@@ -1,0 +1,88 @@
+
+<p>In this activity, we will look at relationships between points on a parabola.
+  As you are answering the questions, think about what patterns you notice. 
+and what generalizations you can make about these relationships.</p>
+
+
+<p>We begin by examining the slope between two points on the parabola <math>y=x^2</math>.</p>
+<p>Some of the points on the parabola are (0,0), (1,1), (2,4), (3,9), (4,16), (5,25).</p>
+<graph>
+<function>x^2</function>
+
+    <point name="given">(2,4)</point>
+  <point name="student">(1,1)</point>
+	
+  <line through="$given $student" />
+
+ </graph>
+
+
+
+<p>Find the slope between ...</p>
+  <ul><li>the point (2,4) and the point (5,25)
+<answer>
+  <mathinput name="a" />
+  <award>
+    <when><copy tname="a" prop="immediateValue" isResponse/>=
+	7
+		</when>
+		</award>
+    </answer>
+
+</li>
+  <li>the point (2,4) and the point (4,16)
+<answer>
+  <mathinput name="b" />
+  <award>
+    <when><copy tname="b" prop="immediateValue" isResponse/>=
+	6
+		</when>
+		</award>
+  </answer></li>
+<li>the point (2,4) and the point (3,9)<answer>
+  <mathinput name="c" />
+  <award>
+    <when><copy tname="c" prop="immediateValue" isResponse/>=
+	5
+		</when>
+		</award>
+  </answer>
+</li>
+    <li>the point (2,4) and the point (1,1)
+<answer>
+  <mathinput name="d" />
+  <award>
+    <when><copy tname="d" prop="immediateValue" isResponse /> =
+	3
+		</when>
+		</award>
+  </answer></li></ul>
+
+<p>Can you guess a simple formula to calculate the slope between (2,4) and an arbitrary point 
+  on the parabola?</p>
+
+
+<p>What is the slope between the point (2,4) and the point (2,4)?</p>
+
+
+
+  
+
+
+
+
+
+
+ 
+
+ 
+
+
+ 
+  
+  
+  
+  
+  
+
+

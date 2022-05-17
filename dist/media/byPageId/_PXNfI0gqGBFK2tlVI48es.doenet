@@ -1,0 +1,178 @@
+<title>Modules</title>
+
+<p>One can create reusable pieces of DoenetML with parameters using the <tag>module</tag> component.</p>
+
+<p>Parameters are defined through <tag>customAttribute</tag> components enclosed in a <tag>setup</tag> component.  Copies of the module can then be created with different attribute values.</p>
+
+<section><title>A simple module</title>
+<p>The initial definition of a module is rendered where it is created.  Module attributes are components created from the attribute values (or a default value).  They are not rendered, but they can be copied from outside the <tag>setup</tag>.</p>
+
+<tabular>
+  <row header bottom="medium"><cell>DoenetML</cell><cell>Rendered</cell></row>
+  <row><cell>
+<pre>&lt;module name=&quot;m&quot;&gt;
+  &lt;setup&gt;
+    &lt;customAttribute componentType=&quot;text&quot; attribute=&quot;item&quot; 
+        defaultValue=&quot;who?&quot; assignNames=&quot;item&quot; /&gt;
+  &lt;/setup&gt;
+  Hello &dollar;item!
+&lt;/module&gt;
+</pre>
+  </cell><cell>
+<module name="m">
+  <setup>
+    <customAttribute componentType="text" attribute="item" defaultValue="who?" assignNames="item" />
+  </setup>
+  Hello $item!
+</module>
+  </cell></row>
+</tabular>
+  
+The attribute <attr>link</attr> of the <tag>copy</tag> tag.
+
+<p>Copies of a module are created with <attr>link</attr> = <q>false</q> by default, as the idea is to create something with new values.  Pass desired attribute values to the copy.  Attribute values are copied into the module.  They retain any link to outside values.</p>
+
+
+<tabular>
+  <row header bottom="medium"><cell>DoenetML</cell><cell>Rendered</cell></row>
+  <row><cell>
+    <pre>&lt;copy tname=&quot;m&quot; item=&quot;friend&quot;/&gt;</pre>
+  </cell><cell>
+    <copy tname="m" item="friend"/>
+  </cell></row>
+  <row><cell>
+    <pre>&lt;p&gt;Who do you want to greet? 
+  &lt;textinput name=&quot;friend&quot; prefill=&quot;friend&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;copy tname=&quot;m&quot; item=&quot;&dollar;friend&quot; /&gt;&lt;/p&gt;</pre>
+  </cell><cell>
+    <p>Who do you want to greet? <textinput name="friend" prefill="friend" /></p>
+<p><copy tname="m" item="$friend" /></p>
+  </cell></row>
+</tabular>
+
+
+
+
+
+</section>
+
+<section><title>Referencing components inside module from outside</title>
+
+  <p>Copying of modules follows all DoenetML naming conventions.  To create a copy of a module with internal components that have determined names, you need to create the module with the <attr>newNamespace</attr> and assign the copied module a name.</p>
+
+
+<tabular>
+  <row header bottom="medium"><cell>DoenetML</cell><cell>Rendered</cell></row>
+  <row bottom="minor"><cell>
+<pre>&lt;module newNamespace name=&quot;m2&quot;&gt;
+  &lt;setup&gt;
+    &lt;customAttribute componentType=&quot;point&quot; attribute=&quot;goal&quot; 
+    defaultValue=&quot;(1,1)&quot; assignNames=&quot;goal&quot; /&gt;
+  &lt;/setup&gt;
+  
+  &lt;p&gt;Move the point to &dollar;goal.&lt;/p&gt;
+  &lt;graph&gt;
+    &lt;point x=&quot;0&quot; y=&quot;0&quot; name=&quot;P&quot;&gt;
+      &lt;constraints&gt;
+        &lt;attractTo&gt;$goal&lt;/attractTo&gt;
+      &lt;/constraints&gt;
+    &lt;/point&gt;
+  &lt;/graph&gt;
+  
+  &lt;answer name=&quot;ans&quot;&gt;
+    &lt;award targetsAreResponses=&quot;P&quot;&gt;
+      &lt;when&gt;
+        &dollar;P = &dollar;goal
+      &lt;/when&gt;
+    &lt;/award&gt;
+  &lt;/answer&gt;
+&lt;/module&gt;
+</pre>
+  </cell><cell>
+        <module newNamespace name="m2">
+      <setup>
+        <customAttribute componentType="point" attribute="goal" defaultValue="(1,1)" assignNames="goal" />
+      </setup>
+
+      <p>Move the point to $goal.</p>
+      <graph>
+        <point x="0" y="0" name="P">
+          <constraints>
+            <attractTo>$goal</attractTo>
+          </constraints>
+        </point>
+      </graph>
+
+      <answer name="ans">
+        <award targetsAreResponses="P">
+          <when>
+            $P = $goal
+          </when>
+        </award>
+      </answer>
+    </module>
+  </cell></row>
+
+  <row><cell>
+<pre>&lt;copy tname=&quot;m2&quot; assignNames=&quot;m3&quot; goal=&quot;(-7, 4)&quot; /&gt;
+  
+&lt;p&gt;Submitted response for copied module:
+   &lt;copy prop=&quot;submittedResponse&quot; tname=&quot;m3/ans&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Credit achieved for copied module:
+   &lt;copy prop=&quot;creditAchieved&quot; tname=&quot;m3/ans&quot; /&gt;&lt;/p&gt;
+</pre>
+  </cell><cell>
+    <copy tname="m2" assignNames="m3" goal="(-7, 4)" />
+
+    <p>Submitted response for copied module: <copy prop="submittedResponse" tname="m3/ans" /></p>
+    <p>Credit achieved for copied module: <copy prop="creditAchieved" tname="m3/ans" /></p>
+
+  </cell></row>
+
+  
+</tabular>
+
+  <p>Since the module had a new namespace, we could reference components from inside it, such as <c>m3/ans</c>.</p>
+
+</section>
+
+<section>
+  <title>Copying an external module</title>
+
+  <p>Copying a module defined in another documents works the same way as copying any DoenetML via a URL.</p>
+
+  <p>Here is a similar module a few more controls</p>
+
+  <tabular>
+  <row header bottom="medium"><cell>DoenetML</cell><cell>Rendered</cell></row>
+  <row><cell>
+<pre>&lt;copy width=&quot;400px&quot; height=&quot;200px&quot;
+  goalx=&quot;3&quot; goaly=&quot;2&quot;
+  initialx=&quot;7&quot; initialy=&quot;-8&quot;
+  title=&quot;A module copied from an external source&quot;
+  uri=&quot;doenet:contentId=77c2bfe094c83bccb442e19a57644
+  1522593f2439e311c298b2377e1ff8b1f25&quot;
+  assignNames=&quot;m4&quot;
+/&gt;
+
+
+&lt;p&gt;Current location of point: &dollar;(m4/P)&lt;/p&gt;
+&lt;p&gt;Location of point at last submit:
+  &dollar;(m4/ans{prop=&apos;submittedResponse&apos;})&lt;/p&gt;
+</pre>
+  </cell><cell>
+      <copy width="400px" height="200px" goalx="3" goaly="2" initialx="7" initialy="-8" title="A module copied from an external source" uri="doenet:contentId=77c2bfe094c83bccb442e19a576441522593f2439e311c298b2377e1ff8b1f25" assignNames="m4" />
+
+  <p>Current location of point: $(m4/P)</p>
+  <p>Location of point at last submit: $(m4/ans{prop='submittedResponse'})</p>
+
+  </cell></row>
+  </tabular>
+  
+
+
+
+  <p>Since external content always gets a new namespace, we can copy components from inside the module.</p>
+
+
+</section>

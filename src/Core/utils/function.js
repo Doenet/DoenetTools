@@ -491,7 +491,6 @@ export var functionOperatorDefinitions = {
 
   derivative: function (derivDefinition, derivVariables) {
 
-    console.log('derivative def', derivDefinition, derivVariables)
     if (derivDefinition.derivativeType === "interpolatedFunction") {
       let derivGenerator = returnReturnDerivativesOfInterpolatedFunction({
         xs: derivDefinition.xs,

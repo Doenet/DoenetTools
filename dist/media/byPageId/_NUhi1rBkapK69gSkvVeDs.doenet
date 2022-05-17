@@ -1,0 +1,203 @@
+<problem>
+<!-- <title>Review derivative of exponential to introduce differential equations, 2</title> -->
+
+<setup>
+
+<function name='f' variables='t'>3e^(7t)</function>
+<function name='g' variables='t'>-2e^(7t)</function>
+<function name='h' variables='t'>7e^(7t)</function>
+<math name='fprime' simplify='full' ><derivative>$f</derivative></math>
+<math name='gprime' simplify='full' ><derivative>$g</derivative></math>
+<math name='hprime' simplify='full' ><derivative>$h</derivative></math>
+<math name='z' simplify='full' >11e^(7t)</math>
+
+
+</setup>
+
+
+<p>Consider the functions <m>f(t)=<copy prop="formula" tname="f" /></m>, <m>g(t)=<copy prop="formula" tname="g" /></m>, and <m>h(t)=<copy prop="formula" tname="h" /></m>.</p>
+
+
+<ol>
+
+<!--Problem#1**********************************************-->
+<li>
+<p>Calculate the derivatives of <m>f</m>, <m>g</m>, and <m>h</m>.</p>
+
+<!--<p style="line-height: 250%">-->
+<p><m>\displaystyle \frac{ df }{ dt } =</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$fprime </award>
+</answer></p>
+
+<p>
+<m>\displaystyle \frac{ dg }{ dt } =</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$gprime </award>
+</answer></p>
+
+<p>
+<m>\displaystyle \frac{ dh }{ dt } =</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$hprime </award>
+</answer>
+</p>
+</li>
+
+<!--Problem#2********************************************-->
+<li>
+<p>The expressions for those derivatives should be equal to the same thing as the function itself, multiplied by a number.</p>
+
+<!--<p style="line-height: 250%">-->
+<p><m>\displaystyle \frac{ df }{ dt } =</m> 
+<answer>
+<award>7</award>
+</answer>
+ <m>\times f(t)</m>
+</p>
+
+<p><m>\displaystyle \frac{ dg }{ dt } =</m> 
+<answer>
+<award >7</award>
+</answer>
+ <m>\times g(t)</m>
+</p>
+
+  
+<p><m>\displaystyle \frac{ dh }{ dt } =</m> 
+<answer>
+<award >7</award>
+</answer>
+ <m>\times h(t)</m></p>
+</li>
+
+<!--Problem#3*******************************************-->  
+<li>
+<p>The function <m>v(t)</m> is one of those three function and is the solution to the differential equation <m>\displaystyle \frac{ dv }{ dt } = 7v(t)</m>.  Can you determine whether <m>v(t)=<copy prop="formula" tname="f" /></m>,  <m>v(t)=<copy prop="formula" tname="g" /></m>, or <m>v(t)=<copy prop="formula" tname="h" /></m>?  
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>no</choice>
+<choice>yes</choice>
+<choice credit='0.5'>I'm clueless</choice>
+</choiceinput>
+</answer>
+  Which of these are possibilities for the solution <m>v(t)</m>? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>any of them</choice>
+<choice>none of them</choice>
+<choice>the first one</choice>
+<choice>the second one</choice>
+<choice>the third one</choice>
+</choiceinput>
+</answer>
+</p>
+
+<hint>
+<p>If <m>v(t)</m> were equal to <m><copy prop="formula" tname="f" /></m>, is it true that <m>\displaystyle \frac{ dv }{ dt }</m> is the same thing as <m>7v(t)</m>?</p>
+
+<p>
+If <m>v(t)</m> were equal to <m><copy prop="formula" tname="g" /></m>, is it true that <m>\displaystyle \frac{ dv }{ dt }</m> is the same thing as <m>7v(t)</m>?
+</p>
+
+<p>
+If <m>v(t)</m> were equal to <m><copy prop="formula" tname="h" /></m>, is it true that <m>\displaystyle \frac{ dv }{ dt }</m> is the same thing as <m>7v(t)</m>?</p>
+
+<p>Any function <m>v(t)</m> where <m>\frac{ dv }{ dt }</m> is the same thing as <m>7v(t)</m> is a possible solution, as it obeys the differential equation <m>\displaystyle \frac{ dv }{ dt }=7v(t)</m>.</p></hint>
+
+</li>
+
+<!--Problem#4*********************************************-->
+<li>
+<p>If you were given the additional piece of information that <m>v(0)=3</m>, could you determine the identity of <m>v(t)</m>?  
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>yes</choice>
+<choice>no</choice>
+<choice credit='0.5'>I'm clueless</choice>
+</choiceinput>
+</answer>
+ If so, what is <m>v(t)</m>?  <m>v(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$f </award>
+</answer>
+</p>
+  
+<hint>
+If you have a number of possibilities for <m>v(t)</m>, does the requirement that <m>v(0)=3</m> narrow down the possible options?  For which of the listed options is <m>v(0)=3</m>?
+</hint>
+
+</li>
+
+<!--Problem#5********************************************--> 
+<li>
+<p>The function <m>w(t)</m> is one of those three functions and is the solution to the differential equation <m>\displaystyle \frac{ dw }{ dt } = 7w</m> with initial condition <m>w(0)=-2</m>.  What is <m>w(t)</m>?  </p>
+<p><m>w(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$g </award>
+</answer></p>
+
+<hint>
+The differential equation 
+<me>\displaystyle \frac{ dw }{ dt }=7w</me>
+is the same thing as 
+<me>\displaystyle \frac{ dw }{ dt } = 7w(t).</me>
+Some times we drop the argument <m>t</m>, and write <m>w(t)</m> as just <m>w</m> for brevity.
+</hint>
+
+</li>
+
+<!--Problem#6********************************************-->
+<li>
+<p>Actually, we can solve this differential equation even if the answer is not one of those options.  If <m>z(t)</m> is a function that satisfies the differential equation <m>\frac{ dz }{ dt }=7z</m> with initial condition <m>z(0)=11</m>, what is <m>z(t)</m>?  </p>
+<p><m>z(t)=</m>
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$z </award>
+</answer></p>
+
+<hint>
+The answer is similar the other parts, with the only difference being the 11.
+</hint>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li><p>
+<m>\displaystyle \frac{ df }{ dt } = $fprime </m>, <m>\displaystyle \frac{ dg }{ dt }=$gprime </m>, <m>\displaystyle \frac{ dh }{ dt }=$hprime </m>.</p>
+</li>
+
+<li><p>
+<m>\displaystyle \frac{ df }{ dt }=7f(t)</m>, <m>\displaystyle \frac{ dg }{ dt }=7g(t)</m>, <m>\displaystyle \frac{ dh }{ dt }=7h(t)</m>.</p>
+</li>
+
+<li><p>
+For all three functions, the derivative is equal to 7 times the function itself.  You could not determine which of those functions was <m>v(t)</m>.</p>
+</li>
+
+<li><p>
+Yes, then you can conclude that <m>v(t)=<copy prop="formula" tname="f" /></m>.</p>
+</li>
+
+<li><p>
+<m>w(t)=<copy prop="formula" tname="g" /></m></p>
+</li>
+
+<li><p>
+<m>z(t)=z</m>.</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

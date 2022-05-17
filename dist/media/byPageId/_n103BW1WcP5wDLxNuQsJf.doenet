@@ -1,0 +1,28 @@
+<title>Solving linear discrete dynamical systems problem set</title>
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=124c5858bda0345f89f3dbfcd6ee86966985f904f27c3c39223d4a4b613178c1&doenetId=Xb5GGn6lW6HV66G9N1MTx" componentType="problem"/>
+
+  <copy uri="doenet:contentId=c417a271f2862c5b9ac9b32974027ca551dc373d2c2796e20b3b2d7d822ea0f0&doenetId=gmU4VRQUZ6EhbJkNizSuz" componentType="problem"/>
+  
+  <copy uri="doenet:contentId=0dd19aad8c121f938a7183816b00c63957576d3806fbee9c31b2f1e2021d97bf&doenetId=YZXcv2ee5vRpJ54mQfK4Y" componentType="problem"/>
+  
+  <copy uri="doenet:contentId=5472b136cd25091c2b6792898759a85774963af4d0e9f89682da195a313f6268&doenetId=GJ1X9aZ19DLKdG9DX-_7v" componentType="problem"/>
+
+  <copy uri="doenet:contentId=bc64cf5f4deff9064177edcadda363fffe4160ac214aaa25a47cca27aee03623&doenetId=8n1ljLZ2bjX9OkCP4Zf_" componentType="problem"/>
+
+  <copy uri="doenet:contentId=3a128b2cc2fffd4224fc42de761149474ca512370f8b266c6ba9378336149941&doenetId=VvE_2zqXEJy6HcPhnprrT" componentType="problem"/>
+
+  <copy uri="doenet:contentId=3adfd0243b8bb295e39b6a8c4d59c9649aaccd3657c70b6f41fff235938d8ddc&doenetId=k8bS9wdj-cV8_L1MRgMPR" componentType="problem"/>
+  
+  <copy uri="doenet:contentId=370c3e3e08bb74690784656989861d66156108cd416cacfc9201937c15280100&doenetId=UuGmVnoHvrGq01MLJ6kHh" componentType="problem"/>
+
+
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

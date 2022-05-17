@@ -1,0 +1,14 @@
+<title>Derivatives of polynomials problem set</title>
+<variantControl nVariants="1" />
+
+
+<paginatorControls paginatorTname="pgn" />
+
+<paginator name="pgn">
+
+  <copy uri="doenet:contentId=daf0fe9bd9f4cebb9841734435cde845cc2b7125eb80568965b3e3dcb03ebc64&doenetId=oS6gQf6nXJSM-X8eU5web" componentType="problem" />
+  <copy uri="doenet:contentId=8a797d4cd6d7539bba0a9158d53922430caa0640e648ef49937e29657a98b45f&doenetId=7Qk4MmnEoh2vn_d3J47PN" componentType="problem" />
+  <copy uri="doenet:contentId=305599992279919b12cba6fd9294eacaf0e522a1dc0766000826eedc4a15f087&doenetId=q53cf8_1BRnpunsEfa_9t" componentType="problem" />
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />

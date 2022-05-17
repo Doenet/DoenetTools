@@ -1,0 +1,106 @@
+<problem>
+<!-- <title>quotient rule</title> -->
+
+<setup>
+
+<math name='poly_ratio' simplify='numbersPreserveOrder' >x^2/(1-x^2)</math>
+<derivative name='d_poly_ratio' variables='x' symbolic>$poly_ratio</derivative>
+<math name='d_poly_ratio_3' simplify='full' >$$d_poly_ratio(3)</math>
+<math name='exp_ratio' simplify='numbersPreserveOrder' >(1-e^x)/(1+e^x)</math>
+<derivative name='d_exp_ratio' variables='x' symbolic>$exp_ratio</derivative>
+<math name='d_exp_ratio_0' simplify='full' >$$d_exp_ratio(0)</math>
+
+</setup>
+
+
+Calculate the following derivatives.
+
+<ol>
+
+<li>
+
+<p><m>\displaystyle h(x)=$poly_ratio </m>
+</p>
+<p>
+
+<m>h'(x) =</m> 
+<answer>
+<award>$d_poly_ratio </award>
+</answer>
+</p>
+
+  
+<hint>
+Some terms should cancel when you simplify your expression, making it less annoying to type than it may first seem.
+</hint>
+
+<p>
+<m>h'(3)=</m> 
+<answer>
+<award>$d_poly_ratio_3 </award>
+</answer>
+
+</p>
+
+</li>
+
+<li>
+<p><m>\displaystyle g(x)=$exp_ratio </m>
+</p>
+<p>
+
+<m>\displaystyle \frac{ dg }{ dx }=</m> 
+<answer>
+<award>$d_exp_ratio </award>
+</answer>
+</p>
+
+  
+<hint>
+Again, some terms should cancel when you simplify your expression, making it less annoying to type than it may first seem.
+</hint>
+  
+<p>
+<m>\displaystyle \frac{ dg }{ dx }\bigg|_{x=0}=</m> 
+<answer>
+<award>$d_exp_ratio_0 </award>
+</answer>
+</p>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<p><m>\displaystyle h'(x)= $d_poly_ratio</m>
+</p>
+<p>
+
+<m>h'(3)=$d_poly_ratio_3 </m>. 
+</p>
+</li>
+
+<li>
+<p><m>\displaystyle \frac{ dg }{ dx }=  $d_exp_ratio</m>
+</p>
+<p>
+
+<m>\displaystyle \frac{ dg }{ dx }\bigg|_{x=0}= $d_exp_ratio_0 .</m>
+</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

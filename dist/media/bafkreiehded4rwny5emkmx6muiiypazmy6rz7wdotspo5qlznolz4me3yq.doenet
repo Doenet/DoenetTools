@@ -1,0 +1,273 @@
+<title>Discrete dynamical system iteration examples</title>
+
+<!--<description>
+Examples of iterating discrete dynamical system models.
+</description>-->
+
+<p>The following are examples of iterating discrete dynamical system.  You can use the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+ to quickly iterate these systems.</p>
+
+
+
+<example>
+
+
+<p>For the dynamical system
+<md>
+  <mrow>x_{n+1}\amp = 2 - 0.5 x_n</mrow>
+  <mrow>x_0\amp = 2</mrow>
+</md>
+calculate </p>
+<ul>
+<li><m>x_1</m> = <answer>1</answer></li>
+<li><m>x_2</m> = <answer>1.5</answer></li>
+<li><m>x_3</m> = <answer>1.25</answer></li>
+</ul>
+
+<p> What happens to <m>x_n</m> after a long time, i.e., for large values of <m>n</m>?  <m>x_n</m> approaches the value <answer allowedErrorInNumbers="0.01" allowedErrorIsAbsolute>4/3</answer>.  (Answer should be accurate to within 0.01.)
+</p>
+
+<p>(You can use the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+ to quickly calculate <m>x_n</m> for large <m>n</m>.)</p>
+
+
+<solution>
+<p>We just plug in <m>x_0=2</m> into the equation with <m>n=0</m> to calculate <m>x_1</m>.
+<md>
+  <mrow>x_1\amp = 2- 0.5 x_0</mrow>
+  <mrow>\amp = 2 - 0.5(2) = 1</mrow>
+</md>
+</p>
+<p>Plug in <m>x_1=1</m> into equation with <m>n=1</m> to calculate <m>x_2</m>.
+<md>
+  <mrow>x_2\amp = 2- 0.5 x_1</mrow>
+  <mrow>\amp = 2 - 0.5(1) = 1.5</mrow>
+</md>
+Similarly, <m>x_3=2-0.5x_2=2-0.5(1.5) = 1.25</m>.</p>
+
+<p>To look at the long time behavior, we type in 2-0.5 x for <m>f(x)</m> and 2 for <m>x_0</m> in the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+ and click <q>iterate</q> a bunch of times.  The results are:
+<md>
+  <mrow>x_4\amp = 1.375</mrow>
+  <mrow>x_5\amp = 1.3125</mrow>
+  <mrow>x_6\amp \approx 1.3438</mrow>
+  <mrow>x_7\amp \approx 1.3281</mrow>
+  <mrow>x_8\amp \approx 1.3359</mrow>
+  <mrow>x_9\amp \approx 1.3320</mrow>
+  <mrow>x_{10}\amp \approx 1.3340.</mrow>
+</md>
+For <m>n \ge 15</m>, <m>x_{n} \approx 1.3333</m>.  It appears that <m>x_{n}</m> is pretty close <m>1 \frac{1}{3}</m> for large <m>n</m>.  (It turns out that <m>1 \frac{1}{3}</m> is something called an 
+<ref uri='doenet:equilibria_discrete_dynamical_systems'>equilibrium</ref>
+ of the dynamical system.)</p>
+
+</solution>
+
+</example>
+
+<example>
+
+
+<p>For the dynamical system
+<md>
+  <mrow>x_{n+1} -x_{n}\amp = 2 - 1.5 x_n</mrow>
+  <mrow>x_0\amp = 2</mrow>
+</md>
+calculate</p>
+<ul>
+<li><m>x_1</m> = <answer>1</answer></li>
+<li><m>x_2</m> = <answer>1.5</answer></li>
+<li><m>x_3</m> = <answer>1.25</answer></li>
+</ul>
+
+<p> What happens to <m>x_n</m> after a long time, i.e., for large values of <m>n</m>?  <m>x_n</m> approaches the value <answer allowedErrorInNumbers="0.01" allowedErrorIsAbsolute>4/3</answer>.  (Answer should be accurate to within 0.01.)
+</p>
+
+<p>(You can use the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+ to quickly calculate <m>x_n</m> for large <m>n</m>.)</p>
+
+<solution>
+<p>We just plug in <m>x_0=2</m> into the equation with <m>n=0</m> to calculate <m>x_1</m>.
+<md>
+  <mrow>x_1 -x_0\amp = 2- 1.5 x_0</mrow>
+  <mrow>x_1 - 2\amp = 2 - 1.5(2) = -1</mrow>
+  <mrow>x_1\amp = 1</mrow>
+</md>
+</p>
+<p>Plug in <m>x_1=1</m> into equation with <m>n=1</m> to calculate <m>x_2</m>.
+<md>
+  <mrow>x_2 -x_1\amp = 2- 1.5 x_1</mrow>
+  <mrow>x_2 - 1\amp = 2 - 1.5(1) = 0.5</mrow>
+  <mrow>x_2\amp = 1.5</mrow>
+</md>
+</p>
+<p>Plug in <m>x_2=1.5</m> into equation with <m>n=2</m> to calculate <m>x_3</m>.
+<md>
+  <mrow>x_3 -x_2\amp = 2- 1.5 x_2</mrow>
+  <mrow>x_3 - 1.5\amp = 2 - 1.5(1.5) = -0.25</mrow>
+  <mrow>x_3\amp = 1.25</mrow>
+</md>
+</p>
+
+<p>To plug the result into the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+, we need to write the dynamical system in the form
+<me>x_{n+1} = f(x_n),</me>
+which we call <em>
+<ref uri='doenet:function_iteration_form|page_type=definition'>function iteration form</ref>
+</em>.  The left hand side of equation <m>x_{n+1} -x_{n} = 2 - 1.5 x_n</m> is <m>x_{n+1}-x_n</m>, which is the difference between the value of <m>x</m> between two time steps (or you can think of <m>x_{n+1}-x_n</m> as being the change in <m>x</m>).  For this reason, we say the equation is in <em>
+<ref uri='doenet:difference_form|page_type=definition'>difference form</ref>
+</em>.  It's easy to rewrite the equation in function iteration form.  We need to solve for <m>x_{n+1}</m> by adding <m>x_{n}</m> to both sides of the equation.
+<md>
+  <mrow>x_{n+1} -x_{n}\amp = 2 - 1.5 x_n</mrow>
+  <mrow>x_{n+1}\amp = 2 - 1.5 x_n + x_n = 2-0.5x_n.</mrow>
+</md>
+The dynamical system in function iteration form is
+<md>
+  <mrow>x_{n+1}\amp = 2 - 0.5 x_n</mrow>
+  <mrow>x_0\amp = 2.</mrow>
+</md>
+Does this look familiar?  It is exactly the same as the previous example.  If we plug <m>f(x)=2-0.5x</m> into the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+ and iterate many times, we will see that <m>x_n</m> approaches <m>1 \frac{1}{3}</m>.</p>
+
+
+</solution>
+
+
+</example>
+
+<example>
+
+
+<p>For the dynamical system
+<md>
+  <mrow>x_{n+1}\amp = 2 - 0.5 x_n^2</mrow>
+  <mrow>x_0\amp = 1</mrow>
+</md>
+calculate</p>
+<ul>
+<li><m>x_1</m> = <answer>1.5</answer></li>
+<li><m>x_2</m> = <answer>0.875</answer></li>
+<li><m>x_3</m> = <answer allowedErrorInNumbers="0.0001" allowedErrorIsAbsolute>1.6171875</answer></li>
+</ul>
+
+<p>Don't round the first two answers.  The third answer must be accurate to within 0.0001.</p>
+
+<p>Note: The notation <m>x_n^2</m> means <m>(x_n)^2</m>.</p>
+
+<p> What happens to <m>x_n</m> after a long time, i.e., for large values of <m>n</m>?  <m>x_n</m>
+<answer>
+  <choiceinput>
+    <choice credit="1">jumps back and forth between two numbers.</choice>
+    <choice>approaches a single number.</choice>
+    <choice>is erratic.</choice>
+  </choiceinput>
+</answer>
+</p>
+
+<p>(You can use the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+ to quickly calculate <m>x_n</m> for large <m>n</m>.)</p>
+
+<solution>
+<p>We just plug in <m>x_0=1</m> into the equation with <m>n=0</m> to calculate <m>x_1</m>.
+<md>
+  <mrow>x_1\amp = 2- 0.5 x_0^2</mrow>
+  <mrow>\amp = 2 - 0.5(1) ^2 = 1.5</mrow>
+</md>
+</p>
+<p>Plug in <m>x_1=1.5</m> into equation with <m>n=1</m> to calculate <m>x_2</m>.
+<md>
+  <mrow>x_2\amp = 2- 0.5 x_1^2</mrow>
+  <mrow>\amp = 2 - 0.5(1.5)^2 = 0.875</mrow>
+</md>
+Similarly, <m>x_3=2-0.5x_2^2=2-0.5(0.875)^2 \approx 1.6172</m>.</p>
+
+<p>To look at the long time behavior, we type in 2-0.5 x^2 for <m>f(x)</m> and 1 for <m>x_0</m> in the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+ and click <q>iterate</q> a bunch of times.  The results are:
+<md>
+  <mrow>x_4\amp \approx 0.6924</mrow>
+  <mrow>x_5\amp \approx 1.7603</mrow>
+  <mrow>x_6\amp \approx 0.4506</mrow>
+  <mrow>x_7\amp \approx 1.8985</mrow>
+  <mrow>x_8\amp \approx 0.1979</mrow>
+  <mrow>x_9\amp \approx 1.9084</mrow>
+  <mrow>x_{10}\amp \approx 0.0390.</mrow>
+</md>
+For <m>n \ge 13</m>, <m>x_n</m> jumps back and forth between <m>x_n \approx 2</m> (for odd <m>n</m>) and <m>x_n \approx 0</m> (for even <m>n</m>).  We say that the solution oscillates between these two values.</p>
+
+
+</solution>
+
+</example>
+
+<example>
+
+
+<p>For the dynamical system
+<md>
+  <mrow>y_{t+1}\amp = 2 - y_t^2</mrow>
+  <mrow>y_0\amp = 1.5</mrow>
+</md>
+calculate</p>
+<ul>
+<li><m>y_1</m> = <answer>-0.25</answer></li>
+<li><m>y_2</m> = <answer>1.9375</answer></li>
+<li><m>y_3</m> = <answer allowedErrorInNumbers="0.0001" allowedErrorIsAbsolute>-1.75390625</answer></li>
+</ul>
+
+<p>Don't round the first two answers.  The third answer must be accurate to within 0.0001.</p>
+
+
+<p> What happens to <m>y_t</m> after a long time, i.e., for large values of <m>t</m>?  <m>y_t</m>
+<answer>
+  <choiceinput>
+    <choice>jumps back and forth between two numbers.</choice>
+    <choice>approaches a single number.</choice>
+    <choice credit="1">is erratic.</choice>
+  </choiceinput>
+</answer>
+</p>
+
+<p>(You can use the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+ to quickly calculate <m>y_t</m> for large <m>t</m>.)</p>
+
+
+<solution>
+<p>We just plug in <m>y_0=1.5</m> into the equation with <m>t=0</m> to calculate <m>y_1</m>.
+<md>
+  <mrow>y_1\amp = 2- y_0^2</mrow>
+  <mrow>\amp = 2 - (1.5) ^2 = -0.25</mrow>
+</md>
+</p>
+<p>Plug in <m>y_1=-0.25</m> into equation with <m>t=1</m> to calculate <m>y_2</m>.
+<md>
+  <mrow>y_2\amp = 2- y_1^2</mrow>
+  <mrow>\amp = 2 - (-0.25)^2 = 1.9375</mrow>
+</md>
+Similarly, <m>y_3=2-y_2^2=2-(1.9375)^2 \approx -1.7539</m>.</p>
+
+<p>To look at the long time behavior, we can still use the 
+<ref uri='doenet:doenetId=uswwOciT_l5DHV0dc0sZn'>function iteration applet</ref>
+.  However, the applet uses <m>x</m> for the variable, so we have to translate <m>2-y_t^2</m> in terms of <m>x</m> and  type in 2-x^2 for <m>f(x)</m>.  After entering 1.5 for <m>x_0</m> and clicking <q>iterate</q> a bunch of times, we obtain the results:
+<md>
+  <mrow>y_4\amp \approx -1.0762</mrow>
+  <mrow>y_5\amp \approx 0.8418</mrow>
+  <mrow>y_6\amp \approx 1.2913</mrow>
+  <mrow>y_7\amp \approx 0.3324</mrow>
+  <mrow>y_8\amp \approx 1.8895</mrow>
+  <mrow>y_9\amp \approx -1.5701</mrow>
+  <mrow>y_{10}\amp \approx -0.4653.</mrow>
+</md>
+Even after iterating to <m>y_{40}</m> or beyond, we don't discern any clear pattern in the evolution.  It turns out that they system is 
+<ref uri='doenet:chaos|page_type=definition'>chaotic</ref>
+, and there is no such repeating pattern of the evolution.</p>
+</solution>
+
+</example>

@@ -1,0 +1,399 @@
+<!--work in progress do not release(VM)-->
+
+<!--Greek symbols, subscripts, superscripts, basic operators....-->
+
+<title>Symbols, Greek & Mathematical Notation</title>
+<p>see also:  &lt;m&gt; &lt;math&gt;</p> 
+
+<subsection><title>Greek Letters & Basic Operators</title>
+  <tabular>
+    
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;pi + 2&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;gamma_1&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>gamma_1</math>
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;beta^2&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>beta^2</math>
+      </cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;1/4 epsilon&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>1/4 epsilon</math>
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;2*delta&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>2*delta</math>
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;2 doteq alpha&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>2 doteq alpha</math>
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;sqrt(eta)&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>sqrt(eta)</math>
+      </cell>
+    </row>
+
+<row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;sin(theta)&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>sin(theta)</math>
+      </cell>
+    </row>
+    </tabular>
+  </subsection>
+
+
+<!--Sets, set notation, advanced operators..................-->
+
+<subsection><title>Sets and Set Notation</title>
+  
+  <!--how do I embed a hyperlink?, how do I write smaller font?-->
+  <p>Note:  Most tags in this section are &lt;m&gt; rather than 
+  &lt;math&gt;.  The &lt;m&gt; tag works with Latex.  They are not 
+  intelligent and can only display the content.  See also 
+  https://oeis.org/wiki/List_of_LaTeX_mathematical_symbols for 
+  additional symbols not listed
+  </p>
+  <tabular>
+    
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+
+<!-- Reals, with superscript-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;m&gt;\mathbb R^2 &lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+      <m>\mathbb R^2</m>
+      </cell>
+    </row>
+
+<!-- Naturals, discluding the singleton {1}--> 
+    <!--is there a prettier way?-->
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;m&gt;\mathbb N \backslash&lt;/m&gt;{1}
+        </pre>
+      </cell>
+      <cell>
+      <m>\mathbb N \backslash</m>{1}
+      </cell>
+    </row>
+
+<!--For any x in the set of Integers -->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;m&gt;\forall  x  \epsilon \mathbb Z&lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <!--how to for spacing?-->
+      <m>\forall  x  \epsilon \mathbb Z</m>
+      </cell>
+    </row>
+
+<!--there exists x in Rationals with a subscript-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;m&gt;\exists \epsilon \mathbb Q withsubscript? &lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+        <!--how to for spacing and subscript within 'm'?-->
+      <m>\exists x \epsilon \mathbb Q withsubscript?</m>
+      </cell>
+    </row>
+
+<!-- x is not in the set of positive reals-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;m&gt;x \notin \mathbb R^+ &lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+      <m>x \notin \mathbb R^+ </m>
+      </cell>
+    </row>
+<!-- union and intersection-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;union and intersection &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+<!-- not equal, inequalities-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;not equal, inequalities &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+ <!---empty set, power sets, special sets-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;empty set, power sets, special sets &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+<!-- all types of subsets-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;all types of subsets &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+<!-- cardinality symbols-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;cardinality symbols&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+<!--functions and mappings-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;functions and mappings &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+<!--logic notation-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;logic notation &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row> 
+    
+  </tabular>
+</subsection>
+
+<!--Displaying vectors, vector operations..................-->
+
+<subsection><title>Vectors</title>
+  <tabular>
+    
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+<!-- column vector-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;column vector &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+    <!-- row vector-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;row vector &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+    <!-- vector arrow over variable-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;vector arrow over variable&lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+    <!--boldface type vector variable-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;m&gt;\mathbf x (t)=\mathbf u +t(\mathbf u - \mathbf v) &lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+      <m>\mathbf x (t)=\mathbf u +t(\mathbf u - \mathbf v)</m>
+      </cell>
+    </row>
+
+   <!--vector dot product-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;vector dot product &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row> 
+
+    <!--vector cross product-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;vector cross product &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+
+    <!--magnitude of a vector-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;math&gt;magnitude of a vector &lt;/math&gt;
+        </pre>
+      </cell>
+      <cell>
+      <math>pi + 2</math>
+      </cell>
+    </row>
+  </tabular>
+</subsection>
+
+
+<subsection><title>Matrices</title>
+  <tabular>
+    
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+<!-- column vector-->    
+    <row bottom="minor">
+      <cell>
+        <pre>
+   &lt;m&gt;
+      \mathbf{A} =
+      \begin{pmatrix}
+        2 & 3 & -1 \\
+        -1 & 0 & 2
+      \end{pmatrix} &lt;/m&gt;
+        </pre>
+      </cell>
+      <cell>
+      <m>\mathbf{A} =
+      \begin{pmatrix}
+        2 & 3 & -1 \\
+        -1 & 0 & 2
+      \end{pmatrix} </m>
+      </cell>
+    </row>    
+  </tabular>
+</subsection>
+   

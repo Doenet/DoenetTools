@@ -1,0 +1,45 @@
+<problem>
+<!-- <title>Linear scalar ode, analytic</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='tau' from='2' to='20' />
+<selectFromSequence assignNames='xinf' from='-20' to='20' exclude="0" />
+<selectFromSequence assignNames='x0' from='-20' to='20' />
+
+<select assignNames='xx' >x y z u v w</select>
+
+<math name='rhs' simplify='numbersPreserveOrder' >1/$tau *(-$xx +$xinf )</math>
+<math name='generic_solution' simplify='numbers' >C*e^(-t/$tau ) + $xinf </math>
+<math name='specific_solution' simplify='numbers' >($x0 -$xinf )*e^(-t/$tau ) + $xinf </math>
+<math name='C_specific' simplify='full' >$x0 -$xinf </math>
+<math name='rhs_no_tau' simplify='full' >-$xx +$xinf </math>
+
+</setup>
+
+
+Solve the following differential equation:
+<md>
+  <mrow>\frac{ d$xx }{ dt }\amp = \frac{1}{ $tau  } \left($rhs_no_tau  \right)</mrow>
+  <mrow>$xx (0)\amp = $x0 </mrow>
+</md>
+
+<p>Solution: <m>$xx (t) =</m> 
+<answer>
+<award allowedErrorInNumbers='0.00009999999999999999'>$specific_solution </award>
+<award credit='0.5' allowedErrorInNumbers='0.001' feedbackCodes='numericalerror'>$specific_solution </award>
+<award credit='0.25' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$specific_solution </award>
+</answer>
+<copy prop="feedbacks" tname="answer1" />
+</p>
+<p>(If you round your answer, include at least 5 significant digits.)</p>
+
+
+<solution>
+The generic solution is <m>$xx (t)=$generic_solution </m>.  To match the initial conditions, we need <m>C=$C_specific </m>.  Therefore the specific solution is
+<m>$xx (t) = $specific_solution </m>.
+
+</solution>
+
+
+</problem>

@@ -1,0 +1,94 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>sum</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exlusive to component</li>
+    <ul><title><alert>Inherited from parent component/  mathBaseOperator:</alert></title>
+      <li>forceNumeric  <em>(boolean)</em></li>
+      <li>forceSymbolic  <em>(boolean)</em></li>
+    </ul>
+<aside><title>Attributes inherited from parent component<tag>math</tag> </title>
+    <li>simplify  <em>(text)</em></li>
+    <li>format  <em>(text)</em></li>
+    <li>expand  <em>(boolean)</em></li>
+    <li>displayDigits  <em>(integer)</em></li>
+    <li>displayDecimals  <em>(integer)</em></li>
+    <li>displaySmallAsZero  <em>(number)</em></li>
+    <li>renderMode  <em>(text)</em></li>
+    <li>unordered  <em>(boolean)</em></li>
+    <li>createVectors  <em>(boolean)</em></li>
+    <li>createIntervals  <em>(boolean)</em></li>
+    <li>functionSymbols  <em>(textList)</em></li>
+    <li>targetsAreFunctionSymbols  <em>(textList)</em></li>
+    <li>splitSymbols <em>(boolean)</em></li>
+    <li>groupCompositeReplacements <em>(boolean)</em></li></aside>  
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>sum</tag><idx><tag>sum</tag></idx> component is a functional math component that renders the sum of its arguments. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1:  <tag>sum</tag> without attributes </title>
+<p>In the sample code below, the basic form of the <tag>sum</tag> component is illustrated without any additional attributes specified.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;The sum of the first 10 Fibonacci numbers is:
+&lt;sum&gt;1 1 2 3 5 8 13 21 34 55&lt;/sum&gt;
+&lt;/p&gt;
+</pre>
+  </example>
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<p>The sum of the first 10 Fibonacci numbers is:
+<sum>1 1 2 3 5 8 13 21 34 55</sum>
+</p>
+</example>
+
+
+<!--******************************************************-->
+<!--   
+ 
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+  -->
+<!--*******************************************************-->
+<!-- 
+  
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+   -->
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

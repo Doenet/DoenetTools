@@ -1,0 +1,138 @@
+<document><title><tag>floor</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+  <ul>
+    <aside><title>Attributes inherited from parent component <tag><ref>math</ref></tag> </title>
+    <li><attr>simplify</attr>
+      <em>(text)</em></li>
+    <li><attr>format</attr>  <em>(text)</em></li>
+    <li><attr>expand</attr>  <em>(boolean)</em></li>
+    <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+    <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+    <li><attr>displaySmallAsZero</attr>  <em>(number)</em></li>
+    <li><attr>renderMode</attr>  <em>(text)</em></li>
+    <li><attr>unordered</attr>  <em>(boolean)</em></li>
+    <li><attr>createVectors</attr>  <em>(boolean)</em></li>
+    <li><attr>createIntervals</attr>  <em>(boolean)</em></li>
+    <li><attr>functionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>targetsAreFunctionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>splitSymbols</attr> <em>(boolean)</em></li>
+    <li><attr>groupCompositeReplacements</attr> <em>(boolean)</em></li></aside>
+  </ul>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>floor</tag><idx><tag>floor</tag></idx> component renders the result of the floor function applied to the enclosed numerical expression or math input.  The floor function returns the greatest integer less than or equal to a given rational number.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+&lt;p&gt;
+  &lt;m&gt;\mathrm{floor}(4.8) = \lfloor 4.8 \rfloor = &lt;floor&gt;4.8&lt;/floor&gt;&lt;/m&gt;
+&lt;/p&gt;
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<p>
+  <m>\mathrm{floor}(4.8) = \lfloor 4.8 \rfloor = <floor>4.8</floor></m>
+</p>
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: floor function input defined in <tag>setup</tag></title>
+<pre>
+&lt;setup&gt;
+  &lt;number name="x"&gt;12/7&lt;/number&gt;
+&lt;/setup&gt;
+
+&lt;me&lt;x = \frac{12}{7} = &dollar;x&lt;/me&gt;
+&lt;me&gt;\mathrm{floor}(x) = \left\lfloor \frac{12}{7} \right\rfloor = &lt;floor&gt;&dollar;x&lt;/floor&gt;&lt;/me&gt;
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<setup>
+  <number name="x">12/7</number>
+</setup>
+
+<me>x = \frac{12}{7} = $x</me>
+<me>\mathrm{floor}(x) = \left\lfloor \frac{12}{7} \right\rfloor = <floor>$x</floor></me>
+ 
+</subsection>
+    </cell>
+  </row>
+ 
+
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code:  User-input to ceiling function </title>
+<pre>
+&lt;m&gt;y = &lt;/m&gt;&lt;mathInput name="y"/&gt;
+&lt;p&gt;The &lt;m&gt;\mathrm{floor}&lt;/m&gt; of &lt;m&gt;y&lt;/m&gt; is: &lt;me&gt;\lfloor y \rfloor = &lt;floor&gt;&dollar;y&lt;/floor&gt;&lt;/me&gt;&lt;/p&gt;
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<m>y = </m><mathInput name="y"/>
+<p>The <m>\mathrm{floor}</m> of <m>y</m> is: <me>\lfloor y \rfloor = <floor>$y</floor></me></p>
+</subsection>
+    </cell>
+  </row>
+
+</tabular>  
+ 
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

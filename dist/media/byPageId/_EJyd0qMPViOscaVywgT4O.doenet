@@ -1,0 +1,55 @@
+<!--***********************************************************
+*Dear user, 
+*please do not alter the source file for the course, but instead *use CMD+A (or CNTRL+A) to *select all the text, then copy and *paste into a separate DoenetML for practice. If you *can manage this you will be showered with golden coins and four-leaf clovers.
+*
+*Most Kindly,
+*the DoenetML leprechauns
+************************************************************-->
+<title>Practice Example:  the <tag>image/</tag> component</title>
+<ref createButton="true" uri="https://docs.google.com/document/d/1053chUSTiTN6wMRj2G1YAKn_qS2yU3Hur3jHmOixdeY/edit?usp=sharing">Get Text File</ref>
+
+<!--***********************************************************
+*  Example 1:  Using an image tag with just the source attribute.      
+*
+************************************************************-->
+<section><title>Example 1</title>
+
+<figure> 
+<image source="https://upload.wikimedia.org/wikipedia/commons/5/58/Leprechaun_engraving_1900.jpg" />
+</figure>
+
+
+<!--Delete or comment out the image above and insert your own using the source attribute-->
+
+
+
+</section>
+<!--***********************************************************
+*  Example 2:  Using an image tag with the width and source
+*  attributes. 
+************************************************************-->
+<section><title>Example 2</title>
+
+<figure> 
+<image width="200" source="https://upload.wikimedia.org/wikipedia/commons/0/0b/Leprechaun_ill_artlibre_jnl.png" />
+</figure>
+
+<!--Delete this comment and make your own image using the width and source attributes.  What happens with the example picture shown if you do NOT have the width attribute?  Also, notice how changing the width alone also preserves the aspect ratio of the image.-->
+
+
+</section>
+<!--***********************************************************
+*  Example 3:  Using an image tag with height, width, and 
+*  source attributes.
+************************************************************-->
+<section><title>Example 3</title>
+
+
+
+<figure>
+  <image width="200" height="100" source="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Steam_Phase_eruption_of_Castle_geyser_with_double_rainbow.jpg/1920px-Steam_Phase_eruption_of_Castle_geyser_with_double_rainbow.jpg" />
+</figure>
+
+<!--Delete this comment and make your own image using all three attributes of width, height, and source. What happens if you make your picture very small but don't nest it in the <p></p> tags?-->
+
+</section>

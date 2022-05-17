@@ -1,0 +1,109 @@
+<title>Information about the Differentiation Exam</title>
+  
+<p>The differentiation module exam for Math 1241 is based on the Differentiation module. </p>
+
+<section><title>Material for the exam</title>
+
+<ol>
+<li><p>Introduction to the derivative</p>
+
+
+<ol>
+<li>The slope of the secant line as average rate of the change, and the
+  slope of the tangent line as instantaneous rate of change.</li>
+<li>The tangent line as the limit of a secant line with the two points approaching each other.</li>
+<li>The derivative is the slope of the tangent line, which we also call the slope of the function itself.</li>
+<li>The limit as the idea of getting as close as possible with actually going all the way.</li>
+</ol>
+</li>
+
+<li><p>Derivatives of polynomials</p>
+
+
+<p>Be able to calculate the derivative of polynomials or the derivative of powers with other exponents.</p></li>
+
+<li><p>Derivatives of exponential and logarithmic functions</p>
+
+<p>Be able to calculate the derivative of the exponential function and the logarithm.</p>
+
+</li>
+
+<li><p>Differentiation rules</p>
+
+<ol>
+ <li>Be able to calculate the derivative of the product and quotient of
+  two functions.</li>
+ 
+<li>Be able to calculate the derivative of simple compositions using the chain rule, especially those of the form <m>f(x)=e^{p(x)}</m>, <m>f(x)=\ln(p(x))</m>, or <m>(p(x))^n</m>, where <m>p(x)</m> is a polynomial.</li>
+
+<li>Be able to combine product and chain rule to differential functions of the form <m>f(x)=p(x)e^{q(x)}</m>, where <m>p(x)</m> and <m>q(x)</m> are polynomials.</li>
+
+<li>Be able to differentiate functions that include parameters, such as <m>f(x) = ax^2 + b e^{cx} + d</m>, where <m>a</m>, <m>b</m>, <m>c</m>, and <m>d</m> are constant parameters.</li>
+</ol>
+
+</li>
+
+</ol>
+
+</section>
+
+<section>
+  <title>Study aids</title>
+
+<ol>
+<li><p><ref uri="doenet:doenetId=4_DSRiNjRapmsYOEQ7BjS" >Differentiation practice exam</ref></p>
+
+<p>All questions that may appear in the differentiation exam are available in the <ref uri="doenet:doenetId=4_DSRiNjRapmsYOEQ7BjS" >differentiation practice exam</ref>.  In both the practice exam and the actual Differentiation Exam, the set of problems as well as values of numbers, variables, parameters, and other quantities are selected randomly.  You will want to generate attempts of the practice exam to see the larger array of problems.  Given the random nature, we cannot guarantee that you will actually see all the problems that will appear on the actual Differentiation Exam.  But the more problems you work on, the greater the chance you will work on problems that will show up on the test.</p>
+
+<p>Unlike the actual Differentiation Exam, the practice exam will give you immediate feedback and allow you to view the solutions.</p>
+</li>
+  
+<li><p>Quiz problems</p>
+<p><ref uri="doenet:doenetId=3CXtX5y0ze8_lU2hH8RFN">Quiz 4</ref> also contains some of the problems that are on the Differentiation Exam.  Even after the due date of quizzes, you can still generate more attempts and check out how well you can answer those questions.
+</p></li>
+
+<li><p>Problem sets</p>
+<p>
+The problem sets from the Differentiation module are also good review.</p></li>
+</ol>
+
+</section>
+
+<section>
+  <title>Exam rules</title>
+
+<ol>
+<li>You must bring your University ID card.</li>
+<li>You are allowed 50 minutes to take the exam.</li>
+<li>You are allowed to have one-half of one letter (8.5in <m>\times</m> 11in) sized sheet of paper of handwritten notes.  Double-sided is OK.</li>
+<li>You are allowed to have a scientific calculator in the exam.  However, graphing calculators are NOT allowed on this exam. </li>
+<li>No textbook or electronic equipment (other than scientific calculator) allowed.</li>
+
+</ol>
+
+</section>
+
+<section>
+  <title>Exam format</title>
+
+  <p>The exam will be taken on iPads and will essentially look like the practice exam, except that you will not be given feedback on your responses.</p>
+  
+  <p>You can change your response to each question as often as you like.  Your last response for each question at the time you submit exam will be the one that is graded.</p>
+
+  <p>The exam will not tell you which questions you got right or wrong.  However, immediately after taking the exam, you can go to the gradebook and click on the Differentiation Exam to see your score and the solutions to the problems.</p>
+</section>
+
+<section>
+  <title>Exam times</title>
+
+<p>You can take the exam up to two times.  You can take it once on Thursday, October 21, and once on Thursday, October 28. Each day, the exam is offered at the following times.  Plan to take it during the time that you are officially registered.  (You can check with a proctor to see if there is a computer available to take the exam at one of the other times, but there are few extra computers available.)</p>
+
+<ul>
+<li>11:15 AM - 12:05 PM</li>
+<li>12:20 PM - 1:10 PM</li>
+<li>1:25 PM - 2:15 PM</li>
+</ul>
+<p>Exam location: Vincent Hall, room 16</p>
+
+<p>If you take the exam twice, your exam score will be the maximum of your scores from the two attempts.</p>
+</section>

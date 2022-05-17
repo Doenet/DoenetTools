@@ -1,0 +1,2 @@
+<p>What's your favorite color? <textinput name='color' /></p>
+<p>What's your favorite car? <textinput name='car' /></p>

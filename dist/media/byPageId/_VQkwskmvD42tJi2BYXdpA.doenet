@@ -1,0 +1,102 @@
+<problem>
+<!-- <title>Secant of polynomial</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='c1 c2' numberToSelect='2' withReplacement from='-10' to='10' exclude='0' />
+<selectFromSequence assignNames='x1 x2' numberToSelect='4' withReplacement='false' from='-10' to=' 10' />
+<selectFromSequence assignNames='n1' from='2' to=' 3' />
+<select assignNames='x' > x y z</select>
+<select assignNames='xa xb' numberToSelect='2' withReplacement='false'> a b c d k m p q</select>
+
+<function name='fun' variables='$x' symbolic>$c1 $x ^$n1 +$c2</function>
+
+<math name='dx' simplify='numbers' >$x1 -$x2 </math>
+
+<math name='funx1' simplify='numbers' >$$fun($x1 )</math>
+<math name='funx2' simplify='numbers' >$$fun($x2 )</math>
+<math name='secant_slope_1' simplify='numbers' >($funx1 -$funx2 )/($dx )</math>
+
+<math name='funxa' simplify='numbers' >$$fun($xa )</math>
+<math name='funxb' simplify='numbers' >$$fun($xb )</math>
+<math name='secant_slope_2' simplify='full' >($funxa -$funxb )/($xa -$xb )</math>
+<math name='secant_slope_3'>(g($xa) - g($xb))/($xa -$xb )</math>
+<math name='secant_slope_3a'>(g($xb) - g($xa))/($xb -$xa )</math>
+
+</setup>
+
+<p>Let <m>f ($x ) = $fun </m>.</p>
+
+
+<ol>
+
+<li>
+<p>Calculate the slope of the secant line from <m>$x =$x1 </m> to <m>$x =$x2 </m>.</p>
+
+<p>Slope = 
+<answer>
+<award allowedErrorIsAbsolute allowedErrorInNumbers='0.1'>$secant_slope_1 </award>
+</answer>
+
+</p>
+
+
+</li>
+
+<li>
+<p>Calculate the slope of the secant line from <m>$x =$xa </m> to <m>$x =$xb </m>.</p>
+
+<p>Slope = 
+<answer>
+<award>$secant_slope_2 </award>
+</answer>
+
+</p>
+
+</li>
+
+<li>
+<p>For any function <m>g ($x )</m>, what is the slope of the secant line from <m>$x =$xa </m> to <m>$x =$xb </m>?</p>
+
+<p>Slope = 
+<answer>
+<award>$secant_slope_3 </award>
+<award>$secant_slope_3a </award>
+</answer>
+
+</p>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+The slope of the secant is
+<me>\frac{ f ($x1 ) - f ($x2 ) }{ $x1  - ($x2 ) } =\frac{ $funx1 -($funx2 ) }{ $dx  } = <round numberdigits="2"><number>$secant_slope_1 </number></round></me>
+</li>
+
+<li>
+The slope of the secant is
+<me>\frac{ f ($xa ) - f ($xb ) }{ $xa  - $xb  } =\frac{ $funxa -($funxb ) }{ $xa -$xb  } = $secant_slope_2 </me>
+</li>
+
+<li>
+<p>The slope of the secant is
+<me>\frac{ g ($xa ) - g ($xb )}{ $xa -$xb  }.</me>
+</p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

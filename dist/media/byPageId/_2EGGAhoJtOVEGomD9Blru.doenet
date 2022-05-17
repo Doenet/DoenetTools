@@ -1,0 +1,217 @@
+<!--
+  Simplification of Complex Fraction in
+  $ans7 -- g composed with g.
+-->
+
+<!--
+#DESCRIPTION
+##  Calculus: Functions
+##ENDDESCRIPTION
+
+
+## DBsubject(Trigonometry)
+## DBchapter(Trigonometric functions)
+## DBsection(Combinations and compositions of functions)
+## Date(08/29/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(Compose_find_result)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('1.3')
+## Problem1('36')
+## KEYWORDS('calculus', 'function', 'composition')
+-->
+
+<setup>
+  <selectFromSequence from="1" to="2" name="a" />
+  <selectFromSequence from="2" to="10" name="b" />
+  <selectFromSequence from="2" to="5" name="c" />
+
+  <function variable='x' name="gg" symbolic formula="x/(4+x)" />
+
+  <select assignNames="(ff)">
+    <option>
+      <function variable='x' symbolic formula="sin($b*x)" />
+    </option>
+    <option>
+      <function variable='x' symbolic formula="cos($b*x)" />
+    </option>
+  </select>
+
+  <math name="ans1" simplify>$$ff($gg)</math>
+  <math name="ans3" simplify>$$gg($ff)</math>
+  <math name="ans5" simplify>$$ff($ff)</math>
+  <math name="ans7" simplify>$$gg($gg)</math>
+
+  <math format="latex" name="ans2">
+    (-\infty,-$c)\cup(-$c,\infty)
+  </math>
+  <math format="latex" name="ans4">
+    (-\infty,\infty)
+  </math>
+  <math format="latex" name="ans6">
+    (-\infty,\infty)
+  </math>
+  <math simplify="numbers" format="latex" name="ans8">
+    (-\infty,-$c)
+    \cup
+    (-$c, -($c^2)/(1+$c))
+    \cup
+    (-($c^2)/(1+$c), \infty)
+  </math>
+</setup>
+
+<p>
+  Let <m>f(x)=$ff</m> and <m>g(x)=\displaystyle $gg</m>.
+  Find 
+  <m>f\circ g,</m>
+  <m>g\circ f,</m>
+  <m>f\circ f,</m>  and
+  <m>g\circ g,</m>
+  and their respective domains.
+</p>
+
+<p>1. <m>f\circ g = </m>
+<answer>
+  <award>
+    $ans1
+  </award>
+</answer></p>
+
+<p>2. What is the domain of <m>f\circ g</m>?</p>
+<p>Answer (in interval notation):
+<answer>
+  <award>
+    $ans2
+  </award>
+</answer></p>
+
+<p>3. <m>g\circ f = </m>
+<answer>
+  <award>
+    $ans3
+  </award>
+</answer></p>
+
+<p>4. What is the domain of <m>g\circ f</m>?</p>
+<p>Answer (in interval notation):
+<answer>
+  <award>
+    $ans4
+  </award>
+</answer></p>
+
+<p>5. <m>f\circ f = </m>
+<answer>
+  <award>
+    $ans5
+  </award>
+</answer></p>
+
+<p>6. What is the domain of <m>f\circ f</m>?</p>
+<p>Answer (in interval notation):
+<answer>
+  <award>
+    $ans6
+  </award>
+</answer></p>
+
+<p>7. <m>g\circ g = </m>
+<answer>
+  <award>
+    $ans7
+  </award>
+</answer></p>
+
+<p>8. What is the domain of <m>g\circ g</m>?</p>
+<p>Answer (in interval notation):
+<answer>
+  <award>
+    $ans8
+  </award>
+</answer></p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        <m>f\circ g</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans1
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        Domain
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        $ans2
+      </cell>
+   </row>
+    <row bottom="minor">
+      <cell>
+        <m>g\circ f</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans3
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        Domain
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        $ans4
+      </cell>
+   </row>
+    <row bottom="minor">
+      <cell>
+        <m>f\circ f</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans5
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        Domain
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        $ans6
+      </cell>
+   </row>
+    <row bottom="minor">
+      <cell>
+        <m>g\circ g</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans7
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        Domain
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        $ans8
+      </cell>
+   </row>
+  </tabular>
+</solution>

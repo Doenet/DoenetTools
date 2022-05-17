@@ -1,0 +1,294 @@
+<document><title><tag>periodicSet</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>minIndex</attr>  <em>(integer)</em></li>
+  <li><attr>maxIndex</attr>  <em>(integer)</em></li>
+  <li><attr>offsets</attr>  <em>(mathList)</em></li>
+  <li><attr>period</attr>  <em>(integer)</em></li>
+  <li><attr>minIndexAsList</attr>  <em>(integer)</em></li>
+  <li><attr>maxIndexAsList</attr>  <em>(integer)</em></li>
+    <aside><title>Attributes inherited from parent component <tag><ref>math</ref></tag> </title>
+    <li><attr>simplify</attr>
+      <em>(text)</em></li>
+    <li><attr>format</attr>  <em>(text)</em></li>
+    <li><attr>expand</attr>  <em>(boolean)</em></li>
+    <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+    <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+    <li><attr>displaySmallAsZero</attr>  <em>(number)</em></li>
+    <li><attr>renderMode</attr>  <em>(text)</em></li>
+    <li><attr>unordered</attr>  <em>(boolean)</em></li>
+    <li><attr>createVectors</attr>  <em>(boolean)</em></li>
+    <li><attr>createIntervals</attr>  <em>(boolean)</em></li>
+    <li><attr>functionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>targetsAreFunctionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>splitSymbols</attr> <em>(boolean)</em></li>
+    <li><attr>groupCompositeReplacements</attr> <em>(boolean)</em></li></aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>periodicSet</tag><idx><tag>periodicSet</tag></idx> component calculates a list of values from a periodic set that is specified with the <attr>period</attr> and <attr>offset</attr> attributes.  A sequence of representative values of the set may be rendered as output using the <tag><ref>copy</ref></tag> component along with the <attr>prop = "asList"</attr> attribute specification.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<!--rephrase this, text is awkward...-->
+<periodicSet period="abs(pi/2)" offsets="pi/4" name="exampleSet"/>
+<p>The periodic set defined by a period of <m>|\frac{\pi}{2}|</m> with offsets of <m>\frac{\pi}{4}</m> can be described by the sequence:  <copy prop="asList" tname="exampleSet"/>
+</p>
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+Everything below copied from glossary:
+<title>Periodic set</title>
+<section newNameSpace>
+<setup>
+  <select assignNames="a">1/4 -1/4 1/2 -1/2 3/4 -3/4 1 -1 4/3 -4/3 2 -2 4 -4</select>
+  <select assignNames="b">0 1 -1 1/2 -1/2</select>
+  <periodicSet period="$p" offsets="$o" name="userPeriodicSet" />
+  <periodicSet period="abs(pi/$a)" offsets ="-pi$b/$a" name="correctPeriodicSet" />
+
+  <conditionalContent assignNames="(maxCreditRedund)">
+    <case condition="$(userPeriodinamecSet{prop='redundantOffsets'})">
+      <number>0.8</number>
+    </case>
+    <else>
+      <number>1</number>
+    </else>
+  </conditionalContent>
+</setup>
+<!--testing output below-->
+  <periodicSet period="abs(pi/$a)" offsets ="-pi$b/$a" name="test" />
+  <copy prop="asList" tname="test" />
+<!--below, this does nothing-->
+  <asList>$test</asList>
+
+<!--original again...-->  
+<p>Solve for <m>x</m>:
+<me><math simplify="numbersPreserveOrder">sin(<math simplify>$a x</math>+<math simplify>$b pi</math>)</math> = 0</me>
+</p>
+
+<p>Specify your answer by giving the period and offsets defining all the solutions.</p>
+
+<p>Period: <mathinput name="p" /></p>
+<p>Offsets: <mathinput name="o" /></p>
+<!--below, this does nothing...-->
+$correctPeriodicSet
+
+<p>Your response as a list: <copy prop="asList" tname="userPeriodicSet" /></p>
+
+<p>No partial credit:
+<answer>
+  <award>
+    <when>
+      $userPeriodicSet = $correctPeriodicSet
+    </when>
+  </award>
+  <considerAsResponses>
+    $p$o
+  </considerAsResponses>
+</answer>
+</p>
+
+
+<p>Match partial:
+<answer>
+  <award>
+    <when matchPartial>
+      $userPeriodicSet = $correctPeriodicSet
+    </when>
+  </award>
+  <considerAsResponses>
+    $p$o
+  </considerAsResponses>
+</answer>
+</p>
+
+<p>Penalize redundancy:
+
+<answer>
+  <award credit="$maxCreditRedund">
+    <when matchPartial>
+      $userPeriodicSet = $correctPeriodicSet
+    </when>
+  </award>
+  <award name="redund" credit="0">
+    <when><copy prop="redundantOffsets" tname="userPeriodicSet" /></when>
+  </award>
+  <considerAsResponses>
+    $p$o
+  </considerAsResponses>
+</answer>
+</p>
+
+<feedback condition="$redund">
+  <p>Answer has redundant offsets.</p>
+</feedback>
+
+
+<p>Alternatively, answer as a list (require at least 3 entries): <m>x = </m>
+<answer matchPartial name="ansList1">
+  <mathinput name="list1" />
+  <award>
+    <when>$list1 = $correctPeriodicSet</when>
+  </award>
+</answer>
+</p>
+<setup>
+  <extractMath type="numberOfOperands" name="nops1">$list1</extractMath>
+  <extractMath type="operand" operandNumber="1" name="firstOp1">$list1</extractMath>
+  <extractMath type="operand" operandNumber="$nops1" name="lastOp1">$list1</extractMath>
+  <math format="latex" name="ldots">\ldots</math>
+</setup>
+<feedback condition="$firstOp1 != $ldots or $lastOp1 != $ldots" updateWithTname="ansList1">
+  <p>List must begin and end with $ldots</p>
+</feedback>
+
+<p>Alternatively, answer as a list (require at least 4 entries): <m>x = </m>
+<answer matchPartial nPeriodicSetMatchesRequired="4" name="ansList2">
+  <mathinput name="list2" />
+  <award>
+    <when>$list2 = $correctPeriodicSet</when>
+  </award>
+  <award credit="0" name="noDots2">
+    <when>$firstOp2 != $ldots or $lastOp2 != $ldots</when>
+  </award>
+</answer>
+</p>
+<setup>
+  <extractMath type="numberOfOperands" name="nops2">$list2</extractMath>
+  <extractMath type="operand" operandNumber="1" name="firstOp2">$list2</extractMath>
+  <extractMath type="operand" operandNumber="$nops2" name="lastOp2">$list2</extractMath>
+</setup>
+<feedback condition="$firstOp2 != $ldots or $lastOp2 != $ldots" updateWithTname="ansList2">
+  <p>List must begin and end with $ldots</p>
+</feedback>
+
+<solution>
+  <setup>
+    <math simplify name="period">pi/abs($a)</math>
+    <math simplify name="offset">-pi$b/$a</math>
+  </setup>
+  <p><math simplify="numbersPreserveOrder">x = $period k+ $offset</math></p>
+
+  <p>Alternatively, <m>x = \ldots, <math simplify>($offset/pi-2$period/pi)pi</math>, <math simplify>($offset/pi-$period/pi)pi</math>, <math simplify>$offset</math>, <math simplify>($offset/pi+$period/pi)pi</math>,<math simplify>($offset/pi+2$period/pi)pi</math>, \ldots</m></p>
+</solution>
+
+
+
+<problem newNamespace>
+
+    <periodicSet period="2" offsets="1" name="correct" />
+
+  <p>All odd numbers: </p>
+  <p>Period: <mathinput name="p" /></p>
+  <p>Offsets: <mathinput name="o" /></p>
+
+
+  <answer>
+    <award>
+      <when matchPartial>
+        <periodicSet period="$p" offsets="$o" name="ups" />
+          =
+        $correct
+      </when>
+    </award>
+  </answer>
+        
+    <p>Your response as a list: <copy prop="asList" tname="ups" /></p>
+
+
+  
+</problem>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+

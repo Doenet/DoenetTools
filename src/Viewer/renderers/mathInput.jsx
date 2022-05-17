@@ -126,7 +126,12 @@ export default function MathInput(props) {
         action: actions.updateValue,
         baseVariableValue: rendererValue.current,
       });
-      //console.log(">>>", e.target, e.currentTarget, e.relatedTarget);
+      if (e.relatedTarget?.id === checkWorkButton?.props.id && includeCheckWork.current && validationState.current === 'unvalidated') {
+        callAction({
+          action: actions.submitAnswer,
+        });
+      }
+      // console.log(">>>", e.relatedTarget.id, checkWorkButton.props.id);
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
       setFocusedFieldID(null);

@@ -1,0 +1,52 @@
+<problem>
+
+<setup>
+  <selectFromSequence assignNames='a1 a2' numberToSelect='2' withReplacement="false" from="1" to="8" />
+  <math name='a' simplify='full'>$a1/$a2</math>
+  <selectFromSequence assignNames='b' exclude="0 $a" from="-8" to="8" />
+  <selectFromSequence assignNames='c' from="2" to="9" />
+  <math name='ax_plus_b' simplify='full'>$a*x+$b</math>
+  <math name='lb' simplify='full'>(-$c-$b)/$a</math>
+  <math name='ub' simplify='full'>($c-$b)/$a</math>
+</setup>
+
+Simplify the inequality:
+<me>\left|$ax_plus_b\right|\lt $c</me>
+
+<p><mathinput size='8' name="input1"/>
+<m>\lt x \lt</m> <mathinput size='8' name="input2"/>
+</p>
+
+<p>To ensure credit, either don't round (keeping your numbers as fractions) 
+or include at least 5 significant digits in your answer.</p>
+
+<answer>
+  <award allowedErrorInNumbers='0.0001' targetsAreResponses="input1 input2"><when matchpartial="true">
+    $input1 = $lb
+    and
+    $input2 = $ub
+  </when></award>
+</answer>
+
+<solution>
+  <setup>
+    <math name='ax' simplify='full'>$a*x</math>
+    <math name='minus_b' simplify='full'>-$b</math>
+    <math name='a_recip' simplify='full'>1/$a</math>
+  </setup>
+<p>The first step in simplifying is to remove the absolute value sign, and instead write the inequality as</p>
+<me>-$c \lt  $ax_plus_b \lt $c.</me>
+Next, add <m>$minus_b</m> to all three parts of the inequality.
+<md>
+  <mrow><math>-$c+ $minus_b</math> \lt $ax \lt <math>$c + $minus_b</math></mrow>
+  <mrow><math simplify="full">-$c-$b</math> \lt $ax \lt <math simplify="full">$c-$b</math></mrow>
+</md>
+To finish, multiply through by <m>$a_recip</m>.  Since <m>$a_recip</m> is positive, we keep the inequalities pointing in the same direction.
+<md>
+  <mrow>\left(<math simplify="full">-$c-$b</math>\right) \cdot $a_recip \lt x \lt \left(<math simplify="full">$c-$b</math> \right)\cdot $a_recip</mrow>
+  <mrow>$lb \lt x \lt $ub</mrow>
+</md>
+
+</solution>
+
+</problem>

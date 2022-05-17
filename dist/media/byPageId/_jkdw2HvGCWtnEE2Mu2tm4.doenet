@@ -1,0 +1,112 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>asList</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>asList</tag><idx><tag>asList</tag></idx> component renders a formatted list when it surrounds <ref uri="doenet:doenetId=__VgxVIdpE3sN4POU0EKT"><tage>sequence</tage></ref> or a <ref uri="doenet:doenetId=6xVfXS5mHvlZ1La6IyVmP"><tag>map</tag></ref>.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1:  <tag>asList</tag> used with a <tage>sequence</tage></title>
+<p>In the sample code below, the  <ref uri="doenet:doenetId=__VgxVIdpE3sN4POU0EKT"><tage>sequence</tage></ref> is called both without an <tag>asList</tag> and within an <tag>asList</tag> to illustrate its formatting behavior.</p> 
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;&lt;sequence from="1" to="10"/&gt;&lt;/p&gt;
+  
+&lt;p&gt;
+  &lt;asList&gt;
+      &lt;sequence from="1" to="10"/&gt;
+  &lt;/asList&gt;
+&lt;/p&gt;
+</pre>
+        </example>
+      </subsection>
+    
+<!--*******************************************************-->
+ 
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<p><sequence from="1" to="10"/></p>
+<p>
+  <asList>
+      <sequence from="1" to="10"/>
+  </asList>
+</p>
+</example>
+   
+
+<!--******************************************************-->
+    
+<subsection><title>Example 2: <tag>asList</tag> used with <tag>map</tag> </title>
+<p>In the sample code below, the <ref uri="doenet:doenetId=6xVfXS5mHvlZ1La6IyVmP"><tag>map</tag></ref> component is used both without and within an <tag>asList</tag> to illustrate its formatting behavior.  (See also <ref uri="doenet:doenetId=RwwwA15KDsX6ZvjlkZmCm"><tag>template</tag></ref>, <ref uri="doenet:doenetId=BYXQro7P7NJrtKyTCxJcX"><tag>math</tag></ref>, <ref uri="doenet:doenetId=7DHdSFMGgXO23YarWCeYj"><tag>sources</tag></ref>.)</p>
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;p&gt;
+  &lt;map&gt;
+    &lt;template&gt;&lt;math simplify&gt;&dollar;x+1&lt;/math&gt;&lt;/template&gt;
+    &lt;sources alias="x"&gt;&lt;sequence from="3" to="6"/&gt;&lt;/sources&gt;
+  &lt;/map&gt;
+&lt;/p&gt;
+
+&lt;p&gt;
+  &lt;asList&gt;
+    &lt;map&gt;
+      &lt;template&gt;&lt;math simplify&gt;&dollar;x+1&lt;/math&gt;&lt;/template&gt;
+        &lt;sources alias="x"&gt;&lt;sequence from="3" to="6"/&gt;&lt;/sources&gt;
+    &lt;/map&gt;
+  &lt;/asList&gt;
+&lt;/p&gt;
+
+</pre>
+        </example>
+      </subsection>
+   
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 2)</title>
+<p>
+  <map>
+    <template><math simplify>$x+1</math></template>
+    <sources alias="x"><sequence from="3" to="6"/></sources>
+  </map>
+</p>
+
+<p>
+  <asList>
+    <map>
+      <template><math simplify>$x+1</math></template>
+        <sources alias="x"><sequence from="3" to="6"/></sources>
+    </map>
+  </asList>
+</p>
+</example>
+   
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

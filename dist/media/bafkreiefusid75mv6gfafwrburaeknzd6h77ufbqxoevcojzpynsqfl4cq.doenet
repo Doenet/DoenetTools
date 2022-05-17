@@ -1,0 +1,43 @@
+<!--work in progress do not release (VM)-->
+
+<title>Graphical solution of pure-time differential equations</title>
+
+<description>
+
+</description>
+
+<figure>
+<video youtube="FbsC-t_KkvQ" width="640px" height="360px"/>
+<caption>Graphical solution of pure-time differential equations</caption>
+</figure>
+<!--Video transcript -->
+<p>One method to solve pure time differential equations is a strictly graphical approach in which we analyze the graph of a derivative in order to sketch the function itself.  This approach is based on the relationship between the graph of a function <m>f(x)</m> and the graph of its derivative <m>f'(x)</m>.</p>
+
+<p>To begin let's review some facts about the derivative, which all stem from the fact that the derivative measures the rate of change of a function.  Recall that a positive derivative indicates that a function is increasing.  On the other hand, if the derivative is negative, then the function must be decreasing.  The derivative might also be zero, in which case the function is not changing at all, but is a constant.</p>
+
+<p>Of course, these examples were overly simplistic as the derivative was constant in each case.  We'd like to be able to do this for any derivative <m>f'(x)</m>.  For any shape of the derivative <m>f'(x)</m>, we'd like to determine what the graph of the function <m>f(x)</m> looks like.  We'll show how through a couple examples of solving pure time differential equations.</p>
+
+<p>Solving a pure-time differential equation requires doing exactly what we did on the previous slide.  We are given a derivative, in this example, it is the derivative of a function <m>y</m> of the variable <m>t</m>, but the procedure doesn't depend on the letters we use to represent our function.  In this example, we are given that the derivative <m>y'(t)</m> is half of <m>t</m> minus 3.  We are also given one addition piece of information about the function <m>y(t)</m>, namely that when <m>t=0</m>, its value <m>y(0)</m> is 4.  We call this additional datum the <em>initial condition</em> as it specifies the value of <m>y(t)</m> at the initial time <m>t=0</m>.</p>
+
+<p>Since we are using a graphical approach, the first step is draw the graph of the derivative <m>y'(t)</m>.  It is a line with slope one-half and y-intercept -3.  We need to graph the derivative carefully enough so that it correctly intercepts the <m>t</m> axis at <m>t=6</m>, as it will be important that <m>y'(6)=0</m>.</p>
+
+<p>Let's start at the beginning, at <m>t=0</m>.  What is the sign of the derivative <m>y'(t)</m> at <m>t=0</m>?  As we can see from the graph, <m>y'(0)</m> is negative.  Since the derivative is negative, the function <m>y(t)</m> must therefore be decreasing at <m>t=0</m>.  Let's use this information to begin to sketch the solution <m>y(t)</m>.  We start at the initial condition <m>y(0)=4</m> and draw the graph of <m>y(t)</m> so that it decreases from this point.</p> 
+
+<p>As time <m>t</m> increases, what happens to the derivative <m>y'(t)</m>?  The derivative gets closer to zero.  Since the magnitude of the derivative shrinks, the steepness of the graph of <m>y(t)</m> decreases.  The graph flattens out until finally, when we reach <m>t=6</m>, the derivative is zero.  The result is that the graph of <m>y(t)</m> must be horizontal at <m>t=6</m>.</p>
+
+<p>As <m>t</m> increases past 6, the derivative becomes positive, which means the graph of <m>y(t)</m> begins to increase, starting off slowly and accelerating.</p>
+
+<p>We end up with a graph of <m>y(t)</m> that starts at 4, decreases until <m>t=6</m> and then increases.  This graph represents the solution to our pure-time differential equation.</p>
+
+<p>Let's illustrate the graphical solution procedure with a second example.  This time, to keep you on your toes, we'll call the function <m>z(t)</m>.  Moreover, we won't even give the formula for the right-hand side of the differential equation.  Instead, we'll simply specify that the derivative <m>dz/dt</m> is the function <m>f(t)</m> that we graph.</p>
+
+<p>In this example, we'll make the solution steps more explicit.  For the first step, we'll find the times <m>t</m> where the derivative is zero.  The derivative <m>dz/dt</m> is zero when <m>t</m> is 1, 3, or 6. From this observation, we know that the graph of the solution <m>z(t)</m> must be horizontal at these points.</p>
+
+<p>For the second step, we determine the sign of the derivative in between those zero derivative points.  For <m>t \lt  1</m>, we see that the derivative is negative, so <m>z(t)</m> must decrease in the first interval.  When <m>t</m> is between 1 and 3, the positive derivative indicates an increasing solution.  When <m>t</m> passes 3, the derivative becomes negative again until <m>t=6</m>, so graph turns around and decreases.  Lastly, the derivative is positive for <m>t\gt 6</m> so the solution finishes off the shown region while increasing.  The arrows we drew will guide our sketch of the solution.</p>
+
+<p>Before we start drawing, we have to determine where to begin.  Hence, for step 3, we look up the initial condition and discover we should start at 2.  Now, we just have to follow the directions we've given ourselves and sketch a solution that moves in the correct directions, which is the final step 4.</p>
+
+<p>Notice how, for pure-time differential equations, we can determine the directions in which the solution is moving without even knowing the initial condition.  As a consequence, if we change the initial condition, the shape of the solution doesn't change.  Instead, the whole graph of the solution simply shifts up or down if we change the initial condition, for example to <m>z(0)=3.6</m>.  This vertical shifting corresponds to adding or subtracting a constant from the solution, as we'll see more explicitly when we investigate analytic solutions to pure-time differential equations.</p>
+
+<!-- End video transcript -->
+<!-- boxedvideo pure_time_differential_equation_graphical -->

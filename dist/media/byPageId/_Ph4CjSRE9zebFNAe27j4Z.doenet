@@ -1,0 +1,28 @@
+<p>Temp way to change controls 1:
+    <choiceInput inline name="dir1" fixedOrder>
+      <bindValueTo><copy prop="vectorcontroldirection1" tname="_curve1" /></bindValueTo>
+      <group name="choices">
+        <choice>none</choice>
+        <choice>symmetric</choice>
+        <choice>both</choice>
+        <choice>previous</choice>
+        <choice>next</choice>
+      </group>
+    </choiceInput>
+    <choiceInput inline name="dir2" fixedOrder>
+      <bindValueTo><copy prop="vectorcontroldirection2" tname="_curve1" /></bindValueTo>
+      <copy tname="choices" />
+    </choiceInput>
+    <choiceInput inline name="dir3" fixedOrder>
+      <bindValueTo><copy prop="vectorcontroldirection3" tname="_curve1" /></bindValueTo>
+      <copy tname="choices" />
+  </choiceInput>
+</p>
+
+
+<graph>
+      <curve>
+        <through>(1,2),(3,4),(-5,6),(2,1)</through>
+        <beziercontrols>(3,1),(-1,5),(5,3),(0,0)</beziercontrols>
+      </curve>
+    </graph>

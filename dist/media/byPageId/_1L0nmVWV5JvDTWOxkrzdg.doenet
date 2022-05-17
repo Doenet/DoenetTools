@@ -1,0 +1,423 @@
+<problem>
+<!-- <title>Equilibria, vector field, stability and solutions of differential equation from graph</title> -->
+
+<setup>
+
+<number name='a'>-7</number>
+
+<number name='b'>-4</number>
+<number name='c'>4</number>
+<function name='fun' variables='z'>exp(-z ^2/50)(z -$a )*(z -$b )*(z -$c )/20</function>
+<number name='initial1'>-7.5</number>
+<number name='initial2'>-7</number>
+<number name='initial3'>-6.5</number>
+<number name='initial4'>-4</number>
+<number name='initial5'>2</number>
+<number name='initial6'>4</number>
+<number name='initial7'>4.5</number>
+<mathlist name='Es'>$a $b $c</mathlist>
+<booleanList name="EstabilityBoolean">false true false</booleanList>
+<textList name="EstabilityText">unstable stable unstable</textList>
+
+<math name='xmin'>-10</math>
+<math name='xmax'>6</math>
+
+
+<styleDefinitions>
+  <styleDefinition styleNumber="2" lineWidth="3" />
+  <styleDefinition styleNumber="3" lineColor="cyan" lineWidth="2" markerStyle="circle" markerColor='cyan' markerSize="3" />
+  <styleDefinition styleNumber="4" lineColor="magenta" lineWidth="2" markerStyle="circle" markerColor='magenta' markerSize="3" />
+  <styleDefinition styleNumber="5" lineColor="lightblue" lineWidth="3" markerStyle="circle" markerColor='lightblue' markerSize="3" />
+  <styleDefinition styleNumber="6" lineColor="lightgreen" lineWidth="3" markerStyle="circle" markerColor='lightgreen' markerSize="3" />
+  <styleDefinition styleNumber="7" lineColor="purple" lineWidth="2" markerStyle="circle" markerColor='purple' markerSize="3" />
+  <styleDefinition styleNumber="9" lineColor="red" lineWidth='3' markerColor='red' markerStyle="circle" markerSize="4" />
+</styleDefinitions>
+
+
+</setup>
+
+
+<p>Consider the dynamical system
+<me>\frac{ dz }{ dt } = f(z )</me>
+where the function <m>f</m> is graphed below.   All zeros of the function are integers.</p>
+
+<setup>
+  <sort name="sortedPointEs1"><collect componentTypes="point" tname="fAndEs/mapPointEs" name="pointEs1" /></sort>
+  
+  <boolean name="showVectors">false</boolean>
+  
+  <sort name="sortedVectors1" sortVectorsBy="tail" assignNames="v11 v12 v13 v14">
+    $(fAndEs/v1) $(fAndEs/v2) $(fAndEs/v3) $(fAndEs/v4)
+  </sort>
+  <copy prop="tailX1" assignNames="v11tx" tname="v11" />
+  <copy prop="tailX2" assignNames="v11ty" tname="v11" />
+  <copy prop="headX1" assignNames="v11hx" tname="v11" />
+  <copy prop="headX2" assignNames="v11hy" tname="v11" />
+
+  <copy prop="tailX1" assignNames="v12tx" tname="v12" />
+  <copy prop="tailX2" assignNames="v12ty" tname="v12" />
+  <copy prop="headX1" assignNames="v12hx" tname="v12" />
+  <copy prop="headX2" assignNames="v12hy" tname="v12" />
+
+  <copy prop="tailX1" assignNames="v13tx" tname="v13" />
+  <copy prop="tailX2" assignNames="v13ty" tname="v13" />
+  <copy prop="headX1" assignNames="v13hx" tname="v13" />
+  <copy prop="headX2" assignNames="v13hy" tname="v13" />
+
+  <copy prop="tailX1" assignNames="v14tx" tname="v14" />
+  <copy prop="tailX2" assignNames="v14ty" tname="v14" />
+  <copy prop="headX1" assignNames="v14hx" tname="v14" />
+  <copy prop="headX2" assignNames="v14hy" tname="v14" />
+</setup>
+
+
+<graph width='500' height='300' xmin='$xmin' xmax='$xmax' ymin='-6.2' ymax='5' xlabel="z" ylabel="f(z)" fixAxes name="fAndEs" newNamespace>
+  $(../fun)
+
+  <map name="mapPointEs">
+    <template>
+      <equilibriumPoint styleNumber="9" x="$(v{prop='value' link='false'})" y="-4" switchable>
+        <constraints>
+          <attractTo>
+            <point>($(../a),0)</point>
+            <point>($(../b),0)</point>
+            <point>($(../c),0)</point>
+          </attractTo>
+        </constraints>
+      </equilibriumPoint>
+    </template>
+    <sources alias="v"><sequence length="min($(../n_e),5)" /></sources>
+  </map>
+
+
+
+  <point name="v1Tail" hide x="-8" y="3">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <point name="v1Head" hide x="-6" y="3">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <vector name="v1" hide="not $(../showVectors)" head="$v1Head" tail="$v1Tail" styleNumber="2" />
+  
+  <point name="v2Tail" hide x="-4" y="3">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <point name="v2Head" hide x="-2" y="3">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <vector name="v2" hide="not $(../showVectors)" head="$v2Head" tail="$v2Tail" styleNumber="2" />
+  
+
+  <point name="v3Tail" hide x="-8" y="4">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <point name="v3Head" hide x="-6" y="4">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <vector name="v3" hide="not $(../showVectors)" head="$v3Head" tail="$v3Tail" styleNumber="2" />
+  
+  <point name="v4Tail" hide x="-4" y="4">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <point name="v4Head" hide x="-2" y="4">
+    <constraints>
+      <attractTo><line>y=0</line></attractTo>
+    </constraints>
+  </point>
+  <vector name="v4" hide="not $(../showVectors)" head="$v4Head" tail="$v4Tail" styleNumber="2" />
+  
+
+</graph>
+
+
+
+
+<ol>
+
+<li>
+Estimate the value of all equilibria and indicate their location on the graph.
+
+<p>Number of equilibria: <mathinput name="n_e" /></p>
+
+<p>Equilibria (in increasing order): </p>
+
+  <ul>
+    <map name="esMap">
+      <template><li><m>z _e=</m> <mathinput /></li></template>
+      <sources alias="v"><sequence length="min($n_e,5)" /></sources>
+    </map>
+  </ul>
+  
+<p>
+<answer matchPartial>
+  <award>
+    <when>
+      <mathlist name="uEs"><collect componentTypes="mathinput" prop="value" tname="esMap" /></mathlist>
+      = $Es
+    </when>
+  </award>
+  <award unorderedCompare credit="0.8" name="award2">
+    <when>
+      $uEs = $Es
+    </when>
+  </award>
+</answer>
+</p>
+
+<feedback condition="$award2">Enter equilibria in increasing order for full credit.</feedback>
+
+<p>
+  Move the <collect componentTypes="point" prop="styleDescription" tname="fAndEs" maximumNumber="1" /> points in the above graph to the locations of the equilibria.
+<answer matchPartial name="ansEPoints1">
+  <award unorderedCompare>
+    <when name="EpointsInLocation1">
+      <mathlist><copy prop="x" tname="pointEs1"/></mathlist>
+      = $Es
+    </when>
+  </award>
+</answer>
+</p>
+
+</li>
+
+<li>
+<p>The equilibria divide the state space of <m>z </m> into four intervals.  Click <updateValue name="revealVector" label="show arrows" tname="showVectors" type="boolean" newValue="true" disabled="$showVectors" /> and draw a horizontal arrow on the graph to show the direction of change of <m>z </m> in each interval.
+  <answer matchPartial name="ansV1s">
+    <award>
+      <when>
+        <when name="v1sOnAxis">
+          <boolean>$v11hy = 0 and $v11ty = 0</boolean>
+           and 
+          <boolean>$v12hy = 0 and $v12ty = 0</boolean>
+          and 
+          <boolean>$v13hy = 0 and $v13ty = 0</boolean>
+          and
+          <boolean>$v14hy = 0 and $v14ty = 0</boolean>
+        </when>
+        and
+        <when>
+          <boolean name="v11Location">max($v11hx, $v11tx) < $a</boolean>
+          and
+          <boolean name="v12Location">$a < min($v12hx, $v12tx) and max($v12hx, $v12tx) < $b</boolean>
+          and
+          <boolean name="v13Location">$b < min($v13hx, $v13tx) and max($v13hx, $v13tx) < $c</boolean>
+          and
+          <boolean name="v14Location">$c < min($v14hx, $v14tx)</boolean>
+        </when>
+        and
+        <when>
+          <boolean>$v11Location and <sign>$v11hx - $v11tx</sign> = -1</boolean>
+          and
+          <boolean>$v12Location and <sign>$v12hx - $v12tx</sign> = 1</boolean>
+          and
+          <boolean>$v13Location and <sign>$v13hx - $v13tx</sign> = -1</boolean>
+          and
+          <boolean>$v14Location and <sign>$v14hx - $v14tx</sign> = 1</boolean>
+        </when>
+      </when>
+    </award>
+    <considerAsResponses>
+      $v11hx $v11hy $v11tx $v11ty
+      $v12hx $v12hy $v12tx $v12ty
+      $v13hx $v13hy $v13tx $v13ty
+      $v14hx $v14hy $v14tx $v14ty
+    </considerAsResponses>
+  </answer>
+</p>
+  
+<feedback updateWithTname="ansV1s" condition="not $v1sOnAxis">
+  All arrows must be on the <m>z</m>-axis.
+</feedback>
+<feedback updateWithTname="ansV1s" condition="$v1sOnAxis and not ($v11Location and $v12Location and $v13Location and $v14Location)">
+  Place one arrow into each of the four intervals.  Make sure no arrows cross an equilibrium.
+</feedback>
+<feedback updateWithTname="ansV1s" condition="$v1sOnAxis and $v11Location and $v12Location and $v13Location and $v14Location and $(ansV1s{prop='creditAchieved'}) < 1">
+  An arrow is not pointed in the correct direction based on the sign of <m>f</m> in its interval.
+</feedback>
+
+<p>  Based on these arrows, determine the stability of each equilibrium.  If the arrows point toward an equilibrium it is stable; if they point away from an equilibrium, it is unstable.</p>
+
+
+<p>Stability of equilibria:</p>
+
+<ul>
+<map name="mapStab">
+  <template><li><m>z_e=$v</m> is 
+    <choiceinput inline>
+      <choice>stable</choice>
+      <choice>unstable</choice>
+    </choiceinput>
+    </li>
+  </template>
+  <sources alias="v">$(uEs{prop='maths'})</sources>
+</map>
+</ul>
+<p>
+<answer>
+  <award matchPartial matchByExactPositions>
+    <when>
+      <textlist><collect prop="selectedValue" componentTypes="choiceinput" tname="mapStab" /></textlist>
+      = $EstabilityText
+    </when>
+  </award>
+</answer>
+</p>
+
+<p>Specify the stability of the equilbria on the graph.  Click the equilibrium points on the graph to switch between stable (filled point) and unstable (unfilled point).
+  <answer name="ansEpointStab1" disabled="not $EpointsInLocation1">
+    <award matchPartial matchByExactPositions>
+      <when>
+        <booleanList><copy prop="stable" tname="sortedPointEs1" /></booleanList>
+         = $EstabilityBoolean
+      </when>
+    </award>
+  </answer>
+
+  <em><text hide="$EpointsInLocation1">
+    (First, move the equilibrium points to the correct locations to unlock this stability question.)
+  </text></em>
+</p>
+
+
+</li>
+
+<li>
+<p>At each stable equilibrium, what is the sign of the slope <m>f'(z )</m>?  
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>negative</choice>
+<choice>positive</choice>
+<choice>zero</choice>
+</choiceinput>
+</answer>
+</p>
+  
+<p>
+At each unstable equilibrium, what is the sign of the slope <m>f'(z )</m>? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>positive</choice>
+<choice>negative</choice>
+<choice>zero</choice>
+</choiceinput>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+<p>Summarize your results in a <q>state line</q> or <q>phase line</q> plot.  Below is a horizontal <m>z </m>-axis, which represents the state space of the state variable <m>z (t)</m>.  At each stable equilibrium, draw a filled in circle.  At each unstable equilibrium, draw an open circle.  In the intervals between equilibria, draw the <q>vector field,</q> representing the evolution of the system, i.e., draw leftward or rightward arrows that show the direction of motion.</p>
+
+  <copy uri="doenet:contentId=8ab91e35b1f6f8d5e95020aa8e48a67bc59db6b6fd0917111ba8254c732ff7e8&doenetId=ykzslXSeVY0z_NhgA46ga" width='500' height='150' vmin='$xmin' vmax='$xmax' var="z" assignNames="zLine" nEquilibria="3" E1="-7" E2="-4" E3="4" Estable1="false" />
+
+</li>
+
+<li>
+<p>Now, create a plot of the solution, i.e., a graph of <m>z </m> versus <m>t</m>.  Plot solutions for the seven initial conditions <m>z (0) = $initial1, $initial2, $initial3, $initial4, $initial5, $initial6, $initial7</m>.  If some of those initial conditions are equilibria, they will convert into horizontal lines once you've correctly placed them.  You can then click them to switch their representation between stable (solid line) and unstable (dashed line).</p>
+
+<math hide name="ICexpr" functionSymbols="z">z(0)</math>
+
+<copy uri="doenet:contentId=deec869ccf5958c59fbe0be4dce7989b3d0a38dfc919b2031d571777f75dd98b&doenetId=hMRCBB72QUn89g054358W" width="500" height='400' vmin="$xmin-1" vmax="$xmax+2" var="z" ICexpr="$ICexpr" convertEquilibria nPoints="7" IC1="$initial1" final1="-Infinity" IC2="$initial2" final2="$a" Estable2="false" IC3="$initial3" final3="$b" IC4="$initial4" final4="$b" Estable4="true" IC5="$initial5" final5="$b" IC6="$initial6" final6="$c" Estable6="false" IC7="$initial7" final7="Infinity" />
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+The equilibria are <m>z _e=$a , $b , $c </m>.  They are the points where the graph of <m>f</m> is zero.
+</li>
+
+<li>
+<p>The directions of the arrows in the intervals correspond to the directions of the arrows in the below phase line.  Since the arrows are pointing 
+away from
+ the equilibrium <m>z_e =$a </m>, the equilibrium <m>z_e =$a </m> is
+unstable.   Since the arrows are pointing 
+toward
+ the equilibrium <m>z_e =$b </m>, the equilibrium <m>z_e =$b </m> is
+stable.   Since the arrows are pointing
+away from
+ the equilibrium <m>z_e =$c </m>, the equilibrium <m>z_e =$c </m> is
+unstable.  </p>
+
+</li>
+
+<li>
+<p>The slope <m>f'(z )</m> is negative at the stable 
+equilibrium <m>z =$b </m>.
+The slope <m>f'(z )</m> is positive at the unstable 
+equilibria <m>z =$a </m> and <m>z =$c </m>.
+</p>
+</li>
+
+<li>
+The phase line:
+
+<graph width='500' height='150' xmin='$xmin' xmax='$xmax' ymin='-3' ymax='3' xlabel="z" fixAxes name="zLineSol" newNamespace displayYaxis="false">
+
+  <equilibriumPoint styleNumber="9" fixed stable="false">($(../a),0)</equilibriumPoint>
+  <equilibriumPoint styleNumber="9" fixed stable>($(../b),0)</equilibriumPoint>
+  <equilibriumPoint styleNumber="9" fixed stable="false">($(../c),0)</equilibriumPoint>
+
+
+  <vector name="v1" head="(-9,0)" tail="(-7.5,0)" styleNumber="2" />
+  <vector name="v2" head="(-4.5,0)" tail="(-6.5,0)" styleNumber="2" />
+  <vector name="v3" head="(-3,0)" tail="(3.5,0)" styleNumber="2" />
+  <vector name="v4" head="(6,0)" tail="(4.5,0)" styleNumber="2" />
+  
+
+</graph>
+
+</li>
+
+<li>
+
+<p>Sketch of the solutions at the seven initial conditions, where the equilibria are dashed or solid horizontal lines.</p>
+
+<graph width="500" height='400' ymin="$xmin-1" ymax="$xmax+2" xmin="-2" xmax="20" fixAxes xlabel="t" ylabel="z">
+
+  <function domain="(0,30)" styleNumber="1">$initial1 - e^(x/2) +1 </function>
+  <equilibriumLine styleNumber="9" stable="false">y=$a</equilibriumLine>
+  <function domain="(0,30)" styleNumber="3">$b + e^(-x/2)($initial3-$b) </function>
+  <equilibriumLine styleNumber="9" stable>y=$b</equilibriumLine>
+  <function domain="(0,30)" styleNumber="5">$b + e^(-x/2)($initial5-$b) </function>
+  <equilibriumLine styleNumber="9" stable="false">y=$c</equilibriumLine>
+  <function domain="(0,30)" styleNumber="7">$initial7 + e^(x/2) -1 </function>
+
+</graph>
+
+
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>
+

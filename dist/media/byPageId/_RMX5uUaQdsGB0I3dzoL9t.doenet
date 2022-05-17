@@ -1,0 +1,297 @@
+<problem>
+<!-- <title>Definite integrals and the Fundamental Theorem of Calculus</title> -->
+
+<setup>
+
+
+<math name='f_t'>f (t)</math>
+
+<math name='F_a_to_b' functionSymbols="F">F (b)-F (a)</math>
+<math name='f_a_to_b'>f (b)-f (a)</math>
+
+<function name='rate' variables='t'>3t^2-1</function>
+
+<function name='integral_rate' variables='t'>t^3-t</function>
+
+
+<function name='integral_rate_C' variables='t'>$integral_rate+C </function>
+<math name='F1' >$integral_rate</math>
+<math name='F_0_2' simplify='numbers' >$$integral_rate(2)-$$integral_rate(0)</math>
+<math name='F2' simplify='numbers' >$integral_rate+2</math>
+<math name='F_2' simplify='numbers' >$$integral_rate(2)</math>
+<math name='F_0' simplify='numbers' >$$integral_rate(0)</math>
+<math name='F_2_C0' simplify='numbers' >$F_2 </math>
+<math name='F_2_C2' simplify='numbers' >$F_2 +2</math>
+<math name='F_0_C0' simplify='numbers' >$F_0 </math>
+<math name='F_0_C2' simplify='numbers' >$F_0 +2</math>
+
+
+
+</setup>
+
+
+We have defined the definite integral as a limit of Riemann sums.  The integral
+<m>\int_a^b f(t) \, dt</m>
+is the limit as <m>n</m> goes to infinity of the Riemann sum 
+<m>\sum_{i=1}^n f(t_i) \Delta t</m>.
+To define the Riemann sum, we divide the interval <m>[a,b]</m> into <m>n</m> intervals of width <m>\Delta t</m>.  We evaluate the function <m>f</m> at the points <m>t_i</m>, which could be either the left or right endpoints of these <m>n</m> intervals.
+
+<p>Here we show how to use the the Fundamental Theorem of Calculus to evaluate the definite integral without calculating a Riemann sum, which works as long as we can calculate the <em>indefinite integral</em>, or <em>antiderivative</em>, <m>\int f(t) \, dt</m>.</p>
+
+
+<ol>
+
+<li>
+<p>If <m>f(t)</m> is the rate at which a function <m>F(t)</m> is changing, then the Riemann sum estimates the total change in <m>F(t)</m> from <m>a</m> to <m>b</m>.  As we increase the number of intervals <m>n</m>, this estimate improves.  The limit as <m>n</m> goes to infinity, i.e., the definite integral <m>\displaystyle \int_a^b f(t) \, dt</m>, is the actual value of the total change in <m>F(t)</m> from <m>a</m> to <m>b</m>.</p>
+
+<p>Now, what does it mean for <m>f(t)</m> to be the rate at which <m>F(t)</m> is changing?  It means that <m>F</m> satisfies the differential equation <m>\frac{dF}{dt} =</m> 
+<answer>
+<award symbolicEquality='true'>$f_t </award>
+<award symbolicEquality='true' credit='0' name='award1'>f </award>
+</answer>
+<feedback condition="$award1">Write <m>f</m> as a function of time.</feedback>
+.</p>
+
+<p>Suppose we knew what the function <m>F(t)</m> was, and we wanted to know the total change in <m>F(t)</m> from <m>t=a</m> to <m>t=b</m>. We could do this just by subtracting two values of <m>F</m>: 
+<answer>
+  <mathinput functionSymbols="F f" />
+  <award symbolicEquality='true'>$F_a_to_b</award>
+  <award symbolicEquality='true' credit='0' name='award3'>$f_a_to_b </award>
+</answer>
+<feedback condition="$award3">Remember that <m>f</m> is the derivative. We want <m>F</m> instead.</feedback>
+</p>
+
+
+</li>
+
+<li>
+<p>Let's look at a specific example.  Suppose <m>f(t)=<copy prop="formula" tname="rate" /></m> and we want to know the change in <m>F</m> from <m>t=0</m> to <m>t=2</m>. We can solve the differential equation <m>\frac{dF}{dt}=<copy prop="formula" tname="rate" /></m> using an indefinite integral:
+</p>
+<p>
+
+<m>\displaystyle F(t) = \int <copy prop="formula" tname="rate" /> \, dt =</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare credit='0.75' name='award4'>$integral_rate </award>
+<award symbolicEquality='true' simplifyOnCompare>$integral_rate_C </award>
+</answer>
+<feedback condition="$award4">Don't forget the constant!</feedback>
+
+</p>
+<p>
+
+To finish solving the differential equation, we need an initial condition.  Let's see what happens when we pick three different initial conditions.</p>
+
+<p>First, let's try <m>F(0)=0</m>.  In this case, what is <m>C</m>? 
+<answer>
+<award symbolicEquality='true'>0</award>
+</answer>
+ So <m>F(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare >$F1 </award>
+</answer>
+.  To find the total change, we need to subtract <m>F(0)</m> from <m>F(2)</m>.  The total change is 
+  <mathinput name="mi_F_2_C0" functionSymbols="f F"/>
+ - 
+  <mathinput name="mi_F_0_C0" functionSymbols="f F" />
+ =
+  <mathinput name="mi_F_0_2_C0" functionSymbols="f F"  />
+.
+
+<answer matchPartial symbolicEquality='true' nAwardsCredited="3">
+<award targetsAreResponses="mi_F_2_C0 mi_F_0_C0 mi_F_0_2_C0">
+  <when>
+    $mi_F_2_C0=$F_2_C0
+    and
+    $mi_F_0_C0=$F_0_C0 
+    and
+    $mi_F_0_2_C0 = $F_0_2 
+  </when>
+  </award>
+  <award credit="0" name="award23">
+    <when>$mi_F_0_C0=<math functionSymbols="F">F(0)</math></when>
+  </award>
+  <award credit="0" name="award27">
+    <when>$mi_F_2_C0=<math functionSymbols="F">F(2)</math></when>
+  </award>
+</answer>
+
+
+</p>
+
+  <feedback condition="$award27">Right, for the first answer blank, we want <m>F(2)</m>.  But, given the above choice for <m>F</m>, what number is <m>F(2)</m>?</feedback>
+<feedback condition="$award23">Right, for the second answer blank,  we want <m>F(0)</m>.  But, given the above choice for <m>F</m>, what number is <m>F(0)</m>?</feedback>
+
+  
+
+<p>Next, let's try <m>F(0)=2</m>.  In this case, what is <m>C</m>? 
+<answer>
+<award symbolicEquality='true'>2</award>
+</answer>
+ So <m>F(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$F2 </award>
+</answer>
+.  To find the total change, we need to subtract <m>F(0)</m> from <m>F(2)</m>.  The total change is  
+
+  <mathinput name="mi_F_2_C2" functionSymbols="f F"/>
+ - 
+  <mathinput name="mi_F_0_C2" functionSymbols="f F" />
+ =
+  <mathinput name="mi_F_0_2_C2" functionSymbols="f F"  />
+.
+  
+<answer matchPartial symbolicEquality='true' nAwardsCredited="3">
+<award targetsAreResponses="mi_F_2_C2 mi_F_0_C2 mi_F_0_2_C2">
+  <when>
+    $mi_F_2_C2=$F_2_C2
+    and
+    $mi_F_0_C2=$F_0_C2 
+    and
+    $mi_F_0_2_C2 = $F_0_2 
+  </when>
+  </award>
+  <award credit="0" name="award25">
+    <when>$mi_F_0_C2=<math functionSymbols="F">F(0)</math></when>
+  </award>
+  <award credit="0" name="award29">
+    <when>$mi_F_2_C2=<math functionSymbols="F">F(2)</math></when>
+  </award>
+</answer>
+</p>
+
+    <feedback condition="$award29">Right, for the first answer blank, we want <m>F(2)</m>.  But, given the above choice for <m>F</m>, what number is <m>F(2)</m>?</feedback>
+<feedback condition="$award25">Right, for the second answer blank,  we want <m>F(0)</m>.  But, given the above choice for <m>F</m>, what number is <m>F(0)</m>?</feedback>
+
+
+<p>Now, you pick an initial condition to try: <m>F(0)=</m> 
+<answer name="uC" symbolicEquality>
+<mathinput name='mi_uC' />
+<award >
+  <when>
+    <isNumber>$mi_uC</isNumber>
+    and $mi_uC != 0
+    and $mi_uC != 2
+  </when>
+</award>
+<award symbolicEquality='true' credit='0' name='award12'>0</award>
+<award symbolicEquality='true' credit='0' name='award13'>2</award>
+</answer>.</p>
+  
+<feedback condition='$award12'>Pick a new initial condition.  We've already looked at 0 and 2.</feedback>
+<feedback condition='$award13'>Pick a new initial condition.  We've already looked at 0 and 2.</feedback>
+ 
+<p>In this case, what is <m>C</m>? 
+<answer>
+<award symbolicEquality='true'>$uC </award>
+</answer>
+ So <m>F(t)=</m> 
+<answer>
+<award symbolicEquality='true' simplifyOnCompare>$integral_rate+$uC</award>
+</answer>
+.  To find the total change, we need to subtract <m>F(0)</m> from <m>F(2)</m>.  The total change is  
+
+  <mathinput name="mi_F_2_uC" functionSymbols="f F"/>
+ - 
+  <mathinput name="mi_F_0_uC" functionSymbols="f F" />
+ =
+  <mathinput name="mi_F_0_2_uC" functionSymbols="f F"  />
+.
+  
+<answer matchPartial symbolicEquality='true' simplifyOnCompare="numbers" nAwardsCredited="3">
+<award targetsAreResponses="mi_F_2_uC mi_F_0_uC mi_F_0_2_uC">
+  <when>
+    $mi_F_2_uC=$F_2+$uC
+    and
+    $mi_F_0_uC=$F_0+$uC
+    and
+    $mi_F_0_2_uC = $F_0_2 
+  </when>
+  </award>
+  <award credit="0" name="award31">
+    <when>$mi_F_0_uC=<math functionSymbols="F">F(0)</math></when>
+  </award>
+  <award credit="0" name="award33">
+    <when>$mi_F_2_uC=<math functionSymbols="F">F(2)</math></when>
+  </award>
+</answer>
+</p>
+
+    <feedback condition="$award33">Right, for the first answer blank, we want <m>F(2)</m>.  But, given the above choice for <m>F</m>, what number is <m>F(2)</m>?</feedback>
+<feedback condition="$award31">Right, for the second answer blank,  we want <m>F(0)</m>.  But, given the above choice for <m>F</m>, what number is <m>F(0)</m>?</feedback>
+
+
+
+  
+
+<p> What effect does the initial condition have on the total change? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>None</choice>
+<choice credit='1'>No effect</choice>
+<choice credit='1'>None whatsoever!</choice>
+</choiceinput>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+<p>We can evaluate a definite integral either by taking the limit of Riemann sums or by solving a pure time differential equation.  This is the idea of the <alert>Fundamental Theorem of Calculus</alert>:</p>
+
+<p>If <m>f(t)</m> is a continuous function and <m>F(t)</m> any differentiable function with <m>F'(t)=f(t)</m>, then <me>\int_a^b f(t)\, dt=F(b)-F(a)=F(t)\Big |_a^b</me>
+The notation <m>F(t)\Big |_a^b</m> is just short-hand notation for <m>F(b)-F(a)</m>.</p>
+
+<p>In other words, if we can find an antiderivative of <m>f(t)</m>, we can evaluate the definite integral just by plugging in the limits of integration and subtracting.  (We can't always find an antiderivative, but we won't worry about such cases here.)</p>
+
+
+<!-- django tag comment
+
+
+<p>It may be helpful to think about the relationship between Forward Euler and Riemann sums.  With Forward Euler, we are estimating the value <m>F(b)</m> by taking <m>F(a)</m> and adding <m>\displaystyle \sum_{i=1}^{n} f(t_i)\Delta t</m>, where <m>t_i</m> are the left endpoints of the <m>n</m> intervals into which we split <m>[a,b]</m>.  With left-hand Riemann sums, we are estimating the difference <m>F(b)-F(a)</m> by <m>\displaystyle \sum_{i=1}^{n} f(t_i)\Delta t</m>.  How can we derive the Riemann sum estimate from Forward Euler? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>Subtract f(a).</choice>
+<choice name='choice20'>Add f(a).</choice>
+<choice>Multiply by 2.</choice>
+</choiceinput>
+</answer>
+<feedback condition="$choice20" >That would derive Forward Euler from Riemann sums.</feedback>
+</p>
+
+  -->
+
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+If <m>f(t)</m> represents the rate of change of <m>F(t)</m>, then we need <m>\frac{dF}{dt} =$f_t </m>. If we want to find the total change in <m>F(t)</m> from <m>t=a</m> to <m>t=b</m>, we just have to take <m>F(b)-F(a)</m>.
+</li>
+
+<li>
+<p>The indefinite integral <m>\displaystyle \int <copy prop="formula" tname="rate" /> \, dt = $F1 +C</m> solves the differential equation <m>\frac{dF}{dt}=<copy prop="formula" tname="rate" /></m>.  We need an initial condition to find a value for <m>C</m>.</p>
+
+<p>If <m>F(0)=0</m>, <m>C=0</m>.  Then <m>F(t)=$F1 </m>.  The total change is <m>F(2)-F(0)=$F_0_2 </m>.</p>
+
+<p>If <m>F(0)=2</m>, <m>C=2</m>.  Then <m>F(t)=$F2 </m>.  The total change is <m>F(2)-F(0)=$F_0_2 </m>.</p>
+
+<p>Regardless of the initial condition you choose, the total change is <m>F(2)-F(0)=$F_0_2 </m>. If we leave the <m>C</m> as an arbitrary constant, we have <m>$F_2 +C-( $F_0  + C )=$F_0_2 </m>.  This tells us the initial condition has no effect on the total change.</p>
+</li>
+
+<li>
+The difference between Forward Euler and Riemann sums is really just a matter of perspective.  The Riemann sum estimate comes from Forward Euler by subtracting <m>F(a)</m> from both sides.
+</li>
+</ol>
+</solution>
+</problem>

@@ -1,0 +1,144 @@
+<problem>
+<variantControl nVariants="1" />
+<!-- <title>Solution to linear discrete dynamical system, steps, function iteration</title> -->
+
+<setup>
+
+<math name='c'>c</math>
+<math name='x'>x</math>
+<math name='t'>t</math>
+<math name='x0'>D</math>
+<math name='x1' simplify='full'>$c*$x0</math>
+<math name='x2' simplify='full'>$c*$x1</math>
+<math name='x3' simplify='full'>$c*$x2</math>
+<math name='xt' simplify='full'>$c^$t*$x0</math>
+<math name='c_ex'>3</math>
+<math name='D_ex'>2</math>
+<math name='xt_ex' simplify='full'>$c_ex ^ $t * $D_ex</math>
+<math name='x10_ex' simplify='full'>$c_ex^10*$D_ex</math>
+<math name='x16_ex' simplify='full'>$c_ex^16*$D_ex</math>
+
+</setup>
+
+Consider the dynamical system
+<md>
+  <mrow>$(x)_{ $t+1}\amp = $c $(x)_$t \qquad \text{for $ $t= 0,1,2,\ldots $ }</mrow>
+  <mrow>$(x)_0\amp = $x0.</mrow>
+</md>
+
+<ol>
+<li>Calculate:
+
+<ul>
+
+<li><m>$(x)_1 =</m><mathinput name="mi1_step1" /> <m>\times \: $(x)_0</m>
+<p><m>$(x)_1 =</m><mathinput name="mi1_step2" /></p>
+<answer>
+<award matchPartial><when>$mi1_step1 = $c and $mi1_step2 = $x1</when></award>
+</answer>
+</li>
+
+<li><m>$(x)_2 =</m><mathinput name="mi2_step1" /> <m>\times \: $(x)_1</m>
+<p><m>$(x)_2 =</m><mathinput name="mi2_step2" /></p>
+<answer>
+<award matchPartial><when>$mi2_step1 = $c and $mi2_step2 = $x2</when></award>
+</answer>
+</li>
+
+<li><m>$(x)_3 =</m><mathinput name="mi3_step1" /> <m>\times \: $(x)_2</m>
+<p><m>$(x)_3 =</m><mathinput name="mi3_step2" /></p>
+<answer>
+<award matchPartial><when>$mi3_step1 = $c and $mi3_step2 = $x3</when></award>
+</answer>
+</li>
+
+<li>. . .</li>
+
+<li><m>$(x)_$t =</m><mathinput name="mi_t_step1" />
+<answer>
+<award><when>$mi_t_step1 = $xt</when></award>
+</answer>
+</li>
+
+</ul>
+
+<hint>
+We don't give you any number is this version, but really, it only makes it easier.  Now, you will start getting powers of <m>c</m> in your answer, and you don't need a calculator.  You know that when, for example, you start with <m>D</m> and multiply by <m>c</m> eleven times, you get <m>c \times c \times c \times c \times c \times c \times c \times c \times c \times c \times D</m>, which is the same as <m>c^{11}D</m>.
+</hint>
+
+
+</li>
+<li>
+
+
+If <m>$c = $c_ex</m> and <m>$x0=$D_ex</m>, then
+
+<ul>
+
+<li>
+<m>$(x)_$t =</m> 
+<answer>
+<award>$xt_ex</award>
+</answer>
+</li>
+
+<li>
+<m>$(x)_{10} =</m> 
+<answer>
+<award>$x10_ex</award>
+</answer>
+</li>
+
+<li>
+<m>$(x)_{16} =</m> 
+<answer>
+<award>$x16_ex</award>
+</answer>
+</li>
+
+</ul>
+
+
+<hint>
+For the last two answers, you should get plain numbers.  No rounding allowed here, just enter the numbers you get.  If you happen to get big numbers, don't include any commas.
+
+</hint>
+
+</li>
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+
+<ul>
+<li><m>$(x)_1 = $c$(x)_0 = $c $x0</m></li>
+<li><m>$(x)_2 = $c$(x)_1 = $c^2 $x0</m></li>
+<li><m>$(x)_3 = $c$(x)_2 = $c^3 $x0</m></li>
+<li> . . . . </li>
+<li> <m>$(x)_$t = $c^$t  $x0</m></li>
+</ul>
+
+</li>
+
+<li>
+<ul>
+<li><m>$(x)_$t = $(xt_ex)</m> </li>
+<li><m>$(x)_{10} = $c_ex^{10} \cdot $D_ex = $x10_ex</m></li>
+<li> <m>$(x)_{16} = $c_ex^{16} \cdot $D_ex = $x16_ex</m></li>
+</ul>
+
+</li>
+
+
+</ol>
+
+
+</solution>
+
+
+</problem>

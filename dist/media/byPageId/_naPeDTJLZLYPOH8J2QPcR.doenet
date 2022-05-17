@@ -1,0 +1,2 @@
+ <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+   <p><callAction tName="s" actionName="resample" label="roll dice" name="rs" /></p>

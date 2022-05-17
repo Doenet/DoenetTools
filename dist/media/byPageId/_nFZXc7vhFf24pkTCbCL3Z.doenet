@@ -1,0 +1,45 @@
+<problem>
+<!-- <title>chain rule, f=log(quadratic(x))</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a' from='1' to=' 7' exclude='0'/>
+<selectFromSequence assignNames='b c' numberToSelect='2' withReplacement from='-5' to=' 5' />
+
+<math name='poly' simplify='full' >$a *x^2 + $b *x+$c </math>
+<math name='dpoly' simplify='full' >2*$a *x + $b </math>
+<math name='dfun' simplify='full' >$dpoly /$poly </math>
+<math name='fun' simplify='full' >ln($poly )</math>
+
+
+</setup>
+
+<p>
+Compute the derivative, <m>\frac{df}{dx}</m>, of the function <m>f(x)</m> below
+<me>f(x) = $fun .</me>
+
+</p>
+<p>
+
+<m>f'(x) =</m> 
+<answer name='answer1' forceFullCheckworkButton>
+<award>$dfun </award>
+<!-- <award credit='0.9' nSignErrorsMatched="1" feedbackCodes='onesignerror'>$dfun </award> -->
+<!-- <award credit='0.81' nSignErrorsMatched="2" feedbackCodes='twosignerrors'>$dfun </award> -->
+</answer>
+<!-- <copy prop="feedbacks" tname="answer1" /> -->
+
+</p>
+
+<solution>
+Since <m>f(x)</m> is logarithm of a polynomial, we have to use the chain rule.  The derivative of <m>\ln(y)</m> is <m>1/y</m> and the derivative of <m>$poly </m> is <m>$dpoly </m>.  Putting these together, the derivative of <m>f</m> is
+<md>
+  <mrow>f'(x)\amp = \frac{1}{ $poly  } ($poly )'</mrow>
+  <mrow>\amp = $dfun .</mrow>
+</md>
+
+
+</solution>
+
+
+</problem>

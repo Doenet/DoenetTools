@@ -1,0 +1,182 @@
+<document><title><tag>intersection</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none at this time</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+  <p>The <tag>intersection</tag><idx><tag>intersection</tag></idx> component renders a point when nested inside a <ref><tag>graph</tag></ref> component, and renders a coordinate pair in the form <m>(a,b)</m> otherwise. It may be used alone, or nested inside a <ref><tag>point</tag></ref> component, but can only be labeled with a point label. Current functionality supports generation of intersections in <m>\mathbb{R^2}</m> through user-specification of a single pair of lines. See examples below. </p>
+</section> 
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code:  Define an intersection</title>
+<pre>
+<tag>p</tag>Two intersecting lines:<tag>/p</tag>
+<tag>graph</tag>
+  <tag>point name="A" label="A"</tag>(-5,-5)<tag>/point</tag>
+  <tag>point name="B" label="B"</tag>(2,2)<tag>/point</tag>
+  <tag>line name="AB" through="<text>$</text>A <text>$</text>B"/</tag>
+  <tag>point name="C" label="C"</tag>(-1,1)<tag>/point</tag>
+  <tag>point name="D" label="D"</tag>(2,-2)<tag>/point</tag>
+  <tag>line name="CD" through="<text>$</text>C <text>$</text>D"/</tag>
+  <tag>point label="I.P."</tag>
+    <tag>intersection</tag><text>$</text>AB <text>$</text>CD<tag>/intersection</tag>
+  <tag>/point</tag>
+<tag>/graph</tag>
+<tag>p</tag>The intersection of line AB and CD is:
+<tag>intersection</tag><text>$</text>AB <text>$</text>CD<tag>/intersection</tag><tag>/p</tag>
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+
+  
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<p>Two intersecting lines:</p>
+<graph>
+  <point name="A" label="A">(-5,-5)</point>
+  <point name="B" label="B">(2,2)</point>
+  <line name="AB" through="$A $B" />
+  <point name="C" label="C">(-1,1)</point>
+  <point name="D" label="D">(2,-2)</point>
+  <line name="CD" through="$C $D" />
+  <point label="I.P.">
+    <intersection>$AB $CD</intersection>
+  </point>
+</graph>
+<p>The intersection of line AB and CD is:
+<intersection>$AB $CD</intersection></p>
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+<!--*******************************************************-->
+
+<aside newNameSpace><title>Edge case: Collinear Lines</title>
+ <tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code:  Collinear Lines</title>
+    <pre>
+<tag>p</tag>Collinear lines:<tag>/p</tag>
+<tag>graph</tag>
+  <tag>point name="A" label="A"</tag>(2,2)<tag>/point</tag>
+  <tag>point name="B" label="B"</tag>(5,5)<tag>/point</tag>
+  <tag>line name="AB" through="<text>$</text>A <text>$</text>B"/</tag>
+  <tag>point name="C" label="C"</tag>(-2,-2)<tag>/point</tag>
+  <tag>point name="D" label="D"</tag>(-5,-5)<tag>/point</tag>
+  <tag>line name="CD" through="<text>$</text>C <text>$</text>D"/</tag>
+  <tag>point label="I.P"</tag>
+    <tag>intersection</tag><text>$</text>AB <text>$</text>CD<tag>/intersection</tag>
+  <tag>/point</tag>
+<tag>/graph</tag>
+<tag>p</tag>Note, Doenet now returns the shared equation for the line,<tag>/p</tag>
+<tag>p</tag>The intersection of line AB and CD is:            
+<tag>intersection</tag><text>$</text>AB <text>$</text>CD<tag>/intersection</tag>
+    </pre>
+</subsection>
+    </cell>
+  </row>
+
+      <row bottom="minor">
+        <cell>
+          <subsection><title>What Doenet Renders:</title>
+<p>Collinear lines:</p>
+<graph>
+  <point name="A" label="A">(2,2)</point>
+  <point name="B" label="B">(5,5)</point>
+  <line name="AB" through="$A $B"/>
+  <point name="C" label="C">(-2,-2)</point>
+  <point name="D" label="D">(-5,-5)</point>
+  <line name="CD" through="$C $D"/>
+  <point label="I.P">
+  <intersection>$AB $CD</intersection>
+  </point>
+</graph>
+<p>Note, Doenet now returns the shared equation for the line,</p>
+<p>The intersection of line AB and CD is:            
+<intersection>$AB $CD</intersection></p>
+          </subsection>
+        </cell>
+      </row>
+ </tabular>
+</aside>
+
+
+<aside newNameSpace><title>Edge case: Parallel lines</title>
+
+ <tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code:  Parallel Lines</title>
+    <pre>
+<tag>p</tag>Parallel lines:<tag>/p</tag>
+<tag>graph</tag>
+  <tag>point name="A" label="A"</tag>(1,1)<tag>/point</tag>
+  <tag>point name="B" label="B"</tag>(4,4)<tag>/point</tag>
+  <tag>line name="AB" through="<text>$</text>A <text>$</text>B"/</tag>
+  <tag>point name="C" label="C"</tag>(0,-4)<tag>/point</tag>
+  <tag>point name="D" label="D"</tag>(4,0)<tag>/point</tag>
+  <tag>line name="CD" through="<text>$</text>C <text>$</text>D"/</tag>
+  <tag>point label="I.P"</tag>
+    <tag>intersection</tag><text>$</text>AB <text>$</text>CD<tag>/intersection</tag>
+  <tag>/point</tag>
+<tag>/graph</tag>
+<tag>p</tag>Note, Doenet does not currently give an error message for this. <tag>/p</tag>
+<tag>p</tag>The intersection of line AB and CD is:            
+<tag>intersection</tag><text>$</text>AB <text>$</text>CD<tag>/intersection</tag><tag>/p</tag>
+    </pre>
+</subsection>
+    </cell>
+  </row>  
+
+  <row bottom="minor">
+      <cell>
+        <subsection><title>What Doenet Renders:</title>
+<p>Parallel lines:</p>
+          <graph>
+  <point name="A" label="A">(1,1)</point>
+  <point name="B" label="B">(4,4)</point>
+  <line name="AB" through="$A $B"/>
+  <point name="C" label="C">(0,-4)</point>
+  <point name="D" label="D">(4,0)</point>
+  <line name="CD" through="$C $D"/>
+            <point label="I.P.">
+  <intersection>$AB $CD</intersection>
+            </point>
+</graph>
+<p>Note, Doenet currently does not give an error message for this.</p>
+<p>The intersection of line AB and CD is:            
+<intersection>$AB $CD</intersection></p>
+        </subsection>
+      </cell>
+  </row>
+ </tabular>
+</aside>
+</section>
+
+   
+</document>
+
+
+
+
+
+
+
+
+

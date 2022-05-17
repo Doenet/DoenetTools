@@ -1,0 +1,60 @@
+
+<p>a is <mathinput name="a" prefill="1" /></p>
+
+<p><m>$a + 1 = <math simplify>$a+1</math></m></p>
+
+<p><m>$a \times 2 = <math>$a*2</math></m></p>
+
+
+<p><m>$a \times 2 = <math>
+  <copy tname="a" prop="value" />*2
+</math></m></p>
+
+<p>here</p>
+<p>function: 
+<function name="f" symbolic variable="w">
+<formula>
+<copy tname="a" prop="value" />*2w
+</formula>
+</function>
+</p>
+<p>f(q) = $$f(q)</p>
+
+
+
+<function name="g" symbolic variable="w">
+<formula>
+ <math>w</math>*2w
+</formula>
+</function>
+
+<p>f(g(u))=
+
+$$f($$g(u))
+</p>
+
+
+
+
+<map>
+<template>
+<rectangle width="$_source" />
+
+<copySource/>
+<copy tname="_source" componentIndex="2" />
+
+<rectangle width='$(a-b{componentIndex="$n"})'/>
+
+
+<copy tname="a-b" componentIndex="$n" />
+
+
+<sourceIndex/>
+<copy tname="_sourceindex" />
+
+</template>
+<sources>
+<group>x,y,z</group>
+<group>a,b,c</group>
+</sources>
+</map>

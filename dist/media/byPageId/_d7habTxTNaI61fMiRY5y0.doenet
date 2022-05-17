@@ -1,0 +1,49 @@
+<sideBySide>
+<!--  <ref createButton="true" uri="">Previous</ref>-->
+  <ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Component Index</ref>
+   <ref createButton="true"  uri="doenet:doenetId=vkIa2lwfR1JOxEdcxBvhE">Next Chapter</ref>
+</sideBySide>
+
+
+<sideBySide widths="50% 50%">
+<document>
+<title>The DoenetML Guide</title>
+
+  <subsection><title>Preface</title>
+<p>This guide is intended to provide a brief introduction to the structure and syntax of the current Doenet markup language, DoenetML.  For more detailed examples and practice exercises, refer to the DoenetML tutorial course <ref>here</ref>. </p>
+  </subsection>
+  
+<subsection><title>Introduction to DoenetML</title>
+<p>The Distributed Open Education Network (Doenet) is, at its core, a mechanism for measuring and sharing student interactions with web pages and storing anonymized data in an open distributed data warehouse.  The Doenet platform includes tools for authoring interactive educational content, conducting educational research using the content, and discovering the most effective content based on the research results.</p>
+<p>The Doenet platform consists of two major ongoing research projects:  the markup language, DoenetML, which is used to author interactive educational content and activities, and the DoenetAPI, a library for connecting web pages to the Doenet data layer, enabling tracking of student data across web pages and multiuser interactives.</p>
+  
+<aside><title>DoenetML</title>
+<p>The markup language DoenetML allows you to build richly interactive activites by focusing on the meaning of the elements you wish to create.  Based on PreTeXt, DoenetML looks similar to HTML, with descriptive tags such as <tag>point</tag>, <tag>intersection</tag>, and <tag>answer</tag>. The Doenet interface allows authors to simultaneously view side-by-side both the Doenet editor in which the markup language is entered, and the Doenet viewer which allows authors to instantly view the created online content as it will appear to students.</p>
+</aside>
+
+<aside><title>DoenetAPI</title>
+
+  <!--need expert author here-->
+</aside>
+</subsection>
+
+<subsection><title>The Philosophy of Doenet</title>
+<p>"Our philosophy is that education should equip students to effectively engage with the web as a whole, rather than restricting their exploration to content provided by the instructor and isolated within a learning management system.  By encouraging authors and instructors to place their content on the open web and then following a learner's activity as they explore multiple sites, Doenet can collect anonymized data (with permission) that can be analyzed to evaluate the impact of content.  The ultimate goal is to discover effective content and learning strategies, which will enable Doenet to guide learners to content that will best facilitate their learning.)</p>
+<p>Doenet's tools will allow content creators to integrate interactive content with text, video, and assessments.  We also lay the groundwork for converting materials into accessible formats compatible with assistive technology." -Duane Nykamp (Project Lead, University of Minnesota)</p>
+</subsection>
+
+</document>
+
+<document>
+<ol><title>Chapters</title>
+    <li><ref createButton="true" uri="doenet:doenetId=_pXorGnWFwZn2kTil3HHw">Introduction</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=-gKVK4jPcnL5BMPizZYY-">General Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=11kv_2knqH_H81PUGeF9F">Mathematical Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=QwmPcHU0wV8VxcgqNUNSE">Graphical Content</ref></li>
+    <li><ref createButton="true" uri="doenet:doenetId=CF2oaf_wwyyqiLodYtQ_g">Interactive Applets</ref></li>
+  </ol>
+</document>
+</sideBySide>
+
+  
+

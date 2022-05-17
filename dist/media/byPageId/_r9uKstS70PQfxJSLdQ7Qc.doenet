@@ -1,0 +1,143 @@
+<document><title><tag>video</tag> component</title>
+width	_componentSize
+height	_componentSize
+youtube	text
+source	text
+
+  
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>width</attr>  <em>(_componentSize)</em></li>
+  <li><attr>height</attr>  <em>(_componentSize)</em></li>
+  <li><attr>aspectRatio</attr>  <em>(number)</em></li>
+  <li><attr>youtube</attr>  <em>(text)</em></li>
+  <li><attr>source</attr>  <em>(text)</em></li>
+<!--    <aside><title><alert>Inherited from parent component/  TypeParentComponentHere:<ref></ref><footnote></footnote></alert></title>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+      <li><attr>type attribute</attr>  <em>(attributeType)</em></li>
+    </aside>
+    <aside><title>Attributes inherited from parent component <tag><ref>math</ref></tag> </title>
+    <li><attr>simplify</attr>
+      <em>(text)</em></li>
+    <li><attr>format</attr>  <em>(text)</em></li>
+    <li><attr>expand</attr>  <em>(boolean)</em></li>
+    <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+    <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+    <li><attr>displaySmallAsZero</attr>  <em>(number)</em></li>
+    <li><attr>renderMode</attr>  <em>(text)</em></li>
+    <li><attr>unordered</attr>  <em>(boolean)</em></li>
+    <li><attr>createVectors</attr>  <em>(boolean)</em></li>
+    <li><attr>createIntervals</attr>  <em>(boolean)</em></li>
+    <li><attr>functionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>targetsAreFunctionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>splitSymbols</attr> <em>(boolean)</em></li>
+    <li><attr>groupCompositeReplacements</attr> <em>(boolean)</em></li></aside>-->
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>video</tag><idx><tag>video</tag></idx> component renders an embedded video in the viewer.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<p>In the code below, the video at url <em>https://www.youtube.com/watch?v=B7UmUX68KtE</em> is embedded into the page with the <attr>youtube</attr> attribute.  Note that only the parameter portion following the equals sign is required.</p>
+<pre>
+  &lt;video youtube = "B7UmUX68KtE"/&gt;
+      
+</pre>
+
+</subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+<video youtube="B7UmUX68KtE" />
+    
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+<!--    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>-->
+<!--*******************************************************-->
+<!-- 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>-->
+</tabular> 
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<!--<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>-->
+<!--*******************************************************-->
+<!-- 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>-->
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,227 @@
+<problem>
+<!-- <title>critical points of absolute value</title> -->
+
+<setup>
+
+<function name='f' variables='x'>abs(x+1)</function>
+<math name='one'>1</math>
+<math name='n1'>-1</math>
+<subsetOfReals name='left_interval'>(-infinity, $n1)</subsetOfReals>
+<subsetOfReals name='right_interval'>($n1, infinity)</subsetOfReals>
+<math name='zero'>0</math>
+
+</setup>
+
+
+Let <m>f(x) = $f</m>, which is the same as the function
+<me>f(x) = \begin{cases}
+  x+1\amp \text{if $ x \gt -1 $ }\\
+-x-1\amp \text{if  $ x \lt -1 $ }\\
+0\amp \text{if $ x = -1 $ }.
+\end{cases}</me>
+
+
+<ol>
+
+<li>
+Calculate <m>f'(x)</m>.  Be sure to note any points where the derivative does not exist.
+
+<p><m>f'(x) =</m> 
+<answer>
+<award>$one </award>
+</answer>
+ if <m>x \gt</m> 
+<answer>
+<award>$n1 </award>
+</answer>
+
+</p>
+<p>
+
+<m>f'(x) =</m> 
+<answer>
+<award>$n1 </award>
+</answer>
+ if <m>x \lt</m> 
+<answer>
+<award>$n1 </award>
+</answer>
+
+</p>
+<p>
+
+<m>f'(x)</m> does not exist if <m>x=</m> 
+<answer>
+<award>$n1 </award>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+Find the critical points of <m>f</m>.
+
+<p>Critical points: <m>x=</m> 
+<answer>
+<award>$n1 </award>
+</answer>
+
+</p>
+<p>
+
+Enter answers in increasing order, separated by commas.</p>
+
+
+<hint>
+Remember critical points are where the derivative is zero or does not exist.
+</hint>
+
+</li>
+
+<li>
+Determine the intervals over which <m>f</m> is increasing and decreasing.
+
+<p>Left interval: <m>f</m> is 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>decreasing</choice>
+<choice>increasing</choice>
+</choiceinput>
+</answer>
+ on the interval 
+<answer name="answer4">
+  <mathinput name="mi4" />
+  <award targetsAreResponses="mi4">
+    <when><subsetOfReals>$mi4</subsetOfReals> = $left_interval</when>
+  </award>
+</answer>
+</p>
+  
+<p>
+Right interval: <m>f</m> is 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>increasing</choice>
+<choice>decreasing</choice>
+</choiceinput>
+</answer>
+ on the interval 
+<answer name="answer6">
+  <mathinput name="mi6" />
+  <award targetsAreResponses="mi6">
+    <when><subsetOfReals>$mi6</subsetOfReals> = $right_interval</when>
+  </award>
+</answer>
+</p>
+
+
+<hint>
+You can write the intervals as <m>(a,b)</m> or as <m>a < x < b</m>.  Or if an interval extends to infinity, you can write it, for example, as <m>(-\infty, b)</m> or <m>x < b</m>.
+</hint>
+  
+</li>
+
+<li>
+Using this information and the value of <m>f(0) =</m> 
+<answer>
+<award>$one </award>
+</answer>
+, sketch the graph of <m>f(x)</m>.
+
+
+
+
+<graph width='400' height='400' xmin='-5' xmax='5' ymin='-5' ymax='5'  showNavigation='false' grid>
+
+<point name='p1' x='-1' y='3'>
+<constraints><constrainToGrid /></constraints>
+</point>
+
+<point name='p2' x='0' y='2'>
+<constraints><constrainToGrid /></constraints>
+</point>
+
+<point name='p3' x='1' y='2'>
+<constraints><constrainToGrid /></constraints>
+</point>
+
+<ray fixed through='$p1' endpoint='$p2' />
+<ray fixed through='$p3' endpoint='$p2' />
+
+</graph>
+
+
+<setup>
+<copy name='px1' tname='p1' prop='x' />
+<copy name='px3' tname='p3' prop='x' />
+<copy name='py1' tname='p1' prop='y' />
+<copy name='py3' tname='p3' prop='y' />
+</setup>
+
+<p>
+<answer>
+<award><when>
+$p2 = (-1,0) and
+
+(( $px1 + 1 =  1 $py1 and $px1 > -1 and $px3 + 1 = -1 $py3 and $px3 < -1 ) or 
+ ( $px3 + 1 =  1 $py3 and $px3 > -1 and $px1 + 1 = -1 $py1 and $px1 < -1 ))
+
+
+</when></award>
+</answer>
+</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<me>f'(x) = \begin{cases}
+  1\amp \text{if $ x \gt  -1 $}\\
+-1\amp \text{if $ x \lt  -1 $ }\\
+\text{does not exist}\amp \text{if $ x=-1 $ }
+\end{cases}</me>
+</li>
+
+<li>
+Since <m>f'(x)</m> cannot be zero, the one critical point is at <m>x=-1</m>.
+</li>
+
+<li>
+<p>The intervals determined by the critical points are: <m>(-\infty, -1)</m> and <m>(-1,\infty)</m>.</p>
+
+<p>Over the interval <m>(-\infty,-1)</m>, <m>f'(x)=-1 \lt  0</m> for all <m>x \in  (-\infty,-1)</m>.   <m>f(x)</m> is decreasing on the interval <m>(-\infty,-1)</m>.</p>
+
+<p>For the interval <m>(-1,\infty)</m>, <m>f'(x)=1 \gt  0</m> for all <m>x \in (-1,\infty)</m>.  <m>f(x)</m> is increasing on the interval <m>(-1,\infty)</m>.</p>
+</li>
+
+<li>
+<m>f(0) = 1</m>.
+
+<graph width='400' height='400' xmin='-5' xmax='5' ymin='-5' ymax='5'  showNavigation='false' grid>
+
+<point fixed>(-1, 0)</point>
+<ray fixed endpoint='(-1, 0)' through='(-2,1)' />
+<ray fixed endpoint='(-1, 0)' through='(0,1)' />
+
+</graph>
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

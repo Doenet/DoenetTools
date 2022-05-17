@@ -1,0 +1,3 @@
+<pre>this is pre</pre>
+regular text
+<slider from='1' to='20' showValue='false'/>

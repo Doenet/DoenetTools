@@ -1,0 +1,88 @@
+<problem>
+<variantControl nVariants='1' />
+<!-- <title>Harvest fraction of fish</title> -->
+
+<setup>
+
+<function name='p' variables='k' symbolic>1000(1-k)^2</function>
+<function name='h' variables='k' symbolic>k*$$p(k)</function>
+<derivative name='hprime' variables='k' expand='true' simplify='full'>$h</derivative>
+<math name='k_optimal' simplify='full' >1/3</math>
+<math name='p_optimal' simplify='full' >$$p($k_optimal )</math>
+<math name='h_optimal' simplify='full' >$$h($k_optimal )</math>
+
+</setup>
+
+
+Imagine that, if every year, a fraction <m>k</m> of the fish are harvested from a lake, then the average number of fish in the lake will be <m>p(k)= $p</m>.  (We aren't going to model why this is true; we'll just imagine that, given how the fish reproduce, <m>p(k)</m> is the equilibrium value of the fish population when a fraction <m>k</m> are harvested each year.)
+
+<p>We want to determine the fraction of fish you should harvest to maximum the number of fish harvested each year.   Let's call the actual harvest <m>h(k)</m>.  If the steady state population size is <m>p(k)= $p </m> and you harvest a fraction <m>k</m>, how many fish do you harvest each year? <m>h(k)</m> = 
+<answer>
+<award>$h </award>
+</answer>
+</p>
+
+<p>In order to maximize the fish harvest, what fraction <m>k</m> of fish should be harvested each year? 
+<answer>
+<award>$k_optimal </award>
+</answer>
+
+</p>
+<p>
+
+In this case, what will be the average number of fish in the lake?   
+<answer>
+<award allowedErrorInNumbers='1' allowedErrorIsAbsolute="true">$p_optimal </award>
+</answer>
+
+</p>
+<p>
+
+How many fish will be harvested each year? 
+<answer>
+<award allowedErrorInNumbers='1' allowedErrorIsAbsolute="true">$h_optimal </award>
+</answer>
+</p>
+
+<hint>
+This is clearly a maximization problem.  What function should we maximize?  <m>p(k)</m>?  <m>h(k)</m>?
+
+<p>Do we want a local maximum or a global maximum?</p>
+
+<p>What is the relevant range of fraction harvested <m>k</m>?  (I.e., what numbers for <m>k</m> make sense?)</p>
+
+<p>Once you find the value of <m>k</m> that maximizes the appropriate function, the values of both functions <m>p</m> and <m>h</m> at that optimal fraction are relevant.</p>
+</hint>
+
+
+<solution>
+<p>When need to maximize <m>h(k)= $h</m>, the fish harvest if <m>k</m> is the fraction of fish harvested.  Since <m>k</m> is the fraction of fish, the relevant range of <m>k</m> is <m>0 \lt k \lt 1</m>.  To find the maximum of <m>h</m> for <m>0 \lt k \lt 1</m>, we look for critical points of <m>h</m>.  To make the derivative easier to compute, we'll multiply out the function and write it as
+<md>
+  <mrow>h(k)\amp = 1000k (1-2k +k^2)</mrow>
+  <mrow>\amp = 1000 (k -2k^2+k^3).</mrow>
+</md>
+Then, the derivative is simply
+<me>h'(k) = 1000 (1- 4k +3k^2) = $hprime.</me>
+</p>
+
+<p>To find the critical points where <m>h'(k)=0</m>, we need to solve <m>1-4k+3k^2=0</m>. We can factor this as <m>(1-k)(1-3k)=0</m>, so the critical points are <m>k=1</m> and <m>k=1/3</m>. Or, if you couldn't remember your factoring, you could use the quadratic equation to solve
+<md>
+  <mrow>k\amp = \frac{4 \pm \sqrt{16-12}}{6}</mrow>
+  <mrow>\amp = \frac{4 \pm \sqrt{4}}{6}</mrow>
+  <mrow>\amp = \frac{4 \pm 2}{6}</mrow>
+  <mrow>\amp = 1 \quad \text{or} \quad 1/3</mrow>
+</md>
+</p>
+<p>To find the global maximum, we check the endpoints and the critical points.  <m>h(0)=0</m>, <m>h(1)=0</m>, and
+<md>
+  <mrow>h($k_optimal )\amp = 1000(1/3)(2/3)^2</mrow>
+  <mrow>\amp = 4000/27</mrow>
+  <mrow>\amp \approx <round numberdecimals="0">$h_optimal </round>.</mrow>
+</md>
+The maximum occurs at <m>k=$k_optimal </m>.  One-third of the fish should be harvested each year to maximize the first harvest.  The average number of fish in the lake is <m>p($k_optimal )=1000(2/3)^2 \approx <round numberdecimals="0">$p_optimal </round></m>.  The number of fish harvested is <m>h(1/3) \approx <round numberdecimals="0">$h_optimal </round></m>.</p>
+
+
+</solution>
+
+
+</problem>

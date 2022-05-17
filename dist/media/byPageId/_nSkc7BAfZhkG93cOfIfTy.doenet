@@ -1,0 +1,37 @@
+    <p>Animal: <textinput name="animal" prefill="fox"/></p>
+    <p>Plant: <textinput name="plant" prefill="tree"/></p>
+    
+    <group name="g1">
+      <p name="animalp1">The animal is a <copy prop="value" tname="animal" />.</p>
+      <group name="g2">
+        <p name="plantp1">The plant is a <copy prop="value" tname="plant" />.</p>
+        <copy tname="animalp1" assignNames="animalp2" />
+        <group name="g3">
+          <copy tname="plantp1" assignNames="plantp2" />
+        </group>
+        <copy tname="g3" assignNames="((plantp3))" />
+      </group>
+      <copy tname="g2" assignNames="(plantp4 (animalp3) ((plantp5)) (((plantp6))))" />
+    </group>
+    <copy tname="g1" assignNames="(animalp4 (plantp7 (animalp5) ((plantp8)) (((plantp9)))) ((plantp10 (animalp6) ((plantp11)) (((plantp12)))  )) )" />
+
+
+plantp1 $plantp1
+plantp2 $plantp2
+plantp3 $plantp3
+plantp4 $plantp4
+plantp5 $plantp5
+plantp6 $plantp6
+plantp7 $plantp7
+plantp8 $plantp8
+plantp9 $plantp9
+plantp10 $plantp10
+plantp11 $plantp11
+plantp12 $plantp12
+
+animalp1 $animalp1
+animalp2 $animalp2
+animalp3 $animalp3
+animalp4 $animalp4
+animalp5 $animalp5
+animalp6 $animalp6

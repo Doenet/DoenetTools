@@ -1,0 +1,123 @@
+<title>
+  Attributes versus children
+</title>
+
+<p>We have changed DoenetML so that one cannot interchange
+  attributes and children of a component.  For example,
+  to specify the title of a section, one must use</p>
+<p>&lt;section&gt;&lt;title&gt;Section title&lt;/title&gt;</p>
+
+
+<p>One cannot use:</p>
+<p>&lt;section title=&quot;Section title&quot;&gt;</p>
+
+
+<p>Since we plan to keep this distinction strict,
+  how do we know what should be an attribute versus a child?</p>
+
+<p>The working definition is that attributes define
+  property of a component but are not themselves rendered.
+  Children, on the other hand, are generally rendered.</p>
+
+<p>A practical concern that may sometimes lead to
+  violates of this principle is that attributes
+must be string. One cannot enter DoenetML components,
+  although one can use macros.
+  Therefore, in cases where one must specify
+complicated information,
+  we may sometimes use children even for
+cases that are more like properties.
+</p>
+
+<p>We are currently moving many children to
+  attributes, which makes for many
+backward incompatible changes.</p>
+
+<p>Sometimes sugar can be used to have a property
+  in a child, as the sugar will move the result
+  to a property.</p>
+
+<subsection>
+  <title>Examples</title>
+  
+<ul>
+  <li>
+    <p>&lt;point x="1" y="2" /&gt;</p>
+  </li>
+  <li>
+    <p>&lt;point xs="1 2" /&gt;</p>
+  </li>
+  <li>
+    <p>&lt;point coords="(1,2)" /&gt;</p>
+  </li>
+  <li>
+    <p>&lt;point&gt;(1,2)&lt;/point&gt;</p>
+  </li>
+  <li>
+    <p>&lt;line through=&quot;(1,2) (1,3)&quot; /&gt;</p>
+  </li>
+  <li>
+    <p>&lt;lineSegment endpoints=&quot;(1,2) (1,3)&quot; /&gt;</p>
+  </li>
+  <li>
+    <p>&lt;polygon vertices=&quot;(1,2) (1,3) (-5,6)&quot; /&gt;</p>
+  </li>
+  <li>
+  <p>&lt;circle radius="2" center=&quot;(1,2)&quot; /&gt;</p>
+  </li>
+  <li>
+    <p>&lt;circle radius="2" through=&quot;(1,2) (1,3)&quot; /&gt;</p>
+  
+  </li>
+  <li>
+  <p>&lt;vector head=&quot;(1,2)&quot; tail=&quot;(3,4)&quot; /&gt;</p>
+  </li>
+  <li>
+  <p>&lt;vector displacement=&quot;(1,2)&quot; tail=&quot;(3,4)&quot; /&gt;</p>
+  </li>
+  <li>
+  <p>&lt;vector&gt;(1,2)&lt;/vector&gt;</p>
+  </li>
+  
+    <li>
+  
+  <p>&lt;sequence from="1" to="10" exclude="3 5"/&gt;</p>
+  </li>
+
+
+
+</ul>
+
+</subsection>
+
+
+<subsection>
+  <title>Exceptions and questions</title>
+  <ul>
+    <li>Sources in a map?
+      Will probably leave as a child
+as frequently want to put a sequence there.
+    </li>
+    <li>Functions defined through points at given slope?</li>
+    <li>Bezier curves.  Will leave bezierControls as a child.</li>
+    <li>Constraints will remain a child</li>
+
+  </ul>
+  
+  
+ </subsection>
+
+
+
+
+
+
+<mathinput name="cs" prefill="(1,2)"/>
+
+
+<point coords="$cs" name="A" />
+
+
+<p>N dimensions =
+ <copy prop="nDimensions" tname="A" />
+  </p>

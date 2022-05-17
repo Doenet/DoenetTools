@@ -6,92 +6,103 @@ import {
   useRecoilState,
   useSetRecoilState,
 } from 'recoil';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
+import { searchParamAtomFamily } from '../NewToolRoot';
 import {
-  fileByDoenetId,
   pageVariantInfoAtom,
   pageVariantPanelAtom,
 } from '../ToolHandlers/CourseToolHandler';
 import { findFirstPageOfActivity } from '../../../_reactComponents/Course/CourseActions';
 import axios from 'axios';
 import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom } from '../ToolPanels/EditorViewer'
+import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
+import { parseActivityDefinition } from '../../../_utils/activityUtils';
 
 
 export default function EditorViewer() {
-  // let refreshCount = useRef(1);
   // console.log(">>>>===EditorViewer")
-  // refreshCount.current++;
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
 
-  // TODO: use page Id (for now only first page is shown)
-  const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'));
-
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
-  const { page } = useRecoilValue(pageToolViewAtom);
+  const [pageCid, setPageCid] = useState(null);
 
   const [errMsg, setErrMsg] = useState(null);
-  const [pageId, setPageId] = useState(null);
 
 
   useEffect(async () => {
 
     // determine cid
     let resp = await axios.get(
-      `/api/getPublicActivityDefinition.php`,
-      { params: { doenetId } },
-    )
+      `/api/getCidForAssignment.php`,
+      { params: { doenetId, latestAttemptOverrides: false, publicOnly: true, userCanViewSourceOnly: true } },
+    );
 
-    if (!resp.data.success) {
-      setErrMsg(resp.data.message);
+    let activityCid;
+
+    if (!resp.data.success || !resp.data.cid) {
+      if (resp.data.cid) {
+        setErrMsg(`Error loading activity: ${resp.data.message}`);
+      } else {
+        setErrMsg(`Error loading activity: public content with public source not found`);
+      }
+      return;
+    } else {
+      activityCid = resp.data.cid;
+    }
+
+    let activityDefinition;
+
+    try {
+      activityDefinition = await retrieveTextFileForCid(activityCid, "doenet");
+    }
+    catch (e) {
+      setErrMsg(`Error loading activity: activity file not found`);
       return;
     }
-    let page = findFirstPageOfActivity(resp.data.json.order);
 
-    if (!page) {
-      setErrMsg('Could not find a page of activity');
+    let parseResult = parseActivityDefinition(activityDefinition);
+    if (!parseResult.success) {
+      setErrMsg(`Invalid activity definition: ${parseResult.message}`);
       return;
     }
 
-    setPageId(page);
-
-  }, [doenetId, paramPageId])
+    let activityJSON = parseResult.activityJSON;
 
 
+    setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.order));
+
+    if (errMsg) {
+      setErrMsg(null);
+    }
+
+  }, [doenetId])
 
 
-  let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageId) => {
+  let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageCid) => {
 
-    let response = await snapshot.getPromise(fileByDoenetId(pageId));
-    // if (typeof response === "object"){
-    //   response = response.data;
-    // }
-    const doenetML = response;
+    const doenetML = await retrieveTextFileForCid(pageCid, "doenet");
 
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML)
     set(viewerDoenetMLAtom, doenetML)
-    set(editorPageIdInitAtom, pageId);
   }, [])
 
 
   useEffect(() => {
-    if (pageId) {
-      initDoenetML(pageId)
+    if (pageCid) {
+      initDoenetML(pageCid)
     }
     return () => {
       setEditorInit("");
     }
-  }, [pageId]);
+  }, [pageCid]);
 
-  if (pageId !== initializedPageId) {
-    //DoenetML is changing to another PageId
-    return null;
+  if (errMsg) {
+    return <h1>{errMsg}</h1>;
   }
 
 
@@ -112,16 +123,14 @@ export default function EditorViewer() {
     });
   }
 
-
-
   // console.log(`>>>>Show PageViewer with value -${viewerDoenetML}- -${refreshNumber}-`)
   // console.log(`>>>> refreshNumber -${refreshNumber}-`)
   // console.log(`>>>> attemptNumber -${attemptNumber}-`)
   // console.log('>>>PageViewer Read Only:',!isCurrentDraft)
   // console.log('>>>>variantInfo.index',variantInfo.index)
 
-  if (errMsg) {
-    return <h1>{errMsg}</h1>;
+  if (!viewerDoenetML) {
+    return null;
   }
 
   return <PageViewer
@@ -149,3 +158,27 @@ export default function EditorViewer() {
 }
 
 
+function findFirstPageCidFromCompiledActivity(orderObj) {
+  if (!orderObj?.content) {
+    return null;
+  }
+  //No pages or orders in order so return null
+  if (orderObj.content.length == 0) {
+    return null;
+  }
+
+  for (let item of orderObj.content) {
+    if (item.type === "page") {
+      return item.cid;
+    } else {
+      //First item of content is another order
+      let nextOrderResponse = findFirstPageOfActivity(item);
+      if (nextOrderResponse) {
+        return nextOrderResponse;
+      }
+    }
+  }
+
+  return null; // didn't find any pages
+
+}

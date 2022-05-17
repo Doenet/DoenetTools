@@ -1,0 +1,49 @@
+<setup>
+  <math name="degree">
+    pi/180
+  </math>
+
+  <selectFromSequence from="2" to="5" name="a" />
+  
+ 
+  <!--
+    Calculate Answers
+  -->
+ 
+  <math simplify="full" name="c1">
+    cos($a)
+  </math>
+</setup>
+
+<p>
+Find the amplitude of the wave graphed below 
+</p>
+
+  
+
+
+<p>
+  <m>amplitude</m>:
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05">
+     $c1
+    </award>  
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+         <m>amplitude</m>:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+         $c1
+      </cell>
+    </row>
+    
+    
+  </tabular>
+</solution>

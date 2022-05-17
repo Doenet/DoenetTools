@@ -1,0 +1,303 @@
+<problem>
+<variantControl nVariants='1' />
+<title>Tangent line to alpha function</title>
+
+<setup>
+
+<function name='g' variables='n t' simplify='full' symbolic>t^n*e^(1-t)</function>
+<function name='g1' variables='t' >$$g(1,t)</function>
+
+<function name='gprime' variables='n t' simplify='full' symbolic>e^(1 - t) (n - t) t^(-1 + n)</function>
+<function name='g1prime' variables='t' simplify='full'>e^(1-t) (1-t)</function>
+<math name='L10' simplify="numbers">$$g1(0)+$$g1prime(0)*(t-0)</math>
+<math name='L11' simplify="numbers">$$g1(1)+$$g1prime(1)*(t-1)</math>
+<number name='g10' >$$g1(0)</number>
+<number name='g11' >$$g1(1)</number>
+<number name='g1prime0' >$$g1prime(0)</number>
+<number name='g1prime1' >$$g1prime(1)</number>
+<number name='one' >1</number>
+<number name='two' >2</number>
+<number name='zero' >0</number>
+<number name='three' >3</number>
+
+
+<function name='g2' variables='t' >$$g(2,t)</function>
+<function name='g2prime' variables='t' >$$gprime(2,t)</function>
+<math name='L20' simplify="numbers">$$g(2,0)+$$g2prime(0)*(t-0)</math>
+<math name='L21' simplify="numbers">$$g(2,1)+$$g2prime(1)*(t-1)</math>
+<math name='L22' simplify="numbers">$$g(2,2)+$$g2prime(2)*(t-2)</math>
+<number name='g20' >$$g(2,0)</number>
+<number name='g2prime0' >$$g2prime(0)</number>
+<number name='g21' >$$g(2,1)</number>
+<number name='g2prime1' >$$g2prime(1)</number>
+<number name='g22' >$$g(2,2)</number>
+<number name='g2prime2' >$$g2prime(2)</number>
+<math name='p20'>(0,$g20 )</math>
+<math name='p21'>(1,$g21 )</math>
+<math name='p22'>(2,$g22 )</math>
+<math name='p10'>(0,$g10 )</math>
+<math name='p11'>(1,$g11 )</math>
+
+</setup>
+
+We can find linear approximations of functions of different variables than <m>x</m>.  For example, let <m>g(t)=t^n e^{1-t}</m>, where <m>n</m> is some number.
+
+
+<ol>
+
+<li>
+Let <m>n=1</m>, so <m>g(t)=</m> 
+<answer>
+<award>$g1 </award>
+</answer>
+ and <m>g'(t)=</m> 
+<answer>
+<award>$g1prime </award>
+</answer>
+
+
+<p>Find the equation for the tangent line of <m>g</m> at <m>t=0</m>.
+</p>
+<p>
+
+<m>y=</m> 
+<answer>
+<award allowedErrorInNumbers='0.001'>$L10 </award>
+</answer>
+</p>
+
+  
+<p>Find the equation for the linear approximation of <m>g</m> around <m>t=1</m>
+</p>
+<p>
+
+<m>L_{1}(t)=</m> 
+<answer>
+<award allowedErrorInNumbers='0.001'>$L11 </award>
+</answer>
+</p>
+
+  <hint>
+Linear approximation and tangent line are the same thing.  You should repeat the same calculations, once for <m>t=0</m> and once from <m>t=1</m>.
+
+</hint>
+
+<p>On the below graph of <m>g</m>, plot the tangent lines corresponding to these two linear approximations.</p>
+
+
+
+<math hide name='px1'>3</math>
+<math hide name='px2'>0.5</math>
+
+
+<graph width='500' height='300' xmin='-2' xmax='7' ymin='-1' ymax='4' showNavigation='false'>
+
+<copy tname='g1' />
+
+<point hide name='snap1'>(0, $$g1(0))</point>
+<point hide name='snap2'>(1, $$g1(1))</point>
+
+<point stylenumber='2' name='tangentAnchor1' x='$px1' y='$$g1( $px1 )'>
+<constraints>
+  <attractTo>$snap1</attractTo>
+  <attractTo>$snap2</attractTo>
+  <constrainToGraph />
+</constraints>
+</point>
+<line draggable='false' stylenumber='2' through='$tangentAnchor1' slope="$$g1prime( $(tangentAnchor1{prop='x'}) )" />
+
+<point stylenumber='2' name='tangentAnchor2' x='$px2' y='$$g1( $px2 )' >
+<constraints>
+  <attractTo>$snap1</attractTo>
+  <attractTo>$snap2</attractTo>
+  <constrainToGraph />
+</constraints>
+</point>
+<line draggable='false' stylenumber='2' through='$tangentAnchor2' slope="$$g1prime( $(tangentAnchor2{prop='x'}) )" />
+
+
+</graph>
+
+<answer>
+<award matchPartial unorderedCompare><when>($px1, $px2) = (0, 1)</when></award>
+</answer>
+
+
+
+</li>
+
+<li>
+Let <m>n=2</m>, so <m>g(t)=</m> 
+<answer>
+<award>$g2 </award>
+</answer>
+ and <m>g'(t)=</m> 
+<answer>
+<award>$g2prime </award>
+</answer>
+
+
+<p>Find the equation for the tangent line of <m>g</m> at <m>t=0</m>.
+</p>
+<p>
+
+<m>y=</m> 
+<answer>
+<award allowedErrorInNumbers='0.001'>$L20 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$L20 </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$L20 </award>
+</answer>
+<copy prop="feedbacks" tname="answer7" />
+</p>
+
+<p>Find the equation for the linear approximation of <m>g</m> around <m>t=1</m>
+</p>
+<p>
+
+<m>L_{1}(t)=</m> 
+<answer>
+<award allowedErrorInNumbers='0.001'>$L21 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$L21 </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$L21 </award>
+</answer>
+<copy prop="feedbacks" tname="answer8" />
+</p>
+
+<p>Find the equation for the linear approximation of <m>g</m> around <m>t=2</m>
+</p>
+<p>
+
+<m>L_{2}(t)=</m> 
+<answer>
+<award allowedErrorInNumbers='0.001'>$L22 </award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$L22 </award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackCodes='numericalerror'>$L22 </award>
+</answer>
+<copy prop="feedbacks" tname="answer9" />
+</p>
+
+<p>On the below graph of <m>g</m>, plot the tangent lines corresponding to these three linear approximations.</p>
+
+
+<!-- django tag applet, alpha_function_tangents, width=500, height=300, n=2, answer_n_t=three answer_x1=zero answer_x2=one answer_x3=two answer_n=two -->
+
+<math hide name='px3'>3</math>
+<math hide name='px4'>0.5</math>
+<math hide name='px5'>6</math>
+
+<graph width='500' height='300' xmin='-2' xmax='7' ymin='-1' ymax='4' showNavigation='false'>
+
+<copy tname='g2' />
+
+<point hide name='snap3'>(0, $$g2(0))</point>
+<point hide name='snap4'>(1, $$g2(1))</point>
+<point hide name='snap5'>(2, $$g2(2))</point>
+
+
+<point stylenumber='2' name='tangentAnchor3' x='$px3' y='$$g2( $px3 )'>
+<constraints>
+<attractTo>$snap3</attractTo>
+<attractTo>$snap4</attractTo>
+<attractTo>$snap5</attractTo>
+<constrainToGraph />
+</constraints>
+</point>
+<line draggable='false' stylenumber='2' through='$tangentAnchor3' slope="$$g2prime( $(tangentAnchor3{prop='x'}) )" />
+
+
+<point stylenumber='2' name='tangentAnchor4' x='$px4' y='$$g2( $px4 )'>
+<constraints>
+<attractTo>$snap3</attractTo>
+<attractTo>$snap4</attractTo>
+<attractTo>$snap5</attractTo>
+<constrainToGraph />
+</constraints>
+</point>
+<line draggable='false' stylenumber='2' through='$tangentAnchor4' slope="$$g2prime( $(tangentAnchor4{prop='x'}) )" />
+
+
+<point stylenumber='2' name='tangentAnchor5' x='$px5' y='$$g2( $px5 )'>
+<constraints>
+<attractTo>$snap3</attractTo>
+<attractTo>$snap4</attractTo>
+<attractTo>$snap5</attractTo>
+<constrainToGraph />
+</constraints>
+</point>
+<line draggable='false' stylenumber='2' through='$tangentAnchor5' slope="$$g2prime( $(tangentAnchor5{prop='x'}) )" />
+
+
+</graph>
+
+<answer>
+<award matchPartial unorderedCompare><when>
+($px3, $px4, $px5) = (0, 1, 2)
+</when></award>
+</answer>
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<p><m>g(t)= $g1</m>, <m>g'(t) = $g1prime </m>.</p>
+
+<p><m>t=0</m>:  <m>g(0)=$g10 </m>, <m>g'(0)=$g1prime0 </m>, <m>y=et \approx <round numberdigits="4">e</round>t</m>.</p>
+
+<p><m>t=1</m>: <m>g(1)= $g11 </m>, <m>g'(1)=$g1prime1 </m>, <m>L(t)=<round numberdigits="4"><number>$L11 </number></round></m></p>
+
+
+<graph width='500' height='300' xmin='-2' xmax='7' ymin='-1' ymax='4' showNavigation='false'>
+
+<copy tname='g1' />
+<point stylenumber='2' fixed name='p1'>(0, $$g1(0))</point>
+<point stylenumber='2' fixed name='p2'>(1, $$g1(1))</point>
+<line stylenumber='2' fixed through='$p1' slope='$$g1prime(0)' />
+<line stylenumber='2' fixed through='$p2' slope='$$g1prime(1)' />
+
+</graph>
+
+
+</li>
+
+<li>
+<p><m>g(t)=t^2e^{1-t}</m>. <m>g'(t)=(2t-t^2)e^{1-t} = t(2-t)e^{1-t}</m>.</p>
+
+<p><m>t=0</m>: <m>g(0)=$g20 </m>, <m>g'(0)=$g2prime0 </m>, <m>y= $L20</m>.</p>
+
+<p><m>t=1</m>:  <m>g(1)=$g21 </m>, <m>g'(1)=$g2prime1 </m>, <m>L_{1}(t)=1(t-1)+1 = $L21</m></p>
+
+<p><m>t=2</m>:  <m>g(2)=<evaluate function="$g2" input="2" forceSymbolic simplify name="g22s" /> </m>, <m>f'(2)=$g2prime2</m>, <m>L_{2}(t)=$g22s  \approx <round numberdigits="4"><number>$L22 </number></round></m>.
+
+</p>
+
+<graph width='500' height='300' xmin='-2' xmax='7' ymin='-1' ymax='4' showNavigation='false'>
+
+<copy tname='g2' />
+<point stylenumber='2' fixed name='p3'>(0, $$g2(0))</point>
+<point stylenumber='2' fixed name='p4'>(1, $$g2(1))</point>
+<point stylenumber='2' fixed name='p5'>(2, $$g2(2))</point>
+<line stylenumber='2' fixed through='$p3' slope='$$g2prime(0)' />
+<line stylenumber='2' fixed through='$p4' slope='$$g2prime(1)' />
+<line stylenumber='2' fixed through='$p5' slope='$$g2prime(2)' />
+
+</graph>
+
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

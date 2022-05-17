@@ -1,0 +1,235 @@
+<document><title><tag>matrixInput</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>numRows</attr>  <em>(integer)</em></li>
+  <li><attr>numColumns</attr>  <em>(integer)</em></li>
+  <li><attr>showSizeControls</attr>  <em>(boolean)</em></li>
+  <li><attr>defaultEntry</attr>  <em>(math)</em></li>
+    <aside><title><alert>Inherited from parent component/  <tag><ref>mathInput</ref></tag>:</alert></title>
+      <li><attr>prefill</attr>  <em>(math)</em></li>
+      <li><attr>format</attr>  <em>(text)</em></li>
+      <li><attr>functionSymbols</attr>  <em>(textList)</em></li>
+      <li><attr>splitSymbols</attr>  <em>(boolean)</em></li>
+      <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+      <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+      <li><attr>displaySmallAsZero</attr>  <em>(number)</em></li>
+      <li><attr>bindValueTo</attr>  <em>(math)</em></li>
+      <li><attr>unionFromU</attr>  <em>(boolean)</em></li>
+    </aside> 
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>matrixInput</tag><idx><tag>matrixInput</tag></idx> component renders a formatted table that allows user-input of matrix values.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>
+
+  
+</section>
+</document>
+
+
+Section below for reference copied from glossary
+
+<module>
+  <setup>
+  </setup>
+  <p>
+    <row><alert>Remark</alert></row>
+    All of the previous methods still work replacing the real numbers with a different
+    algebraic ring. We can still compute matrix products and inverses, things are 
+    just slightly different for us. We'll briefly discuss the added complexity of
+    performing these operations <m>\mathbb Z_{26}</m> (over operations mod 26).
+  </p>
+
+  <p>
+    <row><alert>You practice</alert></row>
+    For the matrices
+    <me>
+      \mathbf{A} =
+      \begin{pmatrix}
+        2 & 3 & -1 \\
+        -1 & 0 & 2
+      \end{pmatrix}
+      \qquad
+      \mathbf{B} =
+      \begin{pmatrix}
+        1 & -1 \\
+        -1 & 0 \\
+        1 & 2
+      \end{pmatrix}
+      \qquad
+      \mathbf{C} =
+      \begin{pmatrix}
+        1 & -1 \\
+        -3 & -2
+      \end{pmatrix}
+    </me>
+    find the matrix products below (computing the entries mod 26 in the <em>standard transversal</em>):
+  </p>
+    <setup>
+      <matrixInput name="miAns1" format="latex"
+        prefill="\begin{matrix}24 & 22\\1 & 5\end{matrix}"/>
+      <matrixInput name="miAns2" format="latex"
+        prefill="\begin{matrix}3 & 3 & 23\\24 & 21 & 1 \\ 0 & 3 & 3\end{matrix}"/>
+      <matrixInput name="miAns3" format="latex"
+        prefill="\begin{matrix}4 & 1 \\ 25 & 1 \\ 20 & 20\end{matrix}"/>
+      <matrixInput name="miAns4" format="latex"
+        prefill="\begin{matrix}3 & 3 & 23 \\ 22 & 17 & 25\end{matrix}"/>
+    </setup>
+  <p><alert>1.</alert>
+    <m>\mathbf {AB}=</m>
+    <answer>
+      <matrixInput name="mi1"/>
+      <award targetsAreResponses="mi1"><when>$mi1=$miAns1</when></award>
+    </answer>
+  </p>
+  <p><alert>2.</alert>
+    <m>\mathbf {BA}=</m>
+    <answer>
+      <matrixInput name="mi2"/>
+      <award targetsAreResponses="mi2"><when>$mi2=$miAns2</when></award>
+    </answer>
+  </p>
+  <p><alert>3.</alert>
+    <m>\mathbf {BC}=</m>
+    <answer>
+      <matrixInput name="mi3"/>
+      <award targetsAreResponses="mi3"><when>$mi3=$miAns3</when></award>
+    </answer>
+  </p>
+  <p><alert>4.</alert>
+    <m>\mathbf {CA}=</m>
+    <answer>
+      <matrixInput name="mi4"/>
+      <award targetsAreResponses="mi4"><when>$mi4=$miAns4</when> 
+      </award>
+    </answer>
+  </p>  
+  <p>
+    The matrix <m>\mathbf{AB}</m> above has determinant 98 over the ring of all integers. However, computing this mod 26, we get that <m>\det(\mathbf{AB})\equiv 20 \mod 26</m>.
+However, from our previous work, we know that 20 is not a unit mod 26! Therefore over operations mod 26, this matrix is not invertible!! (You can try if you'd like to convince yourself. You'll multiply by inverses and combine rows mod 26 and get a row of all zeros mod 26.) Similarly, <m>\mathbf{BA}</m> is not invertible mod 26. However, the matrix
+      <me>
+        W=
+        \begin{pmatrix}
+          5 & 9 \\
+          2 & 3
+        \end{pmatrix}
+      </me>
+      is invertible over both <m>\mathbb R</m> and <m>\mathbb Z_{26}</m>. Take a moment to compute both inverses:
+  </p>
+    <setup>
+      <matrixInput name="mInvAns1" format="latex"
+        prefill="\begin{matrix}-1 & 3\\2/3 & -5/3\end{matrix}" />
+      <matrixInput name="mInvAns2" format="latex"
+        prefill="\begin{matrix}3 & 3 & 23\\24 & 21 & 1 \\ 0 & 3 & 3\end{matrix}"/>
+    </setup>
+  <p><alert>1.</alert>
+    Inverse over <m>\mathbb R</m>:
+    <answer>
+      <matrixInput name="mInv1" numRows="2" numColumns="2" showSizeControls="false"/>
+      <award targetsAreResponses="mi1"><when>$mi1=$miAns1</when></award>
+    </answer>
+  </p>
+  <p><alert>2.</alert>
+    Inverse over <m>\mathbb Z_{26}</m>:
+    <answer>
+      <matrixInput name="mInv2"/>
+      <award targetsAreResponses="mi2"><when>$mi2=$miAns2</when></award>
+    </answer>
+  </p>
+</module>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

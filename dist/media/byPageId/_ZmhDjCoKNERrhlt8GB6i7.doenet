@@ -1,0 +1,61 @@
+<setup>
+ <select name="a">sqrt(5/2) sqrt(8) sqrt(7)/3 sqrt(15) 3/4 4/3 sqrt(21)/2 sqrt(11)/5 sqrt(13)/6 2*sqrt(6)/5 sqrt(33)/4 2*sqrt(10)/3 3*sqrt(5)/2</select>
+
+
+  <!--
+    Calculate Answers
+  -->
+ <math simplify="none" name="ans1"> ($a)/sqrt($a^2+1)</math>
+ <math simplify="none" name="ans2"> 1/sqrt($a^2+1)</math>
+
+  
+</setup>
+
+
+<p>If <m>tan(\Theta)</m> =$a and <m>\Theta</m> is in Quadrant I, find <m>sin (\Theta)</m> and <m>cos(\Theta)</m>.  Enter your answer as an exact value using square roots when necessary.  Do not use a calculator to give a decimal approximation.</p>
+
+<p>
+ <m>sin(\Theta)</m> =
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans1
+    </award>  
+  </answer>
+</p>
+
+<p>
+ <m>cos(\Theta)</m> =
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans2
+    </award>  
+  </answer>
+</p>
+
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+       <m>sin(\Theta)</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="2">$ans1</number>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+       <m>cos(\Theta)</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="2">$ans2</number>
+      </cell>
+    </row>
+   
+   
+  </tabular>
+</solution>

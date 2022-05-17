@@ -91,24 +91,26 @@ const toastStack = atom({
 
 let id = 0;
 
+export const recoilAddToast = ({ set }) =>
+(msg, type = toastType.INFO, action = null) => {
+  set(toastStack, (old) => [
+    ...old,
+    <ToastMessage
+      key={id}
+      type={type}
+      action={action}
+      duration={type.timeout}
+      tId={id}
+    >
+      {msg}
+    </ToastMessage>,
+  ]);
+  id++;
+}
+
 export const useToast = () => {
   const addToast = useRecoilCallback(
-    ({ set }) =>
-      (msg, type = toastType.INFO, action = null) => {
-        set(toastStack, (old) => [
-          ...old,
-          <ToastMessage
-            key={id}
-            type={type}
-            action={action}
-            duration={type.timeout}
-            tId={id}
-          >
-            {msg}
-          </ToastMessage>,
-        ]);
-        id++;
-      },
+    recoilAddToast,
     [],
   );
   return addToast;

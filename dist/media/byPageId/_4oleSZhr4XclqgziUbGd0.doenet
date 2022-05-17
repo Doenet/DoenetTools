@@ -1,0 +1,136 @@
+<title>Inference for categorical data</title>
+
+<section>
+  <title>Getting Started</title>
+</section>
+
+<subsection>
+  <title>The data</title>
+
+  <p>You will be analyzing the same dataset as in the previous lab, where you delved into a sample from the Youth Risk Behavior Surveillance System (YRBSS) survey, which uses data from high schoolers to help discover health patterns. The dataset is called <em>yrbss</em>, and you can find it <ref uri="http://mthomas7.github.io/jamovi_labs/06_inf_for_categorical_data/more/yrbss.csv">here</ref>.</p>
+
+  <ol>
+    <li>
+      What are the counts within each category for the amount of days these students have texted while driving within the past 30 days?
+    </li>
+    <li>
+      What is the proportion of people who have texted while driving every day in the past 30 days and never wear helmets?
+    </li>
+  </ol>
+
+  <p>Remember that you can use the <em>filter</em> to limit the dataset to just non-helmet wearers.</p>
+
+  <p>Also, it may be easier to calculate the proportion if you create a new variable that specifies whether the individual has texted every day while driving over the past 30 days or not.
+    Create this new variable, and call it <em>text_ind</em> and use the IF() function, where the values are either "yes" or "no". We'll see that this isn't strictly necessary, but it makes some things easier to see. (Note: "text_while_driving_30d" is not a numeric variable, so in your IF() function, you will need to use "30" instead of 30 because it is using the character string 30, not the number.)</p>
+
+</subsection>
+
+<section>
+  <title>Inference on proportions</title>
+
+  <p>When summarizing the YRBSS, the Centers for Disease Control and Prevention seeks insight into the population <em>parameters</em>.
+    To do this, you can answer the question, "What proportion of people in your sample reported that they have texted while driving each day for the past 30 days?" with a statistic; while the question "What proportion of people on earth have texted while driving each day for the past 30 days?" is answered with an estimate of the parameter.</p>
+
+  <p>The inferential tools for estimating population proportion are analogous to those used for means in the last chapter: the confidence interval and the hypothesis test.</p>
+
+  <p>Click <em>Frequencies</em>, then <em>2 Outcomes Binomial Test</em>. Put <em>text_ind</em> in the Variables box, and check the box `Confidence interval` in the `Additional Statistics` section. Take a look at the results to the right of your screen. You should see a table of results - we will focus on the section under the heading `95% Confidence Interval`. You should see a `Lower` and `Upper` value for each of `yes` and `no`. These values give the upper and lower bounds for the 95% confidence interval for each value of `text_ind`.</p>
+
+  <p>Now, create a new `Binomial Test` analysis, but this time use `text_while_driving_30d` as the variable instead, and include the confidence intervals. Look at the confidence interval in the row for `30` - the values should be the same.</p>
+
+  <ol>
+    <li>
+      What is the margin of error for the estimate of the proportion of non-helmet wearers that have texted while driving each day for the past 30 days based on this survey?
+    </li>
+    <li>
+      Calculate confidence intervals for two other categorical variables (you'll need to decide which level to call "success", and report the associated margins of error. Interpret the interval in context of the data.
+    </li>
+  </ol>
+
+</section>
+
+<section>
+  <title>How does the proportion affect the margin of error?</title>
+
+  <p>Imagine you've set out to survey 1000 people on two questions: are you at least 6-feet tall?
+    and are you left-handed?
+    Since both of these sample proportions were calculated from the same sample size, they should have the same margin of error, right?
+    Wrong!
+    While the margin of error does change with sample size, it is also affected by the proportion.</p>
+
+  <p>Think back to the formula for the standard error: <m>SE = \sqrt{p(1-p)/n}</m>. This is then used in the formula for the margin of error for a 95% confidence interval: <m>ME = 1.96\times SE = 1.96\times\sqrt{p(1-p)/n} \,.</m> Since the population proportion <m>p</m> is in this <m>ME</m> formula, it should make sense that the margin of error is in some way dependent on the population proportion. We can visualize this relationship by creating a plot of <m>ME</m> vs. <m>p</m>.</p>
+
+  <p>Since sample size is irrelevant to this discussion, let's just set it to some value ($n = 1000$) and use this value in our calculations. In the dataset <ref uri="http://mthomas7.github.io/jamovi_labs/06_inf_for_categorical_data/more/me.csv">here</ref>, there are two columns. The first is a variable `p` that is a sequence from 0 to 1 with each number incremented by 0.01. The second is the margin of error (`me`) associated with each of these values of `p` using the familiar approximate formula ($ME = 2 \times SE$).</p>
+
+  <p>Lastly, you can plot the two variables against each other to reveal their relationship. Do this by creating a scatterplot. Put `p` on the x-axis and `me` on the y-axis.</p>
+
+  <p>1. Describe the relationship between `p` and `me`. Include the margin of error vs. population proportion plot you constructed in your answer. For a given sample size, for which value of `p` is margin of error maximized?</p>
+
+</section>
+
+<section>
+  <title>Success-failure condition</title>
+
+  <p>We have emphasized that you must always check conditions before making inference.
+    For inference on proportions, the sample proportion can be assumed to be nearly normal if it is based upon a random sample of independent observations and if both <m>np \geq 10</m> and <m>n(1 - p) \geq 10</m>.
+    This rule of thumb is easy enough to follow, but it makes you wonder: what's so special about the number 10?</p>
+
+  <p>The short answer is: nothing.
+    You could argue that you would be fine with 9 or that you really should be using 11.
+    What is the "best" value for such a rule of thumb is, at least to some degree, arbitrary.
+    However, when <m>np</m> and <m>n(1-p)</m> reaches 10 the sampling distribution is sufficiently normal to use confidence intervals and hypothesis tests that are based on that approximation.</p>
+
+  <p>You can investigate the interplay between <m>n</m> and <m>p</m> and the shape of the sampling distribution by using simulations.
+    Play around with the following app to investigate how the shape, center, and spread of the distribution of <m>\hat{p}</m> changes as <m>n</m> and <m>p</m> changes.</p>
+
+  <ol>
+    <li>
+      Describe the sampling distribution of sample proportions at <m>n = 300</m> and <m>p = 0.1</m>.
+      Be sure to note the center, spread, and shape.
+    </li>
+    <li>
+      Keep <m>n</m> constant and change <m>p</m>. How does the shape, center, and spread of the sampling distribution vary as <m>p</m> changes.
+      You might want to adjust min and max for the <m>x</m>-axis for a better view of the distribution.
+    </li>
+    <li>
+      Now also change <m>n</m>.
+      How does $n$ appear to affect the distribution of <m>\hat{p}</m>?
+    </li>
+  </ol>
+
+</section>
+
+<section>
+  <title>More Practice</title>
+
+  <p>For some of the exercises below, you will conduct inference comparing two proportions.
+    In such cases, you have a response variable that is categorical, and an explanatory variable that is also categorical, and you are comparing the proportions of success of the response variable across the levels of the explanatory variable.</p>
+
+  <ol>
+    <li>
+      Is there convincing evidence that those who sleep 10+ hours per day are more likely to strength train every day of the week?
+      As always, write out the hypotheses for any tests you conduct and outline the status of the conditions for inference.
+      If you find a significant difference, also quantify this difference with a confidence interval.
+    </li>
+    <li>
+      Let's say there has been no difference in likeliness to strength train every day of the week for those who sleep 10+ hours.
+      What is the probability that you could detect a change (at a significance level of 0.05) simply by chance?
+      <hint>
+        Review the definition of the Type 1 error.
+      </hint>
+    </li>
+    <li>
+      Suppose you're hired by the local government to estimate the proportion of residents that attend a religious service on a weekly basis.
+      According to the guidelines, the estimate must have a margin of error no greater than 1% with 95% confidence.
+      You have no idea what to expect for <m>p</m>.
+      How many people would you have to sample to ensure that you are within the guidelines?
+      <hint>
+        Refer to your plot of the relationship between $p$ and margin of error.
+        This question does not require using a dataset.
+      </hint>
+    </li>
+  </ol>
+
+</section>
+
+<image source="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" />
+This work is licensed under a <ref uri=" http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons License</ref>

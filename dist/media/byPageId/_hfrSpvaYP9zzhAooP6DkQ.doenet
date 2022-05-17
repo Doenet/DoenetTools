@@ -1,0 +1,456 @@
+<problem>
+<!-- <title>critical points of cubic</title> -->
+
+<setup>
+
+<function name='f' variables='x' symbolic> (x-4)(x-1)(x+4)/4</function>
+<function name='f_expanded' variables='x' expand='true'>$f</function>
+<derivative name='fprime' variables='x'>$f_expanded</derivative>
+<math name='fprime_factored'>1/4 * (x+2)(3x−8)</math>
+
+<math name='cp1'>-2</math>
+<math name='cp2'>8/3</math>
+<math name='critical_points'>$cp1, $cp2</math>
+
+<subsetOfReals name='left_interval'>(-infinity, $cp1 )</subsetOfReals>
+<subsetOfReals name='middle_interval'>($cp1 ,$cp2 )</subsetOfReals>
+<subsetOfReals name='right_interval'>($cp2, infinity)</subsetOfReals>
+
+<math name='f_cp1' simplify='full'>$$f($cp1 )</math>
+<math name='f_cp2' simplify='full'>$$f($cp2 )</math>
+<math name='x1'>-3</math>
+<math name='fprimex1'>$$fprime($x1 )</math>
+<math name='x2'>0</math>
+<math name='fprimex2'>$$fprime($x2 )</math>
+<math name='x3'>3</math>
+<math name='fprimex3'>$$fprime($x3 )</math>
+
+<math name='zero1'>-4</math>
+<math name='zero2'> 1</math>
+<math name='zero3'> 4</math>
+<math name='zeros'>$zero1, $zero2, $zero3</math>
+
+<point name='point_cp1'>($cp1 ,$f_cp1 )</point>
+<point name='point_cp2'>($cp2 ,$f_cp2 )</point>
+<point name='point_z1'>($zero1 ,0)</point>
+<point name='point_z2'>($zero2 ,0)</point>
+<point name='point_z3'>($zero3 ,0)</point>
+
+</setup>
+
+
+<p>Let <m>f(x) = $f = $f_expanded</m>.</p>
+
+<ol>
+
+<li>
+<p>Calculate the derivative of <m>f</m>.</p>
+
+<p>
+<m>f'(x)=</m> 
+<answer>
+<award>$fprime </award>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+<p>Find the critical points of <m>f</m>, i.e., the points where <m>f'(x)=0</m> or <m>f'(x)</m> does not exist.</p>
+
+<p>How many critical points are there?  <answer name="n_c">2</answer></p>
+
+
+<p>The critical points are</p>
+<ul>
+  <map name="cpMap">
+    <template><li><m>x=</m> <mathinput /></li></template>
+    <sources><sequence length="min(10,$n_c)" /></sources>
+  </map>
+</ul>
+<p>
+<answer matchPartial unorderedCompare name="ansCps">
+  <award targetsAreResponses="cpMap">
+    <when allowedErrorInNumbers="0.0001">
+      <mathlist>
+        <collect componentTypes="mathinput" prop="value" tname="cpMap" />
+      </mathlist>
+      = $critical_points
+    </when>
+  </award>
+</answer>
+</p>
+
+<hint>
+You can either factor the quadratic or use the quadratic formula.
+</hint>
+
+<p>Calculate the value of <m>f</m> at the critical points.</p>
+
+<ul>
+  <map name="fcpMap">
+    <template><li><m>f($v)=</m> <mathinput /></li></template>
+    <sources alias="v"><copy prop="submittedResponses" tname="ansCps" name="ucps" /></sources>
+  </map>
+</ul>
+
+
+
+<p>
+  <answer disabled="$(ansCps{prop='creditAchieved'}) != 1">
+    <award matchPartial matchByExactPositions allowedErrorInNumbers="0.0001">
+      <when>
+        <mathlist hide name="fucplist">
+          <collect componentTypes="mathinput" prop="value" tname="fcpMap" />
+        </mathlist>
+        = 
+        <mathlist>
+          <map>
+            <template>
+              <evaluate forceNumeric function="$f" input="$v" />
+            </template>
+            <sources alias="v">$ucps</sources>
+          </map>
+        </mathlist>
+      </when>
+    </award>
+  </answer>
+  <conditionalContent condition="$(ansCps{prop='creditAchieved'}) != 1">
+    (Find the correct critical points first.)
+  </conditionalContent>
+</p>
+
+</li>
+
+<li>
+<p>Since <m>f</m> is defined everywhere, the critical points are the only points where <m>f'(x)</m> can change sign.  The two critical points divide the number line into three intervals: one to the left of the critical points, one between the critical points, and one to the right of the critical points.  What are these three intervals?</p>
+
+    
+<hint>
+You can write the intervals as <m>(a,b)</m> or as <m>a < x < b</m>.  Or if an interval extends to infinity, you can write it, for example, as <m>(-\infty, b)</m> or <m>x < b</m>.
+</hint>
+
+
+<p>Left interval: 
+<answer name="answer4">
+  <mathinput name="mi4" />
+  <award allowedErrorInNumbers='0.0001' targetsAreResponses="mi4">
+    <when><subsetOfReals>$mi4</subsetOfReals> = $left_interval</when>
+  </award>
+</answer>
+</p>
+
+  
+<p>Middle interval:
+<answer name="answer5">
+  <mathinput name="mi5" />
+  <award allowedErrorInNumbers='0.0001' targetsAreResponses="mi5">
+    <when><subsetOfReals>$mi5</subsetOfReals> = $middle_interval</when>
+  </award>
+</answer>
+</p>
+
+<p>Right interval:
+<answer name="answer6">
+  <mathinput name="mi6" />
+  <award allowedErrorInNumbers='0.0001' targetsAreResponses="mi6">
+    <when><subsetOfReals>$mi6</subsetOfReals> = $right_interval</when>
+  </award>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+<p>On each of these intervals, <m>f'(x)</m> does not change sign.  Pick an auxiliary point in each interval, test the sign of <m>f'(x)</m> at that point, and conclude whether <m>f</m> is increasing or decreasing on that interval.</p>
+
+<p>For the left interval, <m>f</m> is 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>increasing</choice>
+<choice>decreasing</choice>
+</choiceinput>
+</answer>
+
+</p>
+<p>
+
+For the middle interval, <m>f</m> is 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>decreasing</choice>
+<choice>increasing</choice>
+</choiceinput>
+</answer>
+
+</p>
+<p>
+
+For the right interval, <m>f</m> is 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>increasing</choice>
+<choice>decreasing</choice>
+</choiceinput>
+</answer>
+</p>
+
+
+</li>
+
+<li>
+<p>Find the roots of <m>f</m> itself, i.e.,the points where <m>f(x)=0</m>.</p>
+
+
+
+<p>How many roots are there?  <answer name="n_r">3</answer></p>
+
+
+<p>The roots are</p>
+<ul>
+  <map name="rootMap">
+    <template><li><m>x=</m> <mathinput /></li></template>
+    <sources><sequence length="min(10,$n_r)" /></sources>
+  </map>
+</ul>
+<p>
+<answer matchPartial unorderedCompare name="ansRoots">
+  <award targetsAreResponses="rootMap">
+    <when>
+      <mathlist>
+        <collect componentTypes="mathinput" prop="value" tname="rootMap" />
+      </mathlist>
+      = $zeros
+    </when>
+  </award>
+</answer>
+</p>
+
+
+<hint>
+Use the factored form of <m>f(x)</m> given at the beginning.
+</hint>
+
+</li>
+
+<li>
+<p>Using this information, sketch the graph of <m>f(x)</m>.</p>
+
+
+
+<graph name='g1' width='500' height='300' xmin='-6' xmax='6' ymin='-6' ymax='13'  fixAxes>
+
+<map name="mapZeros" assignNames='(z1) (z2) (z3)'>
+<template>
+
+<point fixed='$showCurve' stylenumber="2" x='$i - 2' y='1'>
+
+<constraints>
+<attractTo>$point_z1</attractTo>
+<attractTo>$point_z2</attractTo>
+<attractTo>$point_z3</attractTo>
+</constraints>
+
+</point>
+
+</template>
+<sources alias="i"><sequence fixed='false' from="1" to="$n_r" /></sources>
+
+</map>
+
+<map name="mapCrits" assignNames='(c1) (c2)'>
+<template>
+
+<point fixed='$showCurve' stylenumber="3" x='$j - 2' y='-1'>
+
+<constraints>
+<attractTo threshold='0.5'>$point_cp1</attractTo>
+<attractTo threshold='0.5'>$point_cp2</attractTo>
+</constraints>
+
+</point>
+
+</template>
+<sources alias="j"><sequence fixed='false' from="1" to="$n_c" /></sources>
+
+</map>
+
+
+
+
+<conditionalContent>
+<case condition='$showCurve'>
+
+
+<setup>
+<sort name='sortedPoints' fixed>$z1 $c1 $z2 $c2 $z3</sort>
+</setup>
+
+
+<curve extrapolateforward='true' extrapolatebackward='true' through='$sortedPoints'>
+
+<beziercontrols>
+
+<controlVectors pointNumber='1'><vector><point name='control1' x='0' y='1'>
+<constraints><constrainTo>
+<point>( 0.3,  2.3)</point>
+<point name='controlCorrect1'>(-0.3,  -2.3)</point>
+<point>( 0.3,  -2.3)</point>
+<point>( -0.3, 2.3)</point>
+</constrainTo></constraints>
+</point></vector></controlVectors>
+
+
+<controlVectors pointNumber='2'><vector><point name='control2' x='0' y='1'>
+<constraints><constrainTo>
+<point>( 2/2.6,  0)</point>
+<point name='controlCorrect2'>(-2/2.6,  0)</point>
+<point>( 0,  2)</point>
+<point>( 0, -2)</point>
+</constrainTo></constraints>
+</point></vector></controlVectors>
+
+<controlVectors pointNumber='3'><vector><point name='control3' x='-1' y='0'>
+<constraints><constrainTo>
+<point>(1,0)</point>
+<point>(-1,0)</point>
+<point>( 0.5,  3.75 *0.5)</point>
+<point>( 0.5, -3.75 *0.5)</point>
+<point name='controlCorrect3'>(-0.5,  3.75 *0.5)</point>
+<point>(-0.5, -3.75 *0.5)</point>
+</constrainTo></constraints>
+</point></vector></controlVectors>
+
+
+<controlVectors pointNumber='4'><vector><point name='control4' x='0' y='1'>
+<constraints><constrainTo>
+<point>( 1.3/2.6,  0)</point>
+<point name='controlCorrect4'>(-1.3/2.6,  0)</point>
+<point>( 0,  1.3)</point>
+<point>( 0, -1.3)</point>
+</constrainTo></constraints>
+</point></vector></controlVectors>
+
+<controlVectors pointNumber='5'><vector><point name='control5' x='0' y='1'>
+<constraints><constrainTo>
+<point>( 0.4,  2.1)</point>
+<point name='controlCorrect5'>(-0.4,  -2.1)</point>
+<point>( 0.4,  -2.1)</point>
+<point>( -0.4, 2.1)</point>
+</constrainTo></constraints>
+</point></vector></controlVectors>
+</beziercontrols>
+
+
+</curve>
+
+</case>
+</conditionalContent>
+
+</graph>
+
+<p>Move the $n_c <copy prop="styleDescriptionWithNoun" tname="c1" />s to the locations of the critical points.
+  <answer name='ansCpsGraph'>
+  <award unorderedCompare matchPartial><when>
+    <math>$c1, $c2</math> = <math>$point_cp1, $point_cp2</math>
+  </when></award>
+  </answer>
+</p>
+
+<p>Move the $n_r <copy prop="styleDescriptionWithNoun" tname="z1" />s to the locations of the roots.
+  <answer name='ansRootsGraph'>
+  <award unorderedCompare matchPartial><when>
+    <math>$z1, $z2, $z3</math> = <math>$point_z1, $point_z2, $point_z3</math>
+  </when></award>
+  </answer>
+</p>
+
+<boolean name="showCurve" hide />
+<boolean name="pointsCorrect" hide>$(ansCpsGraph{prop='creditAchieved'}) + $(ansRootsGraph{prop='creditAchieved'}) = 2</boolean>
+<p disabled="not $pointsCorrect or $showCurve">
+  <updateValue type="boolean" label="Show curve" tname="showCurve" newValue="true" />
+</p>
+
+<p>
+Transform the curve so that it approximates the graph of <m>f(x)</m>.  Click each point to reveal handles that you can drag to change the direction of the curve.  To be correct, the <copy prop="styleDescriptionWithNoun" tname="c1" />s (and no other points) must be critical points of the graph and the graph must increase and decrease in the correct intervals.
+<answer disabled='not $showCurve'>
+<award matchPartial><when>
+<boolean>$control1 = $controlCorrect1</boolean> and 
+<boolean>$control2 = $controlCorrect2</boolean> and 
+<boolean>$control3 = $controlCorrect3</boolean> and 
+<boolean>$control4 = $controlCorrect4</boolean> and 
+<boolean>$control5 = $controlCorrect5</boolean>
+</when></award>
+</answer>
+</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+<m>f'(x) = $fprime</m>
+</li>
+
+<li>
+The derivative exists everywhere.  Factoring <m>f'(x)</m>, we get <m>f'(x) = $fprime_factored </m>.  The critical points are <m>x=<round numberdigits="5">$cp1</round></m> and <m>x=8/3 \approx <round numberdigits="5">$cp2</round></m>.
+
+<p>Evaluating <m>f</m> at the critical points: <m>f(<round numberdigits="5">$cp1</round>)=<round numberdigits="5">$f_cp1</round></m>, <m>f(<round numberdigits="5">$cp2</round>)=<round numberdigits="5">$f_cp2</round></m>.
+</p>
+</li>
+
+<li>
+The intervals are: <m><round numberdigits="5">$left_interval</round></m>, <m><round numberdigits="5">$middle_interval</round></m>, and <m><round numberdigits="5">$right_interval</round></m>.
+
+</li>
+
+<li>
+<p>For the interval <m><round numberdigits="5">$left_interval</round></m>, we could pick the point <m>x=$x1 </m>.  <m>f'($x1 ) = $fprimex1  \gt  0</m>.  <m>f(x)</m> is increasing on the interval <m><round numberdigits="5">$left_interval</round></m>.</p>
+
+<p>For the interval <m><round numberdigits="5">$middle_interval</round></m>, we could pick the point <m>x=$x2 </m>.  <m>f'($x2 ) = $fprimex2 \lt  0</m>.  <m>f(x)</m> is decreasing on the interval <m><round numberdigits="5">$middle_interval</round></m>.</p>
+
+<p>For the interval <m><round numberdigits="5">$right_interval</round></m>, we could pick the point <m>x=$x3 </m>.  <m>f'($x3 ) = $fprimex3  \gt  0</m>.  <m>f(x)</m> is increasing on the interval <m><round numberdigits="5">$right_interval</round></m>.</p>
+
+</li>
+
+<li>
+<m>f(x) = $f = 0</m> if <m>x=$zero1</m>, <m>x=$zero2</m>, or <m>x=$zero3 </m>.  These are the three roots.
+</li>
+
+<li>
+<p>It's not important to get the curvature right, but just to get the critical points, the roots, and the regions where <m>f</m> is increasing/decreasing correct.</p>
+
+
+<graph width='500' height='300' xmin='-6' xmax='6' ymin='-6' ymax='13'  showNavigation='false'>
+
+<copy tname='f' />
+
+<copy fixed stylenumber='2' tname='point_z1' />
+<copy fixed stylenumber='2' tname='point_z2' />
+<copy fixed stylenumber='2' tname='point_z3' />
+
+<copy fixed stylenumber='3' tname='point_cp1' />
+<copy fixed stylenumber='3' tname='point_cp2' />
+
+
+</graph>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

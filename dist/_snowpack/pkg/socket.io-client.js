@@ -52,26 +52,21 @@ const encodeBlobAsBase64 = (data, callback) => {
     return fileReader.readAsDataURL(data);
 };
 
-/*
- * base64-arraybuffer 1.0.1 <https://github.com/niklasvh/base64-arraybuffer>
- * Copyright (c) 2022 Niklas von Hertzen <https://hertzen.com>
- * Released under MIT License
- */
-var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 // Use a lookup table to find the index.
-var lookup = typeof Uint8Array === 'undefined' ? [] : new Uint8Array(256);
-for (var i = 0; i < chars.length; i++) {
+const lookup = typeof Uint8Array === 'undefined' ? [] : new Uint8Array(256);
+for (let i = 0; i < chars.length; i++) {
     lookup[chars.charCodeAt(i)] = i;
 }
-var decode = function (base64) {
-    var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
+const decode = (base64) => {
+    let bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
     if (base64[base64.length - 1] === '=') {
         bufferLength--;
         if (base64[base64.length - 2] === '=') {
             bufferLength--;
         }
     }
-    var arraybuffer = new ArrayBuffer(bufferLength), bytes = new Uint8Array(arraybuffer);
+    const arraybuffer = new ArrayBuffer(bufferLength), bytes = new Uint8Array(arraybuffer);
     for (i = 0; i < len; i += 4) {
         encoded1 = lookup[base64.charCodeAt(i)];
         encoded2 = lookup[base64.charCodeAt(i + 1)];
@@ -234,7 +229,7 @@ Emitter.prototype.hasListeners = function(event) {
   return !!this.listeners(event).length;
 };
 
-var globalThis = (() => {
+const globalThisShim = (() => {
     if (typeof self !== "undefined") {
         return self;
     }
@@ -259,12 +254,12 @@ const NATIVE_SET_TIMEOUT = setTimeout;
 const NATIVE_CLEAR_TIMEOUT = clearTimeout;
 function installTimerFunctions(obj, opts) {
     if (opts.useNativeTimers) {
-        obj.setTimeoutFn = NATIVE_SET_TIMEOUT.bind(globalThis);
-        obj.clearTimeoutFn = NATIVE_CLEAR_TIMEOUT.bind(globalThis);
+        obj.setTimeoutFn = NATIVE_SET_TIMEOUT.bind(globalThisShim);
+        obj.clearTimeoutFn = NATIVE_CLEAR_TIMEOUT.bind(globalThisShim);
     }
     else {
-        obj.setTimeoutFn = setTimeout.bind(globalThis);
-        obj.clearTimeoutFn = clearTimeout.bind(globalThis);
+        obj.setTimeoutFn = setTimeout.bind(globalThisShim);
+        obj.clearTimeoutFn = clearTimeout.bind(globalThisShim);
     }
 }
 // base64 encoded buffers are about 33% bigger (https://en.wikipedia.org/wiki/Base64)
@@ -488,7 +483,7 @@ catch (err) {
 const hasCORS = value;
 
 // browser shim for xmlhttprequest module
-function XMLHttpRequest$1 (opts) {
+function XHR(opts) {
     const xdomain = opts.xdomain;
     // XMLHttpRequest can be disabled on IE
     try {
@@ -499,7 +494,7 @@ function XMLHttpRequest$1 (opts) {
     catch (e) { }
     if (!xdomain) {
         try {
-            return new globalThis[["Active"].concat("Object").join("X")]("Microsoft.XMLHTTP");
+            return new globalThisShim[["Active"].concat("Object").join("X")]("Microsoft.XMLHTTP");
         }
         catch (e) { }
     }
@@ -507,7 +502,7 @@ function XMLHttpRequest$1 (opts) {
 
 function empty() { }
 const hasXHR2 = (function () {
-    const xhr = new XMLHttpRequest$1({
+    const xhr = new XHR({
         xdomain: false
     });
     return null != xhr.responseType;
@@ -760,7 +755,7 @@ class Request extends Emitter {
         const opts = pick(this.opts, "agent", "pfx", "key", "passphrase", "cert", "ca", "ciphers", "rejectUnauthorized", "autoUnref");
         opts.xdomain = !!this.opts.xd;
         opts.xscheme = !!this.opts.xs;
-        const xhr = (this.xhr = new XMLHttpRequest$1(opts));
+        const xhr = (this.xhr = new XHR(opts));
         try {
             xhr.open(this.method, this.uri, this.async);
             try {
@@ -887,7 +882,7 @@ if (typeof document !== "undefined") {
         attachEvent("onunload", unloadHandler);
     }
     else if (typeof addEventListener === "function") {
-        const terminationEvent = "onpagehide" in globalThis ? "pagehide" : "unload";
+        const terminationEvent = "onpagehide" in globalThisShim ? "pagehide" : "unload";
         addEventListener(terminationEvent, unloadHandler, false);
     }
 }
@@ -908,7 +903,7 @@ const nextTick = (() => {
         return (cb, setTimeoutFn) => setTimeoutFn(cb, 0);
     }
 })();
-const WebSocket = globalThis.WebSocket || globalThis.MozWebSocket;
+const WebSocket = globalThisShim.WebSocket || globalThisShim.MozWebSocket;
 const usingBrowserWebSocket = true;
 const defaultBinaryType = "arraybuffer";
 
@@ -1075,8 +1070,7 @@ class WS extends Transport {
      * @api public
      */
     check() {
-        return (!!WebSocket &&
-            !("__initialize" in WebSocket && this.name === WS.prototype.name));
+        return !!WebSocket;
     }
 }
 

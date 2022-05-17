@@ -1,0 +1,186 @@
+<module>
+  <setup>
+  </setup>
+  <p>
+    The last new concept we'll (re)-learn this week is multiplication, but we'll learn a new algorithm to do it than we've likely seen in the past.
+    To multiply two numbers, we'll essentially compute the base 2 expansion of the smaller number and keep doubling the larger number.
+    We'll then add up appropriate double values using the base 2 expansion as our guide, and we'll wind up with the correct answer!
+    Believe it or not, this is the method used by the Ancient Egyptians, and it's worth not that it makes a lot of sense when you consider that they used hieroglyphics rather than a ``place" number system like we use today.
+    I won't make you do the computations in hieroglyphics (like I had to when I learned this), but I do think it's a useful technique to know and we'll use similar techniques in class.
+  </p>
+  <p>
+    <alert>Example 1:</alert>
+    Compute <m>30\cdot 411</m>. To start, we will construct a table, where we start with <m>1</m> in the first column, and the larger number, in this case 411, in the second.
+    We proceed by doubling each number until the first column would exceed 30 (so in this case, we'll stop at 16, since if we doubled 16 we would have 32, which is greater than 30).
+    The result looks like this:
+    <tabular width="400">
+      <row>
+        <cell>1</cell>
+        <cell><math>411</math></cell>
+      </row>
+      <row>
+        <cell>2</cell>
+        <cell><math simplify>411*2</math></cell>
+      </row>
+      <row>
+        <cell>4</cell>
+        <cell><math simplify>411*4</math></cell>
+      </row>
+      <row>
+        <cell>8</cell>
+        <cell><math simplify>411*8</math></cell>
+      </row>
+      <row>
+        <cell>16</cell>
+        <cell><math simplify>411*16</math></cell>
+      </row>
+    </tabular>
+    This is a nice method, because we only need to know how to multiply by 2, which is often quite easy!
+    Once we have all our doubled numbers, we need to find a combination that adds up to 30. In this case,
+    <me>16+8+4+2=30,</me>
+    so we mark out any column that was not used. (This also shows that 30=11110 in binary).
+    So we obtain the table:
+    <tabular width="400">
+      <row>
+        <cell><m>\rule[.3em]{.5em}{.1pt}\hspace{-.5em}1</m></cell>
+        <cell><m>\rule[.3em]{1.5em}{.1pt}\hspace{-1.5em}411</m></cell>
+      </row>
+      <row>
+        <cell>2</cell>
+        <cell><math simplify>411*2</math></cell>
+      </row>
+      <row>
+        <cell>4</cell>
+        <cell><math simplify>411*4</math></cell>
+      </row>
+      <row>
+        <cell>8</cell>
+        <cell><math simplify>411*8</math></cell>
+      </row>
+      <row>
+        <cell>16</cell>
+        <cell><math simplify>411*16</math></cell>
+      </row>
+    </tabular>
+  </p>
+  <p>
+    Finally, we simply add up the numbers left in the right column to obtain the value of <m>30*411</m>.
+    In this case, we find that
+    <me>822+1644+3288+6576=<math simplify>822+1644+3288+6576</math>.</me>
+    Again, this may seem like a strange method at first glance, but in hieroglyphics, doubling simply meant "repeating the number of symbols twice as many times", and occassionally trading in a collection of symbols for the next larger symbol when you got enough of them.
+    These were written in columns and rows of symbols though, not in specific places using digits, in that context, it's a fairly efficient algorithm for performing multiplication.
+  </p>
+  <p>
+    <setup>
+      <select assignNames="(n11 a11 l11)">
+        <option>
+          <math>25</math>
+          <math>16+8+1</math>
+          <math unordered>1,4,5</math>
+        </option>
+        <option>
+          <math>19</math>
+          <math>16+2+1</math>
+          <math unordered>1,2,5</math>
+        </option>
+      </select>
+      <select assignNames="(n12 a12)">
+        <option >
+          <math>111</math>
+          <math>64+32+8+4+2+1</math>
+        </option>
+        <option>
+          <math>113</math>
+          <math>64+32+16+1</math>
+        </option>
+      </select>
+      <select assignNames="(n13 a13)">
+        <option>
+          <math>31</math>
+          <math>16+8+4+2+1</math>
+        </option>
+        <option>
+          <math>63</math>
+          <math>32+16+8+4+2+1</math>
+        </option>
+      </select>
+    </setup>
+    <alert>Practice Problems</alert>
+    First, compute the expansions of a few numbers using only powers of 2.
+    Your answer should be in the form of sums of powers of 2 in descending order, for example,
+    if you were asked to compute 5, you would answer "4+1" or 21 would be "16+4+1".
+    <row>
+      $n11 = <answer><award symbolicEquality>$a11</award></answer>
+    </row>
+    <row>
+      $n12 = <answer><award symbolicEquality>$a12</award></answer>
+    </row>
+    <row>
+      $n13 = <answer><award symbolicEquality>$a13</award></answer>
+    </row>
+  </p>
+  <p>
+    Complete the table below.
+    <tabular>
+      <row>
+        <cell>
+          <math>1</math>
+        </cell>
+        <cell>
+          $n12
+        </cell>
+      </row>
+      <row>
+        <cell>
+          <mathInput name="t11" />
+        </cell>
+        <cell>
+          <mathInput name="t12" />
+        </cell>
+      </row>
+      <row>
+        <cell>
+          <mathInput name="t21" />
+        </cell>
+        <cell>
+          <mathInput name="t22" />
+        </cell>
+      </row>
+      <row>
+        <cell>
+          <mathInput name="t31" />
+        </cell>
+        <cell>
+          <mathInput name="t32" />
+        </cell>
+      </row>
+      <row>
+        <cell>
+          <mathInput name="t41" />
+        </cell>
+        <cell>
+          <mathInput name="t42" />
+        </cell>
+      </row>
+    </tabular>
+  </p>
+  <answer>
+    <award matchPartial targetsAreResponses="t11 t12 t21 t22 t31 t32 t41 t42">
+      <when>
+        $t11=2 and $t12=<math simplify>$n12*2</math> and
+        $t21=4 and $t22=<math simplify>$n12*4</math> and
+        $t31=8 and $t32=<math simplify>$n12*8</math> and
+        $t41=16 and $t42=<math simplify>$n12*16</math>
+      </when>
+    </award>
+  </answer>
+
+  In the second column, which rows of the table need to be added up to obtain the quantity
+  <m>$n11\cdot $n12</m>?
+  (Answer as a comma separated list. For example, if all but the first row is needed, you would answer 2,3,4,5).
+  <answer>
+    <award>
+      $l11
+    </award>
+  </answer>
+</module>

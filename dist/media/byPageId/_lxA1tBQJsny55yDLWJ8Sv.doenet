@@ -1,0 +1,149 @@
+<document><title><tag>lorem</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>generateWords  <em>(number)</em></li>
+  <li>generateSentences  <em>(number)</em></li>
+  <li>generateParagraphs  <em>(number)</em></li>
+  <li>minSentencesPerParagraph  <em>(number)</em></li>
+  <li>maxSentencesPerParagraph  <em>(number)</em></li>
+  <li>minWordsPerSentence  <em>(number)</em></li>
+  <li>maxWordsPerSentence  <em>(number)</em></li>
+</ul>
+<!--
+minSentencesPerParagraph	number				defaultValue="4"
+maxSentencesPerParagraph	number				defaultValue="8"
+minWordsPerSentence	number				defaultValue="4"
+maxWordsPerSentence	number				defaultValue="8"
+generateWords	number				
+generateSentences	number				
+generateParagraphs	number	-->			
+  
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>lorem</tag><idx><tag>lorem</tag></idx> component renders random lorem-ipsum filler text.  The amount of text generated is controlled by attribute specification of the number of words, sentences, and paragraphs. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: create filler text using generateWords attribute</title>
+<pre>
+&lt;lorem generateWords="20"/&gt;
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<lorem generateWords="20"/>
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: create filler text using the generateSentences and minWordsPerSentence attributes</title>
+<pre>
+&lt;lorem generateSentences="3" minWordsPerSentence="7"/&gt;
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<lorem generateSentences="3" minWordsPerSentence="7"/>
+<p><em>Note: the default minimum number of words per sentence is 4, and the default maximum number of words per sentence is 8.  You cannot specify more than a minimum of 8 words per sentence without also specifying a higher maximum number of words per sentence.  See the following example for the similar case with the generateParagraphs attribute, in which both a minimum number of sentences and a maximum number of sentences are specified.</em></p>
+</subsection>
+    </cell>
+  </row>
+  
+
+<!--******************************************************-->
+    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: create filler text using the generateParagraphs, minSentencesPerParagraph, and maxSentencesPerParagraph attributes</title>
+<pre>
+&lt;lorem generateParagraphs="1" minSentencesPerParagraph="9" maxSentencesPerParagraph="9"/&gt;
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<lorem generateParagraphs="1" minSentencesPerParagraph="9" maxSentencesPerParagraph="9"/>
+
+<p><em>Note:In this example the minSentencesPerParagraph (which is by default 4) and the maxSentencesPerParagraph (by default 8) are both set to 9 in order to force a paragraph of that specific length.</em></p>
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<!--<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>-->
+<!--*******************************************************-->
+<!-- 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>-->
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

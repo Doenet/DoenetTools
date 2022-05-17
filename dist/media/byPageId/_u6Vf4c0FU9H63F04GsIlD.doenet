@@ -1,0 +1,43 @@
+
+<setup>
+ <selectfromsequence from="8" to="72" exclude="11 13 17 19 23 25 29 31 35 37 41 43 47 49 53 55 59 61 64 65 67 72" name="a" />
+  <selectfromsequence from="-1" to="1" exclude="0"  name="b" />
+ <math name="pi">3.141592653589793</math>
+  <!--
+    Calculate Answers
+  -->
+ <math simplify="none" name="ans1">sin($b*$a*pi/12)</math>
+  
+</setup>
+
+<p>
+
+ Find <m>sin(\frac{<math simplify="full">$b*$a</math>*\Pi}{12})</m>.  Enter your answer as an exact value using square roots when necessary.  Do not use a calculator to give a decimal approximation.
+</p>
+
+<p>
+
+  <answer>
+    <award allowedErrorIsAbsolute allowedErrorInNumbers="0.05" >
+      $ans1
+    </award>  
+  </answer>
+</p>
+
+
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+       <m>sin(\frac{<math simplify="full">$b*$a</math>*\Pi}{12})</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number displayDecimals="1">$ans1</number>
+      </cell>
+    </row>
+   
+  </tabular>
+</solution>

@@ -1,0 +1,120 @@
+<problem>
+<title>Derivative of exponential of quadratic with parameters</title>
+
+<setup>
+
+<!-- For now, until $function ($x) registers in MathJax as a function -->
+<boolean name='differential_notation'>true</boolean>
+<!-- <select assignNames='differential_notation' type='boolean'>false true</select> -->
+
+<select assignNames='function' > f g m p r u v w</select>
+<select assignNames='var' > x y z s t</select>
+
+<select assignNames='par1 par2' numberToSelect='2' withReplacement="false"> a b c h k</select>
+
+
+<select assignNames='(par3 par3_word par3_symb)' > 
+<option><math>beta</math><text>\beta</text><text>β</text></option>
+<option><math>gamma</math><text>\gamma</text><text>γ</text></option>
+<option><math>delta</math><text>\delta</text><text>δ</text></option>
+<option><math>lambda</math><text>\lambda</text><text>λ</text></option>
+<option><math>mu</math><text>\mu</text><text>μ</text></option>
+<option><math>nu</math><text>\nu</text><text>ν</text></option>
+<option><math>eta</math><text>\eta</text><text>η</text></option>
+<option><math>xi</math><text>\xi</text><text>ξ</text></option>
+</select>
+
+
+<math name='ans1' simplify='full' >2 $par1  $par2  $var  e^($par2  $var ^2) </math>
+<math name='ans2' simplify='full' >2 $par1  $par2  $par3  e^($par2  $par3 ^2)</math>
+
+
+</setup>
+
+Let <m>$function ($var ) = $par1  e^{ $par2  $var ^2 }</m>, where <m>$par1 </m> and <m>$par2 </m> are parameters (i.e., constant numbers).
+
+<conditionalcontent><case condition='$differential_notation'>
+
+<p>
+What is <m> \frac{ d$function }{ d$var }</m>? 
+<answer>
+<award>$ans1 </award>
+</answer>
+ </p>
+<p>
+What is <m>\frac{ d$function }{ d$var }\bigg|_{ $var = $par3  }</m>?  
+<answer>
+<award>$ans2 </award>
+</answer>
+
+</p>
+
+
+</case><else>
+
+
+<p>
+What is <m>$function '($var )</m>?  
+<answer>
+<award>$ans1 </award>
+</answer>
+</p>
+<p>
+What is <m>$function '($par3 )</m>? 
+<answer>
+<award>$ans2 </award>
+</answer>
+
+</p>
+
+</else>
+</conditionalcontent>
+
+
+<hint>
+<p>To enter a <c>$par3_symb</c>, type either <c>$par3_word</c> or copy the symbol <c>$par3_symb </c>.</p>
+
+<paragraphs>
+<title>Helpful pages</title>
+<ul>
+<li><ref uri='doenet:chain_rule_idea'>The idea of the chain rule</ref></li>
+</ul></paragraphs>
+</hint>
+
+
+<solution>
+By the <ref uri='doenet:chain_rule_idea'>chain rule</ref>, 
+
+
+<me>
+
+<conditionalcontent><case condition='$differential_notation'>
+ \frac{ d$function }{ d$var }
+</case><else>
+
+$function '($var )
+</else></conditionalcontent>
+
+ = $par1  e^{ $par2  $var ^2 } (2 $par2   $var )= 2 $par1  $par2   $var e^{ $par2  $var ^2 }.
+ 
+</me>
+When <m>$var =$par3 </m>, the derivative is
+
+<me>
+
+<conditionalcontent><case condition='$differential_notation'>
+ \frac{ d$function }{ d$var }\bigg|_{ $var = $par3  }
+</case><else>
+
+$function '($par3 )
+</else></conditionalcontent>
+
+ = 2 $par1  $par2   $par3  e^{ $par2  $par3 ^2 }.
+ 
+ </me>
+
+
+</solution>
+
+
+</problem>

@@ -205,7 +205,7 @@ export default class Curve extends GraphicalComponent {
           curveDescription += "dotted ";
         }
 
-        curveDescription += dependencyValues.selectedStyle.lineColor;
+        curveDescription += dependencyValues.selectedStyle.lineColorWord;
 
         return { setValue: { styleDescription: curveDescription } };
       }

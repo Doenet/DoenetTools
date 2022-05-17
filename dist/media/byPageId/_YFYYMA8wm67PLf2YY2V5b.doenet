@@ -1,0 +1,165 @@
+<problem>
+<!-- <title>analytic stability of ODE equilibria, dx/dt=quadratic*e^x, quadratic two zeros</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a' from='-4' to=' 4' exclude='0' />
+<selectFromSequence assignNames='b c' from='-10' to=' 10' exclude='0' numberToSelect="2" withReplacement='false' />
+<selectFromSequence assignNames='x0' from='-10' to=' 10' />
+
+
+<select assignNames='x' >x y z u v w p X Y Z S</select>
+<function name='quadratic' variables='$x' symbolic><math expand simplify>$a*($x -$b )*($x -$c )</math></function>
+
+<function name='fun' variables='$x' symbolic><math simplify="numbers">$$quadratic($x)*e^$x</math></function>
+
+<mathlist name="Es">
+  <sort assignNames="E1 E2">$b $c</sort>
+</mathlist>
+
+<derivative name="fprime" variables="$x">$fun</derivative>
+<function name='fprime_factor' variables='$x'><math simplify>($$quadratic($x )+<derivative variables="$x">$$quadratic($x)</derivative>)*e^$x </math></function>
+
+<evaluate name="fprime_E1" forceNumeric function="$fprime" input="$E1" displayDigits="5" />
+<evaluate name="fprime_E2" forceNumeric function="$fprime" input="$E2" displayDigits="5" />
+
+<boolean name='E1_stable'>$fprime_E1  < 0</boolean>
+<boolean name='E2_stable'>$fprime_E2  < 0</boolean>
+
+<conditionalContent assignNames="(E1_stability)">
+  <case condition="$E1_stable"><text>stable</text></case>
+  <else><text>unstable</text></else>
+</conditionalContent>
+
+<conditionalContent assignNames="(E2_stability)">
+  <case condition="$E2_stable"><text>stable</text></case>
+  <else><text>unstable</text></else>
+</conditionalContent>
+ 
+<math name='fun_expand' expand simplify>$fun</math>
+
+</setup>
+
+
+
+<p>Consider the 
+  <select>
+    <option>differential equation</option>
+    <option>dynamical system</option>
+  </select>
+<md>
+  <mrow>
+   <select name="derivString">
+     <option>\frac{ d$x }{ dt }</option>
+     <option>$x'(t)</option>
+   </select>
+  \amp = <copy prop="formula" tname="fun" /></mrow>
+  <mrow>$x _0\amp = $x0 </mrow>
+  <mrow></mrow>
+</md>
+</p>
+<p>
+Find all the equilibria and determine their stability.
+</p>
+
+
+<p>Number of equilibria: <mathinput name="n_e" /></p>
+
+<p>The equilibria are</p>
+<ul>
+  <map name="mapEs">
+    <template><li><m>$(x)_e = </m> <mathinput /></li></template>
+    <sources><sequence length="min(5, $n_e)" /></sources>
+  </map>
+</ul>
+<answer>
+<award matchPartial>
+  <when unorderedCompare>
+    <mathlist><collect isResponse prop="value" componentTypes="mathinput" tname="mapEs" name="collectedEs"/></mathlist>
+    = $Es
+  </when>
+</award>
+</answer>
+
+<p>Stability of equilibria:</p>
+<ul>
+  <map name="mapStab">
+    <template>
+      <li><m>$(x)_e = $v</m>:
+      <choiceinput inline>
+        <choice>stable</choice>
+        <choice>unstable</choice>
+      </choiceinput>
+      </li>
+    </template>
+    <sources alias="v">$collectedEs</sources>
+  </map>
+</ul>
+  
+<answer maximumNumberOfAttempts="3">
+  <award matchPartial matchByExactPositions>
+    <when>
+      <textlist><collect prop="selectedValue" componentTypes="choiceinput" tname="mapStab" isResponse /></textlist>
+      =
+      <textlist>
+        <map>
+          <template>
+            <conditionalContent>
+              <case condition="$(collectedEs{componentIndex='$i'}) = $E1">
+                <text>$E1_stability</text>
+              </case>
+              <case condition="$(collectedEs{componentIndex='$i'}) = $E2">
+                <text>$E2_stability</text>
+              </case>
+              <else><text>invalid</text></else>
+            </conditionalContent>
+          </template>
+          <sources indexAlias="i"><sequence length="2" /></sources>
+        </map>
+      </textlist>
+    </when>
+  </award>
+</answer>
+
+
+
+<solution>
+<p>To find equilibria, set <m>$derivString = 0</m>.  If we let <m>f($x ) =<copy prop="formula" tname="fun" /></m>, then an equilibrium <m>$x _e</m> must satisfy <m>f($x _e)=0</m>, or
+<me>$$fun($(x)_e) =0.</me>
+Since the exponential cannot be zero, the only possibility is that <m>$quadratic =0</m>.  
+We can solve this equation by factoring or using the quadratic formula.  The result is that <m>$x _e = $b </m> or <m>$x _e=$c </m>.</p>
+
+<p>To determine stability, we need to evaluate the derivative <m>f'($x )</m>.  Using the product rule, the derivative is 
+<md>
+  <mrow>f'($x )\amp = <copy prop="formula" tname="fprime" /></mrow>
+  <mrow>\amp = <copy prop="formula" tname="fprime_factor" /></mrow>
+</md>
+ We evaluate the derivative at each of the equilibria.</p>
+
+
+<p>To determine the stability of <m>$x _e = $E1 </m>, we calculate that <m>f'($E1 ) = $fprime_E1
+<conditionalcontent>
+<case condition='$E1_stable'>
+ \lt 
+</case>
+<else>
+ \gt 
+</else>
+</conditionalcontent>
+ 0</m>.  Therefore <m>$x _e=$E1 </m> is $E1_stability .</p>
+
+<p>To determine the stability of <m>$x _e = $E2 </m>, we calculate that <m>f'($E2 ) = $fprime_E2 
+<conditionalcontent>
+<case condition='$E2_stable'>
+ \lt 
+</case>
+<else>
+ \gt 
+</else>
+</conditionalcontent>
+ 0</m>.  Therefore <m>$x _e=$E2 </m> is $E2_stability .</p>
+
+</solution>
+
+
+</problem>

@@ -1,0 +1,125 @@
+<module>
+  <setup>
+  </setup>
+  <p>
+    We've discussed the importance of <em>coprime</em> or <em>relatively prime</em> integers
+    occassionally in class, but I think we have managed to avoid formally defining them up
+    to this point.
+    <row><alert>Definition 1</alert></row>
+    Two integers <m>m_1, m_2</m> are said to be <em>coprime</em> or <em>relatively prime</em> if
+    <me>\gcd(m_1,m_2)=1.</me>
+    A collection <m>m_1, m_2, m_3, \ldots, m_k</m> are said to be <em>pairwise relatively prime</em>
+    if each of the <m>\binom{k}{2}</m> possible pairs is coprime.
+  </p>
+  <p>
+    Now we're in a position to define the Chinese Remainder Theorem formally.
+    <row><alert>Theorem 2</alert></row>
+    Let <m>m_1, m_2, \ldots, m_k</m> be pairwise relatively prime positive integers.
+    Then the system of congruences
+    <me>
+      \begin{align*}
+        x &amp; \equiv a_1 \mod m_1, \\
+        x &amp; \equiv a_2 \mod m_2, \\
+        x &amp; \equiv a_3 \mod m_3, \\
+        &amp; \;\;\vdots \\
+        x &amp; \equiv a_k \mod m_k, \\
+      \end{align*}
+    </me>
+    has a <alert>unique solution</alert> modulo <m>M=m_1m_2\cdots m_k</m> (the product of all the moduli).
+  </p>
+
+  <p>
+    <row><alert>Application of Theorem</alert></row>
+    The proof of Theorem 2 is constructive.
+    It shows that the solution exists, and builds the abstract solution given any system.
+    We'll go over this in class, but the solution is always of the form
+    <me>
+      x=a_1M_1y_1 + a_2M_2y_2 + \ldots + a_k M_k y_k,
+    </me>
+    where <m>a_1, a_2, \ldots, a_k</m> are given in the system of equations,
+    <m>M_\ell = \frac{M}{m_\ell}</m> (the product of all moduli except <m>m_\ell</m>),
+    and <m>y_\ell</m> is the multiplicative inverse of <m>M_\ell</m> moduli <m>m_\ell</m>.
+  </p>
+
+  <p>
+    I know, that's a lot of notation to sift through! So let's do an example.
+  </p>
+
+  <p>
+    <row><alert>Example 3</alert></row>
+    Let's start by solving the system given by the ancient Chinese puzzle:
+    <me>
+      \begin{align*}
+        x &amp; \equiv 1 \mod 3, \\
+        x &amp; \equiv 2 \mod 5, \\
+        x &amp; \equiv 3 \mod 7. \\
+      \end{align*}
+    </me>
+    We have that <m>M=3\cdot 5 \cdot 7 =105, M_1=\frac{105}{3}=35, M_2=\frac{105}{5}=21,</m> and
+    <m>M_3=\frac{105}{7}=15.</m>
+    To determine <m>y_1</m> we solve <m>35y_1\equiv 1 \mod 3</m>,
+    to find <m>y_2</m> we solve <m>21y_2\equiv 2 \mod 5</m>,
+    and to find <m>y_3</m> we solve <m>15y_3\equiv 3 \mod 7</m>.
+    Solving each inverse
+    (first simplify, some are easy by inspection, otherwise we apply the Euclidean algorithm)
+    yields the values
+    <me>
+      \begin{align*}
+        y_1 &amp; \equiv 2 \mod 3, \\
+        y_2 &amp; \equiv 1 \mod 5, \\
+        y_3 &amp; \equiv 1 \mod 7. \\
+      \end{align*}
+    </me>
+    Thus we find the solution
+    <me>
+      \begin{split}
+        x &amp; \equiv 1\cdot 35 \cdot 2 + 2 \cdot 21 \cdot 1 + 3\cdot 15\cdot 1 \\
+          &amp; \equiv 157 \\
+          &amp; \equiv 52 \mod 105.
+      \end{split}  
+    </me>
+    To find all possible solutions then, we know that <m>x=52+105y</m> for any integer <m>y</m>.
+  </p>
+
+  <p>
+    We also give an alternative method of solving the system in the following example.
+    <row><alert>Example 4</alert></row>
+    Suppose we wish to solve the sytem 
+    <me>
+      \begin{align*}
+        x &amp; \equiv 1 \mod 5, \\
+        x &amp; \equiv 2 \mod 6, \\
+        x &amp; \equiv 3 \mod 7. \\
+      \end{align*}
+    </me>
+    We can rewrite the first congruence as <m>x=5t+1</m>, where <m>t</m> is an integer.
+    Substituting this into the second congruence, we find
+    <me>5t+1 \equiv 2 \mod 6,</me>
+    which can easily be solved to show that <m>t\equiv 5 \mod 6</m>.
+    Repeating this process, we can write <m>t=6u+5</m> for some integer <m>u</m>.
+    Therefore <m>x=5(6u+5)+1=30u+26</m> (by backsubstitution).
+    Substituting this into the third expression, we obtain
+    <me>
+      30u+26 \equiv 3 \mod 7.
+    </me>
+    Again, this is straightforward to solve, and we find <m>u\equiv 6 \mod 7</m>.
+    Thus <m>u=7v+6</m> for some integer <m>v</m>. Now, backsubstitution yields
+    <me>
+      x=30(7v+6)+26 = 210v+206.
+    </me>
+    Translating this into a congruence, we find that
+    <me>
+      x\equiv 206 \mod 210,
+    </me>
+    and you can verify that this is the simultaneous solution.
+  </p>
+  <p>
+    Note that this second method illustrates that a system of simultaneous congruences
+    can be solved by successively solving linear congruences.
+    This can be done even when the moduli of the congruences are not relatively prime,
+    provided the congruences are consistent.
+  </p>
+  <p>
+    On the next page, you will practice solving a few systems using one of these methods.
+  </p>
+</module>

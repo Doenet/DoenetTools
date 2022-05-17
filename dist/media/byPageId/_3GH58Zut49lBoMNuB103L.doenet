@@ -1,0 +1,154 @@
+<!--
+#DESCRIPTION
+##  Calculus: Newton's method
+##ENDDESCRIPTION
+
+
+## DBsubject(Calculus - single variable)
+## DBchapter(Applications of differentiation)
+## DBsection(Newton's method)
+## Date(02/01/2011)
+## Institution(UCSB)
+## Author(Justin Sukiennik)
+## MLT(NMIterationsPoly)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('4.7')
+## Problem1('8')
+## TitleText2('Calculus: Early Transcendentals')
+## AuthorText2('Stewart')
+## EditionText2('5')
+## Section2('4.9')
+## Problem2('8')
+## KEYWORDS('calculus', 'derivative', 'newton's method','Newton's Method','Differentiation')
+-->
+
+<setup>
+  <selectFromSequence from="3" to="9" step="2" name="a" />
+  <function symbolic formula="x^$a+2" name="f" />
+
+  <math name="ans1" simplify>
+    -1-(1)/($a)
+  </math>
+  <math name="ans2" simplify>
+    $ans1-($ans1^$a+2)/($a*$ans1^<math simplify>($a-1)</math>)
+  </math>
+  <math name="ans3" simplify>
+    $ans2-($ans2^$a+2)/($a*$ans2^<math simplify>($a-1)</math>)
+  </math>
+</setup>
+
+<p>
+  Use Newton's method with the specific initial value 
+  <m>
+    x_1 = -1
+  </m>
+  to approximate the solution of the equation
+  <me>
+    $f=0.
+  </me>
+</p>
+
+<p>
+  1.
+  <m>
+    x_2 =
+  </m>
+  <answer>
+    <award>
+      $ans1
+    </award>
+  </answer>
+</p>
+
+<p>
+  2.
+  <m>
+    x_3 =
+  </m>
+  <answer>
+    <award>
+      $ans2
+    </award>
+  </answer>
+</p>
+
+<p>
+  3.
+  <m>
+    x_4 =
+  </m>
+  <answer>
+    <award>
+      $ans3
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        <m>x_2:</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans1
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>x_3:</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans2
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>x_4:</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans3
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>x_2:</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number>$ans1</number>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>x_3:</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number>$ans2</number>
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        <m>x_4:</m>
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        <number>$ans3</number>
+      </cell>
+    </row>
+  </tabular>
+</solution>

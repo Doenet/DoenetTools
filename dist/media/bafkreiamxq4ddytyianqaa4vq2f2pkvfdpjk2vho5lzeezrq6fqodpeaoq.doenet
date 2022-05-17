@@ -1,0 +1,131 @@
+<title>A bistable population model</title>
+<variantControl nVariants="1" />
+
+<p>We can describe the evolution of a bistable population with a dynamical system of the form
+<md>
+  <mrow>\frac{dx}{dt} &amp;= rx(x-\alpha)(\beta-x)</mrow>
+  <mrow>x(0) &amp;= x_0</mrow> 
+</md>
+where <m>r</m> is the growth rate and <m>\alpha</m> and <m>\beta</m> are the non-zero equilibria.  The number <m>x_0</m> is the initial population size.</p>
+
+
+<p>Substituting in numbers for the parameters, we can write the dynamical system as
+  <odesystem name="ode" initialconditions="$x0" tolerance="0.01" displaydigits="6" >
+    <righthandside>$r*x*(x-$alpha)($beta-x)</righthandside>
+  </odesystem>
+  You can change the values of the parameters by opening up the Advanced Options, below.
+</p>
+
+<p>In both panels of the simulation, the state space of the dynamical system is represented by a <copy prop="styleDescription" tname="stateLine" /> line.  A <copy prop="styleDescriptionWithNoun" tname="x0onLine" /> represents the initial condition <m>x(0) = $x0</m> and a <copy prop="styleDescriptionWithNoun" tname="aOfTOnLine" /> represents the population size <m>x(t)</m> at time t, which you can change via the slider or by dragging the  <copy prop="styleDescriptionWithNoun" tname="aOfTOnLine" /> in the right panel.</p>
+
+<p>The left panel shows the state line of the model by itself, while the right panel is a plot of the state variable versus time.</p>
+
+
+<setup>
+  <clampnumber name="x0" lowerValue="0" upperValue="$xmax">100</clampnumber>
+  <copy prop="numericalsolution" tname="ode" assignNames="f" />
+  <number name="rDefault">0.000001</number>
+  <number name="alphaDefault">2000</number>
+  <number name="betaDefault">500</number>
+  <number name="tmaxDefault">10</number>
+  <number name="xmaxDefault">3200</number>
+</setup>
+
+<sideBySide>
+
+<stack>
+<graph displayYAxis="false" width="300" height="60" xmin="-0.05$xmax" xmax="$xmax" showNavigation="false" xlabel="x" >
+  <linesegment endpoints="(0,0) ($xmax, 0)" fixed name="stateLine"/>
+  <point x="$x0" y="$zeroFixed" name="x0onLine">
+    <constraints>
+      <constrainToGrid />
+    </constraints>
+  </point>
+  <point styleNumber="3" x="$$f($t)" y="$zeroFixed" draggable="false" layer="1" name="aOfTOnLine" />
+</graph>
+
+<p><m>x_0 =</m> <mathinput bindValueTo="$x0" /></p>
+
+<slider name="t" width="200px" from="0" to="$tmax" step="0.1" label="t" />
+
+<p><math displaydecimals="1" functionSymbols="x">x($t) = $ft_NaN_to_infinity</math></p>
+    
+    
+<p>
+<updateValue name="on" hide="$(timeAnimation{prop='animationOn'})" type="boolean" tname="timeAnimation" prop="animationOn" newValue="true" label="Animate" />
+<updateValue name="off" hide="not $(timeAnimation{prop='animationOn'})" type="boolean" tname="timeAnimation"  prop="animationOn" newValue="false" label="Stop" />
+</p>
+
+</stack>
+
+<graph xmax="$tmax" xmin="-0.1$tmax" ymax="$xmax" ymin="-0.1$xmax" showNavigation="false" xlabel="t" ylabel="x" >
+  <linesegment endpoints="(0,0) (0, $xmax)" fixed />
+
+  <copy tname="f" stylenumber="2" />
+  <point x='$zeroFixed' y='$x0' >
+    <constraints>
+      <constrainToGrid />
+    </constraints>
+  </point>
+  <point styleNumber="3" x="$t" y="$$f($t)" layer="1" />
+
+</graph>
+
+</sideBySide>
+
+<aside>
+<title>Advanced options</title>
+
+<sideBySide margins="0%" widths="50% 20% 20%">
+<!--   <stack>
+    <p>The dynamical system describing the dynamics of the bistable population is
+    </p>
+    <odesystem name="ode" initialconditions="$x0" tolerance="0.01" displaydigits="6" >
+      <righthandside>$r*x*(x-$alpha)(x-$beta)</righthandside>
+    </odesystem>
+
+    <p>In terms of parameters, the equation is
+    <me>\frac{dx}{dt} = rx(x-\alpha)(x-\beta).</me>
+    You can change growth rate <m>r</m> and the equilibria <m>\alpha</m> and <m>\beta</m>, 
+    as well as limits <m>t_{max}</m> and <m>x_{max}</m> of the graph.</p>
+
+  </stack>
+ -->
+  <stack>
+    <p><m>r = </m> <mathinput name="r" prefill="$rDefault" /></p>
+    <p><m>\alpha = </m> <mathinput name="alpha" prefill="$alphaDefault" /></p>
+    <p><m>\beta =</m> <mathinput name="beta" prefill="$betaDefault" /></p>
+    <p><m>t_{max} = </m> <mathinput name="tmax" prefill="$tmaxDefault" /></p>
+    <p><m>x_{max}=</m> <mathinput name="xmax" prefill="$xmaxDefault" /></p>
+  </stack>
+
+  <stack>
+    <triggerSet label="Reset parameters" >
+      <updateValue tname="r" newValue="$rDefault" />
+      <updateValue tname="alpha" newValue="$alphaDefault" />
+      <updateValue tname="beta" newValue="$betaDefault" />
+      <updateValue tname="tmax" newValue="$tmaxDefault" />
+      <updateValue tname="xmax" newValue="$xmaxDefault" />
+    </triggerSet>
+  </stack>
+
+</sideBySide>
+
+</aside>
+
+
+<number fixed hide name="zeroFixed">0</number>
+<number hide name="nan">0/0</number>
+<conditionalContent hide assignNames="(ft_NaN_to_infinity)">
+  <case condition="$$f($t)=$nan">
+    <math>infinity</math>
+  </case>
+  <else>
+    $$f($t)
+  </else>
+</conditionalContent>
+  
+<animateFromSequence name="timeAnimation" tname="t" prop="value" from="0" to="$tmax" step="0.1" animationInterval='100' animationMode='increase once' animationOn='false' />
+
+
+<p>You can explore the behavior of this model in the context of an anteater population <ref uri="doenet:IzM7TFwvSoMCw5sdsJkPM">here</ref>.</p>

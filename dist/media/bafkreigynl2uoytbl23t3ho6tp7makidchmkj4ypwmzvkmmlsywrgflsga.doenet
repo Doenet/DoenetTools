@@ -1,0 +1,44 @@
+<title>Practice Example:  The <tag>p</tag> component</title>
+<ref createButton="true" uri="https://docs.google.com/document/d/1PqWBjHG_x_C7G6lMdJJD6B1NBXtQjTRTyp9S4wt28z4/edit?usp=sharing">Get Text File</ref>
+
+<!--***********************************************************
+*  Example 1:  Using a <p></p> tag to write a nice plain *paragraph.                                   
+************************************************************-->
+
+<p>In order to ride a broom properly, you must wait until the night of a full moon; late fall works the best. A nice foggy ride through London with bare-branched trees in the background will set you off to best advantage.</p>
+<p>For the latest in witch fashion, head to robes-r-us.  There, you will find a huge selection of designer pajamas in shades of brown and black and a wonderful assortment of pointy hats.</p>
+
+<!--Delete this comment and make your own paragraph.-->
+
+
+
+
+<!--***********************************************************
+*  Example 2:  Using a <p></p> tag within a list to create *space. 
+************************************************************-->
+
+<!--notice how the list looks without the <p></p> tags-->
+<ol>
+  <title><alert>To Do List:</alert></title>
+    <li>buy a cauldron</li>
+    <li>learn how to ride a broomstick</li>
+    <li>find a nice cave to live in</li>
+</ol>
+
+<!--vs. with <p></p> tags:-->
+<ol>
+  <title><alert>Love Potion:</alert></title>
+    <li><p>pickled turnips</p></li>
+    <li><p>eye of toad (vegan-only)</p></li>
+    <li><p>powdered birchtree root</p></li>
+</ol>
+
+<!--Delete this comment and make your own <p></p> tags nested within an <li></li> tag.-->
+
+
+
+
+
+
+
+

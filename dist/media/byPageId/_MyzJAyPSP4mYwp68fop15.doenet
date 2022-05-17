@@ -1,0 +1,34 @@
+<problem>
+<title>Derivative of a quadratic</title>
+
+<setup>
+
+<selectFromSequence assignNames='a' from='-10' to=' 10' exclude='0'/>
+<selectFromSequence assignNames='b c' numberToSelect='2' withReplacement from='-10' to=' 10' />
+<select assignNames='function' > f g h k</select>
+<select assignNames='x' > x y z s t</select>
+
+<math name='quadratic' simplify='full' >$a *$x ^2+$b *$x +$c </math>
+<math name='d_quadratic' simplify='full' >2*$a *$x +$b </math>
+
+</setup>
+
+
+Compute the derivative of <m>$function ($x ) = $quadratic </m>.
+
+<p><m>$function'($x) =</m>
+<answer>
+<award>$d_quadratic </award>
+</answer>
+</p>
+
+
+
+<solution>
+<me>$function '($x ) =$d_quadratic </me>
+
+
+</solution>
+
+
+</problem>

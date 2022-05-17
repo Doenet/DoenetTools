@@ -1,0 +1,46 @@
+<problem>
+<!-- <title>discrete equilibria 5</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='a b' numberToSelect='2' withReplacement='false' from='1' to=' 10' />
+
+<selectFromSequence assignNames='c' from='1' to=' 33' />
+<select assignNames='x' > x y z u v w p X Y Z S</select>
+
+<math name='answer' unordered='true'>$a ,$b </math>
+<math name='twob' simplify='full' >2*$b </math>
+<math name='bsquare' simplify='full' >$b **2</math>
+
+</setup>
+
+
+<p>Find all equilibria to the discrete dynamical system below.  If there are multiple equilibria, separate your answers by commas.  
+<md>
+  <mrow>$x _{n+1}  - $x _n \amp = ($x _n - $a  )( $x _n^2 - $twob $x _n + $bsquare  )</mrow>
+  <mrow>$x _0 \amp = $c</mrow>
+</md>
+</p>
+
+<p><m>E =</m> 
+<answer>
+<award matchPartial unorderedCompare>$answer </award>
+</answer>
+</p>
+
+
+<solution>
+<p>To find the equilibria, we set <m>$x _{n+1} = E</m> and <m>$x _n = E</m> in the evolution rule, obtaining
+<md>
+  <mrow>E-E\amp =  ( E - $a  )( E^2 - $twob E + $bsquare  )</mrow>
+  <mrow>0\amp = ( E - $a  )( E^2 - $twob E + $bsquare  )</mrow>
+</md>
+We can factor the quadratic: <m>( E^2 - $twob E + $bsquare  )  = (E-$b )^2</m>.  The condition for the equilibria becomes
+<me>0 = ( E - $a  ) (E-$b )^2.</me>
+Therefore, the equilibria are <m>E=$a </m> and <m>E = $b </m>.</p>
+
+
+</solution>
+
+
+</problem>

@@ -12,7 +12,7 @@ import {
   assignmentData,
 } from '../_framework/ToolPanels/Gradebook.js';
 import {
-  authorItemByDoenetId,
+  itemByDoenetId,
   coursePermissionsAndSettingsByCourseId,
   findFirstPageOfActivity,
 } from '../_reactComponents/Course/CourseActions.js';
@@ -68,7 +68,7 @@ const navigationSelectorFamily = selectorFamily({
           label,
           parentDoenetId: itemParentDoenetId,
           type,
-        } = await get(authorItemByDoenetId(parentDoenetId));
+        } = await get(itemByDoenetId(parentDoenetId));
         if (courseId === itemParentDoenetId) {
           return [{ label, parentDoenetId, type }];
         }
@@ -147,11 +147,11 @@ export function useNavigationCrumbs(courseId, parentDoenetId) {
   return crumbs;
 }
 
-export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
+export function useEditorCrumb({ pageId, doenetId }) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const pageObj = useRecoilValue(authorItemByDoenetId(pageId));
+  const pageObj = useRecoilValue(itemByDoenetId(pageId));
   let {label:pageLabel} = pageObj;
-  const activityObj = useRecoilValue(authorItemByDoenetId(doenetId));
+  const activityObj = useRecoilValue(itemByDoenetId(doenetId));
   let { label:activityLabel } = activityObj;
 
   let crumbs = [{
@@ -162,8 +162,6 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
         tool: 'editor',
         view: '',
         params: {
-          courseId,
-          sectionId,
           doenetId,
           pageId,
         },
@@ -182,8 +180,6 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
           tool: 'editor',
           view: '',
           params: {
-            courseId,
-            sectionId,
             doenetId,
             pageId:firstPageDoenetId,
           },
@@ -198,8 +194,6 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
           tool: 'editor',
           view: '',
           params: {
-            courseId,
-            sectionId,
             doenetId,
             pageId,
           },
@@ -212,7 +206,7 @@ export function useEditorCrumb({ pageId, doenetId, sectionId, courseId }) {
 
 export function useAssignmentCrumb({ doenetId}) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const { label } = useRecoilValue(authorItemByDoenetId(doenetId));
+  const { label } = useRecoilValue(itemByDoenetId(doenetId));
 
   return {
     label: label ?? '_',

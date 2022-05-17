@@ -1,0 +1,196 @@
+<title>Paginator</title>
+
+<p>A paginator takes only sectioning components or selects that contain sectioning components.  Any other component is ignored.</p>
+
+<section name="example1" newNamespace aggregateScores>
+  <title>Example 1</title>
+
+
+  <p>A simple example.  It includes a page (page 2) without any answers in it, showing how you get credit for it as soon as you visit that page.</p>
+  
+    <paginatorControls paginatorTname="pgn" />
+  
+    <paginator name="pgn">
+      <subsection>
+        <title>Page 1</title>
+        <p>What is 1+1? <answer>$two</answer></p>
+        <math hide name="two">2</math>
+      </subsection>
+      <subsection>
+        <p>What is your name? <textinput name="name" /></p>
+        <p>Hello, $name!</p>
+      </subsection>
+      <subsection>
+        <title>Page 3</title>
+        <math hide name="twox">2x</math>
+        <p>What is <m>x+x</m>? <answer>$twox</answer></p>
+        <p>What is <m>y+y</m>? <answer>2y</answer></p>
+      </subsection>
+    </paginator>
+    <paginatorControls paginatorTname="pgn" />
+  
+    <p>Content outside the page.  It is weighted the same as a whole page (as no weights are specified).  What is 2+2? <answer>4</answer></p>
+  
+    <p>Credit achieved for <copy prop="title" tname="../example1" />:
+      <copy prop="creditAchieved" tname="../example1" assignNames="ca" />
+    </p>
+
+</section>
+
+
+<section name="example2" newNamespace aggregateScores>
+  <title>Example 2</title>
+
+  <p>A complex example showing multiple levels of selects. If options for selects have different numbers of pages (sectioning components), the number of pages is taken to be the minimum.</p>
+  
+    <paginatorControls paginatorTname="pgn" />
+  
+    <paginator name="pgn">
+      <select assignNames="(problem1)">
+        <option>
+          <problem newNamespace>
+            <title>Problem A</title>
+            <p>Enter <m>$n</m>.
+              <answer name="ans1">
+                <mathinput name="input1"/>
+                <award>$n</award>
+              </answer>
+            </p>
+            <p>What is <m>1+$n</m>? 
+              <answer name="ans2">
+                <mathinput name="input2"/>
+                <award>1+$n</award>
+              </answer>
+            </p>
+            <selectFromSequence from="1" to="10" assignNames="n" hide />
+          </problem>
+        </option>
+        <option>
+          <problem newNamespace>
+            <variantControl nVariants="50" />
+            <title>Problem B</title>
+            <p>Enter <m>$n</m>.
+              <answer name="ans1">
+                <mathinput name="input1"/>
+                <award>$n</award>
+              </answer>
+            </p>
+            <p>What is <m>1-$n</m>? 
+              <answer name="ans2">
+                <mathinput name="input2"/>
+                <award>1-$n</award>
+              </answer>
+            </p>
+            <selectFromSequence from="1" to="10" assignNames="n" hide />
+          </problem>
+        </option>
+      </select>
+      <select assignNames = "(((problem2) (problem3)))">
+        <option>
+          <select numberToSelect="2">
+            <option>
+              <problem newNamespace>
+                <title>Problem C</title>
+                <p>What is <m>2+$n</m>? 
+                  <answer name="ans">
+                    <mathinput name="input"/>
+                    <award>2+$n</award>
+                  </answer>
+                </p>
+                <selectFromSequence from="1" to="10" assignNames="n" hide />
+              </problem>
+            </option>
+            <option>
+              <problem newNamespace>
+                <title>Problem D</title>
+                <variantControl nVariants="50" />
+                <p>What is <m>2-$n</m>? 
+                  <answer name="ans">
+                    <mathinput name="input"/>
+                    <award>2-$n</award>
+                  </answer>
+                </p>
+                <selectFromSequence from="1" to="10" assignNames="n" hide />
+              </problem>
+            </option>
+          </select>
+        </option>
+        <option>
+          <select numberToSelect="2">
+            <option>
+              <problem newNamespace>
+                <title>Problem E</title>
+                <variantcontrol nVariants="3" variantNames="one two three" />
+                <select assignNames="(n)" hide>
+                  <option selectForVariantNames="one"><number>1</number></option>
+                  <option selectForVariantNames="two"><number>2</number></option>
+                  <option selectForVariantNames="three"><number>3</number></option>
+                </select>
+                <p>What is <m>3+$n</m>? 
+                  <answer name="ans">
+                    <mathinput name="input"/>
+                    <award>3+$n</award>
+                  </answer>
+                </p>
+              </problem>
+            </option>
+            <option>
+              <problem newNamespace>
+                <title>Problem F</title>
+                <variantcontrol nVariants="3" variantNames="four five six" />
+                <select assignNames="(n)" hide>
+                  <option selectForVariantNames="four"><number>4</number></option>
+                  <option selectForVariantNames="five"><number>5</number></option>
+                  <option selectForVariantNames="six"><number>6</number></option>
+                </select>
+                <p>What is <m>3-$n</m>? 
+                  <answer name="ans">
+                    <mathinput name="input"/>
+                    <award>3-$n</award>
+                  </answer>
+                </p>
+              </problem>
+            </option>
+          </select>
+        </option>
+      </select>
+      <problem name="problem4" newNamespace>
+        <title>Problem G</title>
+        <selectFromSequence from="101" to="999" name="n" hide/>
+        <p>What is <m>2 \cdot $n</m>? 
+          <answer name="ans">
+            <mathinput name="input"/>
+            <award>2$n</award>
+          </answer>
+        </p>
+      </problem>
+      <problem name="problem5" newNamespace>
+        <title>Problem H</title>
+        <variantControl nVariants="7" variantNames="apple banana cherry date elderberry fig grape" />
+        <select assignNames="(fruit)" hide>
+          <option selectForVariantNames="apple"><text>apple</text></option>
+          <option selectForVariantNames="banana"><text>banana</text></option>
+          <option selectForVariantNames="cherry"><text>cherry</text></option>
+          <option selectForVariantNames="date"><text>date</text></option>
+          <option selectForVariantNames="elderberry"><text>elderberry</text></option>
+          <option selectForVariantNames="fig"><text>fig</text></option>
+          <option selectForVariantNames="grape"><text>grape</text></option>
+        </select>
+        <p>Enter $fruit:
+          <answer name="ans" type="text">
+            <textinput name="input"/>
+            <award>$fruit</award>
+          </answer>
+        </p>
+      </problem>
+    </paginator>
+ 
+    <paginatorControls paginatorTname="pgn" />
+
+  
+    <p>Credit achieved for <copy prop="title" tname="../example2" />:
+      <copy prop="creditAchieved" tname="../example2" assignNames="ca" />
+    </p>
+
+
+</section>

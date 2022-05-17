@@ -1,0 +1,217 @@
+<problem>
+<!-- <title>Cobweb step-by-step, quadratic, worksheet, part 2</title> -->
+
+<setup>
+
+<function name='f' variables='x'>1/3*x*(3-x)+x</function>
+<math name='x0' >1</math>
+<math name='x1' >$$f($x0 )</math>
+<math name='x2' >$$f($x1 )</math>
+<math name='x3' >$$f($x2 )</math>
+<math name='three' >3</math>
+<math name='minus_infinity_symbol'>-infinity</math>
+<math name='infinity_symbol' >infinity</math>
+<math name='X0point' >($x0 ,0)</math>
+<math name='x0b' >-0.1</math>
+
+</setup>
+
+
+<p>
+  We can simplify the cobweb procedure from the previous tutorial to help you cobweb more efficiently and with less mess.  Let's start over with the dynamical system
+  <md>
+    <mrow>x_{n+1} \amp = 2x_n - \frac{1}{3}x_n^2</mrow>
+    <mrow>x_0 \amp = 1.</mrow>
+  </md>
+</p>
+  
+<p>As before, we plot the function  <m>f(x) = 2x-\frac{1}{3}x^2</m> as well as the diagonal on a graph of <m>x_{n+1}</m> versus <m>x_n</m>.
+</p>
+
+<paragraphs><title>The initial condition</title>
+
+  <p>We start by locating the initial condition on the horizontal axis labeled by <m>x_n</m>.  (For the first step, we imagine that <m>n=0</m>.)  Move the point labeled by <m>(x_0,0)</m> to the location corresponding to the initial condition.</p>
+
+  <hint>
+    <p>You won't be able to move the initial condition point if you clicked the "Add line" button.  Click the "Delete line" button to remove any lines you added so that you can move the initial condition point again.</p>
+    
+    <p>You can check if you got the initial condition correct with the first Check Work button below the graph.</p>
+  </hint>
+
+</paragraphs>
+
+<copy uri='doenet:contentId=89296fb46fafe5a39cb6a539ad0843fca96ac77afd30a8442f8430ae51400119&doenetId=aQbjajWb3k0vED-HBKg6o59' width='400' height='300' xmin='-0.5' xmax='4' ymin='-0.5' ymax='3.2' function='$f' initialInitialValue='2' initialValueDx='0.1' x0='$x0' nIterationsRequired='6' showNavigation='false' attractThreshold="0.2" grid />
+
+
+<paragraphs><title>Calculate the first iterate</title>
+
+<p>To start cobwebbing, click the "Add line" botton.  This locks the initial condition point and creates a line segment.  Move the point vertically to the graph of the function to estimate <m>x_1 = f(x_0)</m>.  You can then read off the value of <m>x_1</m> by opening the above <alert>calculated values</alert> section.</p>
+
+<p>The result is <m>x_1 = </m> 
+<answer>
+  <award symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true">$x1 </award>
+</answer>,
+which should match the value of <m>x_1</m> from the tutorial.
+</p>
+
+<hint>
+  If you did this step correctly, you should get 9% correct if you click the second Check Work button below the graph.  You won't get full credit until you get to <m>x_6</m>.
+</hint>
+
+</paragraphs>
+
+<paragraphs><title>Shortcut: translate <m>x_1</m> to the diagonal</title>
+
+<p>Now, we deviate from the tutorial and take a shortcut to translate the value of <m>x_1</m> to the horizontal axis.  In the tutorial, we drew a horizontal line so that we could estimate the value of <m>x_1</m> from the vertical axis.  Instead, we'll just draw a horizontal line segment to the diagonal.  When you hit the diagonal by moving horizontally, you'll hit the diagonal at the point <m>(x_1, x_1)</m>.  You end up being right above the value of <m>x_1</m> on the horizontal axis!</p>
+
+<p>Click the "Add line" button and create a horizontal line segment to the diagonal.</p>
+
+<hint>
+  <p>You can verify in the tutorial that the horizontal and vertical lines for <m>x_1</m> cross at the diagonal.</p>
+</hint>
+</paragraphs>
+
+<paragraphs><title>Calculate the second iterate</title>
+
+<p>Now that you translated <m>x_1</m> to the diagonal, you can calculate <m>x_2</m> by drawing a line segment vertically to the function.  Click "Add line" to draw this line segment.  The result is 
+<m>x_2 =</m> 
+<answer>
+  <award symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true">$x2 </award>
+</answer>.
+</p>
+
+<hint>
+  <p>This vertical line segment should match the second vertical line from the tutorial.</p>
+
+  <p>You should be able to get 27% Correct, above, by calculating <m>x_2</m> correctly with cobwebbing.</p>
+
+  <p>You can read the value of <m>x_2</m> from the above <alert>calculated values</alert> section, once you have completed this cobwebbing step.</p>
+
+</hint>
+
+</paragraphs>
+
+
+<paragraphs><title>Calculate the third iterate</title>
+
+  <p>Now you should be able to make short work of calculating the third iterate <m>x_3</m>.</p>
+
+  <p>Click "Add line" to draw a horizontal line segment to the diagonal so you'll be above <m>x_2</m>.  Then click "Add line" again to draw a vertical line segment to the graph of the function, which will be at height <m>x_3 = f(x_2)</m>.</p>
+
+  <p>Result: <m>x_3=</m> 
+  <answer>
+    <award symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true">$x3 </award>
+  </answer>
+  </p>
+
+  <hint>
+    <p>You should be able to get 45% Correct, above, when cobwebbing to <m>x_3</m>.</p>
+  </hint>
+
+</paragraphs>
+
+<paragraphs>
+  <title>Long term behavior when <m>x_0=1</m></title>
+
+  <p>As you may have surmised, cobwebbing isn't that great for estimating precise values of <m>x_n</m>.  Without the above applet, you probably wouldn't draw that accurately.  (We're cheating here to get the precise values since we're calculating them behind the scenes.)</p>
+
+  <p>The real strength of cobwebbing is determining the long term behavior of <m>x_n</m> as <m>n</m> gets large.  As <m>n</m> increases, does <m>x_n</m> blow up, tend to an equilibrium, or exhibit more complicated behavior?</p>
+
+  <p>Use the above applet continue cobwebbing until at least <m>x_6</m>.  (This will allow you to get full credit for correct cobwebbing.)</p>
+
+  <p>What value does <m>x_n</m> approach as <m>n</m> gets large? <answer>3</answer></p>
+
+  <p>You should find that <m>x_n</m> approaches an equilibrium.</p>
+
+  <hint>
+    <p>As <m>n</m> gets above 4, the line segments you will draw with cobwebbing will start to become really short, indicating that <m>x_n</m> isn't changing much.</p>
+
+    <p>When cobwebbing by hand, you can't draw much once <m>x_n</m> is barely changing.With the applet, though, you can keep drawing points that are on top of each other.</p>
+  </hint>
+
+
+</paragraphs>
+
+
+<paragraphs>
+  <title>Long term behavior when <m>x_0 = -0.1</m></title>
+
+  <p>Cobweb to determine the behavior of <m>x_n</m> with the initial condition <m>x_0 = -0.1</m>.</p>
+
+  <p>Note: below is an applet for cobwebbing.  It has two Check Work buttons below it so that you can get feedback on your cobwebbing.  However, using the applet is strictly optional, and its results are not counted toward your score.  (In fact, the second Check Work button will give you full credit after one iteration, but you'll probably want to calculate more iterations.)</p>
+
+  <setup>
+    <number name="xmin2">-4</number>
+    <number name="xmax2">2</number>
+    <number name="ymin2">-4</number>
+    <number name="ymax2">2</number>
+  </setup>
+<copy uri='doenet:contentId=89296fb46fafe5a39cb6a539ad0843fca96ac77afd30a8442f8430ae51400119&doenetId=aQbjajWb3k0vED-HBKg6o59' width='300' height='300' xmin='$xmin2' xmax='$xmax2' ymin='$ymin2' ymax='$ymax2' function='$f' initialInitialValue='0.5' initialValueDx='0.1' x0='-0.1' showNavigation='true' attractThreshold="($xmax2-$xmin2)*0.02" initialConditionWeight="0" cobwebbingWeight="0" grid />
+
+<p>
+When starting with <m>x_0=-0.1</m>, is <m>x_n</m> increasing or decreasing? 
+<answer inline='true'>
+<choiceinput>
+<choice credit='1'>decreasing</choice>
+<choice>increasing</choice>
+<choice>staying the same</choice>
+</choiceinput>
+</answer>
+</p>
+
+<p>
+  Although the plotted portion of the graph isn't enough to keep cobwebbing too long, knowing that the graph of <m>f</m> is a parabola, you can infer that as <m>n</m> gets large (tends toward <m>\infty</m>) the value of <m>x_n</m> tends toward 
+<answer>
+<award symbolicEquality='true'>$minus_infinity_symbol </award>
+<award symbolicEquality='true' credit='0' name='award17'>$infinity_symbol </award>
+  <award credit=".5" name="diffForm">$minus_infinity_symbol </award>
+</answer>
+.
+</p>
+<feedback condition="$award17">Right idea, though, just think about the sign.</feedback>
+<feedback condition="$diffForm">Your answer is mathematically equivalent to the correct answer but write it as <m>-\infty</m> for full credit.</feedback>
+</paragraphs>
+
+<hint>
+  If you need to enter the symbol ∞, you can copy the symbol, enter <c>infinity</c>, or enter <c>\infty</c> followed by a space.
+</hint>
+
+<solution>
+
+
+<ol>
+
+<li>
+The below graph shows the cobwebbing for parts a and b.
+
+
+<copy uri="doenet:contentId=10d73740be2051d4d1af2b7362840866ccf5eacdbbc7c8dd01dfd792a6af8c55&doenetId=_JIt4ArMceqFTCMrsJmUj" width='400' height='300' xmin='-0.5' xmax='4' ymin='-0.5' ymax='3.2' function='$f' x0="$x0" nPoints="11"
+/>
+
+The first three estimates are: <m>x_1 \approx <round numberdecimals="2">$x1 </round></m>, <m>x_2 \approx <round numberdecimals="2">$x2 </round></m>, <m>x_3 \approx <round numberdecimals="2">$x3 </round></m>.
+</li>
+
+<li>
+<m>x_n</m> approaches the equilibrium 3 as <m>n</m> gets large.
+</li>
+
+<li>
+The following graph shows cobwebbing starting with the initial condition <m>x_0=-0.1</m>.
+
+
+<copy uri="doenet:contentId=10d73740be2051d4d1af2b7362840866ccf5eacdbbc7c8dd01dfd792a6af8c55&doenetId=_JIt4ArMceqFTCMrsJmUj" width='300' height='300' xmin='-4' xmax='2' ymin='-4' ymax='2' function='$f' x0="-0.1" nPoints="11"
+/>
+
+
+As <m>n</m> increases, <m>x_n</m> tends toward <m>-\infty</m>.
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>
+
+

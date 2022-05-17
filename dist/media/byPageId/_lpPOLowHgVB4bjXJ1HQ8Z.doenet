@@ -1,0 +1,12 @@
+<module name="rowTest">
+  <setup>
+    <customAttribute componentType="text" attribute="label" defaultValue="Answer" assignNames="label" />
+    <customAttribute componentType="math" attribute="ans" defaultValue="pi^2/6" assignNames="ans" />
+  </setup>
+  <row bottom="minor">
+    <cell>$label:</cell>
+    <cell></cell>
+    <cell></cell>
+    <cell>$ans</cell>
+  </row>
+</module>

@@ -1,0 +1,64 @@
+<document><title>This is my Document#1 Title#1</title>
+Test document wide attributes:  documentWideCheckWork, feedbackDefinitions, styleDefinitions
+
+
+<section>This is section 1
+automatically sectionWideCheckWork....aggregateScores... 
+  <subsection>This is a subsection of 1
+    <subsubsection>What happens to the title size here?
+    </subsubsection>
+  </subsection>
+  <subsection>Here is another subsection</subsection>
+</section>
+
+<section>This is section 2
+automatically sectionWideCheckWork....aggregateScores... 
+  <subsection>This is a subsection of 2
+    <subsubsection>What happens to the title size here?
+    </subsubsection>
+  </subsection>
+  <subsection>Here is another subsection</subsection>
+</section>
+
+</document>
+
+<document><title>Can I have two? Document#2 title #2</title>
+  <example>This is an example not under another section</example>
+  <section>What happens to my section numbering?
+    <example>What happens to the example default if it's placed within a different nest?</example>
+    <subsection>
+      <example>cheese coffee bread</example>
+    </subsection>
+  </section>
+  <problem>This is a problem in the overall document, but outside of a section
+    <example>This is an example nested within that rogue problem
+    </example>
+  </problem>
+<section>This is document #2 section #2
+  <problem>Now we adopt the problem numbering system of the section
+  <exercise>and this exercise should have three? numbers</exercise>
+  </problem>
+    <exercise>this exercise should have two...? numbers</exercise>
+<p>Can you put a table in a paragraph? (not allowed in PreTeXt)
+  <lorem generateParagraphs="1"/>
+  <table>
+    <tabular top="minor" bottom="minor" right="minor" left="minor">
+      <row>
+        <cell>1</cell><cell>2</cell>
+      </row>
+    </tabular>
+  </table>
+</p>
+<p>Can you put a figure in a paragraph? (not allowed in PreTeXt...)
+  <figure>
+    <image width="200" source="https://lh3.googleusercontent.com/rt0qe1i3WvwJDx0nW12hgnZ0yMLDQly0rGFaEbCbRlnQzHyN5FHevLxQxMxtr1mbN7R5Im8mhRZb5ENWYZYxWgsi59HJEcaWqomeoBGixLYcC1e0wFi4T5gjwQLeEvpXu6hU393CcgHw7mWT3fGmsf2zlS2wAeU9bDQ5Zjg4sVGj7i8rtH1QtRLvphuUtlpCxGNDKA6o6ay5SV0_EnCd3ilOVx8MLJSoPPcM0fTEDOJeY0adv4pCQ6K_4uzRN0Z1X9Mzlq-mKIXl7HeGK4tn7N1StTK4Avfzw5sZvr3pJR2QaqBBYLOHiHrrOkQu-NkIuD5j4PZjAJIAtK85LjZUpJbGJbu0n9tZzFsEHsBsTP9ZqgHdESGeVP2jip8EhwkeyhgkD0PIr6ryPgG1QdIfT6MjukGJa6G8E8OLLeL37-utPmF_j1TpSvVNoQ1J0OFDhPa-NJy944Afsy-SaxQbAGzggoZKLmYV4npUzmuEl4Rwr1FR3JxLsADowLHu6DjODguHEFR8y3hNIpjfUjwEwuDGR0FF5vddRzd-LsXED8PA8zSVRg8-3MXmHW7rwJNRXc6cNyhjS_L30XWwP70yfJeAGP6BmEZgijsGreV6qPpL5WmcwacCgigPZSGhUWZpQE6nUEaUM_HrMwR5mHlTZwPOTfOUzQkK_GWwigE27NP4-JarBqZ-h51BqYUjk4blOl38lgf2mJc8WSIQAm-c6A=w608-h1044-no?authuser=0"/>
+  </figure>
+<lorem generateParagraphs="1"/> 
+</p>
+</section>
+
+
+
+  
+</document>
+  

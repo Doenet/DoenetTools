@@ -1,0 +1,9 @@
+<slider name='x' />
+<slider name='pow' />
+<math name='m'>x^$pow/6</math>
+<p>The expresion is: <m>$m</m></p>
+<graph>
+<point>(1/3$x/10,3)</point>
+  <function><formula>$m</formula></function>
+</graph>
+$$x

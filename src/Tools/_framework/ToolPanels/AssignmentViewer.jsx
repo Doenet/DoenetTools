@@ -21,7 +21,7 @@ import axios from 'axios';
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { prng_alea } from 'esm-seedrandom';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../../../_utils/activityUtils';
-import { authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 
 export const currentAttemptNumber = atom({
   key: 'currentAttemptNumber',
@@ -121,7 +121,7 @@ export default function AssignmentViewer() {
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
 
-  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
+  let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
 
 
   useEffect(() => {
@@ -464,7 +464,9 @@ export default function AssignmentViewer() {
   // console.log(`>>>>recoilAttemptNumber -${recoilAttemptNumber}-`)
   // console.log(`>>>>attemptNumber -${attemptNumber}-`)
 
-  if (stage === 'Initializing') {
+  if(courseId === "__not_found__") {
+    return <h1>Content not found or no permission to view content</h1>;
+  } else if (stage === 'Initializing') {
     // initializeValues(recoilDoenetId, itemObj);
     return null;
   } else if (stage === 'Problem') {

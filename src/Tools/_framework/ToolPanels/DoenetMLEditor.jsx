@@ -12,7 +12,7 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 
 import CodeMirror from '../CodeMirror';
 import axios from "axios";
-import { fileByDoenetId } from '../ToolHandlers/CourseToolHandler';
+import { fileByPageId } from '../ToolHandlers/CourseToolHandler';
 import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
 
 
@@ -31,6 +31,7 @@ export default function DoenetMLEditor(props) {
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   let editorRef = useRef(null);
   let timeout = useRef(null);
+  let backupOldDraft = useRef(true);
 
   const saveDraft = useRecoilCallback(({ snapshot, set }) => async (pageId, courseId) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
@@ -39,11 +40,19 @@ export default function DoenetMLEditor(props) {
     // localStorage.setItem(cid,doenetML)
 
     try {
-      const { data } = await axios.post("/api/saveDoenetML.php", { doenetML, pageId, courseId })
-      set(fileByDoenetId(pageId),doenetML);
+      const params = {
+        doenetML,
+        pageId,
+        courseId,
+        backup: backupOldDraft.current,
+      }
+      const { data } = await axios.post("/api/saveDoenetML.php", params);
+      set(fileByPageId(pageId),doenetML);
       if (!data.success) {
         //TODO: Toast here
         console.log("ERROR", data.message)
+      } else {
+        backupOldDraft.current = false;
       }
     } catch (error) {
       console.log("ERROR", error)
@@ -80,6 +89,7 @@ export default function DoenetMLEditor(props) {
 
   if (paramPageId !== initializedPageId) {
     //DoenetML is changing to another PageId
+    backupOldDraft.current = true;
     return null;
   }
 

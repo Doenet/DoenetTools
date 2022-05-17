@@ -1,0 +1,230 @@
+<!--***********************************************************
+*Dear member of the human species, 
+*please do not alter the source file for the course, but instead 
+*use CMD+A (or CNTRL+A) to select all the text, then copy and 
+*paste into a separate DoenetML for practice. If you fail to 
+*comply you will be assimilated.
+*
+*Resistance is Futile,
+*the DoenetML Borg
+************************************************************-->
+
+
+<!--***********************************************************
+*  Example 1:  Using a <section></section> tag with the default
+*  numbering for multiple sections                                   
+************************************************************-->
+<title>Practice Example: <tag>section</tag>component</title>
+<ref createButton="true" uri="https://docs.google.com/document/d/1ozndj_n--lXm3lJXkMIBBHw3LUK124iBJdkUY2qaL-k/edit?usp=sharing">Get Text File</ref>
+
+<section>
+    <ul><title>Alien Species of Star Wars</title>
+        <li>the Ewoks</li>
+        <li>the Gungans</li>
+        <li>the Hutt</li>
+    </ul>
+</section>
+
+<section>
+    <ol><title>Alien Species of Star Trek</title>
+        <li>the Klingons</li>
+        <li>the Borg</li>
+        <li>the Vulcans</li>
+    </ol>
+</section>
+
+<!--Delete this comment and make your own sections with 
+paragraphs or lists inside them-->
+
+
+
+
+<!--***********************************************************
+*  Example 2:  Using a <title></title> tag within a section
+*  to overwrite the default numbering.
+************************************************************-->
+
+<section><title>Alien Species of the Marvel Universe</title>
+    <ul>
+        <li>the Asgardians</li>
+        <li>the Dire Wraiths</li>
+        <li>the Kree</li>
+    </ul>
+</section>
+
+<!--Delete this comment and use the <title></title> tag nested within 
+the <section></section tag to overwrite the auto-numbering-->
+
+
+
+
+<!--***********************************************************
+*  Example 3:  Using "newNamespace" within a section
+*  to reuse existing variable names.
+************************************************************-->
+
+
+<p>The next three sections demonstrate the use of "newNamespace"
+within the <tag>section</tag><tag>/section</tag>component.  In the first two sections, a single variable name for a text input is used to 
+refer to the same user-supplied value.  In the third section, 
+"newNamespace" is invoked within the section component in order
+to reuse the same variable name but for a new user input value.</p>
+
+<section><title>Play "Name that Alien!"</title>
+    <p>Let's say you are a sci-fi author building a new universe.  What
+    name would you give to your alien character?</p>
+    <image width="100" source="" />
+    <textInput name="alien_1"></textInput>
+    <p>Welcome, $alien_1 to planet Earth!</p>
+</section>
+
+<section><title>Play "Getting to know $alien_1..."</title>
+    <p>What is $alien_1 's favorite food?</p>
+    <textInput name="food"></textInput>
+    <p>Let's bring a peace offering to $alien_1 of $food...</p>
+</section>
+
+
+<section newNamespace><title>Play "Second Round"</title>
+  <p>In this section, notice how the same textInput name="alien_1" is used again for a different name</p>
+  <p>What name would you give to your new alien character?</p>
+    <image width="100" source="" />
+    <textInput name="alien_1"></textInput>
+    <p>Why hello there, $alien_1!</p>
+</section>
+
+
+
+<!--Delete this comment and use "newNamespace" with the <section></section> tag 
+to reuse the same variable name in different sections.-->
+
+  
+<!--***********************************************************
+*  Example 4:  Using the "sectionWideCheckWork" and 
+* "aggregateScores" attributes within a section. 
+*  Method 1:  Using the 'credit = "1"'' attribute within a
+*  <choice></choice> tag to mark correct answer.
+************************************************************-->
+
+
+<section sectionWideCheckWork aggregateScores>
+
+<p>The "sectionWideCheckWork" and "aggregateScores" attributes can be used within a <tag>section</tag><tag>/section</tag> to suppress solution checking on individual problems.  This atttribute allows for one single checkwork button to occur at the bottom of the section.</p>
+
+<p>In this example, the "correct" choice is marked by assigning credit with the credit attribute within the <tag>choice</tag><tag>/choice</tag> component.</p>
+
+<p><em>A note of warning, if you don't fill out your alien's favorite food, you won't see the right answer for question 1!</em></p>
+
+  <ol>
+    <li>What is $alien_1's favorite food?
+      <answer>
+        <choiceinput>
+          <choice>pickles</choice>
+          <choice>humans</choice>
+          <choice credit="1">$food</choice>
+        </choiceinput>
+      </answer>
+    </li>
+    <li>What is $alien_1 's favorite pasttime??
+      <answer>
+        <choiceinput>
+          <choice credit = "1">playing backgammon</choice>
+          <choice>World Domination</choice>
+          <choice>knitting</choice>
+        </choiceinput>
+      </answer>
+    </li>
+    <li>Where on Earth does $alien_1 most want to visit?
+      <answer>
+        <choiceinput>
+          <choice>the Galapagos Islands</choice>
+          <choice>Tokyo</choice>
+          <choice credit="1">Graceland</choice>
+        </choiceinput>
+      </answer>
+    </li>
+  </ol>
+</section>
+
+
+<!--Delete this comment and use "sectionWideCheckWork" and "aggregateScores" with the <section></section> tag 
+to create a scored multiple choice quiz with a single Check Work button at the bottom.  Use Method 1 to assign correct answers.
+
+Also, notice that the alien's name from Example 2 is used, rather than Example 3.  Why do you think this happens?-->
+
+
+
+<!--***********************************************************
+*  Example 5:  Using the "sectionWideCheckWork" attribute 
+*  and "aggregateScores" attribute within a section - Method 1
+*  Method 2: Using a boolean statement nested within an 
+*  the <answer></answer> and following the list of choices.
+*  The boolean syntax is: 
+*  <award><when>conditional statement</when></award>
+************************************************************-->
+
+
+
+<section sectionWideCheckWork aggregateScores>
+
+<p>The "sectionWideCheckWork" and "aggregateScores" attributes can be used within a <tag>section</tag><tag>/section</tag> to suppress solution checking on individual problems.  This atttribute allows for one single checkwork button to occur at the bottom of the section.</p>
+  
+<p>In this example, the "correct" choice is marked by a boolean within the <tag>answer</tag><tag>/answer</tag> component below the choice definitions.</p>
+
+<p><em>A note of warning, if you don't fill out your alien's favorite food, you won't see the right answer for question 1!</em></p>
+
+  <ol> 
+    <li>What is $alien_1's favorite food?
+        <choiceinput name="answer1">
+          <choice>pickles</choice>
+          <choice>humans</choice>
+          <choice>$food</choice>
+        </choiceinput>
+      <answer>
+        <award>
+          <when>$answer1=<text>$food</text>
+          </when>
+        </award>
+      </answer>
+    
+    </li>
+    <li>What is $alien_1 's favorite pasttime??
+        <choiceinput name="answer2">
+          <choice>playing backgammon</choice>
+          <choice>World Domination</choice>
+          <choice>knitting</choice>
+        </choiceinput>
+      <answer>
+        <award>
+          <when>$answer2=playing backgammon
+          </when>
+        </award>
+      </answer>
+    </li>
+    <li>Where on Earth does $alien_1 most want to visit?
+        <choiceinput name="answer3">
+          <choice>the Galapagos Islands</choice>
+          <choice>Tokyo</choice>
+          <choice>Graceland</choice>
+        </choiceinput>
+      <answer>
+        <award>
+          <when>$answer3=Graceland
+          </when>
+        </award>
+      </answer>
+    </li>
+  </ol>
+</section>
+
+
+<!--Delete this comment and use "sectionWideCheckWork" and "aggregateScores" with the <section></section> tag 
+to create a scored multiple choice quiz with a single Check Work button at the bottom using Method 2 of assigning correct answers-->
+
+
+
+
+
+
+
+

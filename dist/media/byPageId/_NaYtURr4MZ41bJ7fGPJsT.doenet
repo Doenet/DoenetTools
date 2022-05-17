@@ -1,0 +1,322 @@
+<problem>
+<variantControl nVariants="1" />
+<!-- <title>Average rate of change, squirrel and owl, worksheet</title> -->
+
+<setup>
+
+<function name='g' variables='t'><math expand>(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</math></function>
+<function name='gprime' variables='t'>(60 - 212 t + 177*t^2 - 52 t^3 + 5 t^4)4</function>
+
+<number name='g5' >$$g(5)</number>
+<number name='g1' >$$g(1)</number>
+<number name='g2' >$$g(2)</number>
+<number name='secant_slope_0_5' >($g5 -$$g(0))/5</number>
+<function name='secant_0_5' variables='t'>$$g(0)+$secant_slope_0_5 *t</function>
+<number name='secant_slope_1_2' >$g2 -$g1 </number>
+<function name='secant_1_2' variables='t'>$$g(1)+$secant_slope_1_2 *(t-1)</function>
+
+<number name='g3' >$$g(3)</number>
+<number name='g301' >$$g(3.01)</number>
+<number name='g3001' >$$g(3.001)</number>
+<number name='secant_slope_3_301' >($g301 -$g3 )/0.01</number>
+<number name='secant_slope_3_3001' >($g3001 -$g3 )/0.001</number>
+<number name='tangent_slope_3'>round(($$g(3.000001)-$g3 )/0.000001)</number>
+<math name='secant_line_rhs_0_5' simplify='full' >$secant_slope_0_5 *t</math>
+<math name='secant_xs_0_5' unordered='true'>0,5</math>
+<math name='secant_xs_1_2' unordered='true'>1,2</math>
+<math name='n_s'>2</math>
+<math name='n_t'>1</math>
+<math name='secant_line_rhs_1_2_unevaluated' simplify='numbersPreserveOrder' >$g1  + $secant_slope_1_2 (t-1)</math>
+<math name='secant_line_rhs_1_2' expand simplify='full' >$secant_line_rhs_1_2_unevaluated </math>
+<math name='tangent_line_rhs_3_unevaluated' simplify='numbersPreserveOrder' >$g3  + $tangent_slope_3 (t-3)</math>
+<math name='tangent_line_rhs_3' simplify='full' >$tangent_line_rhs_3_unevaluated </math>
+<math name='secant_line_rhs_0_5_in_x' >$secant_slope_0_5 *x</math>
+<math name='secant_line_rhs_1_2_in_x' simplify='full' >$g1  + $secant_slope_1_2 (x-1)</math>
+<math name='tangent_line_rhs_3_in_x' simplify='full' >$g3  + $tangent_slope_3 (x-3)</math>
+
+</setup>
+
+<p>
+A squirrel is running along a branch avoiding an oncoming owl.  Her position <m>x</m> along the branch after <m>t</m> seconds is <m>g(t)=<copy prop="formula" tname="g" /></m>, where <m>g(t)</m> is given in cm, relative to her position at time <m>t=0</m> seconds.  The graph of <m>x=g(t)</m> is shown below.
+</p>
+
+
+
+<graph width="400" height="320" xmin="-0.5" xmax="6" ymin="-40" ymax="110" xlabel="t" ylabel="x" grid>
+
+<copy fixed tname="g" />
+<point hide name="anchor1">(0, $$g(0))</point>
+<point hide name="anchor2">(5, $g5)</point>
+
+<point name="sec1" stylenumber="2">(1,0)
+<constraints>
+<constrainTo>$g</constrainTo>
+<attractTo threshold="0.04" thresholdRelativeToGraph>$anchor1</attractTo>
+<attractTo threshold="0.04" thresholdRelativeToGraph>$anchor2</attractTo>
+<constrainToGraph/>
+</constraints>
+</point>
+
+<point name="sec2" stylenumber="2">(3,0)
+<constraints>
+<constrainTo>$g</constrainTo>
+<attractTo threshold="0.04" thresholdRelativeToGraph>$anchor1</attractTo>
+<attractTo threshold="0.04" thresholdRelativeToGraph>$anchor2</attractTo>
+<constrainToGraph/>
+</constraints>
+</point>
+
+<line name="line1" through="$sec1 $sec2" stylenumber="2" />
+
+</graph>
+
+
+<ol>
+
+<li>
+After five seconds, her position along the branch is <m>g(5)=$g5 </m> cm.  What is the average rate of change of her position (i.e., her average velocity) during the five seconds from <m>t=0</m> to <m>t=5</m>? 
+<answer>
+<award symbolicEquality='true'>$secant_slope_0_5 </award>
+</answer>
+ cm/second.
+
+
+
+<p>Sketch a secant line on the above graph that shows her position as a function of time if she had moved steadily at that velocity during those five seconds. Move the <copy prop="styleDescription" tname="sec1" /> points so that the <copy prop="styleDescription" tname="line1" /> line is the secant line.
+<answer>
+<award><when matchPartial unorderedCompare>($sec1, $sec2) = ($anchor1, $anchor2)</when></award>
+</answer>
+</p>
+
+
+<p> What is the equation of that line?</p>
+
+<p>
+<m>x=</m> 
+<answer>
+<award>$secant_line_rhs_0_5 </award>
+<award credit='0' name='award2'>$secant_line_rhs_0_5_in_x </award>
+</answer>
+</p>
+<feedback condition="$award2">This would be right, but the variable on the horizontal axis is not <m>x</m>.</feedback>
+
+
+<hint>
+For the equation of the line, note that <m>x</m> is on the vertical axis (playing the role <m>y</m> usually does) and <m>t</m> is on the horizontal axis (playing the role that <m>x</m> usually does).  So an equation for a line could be written in the form <m>x=mt+b</m> with slope <m>m</m> and vertical intercept <m>b</m>.  (Vertical intercept is what you'd usually call <m>y</m>-intercept, but here's it's not <m>y</m> on the vertical axis.)
+</hint>
+
+</li>
+
+<li>
+<p>
+Her position at <m>t=1</m> seconds is <m>g(1)=$g1 </m> cm; at <m>t=2</m> seconds, it is <m>g(2)=$g2 </m> cm.  What is her average velocity during the period between <m>1 \le t \le 2</m>?  
+<answer>
+<award symbolicEquality='true' simplifyOnCompare="numbers">$secant_slope_1_2 </award>
+</answer>
+ cm/second.
+</p>
+
+<graph width="400" height="320" xmin="-0.5" xmax="6" ymin="-40" ymax="110" xlabel="t" ylabel="x">
+
+<copy fixed tname="g" />
+<copy fixed tname="line1" />
+
+<point hide name="anchor3">(1, $g1)</point>
+<point hide name="anchor4">(2, $g2)</point>
+
+<point name="sec3" stylenumber="3">(0,0)
+<constraints>
+<constrainTo>$g</constrainTo>
+<attractTo threshold="0.04" thresholdRelativeToGraph>$anchor3</attractTo>
+<attractTo threshold="0.04" thresholdRelativeToGraph>$anchor4</attractTo>
+<constrainToGraph/>
+</constraints>
+</point>
+
+<point name="sec4" stylenumber="3">(4,0)
+<constraints>
+<constrainTo>$g</constrainTo>
+<attractTo threshold="0.04" thresholdRelativeToGraph>$anchor3</attractTo>
+<attractTo threshold="0.04" thresholdRelativeToGraph>$anchor4</attractTo>
+<constrainToGraph/>
+</constraints>
+</point>
+
+<line name="line2" through="$sec3 $sec4" stylenumber="3" />
+
+</graph>
+
+
+
+
+<p>Sketch a secant line on the above graph, which would show her position if she had moved steadily at that velocity starting at <m>t=1</m>.  Move the <copy prop="styleDescription" tname="sec3" /> points so that the <copy prop="styleDescription" tname="line2" /> line is the secant line.  (The <copy prop="styleDescription" tname="line1" /> line is the line you drew in the previous step.)
+<answer>
+<award><when matchPartial unorderedCompare>($sec3, $sec4) = ($anchor3, $anchor4)</when></award>
+</answer>
+
+</p>
+
+
+<p> What is the equation of that line?  
+</p>
+
+
+<p>
+<m>x=</m> 
+<answer>
+<award>$secant_line_rhs_1_2 </award>
+<award credit='0' name='award10'>$secant_line_rhs_1_2_in_x </award>
+</answer>
+</p>
+<feedback condition="$award10">This would be right, but the variable on the horizontal axis is not <m>x</m>.</feedback>
+
+
+<hint>
+If, on average, she was moving backward on the branch, her velocity should be negative.
+
+<p>For the equation of the line, note that <m>x</m> is on the vertical axis (playing the role <m>y</m> usually does) and <m>t</m> is on the horizontal axis (playing the role that <m>x</m> usually does).  So an equation for a line could be written in the form <m>x=mt+b</m> with slope <m>m</m> and vertical intercept <m>b</m>.  (Vertical intercept is what you'd usually call <m>y</m>-intercept, but here's it's not <m>y</m> on the vertical axis.)</p>
+
+</hint>
+
+</li>
+
+<li>
+Approximate the instantaneous rate of her position (her velocity) at <m>t=3</m> seconds.  To do so, calculate her average rate of change from <m>t=3</m> to <m>t=3+\Delta t</m> for  <m>\Delta t=0.01</m> and <m>0.0001</m>.
+
+<p>Estimated velocity from <m>\Delta t=0.01</m>: 
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true">$secant_slope_3_301 </award>
+</answer>
+ cm/second.
+</p>
+<p>
+Estimated velocity from <m>\Delta t=0.001</m>: 
+<answer>
+<award symbolicEquality='true' allowedErrorInNumbers='0.01' allowedErrorIsAbsolute="true">$secant_slope_3_3001 </award>
+</answer>
+ cm/second.
+</p>
+<p>
+
+(Round the above answers to nearest 100th of a cm/second or less.)</p>
+
+<p>As <m>\Delta t</m> decreases, it appears the velocity is approaching what integer value?  
+<answer>
+<award symbolicEquality='true'>$tangent_slope_3 </award>
+</answer>
+ cm/second</p>
+
+
+<hint>
+Yes, you have to enter a few number into the longish formula <m>g(t)=<copy prop="formula" tname="g" /></m> and calculate the answer.  It's annoying, but not the worst thing in the world.
+</hint>
+
+</li>
+
+<li>
+
+<p>Assuming she continued moving steadily at this velocity starting at <m>t=3</m> seconds, write down an equation for her position as a function of time.
+</p>
+<p>
+
+<m>x=</m> 
+<answer>
+<award>$tangent_line_rhs_3 </award>
+<award credit='0' name='award15'>$tangent_line_rhs_3_in_x </award>
+</answer>
+</p>
+<feedback condition="$award15">This would be right, but the variable on the horizontal axis is not <m>x</m>.</feedback>
+
+<p>The graph of this equation will be a tangent line to the graph at <m>t=3</m> seconds.  Sketch the tangent line on the graph. (Use the <copy prop="styleDescriptionWithNoun" tname="tan1" /> to move the <copy prop="styleDescription" tname="line3" /> line to the tangent line.)
+<answer>
+<award><when>$tan1 = $anchor5</when></award>
+</answer>
+</p>
+
+<graph width="400" height="320" xmin="-0.5" xmax="6" ymin="-40" ymax="110" xlabel="t" ylabel="x">
+
+<copy fixed tname="g" />
+<copy fixed tname="line1" />
+<copy fixed tname="line2" />
+
+<point hide name="anchor5">(3, $g3)</point>
+
+<point name="tan1" stylenumber="4">(0.5, 0)
+<constraints>
+<constrainTo>$g</constrainTo>
+<attractTo threshold="0.04" thresholdRelativeToGraph>$anchor5</attractTo>
+<constrainToGraph/>
+</constraints>
+</point>
+
+<line name="line3" equation="y - $$g($p0) = $$gprime($p0) * (x - $p0)" stylenumber="4"/>
+
+</graph>
+
+<copy hide name="p0" tname="tan1" prop="x" />
+
+
+<hint>
+For the equation of the line, note that <m>x</m> is on the vertical axis (playing the role <m>y</m> usually does) and <m>t</m> is on the horizontal axis (playing the role that <m>x</m> usually does).  So an equation for a line could be written in the form <m>x=mt+b</m> with slope <m>m</m> and vertical intercept <m>b</m>.  (Vertical intercept is what you'd usually call <m>y</m>-intercept, but here's it's not <m>y</m> on the vertical axis.)
+
+</hint>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+<graph width="400" height="320" xmin="-0.5" xmax="6" ymin="-40" ymax="110" xlabel="t" ylabel="x">
+
+<copy fixed tname="g" />
+<copy fixed tname="anchor1" stylenumber="2" />
+<copy fixed tname="anchor2" stylenumber="2" />
+<line fixed through="$anchor1 $anchor2" stylenumber ="2" />
+
+<copy fixed stylenumber="3" tname="anchor3" />
+<copy fixed stylenumber="3" tname="anchor4" />
+<line fixed stylenumber="3" through="$anchor3 $anchor4" />
+
+<copy fixed stylenumber="4" tname="anchor5" />
+<line fixed stylenumber="4" equation="y - $$g(3) = $$gprime(3) * (x - 3)" />
+
+</graph>
+
+<ol>
+
+<li>
+During the first five second, her average velocity was
+<me>\frac{ g(5)-g(0)}{5} = \frac{ $g5  - 0}{5} = $secant_slope_0_5  \text{ cm/second}</me>
+The equation for the secant line is <m>x=$secant_slope_0_5  t</m>.
+
+</li>
+
+<li>
+Her average velocity for <m>1 \le t \le 2</m> is
+<me>\frac{g(2)-g(1)}{2-1} = \frac{ $g2  - $g1  }{1} = $secant_slope_1_2  \text{ cm/second}</me>
+The equation for the line is <m>x= $secant_line_rhs_1_2_unevaluated </m>.
+</li>
+
+<li>
+For <m>\Delta t=0.01</m>, her average rate of change was
+<me>\frac{ g(3.01)-g(3)}{0.01} = \frac{ <round numberdecimals="2">$g301 </round>-$g3  }{0.01} = <round numberdecimals="2">$secant_slope_3_301 </round> \text{ cm/second}</me>
+For <m>\Delta t=0.001</m>, her average rate of change was
+<me>\frac{ g(3.001)-g(3)}{0.001} = \frac{ <round numberdecimals="2">$g3001 </round>-$g3  }{0.001} = <round numberdecimals="2">$secant_slope_3_3001 </round> \text{ cm/second}</me>
+Her instantaneous rate of change at <m>t=3</m> is about $tangent_slope_3  cm/second.
+</li>
+
+<li>
+If she continued moving at $tangent_slope_3  cm/second after <m>t=3</m> seconds, her position would be given by <m>y=$tangent_line_rhs_3_unevaluated </m>.
+
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

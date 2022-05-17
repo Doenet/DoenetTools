@@ -1,0 +1,65 @@
+<!--
+   Missing text decorations (Italics, Bold, etc)
+-->
+
+<!--
+#DESCRIPTION
+##  Calculus: Limit laws
+##ENDDESCRIPTION
+
+
+## DBsubject(Calculus - single variable)
+## DBchapter(Limits and continuity)
+## DBsection(Rules of limits - basic)
+## Date(08/30/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(rat4)
+## MLTleader(1)
+## Level(2)
+## MO(1)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('2.3')
+## Problem1('12')
+## KEYWORDS('calculus', 'limit laws', 'limit')
+-->
+
+<setup>
+  <selectFromSequence from="-3" to="5" exclude="0 2 3 4" name="a" />
+  <math name="ans" simplify>
+    (2*($a)^2+(4*$a)-5)/(($a)^2-(5*$a)+6)
+  </math>
+</setup>
+
+<p>
+  Evaluate the limit, if it exists.  If a limit \emph{does not exist}, type \textbf{DNE}.
+  <me>
+    \lim_{x \to $a} \frac{2x^2+4x-5}{x^2-5x+6}
+  </me>
+</p>
+
+<p>
+  Limit:
+  <answer>
+    <award>
+      $ans
+    </award>
+  </answer>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        Limit
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ans
+      </cell>
+    </row>
+  </tabular>
+</solution>

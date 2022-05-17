@@ -1,0 +1,511 @@
+<title>Creating Multiple Choice Exercises</title>
+
+<aside><title>How to use this tutorial</title>
+  <p>
+  <ul>
+    <p><li><em>Preview</em> the sample code using the links at the top of the page.</li></p>
+    <p><li><em>Learn</em> by watching the video and reading the examples</li></p>
+    <p><li><em>Practice</em> with built-in tutorial exercises or by editing the sample code</li></p>
+    <p><li><em>Check your understanding</em> using the 4-question quiz at the end of the page</li></p>
+    </ul>
+</p>
+</aside>
+
+
+
+
+<section><title>Preview</title>(note:  clicking the links below will open a sample DoenetML file)
+  <tabular>
+    <row>
+      <cell><ref createButton = "true" uri= ""><tag>answer</tag></ref>
+      </cell>
+      <cell><em>creates an answer block within a document</em>
+      </cell>
+    </row>
+    <row>
+      <cell><ref createButton = "true" uri= ""><tag>choiceinput</tag></ref>
+      </cell>
+      <cell><em>creates a subsection when nested inside an <tag>answer</tag> that initializes the multiple choice sequence</em>
+      </cell>
+    </row>
+    <row>
+      <cell><ref createButton = "true" uri= ""><tag>choice</tag></ref>
+      </cell>
+      <cell><em>defines an individual multiple choice option when nested inside a <tag>choiceinput</tag></em>
+      </cell>
+    </row>
+  </tabular>
+</section>
+
+<section><title>Learn</title>
+<p><alert>Summary:</alert>   The process for creating a multiple choice question (or set of questions) consists of 4 steps,<ol>
+    <li>Pose the question (using a <alert><tag>problem</tag></alert>, an <alert><tag>exercise</tag></alert>, an ordered list <alert><tag>ol</tag></alert> or simply within a paragraph block of text.</li>
+    <li>Define an answer block by typing the opening <alert><tag>answer</tag></alert> tag.</li>
+    <li>Further define an input section of multiple-choice style responses using the opening <alert><tag>choiceinput</tag></alert> tag.</li>
+    <li>List individual choices inside opening and closing <alert><tag>choice</tag><tag>/choice</tag></alert> tags.  Close remaining <alert><tag>/choiceinput</tag></alert> and <alert><tag>/answer</tag></alert> tags.</li>
+  </ol>
+</p>
+
+<aside><title>More detail</title>
+<p>To create a set of multiple-choice questions, you will use a combination of several different components.  This tutorial focuses on fact-retention type multiple-choice questions with instructor-provided correct responses, rather than more mathematical multiple-choice questions where solutions may be generated within Doenet.  To learn how to create mathematical multiple-choice exercises, see <ref>Multiple Choice Math Questions</ref></p>
+<p>The first step in creating a multiple-choice question is to define an <alert><tag>answer</tag></alert> block within the DoenetML editor immediately following the statement of the question and in the location where the user wants the choices to appear.  The question itself can be stated in many ways;  it could occur as part of an ordered list (<alert><tag>ol</tag></alert>), in a <alert><tag>table</tag></alert> , using a <alert><tag>problem</tag></alert> or an <alert><tag>exercise</tag></alert>, or even nested within a paragraph of text (<alert><tag>p</tag></alert>).</p>
+<p>The <alert><tag>answer</tag></alert> block element has numerous attributes, for further detail see the practice examples.  A partial listing of the more useful attributes for these types of general multiple choice questions are:<ul>
+  <li><ref>matchPartial</ref></li>
+  <li><ref>weight</ref></li>
+  <li><ref>inline</ref></li>
+  <li><ref>maximumNumberOfAttempts</ref></li>
+</ul>
+</p>
+  
+<p>Once the <alert><tag>answer</tag></alert> block has been initialized with an opening tag, the next step is to initialize the <alert><tag>choiceinput</tag></alert> section.  Think of this as a container that will hold the various individual choices. The <alert><tag>choiceinput</tag></alert> has many attributes which allow the user to specify how the choices will be displayed, as well as how the solution will be verified.  The attributes are:<ul>
+  <li><ref>selectMultiple</ref></li>
+  <li><ref>matchPartial</ref></li>
+  <li><ref>inline</ref></li>
+  <li><ref>randomizeOrder</ref></li>
+  <li><ref>feedbackDefinitions</ref></li>
+  <li><ref>preselectChoice</ref></li>
+  <li><ref>bindValueTo</ref></li>
+  <li><ref>placeHolder</ref></li>
+</ul></p>
+<p>With the <alert><tag>choiceinput</tag></alert> characteristics declared (the default appearance has choices arranged in a vertical list with radio buttons on the left side), the final step is to define the possible choices using the <alert><tag>choice</tag></alert> component.  Provide the text, or image, or any other content that defines a choice between opening and closing <alert><tag>choice</tag></alert> tags.  A straightforward way to define the 'correct' choice is to employ the attribute <alert>credit='1'</alert> within the correct choice tag.  More complex situtations can arise with partial credit assigned to various choices if the <alert>matchPartial</alert> or the <alert>selectMultiple</alert> attributes are used within the <alert><tag>choiceinput</tag></alert> tag. The attributes for the <alert><tag>choice</tag></alert> component are:<ul>
+  <li><ref>credit</ref></li>
+  <li><ref>feedbackCodes</ref></li>
+  <li><ref>feedbackText</ref></li>
+  <li><ref>preSelect</ref></li>
+</ul>
+</p>
+  
+<p>It is good practice to name the choices which you will reference later in the document, such as incorrect answers that will generate a specific hint or feedback, or correct answers that you will use later in answer verification.  For more information on this topic, see the <ref>Naming Components</ref> tutorial.</p>    
+</aside>
+  
+<p>
+<figure>
+<video youtube = ""></video>
+<caption>How to use the <alert><tag>answer</tag></alert> , <alert><tag>choiceinput</tag></alert>, and <alert><tag>choice</tag></alert> components</caption>
+</figure>
+</p>
+
+  
+<!--<aside>
+  <title>Video Transcript</title>
+<p>coming soon!  
+</p></aside>-->
+
+</section>
+
+<!--********************************************************************
+Warning - do not change anything in the table.  Preserved formatting
+********************************************************************-->
+
+<subsection><title>Examples</title>  
+  <tabular>
+    
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell><em><p>A multiple choice question without attributes</p> 
+        <p>(other than credit) specified; the "default" case:</p></em>
+          <pre>
+<alert><tag>p</tag></alert>Which letter is the 15th letter in the English alphabet?<alert><tag>/p</tag></alert>
+        <alert><tag>answer</tag>
+          <tag>choiceinput</tag>
+            <tag>choice</tag></alert>A<alert><tag>/choice</tag>
+            <tag>choice credit="1"</tag></alert>O<alert><tag>/choice</tag>
+            <tag>choice</tag></alert>Z<alert><tag>/choice</tag>
+          <tag>/choiceinput</tag>
+        <tag>/answer</tag></alert>
+</pre>
+      </cell>
+        
+      <cell><p>Which letter is the 15th letter in the English alphabet?</p>
+        <answer>
+          <choiceinput>
+            <choice>A</choice>
+            <choice credit="1">O</choice>
+            <choice>Z</choice>
+          </choiceinput>
+        </answer>
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell><em><p>A multiple choice question within a block of</p>
+        <p>text using the <alert>inline</alert> attribute within the</p>
+        <p><tag>choiceinput</tag> component:</p></em><pre>
+<alert><tag>p</tag></alert>Jelly beans jelly beans tootsie roll candy 
+        canes lollipop caramels. Topping chupa chups tart liquorice 
+        bear claw gingerbread biscuit. Chocolate cake tart?<alert>
+            <tag>answer</tag></alert>
+          <alert><tag>choiceinput inline="true"</tag>
+            <tag>choice</tag></alert>bear claw<alert><tag>/choice</tag>
+            <tag>choice credit="1"</tag></alert>sugar plum<alert><tag>/choice</tag>
+            <tag>choice</tag></alert>chocolate cake<alert><tag>/choice</tag>
+          <tag>/choiceinput</tag>
+        <tag>/answer</tag></alert> Marshmallow carrot cake sweet 
+          roll danish fruitcake tart. Marzipan 
+          chocolate bar fruitcake bonbon pastry.<alert><tag>/p</tag></alert>
+        </pre>
+      </cell>
+        
+      <cell><p>Jelly beans jelly beans tootsie roll candy 
+        canes lollipop caramels. Topping chupa chups tart liquorice 
+        bear claw gingerbread biscuit. Chocolate cake tart?<answer>
+          <choiceinput inline="true">
+            <choice>bear claw</choice>
+            <choice credit="1">sugar plum</choice>
+            <choice>chocolate cake</choice>
+          </choiceinput>
+        </answer> Marshmallow carrot cake sweet 
+          roll danish fruitcake tart. Marzipan 
+          chocolate bar fruitcake bonbon pastry.</p>
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell><em><p>A set of 3 problems with different point values </p> 
+        <p>specified using the sectionWideCheckWork attribute along</p>
+        <p>with the weight attribute</p></em>
+      </cell>
+      <cell>
+      </cell>
+    </row>
+  </tabular>
+
+  
+</subsection>
+
+<!--Practice Section problem 1************************************-->
+
+<section><title>Practice</title>
+<problem sectionWideCheckWork aggregateScores><title>Problem 1</title>
+      <alert>Finish the code required to create a link to the address "https://www.marblerun.at" when the word "here" is clicked:</alert>
+      <p>Example:  Click <ref uri="https://www.marblerun.at">here</ref> to build a custom marble run!</p>
+      <p>Click <answer>
+        <textInput name="tI_1a" prefill="<"></textInput>
+            <award credit="1.0">
+              <when>$tI_1a=<text>&lt;ref</text></when>
+            </award>
+        </answer> uri="
+        <answer>
+          <textInput name="tI_1b" size="20"></textInput>
+            <award credit="1.0">
+              <when>$tI_1b=<text>https://www.marblerun.at</text></when>
+            </award>
+        </answer>"<alert>&gt;</alert>here<alert><tag>/ref</tag></alert> to build a custom marble run!
+      </p>
+</problem>
+
+<!--  
+  https://www.marblerun.at/
+  https://learningcontent.cisco.com/games/binary/index.html
+    -->
+<!--Practice Section problem 2***********************************-->
+  
+<problem sectionWideCheckWork aggregateScores><title>Problem 2</title><alert>Finish the code required to link to the doenet page located at</alert> "https://www.doenet.org/#/course?tool=editor<alert>&</alert>doenetId=yX1XdnrDpGClwJmEi6_ta<alert>&</alert>path=sylbRj3AA0e4ovl1kLGXE%3AdlLhRUOcrOdH8F0c129ft%3Au1q7LFmKRECRJzDpucCgN%3ADoenetML".<alert>  Recall, the only portion of this address that remains following the text 'doenet:' in the uri attribute is the portion <em>between</em> the two ampersands:</alert>
+      <p>Example:  Click <ref uri="doenet:doenetId=yX1XdnrDpGClwJmEi6_ta">here</ref> to learn about basic text formatting.</p>
+      
+        <alert><tag>p</tag></alert>Click <alert>&lt;ref uri="doenet:</alert>
+        <answer>
+          <textInput size="25" name="tI_2a"></textInput>
+            <award credit="1.0">
+              <when>$tI_2a=<text>doenetId=yX1XdnrDpGClwJmEi6_ta</text>
+              </when>
+            </award>
+        </answer>"<alert>&gt;</alert>here
+        <answer>
+          <textInput name="tI_2b" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_2b= <text>&lt;/ref&gt;</text></when>
+          </award>
+        </answer>to learn about basic text formatting.<alert><tag>/p</tag></alert>
+      
+</problem>
+
+<!--Practice Section problem 3***********************************--> 
+  
+<problem sectionWideCheckWork aggregateScores><title>Problem 3</title><alert>Create a link that displays the web address using a self-closing <tag>ref/</tag> tag, (i.e. without any alternate linking text specified).  The address is "https://marblerun.at" For full credit, provide one space between component name and attribute specification, and no other additional spaces:</alert>
+      <p>Example:  Build your own marble run here: <ref uri="https://www.marblerun.at"/></p>
+      <alert><tag>p</tag></alert>Build your own marble run here:
+        <answer>
+          <textInput size="24" name="tI_3a" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3a=<text>&lt;ref uri="https://www.marblerun.at"/&gt;</text></when>
+            </award>
+        </answer><alert><tag>/p</tag></alert>
+</problem>
+        
+<!--Practice Section problem 4***********************************-->        
+
+<problem sectionWideCheckWork aggregateScores><title>Problem 4</title><alert>Complete the code below using the <tag>figure</tag>, <tag>ref</tag>, <tag>image/</tag>, and <tag>caption</tag> components to create an image that functions as a link.</alert>
+    <p>Example: 
+      <figure suppressFigureNameInCaption>
+        <ref uri="https://www.marblerun.at">
+          <image width="100" source="https://lh3.googleusercontent.com/nUk4iTSopATagCBlUoZT0pRx4A55SKfDN5kFqe1PKGfuMMeP-gWoCOuskbBN6RDfnlYNZC363RsCYTzU2rdE1UaKNyJkWwZvakIwf73SFncA_JORBkvkfkGbreBPVMFIfUEhf3SXE_P1jjEbfIqY-nAzK0zoj7kD5XF7RHEbHN80mTUNVdSUFMHTH_aVIUyyAYraJBOoYeG6TPOiwuxemn_XK7STKhoDwbxaHnMcINvKYTx_HT7aGNpQbD2LN03xcqYkiwggp7pkK-13GStADWt3V1YHwbtjgIQgke2hJlhQplj3MY8XcoVJP7a2PvspZ15KzHr_zNTGfg-9FRTAitMD6TdBRtX8EwVMg5e_1JKQj7Ae12_H3NduvVMnjowiYcINWb8TjZxjEa2EsHJ1hZRfhXsChEkt4GfUkYI31KJaw0EQkmhK3xozSaT7B43KGwbnmRu9s59qp5vVdmQ1pR-3D7eyJnRvfjEszlj308A9wCFSo6SI9jL5VUpeRoaADzV1HjTBh4IzgNNEgm51ScfaTkZqf0aDiJo6g-Hpdr_9N1NQLSbxhz7v_bH_Y8oWHMm0KYyEcrZulY6pVYYFiZgrLu4EwQxN5FvRxUt_5367vZDdQGtJYLmiC73ColZ9ZfO_QbBuoOJgjY1h6x-m4cAbBcyX8BfK2U5GxWl3m9bDbHtQpUqOm27hxsxMB4Ui3nOqF4E4_3ZeAbQ_HYn4KQ=w608-h1044-no?authuser=0"/>
+        </ref>
+        <caption>Click the picture above to make your own marble run!</caption>
+      </figure>
+    </p>
+
+<pre>
+<answer>
+    <textInput name="tI_4a" prefill="<"></textInput>
+      <award credit="1.0">
+        <when>$tI_4a=<text>&lt;figure</text></when>
+      </award>
+</answer> suppressFigureNameInCaption&gt;
+  <answer>
+    <textInput name="tI_4b" prefill="<"></textInput>
+      <award credit="1.0">
+        <when>$tI_4b=<text>&lt;ref</text></when>
+      </award>
+  </answer> uri="https:www.//marblerun.at"&gt;
+      <answer>
+        <textInput name="tI_4c" prefill="<"></textInput>
+          <award credit="1.0">
+            <when>$tI_4c=<text>&lt;image</text></when>
+          </award>
+        </answer> size="100" source="https://lh3.googleusercontent.com..."/&gt;
+  <answer>
+    <textInput name="tI_4d" prefill="<>"></textInput>
+      <award credit="1.0">
+        <when>$tI_4d=<text>&lt;/ref&gt;</text></when>
+      </award>
+  </answer>
+      <answer>
+        <textInput name="tI_4e" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_4e=<text>&lt;caption&gt;</text></when>
+          </award>
+      </answer>Click the picture above to make your own marble run!<alert><tag>/caption</tag></alert>
+  <alert><tag>/figure</tag></alert>
+        
+</pre>
+    
+</problem>
+
+<!--Practice Section problem 5***********************************--> 
+
+  
+<problem sectionWideCheckWork aggregateScores><title>Problem 5</title><alert>Finish the code to create a Table of Contents using the <tag>ref</tag> component:</alert>
+        <p>Example: 
+            <subsection><title>Table of Contents</title>
+              <ol>
+                <li><ref uri="https://www.bettycrocker.com/recipes/ultimate-chocolate-chip-cookies/77c14e03-d8b0-4844-846d-f19304f61c57">Cookie Recipe</ref></li>
+                <li><ref uri="https://www.foodnetwork.com/recipes/food-network-kitchen/basic-vanilla-cake-recipe-2043654">Cake Recipe</ref></li>
+                <li><ref uri="https://cooking.nytimes.com/recipes/4735-old-fashioned-beef-stew">Beef Stew Recipe</ref></li>
+              </ol>
+            </subsection>
+        </p>
+<pre>
+<alert><tag>subsection</tag><tag>title</tag></alert>Table of Contents<alert><tag>/title</tag></alert>
+<answer>
+<textInput name="tI_5a" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5a=<text>&lt;ol&gt;</text></when>
+        </award>
+</answer>
+  <answer>
+  <textInput name="tI_5b" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5b=<text>&lt;li&gt;</text></when>
+        </award>
+  </answer>
+      <answer>
+      <textInput name="tI_5c" prefill="<"></textInput>
+            <award credit="1.0">
+            <when>$tI_5c=<text>&lt;ref</text></when>
+            </award>
+      </answer> uri="https://www.bettycrocker.com/recipes/ultimate-chocolate-chip-cookies..."&gt;
+            Cookie Recipe<alert><tag>/ref</tag></alert>
+  <alert><tag>/li</tag></alert>
+  <answer>
+  <textInput name="tI_5d" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5b=<text>&lt;li&gt;</text></when>
+        </award>
+  </answer>
+      <answer>
+  <textInput name="tI_5e" prefill="<"></textInput>
+        <award credit="1.0">
+          <when>$tI_5e=<text>&lt;ref</text></when>
+        </award>
+      </answer> uri="https://www.foodnetwork.com/recipes/food-network-kitchen/basic-vanilla-cake-recipe-2043654"&gt;
+            Cake Recipe<alert><tag>/ref</tag></alert>
+  <alert><tag>/li</tag></alert>
+
+  <answer>
+  <textInput name="tI_5f" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5f=<text>&lt;li&gt;</text></when>
+        </award>
+  </answer>
+      <answer>
+      <textInput name="tI_5g" prefill="<"></textInput>
+            <award credit="1.0">
+            <when>$tI_5g=<text>&lt;ref</text></when>
+            </award>
+      </answer> uri="https://cooking.nytimes.com/recipes/4735-old-fashioned-beef-stew"&gt;
+            Beef Stew Recipe<alert><tag>/ref</tag></alert>
+  <alert><tag>/li</tag></alert>
+ <alert><tag>/ol</tag></alert>
+<alert><tag>/subsection</tag></alert>
+</pre>
+        
+</problem>
+
+<problem sectionWideCheckWork aggregateScores><title>Problem 6</title><alert>Finish the code to create a button link using the <tag>ref</tag> component with the 'createButton' attribute:</alert>
+<p>Example:
+  <ref createButton="true" uri="https://www.bettycrocker.com/recipes/ultimate-chocolate-chip-cookies/77c14e03-d8b0-4844-846d-f19304f61c57">🍪🍪🍪</ref></p>
+<pre>
+  <alert>&lt;ref  <answer><textInput name="tI_6a"></textInput>
+      <award credit="1.0">
+        <when>$tI_6a=<text>createButton</text></when>
+      </award>
+    </answer>="true" uri="https://www.bettycrocker.com/..."&gt;🍪🍪🍪<tag>/ref</tag></alert>
+</pre>
+</problem>
+  
+<!--Solution to the Practice Section*****************************-->
+
+  
+<solution>
+  <ol> 
+    <li><pre>
+Click <tag>ref uri="https://www.marblerun.at"</tag>here<tag>/ref</tag> to build a custom marble run!
+    </pre>
+    </li>
+    
+    <li><pre>
+<tag>p</tag>Click <tag>ref uri="doenet:doenetId=yX1XdnrDpGClwJmEi6_ta"</tag>here<tag>/ref</tag>
+      to learn about basic text formatting.<tag>/p</tag>
+        </pre>
+    </li>
+    <li><pre>
+<tag>p</tag>Build your own marble run here: <tag>ref uri="https://www.marblerun.at"/</tag><tag>/p</tag>
+        </pre>
+    </li>
+    
+    <li><pre>
+<tag>figure suppressFigureNameInCaption</tag>
+  <tag>ref uri="https://www.marblerun.at"</tag>
+    <tag>image width="100" source="https://lh3.googleusercontent.com..."/</tag>
+  <tag>/ref</tag>
+    <tag>caption</tag>Click the picture above to make your own marble run!<tag>/caption</tag>
+<tag>/figure</tag>
+      </pre>
+      </li>
+    
+      <li><pre>
+<tag>subsection</tag><tag>title</tag>Table of Contents<tag>/title</tag>
+    <tag>ol</tag>
+        <tag>li</tag>
+          <tag>ref uri="https://www.bettycrocker.com/recipes/..."</tag>
+        Cookie Recipe<tag>/ref</tag>
+        <tag>/li</tag>
+        <tag>li</tag>
+          <tag>ref uri="https://www.foodnetwork.com/recipes/..."</tag>
+        Cake Recipe<tag>/ref</tag>
+        <tag>/li</tag>
+        <tag>li</tag>
+          <tag>ref uri="https://cooking.nytimes.com/recipes/..."</tag>
+        Beef Stew Recipe<tag>/ref</tag>
+        <tag>/li</tag>
+    <tag>/ol</tag>
+<tag>/subsection</tag>
+      </pre>
+      </li>  
+
+    <li><pre>
+<tag>ref createButton="true" uri="https://www.bettycrocker.com/recipes/..."</tag>🍪🍪🍪<tag>/ref</tag>
+
+      </pre>
+      </li>
+   </ol>  
+</solution>  
+</section>
+
+<!--The Quiz Section***********************************************-->
+
+
+<section sectionWideCheckWork aggregateScores><title>Check Your Understanding</title>
+  <aside><title>Take the quiz</title>
+    <ol>
+      <p><li>Which component creates a link to an external website or to another doenet file?                
+        <answer><choiceinput inline randomizeOrder="true">
+          <choice credit = "1">the <tag>ref</tag> component</choice>
+          <choice>the <tag>uri</tag> component</choice>
+          <choice>the <tag>link</tag>component</choice>
+        </choiceinput></answer>
+      </li></p>
+
+      <li><p>Which of the following choices would be the correct way to specify a link to a doenet file with the following address:</p>
+      <p>(https://www.doenet.org/#/course?tool=editor&<alert>doenetId=wRby4Z8fHMhV-Yg9F-gOk</alert>&path=sylbRj3AA0e4ovl1kLGXE%3A6WjmmNokJckzbeWaF504B%3A96DpO6L-CicGAdEQG5YJl%3ADoenetML)?</p> 
+<pre>
+<answer>
+  <choiceinput randomizeOrder="true">
+      <choice><tag>ref uri="https://www.doenet.org/#/course?tool=editor&
+        <alert>doenetId=wRby4Z8fHMhVYg9FgOk</alert>&path=sylbR
+        j3AA0e4ovl1kLGXE%3A6WjmmNokJckzbeWaF504B%3A96DpO6L-Cic
+        GAdEQG5YJl%3ADoenetML"</tag></choice>
+
+    
+        
+      <choice><tag>ref uri="doenet:<alert>doenetId=wRby4Z8fHMhV-Yg9F-
+            gOk</alert>&path=sylbRj3AA0e4ovl1kLGXE%3A6WjmmNok
+            JckzbeWaF504B%3A96DpO6L-CicGAdEQG5YJl%3ADoenetML"</tag></choice>
+
+    
+        
+      <choice credit = "1"><tag>ref uri="doenet:<alert>doenetId=wRby4Z8fHMhV-Yg9F-gOk</alert>"</tag></choice>
+    </choiceinput>
+  </answer>
+</pre>
+    </li>
+      
+      <p><li>Which attribute can be used within the <tag>ref</tag> component to display a button link?
+      <answer>
+        <choiceInput inline randomizeOrder="true">
+          <choice>the buttonLink="true" attribute</choice>
+          <choice>the isButton="true" attribute</choice>
+          <choice credit = "1">the createButton="true" attribute</choice>
+        </choiceinput></answer>
+      </li></p>
+      
+      <p><li>True or False:  An image can serve as a link when nested inside a <tag>ref</tag> component.
+        <answer><choiceinput>
+          <choice credit = "1">True</choice>
+          <choice>False</choice>
+        </choiceinput></answer>
+      </li></p>
+    </ol>
+
+<!--The Quiz Section Solution*********************************-->
+    
+  <solution>
+  <ol>
+    <li>Use the <tag>ref</tag> component to create a link to an external website or to another doenet file.</li>
+    <li>The correct way to specify the doenet link is:  <tag>ref uri="doenet:doenetId=wRby4Z8fHMhV-Yg9F-gOk"</tag>.</li>
+    <li>The correct attribute to specify a button link is the 'createButton' attribute.</li>
+    <li>It is true that an <tag>image</tag> can be nested inside a <tag>ref</tag> in order to create an image that functions as a link.</li>
+  </ol>
+  </solution>
+
+</aside>
+</section>
+
+
+<section><title>References</title>
+  <ref createButton = "true" uri= "https://docs.google.com/spreadsheets/d/1TKjAJxFC7Lzz8YiMWUf7k2gL5omod_RJsk1gQ_RONQw/edit?usp=sharing">ComponentList</ref>
+  <ref createButton = "true" uri= ""><tag>figure</tag><tag>/figure</tag></ref>
+  <ref createButton = "true" uri="doenet:doenetId=PBCTtJf7hbrpPmku8DUDG"><tag>image/</tag></ref>
+  <ref createButton = "true" uri= "doenet:doenetId=lP_BhuhmGqnC7-mJwicom"><tag>ol</tag><tag>/ol</tag> and <tag>ul</tag><tag>/ul</tag></ref>
+</section>
+
+<!--
+<aside>
+    <title>Citations</title>
+</aside>-->
+    

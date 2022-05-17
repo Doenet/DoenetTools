@@ -1,0 +1,20 @@
+<!--NOT the button component, so this does not work...
+
+<button type="button">Click!</button>-->
+
+Instead use the <tag>ref</tag> with the createButton attribute for a button that has a link...
+
+<ref uri="https://en.wikipedia.org/wiki/Rabbit" createButton="true">Click me</ref>
+
+<pre>stuff
+  that has
+  line breaks
+
+  it would be awesome</pre>
+
+<!--Sadly, the horizontal rule does not work<hr></hr>-->
+
+<!--the <br> is also no good...<p>here is a sentence I'd like<br> to break in the middle</p>-->
+
+<!--how about the color changing syntax?
+<p style="color:red;">worth a shot</p>, use styleDefinitions instead-->

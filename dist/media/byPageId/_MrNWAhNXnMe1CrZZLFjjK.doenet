@@ -1,0 +1,191 @@
+<problem>
+<!-- <title>Extrema of quadratic with parameters</title> -->
+
+<setup>
+
+<select assignNames='par' >a b c k m n</select>
+<select assignNames='x'>x y z s t</select>
+<select assignNames='f' >f g h</select>
+<selectFromSequence assignNames='a b' from='-10' to=' 10' exclude="0" numberToSelect="2" withReplacement />
+
+<function name='fun' variables='$x' symbolic><math simplify="numbers">$a *($x -$par )^2+$b </math></function>
+<math name='two_a' simplify='numbers' >2*$a </math>
+<math name='critical_point'>$par </math>
+
+<conditionalContent assignNames="(cp_characterization global_maximum_location global_minimum_location)">
+  <case condition="$a>0"><text>minimum</text><math>3$par</math>$par</case>
+  <else><text>maximum</text>$par<math>3$par</math></else>
+</conditionalContent>
+
+<math name='extremum_value'>$b </math>
+<math name='extremum_location'>$par </math>
+<math name='fun_0' simplify >$$fun(0)</math>
+<math name='fun_par' simplify >$$fun($par )</math>
+<math name='fun_3par' simplify >$$fun(3*$par )</math>
+
+<math name='global_maximum' simplify >$$fun($global_maximum_location )</math>
+<math name='global_minimum' simplify >$$fun($global_minimum_location )</math>
+
+</setup>
+
+
+Let <m><math simplify="numbersPreserveOrder" targetsAreFunctionSymbols="f">$f ($x ) = $a ($x -$par )^2  + $b </math></m>, where <m>$par </m> is a constant parameter.
+
+
+<ol>
+
+<li>
+<p>Find the critical points of <m>$f </m>.</p>
+
+<p>Critical points: <m>$x =</m> 
+<answer>
+<award>$critical_point </award>
+</answer>
+ (If multiple answers, separate by commas; if no answers, enter <alert>none</alert>.)
+</p>
+
+</li>
+
+<li>
+<p>Find the local extrema of <m>$f </m>.  (Extrema just means either a maximum or a minimum.)  For each extremum calculate three things: the location of the extremum (i.e., value of <m>$x </m>), the value of the extremum (i.e., value of <m>$f ($x )</m>), and whether it is a local maximum or a local minimum.</p>
+
+<p>Locations of the local extrema: 
+<answer>
+<award>$extremum_location </award>
+</answer>
+ (If multiple answers, separate by commas; if no answers, enter <alert>none</alert>.)</p>
+
+<p>Values of the local extrema: 
+<answer>
+<award>$extremum_value </award>
+</answer>
+ (If multiple answers, enter in the same order as above, separated by commas; if no answers, enter <alert>none</alert>.)</p>
+
+<p>For each extremum, enter either <alert>maximum</alert> or <alert>minimum</alert> to indicate if the extremum is a local maximum or local minimum, respectively.  (If multiple answers, enter in the same order as above, separated by commas; if no answers, enter <alert>none</alert>.)</p>
+
+<p>Characterization of extrema= 
+<answer type="text">
+<award>$cp_characterization </award>
+</answer>
+</p>
+
+
+
+<hint>
+For example, imagine that there were local extrema at <m>x=-4</m>, <m>x=-1</m>, and <m>x=3</m>.  Imagine moreover, that <m>$f(-4)=0</m>, <m>$f(-1)=-3</m>, and <m>$f(3)=4</m>, and that these extrema were a local maximum, a local minimum, and a local maximum, respectively.  Then, the correct answer would be to enter <c>-4,-1, 3</c> in the locations blank, enter <c>0, -3, 4</c> in the values blank, and <c>maximum, minimum, maximum</c> in the characterization blank.
+</hint>
+
+</li>
+
+<li>
+<p>Assume <m>$par  \gt 0</m>. Find the global maximum and minimum of <m>$f </m> on the interval <m>0 \le $x  \le 3$par </m>.  Also indicate the location (the value of <m>$x </m>) of the global maximum and global minimum.</p>
+
+<p>Global maximum: 
+<answer>
+<award>$global_maximum </award>
+</answer>
+</p>
+
+<p>Location of global maximum: <m>$x  =</m> 
+<answer>
+<award>$global_maximum_location </award>
+</answer>
+</p>
+
+<p>Global minimum: 
+<answer>
+<award>$global_minimum </award>
+</answer>
+</p>
+
+<p>Location of global minimum: <m>$x =</m> 
+<answer>
+<award>$global_minimum_location </award>
+</answer>
+</p>
+
+
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+The derivative of <m>$f ($x )</m> is <m>$f '($x ) = $two_a ($x -$par )</m>, which is defined everywhere, so the only critical point is where <m>$f '($x )=0</m>, which is <m>$x =$par </m>.
+</li>
+
+<li>
+<p>
+<conditionalcontent>
+<case condition='$a > 0'>
+<m>$f '($x ) \lt 0</m>
+</case>
+<else>
+<m>$f '($x ) \gt 0</m>
+</else>
+</conditionalcontent>
+ for <m>$x  \lt $par </m>, so <m>$f </m> is
+<conditionalcontent>
+<case condition='$a > 0'>
+decreasing
+</case>
+<else>
+increasing
+</else>
+</conditionalcontent>
+ for <m>$x  \lt $par </m>. 
+<conditionalcontent>
+<case condition='$a > 0'>
+<m>$f '($x ) \gt 0</m>
+</case>
+<else>
+<m>$f '($x ) \lt 0</m>
+</else>
+</conditionalcontent>
+ for <m>$x  \gt $par </m>, so <m>$f </m> is
+<conditionalcontent>
+<case condition='$a > 0'>
+increasing
+</case>
+<else>
+decreasing
+</else>
+</conditionalcontent>
+ for <m>$x  \gt $par </m>. </p>
+
+<p>Therefore, <m>$f </m> has a local $cp_characterization  at <m>$x =$par </m>.  The value of the $cp_characterization  is <m>$f ($par ) = $b </m>.</p>
+
+<p>There is no local
+<conditionalcontent>
+<case condition='$a > 0'>
+maximum
+</case>
+<else>
+minimum
+</else>
+</conditionalcontent>
+. </p>
+
+<p>In summary, the location of the extrema is: <m>$par </m>.  The value of the extremum is: <m>$b </m>.  The characterization of the extremum is: $cp_characterization .</p>
+</li>
+
+<li>
+<p>We check the endpoints and the critical points.  <m>$f (0) = $fun_0 </m>, <m>$f ($par ) = $fun_par </m>, and <m>$f (3$par ) = $fun_3par </m>.</p>
+
+<p>The global maximum occurs at <m>$x =$global_maximum_location </m>; its value is <m>$f ($global_maximum_location ) = $global_maximum </m>.  The global minimum occurs at <m>$x =$global_minimum_location </m>; its value is <m>$f ($global_minimum_location ) = $global_minimum </m>.  </p>
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

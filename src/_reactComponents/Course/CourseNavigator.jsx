@@ -47,13 +47,14 @@ import {
 
 import { 
   authorCourseItemOrderByCourseId, 
-  authorItemByDoenetId,
+  itemByDoenetId,
   coursePermissionsAndSettingsByCourseId, 
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
   // findFirstPageOfActivity,
-  studentCourseItemOrderByCourseId
+  studentCourseItemOrderByCourseId,
+  studentCourseItemOrderByCourseIdBySection
 } from '../../_reactComponents/Course/CourseActions';
 
 /**
@@ -72,9 +73,6 @@ export default function CourseNavigator(props) {
   const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
 
-  // console.log("courseId",courseId)
-  // console.log("sectionId",sectionId)
-  // console.log("-----\n")
   let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
@@ -85,7 +83,7 @@ export default function CourseNavigator(props) {
     set(selectedMenuPanelAtom,null);
     set(selectedCourseItems,[]);
     for (let deselectId of selectedItems){
-      set(authorItemByDoenetId(deselectId),(was)=>{
+      set(itemByDoenetId(deselectId),(was)=>{
           let newObj = {...was};
           newObj.isSelected = false;
           return newObj;
@@ -107,10 +105,10 @@ export default function CourseNavigator(props) {
     return null;
   }
 
-  if (coursePermissionsAndSettings.canEditContent == '0' || effectiveRole == 'student'){
+  if (coursePermissionsAndSettings.canEditContent == '0' || effectiveRole == 'student' || props.displayRole == 'student'){
     return <StudentCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
-  if (coursePermissionsAndSettings.canEditContent == '1' || effectiveRole == 'instructor'){
+  if (coursePermissionsAndSettings.canEditContent == '1' || effectiveRole == 'instructor' || props.displayRole == 'instructor'){
     return <AuthorCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
   return null;
@@ -118,14 +116,20 @@ export default function CourseNavigator(props) {
 
 }
 
-function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
-  // let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseId(courseId));
-  let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseId(courseId));
-  //TODO: use student information here?
+function StudentCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
+  let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId,sectionId}));
   console.log("studentItemOrder",studentItemOrder)
+  let previousSections = useRef([]);
+  let definedForSectionId = useRef("");
+  //If sectionId changes clear out previousSections
+  if (definedForSectionId.current != sectionId){
+    previousSections.current = []
+    definedForSectionId.current = sectionId;
+  }
+  //TODO: use student information here?
   let items = [];
   studentItemOrder.map((doenetId)=>
-    items.push(<StudentItem key={`itemcomponent${doenetId}`} doenetId={doenetId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} />)
+    items.push(<StudentItem key={`itemcomponent${doenetId}`} courseId={courseId} doenetId={doenetId}  indentLevel={0} previousSections={previousSections} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} />)
   )
     
   return <>
@@ -136,7 +140,7 @@ function StudentCourseNavigation({courseId,numberOfVisibleColumns,setNumberOfVis
 
 function StudentItem({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSections,courseNavigatorProps}){
   //TODO: Investigate if type should be a selector and these three would subscribe to item info
-  let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  let itemInfo = useRecoilValue(itemByDoenetId(doenetId));
 
   if (itemInfo.type == 'section' && previousSections?.current){
     previousSections.current.push(itemInfo.doenetId);
@@ -145,7 +149,7 @@ function StudentItem({courseId,doenetId,numberOfVisibleColumns,indentLevel,previ
     return null;
   }
   if (itemInfo.type == 'section'){
-  return <Section key={`Item${doenetId}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
+  return <StudentSection key={`Item${doenetId}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }else if (itemInfo.type == 'activity'){
     return <StudentActivity key={`Item${doenetId}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={doenetId} itemInfo={itemInfo} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel} />
   }
@@ -153,13 +157,28 @@ function StudentItem({courseId,doenetId,numberOfVisibleColumns,indentLevel,previ
   return null;
 }
 
-function StudentActivity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
-  // console.log("Activity itemInfo",itemInfo)
+function StudentSection({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
+  let studentSectionItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId,sectionId:itemInfo.doenetId}));
+  let previousSections = useRef([]);
 
+  if (itemInfo.isOpen){
+    let sectionItems = studentSectionItemOrder.map((doenetId)=>
+    <Item key={`itemcomponent${doenetId}`} courseNavigatorProps={courseNavigatorProps} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel+1} />)
+    
+    return <>
+    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    {sectionItems}
+    </>
+
+  }else{
+    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+  }
+}
+
+function StudentActivity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
     return <>
     <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
      </>
-  
 }
 
 function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
@@ -185,7 +204,7 @@ function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNu
 
 function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSections,courseNavigatorProps}){
   //TODO: Investigate if type should be a selector and these three would subscribe to item info
-  let itemInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  let itemInfo = useRecoilValue(itemByDoenetId(doenetId));
 
   if (itemInfo.type == 'section' && previousSections?.current){
     previousSections.current.push(itemInfo.doenetId);
@@ -213,12 +232,12 @@ function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,
     <Item key={`itemcomponent${doenetId}`} courseNavigatorProps={courseNavigatorProps} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel+1} />)
     
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} isBeingCut={itemInfo.isBeingCut} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
     {sectionItems}
     </>
 
   }else{
-    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} isBeingCut={itemInfo.isBeingCut} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
   }
 }
 
@@ -229,16 +248,15 @@ function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,cou
     })
 
   return <>
-  <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faLayerGroup} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+  <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faLayerGroup} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} isBeingCut={itemInfo.isBeingCut} indentLevel={indentLevel} />
     {pages}
   </>
   }else{
-    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faLayerGroup} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faLayerGroup} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} isBeingCut={itemInfo.isBeingCut} indentLevel={indentLevel} />
   }
 }
 
 function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
-  // console.log("Activity itemInfo",itemInfo)
   if (itemInfo.isSinglePage){
     return <>
     <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
@@ -258,7 +276,7 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
 
 function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,orderInfo,courseNavigatorProps}){
   let {behavior,doenetId,content, numberToSelect, withReplacement} = orderInfo;
-  let recoilOrderInfo = useRecoilValue(authorItemByDoenetId(doenetId));
+  let recoilOrderInfo = useRecoilValue(itemByDoenetId(doenetId));
 
    let contentJSX = [];
    if (behavior == 'sequence'){
@@ -301,8 +319,7 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
 }
 
 function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentLevel,number=null,courseNavigatorProps}){
-  let recoilPageInfo = useRecoilValue(authorItemByDoenetId(doenetId));
-  // console.log("Page recoilPageInfo",recoilPageInfo,"doenetId",doenetId)
+  let recoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
   //TODO: numbered
   return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
@@ -312,7 +329,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=fal
 
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set})=>()=>{
-    set(authorItemByDoenetId(doenetId),(was)=>{
+    set(itemByDoenetId(doenetId),(was)=>{
       let newObj = {...was};
       newObj.isOpen = !newObj.isOpen;
       return newObj;
@@ -344,7 +361,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   e.preventDefault();
   e.stopPropagation();
   let selectedItems = await snapshot.getPromise(selectedCourseItems);
-  let clickedItem = await snapshot.getPromise(authorItemByDoenetId(doenetId));
+  let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
   console.log("clickedItem",clickedItem.type,clickedItem.doenetId,clickedItem)
   
   let newSelectedItems = [];
@@ -352,7 +369,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
   if (selectedItems.length == 0){
   //No items selected so select this item
   newSelectedItems = [doenetId]
-  set(authorItemByDoenetId(doenetId),(was)=>{
+  set(itemByDoenetId(doenetId),(was)=>{
     let newObj = {...was};
     newObj.isSelected = true;
     return newObj;
@@ -362,7 +379,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     if(e.metaKey){
       //If cmd then clear the one item
       newSelectedItems = [];
-      set(authorItemByDoenetId(doenetId),(was)=>{
+      set(itemByDoenetId(doenetId),(was)=>{
         let newObj = {...was};
         newObj.isSelected = false;
         return newObj;
@@ -384,7 +401,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       let parentDoenetIdsToSkip = [];
       for (let i = 0; i < authorItemDoenetIds.length; i++){
         let itemDoenetId = authorItemDoenetIds[i];
-        const authorItemInfo = await snapshot.getPromise(authorItemByDoenetId(itemDoenetId))
+        const authorItemInfo = await snapshot.getPromise(itemByDoenetId(itemDoenetId))
         if (skip){
           //Check if back to same parent
           if (!parentDoenetIdsToSkip.includes(authorItemInfo.parentDoenetId)){
@@ -419,7 +436,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       for (let newDoenetId of itemsToSelect){
         if (!selectedItems.includes(newDoenetId)){
           newSelectedItems.push(newDoenetId);
-          set(authorItemByDoenetId(newDoenetId),(was)=>{
+          set(itemByDoenetId(newDoenetId),(was)=>{
             let newObj = {...was};
             newObj.isSelected = true;
             return newObj;
@@ -431,7 +448,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       let itemWasSelected = selectedItems.includes(doenetId);
       if (itemWasSelected){
         newSelectedItems = selectedItems.filter((testId)=>{return testId != doenetId});
-        set(authorItemByDoenetId(doenetId),(was)=>{
+        set(itemByDoenetId(doenetId),(was)=>{
           let newObj = {...was};
           newObj.isSelected = false;
           return newObj;
@@ -440,7 +457,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       }else{
         //Add this item to the selected items
         newSelectedItems = [...selectedItems,doenetId];
-        set(authorItemByDoenetId(doenetId),(was)=>{
+        set(itemByDoenetId(doenetId),(was)=>{
           let newObj = {...was};
           newObj.isSelected = true;
           return newObj;
@@ -451,14 +468,14 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       //No Shift or Command Click
       //Only select this option and remove the others
       newSelectedItems = [doenetId];
-      set(authorItemByDoenetId(doenetId),(was)=>{
+      set(itemByDoenetId(doenetId),(was)=>{
                 let newObj = {...was};
                 newObj.isSelected = true;
                 return newObj;
               })
       for (let doenetIdToUnselect of selectedItems){
         if (doenetId != doenetIdToUnselect){ //Leave the selected on selected
-          set(authorItemByDoenetId(doenetIdToUnselect),(was)=>{
+          set(itemByDoenetId(doenetIdToUnselect),(was)=>{
             let newObj = {...was};
             newObj.isSelected = false;
             return newObj;

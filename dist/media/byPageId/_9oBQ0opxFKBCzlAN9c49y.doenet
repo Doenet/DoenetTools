@@ -1,0 +1,50 @@
+<title>The stability of equilibria of a differential equation</title>
+
+<description>
+Identifying stable and unstable equilibria of a differential equation by graphically solving the equation for nearby initial conditions.
+</description>
+
+<figure>
+<video youtube="KgpUyKUC85Q" width="640px" height="360px"/>
+<caption>The stability of equilibria of a differential equation</caption>
+</figure>
+<!--Video transcript -->
+
+<!-- End video transcript -->
+<!-- boxedvideo stability_equilibria_differential_equation -->
+
+
+<!-- django tag display_video_questions, stability_equilibria_differential_equation, , , ,  -->
+
+
+<p></p>
+
+<figure>
+<video youtube="4Qlo4SSH0V8" width="640px" height="360px"/>
+<caption>The stability of equilibria of a differential equation, analytic approach</caption>
+</figure>
+<!--Video transcript -->
+
+<!-- End video transcript -->
+<!-- boxedvideo stability_equilibria_differential_equation_analytic_approach -->
+
+
+
+
+<!-- django tag index_entry, stability theorem, , , , "scalar autonomous differential equation" "stability_theorem_1" -->
+
+
+<!-- django tag index_entry, differential equation, , , , "stability theorem" "stability_theorem_2" -->
+
+
+
+<section><title>Stability theorem</title>
+
+
+<p>Let <m>\frac{ dx }{ dt } = f(x)</m> be an autonomous differential equation.  Suppose <m>x(t)=x^*</m> is an equilibrium, i.e.,
+<m>f(x^*)=0</m>.  Then</p>
+<ul>
+<li>if <m>f'(x^*)\lt 0</m>, the equilibrium <m>x(t)=x^*</m> is stable, and</li>
+<li>if <m>f'(x^*)\gt 0</m>, the equilibrium <m>x(t)=x^*</m> is unstable.</li>
+</ul>
+</section>

@@ -4,7 +4,7 @@ import { useRecoilValue } from 'recoil';
 // import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { searchParamAtomFamily } from '../NewToolRoot';
 // import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { authorItemByDoenetId, copiedCourseItems, cutCourseItems, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, copiedCourseItems, cutCourseItems, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import { useToast, toastType } from '@Toast';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
@@ -16,8 +16,8 @@ export default function CutCopyPasteMenu() {
   let cutObjs = useRecoilValue(cutCourseItems);
   let copiedObjs = useRecoilValue(copiedCourseItems);
   let selectedItems = useRecoilValue(selectedCourseItems);
-  let firstSelectedDoenetId = selectedItems[0]
-  let firstSelectedItemObj = useRecoilValue(authorItemByDoenetId(firstSelectedDoenetId))
+  // let firstSelectedDoenetId = selectedItems[0]
+  // let firstSelectedItemObj = useRecoilValue(itemByDoenetId(firstSelectedDoenetId))
 
   let canCopy = true;
   let canCut = true;
@@ -29,7 +29,11 @@ export default function CutCopyPasteMenu() {
   if (cutObjs.length == 0 && copiedObjs.length == 0){
     canPaste = false;
   }
-  if (selectedItems.length != 1 || firstSelectedItemObj?.type == 'order'){
+  // if (selectedItems.length != 1 || firstSelectedItemObj?.type == 'order'){
+  //   canCopy = false;
+  //   canCut = false;
+  // }
+  if (selectedItems.length == 0 ){
     canCopy = false;
     canCut = false;
   }
@@ -87,7 +91,7 @@ disabled={!canPaste}
   return (
  <>
  <ActionButtonGroup width="menu">
-    {copyJSX}
+    {/* {copyJSX} */}
     {cutJSX}
     {pasteJSX}
  </ActionButtonGroup>

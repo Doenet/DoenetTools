@@ -1,0 +1,11 @@
+<mathinput name='m' prefill='x^2' />
+
+<p>$m</p>
+
+<graph width='6in' height='6in'>
+  <function formula='$m' />
+<point>($s,3)</point>
+
+</graph>
+
+<slider name='s' />

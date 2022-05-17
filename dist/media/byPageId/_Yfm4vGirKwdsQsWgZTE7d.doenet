@@ -1,0 +1,91 @@
+<Title>Matter is composed of atoms</Title>
+
+<alert>Learning Objectives</alert>
+<ul><li>Describe the subatomic particles that make up an atom</li>
+<li>Sketch a picture of an atom, labeling the nucleus</li>
+<li>Understand that opposite charges cancel one another</li></ul>
+
+<p>Wave your hand through the air, touch the keyboard in front of you, take a sip of your beverage; in each case you can feel the matter that surrounds you.  All of this matter is composed of tiny particles called atoms.  Each atom is composed of subatomic particles;  <alert>protons</alert>, <alert>neutrons</alert>, and <alert>electrons</alert>.  The table shows the symbols used to describe these particles, as well as their charge, mass, and location in an atom. </p>
+
+<table><title>Subatomic Particle Symbols</title>
+        <tabular left="minor" right="minor" 
+          top="minor" bottom="minor" halign="center">
+          <row bottom="minor">
+            <cell>Subatomic Particle</cell>
+            <cell>Symbol</cell>
+            <cell>Charge</cell>
+            <cell>Mass*</cell>
+            <cell>Location</cell>
+          </row>
+          <row bottom="minor">
+            <cell>Proton</cell>
+            <cell>p+</cell>
+            <cell>+1</cell>
+            <cell>1.67 x 10-27 kg</cell>
+            <cell>nucleus</cell>
+          </row>
+          <row bottom="minor">
+            <cell>Neutron</cell>
+            <cell>n<m>^{\circ}</m></cell>
+            <cell>-1</cell>
+            <cell>1.67 x 10-27 kg</cell>
+            <cell>nucleus</cell>
+          </row>
+          <row bottom="minor">
+            <cell>Electron</cell>
+            <cell>e</cell>
+            <cell>-1</cell>
+            <cell>9.11 x 10-31 kg</cell>
+            <cell>around nucleus</cell>
+          </row>
+        </tabular> </table>			
+		
+<p>*You may not be familiar with the numerical notation shown for these masses, or with kilograms as a unit of mass.  No need to worry, as you will be provided more instruction before you need to perform any tasks based on this information. </p>
+
+<p>Each atom has a nucleus at its center, which contains protons and neutrons.  These are the heavier particles and determine the mass of an atom.  The electrons occupy a cloud outside of the nucleus and determine the size of an atom.  We will discuss these details shortly.</p>
+
+<p>Each atom is also neutral.  This means that it does not have a net charge.  This also means each atom contains the same number of positive and negative charges.  We say that equal numbers of positive and negative charges cancel one another.  Therefore, atoms contain the same number of protons and electrons.  Since neutrons do not carry a charge, their numbers can vary without changing the neutral property of an atom.  The number of neutrons does matter, as we will find in the next lesson.</p>
+
+<p><em>Atoms Video (8:38 – 14:17)</em></p>
+
+<Section><title>Let’s Practice</title>
+<setup>
+ 
+<number name="atomNum1">1</number>
+<number name="atomNum2">2</number>
+<number name="atomNum3">3</number>
+<number name="atomNum4">4</number>
+<selectFromSequence from="1" to="3" name="x" />
+<select assignNames="y">2 3 5</select>
+</setup>
+  
+<problem>Select any descriptions of p, n, e that represent a neutral atom.
+  <answer name="p1">
+    <choiceInput>
+              <choice>p=5, n=6, e=5</choice>
+              <choice>p=2, n=3, e=2</choice>
+              <choice>p=28, n=28, e=27</choice>
+          </choiceInput>
+  </answer>
+</problem>
+<problem>Fill in the missing blanks 
+ <p>p = <answer name="p2">
+    <award>$atomNum1</award>
+  </answer></p>
+   <p>n = <math simplify="true" >$atomNum1$x</math></p>
+   <p>e = $atomNum1</p>
+</problem>
+
+<problem>Fill in the missing blanks 
+ <p>p = $atomNum2
+  </p>
+   <p>n = <math simplify="true">$y$atomNum2</math></p>
+   <p>e = <answer name="p3">
+    <award>$atomNum2</award></answer></p>
+</problem>
+  </Section>
+
+
+
+
+ 

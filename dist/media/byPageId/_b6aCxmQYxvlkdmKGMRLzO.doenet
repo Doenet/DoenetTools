@@ -1,0 +1,316 @@
+<problem>
+<!-- <title>Phase lines from bifurcation diagram, cubic</title> -->
+
+<setup>
+  
+<selectFromSequence assignNames='bifpoint1' from='-9' to=' 4' />
+<selectFromSequence assignNames='bifpoint2' from='$bifpoint1 +3' to=' 9' />
+<selectFromSequence assignNames='bifxval1 bifxval2' from='-10.0' to=' 10.0' numberToSelect="2" withReplacement="false" sortResults />
+
+<select type="boolean" assignNames='middle_stable'>true false</select>
+<boolean name='outside_stable'>not $middle_stable </boolean>
+
+<selectFromSequence assignNames='parval1' from='-10' to=' $bifpoint1 -1' />
+<selectFromSequence assignNames='parval2' from='$bifpoint1 +1' to=' $bifpoint2 -1' />
+<selectFromSequence assignNames='parval3' from='$bifpoint2 +1' to=' 10' />
+<select assignNames='x' >x y z s u v w</select>
+<select assignNames='par' >a b c alpha beta gamma</select>
+<select assignNames='f' >f g h</select>
+<function name='basefun' variables='$x' symbolic>1/2*$x ^3-3/2*$x </function>
+
+<function name='fun' variables='$x'>(<number>($bifpoint2 - $bifpoint1)/2</number>)*$$basefun((<number>2/($bifxval2 -$bifxval1)</number> $x)+<number>($bifxval1 +$bifxval2 )/($bifxval1 -$bifxval2 )</number>)+<number>($bifpoint1 +$bifpoint2)/2</number></function>
+  
+<math name='xmax' simplify='full' >max($bifpoint2 +2,11)</math>
+<math name='xmin' simplify='full' >min($bifpoint1 -2,-11)</math>
+<math name='ymax' simplify='full' >max(max($bifxval1 ,$bifxval2 )+abs($bifxval1 -$bifxval2 )*1.5,1)</math>
+<math name='ymin' simplify='full' >min(min($bifxval1 ,$bifxval2 )-abs($bifxval1 -$bifxval2 )*1.5,-1)</math>
+
+
+  
+<solveEquations name="par1Sol" variables="$x" minVar="$ymin" maxVar="$ymax">$fun-$parval1=0</solveEquations>
+
+
+<solveEquations name="par2Sol" variables="$x" minVar="$ymin" maxVar="$ymax">$fun-$parval2=0</solveEquations>
+
+
+<solveEquations name="par3Sol" variables="$x" minVar="$ymin" maxVar="$ymax">$fun-$parval3=0</solveEquations>
+
+
+<mathlist name='parval3_roots'>
+  <copy prop="solutions" tname="par3Sol" />
+</mathlist>
+
+<math name='parval1_root1' displayDigits="3"><copy prop="solution1" tname="par1Sol" /></math>
+<math name='parval2_root1' displayDigits="3"><copy prop="solution1" tname="par2Sol" /></math>
+<math name='parval2_root2' displayDigits="3"><copy prop="solution2" tname="par2Sol" /></math>
+<math name='parval2_root3' displayDigits="3"><copy prop="solution3" tname="par2Sol" /></math>
+<math name='parval3_root1' displayDigits="3"><copy prop="solution1" tname="par3Sol" /></math>
+
+
+<number name='ne_1'>1</number>
+<number name='ne_2'>3</number>
+<number name='ne_3'>1</number>
+
+
+  <styleDefinitions>
+  <styleDefinition styleNumber="2" lineWidth="3" />
+  <styleDefinition styleNumber="3" lineColor="magenta" lineStyle="solid" lineWidth="2" markerColor="magenta" markerStyle="circle" markerSize="4" />
+    <styleDefinition styleNumber="9" markerStyle="circle" markerColor="red" markerSize="5" />
+</styleDefinitions>
+
+<function name='f1' domain="($ymin,$bifxval1)" styleNumber="2" >$fun</function>
+<function name='f2' domain="($bifxval1,$bifxval2)" styleNumber="2" >$fun</function>
+<function name='f3' domain="($bifxval2,$ymax)" styleNumber="2" >$fun</function>
+
+  
+
+</setup>
+
+<p>For the dynamical system
+<me>\frac{ d$x }{ dt } = $f ($x , $par ),</me>
+where the function <m>$f </m> of <m>$x </m> also depends on a parameter <m>$par </m>, a bifurcation diagram with respect to the parameter <m>$par </m> is shown below.  In this diagram, solid lines represent stable equilibria and dashed lines represent unstable equilibria.</p>
+
+
+
+<graph width='500' height='350' xmin='$xmin' xmax='$xmax' ymin='$ymin' ymax='$ymax' xlabel='$par' ylabel='$x' fixAxes grid>
+  <equilibriumCurve flipFunction styleNumber="3" stable="$outside_stable" name="ec1" nearestPointAsCurve>$f1</equilibriumCurve>
+  <equilibriumCurve flipFunction styleNumber="3" stable="$middle_stable" name="ec2" nearestPointAsCurve>$f2</equilibriumCurve>
+  <equilibriumCurve flipFunction styleNumber="3" stable="$outside_stable" name="ec3" nearestPointAsCurve>$f3</equilibriumCurve>
+  <point x="0" y="0" stylenumber="3" hide='not $showPoint'>
+    <constraints>
+      <constrainTo>$ec1$ec2$ec3</constrainTo>
+    </constraints>
+  </point>
+</graph>
+
+
+
+<p>To better determine values from the diagram, you can click this box <booleaninput name="showPoint" /> to reveal a point that you can move around to read off coordinates from different parts of the graph.</p>
+
+
+<ol>
+
+<li>
+<p>When <m>$par = $parval1 </m>, how many equilibria are there? Determine their values and their stability.</p>
+
+<p>To report your answers, sketch the phase line on the below number line for the case when <m>$par = $parval1 </m>, including equilibria and direction field.  Use a solid circle for stable equilibria and an open circle for unstable equilibria.  Place circles for equilibria at integer values, using the rounded values of equilibria determined from the bifurcation diagram.</p>
+
+
+   <copy uri="doenet:contentId=c07131d42f82138ab1834fb9f1797873817c2716a330ea4cb39057071b73a8f3&doenetId=ykzslXSeVY0z_NhgA46ga" width="600" height="100" vmin="$ymin" vmax="$ymax" var="$x" nEquilibria="1" E1='$parval1_root1' E1stable="$outside_stable" attractThreshold="0.02($ymax-$ymin)" />
+
+
+
+</li>
+
+<li>
+<p>When <m>$par = $parval2 </m>, how many equilibria are there? Determine their values and their stability.</p>
+
+<p>To report your answers, sketch the phase line on the below number line for the case when <m>$par = $parval2 </m>, including equilibria and direction field.  Use a solid circle for stable equilibria and an open circle for unstable equilibria.  Place circles for equilibria at integer values, using the rounded values of equilibria determined from the bifurcation diagram.  Follow the above instructions to change the phase line applet.</p>
+
+
+   <copy uri="doenet:contentId=c07131d42f82138ab1834fb9f1797873817c2716a330ea4cb39057071b73a8f3&doenetId=ykzslXSeVY0z_NhgA46ga" width="600" height="100" vmin="$ymin" vmax="$ymax" var="$x" nEquilibria="3" E1='$parval2_root1' E1stable='$outside_stable' E2='$parval2_root2' E2stable='$middle_stable' E3='$parval2_root3' E3stable='$outside_stable' attractThreshold="0.02($ymax-$ymin)" />
+
+
+</li>
+
+<li>
+<p>When <m>$par = $parval3 </m>, how many equilibria are there? Determine their values and their stability.</p>
+
+<p>To report your answers, sketch the phase line on the below number line for the case when <m>$par = $parval3 </m>,  including equilibria and direction field.  Use a solid circle for stable equilibria and an open circle for unstable equilibria.  Place circles for equilibria at integer values, using the rounded values of equilibria determined from the bifurcation diagram.  Follow the above instructions to change the phase line applet.</p>
+
+  <copy uri="doenet:contentId=c07131d42f82138ab1834fb9f1797873817c2716a330ea4cb39057071b73a8f3&doenetId=ykzslXSeVY0z_NhgA46ga" width="600" height="100" vmin="$ymin" vmax="$ymax" var="$x" nEquilibria="1" E1='$parval3_root1' E1stable="$outside_stable" attractThreshold="0.02($ymax-$ymin)" />
+
+
+</li>
+
+<li>
+<p>Identify any bifurcation points.</p>
+
+<p>Bifurcations points are at <m>$par  =</m> 
+  <mathinput name="bif1_ans" /> and at <m>$par  =</m> <mathinput name="bif2_ans" />
+<answer name="bifpoints_ans" matchPartial>
+<award targetsAreResponses>
+  <when>$bif1_ans=$bifpoint1 and $bif2_ans=$bifpoint2</when>
+</award>
+<award targetsAreResponses>
+  <when>$bif1_ans=$bifpoint2 and $bif2_ans=$bifpoint1</when>
+</award>
+</answer>
+</p>
+
+</li>
+
+
+</ol>
+
+
+<solution>
+
+
+<ol>
+
+<li>
+When <m>$par = $parval1 </m>, there is one equilibrium: <m>$x _e \approx $parval1_root1</m>.  The equilibrium is
+<conditionalcontent>
+<case condition='$middle_stable'>unstable</case>
+<else>stable</else>
+</conditionalcontent>.
+The phase line for <m>$x </m> should be drawn with a
+<conditionalcontent>
+<case condition='$middle_stable'>
+unfilled
+</case>
+<else>
+filled
+</else>
+</conditionalcontent>
+ circle at  <m>$x = $parval1_root1</m> and the direction field arrows pointing
+<conditionalcontent>
+<case condition='$middle_stable'>
+away from
+</case>
+<else>
+toward
+</else>
+</conditionalcontent>
+ the equlibrium.
+
+<graph width='500' height="150" xmin='$ymin' xmax='$ymax' ymin="-3" ymax="3" displayYAxis="false" ylabel="$x" fixAxes>
+  <equilibriumPoint styleNumber="9" fixed stable="$outside_stable" x="$parval1_root1" y="0" />
+
+  <conditionalContent>
+    <case condition="$outside_stable">
+      <vector styleNumber="2" fixed head="($parval1_root1-0.5,0)" tail="($ymin+0.5,0)" />
+      <vector styleNumber="2" fixed head="($parval1_root1+0.5,0)" tail="($ymax-0.5, 0)" />
+    </case>
+    <else>
+      <vector styleNumber="2" fixed tail="($parval1_root1-0.5,0)" head="($ymin+0.5,0)" />
+      <vector styleNumber="2" fixed tail="($parval1_root1+0.5,0)" head="($ymax-0.5, 0)" />
+    </else>
+  </conditionalContent>
+</graph>
+
+
+</li>
+
+<li>
+When <m>$par = $parval2 </m>, there are three equilibria.  The first equilibrium, <m>$x _1 \approx $parval2_root1</m>,  is
+<conditionalcontent>
+<case condition='$middle_stable'>unstable</case>
+<else>stable</else>
+</conditionalcontent>.
+The second equilibrium, <m>$x _2 \approx $parval2_root2</m>, is
+<conditionalcontent>
+<case condition='$middle_stable'>stable</case>
+<else>unstable</else>
+</conditionalcontent>.
+The third equilibrium, <m>$x _3 \approx $parval2_root3</m>,  is
+<conditionalcontent>
+<case condition='$middle_stable'>unstable</case>
+<else>stable</else>
+</conditionalcontent>.
+The phase line for <m>$x </m> should be drawn with a
+<conditionalcontent>
+<case condition='$middle_stable'>
+unfilled
+</case>
+<else>
+filled
+</else>
+</conditionalcontent>
+ circle at  <m>$x =$parval2_root1</m>,  a
+<conditionalcontent>
+<case condition='$middle_stable'>
+filled
+</case>
+<else>
+unfilled
+</else>
+</conditionalcontent>
+ circle at  <m>$x =$parval2_root2</m>, and a
+<conditionalcontent>
+<case condition='$middle_stable'>
+unfilled
+</case>
+<else>
+filled
+</else>
+</conditionalcontent>
+ circle at  <m>$x =$parval2_root3</m>.  The direction field arrows should point away from the unfilled 
+circle<conditionalcontent condition='$middle_stable'>s</conditionalcontent>
+and toward the filled circle
+<conditionalcontent condition='$outside_stable'>s</conditionalcontent>.
+
+<graph width='500' height="150" xmin='$ymin' xmax='$ymax' ymin="-3" ymax="3" displayYAxis="false" ylabel="$x" fixAxes>
+  <equilibriumPoint styleNumber="9" fixed stable="$outside_stable" x="$parval2_root1" y="0" />
+  <equilibriumPoint styleNumber="9" fixed stable="$middle_stable" x="$parval2_root2" y="0" />
+  <equilibriumPoint styleNumber="9" fixed stable="$outside_stable" x="$parval2_root3" y="0" />
+
+  <conditionalContent>
+    <case condition="$middle_stable">
+      <vector styleNumber="2" fixed tail="($parval2_root1-0.5,0)" head="($ymin+0.5,0)" />
+      <vector styleNumber="2" fixed tail="($parval2_root1+0.2,0)" head="($parval2_root2-0.2, 0)" />
+      <vector styleNumber="2" fixed tail="($parval2_root3-0.2,0)" head="($parval2_root2+0.2, 0)" />
+      <vector styleNumber="2" fixed tail="($parval2_root3+0.5,0)" head="($ymax-0.5, 0)" />
+    </case>
+    <else>
+      <vector styleNumber="2" fixed head="($parval2_root1-0.5,0)" tail="($ymin+0.5,0)" />
+      <vector styleNumber="2" fixed head="($parval2_root1+0.2,0)" tail="($parval2_root2-0.2, 0)" />
+      <vector styleNumber="2" fixed head="($parval2_root3-0.2,0)" tail="($parval2_root2+0.2, 0)" />
+      <vector styleNumber="2" fixed head="($parval2_root3+0.5,0)" tail="($ymax-0.5, 0)" />
+    </else>
+  </conditionalContent>
+</graph>
+
+
+</li>
+
+<li>
+When <m>$par = $parval3 </m>, there is one equilibrium: <m>$x _e \approx $parval3_root1</m>.  The equilibrium is
+<conditionalcontent>
+<case condition='$middle_stable'>unstable</case>
+<else>stable</else>
+</conditionalcontent>.
+The phase line for <m>$x </m> should be drawn with a
+<conditionalcontent>
+<case condition='$middle_stable'>unfilled</case>
+<else>filled</else>
+</conditionalcontent>
+ circle at  <m>$x =$parval3_root1</m> and the direction field arrows pointing
+<conditionalcontent>
+<case condition='$middle_stable'>away from</case>
+<else>toward</else>
+</conditionalcontent>
+ the equlibrium.
+
+
+<graph width='500' height="150" xmin='$ymin' xmax='$ymax' ymin="-3" ymax="3" displayYAxis="false" ylabel="$x" fixAxes>
+  <equilibriumPoint styleNumber="9" fixed stable="$outside_stable" x="$parval3_root1" y="0" />
+
+  <conditionalContent>
+    <case condition="$outside_stable">
+      <vector styleNumber="2" fixed head="($parval3_root1-0.5,0)" tail="($ymin+0.5,0)" />
+      <vector styleNumber="2" fixed head="($parval3_root1+0.5,0)" tail="($ymax-0.5, 0)" />
+    </case>
+    <else>
+      <vector styleNumber="2" fixed tail="($parval3_root1-0.5,0)" head="($ymin+0.5,0)" />
+      <vector styleNumber="2" fixed tail="($parval3_root1+0.5,0)" head="($ymax-0.5, 0)" />
+    </else>
+  </conditionalContent>
+</graph>
+
+
+
+</li>
+
+<li>
+There are two bifurcations.  One bifurcation point is at <m>$par  = $bifpoint1 </m>, where two equilibria appear so that the number of equilibria increases from one to three as <m>$par </m> increases.  The other bifurcation point is at <m>$par =$bifpoint2 </m>, where two equilibria disappear so that the number of equilibria decreases from three to one as <m>$par </m> increases.
+</li>
+
+
+</ol>
+
+</solution>
+
+
+</problem>

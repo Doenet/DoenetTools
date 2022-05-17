@@ -1,0 +1,154 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tage>textInput</tage> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>prefill</attr>  <em>(text)</em></li>
+  <li><attr>size</attr>  <em>(number)</em></li>
+  <li><attr>bindValueTo</attr>  <em>(text)</em></li>
+  <li><attr>expanded</attr>  <em>(boolean)</em></li>
+  <li><attr>width</attr>  <em>(_componentSize)</em></li>
+  <li><attr>height</attr>  <em>(_componentSize)</em></li>
+  <aside><title><alert>Inherited from parent component/  <c>Input</c>:</alert></title>
+      <li><attr>collaborateGroups</attr>  <em>(collaborateGroups)</em></li>
+      </aside>
+</ul>
+
+</section>
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tage>textInput</tage><idx><tage>textInput</tage></idx> component renders a form input field for text responses from the user.  Note, this component differs from an <ref uri="doenet:doenetId=oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref> in that it does not automatically evaluate responses. If evaluation is desired, this can be incorporated by adding additional code (see Example 3 for one possible method.)</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tage>textInput</tage> with <attr>prefill</attr> attribute</title>
+<p>In the sample code below, the <tage>textInput</tage> component is used with its <attr>prefill</attr> attribute to record a named user response. This prefill value is then later used in the boolean specification of the <attr>hide</attr> attribute within the followup <ref uri="doenet:doenetId=ZKtFO1M4oFzd4S8zfJj55"><tag>p</tag></ref> component.  Once the user changes the input to a string other than the prefill value, the <attr>hide</attr> condition becomes <c>false</c> and the <tag>p</tag> appears. 
+ Note, you do not need to enclose the string in quotations within the <attr>hide</attr> condition.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;p&gt;What is your favorite food? &lt;textInput name="userResponse" prefill="enter food"/&gt;&lt;/p&gt;
+  
+&lt;p hide="&dollar;userResponse = enter food"&gt;Oh, nice, &dollar;userResponse sounds delicious!&lt;/p&gt; 
+</pre>
+ 
+  </example>  
+</subsection>
+ 
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 1)</title>
+<p>What is your favorite food? <textInput name="userResponse" prefill="enter food"/></p>
+  
+<p hide="$userResponse = enter food">Oh, nice, $userResponse sounds delicious!</p>  
+</example>
+ 
+
+<!--******************************************************-->
+
+<subsection><title>Example 2: <tage>textInput</tage> with <attr>expanded</attr> attribute</title>
+<p>In the sample code below, the <attr>expanded</attr> attribute is specified within the <tage>textInput</tage>, which renders a larger input field suitable for paragraph-length responses.  The user's response is stored by providing a <c>name</c> for the <tage>textInput</tage> and is later referenced with the <c>&dollar;name</c> notation.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;p&gt;Enter your response to the essay question below:&lt;/p&gt;
+  &lt;textInput expanded="true" name="essayResponse"/&gt;
+&lt;p&gt;Your response is stored as:  &dollar;essayResponse&lt;/p&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+  
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 2)</title>
+<p>Enter your response to the essay question below:</p>
+  <textInput expanded="true" name="essayResponse"/>
+<p>Your response is stored as:  $essayResponse</p>
+</example>
+ 
+
+<!--******************************************************-->
+    
+<subsection><title>Example 3: <tage>textInput</tage> evaluated with additional code</title>
+<p>In the sample code below, the named <tage>textInput</tage> is evaluated in an <ref uri="doenet:doenetId=oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref> block that follows the prompt.  (See also <ref uri="doenet:doenetId=fB4XolOYgmYs6HQXwY-F4"><tag>award</tag></ref>, <ref><tag>when</tag></ref>.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;p&gt;Who is the green monster on Sesame Street who lives in a trash can? &lt;textInput name="ans" /&gt;&lt;/p&gt;
+&lt;answer&gt;
+  &lt;award&gt;
+    &lt;when&gt;
+      &dollar;ans = &lt;text&gt;Oscar the Grouch&lt;/text&gt; or &dollar;ans = &lt;text&gt;Oscar&lt;/text&gt;
+    &lt;/when&gt;
+  &lt;/award&gt;
+&lt;/answer&gt;
+
+</pre>
+ 
+  </example>  
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 3)</title>
+<p>Who is the green monster on Sesame Street who lives in a trash can? <textInput name="ans" /></p>
+<answer>
+  <award>
+    <when>
+      $ans = <text>Oscar the Grouch</text> or $ans = <text>Oscar</text>
+    </when>
+  </award>
+</answer>
+
+</example>
+  
+
+
+<!--******************************************************-->
+
+<subsection><title>Example 4: <tage>textInput</tage>with <attr>size</attr> attribute and follow-up <tag>conditionalContent</tag></title>
+<p>In the sample code below, a <ref><tag>conditionalContent</tag></ref> block checks to see if the user has entered any text into the field by referencing a predefined blank <ref><tag>text</tag></ref>.  As soon as the named <tage>textInput</tage> returns <c>"true"</c> that content has been entered, the follow-up prompt is displayed.  The user's first <tage>textInput</tage>, the beginning line of the story, is then referenced by name as the <attr>prefill</attr> content of the second <tage>textInput</tage> (See also, <ref><tag>case</tag></ref>.)  </p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+&lt;text name="blank" hide /&gt;
+&lt;p&gt;Let's write a story. How should it start? &lt;textInput name="beginning" size="30"/&gt;.&lt;/p&gt; 
+
+&lt;conditionalContent&gt;
+  &lt;case condition="&dollar;beginning = &dollar;blank"&gt;&lt;/case&gt;
+  &lt;case condition="&dollar;beginning != &dollar;blank"&gt;
+    &lt;p&gt;Great beginning! Now, what comes next?&lt;/p&gt;
+    &lt;p&gt;&lt;textInput name="fullStory" expanded="true" 
+    prefill="&dollar;beginning"/&gt;&lt;/p&gt;
+  &lt;/case&gt;
+&lt;/conditionalContent&gt;
+</pre>
+ 
+  </example>  
+</subsection>
+ 
+<!--*******************************************************-->
+
+<example newNameSpace><title>What Doenet Renders (Example 4)</title>
+<text name="blank" hide />
+<p>Let's write a story. How should it start? <textInput name="beginning" size="30"/>.</p> 
+
+<conditionalContent>
+  <case condition="$beginning = $blank"></case>
+  <case condition="$beginning != $blank"><p>Great beginning! Now, what comes next?</p>
+<p><textInput name="fullStory" expanded="true" prefill="$beginning"/></p></case>
+</conditionalContent>
+
+</example>
+  
+</section>
+</document>
+
+
+

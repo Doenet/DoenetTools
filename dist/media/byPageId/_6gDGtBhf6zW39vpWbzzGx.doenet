@@ -1,0 +1,43 @@
+<!--******************************************************-->   
+<tabular> 
+<row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: inline mathematical display text referenced from user input</title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+<setup>
+  <function name="g" variables="x">x+1</function>
+  <point name="a" label="$a">(0, $$g(0))</point>
+</setup>
+
+<graph ymin="-5" ymax="5" xmin="-5" xmax="5">
+  $g
+  $a
+</graph>
+<p>Type the equation for the line shown above:
+<m>g(x) = </m>
+  <answer>
+    <mathInput name="eq1"/>
+      <award>
+        <when>
+        $eq1 = $g
+        </when>
+      </award>
+  </answer> 
+</p>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>

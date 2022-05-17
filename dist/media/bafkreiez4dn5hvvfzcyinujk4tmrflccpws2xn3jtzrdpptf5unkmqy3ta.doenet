@@ -1,0 +1,160 @@
+<title>Integration exam</title>
+
+<boolean hide name="beginExam">false</boolean>
+
+<section hide="$beginExam">
+  <title>Overview of exam</title>
+
+  <p>The Integration Exam consists of 6 problems.  Each problem is on its own page.  You can switch pages with the Previous and Next buttons.</p>
+
+  <p>When you are done, click the Finish Exam button.</p>
+ 
+
+<p><updateValue name="clickBegin" label="Go to first question" type="boolean" tname="beginExam" newValue="true" /></p>
+  
+</section>
+
+<div hide="$showQuitDialog or not $beginExam">
+
+<paginatorControls paginatorTname="pgn" />
+<paginator name="pgn" submitAllOnPageChange>
+
+
+
+
+<select numberToSelect="6" assignNames="((problem1)) ((problem2)) ((problem3)) ((problem4)) ((problem5)) ((problem6))">
+
+
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=27cca49ac1f37b599fba86214e149caa371e72cd5c6e4ae486a7a90f0ae140a0&doenetId=4ggToMnoSTiWLgg9cQxhF" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=8b3f37896900a7d772d8be5b37f33e3f64d0ff56254d4304e40038186a397b76&doenetId=pR30eTCX2GScLQLKpA7b3" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=8830df72c5cf9e6f9fcfca59ca58ade140fdd56cb9a4de331085d39a4dc2212f&doenetId=DwZ3rQi4QeEEznTGtPjtj" componentType="problem" />
+      </option>
+    </select>
+  </option>
+
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=2dba48e62676f03b5e326940ba9ad82fd49605eddaf577499a93e249708b3d76&doenetId=YUt_XP8hlDruoiB-0L0nr" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=621a97977c04a4f200a27a20a705ad185b00e2defe1d0b1b580a7e06faac759d&doenetId=040iOu9DoZFCAUxQexFYY" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=e6e5bd6ed4729b526d132d9387a7fd4961a8b4f1329e1f5208c226fb6052afd6&doenetId=Z44PHpNy14VwMJ6VkHVHw" componentType="problem"/>
+      </option>
+      <option>
+        <copy uri="doenet:contentId=43484ff4198ed7c090d74406ec297b00456d1ab606e284110404099b40068b1a&doenetId=bU8ENXaBDARhJsF2wHGsh" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=b8a3cbb40a4e7a3e38fc98173bbc518fa67c6e00fe7edd602f6ece92b4bda754&doenetId=_tFGcMXBuhamSXuiy_Ykq" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=a9e33746157edeabdb07127d9ea47b49b898bd3f806053efa1e7d0d5f46eee79&doenetId=h-SLgnFjfevDjzQ2-xfM2" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=f59e048ecfeb0abdf5c6f802823cad5c4aede4e7095fdab60360e5c37f8c46ed&doenetId=BRiSiCkAAjTqkwsbHHxN1" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=cdb55056c952686720c0d20a3b19734f3a831127f6a3151a3a628edbb849f125&doenetId=8-9cWIkQr8WfZjPldHJmb" componentType="problem" />
+      </option>
+    </select>
+  </option>
+
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=25cac8ef93aec881931314af3f317df6617d6f4b4a39facecb3f7395c7e3eb41&doenetId=r1rrxp5ZCiet2JyFyl5D3" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=7b7a30a90ab30c23d45281ae3b1bc5ea4d4cb5685f95fa17b625b5debf6d3a98&doenetId=K8ksH_YVYIO0Pz7Pksdmf" componentType="problem" />
+      </option>
+    </select>
+  </option>
+
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=3c8476b355ca371caee9f483fe4d33e103d41bf43db03d25c81623cdef79862e&doenetId=9QdY3M0-lpWGD04rH_zKg" componentType="problem"/>
+      </option>
+      <option>
+        <copy uri="doenet:contentId=619eb840193fd1a770dbae29dcbaa8a7655daa1a95be87b60b30c4a9139cbe7f&doenetId=ji8iYcIR3Ykm6CCquuNpK" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=7eaf417b3da94c8b5cff81337b5ff69032917e7a2ccd1f475da9ea48355e342f&doenetId=hwHSNWucQrLfvNznt9xNy" componentType="problem" />
+      </option>
+    </select>
+  </option>
+
+
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=1569737125fd8b1d6640d1df86206d3a15a0607bc648686c3e26ba16d0dafddc&doenetId=ESEWxbyaqMNL-o49IXScl" componentType="problem"/>
+      </option>
+      <option>
+        <copy uri="doenet:contentId=66bb764d6b432eb722f98e3b62b4c7b59e25fd78cae0456049d13188f10d273b&doenetId=hsK2yzw_EMMfmnQgc-mDJ" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=5c944b9d850afd91f5dbf960652bcc1371d6e7f596f5d1bf22149d85f4410633&doenetId=-z5YD7Ss8qtBPUwAzfSyg" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=8d4ebc18988a75f08a4781a9db722b1b4b1ef2182fde3ce3137ad0765ecb9712&doenetId=i_gneB7vOvaDxo_NwidEb" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=bb4f75bb3ad2e5c457b2b32f2764ebfddd7b5dcfc2294392919dd7ff8085c302&doenetId=HFKrG-O8r8du07xtTPUgZ" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=d67cdad58eea303bea91116c1f74f046a1676aeb76f2f25b1c08267e49d556e8&doenetId=CpEfIq9WC9qiiVkzeSRbK" componentType="problem" />
+      </option>
+    </select>
+  </option>
+
+  <option>
+    <select assignNamesSkip="2">
+      <option>
+        <copy uri="doenet:contentId=60d3257e9340b6c119cf2de33ee2bf21c2f681c6c345a1b4d145d6e0989448a6&doenetId=MQqu9r2vXuAwbtfrQKy8L" componentType="problem" />
+      </option>
+      <option>
+        <copy uri="doenet:contentId=d6a7b42a658622a66221e72bbbc3366016709eac1fe17fb0ff2d69ed3a96d9a0&doenetId=ClQSavDH_IufyiQKjkOKd" componentType="problem" />
+      </option>
+
+    </select>
+  </option>
+
+
+  
+</select>
+
+</paginator>
+
+<paginatorControls paginatorTname="pgn" />
+
+<boolean hide name="showQuitDialog" />
+<updateValue type="boolean" name="finishExam" label="Finish Exam" tName="showQuitDialog" newValue="true" disabled="$showQuitDialog" />
+
+<callAction triggerWithTnames="finishExam" tName="_document1" actionName='submitAllAnswers' />
+  
+</div>
+
+<conditionalContent condition="$showQuitDialog">
+
+<section>
+  <title>Are you sure you want to finish the Exam?</title>
+
+  
+  <p>
+    <updateValue type="boolean" name="cancelFinishExam" label="Cancel" tName="showQuitDialog" newValue="false" disabledIgnoresParentReadOnly />
+    <ref uri="https://www.doenet.org/#/exam?tool=endExam" name="endExam" createButton>Yes, Finish Exam.</ref>
+  </p>
+  
+</section>
+
+</conditionalContent>

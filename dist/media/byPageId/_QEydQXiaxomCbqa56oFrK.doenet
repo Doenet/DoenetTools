@@ -1,0 +1,19 @@
+<setup>
+  <integer name="a">13/2</integer>
+  <integer name="b">(2^(1/2))</integer>
+  <integer name="c">1.5</integer>
+  <integer name="d">3/4</integer>
+  <integer name="e">1.49</integer>
+  <integer name="f">3/2</integer>
+  <integer name="g">5/2</integer>
+  <integer name="h">7/2</integer>
+</setup>
+
+<p>This is <m>13/2</m> = <m>$a</m></p>
+<p>$b</p>
+<p>$c</p>
+<p>$d</p>
+<p>$e</p>
+<p>$f</p>
+<p>$g</p>
+<p>$h</p>

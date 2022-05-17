@@ -1,0 +1,48 @@
+<setup>
+  <selectfromsequence name="a" from="2" to="5"/> 
+  <selectfromsequence name="b" from="2" to="4"/>  
+  <selectfromsequence name="p" from="5" to="10"/> 
+ <math name="L1">$a*x+$b*y=$p</math>
+ <!-- The next three lines are the "distractors".  -->
+ <selectfromsequence name="a2" from="5" to="8"/> 
+ <selectfromsequence name="b2" from="5" to="8"/> 
+ <selectfromsequence name="a3" from="6" to="10"/> 
+ <selectfromsequence name="b3" from="6" to="10"/>  
+ <selectfromsequence name="a4" from="1" to="3"/> 
+ <selectfromsequence name="b4" from="3" to="3"/>  
+  <math name="L2">$a2*x+$b2*y=-$p</math>
+   <math name="L3">-$a3*x+$b3*y=$p</math>
+   <math name="L4">-$a4*x+$b4*y=-$p</math> 
+</setup>
+
+<!-- How can we vary the order the graphs appear in AND know which letter is correct? ALSO, can the radio buttons appear next to the graphs?  -->
+
+<p> Which of the following graphs could be the graph of 
+  <m>$L1</m>
+</p>
+<p>Answer:
+  <answer>
+  <choiceinput>
+  <choice credit="1">
+  <graph>
+     <line equation="$L1" />
+  </graph></choice>
+
+  <choice><graph>
+ <line equation="$L2" />
+</graph></choice>
+  <choice><graph>
+<line equation="$L3" />
+</graph></choice>
+  <choice><graph>
+ <line equation="$L4" />
+</graph></choice>
+</choiceinput>
+  </answer>
+
+</p>
+ 
+
+
+
+

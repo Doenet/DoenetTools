@@ -1,0 +1,209 @@
+<!--
+  Add grid, keep point that gives curve values?
+-->
+
+<!--
+#DESCRIPTION
+##  Calculus: Functions
+##ENDDESCRIPTION
+
+
+## DBsubject(Algebra)
+## DBchapter(Exponential and logarithmic expressions and functions)
+## DBsection(Graphs)
+## Date(08/29/2010)
+## Institution(University of Minnesota)
+## Author(Justin Sukiennik)
+## MLT(Expo_match_graphs)
+## Level(2)
+## TitleText1('Calculus: Concepts and Contexts')
+## AuthorText1('Stewart')
+## EditionText1('4 Custom UMTYMP Ed.')
+## Section1('1.5')
+## Problem1('')
+## KEYWORDS('calculus', 'function', 'exponential function', 'translation')
+-->
+
+<setup>
+  <selectFromSequence from="1" to="5" name="a" />
+
+  <select numberToSelect="4" assignNames="(fnA ansA) (fnB ansB) (fnC ansC) (fnD ansD)" withReplacement="false">
+    <option>
+      <function formula="e^x"/>
+      <text>A</text>
+    </option>
+    <option>
+      <function formula="e^(x+$a)"/>
+      <text>B</text>
+    </option>
+    <option>
+      <function formula="e^x-$a"/>
+      <text>C</text>
+    </option>
+    <option>
+      <function formula="e^(x+$a)-$a"/>
+      <text>D</text>
+    </option>
+  </select>
+</setup>
+
+<p>
+  Match the functions with one of the graphs below.
+</p>
+
+<sideBySide>
+  <p>
+    <figure suppressFigureNameInCaption>
+      <graph width="300" height="250" xmin="-8" xmax="8" ymin="-6" ymax="5">
+        <curve name="cvA">
+          <function formula="$fnA" />
+        </curve>
+        <point fixed name="ptA" label="(0,$$fnA(0))" x="0" y="$$fnA(0)">
+        </point>
+      </graph>
+      <caption>
+        A
+      </caption>
+    </figure>
+    
+    <p></p><p></p>
+    
+    <figure suppressFigureNameInCaption>
+      <graph width="300" height="250" xmin="-8" xmax="8" ymin="-6" ymax="5">
+        <curve name="cvC">
+          <function formula="$fnC" />
+        </curve>
+        <point fixed name="ptC" label="(0,$$fnC(0))" x="0" y="$$fnC(0)">
+        </point>
+      </graph>
+      <caption>
+        C
+      </caption>
+    </figure>
+  </p>
+  
+  <p>
+    <figure suppressFigureNameInCaption>
+      <graph width="300" height="250" xmin="-8" xmax="8" ymin="-6" ymax="5">
+        <curve name="cvB">
+          <function formula="$fnB" />
+        </curve>
+        <point fixed name="ptB" label="(0,$$fnB(0))" x="0" y="$$fnB(0)">
+        </point>
+      </graph>
+      <caption>
+        B
+      </caption>
+    </figure>
+    
+    <p></p><p></p>
+    
+    <figure suppressFigureNameInCaption>
+      <graph width="300" height="250" xmin="-8" xmax="8" ymin="-6" ymax="5">
+        <curve name="cvD">
+          <function formula="$fnD" />
+        </curve>
+        <point fixed name="ptD" label="(0,$$fnD(0))" x="0" y="$$fnD(0)">
+        </point>
+      </graph>
+      <caption>
+        D
+      </caption>
+    </figure>
+  </p>
+</sideBySide>
+
+<p>
+  1.
+  <answer name="ans1">
+    <choiceinput inline>
+      <choice credit="A=$ansA">A</choice>
+      <choice credit="B=$ansA">B</choice>
+      <choice credit="C=$ansA">C</choice>
+      <choice credit="D=$ansA">D</choice>
+    </choiceinput>
+  </answer>
+  <m>y=$fnA</m>
+</p>
+
+<p>
+  2.
+  <answer name="ans2">
+    <choiceinput inline>
+      <choice credit="A=$ansB">A</choice>
+      <choice credit="B=$ansB">B</choice>
+      <choice credit="C=$ansB">C</choice>
+      <choice credit="D=$ansB">D</choice>
+    </choiceinput>
+  </answer>
+  <m>y=$fnB</m>
+</p>
+
+<p>
+  3.
+  <answer name="ans3">
+    <choiceinput inline>
+      <choice credit="A=$ansC">A</choice>
+      <choice credit="B=$ansC">B</choice>
+      <choice credit="C=$ansC">C</choice>
+      <choice credit="D=$ansC">D</choice>
+    </choiceinput>
+  </answer>
+  <m>y=$fnC</m>
+</p>
+
+<p>
+  4.
+  <answer name="ans4">
+    <choiceinput inline>
+      <choice credit="A=$ansD">A</choice>
+      <choice credit="B=$ansD">B</choice>
+      <choice credit="C=$ansD">C</choice>
+      <choice credit="D=$ansD">D</choice>
+    </choiceinput>
+  </answer>
+  <m>y=$fnD</m>
+</p>
+
+<solution>
+  <tabular>
+    <row bottom="minor">
+      <cell>
+        1:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ansA
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        2:
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        $ansB
+      </cell>
+   </row>
+    <row bottom="minor">
+      <cell>
+        3:
+      </cell>
+      <cell></cell>
+      <cell></cell>
+      <cell>
+        $ansC
+      </cell>
+    </row>
+    <row bottom="minor">
+      <cell>
+        4:
+      </cell>
+      <cell></cell><cell></cell>
+      <cell>
+        $ansD
+      </cell>
+   </row>
+  </tabular>
+</solution>

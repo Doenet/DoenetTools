@@ -1,0 +1,18 @@
+<problem>
+<title>Cobweb tutorial</title>
+
+<setup>
+
+  <function name='f' variables='x'>2x-x^2/3</function>
+  <math name='x0' >1</math>
+
+</setup>
+
+<copy uri='doenet:contentId=131b048e2e551727967ed49f739d807371b460e154d3bdff290443aaf5e90a5c&doenetId=ZlFzlQJvbG3cQfV74rCV3' function="$f" x0="$x0"  width='400' height='300' xmin='-1' xmax='4' ymin='-0.7' ymax='3.5'  />
+
+  
+</problem>
+
+
+
+

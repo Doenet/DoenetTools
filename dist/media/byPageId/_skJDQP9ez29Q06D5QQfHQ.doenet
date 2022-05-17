@@ -1,0 +1,89 @@
+<problem>
+<!-- <title>Harvest fraction of fish</title> -->
+
+<setup>
+
+<selectFromSequence assignNames='n' from='2' to=' 6' />
+<selectFromSequence assignNames='M' from='1000' to=' 10000' step=' 100'/>
+<select assignNames='x' >x y z s</select>
+<number name='n_minus_1'>$n -1</number>
+<number name='n_plus_1'>$n +1</number>
+<math name='critical_point' simplify='numbers' >1/($n +1)</math>
+<function name='fun' variables='$x'>$M *$x *(1-$x )^$n </function>
+<evaluate name="fun_cp" function="$fun" input='$critical_point' forceNumeric displayDigits="5" />
+
+<math name='average_fish_cp' simplify='numbers' displayDigits="5">$fun_cp /$critical_point </math>
+<number name='min_x'>0</number>
+<number name='max_x'>1</number>
+<derivative name='fun_prime' simplify='full'>$fun</derivative>
+
+</setup>
+
+
+<p>Imagine that, if every year, a fraction <m>$x </m> of the fish are harvested from a lake, then the average number of fish in the lake will be <m>p($x )=$M (1-$x )^$n </m>.  This means that the annual fish harvest is <m>h($x )= $x  \cdot p($x ) = $M  $x  (1-$x )^$n </m>.  The goal is to determine the fraction of fish to harvest in order to maximize the harvest.</p>
+
+<p>What is the relevant range of fraction <m>$x </m>?  
+<mathinput name="mi_minx" />
+ <m>\le $x  \le</m> 
+<mathinput name="mi_maxx" />
+<answer>
+  <award targetsAreResponses="mi_minx mi_max">
+    <when matchPartial>$mi_minx=$min_x and $mi_maxx=$max_x</when>
+  </award>
+</answer>
+</p>
+
+<p>What is the derivative of <m>h</m>?  <m>\frac{ dh }{ d$x } =</m> 
+<answer>
+<award>$fun_prime </award>
+</answer>
+ </p>
+
+<p>In order to maximize the fish harvest, what fraction <m>$x </m> of fish should be harvested each year?  <m>$x  =</m> 
+<answer>
+<award>$critical_point </award>
+</answer>
+</p>
+
+<p> In this case, what will be the average number of fish in the lake?  
+<answer>
+<award allowedErrorInNumbers='0.001'>$average_fish_cp </award>
+</answer>
+ (If rounding, keep at least four digits.) </p>
+
+<p>How many fish will be harvested each year, on average? 
+<answer>
+<award allowedErrorInNumbers='0.001'>$fun_cp</award>
+</answer>
+ (If rounding, keep at least four digits.) </p>
+
+
+<solution>
+<p>Since <m>$x </m> is the fraction of fish, the relevant range of <m>$x </m> is <m>0 \lt $x  \lt 1</m>.  To find the maximum of <m>h</m> for <m>0 \lt $x  \lt 1</m>, we look for critical points of <m>h</m>.</p>
+
+<p>To differentiate <m>h($x )</m>, we must use the product rule.
+<md>
+  <mrow>\frac{ dh }{ d$x }\amp = \frac{ d }{ d$x } \left($M $x  \right) (1-$x )^$n  + $M $x \frac{ d }{ d$x } \left((1-$x )^$n \right)</mrow>
+  <mrow>\amp =\left($M  \right) (1-$x )^$n  + $M $x  \left( <math simplify="numbersPreserveOrder" format="latex">$n (1-$x )^{ $n_minus_1  }</math>(-1)\right)</mrow>
+</md>
+where we used the chain rule to calculate the derivative of <m>(1-$x )^$n </m>.  To simplify the derivative we factor out <m><math simplify="numbersPreserveOrder" format="latex">$M (1-$x )^{ $n_minus_1  }</math></m> from both terms:
+<md>
+  <mrow>\frac{ dh }{ d$x }\amp = <math simplify="numbersPreserveOrder" format="latex">$M  (1-$x )^{ $n_minus_1  }</math>\left[(1-$x ) -$n $x  \right]</mrow>
+  <mrow>\amp = <math simplify="numbersPreserveOrder" format="latex">$M  (1-$x )^{ $n_minus_1  }\left(1-$n_plus_1 $x  \right)</math>.</mrow>
+</md>
+The derivative is defined for all <m>$x </m> in the interval <m>0 \lt $x  \lt 1</m> that we care about.  The critical points are where the derivative is zero, i.e., where <m>1-$x =0</m> or <m>1-$n_plus_1 $x  =0</m>.  The critical points are <m>$x =1</m> and <m>$x  = 1/$n_plus_1 </m>.</p>
+
+<p>To find the global maximum, we check the endpoints and the critical points.  <m>h(0)=0</m>, <m>h(1)=0</m>, and
+<md>
+  <mrow>h(1/$n_plus_1 )\amp = $M (1/$n_plus_1 )($n /$n_plus_1 )^$n </mrow>
+  <mrow>\amp \approx $fun_cp.</mrow>
+</md>
+The maximum occurs at <m>$x =$critical_point </m>.  To maximize the fish harvest, 1/$n_plus_1  of the fish should be harvested each year.</p>
+
+<p>If one harvests at this rate, the average number of fish in the lake is <m>p\left($critical_point \right)=$M ($n /$n_plus_1 )^$n  \approx $average_fish_cp</m>.  The number of fish harvested, on average, is <m>h\left($critical_point \right) \approx $fun_cp</m>.</p>
+
+
+</solution>
+
+
+</problem>

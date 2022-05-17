@@ -18,7 +18,7 @@ import {
 
 import axios from 'axios';
 import { returnNumberOfActivityVariantsForCid } from '../../../_utils/activityUtils';
-import { authorItemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId } from '../../../_reactComponents/Course/CourseActions';
 
 
 export default function DraftAssignmentViewer() {
@@ -50,7 +50,7 @@ export default function DraftAssignmentViewer() {
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
 
-  let itemObj = useRecoilValue(authorItemByDoenetId(recoilDoenetId));
+  let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
 
   useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);
@@ -148,7 +148,9 @@ export default function DraftAssignmentViewer() {
 
   // console.log(`>>>>stage -${stage}-`)
 
-  if (stage === 'Initializing') {
+  if(courseId === "__not_found__") {
+    return <h1>Content not found or no permission to view content</h1>;
+  } else if (stage === 'Initializing') {
     // initializeValues(recoilDoenetId);
     return null;
   } else if (stage === 'Problem') {

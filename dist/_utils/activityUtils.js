@@ -81,33 +81,14 @@ export function parseActivityDefinition(activityDefDoenetML) {
       return { success: false, message: `Invalid activity definition: invalid document attributes: ${Object.keys(documentProps).join(", ")}` };
     }
 
-    let foundOrder = false;
+    let fakeOrder = { type: "order", behavior: "sequence", children: serializedDefinition.children };
+    let result = validateOrder(fakeOrder);
 
-    // remove blank string children
-    let documentChildren = serializedDefinition.children
-      .filter(x => typeof x !== "string" || /\S/.test(x))
-
-    for (let child of documentChildren) {
-      if (child.componentType?.toLowerCase() === "order") {
-        if (foundOrder) {
-          return { success: false, message: `Invalid activity definition: more than one base order defined` };
-        }
-
-        foundOrder = true;
-
-        let result = validateOrder(child);
-
-        if (!result.success) {
-          return { success: false, message: `Invalid activity definition: ${result.message}` };
-        }
-
-        jsonDefinition.order = result.order;
-
-      } else {
-        return { success: false, message: `Invalid activity definition: invalid child of type ${child.componentType}` };
-      }
-
+    if (!result.success) {
+      return { success: false, message: `Invalid activity definition: ${result.message}` };
     }
+
+    jsonDefinition.order = result.order;
 
     return { success: true, activityJSON: jsonDefinition }
 

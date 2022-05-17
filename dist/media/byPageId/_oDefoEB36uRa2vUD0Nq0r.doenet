@@ -1,0 +1,27 @@
+<p>Without <tag>intComma:</tag>  54321</p>
+<p>With <tag>intComma:</tag> <intComma>54321</intComma></p>
+<p>Without <tag>intComma:</tag>  2358234169284693875023</p>
+<p>With <tag>intComma:</tag> 
+<intComma>2358234169284693875023</intComma></p>
+
+
+<p>Displaying equations with <tag>intComma</tag>:</p>
+  <men><intComma>234234</intComma>+<intComma>21431234234</intComma></men>
+
+<p> Displaying results with <tag>intComma</tag>:</p>
+<setup>
+  <number name= "a">132134123</number>
+  <number name= "b">1242342345</number>
+  <number name= "c">$a+$b</number>
+</setup>
+
+
+<p><m><intComma>$a</intComma>+<intComma>$b</intComma>=<intComma>$c</intComma></m></p>
+
+<p>But note, you cannot define numbers this way and later use them for evaluation:</p>
+<setup>
+  <number name= "d"><intComma>132134123</intComma></number>
+  <number name= "e"><intComma>1242342345</intComma></number>
+  <number name= "f"><intComma>$a+$b</intComma></number>
+</setup>
+  <m>$d+$e=$f</m>

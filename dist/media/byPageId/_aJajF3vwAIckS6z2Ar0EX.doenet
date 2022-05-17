@@ -1,0 +1,99 @@
+<module>
+  <setup>
+  </setup>
+  <p>
+    <alert>Definition 4</alert>
+    An <em>event</em> is a subset of a sample space of an experiment.
+    A <em>probability</em> is a value assigned to a set of outcomes for an experiment (an event).
+    The probability of an event represents the likelihood that one of the outcomes
+    in the set will occur during the experiment.
+  </p>
+  <p>
+    <row><alert>Example</alert></row>
+    1.
+    We roll a red six-sided die and a blue six-sided die and note the result of each roll.
+    Find the sample space of the experiment and identify the outcomes in the events
+    <me>E=\text{ the red die shows }3</me> and 
+    <me>F=\text{ the sum of the results is 5.}</me>
+  </p>
+
+  <figure>
+    <image source="https://drive.google.com/uc?export=view&id=146yE8Qb7SA0ylzbhmMjVx3f6XlN1B6N9" width="700px" description="Tree Diagram of Experiment" />
+    <caption>
+      Tree diagram for rolling a red die then blue die.
+    </caption>
+  </figure>
+
+  <p>
+    Then
+    <me>E = \{R3B1,R3B2,R3B3,R3B4,R3B5,R3B6\}</me>
+    and 
+    <me>F = \{R1B4,R2B3,R3B2,R4B1\},</me>
+    so we can see that <m>|E|=6</m> and <m>|F|=4</m> (where we use the notation absolute value of a set to represent the size of the set).
+  </p>
+
+  <p>
+    <alert>Definition 5</alert>
+    Let us say that we have an experiment with exactly three outcomes: 1, 2, and 3.
+    Suppose we perform the experiment <m>n</m> times and outcome 1 occurs <m>n_1</m> times,
+    outcome 2 occurs <m>n_2</m> times, and outcome 3 occurs <m>n_3</m> times.
+    Then <m>n_1 + n_2 + n_3 = n</m>.
+    In this case, the <em>relative frequency</em> of outcome 1 is <m>\frac{n_1}{n}</m>,
+    of outcome 2 is <m>\frac{n_2}{n}</m>, and of outcome 3 is <m>\frac{n_3}{n}</m>.
+    Using these frequencies to measure the likelihood that an outcome occurs, notice two
+    important properties.
+    <ul>
+      <li>1. Each frequency is between 0 and 1, and</li>
+      <li>2. The sum of all frequencies is equal to 1.</li>
+    </ul>
+  </p>
+  <p>
+    Remark, in general, you can look at arbitrary probability spaces, but events still have to follow these two rules.
+    However, for the core material in Math 5248, the two above will be sufficient to describe the types of 
+    probabiliy experiments we'll be interested in.
+  </p>
+  <p>
+    <alert>Definition 6</alert>
+    Suppose that we are given an experiment with sample space <m>S</m> and 
+    every outcome is equally likely to occur. For any event <m>E\subset S</m>,
+    the <em>probability of Event <m>E</m></em>, denoted 
+    <me>\mathscr P(E) = \frac{|E|}{|S|},</me>
+    which <alert>only</alert> works when every outcome is equally likely.
+    More generally, the probability of event <m>E</m> is the sum of the probabilities of the outcomes contained in the set <m>E</m>.
+  </p>
+
+  <p>
+    <alert>Remark</alert>
+    In class, we'll use tree diagrams to develop conditional probabilities and discuss
+    the general case when every outcome is not equally likely. However, for the purposes
+    of what we need to do in order to attack classical ciphers, the previous page along 
+    with the material above is sufficient.
+  </p>
+
+  <p>
+    <alert>You practice</alert>
+    A few practice problems in order to gauge your understanding of the previous
+    material. We assume the die in question are <em>fair</em> (meaning every number is equally likely, no weighted dice to rig the game here).
+  </p>
+  <setup>
+    <selectFromSequence numberToSelect="2" from="6" to="10" step="2" assignNames="n1 n2" />
+    <selectFromSequence numberToSelect="2" from="$n1+2" to="2$n1-2" step="1" assignNames="k1 k2" />
+    <selectFromSequence numberToSelect="2" from="$n2+2" to="2$n2-2" step="1" assignNames="k3 k4" />
+  </setup>
+  <p>
+    <row>We roll a red $n1-sided die and a blue $n1-sided die. What is the probability that the sum of the two dice are $k1?</row>
+    <answer><award><math simplify>(2$n1-$k1+1)/$n1^2</math></award></answer>
+  </p>
+  <p>
+    <row>We roll a red $n1-sided die and a blue $n1-sided die. What is the probability that the sum of the two dice are $k2?</row>
+    <answer><award><math simplify>(2$n1-$k2+1)/$n1^2</math></award></answer>
+  </p>
+  <p>
+    <row>We roll a red $n2-sided die and a blue $n2-sided die. What is the probability that the sum of the two dice are $k3?</row>
+    <answer><award><math simplify>(2$n2-$k3+1)/$n2^2</math></award></answer>
+  </p>
+  <p>
+    <row>We roll a red $n2-sided die and a blue $n2-sided die. What is the probability that the sum of the two dice are $k4?</row>
+    <answer><award><math simplify>(2$n2-$k4+1)/$n2^2</math></award></answer>
+  </p>
+</module>

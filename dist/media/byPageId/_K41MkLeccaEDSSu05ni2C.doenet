@@ -1,0 +1,427 @@
+<sideBySide>
+  <ref createButton="true" uri="doenet:doenetId=3bg-Px4nAJ64L06G9Hr2H">Previous</ref>
+   <ref createButton="true"  uri="doenet:doenetId=A9wqehi3YpDK_C5B8uocT">Next</ref>
+</sideBySide>
+
+
+<title>Basic Formatting of Display Text</title>
+
+<aside><title>How to use this tutorial</title>
+  <p>
+  <ul>
+    <p><li><em>Preview</em> the sample code using the links at the top of the page.</li></p>
+    <p><li><em>Learn</em> by watching the video and reading the examples</li></p>
+    <p><li><em>Practice</em> with built-in tutorial exercises or by editing the sample code</li></p>
+    <p><li><em>Check your understanding</em> using the 4-question quiz at the end of the page</li></p>
+    </ul>
+</p>
+</aside>
+
+
+
+<section><title>Preview</title>(note:  clicking the links below will open a sample DoenetML file)
+  <tabular>
+    <row>
+      <cell><ref createButton = "true" uri= "doenet:doenetId=CzD4wf4mjrw6qiVt8PSlm"><tag>alert</tag><tag>/alert</tag></ref>
+      </cell>
+      <cell><em>makes enclosed text appear bold</em>
+      </cell>
+    </row>
+    <row>
+      <cell><ref createButton = "true" uri= "doenet:doenetId=o1uQIfHS3IoXG4-oVBh8z"><tag>em</tag><tag>/em</tag></ref>
+      </cell>
+      <cell><em>makes enclosed text emphasized or italicized</em>
+      </cell>
+    </row>
+    <row>
+      <cell><ref createButton = "true" uri= "doenet:doenetId=9sOkFeig9doFzCWNMSyQ4"><tag>q</tag><tag>/q</tag></ref>
+      </cell>
+      <cell><em>makes a quotation of the enclosed text</em>
+      </cell>
+    </row>
+    <row>
+      <cell><ref createButton = "true" uri= "doenet:doenetId=BPcQJ3T5JR5h9tcADxbjP"><tag>pre</tag><tag>/pre</tag></ref>
+      </cell>
+      <cell><em>preserves the exact formatting of the enclosed text as typed in the editor, including spacing and line breaks</em>
+      </cell>
+    </row>
+  </tabular>
+</section>
+
+<section><title>Learn</title>
+
+<video youtube = ""></video>
+<p><caption>Video:  How to use the <alert><tag>alert</tag><tag>/alert</tag></alert>, the <alert><tag>em</tag><tag>/em</tag></alert>, the <alert><tag>pre</tag><tag>/pre</tag></alert>, and the <alert><tag>q</tag><tag>/q</tag></alert> components</caption></p>
+
+<aside><title>Video Transcript</title>
+<p>See you in the next tutorial!  
+</p></aside>
+
+</section>
+
+<!--********************************************************************
+Warning - do not change anything in the table.  Preserved formatting
+********************************************************************-->
+
+<subsection><title>Examples</title>  
+  <tabular>
+    
+    <row bottom="minor" header>
+      <cell>DoenetML</cell>
+      <cell>Rendered</cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell><em>Creating bold text using the <tag>alert</tag> component:</em>
+        <pre>This word is super <alert><tag>alert</tag></alert>Important<tag><alert>/alert</alert></tag> to know!</pre>
+      </cell>
+      <cell>This word is super <alert>Important</alert> to know!
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell><em>Creating italicized text using the <tag>em</tag> component:</em>
+        <pre>"I didn't know him <alert><tag>em</tag></alert>personally<alert><tag>/em</tag></alert>, only by reputation."</pre>
+      </cell>
+                
+      <cell>"I didn't know him <em>personally</em>, only by reputation."
+      </cell>
+    </row>
+
+    <row bottom="minor">
+      <cell><em>Combining the <tag>em</tag> and the <tag>alert</tag> components:</em>
+        <pre>"What in the <tag><alert>em</alert></tag><tag><alert>alert</alert></tag>WORLD<tag><alert>/alert</alert></tag><tag><alert>/em</alert></tag> is all of this?"</pre>
+      </cell>
+                
+      <cell>"What in the <em><alert>WORLD</alert></em> is all of this?"
+      </cell>
+    </row>
+  
+
+  <row bottom="minor">
+      <cell><em>Using the <tag>pre</tag> component to preserve the exact spacing of text as typed:</em>
+      <pre>
+          <tag><alert>pre</alert></tag>
+            A world of dew,
+          And within every dewdrop
+            A world of struggle.
+
+                      -Kobayashi Issa<footnote />
+          <tag><alert>/pre</alert></tag>
+      </pre>
+      </cell>
+                
+      <cell><pre>
+            A world of dew,
+          And within every dewdrop
+            A world of struggle.
+
+                      -Kobayashi Issa
+      </pre>
+      </cell>
+    </row>
+    
+    <row bottom="minor">
+      <cell><em>Using the <tag>q</tag> component to display a quotation, nested within a
+        <tag>pre</tag> component to preserve line spacing, and with italicized author:</em>
+        <pre><alert><tag>pre</tag><tag>q</tag></alert>I think, therefore I am...  
+              (Cogito, ergo sum...)<tag><alert>/q</alert></tag>
+          
+                    <alert><tag>em</tag></alert>-René Descartes<alert><tag>/em</tag><tag>/pre</tag></alert>
+        
+    <em>(Note: on a Mac, to type an accent, hold the Option + 'e' key, then type the letter
+          that you want accented)</em>
+        </pre>
+      </cell>
+                
+      <cell><pre><q>I think, therefore I am...  
+              (Cogito, ergo sum...)</q>
+                     
+                        <em>-René Descartes</em></pre>
+      </cell>
+    </row>  
+  </tabular>
+
+  
+</subsection>
+
+<!--Practice Section problem 1************************************-->
+
+<section><title>Practice</title>
+    <problem sectionWideCheckWork aggregateScores><title>Problem 1</title>
+      <alert>Finish the code required to display the following sentence:</alert>
+      <p>We can use the <alert>Pythagorean Theorem</alert> to solve for the distance.
+      </p>
+      <p>We can use the 
+        <answer>
+          <textInput name="tI_1a" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_1a=<text>&lt;alert&gt;</text></when>
+            </award>
+        </answer>Pythagorean Theorem
+        <answer>
+          <textInput name="tI_1b" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_1b=<text>&lt;/alert&gt;</text></when>
+            </award>
+        </answer> to solve for the distance.
+      </p>
+    </problem>
+    
+<!--Practice Section problem 2***********************************-->
+  
+    <problem sectionWideCheckWork aggregateScores><title>Problem 2</title><alert>Finish the code required to display the following sentence:</alert>
+      <p>Think <em>before</em> you speak.</p>
+      <p>Think 
+        <answer>
+          <textInput name="tI_2a" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_2a=<text>&lt;em&gt;</text>
+              </when>
+            </award>
+        </answer> before
+        <answer>
+          <textInput name="tI_2b" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_2b= <text>&lt;/em&gt;</text></when>
+          </award>
+        </answer>you speak.
+      </p>
+    </problem>
+
+<!--Practice Section problem 3***********************************--> 
+  
+      <problem sectionWideCheckWork aggregateScores><title>Problem 3</title><alert>Beginning with the tag that italicizes, and nesting the tag that creates bold text inside of that, finish the code required to display the following sentence:</alert>
+      <p>I need to remember to get a bar of <em><alert>chocolate</alert></em>, a pound of <em><alert>coffee</alert></em>, and a wheel of <em><alert>cheese</alert></em> at the store.</p>
+      <p>I need to remember to get a bar of
+        <answer>
+          <textInput name="tI_3a" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3a=<text>&lt;em&gt;</text></when>
+            </award>
+        </answer>
+        <answer><textInput name="tI_3b" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3b=<text>&lt;alert&gt;</text></when>
+            </award>
+        </answer>chocolate
+        <answer>
+          <textInput name="tI_3c" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3c=<text>&lt;/alert&gt;</text></when>
+            </award>
+        </answer>
+        <answer><textInput name="tI_3d" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3d=<text>&lt;/em&gt;</text></when>
+            </award>
+        </answer>, a pound of 
+        <answer>
+          <textInput name="tI_3e" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3e=<text>&lt;em&gt;</text></when>
+            </award>
+        </answer>
+        <answer><textInput name="tI_3f" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3f=<text>&lt;alert&gt;</text></when>
+            </award>
+        </answer>coffee
+        <answer>
+          <textInput name="tI_3g" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3g=<text>&lt;/alert&gt;</text></when>
+            </award>
+        </answer>
+        <answer><textInput name="tI_3h" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3h=<text>&lt;/em&gt;</text></when>
+            </award>
+        </answer>, and a wheel of 
+        <answer>
+          <textInput name="tI_3i" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3i=<text>&lt;em&gt;</text></when>
+            </award>
+        </answer>
+        <answer><textInput name="tI_3j" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3j=<text>&lt;alert&gt;</text></when>
+            </award>
+        </answer>cheese
+        <answer>
+          <textInput name="tI_3k" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3k=<text>&lt;/alert&gt;</text></when>
+            </award>
+        </answer>
+        <answer><textInput name="tI_3l" prefill="<>"></textInput>
+            <award credit="1.0">
+              <when>$tI_3l=<text>&lt;/em&gt;</text></when>
+            </award>
+        </answer> at the store.
+      </p>
+    </problem>
+        
+<!--Practice Section problem 4***********************************-->        
+
+    <problem sectionWideCheckWork aggregateScores><title>Problem 4</title><alert>Finish the code to recreate the haiku shown below:</alert>
+    <p>
+      <pre>
+        The light of a candle
+    Is transferred to another candle
+        Spring twilight
+
+                    -Yosa Buson<footnote />
+      </pre>
+      <answer>
+        <textInput name="tI_4a" prefill="<>"></textInput>
+          <award credit="1.0">
+            <when>$tI_4a=<text>&lt;pre&gt;</text></when>
+          </award>
+      </answer><pre>
+        The light of a candle
+    Is transferred to another candle
+        Spring twilight
+
+                    -Yosa Buson
+<answer>
+  <textInput name="tI_4b" prefill="<>"></textInput>
+    <award credit="1.0">
+      <when>$tI_4b=<text>&lt;/pre&gt;</text></when>
+    </award>
+</answer></pre>
+    </p>
+    </problem>
+
+<!--Practice Section problem ***********************************--> 
+
+  
+      <problem sectionWideCheckWork aggregateScores><title>Problem 5</title><alert>Finish the code to create the quote displayed below:</alert>
+        <p>
+  <q>If you even dream of beating me you'd better wake up and apologize.</q> (Muhammad Ali)
+        </p>
+        <p>
+    <answer>
+      <textInput name="tI_5a" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5a=<text>&lt;q&gt;</text></when>
+        </award>
+    </answer>If you even dream of beating me you'd better wake up and apologize.
+        <answer>
+      <textInput name="tI_5b" prefill="<>"></textInput>
+        <award credit="1.0">
+          <when>$tI_5b=<text>&lt;/q&gt;</text></when>
+        </award>
+    </answer>(Muhammad Ali)
+        </p>
+        
+  </problem>
+  
+<!--Solution to the Practice Section*****************************-->
+
+  
+<solution>
+  <ol> 
+    <li><pre>
+      We can use the <tag>alert</tag>Pythagorean Theorem<tag>/alert</tag> to solve for the distance.
+    </pre>
+    </li>
+    <li><pre>
+        Think <tag>em</tag>before<tag>/em</tag> you speak.
+        </pre>
+    </li>
+    <li><pre>
+      I need to remember to get a bar of <tag>em</tag><tag>alert</tag>chocolate<tag>/alert</tag><tag>/em</tag>,
+      a pound of <tag>em</tag><tag>alert</tag>coffee<tag>/alert</tag><tag>/em</tag>,
+      and a wheel of <tag>em</tag><tag>alert</tag>cheese<tag>/alert</tag><tag>/em</tag> at the store.
+        </pre>
+    </li>
+    <li><pre>
+      <tag>pre</tag>
+        The light of a candle
+    Is transferred to another candle
+        Spring twilight
+
+                    -Yosa Buson
+      <tag>/pre</tag>
+  </pre>
+      </li>
+      <li><pre>
+  <tag>q</tag>If you even dream of beating me you'd better wake up and apologize.<tag>/q</tag> (Muhammad Ali)</pre>
+      </li>  
+   </ol>  
+</solution>
+
+
+
+
+  
+</section>
+<!--The Quiz Section***********************************************-->
+
+
+<section sectionWideCheckWork aggregateScores><title>Check Your Understanding</title>
+  <aside><title>Take the quiz</title>
+    <ol>
+      <li>Which component creates italicized text?                
+        <answer><choiceinput inline randomizeOrder="true">
+          <choice credit = "1">the <tag>em</tag><tag>/em</tag> component</choice>
+          <choice>the <tag>italics</tag><tag>/italics</tag> component</choice>
+          <choice>the <tag>alert</tag><tag>/alert</tag> component</choice>
+        </choiceinput></answer>
+      </li>
+      <p></p>
+  
+      <li>Which component preserves the formatting, including spacing and line breaks, of the text typed in the editor? 
+<answer><choiceinput inline randomizeOrder="true">
+          <choice>the <tag>preserve</tag><tag>/preserve</tag> component</choice>
+          <choice>the <tag>match</tag><tag>/match</tag> component</choice>
+          <choice credit = "1">the <tag>pre</tag><tag>/pre</tag> component</choice>
+        </choiceinput></answer>
+      </li>
+      <p></p>
+      <li>Which component creates bold text?<answer><choiceinput inline randomizeOrder="true">
+          <choice>the <tag>em</tag><tag>/em</tag> component</choice>
+          <choice>the <tag>bold</tag><tag>/bold</tag> component</choice>
+          <choice credit = "1">the <tag>alert</tag><tag>/alert</tag> component</choice>
+        </choiceinput></answer>
+      </li>
+      <p></p>
+      <li>Which component is used to display a quotation?<answer><choiceinput inline randomizeOrder="true">
+          <choice>the <tag>pre</tag><tag>/pre</tag> component</choice>
+          <choice>the <tag>p</tag><tag>/p</tag> component</choice>
+          <choice credit = "1">the <tag>q</tag><tag>/q</tag> component</choice>
+        </choiceinput></answer>
+      </li>
+    </ol>
+
+<!--The Quiz Section Solution*********************************-->
+    
+  <solution>
+  <ol>
+    <li>Use the <tag>em</tag><tag>/em</tag> component to create italicized text.</li>
+    <li>The <tag>pre</tag><tag>/pre</tag> component preserves the spacing and line breaks of text that is typed in the editor.</li>
+    <li>Use the <tag>alert</tag><tag>/alert</tag> component to create bold text.</li>
+    <li>To display a quotation, use the <tag>q</tag><tag>/q</tag> component.</li>
+  </ol>
+  </solution>
+
+</aside>
+</section>
+
+<section><title>References</title>
+  <ref createButton = "true" uri= "https://docs.google.com/spreadsheets/d/1TKjAJxFC7Lzz8YiMWUf7k2gL5omod_RJsk1gQ_RONQw/edit?usp=sharing">ComponentList</ref>
+  <ref createButton = "true" uri= "doenet:doenetId=EI8qVxTzW3tPXtzUD6mIl"><tag>section</tag>  <tag>/section</tag></ref>
+  <ref createButton = "true" uri= "doenet:doenetId=WOxEg_HgbMHZHSWHYXN4F"><tag>p</tag><tag>/p</tag></ref>
+  <ref createButton = "true" uri= "doenet:doenetId=lP_BhuhmGqnC7-mJwicom"><tag>ol</tag><tag>/ol</tag> and <tag>ul</tag><tag>/ul</tag></ref>
+</section>
+
+<aside>
+    <title>Citations</title>
+    <p>[1]"A World of Dew" by Kobayashi Issa:  Voutiritsas, T. (2021, July 21). 10 Vivid Haikus to Leave you Breathless. Read Poetry. https://www.readpoetry.com/10-vivid-haikus-to-leave-you-breathless/
+    </p>
+    <p>[2]"Lighting One Candle" by Yosa Buson:  Voutiritsas, T. (2021, July 21). 10 Vivid Haikus to Leave you Breathless. Read Poetry. https://www.readpoetry.com/10-vivid-haikus-to-leave-you-breathless/
+    </p>
+</aside>
+    

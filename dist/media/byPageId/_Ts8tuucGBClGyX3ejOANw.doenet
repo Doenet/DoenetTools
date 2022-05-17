@@ -1,0 +1,66 @@
+<problem>
+
+<setup>
+  <selectFromSequence assignNames='a' from="2" to="18"/>
+  <selectFromSequence assignNames='bb' step=' 0.05' from="1.2" to="1.6" />
+  <select assignNames='(q  half_life_or_doubling_time  half_or_two)'>
+    <option>
+      <number>0</number>
+      <text>doubling time</text>
+      <math>2</math>
+    </option>
+    <option>
+      <number>1</number>
+      <text>half-life</text>
+      <math>1/2</math>
+    </option>
+  </select>
+  
+  <math name='b' simplify='full'>$bb-$q</math>
+  <math name='t_half_double' simplify='full'>log($half_or_two)/log($b)</math>
+</setup>
+
+Consider the function <m>f(t)=$a($b)^t. \;\;</m> Find the 
+$half_life_or_doubling_time, i.e. find <m>t</m> such that <m>f(t)=
+$half_or_two f(0).</m>
+
+<p>
+$half_life_or_doubling_time =
+<mathinput size="20" name="input1"/>
+</p>
+<p>(If you round your answer, include 5 or more significant digits to be sure to earn full credit.)</p>
+
+<answer>
+<award targetsAreResponses="input1" allowedErrorInNumbers='0.0001'><when>
+  $input1 = $t_half_double
+</when></award>
+<award credit='0.5' allowedErrorInNumbers='0.01' feedbackcodes="numericalerror"><when>
+  $input1 = $t_half_double
+</when></award>
+<award credit='0.25' allowedErrorInNumbers='0.1' feedbackcodes="numericalerror"><when>
+  $input1 = $t_half_double
+</when></award>
+</answer>
+<copy prop="feedbacks" tname="_answer1" />
+
+<solution>
+<p>To find the 
+$half_life_or_doubling_time, we need to solve for the time when <m>f(t)=
+$half_or_two f(0).</m>  We do this by dividing the equation by <m>$a</m> (so that the left hand side becomes just an exponential), then taking the logarithm of both sides of the equation.  Note that <m>f(0) = $a($b)^0 = $a</m>. </p>
+<md>
+  <mrow>f(t)\amp = $half_or_two f(0)</mrow>
+  <mrow>$a($b)^t\amp = $half_or_two ($a)</mrow>
+  <mrow>($b)^t\amp = $half_or_two</mrow>
+  <mrow>\log  ($b)^t\amp = \log \left($half_or_two \right)</mrow>
+  <mrow>t \log  ($b)\amp = \log \left($half_or_two \right)</mrow>
+  <mrow>t\amp = \frac{\log($half_or_two )}{\log($b)} \approx <round numberdigits="5">$t_half_double</round></mrow>
+</md>
+
+<p>(It doesn't matter what base logarithm you use; you'll get the same answer for any base.)</p>
+
+<p>Note: you don't need to use a calculator and round you answer.  You can just enter your answer as
+<c>log(<copy prop="text" tname="half_or_two" />)/log(<copy prop="text" tname="b" />)</c>
+if you prefer.</p>
+</solution>
+
+</problem>

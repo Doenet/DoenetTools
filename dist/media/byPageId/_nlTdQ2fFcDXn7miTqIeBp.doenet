@@ -1,0 +1,44 @@
+<Title>Elements are Defined by Number of Protons</Title>
+
+<alert>Learning Objectives</alert>
+<ul><li>Identify an atom from its atomic number, using the periodic table</li>
+<li>Determine the chemical symbol of an element, given its name or atomic number, Z</li>
+<li>Define Isotope</li>
+<li>Determine whether two atoms are isotopes of one another, given the number of protons and neutrons present</li>
+<li>Determine the number of protons, neutrons, and electrons present, given the symbol, atomic number and mass number of an element</li>
+<li>Sketch a picture of an atom, labeling the nucleus</li></ul>
+
+<p>An atom is the smallest piece of matter that exhibits properties associated with a particular element.  If we try to divide it into smaller pieces, we no longer have an atom.  It would be like trying to divide your phone into smaller pieces – you could do this, but it would no longer be considered a phone and would not function properly. </p>
+
+<p>Each atom can be identified as a particular element using the number of protons found in its nucleus.  This number is called the atomic number, symbol Z, and is unique to each element.  The atomic number is shown above the symbol for each element on the <alert>periodic table</alert>.</p>	
+
+<image width="780" source="https://iupac.org/wp-content/uploads/2018/12/IUPAC_Periodic_Table-01Dec18.jpg" />
+
+<p>The periodic table contains a wealth of information about the known elements, but here we focus only on the symbol, name, and atomic number.  The elements are arranged by increasing atomic number.  You can see that each element has a name and a symbol (abbreviation).  It is important to note that all element symbols consist of one or two letter abbreviations, where the first letter is always capitalized and the second one is always lower case. </p>
+
+<Section><title>Let’s Practice</title>
+<setup>
+<number name="atomNum1">1</number>
+<number name="atomNum2">2</number>
+<number name="atomNum3">3</number>
+<number name="atomNum4">4</number>
+</setup>
+  
+<problem>Determine the symbol for the element with [put variable here - can I limit range of Z values selected?] protons.
+    <p>symbol = <answer name="p1">
+      how do I indicate the symbol pulled from the atom set here?
+    <award>$atomNum1</award>
+  </answer></p>
+   
+</problem>
+<problem>Fill in the missing blanks 
+ <p>p = <answer name="p2">
+    <award>$atomNum1</award>
+  </answer></p>
+   <p>n = 2</p>
+   <p>e = $atomNum1</p>
+</problem>
+
+  </Section>
+
+ 

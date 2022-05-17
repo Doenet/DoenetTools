@@ -1,0 +1,141 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>problem</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>newNameSpace</attr></li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>problem</tag><idx><tag>problem</tag></idx> component is a sectional component similar to a <tag><ref>section</ref></tag> or an <tag><ref>example</ref></tag>.  It generates a default numbering system automatically, which can be overwritten by inserting a <ref uri="doenet:doenetId=5HERf7liZuJ_-NnhzeTaU"><tag>title</tag></ref> immediately after the <tag>problem</tag> tag.  To reuse names for various named objects, such as a <tag><ref>math</ref></tag>, a <ref uri="doenet:doenetId=Jwl0ys4sdoUIkguMBx0he"><tag>function</tag></ref> or a <ref uri="doenet:doenetId=Jwi35-iUB_BaSCNWFGNbh"><tag>number</tag></ref> that have already been used elsewhere in the document, the <attr>newNameSpace</attr> attribute can be applied to a <tag>problem</tag>.  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1: <tag>problem</tag> with default numbering</title>
+<p>In the sample code below, the default number convention is illustrated as the <tag>problem</tag> is the child of the <tag>section</tag>.  No other attributes are used.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;section&gt;
+  &lt;problem&gt;What is your favorite color? 
+    &lt;answer type="text"&gt;&lt;textInput name="user_color"/&gt;
+      &lt;award name="red"&gt;red&lt;/award&gt;
+      &lt;award name="notRed"&gt;
+        &lt;when&gt;&dollar;user_color != red&lt;/when&gt;
+      &lt;/award&gt;
+    &lt;/answer&gt;
+    
+    &lt;p&gt;Ah, so your favorite color is &dollar;user_color!&lt;/p&gt;
+
+    &lt;feedback condition="&dollar;red"&gt;
+      Awesome, mine is red too!&lt;/feedback&gt;
+    &lt;feedback condition="&dollar;notRed"&gt;
+      Great choice, mine is red.&lt;/feedback&gt;
+  &lt;/problem&gt;
+&lt;/section&gt;
+
+</pre>
+  </example>
+</subsection>
+
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 1)</title>
+<section>
+  <problem>What is your favorite color? 
+    <answer type="text"><textInput name="user_color"/>
+      <award name="red">red</award>
+      <award name="notRed">
+        <when>$user_color != red</when>
+      </award>
+    </answer>
+    
+    <p>Ah, so your favorite color is $user_color!</p>
+
+    <feedback condition="$red">
+      Awesome, mine is red too!</feedback>
+    <feedback condition="$notRed">
+      Great choice, mine is red.</feedback>
+  </problem>
+</section>
+
+</example>
+  
+<!--******************************************************-->
+ 
+<subsection><title>Example 2: <tag>problem</tag> with <tag>title</tag></title>
+<p>In the sample code below, even though the <tag>problem</tag> is again the child of a <tag>section</tag>, the default numbering is altered with the <ref uri="doenet:doenetId=5HERf7liZuJ_-NnhzeTaU"><tag>title</tag></ref> component. The <attr>newNameSpace</attr> attribute has been used to allow for reuse of the <ref uri="doenet:doenetId=9Cg4Vwh5-o0wk7kT98bPI"><tage>textInput</tage></ref> named <c>user_color</c> within the same DoenetML file.</p>
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;section&gt;
+  &lt;problem newNameSpace&gt;&lt;title&gt;List the Colors of the Rainbow...&lt;/title&gt;
+    &lt;p&gt;Complete the list:  Red, Orange, &lt;answer type="text"&gt;    
+      &lt;textInput name="user_color" /&gt;
+        &lt;award name="Yellow"&gt;Yellow&lt;/award&gt;
+        &lt;award name="yellow"&gt;yellow&lt;/award&gt;
+        &lt;award name="notYellow" credit="0"&gt;
+          &lt;when&gt;&dollar;user_color != yellow&lt;/when&gt;
+        &lt;/award&gt;
+    &lt;/answer&gt;, Green, Blue, Indigo, Violet.&lt;/p&gt;
+
+    &lt;feedback condition="&dollar;Yellow"&gt;
+      Great job!&lt;/feedback&gt;
+    &lt;feedback condition="&dollar;yellow"&gt;
+      Great job!&lt;/feedback&gt;
+    &lt;feedback condition="&dollar;notYellow"&gt;
+      Not quite, try again.&lt;/feedback&gt;
+  &lt;/problem&gt;
+&lt;/section&gt;
+
+</pre>
+  </example>
+</subsection>
+   
+<!--*******************************************************-->
+ 
+<example><title>What Doenet Renders (Example 2)</title>
+<section>
+  <problem newNameSpace><title>List the Colors of the Rainbow...</title>
+    <p>Complete the list:  Red, Orange, <answer type="text">    
+      <textInput name="user_color"/>
+        <award name="Yellow">Yellow</award>
+        <award name="yellow">yellow</award>
+        <award name="notYellow" credit="0">
+          <when>$user_color != yellow</when>
+        </award>
+    </answer>, Green, Blue, Indigo, Violet.</p>
+
+    <feedback condition="$Yellow">
+      Great job!</feedback>
+    <feedback condition="$yellow">
+      Great job!</feedback>
+    <feedback condition="$notYellow">
+      Not quite, try again.</feedback>
+  </problem>
+</section>
+</example>
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

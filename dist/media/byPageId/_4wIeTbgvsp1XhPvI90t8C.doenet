@@ -1,0 +1,77 @@
+<title>Function based on formula</title>
+
+<section>
+  <title>Defining and evaluating a function</title>
+
+<p>Create a function with the default variable <m>x</m>:
+  <m>f(x) = <function name="f">3x^2 - 15x^4/32 + 3x^6/192+1</function></m>.
+</p>
+
+<p>Function is created as numerical function, by default, so
+  evaluating is done with floating point arithemetc.  <m>f(\pi) = $$f(pi)</m>.
+  One can override and force symbolic evaluation using the
+  full &lt;evaluate&gt; tag: 
+  <evaluate forceSymbolic function="$f" input="pi" />. 
+ Numeric evaluation with symbolic values gives NaN: $$f(x).</p>
+
+  <p>Define a symbolic function of <m>y</m>: 
+    <m>g(y) = <function name="g" variables="y" symbolic>sin(2pi y/10)</function>
+    </m>.  Now evaluations will be done symbolically by default, 
+    <m>g(20) = $$g(20)</m> or can be forced to be numeric: 
+    <evaluate forceNumeric function="$g" input="20" />.  
+    (We can display small numbers, less than <m>10^{-14}</m> in magnitude, 
+    as zero with <c>displaySmallAsZero</c>: 
+<evaluate forceNumeric displaySmallAsZero function="$g" input="20" />.)</p>
+
+
+  <p>Both symbolic and numerical functions can be graphed,
+ assuming they have numerical values.</p>
+
+<graph>
+  $f<copy tname="g" stylenumber="2" />
+</graph>
+
+</section>
+
+<section>
+  <title>Taking derivatives</title>
+
+  <p>Take the derivative of a function: <m>f'(x) = <derivative name="fp">$f</derivative></m>.  Since <m>f</m> was numerical so is <m>f'</m>: <m>f'(\pi) = $$fp(pi)</m>.</p>
+
+  <p>In addition to taking derivatives of functions, one can also take derivatives of expressions with the default variable <m>x</m>,  <derivative>1/y+e^(x^2)</derivative>, or <derivative>1/y+e^(x^2)</derivative>.</p>
+
+  <p>To include components inside the expression, wrap the expression in a &lt;math&gt;:  <number name="a" hide>5</number> 
+  <derivative><math>$a x^2y^3</math></derivative>.</p>
+
+</section>
+
+<section>
+<title>Extrema</title>
+
+  <p>If a function has numerical values, one can numerically calculate 
+    the extrema. (By default, extrema in the interval <m>[-100,100]</m> are
+    return.  Change the attribute xscale from its default of 1 to modify this
+ interval.)
+  </p>
+
+  <p>Use prop "minima" to get an array of minimum points of the form
+    <m>(x_i,f(x_i))</m>, where the <m>x_i</m> are the locations of the minima 
+    and the <m>f(x_i)</m> are the values of the minima.  
+<aslist><copy tname="f" prop="minima" /></aslist>.</p>
+
+  <p>The prop "minimumLocations" gives the locations <m>x_i</m> 
+    where the minima occur
+    (<aslist><copy tname="f" prop="minimumLocations" /></aslist>) and
+    "minimumValues" gives the values of those minima 
+    (<aslist><copy tname="f" prop="minimumValues" /></aslist>).  
+The third minimum occurs at <m>x_3 = <copy prop="minimumLocation3" tname="f" /></m> and the value of that minimum is <copy prop="minimumValue3" tname="f" />.</p>
+
+<p>One can similarly obtain the maximum points <aslist><copy tname="f" prop="maxima" /></aslist>, locations <aslist><copy tname="f" prop="maximumlocations" /></aslist> and values <aslist><copy tname="f" prop="maximumvalues" /></aslist>.  Or, get minima and maxima together using the "extrema" prop: <aslist><copy tname="f" prop="extrema" /></aslist>.</p>
+
+<graph>
+  $f
+  <copy tname="f" prop="minima" stylenumber="2"/>
+  <copy tname="f" prop="maxima" stylenumber="3"/>
+</graph>
+
+</section>

@@ -1,0 +1,156 @@
+<!--
+  Somebody once told me
+  This is the end
+  Straight outta Compton
+  Jeremiah was a bullfrog
+  One for the money
+-->
+
+<module>
+  <setup>
+  <!-- Shift Cipher Encryption Table -->
+    <spreadsheet name="encrypt">
+      <row>
+        <cell>A</cell><cell>B</cell><cell>C</cell><cell>D</cell><cell>E</cell>
+        <cell>F</cell><cell>G</cell><cell>H</cell><cell>I</cell><cell>J</cell>
+        <cell>K</cell><cell>L</cell><cell>M</cell><cell>N</cell><cell>O</cell>
+        <cell>P</cell><cell>Q</cell><cell>R</cell><cell>S</cell><cell>T</cell>
+        <cell>U</cell><cell>V</cell><cell>W</cell><cell>X</cell><cell>Y</cell>
+        <cell>Z</cell><cell></cell><cell>.</cell><cell>,</cell><cell>!</cell>
+        <cell>?</cell>
+      </row>
+      <row>
+        <cell>=mod((code(a1)-65)+$key,26)</cell><cell>=mod((code(b1)-65)+$key,26)</cell>
+        <cell>=mod((code(c1)-65)+$key,26)</cell><cell>=mod((code(d1)-65)+$key,26)</cell>
+        <cell>=mod((code(e1)-65)+$key,26)</cell><cell>=mod((code(f1)-65)+$key,26)</cell>
+        <cell>=mod((code(g1)-65)+$key,26)</cell><cell>=mod((code(h1)-65)+$key,26)</cell>
+        <cell>=mod((code(i1)-65)+$key,26)</cell><cell>=mod((code(j1)-65)+$key,26)</cell>
+        <cell>=mod((code(k1)-65)+$key,26)</cell><cell>=mod((code(l1)-65)+$key,26)</cell>
+        <cell>=mod((code(m1)-65)+$key,26)</cell><cell>=mod((code(n1)-65)+$key,26)</cell>
+        <cell>=mod((code(o1)-65)+$key,26)</cell><cell>=mod((code(p1)-65)+$key,26)</cell>
+        <cell>=mod((code(q1)-65)+$key,26)</cell><cell>=mod((code(r1)-65)+$key,26)</cell>
+        <cell>=mod((code(s1)-65)+$key,26)</cell><cell>=mod((code(t1)-65)+$key,26)</cell>
+        <cell>=mod((code(u1)-65)+$key,26)</cell><cell>=mod((code(v1)-65)+$key,26)</cell>
+        <cell>=mod((code(w1)-65)+$key,26)</cell><cell>=mod((code(x1)-65)+$key,26)</cell>
+        <cell>=mod((code(y1)-65)+$key,26)</cell><cell>=mod((code(z1)-65)+$key,26)</cell>
+      </row>
+      <row>
+        <cell>=char(a2+65)</cell><cell>=char(b2+65)</cell><cell>=char(c2+65)</cell>
+        <cell>=char(d2+65)</cell><cell>=char(e2+65)</cell><cell>=char(f2+65)</cell>
+        <cell>=char(g2+65)</cell><cell>=char(h2+65)</cell><cell>=char(i2+65)</cell>
+        <cell>=char(j2+65)</cell><cell>=char(k2+65)</cell><cell>=char(l2+65)</cell>
+        <cell>=char(m2+65)</cell><cell>=char(n2+65)</cell><cell>=char(o2+65)</cell>
+        <cell>=char(p2+65)</cell><cell>=char(q2+65)</cell><cell>=char(r2+65)</cell>
+        <cell>=char(s2+65)</cell><cell>=char(t2+65)</cell><cell>=char(u2+65)</cell>
+        <cell>=char(v2+65)</cell><cell>=char(w2+65)</cell><cell>=char(x2+65)</cell>
+        <cell>=char(y2+65)</cell><cell>=char(z2+65)</cell><cell></cell>
+        <cell>.</cell><cell>,</cell><cell>!</cell><cell>?</cell>
+      </row>
+      <row>
+        <cell>=$(w11)3&$(w12)3&$(w13)3&$(w14)3&$(w15)3&$(w16)3&$(w17)3&$(w18)3</cell>
+        <cell>=$(w21)3&$(w22)3&$(w23)3&$(w24)3&$(w25)3&$(w26)3&$(w27)3&$(w28)3</cell>
+        <cell>=$(w31)3&$(w32)3&$(w33)3&$(w34)3&$(w35)3&$(w36)3&$(w37)3&$(w38)3</cell>
+        <cell>=$(w41)3&$(w42)3&$(w43)3&$(w44)3&$(w45)3&$(w46)3&$(w47)3&$(w48)3</cell>
+      </row>
+      <row>
+        <cell>=A4&" "&B4&" "&C4&" "&D4</cell>
+      </row>
+    </spreadsheet>
+    <text name="space">AA</text>
+    <text name="period">AB</text>
+    <text name="comma">AC</text>
+    <text name="bang">AD</text>
+    <text name="qmark">AE</text>
+  </setup>
+  <setup> <!-- Select Words -->
+    <selectFromSequence assignNames="key" from="12" to="17" />
+    <select assignNames="(pt w11 w12 w13 w14 w15 w16 w17 w18 w21 w22 w23 w24 w25 w26 w27 w28 w31 w32 w33 w34 w35 w36 w37 w38 w41 w42 w43 w44 w45 w46 w47 w48)">
+      <option>
+        <text>SOMEBODY ONCE TOLD ME</text>
+        <text>S</text><text>O</text><text>M</text><text>E</text>
+        <text>B</text><text>O</text><text>D</text><text>Y</text>
+
+        <text>O</text><text>N</text><text>C</text><text>E</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>T</text><text>O</text><text>L</text><text>D</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>M</text><text>E</text><text>AA</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+      </option>
+      <option>
+        <text>THIS IS THE END</text>
+        <text>T</text><text>H</text><text>I</text><text>S</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>I</text><text>S</text><text>AA</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>T</text><text>H</text><text>E</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>E</text><text>N</text><text>D</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+      </option>
+      <option>
+        <text>STRAIGHT OUTTA COMPTON</text>
+        <text>S</text><text>T</text><text>R</text><text>A</text>
+        <text>I</text><text>G</text><text>H</text><text>T</text>
+
+        <text>O</text><text>U</text><text>T</text><text>T</text>
+        <text>A</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>C</text><text>O</text><text>M</text><text>P</text>
+        <text>T</text><text>O</text><text>N</text><text>AA</text>
+
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+      </option>
+      <option>
+        <text>JEREMIAH WAS A BULLFROG</text>
+        <text>J</text><text>E</text><text>R</text><text>E</text>
+        <text>M</text><text>I</text><text>A</text><text>H</text>
+
+        <text>W</text><text>A</text><text>S</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>B</text><text>U</text><text>L</text><text>L</text>
+        <text>F</text><text>R</text><text>O</text><text>G</text>
+
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+      </option>
+      <option>
+        <text>ONE FOR THE MONEY</text>
+        <text>O</text><text>N</text><text>E</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>F</text><text>O</text><text>R</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>T</text><text>H</text><text>E</text><text>AA</text>
+        <text>AA</text><text>AA</text><text>AA</text><text>AA</text>
+
+        <text>M</text><text>O</text><text>N</text><text>E</text>
+        <text>Y</text><text>AA</text><text>AA</text><text>AA</text>
+      </option>
+    </select>
+    <copy name="eca5" prop="evaluatedCellA5" tname="encrypt" />
+    <copy name="ctext" tname="eca5" prop="text" />
+  </setup>
+
+  <p>
+    For this exercise, you will encrypt the following short, famous song opening using the shift cipher.
+    Enter the associated ciphertext (all capital letters, please!), using the plaintext chosen from
+    opening lines from famous songs.
+    <me>\text{Plaintext: $pt} \quad::\quad \text{Encryption Key: $key}.</me>
+    <alert>Hint:</alert> You can go back to the previous page, use your assigned key, and use the table there to perform the operation.
+  </p>
+  <p>
+    Ciphertext:
+    <answer type="text">
+        $ctext
+    </answer>
+  </p>
+</module>

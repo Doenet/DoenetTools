@@ -644,7 +644,7 @@ export default function PageViewer(props) {
 
     // console.log(`send message to create core ${pageNumber}`)
 
-    coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : 'viewer/core.js', { type: 'module' });
+    coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : '/viewer/core.js', { type: 'module' });
 
     coreWorker.current.postMessage({
       messageType: "createCore",
@@ -887,16 +887,16 @@ export default function PageViewer(props) {
   let noCoreWarning = null;
   let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
   if (!coreCreated.current) {
-    noCoreWarning = <p>Waiting for core to be created....</p>
-    pageStyle.backgroundColor = "var(--canvas)";
+    noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
+    <p>Waiting for core to be created....</p>
+    </div>
+    pageStyle.backgroundColor = "#F0F0F0";
   }
 
   //Spacing around the whole doenetML document
   return <>
-    <div style={{ backgroundColor: "var(--lightBlue)", padding: "10px" }}>
-      {noCoreWarning}
-      <p>{saveStatesButton}</p>
-    </div>
+    {noCoreWarning}
+    {/* <p>{saveStatesButton}</p> */}
     <div style={pageStyle}>
       {documentRenderer}
     </div>

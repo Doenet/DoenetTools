@@ -1,0 +1,44 @@
+<booleaninput name="boxy" prefill="true"/>
+<aslist><sequence>1,5</sequence></aslist>
+Show point: <booleaninput name="boxy" prefill="true"/>
+ 
+<title>Vector Matrix Multiplication</title>
+ 
+Note: the attract to is really strong here...
+ 
+<p>
+<math format="latex">A = \begin{bmatrix} 2 & 1 \\ 2 & 3 \end{bmatrix}</math>
+</p>
+ 
+<graph xmin="-3" xmax="3" ymin="-2" ymax="2">
+ 
+<vector name="init">
+<tail fixed>(0,0)</tail>
+<head>
+<point>
+<attractTo threshold="0.1"><copy tname="v1"/><copy tname="v2"/></attractTo>
+<x name="x">0.75</x>
+<y name="y">0</y>
+</point>
+</head>
+</vector>
+ 
+<line name="v1" hide="T">
+<equation>y=-x</equation>
+</line>
+ 
+<line name="v2" hide="T">
+<equation>y=2x</equation>
+</line>
+ 
+<vector name="prod" stylenumber="2">
+<tail fixed>(0,0)</tail>
+<head>
+<x>2*<copy tname="x"/>+<copy tname="y"/></x>
+<y>2*<copy tname="x"/>+3*<copy tname="y"/></y>
+</head>
+</vector>
+ 
+</graph>
+
+

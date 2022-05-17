@@ -1,0 +1,171 @@
+<document><title><tag>variance</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li><attr>population</attr> <em>(boolean)</em></li>
+    <aside><title>Attributes inherited from parent component <tag><ref>math</ref></tag> </title>
+    <li><attr>simplify</attr>
+      <em>(text)</em></li>
+    <li><attr>format</attr>  <em>(text)</em></li>
+    <li><attr>expand</attr>  <em>(boolean)</em></li>
+    <li><attr>displayDigits</attr>  <em>(integer)</em></li>
+    <li><attr>displayDecimals</attr>  <em>(integer)</em></li>
+    <li><attr>displaySmallAsZero</attr>  <em>(number)</em></li>
+    <li><attr>renderMode</attr>  <em>(text)</em></li>
+    <li><attr>unordered</attr>  <em>(boolean)</em></li>
+    <li><attr>createVectors</attr>  <em>(boolean)</em></li>
+    <li><attr>createIntervals</attr>  <em>(boolean)</em></li>
+    <li><attr>functionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>targetsAreFunctionSymbols</attr>  <em>(textList)</em></li>
+    <li><attr>splitSymbols</attr> <em>(boolean)</em></li>
+    <li><attr>groupCompositeReplacements</attr> <em>(boolean)</em></li></aside>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>variance</tag><idx><tag>variance</tag></idx> component renders the variance of a list of enclosed data values according to the equation: <me>Var(x) = \frac{\sum_{i=1}^n (x_{i} - \bar x)^2}{n-1}</me>In this equation, <m>\bar x</m> represents the <tag><ref>mean</ref></tag> of the sample and <m>n</m> the number of data points.  By default, the sample variance is calculated.  If instead, the <attr>population</attr> attribute is specified as "true", the equation becomes: <me>Var(x) = \frac{\sum_{i=1}^n (x_{i} - \bar x)^2}{n}</me>  See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<tabular top="medium">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+&lt;p&gt;The variance of the set 
+  &lt;m&gt;\mathbb{A} = \{1, 2, 3, 4, -1\} =  &lt;variance&gt;1 2 3 4 -1&lt;/variance&gt;&lt;/m&gt;
+&lt;/p&gt;
+</pre>
+  
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<p>The variance of the set 
+  <m>\mathbb{A} = \{1, 2, 3, 4, -1\} = <variance>1 2 3 4 -1</variance></m>
+</p>
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->
+<row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: <attr>population</attr> attribute specified</title>
+<pre>
+&lt;p&gt;The population variance of the set 
+  &lt;m&gt;\mathbb{A} = \{1, 2, 3, 4, -1\} = &lt;variance population="true"&gt;1 2 3 4 -1&lt;/variance&gt;&lt;/m&gt;
+&lt;/p&gt;
+</pre>
+  
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<p>The population variance of the set 
+  <m>\mathbb{A} = \{1, 2, 3, 4, -1\} =  <variance population="true">1 2 3 4 -1</variance></m>
+</p>
+</subsection>
+    </cell>
+  </row>
+
+<!--******************************************************-->    
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+&lt;p&gt;Choose five numbers: &lt;/p&gt;
+&lt;p&gt;&lt;m&gt;x_{1} = &lt;/m&gt;&lt;mathInput name="x1"/&gt;,
+&lt;m&gt;x_{2} = &lt;/m&gt;&lt;mathInput name="x2"/&gt;, 
+&lt;m&gt;x_{3} = &lt;/m&gt;&lt;mathInput name="x3"/&gt;,
+&lt;m&gt;x_{4} = &lt;/m&gt;&lt;mathInput name="x4"/&gt;,
+&lt;m&gt;x_{5} = &lt;/m&gt;&lt;mathInput name="x5"/&gt;&lt;/p&gt;
+&lt;p&gt;  
+The variance of your five numbers &lt;m&gt;\{&dollar;x1, &dollar;x2, &dollar;x3, &dollar;x4, &dollar;x5\}&lt;/m&gt; is:  &lt;number&gt;&lt;variance&gt;&dollar;x1 &dollar;x2 &dollar;x3 &dollar;x4 &dollar;x5&lt;/variance&gt;&lt;/number&gt;
+&lt;/p&gt;
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>
+<!--*******************************************************-->
+ 
+  <row bottom="medium">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+<p>Choose five numbers: </p>
+<p><m>x_{1} = </m><mathInput name="x1"/>,
+<m>x_{2} = </m><mathInput name="x2"/>, 
+<m>x_{3} = </m><mathInput name="x3"/>,
+<m>x_{4} = </m><mathInput name="x4"/>,
+<m>x_{5} = </m><mathInput name="x5"/></p>
+<p>  
+The variance of your five numbers <m>\{$x1, $x2, $x3, $x4, $x5\}</m> is:  <number><variance>$x1 $x2 $x3 $x4 $x5</variance></number>
+</p>
+</subsection>
+    </cell>
+  </row>
+</tabular>  
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<!--
+<aside newNameSpace><title>Edge case:    </title>
+
+<tabular top="minor">
+  <row bottom="minor">
+    <cell>
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+    </cell>
+  </row>-->
+<!--*******************************************************-->
+<!-- 
+  <row bottom="minor">
+    <cell>
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+</tabular>
+</aside>-->
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

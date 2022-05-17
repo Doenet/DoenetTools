@@ -99,10 +99,10 @@ export const fileByCid = atomFamily({
 })
 
 
-export const fileByDoenetId = atomFamily({
-  key:"fileByDoenetId",
+export const fileByPageId = atomFamily({
+  key:"fileByPageId",
   default: selectorFamily({
-    key:"fileByDoenetId/Default",
+    key:"fileByPageId/Default",
     get:(doenetId)=> async ()=>{
       if (!doenetId){
         return "";
@@ -110,7 +110,7 @@ export const fileByDoenetId = atomFamily({
       // const local = localStorage.getItem(doenetId);
       // if (local){ return local}
       try {
-        const server = await axios.get(`/media/bydoenetid/${doenetId}.doenet`); 
+        const server = await axios.get(`/media/byPageId/${doenetId}.doenet`); 
         return server.data;
       } catch (error) {
         //TODO: Handle 404

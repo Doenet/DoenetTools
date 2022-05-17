@@ -1,0 +1,98 @@
+<title>Solving linear discrete dynamical systems</title>
+
+<description>
+One can solve a linear discrete dynamical system analytically.  The result is an exponential function of the time step.
+</description>
+
+<p>A linear discrete dynamical system is one of the form
+<md>
+  <mrow>x_{n+1}\amp = a x_n</mrow>
+  <mrow>x_0\amp = b,</mrow>
+</md>
+where <m>a</m> and <m>b</m> are two numbers called parameters.  The parameter <m>a</m> determines how fast <m>x_n</m> grows or shrinks.  The parameter <m>b</m> determines the initial condition.  Here we show how to solve such a linear system, meaning find a formula for <m>x_t</m> that is written just in terms of the time step <m>n</m> and the initial condition <m>x_0</m> (and, unlike above the above equation, doesn't depend on the value of <m>x</m> from the previous time step).</p>
+
+
+
+
+<section><title>Video</title>
+
+<figure>
+<video youtube="eNVN67eZC88" width="640px" height="360px"/>
+<caption>Solving linear discrete dynamical systems</caption>
+</figure>
+
+  
+<problem>
+<title>Follow-up question</title>
+
+<setup>
+
+<selectFromSequence assignNames='a' from='1' to=' 10' />
+<selectFromSequence assignNames='b' from='10' to=' 100' step=' 10'/>
+<select assignNames='x' >x y z</select>
+<select assignNames='n' >n t</select>
+<math name='answer' simplify='full' >$a **$n *$b </math>
+
+</setup>
+
+
+<p>Compute the solution to the discrete dynamical system
+<md>
+  <mrow>$x _{ $n +1}\amp = <math simplify="numbersPreserveOrder" format="latex">$a  $x _$n </math></mrow>
+  <mrow>$x _0\amp = $b</mrow>
+</md>
+</p>
+<p><m>$x _$n  =</m> 
+<answer>
+<award>$answer </award>
+</answer>
+</p>
+
+
+
+<solution>
+In each time step <m>$x </m> is multiplied by <m>$a </m>.  To go from the initial condition <m>$x _0 = $b </m> to <m>$x _$n </m>, we must multiply by <m>$a </m> a total of <m>$n </m> times, or multiply by <m>$a ^$n </m>.  The solution is <m>$x _$n =$answer </m>.
+
+</solution>
+
+
+</problem>
+
+
+
+</section>
+
+<section><title>Summary of video</title>
+
+
+<p>The solution to the linear system 
+<mdn>
+  <mrow name='linear_function_iteration' >x_{n+1}\amp = a x_n</mrow>
+  <mrow number="false">x_0\amp = b</mrow>
+</mdn>
+is 
+<me>x_{n} = a^n b.</me>
+According to the rule <m>x_{n+1}=ax_n</m>, one multiplies by <m>a</m> for each time step.  Therefore, to evolve from <m>x_0</m> to <m>x_n</m>, one must multiply by <m>a</m> a total of <m>n</m> times, i.e., multiply by <m>a^n</m>.</p>
+
+<p>Model <ref tname='linear_function_iteration' /> was especially simple to solve because it is in 
+<ref uri='doenet:function_iteration_form|page_type=definition'>function iteration form</ref>
+, meaning the rule is in the form <m>x_{n+1}=f(x_n)</m> for some function <m>f</m> (in this case <m>f(x)=ax</m>).  Sometimes, it is easier to come up with a model of the form
+<mdn>
+  <mrow name='linear_difference' >x_{n+1} - x_n\amp = ax_n</mrow>
+  <mrow number="false">x_0\amp = b.</mrow>
+</mdn>
+This form is called 
+<ref uri='doenet:difference_form|page_type=definition'>difference form</ref>
+ because the left hand side <m>x_{n+1}-x_n</m> is the difference between values of the state variables between two time steps.  To solve a linear discrete dynamical system <ref tname='linear_difference' /> in difference form, the first step is to convert it to function iteration form.  Simply add <m>x_n</m> to both sides to obtain
+<md>
+  <mrow>x_{n+1}\amp = (a+1)x_n</mrow>
+  <mrow>x_0\amp = b.</mrow>
+</md>
+The solution is the same as for model <ref tname='linear_function_iteration' /> in function iteration form, only that <m>a</m> is replaced by <m>a+1</m>:
+<me>x_n = (a+1)^n b.</me>
+</p>
+<p>You can see some 
+<ref uri='doenet:solving_linear_discrete_dynamical_system_examples'>examples of solving linear discrete dynamical systems</ref>
+.</p>
+
+</section>

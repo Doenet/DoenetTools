@@ -1,0 +1,79 @@
+<title>Multivariable and vector-valued functions</title>
+
+
+<section><title>Increasing the number of inputs</title>
+
+
+<p>By default, the <tag>function</tag> will create a function of a single variable.  For example, <c>&lt;function name="f1" &gt;x^2&lt;/function&gt;</c> will create a (numeric) function that squares its input: <function name="f1" >x^2</function>.  One can evaluate it with a macro via <c>&dollar;&dollar;f1(3)</c>: $$f1(3).  Or, one can use the evaluate command <c>&lt;evaluate function="&dollar;f1" input="3" /&gt;</c>: <evaluate function="$f1" input="3" />.</p>
+
+
+<subsection><title>Specify additional variables</title>
+  <p>One way to create a function of additional variables is to specify more than one variable in the definition, such as <c>&lt;function variables="x y" name="f2" &gt;x+y&lt;/function&gt;</c>: <function variables="x y" name="f2" >x+y</function>.  Both the macro <c>&dollar;&dollar;f2(3,-5)</c> = $$f2(3,-5) and the evaluate tag <c>&lt;evaluate function="&dollar;f2" input="3 -5" /&gt;</c> = <evaluate function="$f2" input="3 -5" /> generalize.</p>
+
+
+  <example newNamespace><title>Example of user-defined function with variables</title>
+  <p>The <attr>variables</attr> attribute of <tag>function</tag> must be a mathList, which cannot be directly created from a <tag>mathinput</tag>.  Therefore, to allow users to specify an arbitrary number of variables takes an additional step to convert a list inside a <tag>math</tag> to a mathList.</p>
+
+  <p>Variables: <mathinput name="variablesOrig" prefill="x,y" /></p>
+  <p>Function: <mathinput name="formula" prefill="x+y"/></p>
+  <p>Input (as a vector): <mathinput name="input" prefill="(4,q)" /></p>
+  <mathlist mergeMathLists name="variables" hide>$variablesOrig</mathlist>
+
+  <p>f($variablesOrig) = <function name="f" variables="$variables" symbolic simplify >$function</function></p>
+
+  <p>Evaluate via macro.  <m>f$input = $$f($input)</m></p>
+
+  <p>In this example, we are using the fact that a function can take a vector for an input instead of a mathList.  (If we wanted the user to type a comma separated list for the inputs, we'd have to convert it to a mathList like we did for the variables.)</p>
+
+  <p>If the dimension of the input doesn't equal the number of variables, then the function cannot be evaluated.  Since we created a symbolic function, if the formula contains additional variables, they are just part of the output.</p>
+  </example>
+
+</subsection>
+
+
+<subsection><title>Explicitly specify the number of inputs</title>
+
+<p>An alternative method to create a multivariable function is to explicitly specify the number of inputs with the <attr>nInputs</attr> parameter.  If variables are not specified, then the variables <m>x,y,z</m> are chosen if the number of inputs is three or fewer.  Otherwise, the variables <m>x_1, x_2, x_3, x_4, \ldots</m> are chosen.</p>
+
+<p>For example, we define <c>&lt;function name="f3" nInputs="3">xyz&lt;/function&gt;</c> = <function name="f3" nInputs="3" >xyz</function> and evaluate via <c>&dollar;&dollar;f3(4,5,6)</c> = $$f3(4,5,6) or <c>&lt;evaluate forceSymbolic function="&dollar;f3" input="u^2 v^3 w^3" /&gt;</c> = <evaluate forceSymbolic function="$f3" input="u^2 v^3 w^3" />.</p>
+
+  <example newNamespace><title>Example of user-defined function with nInputs</title>
+  <p>In this example, the user can specify the input as a vector or a list, as we convert any list entered to a mathList.</p>
+
+  <p>Number of inputs: <mathinput name="nInputs" prefill="2" /></p>
+  <p>Function: <mathinput name="formula" prefill="x+y"/></p>
+  <p>Input (as a list or a vector): <mathinput name="inputOrig" prefill="4,q" /></p>
+  <mathlist mergeMathLists name="input" hide>$inputOrig</mathlist>
+
+  <p>f(<aslist><copy prop="variables" tname="f" /></aslist>) = <function name="f" nInputs="$nInputs" symbolic simplify >$formula</function></p>
+
+  <p>Evaluate via macro.  <m>f($input) = $$f($input)</m></p>
+
+  </example>
+</subsection>
+
+</section>
+
+
+<section><title>Increasing the number of outputs</title>
+
+    <p>If defining a function via a formula, one can simply give a vector for the formula to create a vector-valued function.</p>
+
+
+ <example newNamespace><title>Example of user-defined function vector-valued function</title>
+
+  <p>This example is identical to the first example, above, except that we prefilled the formula to be a 2D vector.</p>
+
+  <p>Variables: <mathinput name="variablesOrig" prefill="x,y" /></p>
+  <p>Function: <mathinput name="formula" prefill="(x+y,xy^2)"/></p>
+  <p>Input (as a vector): <mathinput name="input" prefill="(4,q)" /></p>
+  <mathlist mergeMathLists name="variables" hide>$variablesOrig</mathlist>
+
+  <p>f($variablesOrig) = <function name="f" variables="$variables" symbolic simplify >$formula</function></p>
+
+  <p>Evaluate via macro.  <m>f$input = $$f($input)</m></p>
+
+  </example>
+
+
+</section>

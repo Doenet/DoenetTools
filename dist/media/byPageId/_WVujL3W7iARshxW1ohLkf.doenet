@@ -1,0 +1,187 @@
+<setup>
+  <variantControl nVariants="5" />
+  <module name="divAlg" newNamespace >
+    <setup>
+      <customAttribute componentType="math" attribute="A" defaultValue="2" assignNames="A" />
+      <customAttribute componentType="math" attribute="B" defaultValue="2" assignNames="B" />
+    </setup>
+    <row>
+      <cell>
+        <m>a=$A, b=$B</m>
+      </cell>
+      <cell>
+        Quotient: <mathinput name="Q" /> Remainder: <mathinput name="R" />
+        <answer>
+          <award targetsAreResponses="Q R" matchPartial>
+            <when> $Q=floor($A/$B) and $R=<math simplify>mod($A,$B)</math></when>
+          </award>
+        </answer>
+      </cell>
+    </row>
+  </module>
+</setup>
+
+<section name="Class02" aggregateScores>
+  <title>Guided Practice for Class 02: The Division Algorithm for Integers</title>
+
+  <paginatorControls paginatorTname="pgn" />
+  <paginator name="pgn">
+
+      <subsection>
+        <title>Overview</title>
+        <p>For our first Preclass Guided Practice, we'll start by reviewing the main resources you have available for reference while learning course material. Other resources for specific lessons will be linked in the relevant Preclass Guided Practice.</p>
+        <p>We'll also practice calculating final grades based on several different situations to gain comfort and familiarity with the grading scheme being used in this course. Grades are calculated in a two-stage process, and we will practice both stages.</p>
+        <p>Finally, we'll review the <em>division algorithm</em>. While this may seem incredibly basic, it is going to lay the groundwork for much of both classical and modern cryptography. We will be able to trace much of what we learn this semester back to the division algorithm, so we'll take a bit of time to go over it carefully.</p>
+        <p>Even though we'll be working almost exclusively with integers this semester, and not other groups, rings, or fields, we'll also look briefly at how this concept generalizes to polynomials, although this work will be done in class.</p>
+        <p>Remember, Guided Practice is designed to get you familiar with the language, definitions, and basic computational skills needed to succeed in the classroom activities each class. While there will be a few minutes at the start of class for questions each day for the Guided Practice, you can get immediate help by asking questions on the <c>#guided_practice</c> channel within our course Slack group. It is expected that you have gone through these exercises and that you are prepared to start working with these concepts without any additional lecture or presentation of these ideas once you get to the classroom.</p>
+      </subsection>
+
+      <subsection>
+        <title>Learning Objectives</title>
+        <alert>BASIC objectives</alert> (to be learned prior to class):
+        <ul>
+          <li>Access/identify resources for course success.</li>
+          <li>Calculate final course grades for several different scenarios of completed coursework.</li>
+<!--          <li>List basic number theory facts which may be used in the course without proof.</li> -->
+          <li>State the definition of the division algorithm.</li>
+          <li>Identify <m>q</m> &amp; <m>r</m> in the division algorithm for integers.</li>
+        </ul>
+        <alert>ADVANCED objectives</alert> (to be learned during and after class):
+        <ul>
+          <li>Identify <m>q</m> &amp; <m>r</m> in the division algorithm for polynomials.</li>
+          <li>Describe the similarity between performing division algorithm for numbers and polynomials.</li>
+          <li>Prove the division algorithm.</li>
+        </ul>
+      </subsection>
+
+      <subsection>
+        <title>Learning Resources</title>
+        <ul>
+          <li />
+          <li><ref uri='https://na01.alma.exlibrisgroup.com/view/action/uresolver.do?operation=resolveService&package_service_id=2273404249810001701&institutionId=1701&customerId=1700'>Course Textbook</ref> (can be downloaded as a free PDF through the library. Requires UMN login.)</li>
+          <li />
+          <li><ref uri='http://math.gordon.edu/ntic/ntic/frontmatter-1.html'>Free Online Number Theory Textbook</ref> (interactive with Sage)</li>
+          <li />
+          <li>The section of the above textbook on the  <ref uri='http://math.gordon.edu/ntic/ntic/section-div-alg.html'>division algorithm</ref>.</li>
+          <li />
+          <li><ref uri='https://canvas.umn.edu/courses/269673'>Course Canvas Page</ref> (which is probably how you got here. But just in case.) All information on grading can be found in the first module on the Canvas site.</li>
+          <li />
+        </ul>
+      </subsection>
+
+      <subsection>
+        <title>Practice 1: Base Grades</title>
+        <p>Given each of the following scenarios, compute the student's base grade.</p>
+        <copy uri="doenet:contentId=adcb0a8c24a1b7f562121d62f49624ef71fadc2ddf01d62fcfc7fb621e8a4333" />
+      </subsection>
+
+      <subsection>
+        <title>Practice 2: Grade Modifiers</title>
+        <p>Now that we've gotten some practice computing base grades, let's compute the final grade by finding the base grade modifier. This will either add a <alert>plus</alert>, <alert>minus</alert>, or deduct a full letter grade. These modifications are based on <em>Engagement Credits</em> and the <em>final exam score</em>.</p>
+        <p>In each scenario you are given the base grade, and these two pieces of information. Find the final grade in each case.</p>
+        <copy uri="doenet:contentId=db31af9513f1782754ffc7a2df8b9b4bfc21d7ce9cb99bfa5bd730ae5667e7db" />
+      </subsection>
+
+      <subsection>
+        <title>Practice 3: Apply Division Algorithm</title>
+        <p>
+          <row><alert>Theorem: The Division Algorithm (for Integers)</alert></row>
+          Let <m>a</m> by an integer and <m>b</m> be a natural number. Then there <em>exists unique</em> integers <m>q</m> and <m>r</m> such that
+          <me>
+            a=q\cdot b+r, \text{where }\qquad 0 \leq r < b.
+          </me>
+          The integer <m>q</m> is called the <alert>quotient</alert> and the value <m>r</m> is called the <alert>remainder</alert>.
+        </p>
+        <p>
+          <setup>
+            <selectFromSequence from="19" to="20" name="a"/>
+            <selectFromSequence from="6" to="8" name="b" />
+          </setup>
+          <row><alert>Examples</alert></row>
+          Suppose that <m>a=$a,b=$b</m>. Then we can write
+          <me>
+            $a = <math simplify>floor($a/$b)</math>\cdot $b + <math simplify>mod($a,$b)</math>.
+          </me>
+          Note that the remainders can be zero, as in the case <m>a=15, b=5</m>, in which case we have:
+          <me>
+            15 = 3\cdot 5 + 0.
+          </me>
+        </p>
+        <setup>
+          <selectFromSequence name="a2" from="10" to="13" />
+          <selectFromSequence name="b2" from="7" to="9" />
+          <selectFromSequence name="a3" from="40" to="80" step="4" />
+          <selectFromSequence name="b3" from="11" to="19" step="2" />
+          <selectFromSequence name="a4" from="18" to="81" step="9" />
+          <selectFromSequence name="b4" from="3" to="9" step="6" />
+          <selectFromSequence name="a5" from="2" to="8" step="2" />
+          <selectFromSequence name="b5" from="30" to="50" />
+          <selectFromSequence name="a6" from="20" to="29" step="2" exclude="24" />
+        </setup>
+        <p>
+          <row><alert>Practice Problems</alert></row>
+          For each of the following, compute the quotient and remainder for the division algorithm.
+          <tabular>
+            <copy tname="divAlg" A="$a2" B="$b2" />
+            <copy tname="divAlg" A="$a3" B="$b3" />
+            <copy tname="divAlg" A="$a4" B="$b4" />
+            <copy tname="divAlg" A="$a5" B="$b5" />
+            <copy tname="divAlg" A="-$a6" B="3" />
+          </tabular>
+        </p>
+<!--
+        <p>
+          <row><alert>Something to think about:</alert></row>
+          <row>Write a few sentences in response to the following question:</row>
+        </p>
+        <p>
+          <row>Why do you think we do not allow <m>b<1</m> in the statement of the division algorithm?</row>
+          <row><textInput name="negativeB" width="450" height="50" expanded /></row>
+          <answer>
+            <award targetsAreResponses="negativeB"><when>$negativeB!=<text></text></when></award>
+          </answer>
+        </p>
+        <p>
+          <row>How could we extend the division algorithm to allow for negative values of <m>b</m>? (There are no "right" answers to this. Just looking for your thoughts.)</row>
+          <row><textInput name="extensionToNegatives" width="450" height="50" expanded /></row>
+          <answer>
+            <award targetsAreResponses="extensionToNegatives"><when>$negativeB!=<text></text></when></award>
+          </answer>
+        </p>
+-->
+      </subsection>
+
+      <subsection>
+        <title>Wrap-up</title>
+        <p>
+          <row><alert>Short Response Questions</alert></row>
+        </p>
+        <p>
+        Complete the short response questions in this <ref uri="https://forms.gle/4tuVzinPMUKJtb619">Google Form</ref> (https://forms.gle/4tuVzinPMUKJtb619).
+        </p>
+        <p>
+          <alert>Note:</alert>
+          Eventually we will move these questions within the Doenet Guided Practice assignments, but there is a few updates that need to happen to the system first.
+          We should be able to stop needing to use Google Forms by the first Assessment Day.
+        </p>
+<!--
+        <p>
+          <row>What questions do you still have regarding the course grading structure?</row>
+          <row><textInput name="gradingQuestions" width="450" height="50" expanded /></row>
+          <answer>
+            <award targetsAreResponses="gradingQuestions"><when>$gradingQuestions!=<text></text></when></award>
+          </answer>
+        </p>
+        <p>
+          <row>How comfortable are you feeling (or not) about in-person classes this semester?</row>
+          <row><textInput name="COVIDConcerns" width="450" height="50" expanded /></row>
+          <answer>
+            <award targetsAreResponses="COVIDConcerns"><when>$COVIDConcerns!=<text></text></when></award>
+          </answer>
+        </p>
+-->
+      </subsection>
+
+    </paginator>
+  <paginatorControls paginatorTname="pgn" />
+</section>

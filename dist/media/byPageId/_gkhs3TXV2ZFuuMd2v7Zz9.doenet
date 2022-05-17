@@ -1,0 +1,162 @@
+<ref createButton="true" uri="doenet:doenetId=DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref>
+
+<document><title><tag>text</tag> component</title>
+
+<section><title>Associated Attributes</title>
+<ul>
+  <li>none exclusive to this component</li>
+</ul>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>text</tag><idx><tag>text</tag></idx> component defines a string variable for use in evaluations and boolean expressions, or simply to store a value for future rendering. See examples below.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+
+<subsection><title>Example 1: <tag>text</tag> defined in <tag>setup</tag> </title>
+<p>In the sample code below, <tag>text</tag> components are defined in a <tag>setup</tag> block which supresses them from rendering until later referenced by name with the <c>&dollar;name</c> notation.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+<pre>
+&lt;setup&gt;
+  &lt;text name="chickenSound"&gt;Bak Bak!&lt;/text&gt;
+  &lt;text name="cowSound"&gt;Moo Moo!&lt;/text&gt;
+  &lt;text name="dogSound"&gt;Woof Woof!&lt;/text&gt;
+&lt;/setup&gt;
+
+&lt;p&gt;The chicken goes $chickenSound&lt;/p&gt;
+&lt;p&gt;The cow goes $cowSound&lt;/p&gt;
+&lt;p&gt;The dog goes $dogSound&lt;/p&gt;
+
+</pre>
+ 
+  </example>  
+</subsection>
+  
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 1)</title>
+<setup>
+  <text name="chickenSound">Bak Bak!</text>
+  <text name="cowSound">Moo Moo!</text>
+  <text name="dogSound">Woof Woof!</text>
+</setup>
+
+<p>The chicken goes $chickenSound</p>
+<p>The cow goes $cowSound</p>
+<p>The dog goes $dogSound</p>
+</example>
+
+
+<!--******************************************************-->
+    
+<subsection><title>Example 2: <tag>text</tag> with <attr>hide</attr> attribute</title>
+<p>In the sample code below, two <tag>text</tag> responses are defined and supressed from rendering in the viewer with the <attr>hide</attr> attribute. These are later referenced for within an <ref uri="doenet:doenetId=oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref> block for evaluation with the <c>&dollar;name</c> notation (See also, <ref uri="doenet:doenetId=fB4XolOYgmYs6HQXwY-F4"><tag>award</tag></ref>, <ref><tag>when</tag></ref>, <ref uri="doenet:doenetId=9Cg4Vwh5-o0wk7kT98bPI"><tage>textInput</tage></ref>.)</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+&lt;text name="theWord" hide&gt;supercalifragilisticexpialidocious&lt;/text&gt;
+&lt;text name="theWordUpperCase" hide&gt;Supercalifragilisticexpialidocious&lt;/text&gt;
+  
+&lt;p&gt;How do you spell Mary Poppins' favorite word? &lt;textInput size="50" name="userTry"/&gt;
+  &lt;answer&gt;
+    &lt;award&gt;
+      &lt;when&gt;&dollar;userTry = &dollar;theWord&lt;/when&gt;
+    &lt;/award&gt;
+    &lt;award&gt;
+      &lt;when&gt;&dollar;userTry = &dollar;theWordUpperCase&lt;/when&gt;
+    &lt;/award&gt;
+  &lt;/answer&gt;
+&lt;/p&gt; 
+
+</pre>
+ 
+  </example>  
+</subsection>
+
+<!--*******************************************************-->
+
+<example><title>What Doenet Renders (Example 2)</title>
+<text name="theWord" hide>supercalifragilisticexpialidocious</text>
+<text name="theWordUpperCase" hide>Supercalifragilisticexpialidocious</text>
+  
+<p>How do you spell Mary Poppins' favorite word? <textInput size="50" name="userTry"/>
+  <answer>
+    <award>
+      <when>$userTry = $theWord</when>
+    </award>
+    <award>
+      <when>$userTry = $theWordUpperCase</when>
+    </award>
+  </answer>
+</p>  
+</example>
+
+<!--******************************************************-->
+    
+<!--  
+<subsection><title>Example 3: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+   -->
+<!--*******************************************************-->
+ 
+<!-- 
+<example><title>What Doenet Renders (Example 3)</title>
+
+</example>
+   -->
+
+
+<!--******************************************************-->
+    
+<!-- 
+<subsection><title>Example 4: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+   -->
+<!--*******************************************************-->
+ 
+<!--  
+<example><title>What Doenet Renders (Example 4)</title>
+
+</example>
+ -->
+
+  
+</section>
+</document>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
