@@ -1941,6 +1941,10 @@ export const useCourse = (courseId) => {
               failureCallback(`Pasting ${cutObj.type} in a ${destType} is not supported.`)
               return;
             }
+            if (cutObj.type == 'order' ){
+              failureCallback("Pasting orders is not yet supported")
+              return;
+            }
             if (destType == 'bank' && cutObj.type == 'order' ){
               failureCallback("Collections can only accept pages.")
               return;
@@ -2071,15 +2075,25 @@ export const useCourse = (courseId) => {
               if (containingObj.type == 'activity'){
                 //Remove from Activity
                 updatedSourceItemJSON = deletePageFromOrder({orderObj:containingObj.order,needleDoenetId:cutObj.doenetId})
+                //if source is destination delete page from destination
+                if (destinationContainingObj.doenetId == containingObj.doenetId){
+                  destinationJSON = deletePageFromOrder({orderObj:destinationJSON,needleDoenetId:cutObj.doenetId})
+                }
               }else if (containingObj.type == 'bank'){
                 //Remove from Collection
                 let nextPages = [...containingObj.pages]
                 nextPages.splice(containingObj.pages.indexOf(cutObj.doenetId),1)
                 updatedSourceItemJSON = nextPages;
+                //if source is destination delete page from destination
+                if (destinationContainingObj.doenetId == containingObj.doenetId){
+                  let nextDestPages = [...destinationJSON]
+                  nextDestPages.splice(destinationJSON.indexOf(cutObj.doenetId),1)
+                  destinationJSON = nextDestPages;
+                }
               }
               sourceJSONs.push(updatedSourceItemJSON)
             }else{
-              //Only need to update JSON and add orginal doenet ids
+              //Only update not add 
               originalPageDoenetIds[indexOfPriorEntry].push(cutObj.doenetId);
 
               let containingObjtype = sourceTypes[indexOfPriorEntry];
@@ -2088,11 +2102,20 @@ export const useCourse = (courseId) => {
               if (containingObjtype == 'activity'){
                 //Remove from Activity
                 updatedSourceItemJSON = deletePageFromOrder({orderObj:previousObj,needleDoenetId:cutObj.doenetId})
+                //if source is destination delete page from destination
+                if (destinationContainingObj.doenetId == cutObj.containingDoenetId){
+                  destinationJSON = deletePageFromOrder({orderObj:destinationJSON,needleDoenetId:cutObj.doenetId})
+                }
               }else if (containingObjtype == 'bank'){
                 //Remove from Collection
                 let nextPages = [...previousObj]
                 nextPages.splice(previousObj.indexOf(cutObj.doenetId),1)
                 updatedSourceItemJSON = nextPages;
+                if (destinationContainingObj.doenetId == cutObj.containingDoenetId){
+                  let nextDestPages = [...destinationJSON]
+                  nextDestPages.splice(destinationJSON.indexOf(cutObj.doenetId),1)
+                  destinationJSON = nextDestPages;
+                }
               }
               sourceJSONs[indexOfPriorEntry] = updatedSourceItemJSON
             }
@@ -2139,9 +2162,9 @@ export const useCourse = (courseId) => {
 
 
           
-        console.log("\n-----------------------")
-        console.log("Cut and Paste pages and orders")
-        console.log("-----------------------")
+        // console.log("\n-----------------------")
+        // console.log("Cut and Paste pages and orders")
+        // console.log("-----------------------")
         // console.log("originalPageDoenetIds",originalPageDoenetIds)
         // console.log("sourceTypes",sourceTypes)
         // console.log("sourceDoenetIds",sourceDoenetIds)
@@ -2154,26 +2177,29 @@ export const useCourse = (courseId) => {
         // console.log("destinationDoenetId",destinationDoenetId)
         // console.log("destinationJSON",destinationJSON)
         // console.log("previousDoenetId",previousDoenetId)
-        console.log("previousDoenetIdForPages",previousDoenetIdForPages)
+        // console.log("previousDoenetIdForPages",previousDoenetIdForPages)
         
-        console.log("-----------------------\n")
+        // console.log("-----------------------\n")
 
         //update database
-        // try {
-          // let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
-          //   isCopy:false,
-          //   courseId,
-          //   originalPageDoenetIds,
-          //   sourceTypes,
-          //   sourceDoenetIds,
-          //   sourceJSONs,
-          //   destinationType,
-          //   destinationDoenetId,
-          //   destinationJSON,
-          // });
-          // console.log("cutCopyAndPasteAPage resp.data",resp.data)
-        //   if (resp.status < 300) {
-          //singleSelectedObj
+        try {
+          let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+            isCopy:false,
+            courseId,
+            originalPageDoenetIds,
+            sourceTypes,
+            sourceDoenetIds,
+            sourceJSONs,
+            destinationType,
+            destinationDoenetId,
+            destinationJSON,
+          });
+          // console.log("!!!!!!!!cutCopyAndPasteAPage resp.data",resp.data)
+          if (resp.status < 300) {
+          
+
+
+
           let nextPagesParentDoenetId;
           if (singleSelectedObj.type == 'order' || singleSelectedObj.type == 'bank'){
             nextPagesParentDoenetId = singleSelectedObj.doenetId;
@@ -2185,58 +2211,50 @@ export const useCourse = (courseId) => {
             let sourceDoenetId = sourceDoenetIds[i]
             let sourceJSON = sourceJSONs[i];
 
-            console.log("sourceType",sourceType)
-            console.log("sourceDoenetId",sourceDoenetId)
-            console.log("sourceJSON",sourceJSON)
-            // //Update source
-            // if (sourceType == 'bank'){
-            //   set(itemByDoenetId(sourceDoenetId),(prev)=>{
-            //     let next = {...prev}
-            //     next.pages = sourceJSON;
-            //     return next;
-            //   })
-            // } else if (sourceType == 'activity'){
-            //   set(itemByDoenetId(sourceDoenetId),(prev)=>{
-            //     let next = {...prev}
-            //     next.order = sourceJSON;
-            //     return next;
-            //   })
-            // }
+            //Update source
+            if (sourceType == 'bank'){
+              set(itemByDoenetId(sourceDoenetId),(prev)=>{
+                let next = {...prev}
+                next.pages = sourceJSON;
+                return next;
+              })
+            } else if (sourceType == 'activity'){
+              set(itemByDoenetId(sourceDoenetId),(prev)=>{
+                let next = {...prev}
+                next.order = sourceJSON;
+                return next;
+              })
+            }
             for(let originalPageDoenetId of originalPageDoenetIds[i]){
               setOfOriginalPageDoenetIds.push(originalPageDoenetId);
               //Update pages
-              // set(itemByDoenetId(originalPageDoenetId),(prev)=>{
-              //   let next = {...prev}
-              //   next.containingDoenetId = destinationDoenetId;
-              //   next.parentDoenetId = nextPagesParentDoenetId;
-              //   next.isBeingCut = false
-              //   return next;
-              // })
+              set(itemByDoenetId(originalPageDoenetId),(prev)=>{
+                let next = {...prev}
+                next.containingDoenetId = destinationDoenetId;
+                next.parentDoenetId = nextPagesParentDoenetId;
+                next.isBeingCut = false
+                return next;
+              })
             }
 
           }
 
-        //     //Update destination
-        //     if (destinationDoenetId != sourceDoenetId){
-        //       if (destinationType == 'bank'){
-        //         set(itemByDoenetId(destinationDoenetId),(prev)=>{
-        //           let next = {...prev}
-        //           next.pages = destinationJSON;
-        //           return next;
-        //         })
-        //       }else if (destinationType == 'activity'){
-        //         set(itemByDoenetId(destinationDoenetId),(prev)=>{
-        //           let next = {...prev}
-        //           next.order = destinationJSON;
-        //           return next;
-        //         })
-        //     }
-        //   }
-    
-            console.log("setOfOriginalPageDoenetIds",setOfOriginalPageDoenetIds)
+            //Update destination
+              if (destinationType == 'bank'){
+                set(itemByDoenetId(destinationDoenetId),(prev)=>{
+                  let next = {...prev}
+                  next.pages = destinationJSON;
+                  return next;
+                })
+              }else if (destinationType == 'activity'){
+                set(itemByDoenetId(destinationDoenetId),(prev)=>{
+                  let next = {...prev}
+                  next.order = destinationJSON;
+                  return next;
+                })
+            }
             set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
               let next = [...prev];
-              console.log("prev",prev)
               for (let doenetId of setOfOriginalPageDoenetIds){
                   next.splice(next.indexOf(doenetId),1);  //remove 
               }
@@ -2251,23 +2269,23 @@ export const useCourse = (courseId) => {
                 }
                 insertIndex = indexPreviousToPrevious + 1;
               }
-              console.log("insertIndex",insertIndex)
               next.splice(insertIndex,0,...setOfOriginalPageDoenetIds);  //insert
-              // return next
-              console.log("next",next)
-              return prev
+              return next
             })
-        //     successCallback?.();
-        //     //Update recoil
-        //     // set(itemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
+
+
+
+            successCallback?.();
+            //Update recoil
+            // set(itemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
             
             
-        //   } else {
-        //     throw new Error(`response code: ${resp.status}`);
-        //   }
-        // } catch (err) {
-        //   failureCallback(err);
-        // }
+          } else {
+            throw new Error(`response code: ${resp.status}`);
+          }
+        } catch (err) {
+          failureCallback(err);
+        }
         }
 
           

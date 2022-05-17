@@ -89,40 +89,40 @@ if ($success) {
         $sourceJSON = $sourceJSONs[$i];
         $originalPageDoenetIdArray = $originalPageDoenetIds[$i];
 
-        //UPDATE SOURCE
-        if ($sourceType == 'bank'){
+        //If source is the same as the destination only use destination so skip source update
+        if ($sourceDoenetId != $destinationDoenetId){
+            //UPDATE SOURCE
+            if ($sourceType == 'bank'){
+                $sql = "
+                UPDATE course_content
+                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.pages',JSON_MERGE('[]','$sourceJSON'))
+                WHERE doenetId='$sourceDoenetId'
+                AND courseId='$courseId'
+                ";
+                $result = $conn->query($sql);
+            }else if ($sourceType == 'activity'){
+                $sql = "
+                UPDATE course_content
+                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$sourceJSON'))
+                WHERE doenetId='$sourceDoenetId'
+                AND courseId='$courseId'
+                ";
+                $result = $conn->query($sql);
+            }
+            foreach ($originalPageDoenetIdArray as $originalPageDoenetId){
+            //Update page in the pages table
             $sql = "
-            UPDATE course_content
-            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.pages',JSON_MERGE('[]','$sourceJSON'))
-            WHERE doenetId='$sourceDoenetId'
+            UPDATE pages
+            SET containingDoenetId='$destinationDoenetId'
+            WHERE doenetId='$originalPageDoenetId'
             AND courseId='$courseId'
             ";
-            echo $sql;
-            $result = $conn->query($sql);
-        }else if ($sourceType == 'activity'){
-            $sql = "
-            UPDATE course_content
-            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$sourceJSON'))
-            WHERE doenetId='$sourceDoenetId'
-            AND courseId='$courseId'
-            ";
-            echo $sql;
-            $result = $conn->query($sql);
-        }
-        foreach ($originalPageDoenetIdArray as $originalPageDoenetId){
-        //Update page in the pages table
-        $sql = "
-        UPDATE pages
-        SET containingDoenetId='$destinationDoenetId'
-        WHERE doenetId='$originalPageDoenetId'
-        AND courseId='$courseId'
-        ";
-            echo $sql;
-            $result = $conn->query($sql);
+                $result = $conn->query($sql);
+            }
         }
     }
     //UPDATE DESTINATION
-    if ($isCopy || $destinationDoenetId != $sourceDoenetId){
+    // if ($isCopy || $destinationDoenetId != $sourceDoenetId){
         //Replace destinationJSON with new doenetId for page
         // if ($isCopy){
         //     $target = $originalPageDoenetId . "2";
@@ -137,7 +137,6 @@ if ($success) {
             WHERE doenetId='$destinationDoenetId'
             AND courseId='$courseId'
             ";
-            echo $sql;
             $result = $conn->query($sql);
         }else if ($destinationType == 'activity'){
             $sql = "
@@ -146,10 +145,9 @@ if ($success) {
             WHERE doenetId='$destinationDoenetId'
             AND courseId='$courseId'
             ";
-            echo $sql;
             $result = $conn->query($sql);
         }
-    }
+    // }
     
 //     if ($isCopy){
 //         $pageInsertedDoenetId = include "randomId.php";
@@ -197,7 +195,6 @@ if ($success) {
 //     //     $result = $conn->query($sql);
 //     // }
 }
-
 
 $response_arr = array(
     "success"=>$success,

@@ -91,7 +91,7 @@ disabled={!canPaste}
   return (
  <>
  <ActionButtonGroup width="menu">
-    {copyJSX}
+    {/* {copyJSX} */}
     {cutJSX}
     {pasteJSX}
  </ActionButtonGroup>
