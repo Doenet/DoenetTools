@@ -1847,6 +1847,15 @@ export const useCourse = (courseId) => {
           return containingIds;
         }
 
+        async function getAncestors(doenetId){
+          let itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
+          if (itemObj.parentDoenetId == courseId){
+            return [doenetId];
+          }
+          let newAncestors = await getAncestors(itemObj.parentDoenetId)
+          return [doenetId,...newAncestors];
+        }
+
 
         let cutObjs = await snapshot.getPromise(cutCourseItems);
         let copiedObjs = await snapshot.getPromise(copiedCourseItems);
@@ -1875,6 +1884,7 @@ export const useCourse = (courseId) => {
           destType = singleSelectedObj.type;
           if (singleSelectedObj.type == 'section'){
             destParentDoenetId = singleSelectedObj.doenetId;
+            destinationContainingObj = {...singleSelectedObj}
           }else if (singleSelectedObj.type == 'activity' || singleSelectedObj.type == 'bank'){
             destinationContainingObj = {...singleSelectedObj}
             destParentDoenetId = singleSelectedObj.parentDoenetId;
@@ -1935,6 +1945,12 @@ export const useCourse = (courseId) => {
           let doenetIdsToMove = [];
           let noParentUpdateDoenetIds = [];
           let sourcePagesAndOrdersToMove = [];
+
+          let ancestorsDoenetIds = [];
+          if (destinationContainingObj){
+            ancestorsDoenetIds = await getAncestors(destinationContainingObj.doenetId)
+          }
+
           //Test if cut orders and pages can go in destination
           for (let cutObj of cutObjs){
             if ((destType == 'section' ||
@@ -1952,6 +1968,10 @@ export const useCourse = (courseId) => {
             }
             if (destType == 'bank' && cutObj.type == 'order' ){
               failureCallback("Collections can only accept pages.")
+              return;
+            }
+            if (ancestorsDoenetIds.includes(cutObj.doenetId)){
+              failureCallback("Can't paste item into itself.")
               return;
             }
             // if (destType == 'activity' && 
