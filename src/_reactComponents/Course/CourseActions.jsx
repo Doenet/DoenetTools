@@ -2056,6 +2056,7 @@ export const useCourse = (courseId) => {
           let sourceDoenetIds = []
           let sourceJSONs = []
           let originalPageDoenetIds = []
+          let previousDoenetId;
           for (let cutObj of sourcePagesAndOrdersToMove){
             let sourceContainingDoenetId = cutObj.containingDoenetId
             let indexOfPriorEntry = sourceDoenetIds.indexOf(sourceContainingDoenetId)
@@ -2099,14 +2100,15 @@ export const useCourse = (courseId) => {
             //Add to destination
             if (destinationType == 'bank'){
               destinationJSON.push(cutObj.doenetId)
+              //find last item in the bank
             }else if (destinationType == 'activity'){
               let orderDoenetIdToAddToDoenetId = singleSelectedObj.doenetId;
               if (singleSelectedObj.type == 'page'){
                 orderDoenetIdToAddToDoenetId = singleSelectedObj.parentDoenetId;
               }
-              console.log(">>orderDoenetIdToAddToDoenetId",orderDoenetIdToAddToDoenetId)
-              let previousDoenetId;
-              ({order:destinationJSON,previousDoenetId} = addToOrder({
+              // console.log(">>orderDoenetIdToAddToDoenetId",orderDoenetIdToAddToDoenetId)
+              // ({order:destinationJSON,previousDoenetId} = addToOrder({
+                ({order:destinationJSON,previousDoenetId} = addToOrder({
                 orderObj:destinationJSON,
                 needleOrderDoenetId:orderDoenetIdToAddToDoenetId,
                 itemToAdd:cutObj.doenetId})
@@ -2114,53 +2116,105 @@ export const useCourse = (courseId) => {
             }
           }
 
+
+          let previousDoenetIdForPages = previousDoenetId;
+          if (!previousDoenetIdForPages){
+            if (singleSelectedObj.type == 'bank'){
+              if (singleSelectedObj.pages.length == 0){
+                previousDoenetIdForPages = singleSelectedObj.doenetId
+              }else{
+                previousDoenetIdForPages = singleSelectedObj.pages[singleSelectedObj.pages.length - 1];
+              }
+            }else if (singleSelectedObj.type == 'page'){
+              //Only need to handle collection case as orders are handled above
+              let collectionObj = await snapshot.getPromise(itemByDoenetId(singleSelectedObj.containingDoenetId));
+              if (collectionObj.pages.length == 0){
+                previousDoenetIdForPages = collectionObj.doenetId
+              }else{
+                previousDoenetIdForPages = collectionObj.pages[collectionObj.pages.length - 1];
+              }
+            }
+
+          }
+
+
           
         console.log("\n-----------------------")
         console.log("Cut and Paste pages and orders")
         console.log("-----------------------")
-        console.log("originalPageDoenetIds",originalPageDoenetIds)
-        console.log("sourceTypes",sourceTypes)
-        console.log("sourceDoenetIds",sourceDoenetIds)
-        console.log("sourceJSONs",sourceJSONs)
-        console.log("destParentDoenetId",destParentDoenetId)
-        console.log("destPreviousContainingItemDoenetId",destPreviousContainingItemDoenetId)
-        console.log("destPreviousItemDoenetId",destPreviousItemDoenetId)
+        // console.log("originalPageDoenetIds",originalPageDoenetIds)
+        // console.log("sourceTypes",sourceTypes)
+        // console.log("sourceDoenetIds",sourceDoenetIds)
+        // console.log("sourceJSONs",sourceJSONs)
+        // console.log("destParentDoenetId",destParentDoenetId)
+        // console.log("destPreviousContainingItemDoenetId",destPreviousContainingItemDoenetId)
+        // console.log("destPreviousItemDoenetId",destPreviousItemDoenetId)
 
-        console.log("destinationType",destinationType)
-        console.log("destinationDoenetId",destinationDoenetId)
-        console.log("destinationJSON",destinationJSON)
+        // console.log("destinationType",destinationType)
+        // console.log("destinationDoenetId",destinationDoenetId)
+        // console.log("destinationJSON",destinationJSON)
+        // console.log("previousDoenetId",previousDoenetId)
+        console.log("previousDoenetIdForPages",previousDoenetIdForPages)
         
         console.log("-----------------------\n")
 
         //update database
         // try {
-          let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
-            isCopy:false,
-            courseId,
-            originalPageDoenetIds,
-            sourceTypes,
-            sourceDoenetIds,
-            sourceJSONs,
-            destinationType,
-            destinationDoenetId,
-            destinationJSON,
-          });
-          console.log("cutCopyAndPasteAPage resp.data",resp.data)
+          // let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+          //   isCopy:false,
+          //   courseId,
+          //   originalPageDoenetIds,
+          //   sourceTypes,
+          //   sourceDoenetIds,
+          //   sourceJSONs,
+          //   destinationType,
+          //   destinationDoenetId,
+          //   destinationJSON,
+          // });
+          // console.log("cutCopyAndPasteAPage resp.data",resp.data)
         //   if (resp.status < 300) {
-        //     //Update source
-        //     if (sourceType == 'bank'){
-        //       set(itemByDoenetId(sourceDoenetId),(prev)=>{
-        //         let next = {...prev}
-        //         next.pages = sourceJSON;
-        //         return next;
-        //       })
-        //     } else if (sourceType == 'activity'){
-        //       set(itemByDoenetId(sourceDoenetId),(prev)=>{
-        //         let next = {...prev}
-        //         next.order = sourceJSON;
-        //         return next;
-        //       })
-        //     }
+          //singleSelectedObj
+          let nextPagesParentDoenetId;
+          if (singleSelectedObj.type == 'order' || singleSelectedObj.type == 'bank'){
+            nextPagesParentDoenetId = singleSelectedObj.doenetId;
+          }else if (singleSelectedObj.type == 'page'){
+            nextPagesParentDoenetId = singleSelectedObj.parentDoenetId;
+          }
+          let setOfOriginalPageDoenetIds = []
+          for (let [i,sourceType] of Object.entries(sourceTypes)){
+            let sourceDoenetId = sourceDoenetIds[i]
+            let sourceJSON = sourceJSONs[i];
+
+            console.log("sourceType",sourceType)
+            console.log("sourceDoenetId",sourceDoenetId)
+            console.log("sourceJSON",sourceJSON)
+            // //Update source
+            // if (sourceType == 'bank'){
+            //   set(itemByDoenetId(sourceDoenetId),(prev)=>{
+            //     let next = {...prev}
+            //     next.pages = sourceJSON;
+            //     return next;
+            //   })
+            // } else if (sourceType == 'activity'){
+            //   set(itemByDoenetId(sourceDoenetId),(prev)=>{
+            //     let next = {...prev}
+            //     next.order = sourceJSON;
+            //     return next;
+            //   })
+            // }
+            for(let originalPageDoenetId of originalPageDoenetIds[i]){
+              setOfOriginalPageDoenetIds.push(originalPageDoenetId);
+              //Update pages
+              // set(itemByDoenetId(originalPageDoenetId),(prev)=>{
+              //   let next = {...prev}
+              //   next.containingDoenetId = destinationDoenetId;
+              //   next.parentDoenetId = nextPagesParentDoenetId;
+              //   next.isBeingCut = false
+              //   return next;
+              // })
+            }
+
+          }
 
         //     //Update destination
         //     if (destinationDoenetId != sourceDoenetId){
@@ -2168,14 +2222,6 @@ export const useCourse = (courseId) => {
         //         set(itemByDoenetId(destinationDoenetId),(prev)=>{
         //           let next = {...prev}
         //           next.pages = destinationJSON;
-        //           return next;
-        //         })
-        //         //Update page
-        //         set(itemByDoenetId(originalPageDoenetId),(prev)=>{
-        //           let next = {...prev}
-        //           next.containingDoenetId = destinationDoenetId;
-        //           next.parentDoenetId = singleSelectedObj.doenetId;
-        //           next.isBeingCut = false
         //           return next;
         //         })
         //       }else if (destinationType == 'activity'){
@@ -2186,21 +2232,31 @@ export const useCourse = (courseId) => {
         //         })
         //     }
         //   }
-        //       //Update page
-        //       set(itemByDoenetId(originalPageDoenetId),(prev)=>{
-        //         let next = {...prev}
-        //         next.containingDoenetId = destinationDoenetId;
-        //         next.parentDoenetId = singleSelectedObj.doenetId;
-        //         next.isBeingCut = false
-        //         return next;
-        //       })
-            
-        //     set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
-        //       let next = [...prev];
-        //       next.splice(next.indexOf(originalPageDoenetId),1);  //remove 
-        //       next.splice(next.indexOf(previousDoenetId)+1,0,originalPageDoenetId);  //insert
-        //       return next
-        //     })
+    
+            console.log("setOfOriginalPageDoenetIds",setOfOriginalPageDoenetIds)
+            set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
+              let next = [...prev];
+              console.log("prev",prev)
+              for (let doenetId of setOfOriginalPageDoenetIds){
+                  next.splice(next.indexOf(doenetId),1);  //remove 
+              }
+              let insertIndex = next.indexOf(previousDoenetIdForPages)+1;
+              if (insertIndex == 0){
+                //Not found so backtrack to find the closest
+                let indexPreviousToPrevious = prev.indexOf(previousDoenetIdForPages) -1
+                let needle = prev[indexPreviousToPrevious];
+                while (indexPreviousToPrevious > 0 && !next.includes(needle)){
+                  indexPreviousToPrevious--
+                  needle = prev[indexPreviousToPrevious];
+                }
+                insertIndex = indexPreviousToPrevious + 1;
+              }
+              console.log("insertIndex",insertIndex)
+              next.splice(insertIndex,0,...setOfOriginalPageDoenetIds);  //insert
+              // return next
+              console.log("next",next)
+              return prev
+            })
         //     successCallback?.();
         //     //Update recoil
         //     // set(itemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
