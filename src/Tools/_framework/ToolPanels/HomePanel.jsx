@@ -244,11 +244,11 @@ export default function HomePage(props) {
             </div> */}
 
 
-        {/* <Paragraph>
+        <Paragraph>
           <div style={{ display: "flex", justifyContent: "center" }}>
-            <a href="">DoenetML Online Guide</a>
+            <a href="/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q">DoenetML Reference</a>
           </div>
-        </Paragraph> */}
+        </Paragraph>
 
 
 
