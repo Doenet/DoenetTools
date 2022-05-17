@@ -276,6 +276,7 @@ function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLe
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
       courseNavigatorProps,
+      isBeingCut: itemInfo.isBeingCut,
       numberOfVisibleColumns,
       icon: faFolderTree,
       label: itemInfo.label,
@@ -289,6 +290,7 @@ function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLe
     return /* @__PURE__ */ React.createElement(Row, {
       courseId,
       courseNavigatorProps,
+      isBeingCut: itemInfo.isBeingCut,
       numberOfVisibleColumns,
       icon: faFolderTree,
       label: itemInfo.label,
@@ -322,6 +324,7 @@ function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel
       hasToggle: true,
       isOpen: itemInfo.isOpen,
       isSelected: itemInfo.isSelected,
+      isBeingCut: itemInfo.isBeingCut,
       indentLevel
     }), pages);
   } else {
@@ -335,6 +338,7 @@ function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel
       hasToggle: true,
       isOpen: itemInfo.isOpen,
       isSelected: itemInfo.isSelected,
+      isBeingCut: itemInfo.isBeingCut,
       indentLevel
     });
   }

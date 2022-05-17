@@ -13,7 +13,7 @@ export default function Ref(props) {
     linkContent = SVs.linkText;
   }
   let url = "";
-  let target = "_blank";
+  let targetForATag = "_blank";
   let haveValidTarget = false;
   if (SVs.cid || SVs.doenetId) {
     if (SVs.cid) {
@@ -31,12 +31,14 @@ export default function Ref(props) {
       if (SVs.edit === true || SVs.edit === null && pageToolView.tool === "editor") {
         url = `tool=editor&${url}`;
       }
-      url = `public?${url}`;
+      url = `/public?${url}`;
     } else {
-      url = `course?tool=assignment&${url}`;
+      url = `/course?tool=assignment&${url}`;
     }
-    url = `/#/${url}`;
     haveValidTarget = true;
+    if (SVs.targetName) {
+      url += "#" + SVs.targetName;
+    }
   } else if (SVs.uri) {
     url = SVs.uri;
     if (url.substring(0, 8) === "https://" || url.substring(0, 7) === "http://") {
@@ -44,7 +46,7 @@ export default function Ref(props) {
     }
   } else {
     url = "#" + SVs.targetName;
-    target = null;
+    targetForATag = null;
     haveValidTarget = true;
   }
   if (SVs.createButton) {
@@ -60,7 +62,7 @@ export default function Ref(props) {
   } else {
     if (haveValidTarget) {
       return /* @__PURE__ */ React.createElement("a", {
-        target,
+        target: targetForATag,
         id: name,
         name,
         href: url

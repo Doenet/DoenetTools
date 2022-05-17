@@ -1,4 +1,4 @@
-import { f as functionUncurryThis, a as arrayMethodIsStrict, _ as _export, b as arrayIncludes, g as global_1, e as engineUserAgent, i as isCallable, c as arraySlice, d as functionApply, h as engineIsNode, j as functionBindContext, k as fails, l as documentCreateElement, m as html$2, n as hasOwnProperty_1, o as internalMetadata, p as isObject$2, q as freezing, r as objectSetPrototypeOf, s as fixRegexpWellKnownSymbolLogic, t as requireObjectCoercible, u as getMethod, v as functionCall, w as toString_1, x as anObject, y as regexpExecAbstract, z as advanceStringIndex, A as toLength, B as toIndexedObject, C as lengthOfArrayLike, D as toIntegerOrInfinity, E as ownKeys$8, F as createProperty, G as descriptors, H as objectGetOwnPropertyDescriptor } from './es.string.starts-with-aa41bca0.js';
+import { f as functionUncurryThis, a as arrayMethodIsStrict, _ as _export, b as arrayIncludes, g as global_1, e as engineUserAgent, i as isCallable, c as arraySlice, d as functionApply, h as engineIsNode, j as functionBindContext, k as fails, l as documentCreateElement, m as html$2, n as hasOwnProperty_1, o as internalMetadata, p as isObject$2, q as freezing, r as objectSetPrototypeOf, s as fixRegexpWellKnownSymbolLogic, t as requireObjectCoercible, u as getMethod, v as functionCall, w as toString_1, x as anObject, y as regexpExecAbstract, z as advanceStringIndex, A as toLength, B as toIndexedObject, C as lengthOfArrayLike, D as toIntegerOrInfinity, E as ownKeys$8, F as createProperty, G as descriptors, H as objectGetOwnPropertyDescriptor } from './es.string.starts-with-6dcf56ee.js';
 
 /* eslint-disable es-x/no-array-prototype-indexof -- required for testing */
 
@@ -779,9 +779,89 @@ function isWindowsOS() {
   return platforms.win.value;
 }
 
-/*! @license DOMPurify 2.3.6 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/2.3.6/LICENSE */
+/*! @license DOMPurify 2.3.8 | (c) Cure53 and other contributors | Released under the Apache license 2.0 and Mozilla Public License 2.0 | github.com/cure53/DOMPurify/blob/2.3.8/LICENSE */
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _typeof$2(obj) {
+  "@babel/helpers - typeof";
+
+  return _typeof$2 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  }, _typeof$2(obj);
+}
+
+function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+    o.__proto__ = p;
+    return o;
+  };
+
+  return _setPrototypeOf(o, p);
+}
+
+function _isNativeReflectConstruct() {
+  if (typeof Reflect === "undefined" || !Reflect.construct) return false;
+  if (Reflect.construct.sham) return false;
+  if (typeof Proxy === "function") return true;
+
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {}));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function _construct(Parent, args, Class) {
+  if (_isNativeReflectConstruct()) {
+    _construct = Reflect.construct;
+  } else {
+    _construct = function _construct(Parent, args, Class) {
+      var a = [null];
+      a.push.apply(a, args);
+      var Constructor = Function.bind.apply(Parent, a);
+      var instance = new Constructor();
+      if (Class) _setPrototypeOf(instance, Class.prototype);
+      return instance;
+    };
+  }
+
+  return _construct.apply(null, arguments);
+}
+
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+}
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return _arrayLikeToArray(arr);
+}
+
+function _iterableToArray(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
+}
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+}
+
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+
+  return arr2;
+}
+
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
 
 var hasOwnProperty$1 = Object.hasOwnProperty,
     setPrototypeOf = Object.setPrototypeOf,
@@ -816,45 +896,40 @@ if (!seal) {
 
 if (!construct) {
   construct = function construct(Func, args) {
-    return new (Function.prototype.bind.apply(Func, [null].concat(_toConsumableArray(args))))();
+    return _construct(Func, _toConsumableArray(args));
   };
 }
 
 var arrayForEach = unapply(Array.prototype.forEach);
 var arrayPop = unapply(Array.prototype.pop);
 var arrayPush = unapply(Array.prototype.push);
-
 var stringToLowerCase = unapply(String.prototype.toLowerCase);
 var stringMatch = unapply(String.prototype.match);
 var stringReplace = unapply(String.prototype.replace);
 var stringIndexOf = unapply(String.prototype.indexOf);
 var stringTrim = unapply(String.prototype.trim);
-
 var regExpTest = unapply(RegExp.prototype.test);
-
 var typeErrorCreate = unconstruct(TypeError);
-
 function unapply(func) {
   return function (thisArg) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
     }
 
     return apply(func, thisArg, args);
   };
 }
-
 function unconstruct(func) {
   return function () {
-    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+    for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
       args[_key2] = arguments[_key2];
     }
 
     return construct(func, args);
   };
 }
-
 /* Add properties to a lookup table */
+
 function addToSet(set, array) {
   if (setPrototypeOf) {
     // Make 'in' and truthy checks like Boolean(set.constructor)
@@ -864,10 +939,13 @@ function addToSet(set, array) {
   }
 
   var l = array.length;
+
   while (l--) {
     var element = array[l];
+
     if (typeof element === 'string') {
       var lcElement = stringToLowerCase(element);
+
       if (lcElement !== element) {
         // Config presets (e.g. tags.js, attrs.js) are immutable.
         if (!isFrozen(array)) {
@@ -883,12 +961,12 @@ function addToSet(set, array) {
 
   return set;
 }
-
 /* Shallow clone an object */
+
 function clone$1(object) {
   var newObject = create(null);
+  var property;
 
-  var property = void 0;
   for (property in object) {
     if (apply(hasOwnProperty$1, object, [property])) {
       newObject[property] = object[property];
@@ -897,14 +975,15 @@ function clone$1(object) {
 
   return newObject;
 }
-
 /* IE10 doesn't support __lookupGetter__ so lets'
  * simulate it. It also automatically checks
  * if the prop is function or getter and behaves
  * accordingly. */
+
 function lookupGetter(object, prop) {
   while (object !== null) {
     var desc = getOwnPropertyDescriptor(object, prop);
+
     if (desc) {
       if (desc.get) {
         return unapply(desc.get);
@@ -926,40 +1005,33 @@ function lookupGetter(object, prop) {
   return fallbackValue;
 }
 
-var html = freeze(['a', 'abbr', 'acronym', 'address', 'area', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'content', 'data', 'datalist', 'dd', 'decorator', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'img', 'input', 'ins', 'kbd', 'label', 'legend', 'li', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meter', 'nav', 'nobr', 'ol', 'optgroup', 'option', 'output', 'p', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'select', 'shadow', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr']);
+var html$1 = freeze(['a', 'abbr', 'acronym', 'address', 'area', 'article', 'aside', 'audio', 'b', 'bdi', 'bdo', 'big', 'blink', 'blockquote', 'body', 'br', 'button', 'canvas', 'caption', 'center', 'cite', 'code', 'col', 'colgroup', 'content', 'data', 'datalist', 'dd', 'decorator', 'del', 'details', 'dfn', 'dialog', 'dir', 'div', 'dl', 'dt', 'element', 'em', 'fieldset', 'figcaption', 'figure', 'font', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head', 'header', 'hgroup', 'hr', 'html', 'i', 'img', 'input', 'ins', 'kbd', 'label', 'legend', 'li', 'main', 'map', 'mark', 'marquee', 'menu', 'menuitem', 'meter', 'nav', 'nobr', 'ol', 'optgroup', 'option', 'output', 'p', 'picture', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'section', 'select', 'shadow', 'small', 'source', 'spacer', 'span', 'strike', 'strong', 'style', 'sub', 'summary', 'sup', 'table', 'tbody', 'td', 'template', 'textarea', 'tfoot', 'th', 'thead', 'time', 'tr', 'track', 'tt', 'u', 'ul', 'var', 'video', 'wbr']); // SVG
 
-// SVG
-var svg = freeze(['svg', 'a', 'altglyph', 'altglyphdef', 'altglyphitem', 'animatecolor', 'animatemotion', 'animatetransform', 'circle', 'clippath', 'defs', 'desc', 'ellipse', 'filter', 'font', 'g', 'glyph', 'glyphref', 'hkern', 'image', 'line', 'lineargradient', 'marker', 'mask', 'metadata', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialgradient', 'rect', 'stop', 'style', 'switch', 'symbol', 'text', 'textpath', 'title', 'tref', 'tspan', 'view', 'vkern']);
-
-var svgFilters = freeze(['feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage', 'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence']);
-
-// List of SVG elements that are disallowed by default.
+var svg$1 = freeze(['svg', 'a', 'altglyph', 'altglyphdef', 'altglyphitem', 'animatecolor', 'animatemotion', 'animatetransform', 'circle', 'clippath', 'defs', 'desc', 'ellipse', 'filter', 'font', 'g', 'glyph', 'glyphref', 'hkern', 'image', 'line', 'lineargradient', 'marker', 'mask', 'metadata', 'mpath', 'path', 'pattern', 'polygon', 'polyline', 'radialgradient', 'rect', 'stop', 'style', 'switch', 'symbol', 'text', 'textpath', 'title', 'tref', 'tspan', 'view', 'vkern']);
+var svgFilters = freeze(['feBlend', 'feColorMatrix', 'feComponentTransfer', 'feComposite', 'feConvolveMatrix', 'feDiffuseLighting', 'feDisplacementMap', 'feDistantLight', 'feFlood', 'feFuncA', 'feFuncB', 'feFuncG', 'feFuncR', 'feGaussianBlur', 'feImage', 'feMerge', 'feMergeNode', 'feMorphology', 'feOffset', 'fePointLight', 'feSpecularLighting', 'feSpotLight', 'feTile', 'feTurbulence']); // List of SVG elements that are disallowed by default.
 // We still need to know them so that we can do namespace
 // checks properly in case one wants to add them to
 // allow-list.
+
 var svgDisallowed = freeze(['animate', 'color-profile', 'cursor', 'discard', 'fedropshadow', 'font-face', 'font-face-format', 'font-face-name', 'font-face-src', 'font-face-uri', 'foreignobject', 'hatch', 'hatchpath', 'mesh', 'meshgradient', 'meshpatch', 'meshrow', 'missing-glyph', 'script', 'set', 'solidcolor', 'unknown', 'use']);
-
-var mathMl = freeze(['math', 'menclose', 'merror', 'mfenced', 'mfrac', 'mglyph', 'mi', 'mlabeledtr', 'mmultiscripts', 'mn', 'mo', 'mover', 'mpadded', 'mphantom', 'mroot', 'mrow', 'ms', 'mspace', 'msqrt', 'mstyle', 'msub', 'msup', 'msubsup', 'mtable', 'mtd', 'mtext', 'mtr', 'munder', 'munderover']);
-
-// Similarly to SVG, we want to know all MathML elements,
+var mathMl$1 = freeze(['math', 'menclose', 'merror', 'mfenced', 'mfrac', 'mglyph', 'mi', 'mlabeledtr', 'mmultiscripts', 'mn', 'mo', 'mover', 'mpadded', 'mphantom', 'mroot', 'mrow', 'ms', 'mspace', 'msqrt', 'mstyle', 'msub', 'msup', 'msubsup', 'mtable', 'mtd', 'mtext', 'mtr', 'munder', 'munderover']); // Similarly to SVG, we want to know all MathML elements,
 // even those that we disallow by default.
-var mathMlDisallowed = freeze(['maction', 'maligngroup', 'malignmark', 'mlongdiv', 'mscarries', 'mscarry', 'msgroup', 'mstack', 'msline', 'msrow', 'semantics', 'annotation', 'annotation-xml', 'mprescripts', 'none']);
 
+var mathMlDisallowed = freeze(['maction', 'maligngroup', 'malignmark', 'mlongdiv', 'mscarries', 'mscarry', 'msgroup', 'mstack', 'msline', 'msrow', 'semantics', 'annotation', 'annotation-xml', 'mprescripts', 'none']);
 var text = freeze(['#text']);
 
-var html$1 = freeze(['accept', 'action', 'align', 'alt', 'autocapitalize', 'autocomplete', 'autopictureinpicture', 'autoplay', 'background', 'bgcolor', 'border', 'capture', 'cellpadding', 'cellspacing', 'checked', 'cite', 'class', 'clear', 'color', 'cols', 'colspan', 'controls', 'controlslist', 'coords', 'crossorigin', 'datetime', 'decoding', 'default', 'dir', 'disabled', 'disablepictureinpicture', 'disableremoteplayback', 'download', 'draggable', 'enctype', 'enterkeyhint', 'face', 'for', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'id', 'inputmode', 'integrity', 'ismap', 'kind', 'label', 'lang', 'list', 'loading', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'minlength', 'multiple', 'muted', 'name', 'nonce', 'noshade', 'novalidate', 'nowrap', 'open', 'optimum', 'pattern', 'placeholder', 'playsinline', 'poster', 'preload', 'pubdate', 'radiogroup', 'readonly', 'rel', 'required', 'rev', 'reversed', 'role', 'rows', 'rowspan', 'spellcheck', 'scope', 'selected', 'shape', 'size', 'sizes', 'span', 'srclang', 'start', 'src', 'srcset', 'step', 'style', 'summary', 'tabindex', 'title', 'translate', 'type', 'usemap', 'valign', 'value', 'width', 'xmlns', 'slot']);
-
-var svg$1 = freeze(['accent-height', 'accumulate', 'additive', 'alignment-baseline', 'ascent', 'attributename', 'attributetype', 'azimuth', 'basefrequency', 'baseline-shift', 'begin', 'bias', 'by', 'class', 'clip', 'clippathunits', 'clip-path', 'clip-rule', 'color', 'color-interpolation', 'color-interpolation-filters', 'color-profile', 'color-rendering', 'cx', 'cy', 'd', 'dx', 'dy', 'diffuseconstant', 'direction', 'display', 'divisor', 'dur', 'edgemode', 'elevation', 'end', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'filterunits', 'flood-color', 'flood-opacity', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'fx', 'fy', 'g1', 'g2', 'glyph-name', 'glyphref', 'gradientunits', 'gradienttransform', 'height', 'href', 'id', 'image-rendering', 'in', 'in2', 'k', 'k1', 'k2', 'k3', 'k4', 'kerning', 'keypoints', 'keysplines', 'keytimes', 'lang', 'lengthadjust', 'letter-spacing', 'kernelmatrix', 'kernelunitlength', 'lighting-color', 'local', 'marker-end', 'marker-mid', 'marker-start', 'markerheight', 'markerunits', 'markerwidth', 'maskcontentunits', 'maskunits', 'max', 'mask', 'media', 'method', 'mode', 'min', 'name', 'numoctaves', 'offset', 'operator', 'opacity', 'order', 'orient', 'orientation', 'origin', 'overflow', 'paint-order', 'path', 'pathlength', 'patterncontentunits', 'patterntransform', 'patternunits', 'points', 'preservealpha', 'preserveaspectratio', 'primitiveunits', 'r', 'rx', 'ry', 'radius', 'refx', 'refy', 'repeatcount', 'repeatdur', 'restart', 'result', 'rotate', 'scale', 'seed', 'shape-rendering', 'specularconstant', 'specularexponent', 'spreadmethod', 'startoffset', 'stddeviation', 'stitchtiles', 'stop-color', 'stop-opacity', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke', 'stroke-width', 'style', 'surfacescale', 'systemlanguage', 'tabindex', 'targetx', 'targety', 'transform', 'transform-origin', 'text-anchor', 'text-decoration', 'text-rendering', 'textlength', 'type', 'u1', 'u2', 'unicode', 'values', 'viewbox', 'visibility', 'version', 'vert-adv-y', 'vert-origin-x', 'vert-origin-y', 'width', 'word-spacing', 'wrap', 'writing-mode', 'xchannelselector', 'ychannelselector', 'x', 'x1', 'x2', 'xmlns', 'y', 'y1', 'y2', 'z', 'zoomandpan']);
-
-var mathMl$1 = freeze(['accent', 'accentunder', 'align', 'bevelled', 'close', 'columnsalign', 'columnlines', 'columnspan', 'denomalign', 'depth', 'dir', 'display', 'displaystyle', 'encoding', 'fence', 'frame', 'height', 'href', 'id', 'largeop', 'length', 'linethickness', 'lspace', 'lquote', 'mathbackground', 'mathcolor', 'mathsize', 'mathvariant', 'maxsize', 'minsize', 'movablelimits', 'notation', 'numalign', 'open', 'rowalign', 'rowlines', 'rowspacing', 'rowspan', 'rspace', 'rquote', 'scriptlevel', 'scriptminsize', 'scriptsizemultiplier', 'selection', 'separator', 'separators', 'stretchy', 'subscriptshift', 'supscriptshift', 'symmetric', 'voffset', 'width', 'xmlns']);
-
+var html = freeze(['accept', 'action', 'align', 'alt', 'autocapitalize', 'autocomplete', 'autopictureinpicture', 'autoplay', 'background', 'bgcolor', 'border', 'capture', 'cellpadding', 'cellspacing', 'checked', 'cite', 'class', 'clear', 'color', 'cols', 'colspan', 'controls', 'controlslist', 'coords', 'crossorigin', 'datetime', 'decoding', 'default', 'dir', 'disabled', 'disablepictureinpicture', 'disableremoteplayback', 'download', 'draggable', 'enctype', 'enterkeyhint', 'face', 'for', 'headers', 'height', 'hidden', 'high', 'href', 'hreflang', 'id', 'inputmode', 'integrity', 'ismap', 'kind', 'label', 'lang', 'list', 'loading', 'loop', 'low', 'max', 'maxlength', 'media', 'method', 'min', 'minlength', 'multiple', 'muted', 'name', 'nonce', 'noshade', 'novalidate', 'nowrap', 'open', 'optimum', 'pattern', 'placeholder', 'playsinline', 'poster', 'preload', 'pubdate', 'radiogroup', 'readonly', 'rel', 'required', 'rev', 'reversed', 'role', 'rows', 'rowspan', 'spellcheck', 'scope', 'selected', 'shape', 'size', 'sizes', 'span', 'srclang', 'start', 'src', 'srcset', 'step', 'style', 'summary', 'tabindex', 'title', 'translate', 'type', 'usemap', 'valign', 'value', 'width', 'xmlns', 'slot']);
+var svg = freeze(['accent-height', 'accumulate', 'additive', 'alignment-baseline', 'ascent', 'attributename', 'attributetype', 'azimuth', 'basefrequency', 'baseline-shift', 'begin', 'bias', 'by', 'class', 'clip', 'clippathunits', 'clip-path', 'clip-rule', 'color', 'color-interpolation', 'color-interpolation-filters', 'color-profile', 'color-rendering', 'cx', 'cy', 'd', 'dx', 'dy', 'diffuseconstant', 'direction', 'display', 'divisor', 'dur', 'edgemode', 'elevation', 'end', 'fill', 'fill-opacity', 'fill-rule', 'filter', 'filterunits', 'flood-color', 'flood-opacity', 'font-family', 'font-size', 'font-size-adjust', 'font-stretch', 'font-style', 'font-variant', 'font-weight', 'fx', 'fy', 'g1', 'g2', 'glyph-name', 'glyphref', 'gradientunits', 'gradienttransform', 'height', 'href', 'id', 'image-rendering', 'in', 'in2', 'k', 'k1', 'k2', 'k3', 'k4', 'kerning', 'keypoints', 'keysplines', 'keytimes', 'lang', 'lengthadjust', 'letter-spacing', 'kernelmatrix', 'kernelunitlength', 'lighting-color', 'local', 'marker-end', 'marker-mid', 'marker-start', 'markerheight', 'markerunits', 'markerwidth', 'maskcontentunits', 'maskunits', 'max', 'mask', 'media', 'method', 'mode', 'min', 'name', 'numoctaves', 'offset', 'operator', 'opacity', 'order', 'orient', 'orientation', 'origin', 'overflow', 'paint-order', 'path', 'pathlength', 'patterncontentunits', 'patterntransform', 'patternunits', 'points', 'preservealpha', 'preserveaspectratio', 'primitiveunits', 'r', 'rx', 'ry', 'radius', 'refx', 'refy', 'repeatcount', 'repeatdur', 'restart', 'result', 'rotate', 'scale', 'seed', 'shape-rendering', 'specularconstant', 'specularexponent', 'spreadmethod', 'startoffset', 'stddeviation', 'stitchtiles', 'stop-color', 'stop-opacity', 'stroke-dasharray', 'stroke-dashoffset', 'stroke-linecap', 'stroke-linejoin', 'stroke-miterlimit', 'stroke-opacity', 'stroke', 'stroke-width', 'style', 'surfacescale', 'systemlanguage', 'tabindex', 'targetx', 'targety', 'transform', 'transform-origin', 'text-anchor', 'text-decoration', 'text-rendering', 'textlength', 'type', 'u1', 'u2', 'unicode', 'values', 'viewbox', 'visibility', 'version', 'vert-adv-y', 'vert-origin-x', 'vert-origin-y', 'width', 'word-spacing', 'wrap', 'writing-mode', 'xchannelselector', 'ychannelselector', 'x', 'x1', 'x2', 'xmlns', 'y', 'y1', 'y2', 'z', 'zoomandpan']);
+var mathMl = freeze(['accent', 'accentunder', 'align', 'bevelled', 'close', 'columnsalign', 'columnlines', 'columnspan', 'denomalign', 'depth', 'dir', 'display', 'displaystyle', 'encoding', 'fence', 'frame', 'height', 'href', 'id', 'largeop', 'length', 'linethickness', 'lspace', 'lquote', 'mathbackground', 'mathcolor', 'mathsize', 'mathvariant', 'maxsize', 'minsize', 'movablelimits', 'notation', 'numalign', 'open', 'rowalign', 'rowlines', 'rowspacing', 'rowspan', 'rspace', 'rquote', 'scriptlevel', 'scriptminsize', 'scriptsizemultiplier', 'selection', 'separator', 'separators', 'stretchy', 'subscriptshift', 'supscriptshift', 'symmetric', 'voffset', 'width', 'xmlns']);
 var xml = freeze(['xlink:href', 'xml:id', 'xlink:title', 'xml:space', 'xmlns:xlink']);
 
-// eslint-disable-next-line unicorn/better-regex
-var MUSTACHE_EXPR = seal(/\{\{[\s\S]*|[\s\S]*\}\}/gm); // Specify template detection regex for SAFE_FOR_TEMPLATES mode
-var ERB_EXPR = seal(/<%[\s\S]*|[\s\S]*%>/gm);
+var MUSTACHE_EXPR = seal(/\{\{[\w\W]*|[\w\W]*\}\}/gm); // Specify template detection regex for SAFE_FOR_TEMPLATES mode
+
+var ERB_EXPR = seal(/<%[\w\W]*|[\w\W]*%>/gm);
 var DATA_ATTR = seal(/^data-[\-\w.\u00B7-\uFFFF]/); // eslint-disable-line no-useless-escape
+
 var ARIA_ATTR = seal(/^aria-[\-\w]+$/); // eslint-disable-line no-useless-escape
+
 var IS_ALLOWED_URI = seal(/^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-:]|$))/i // eslint-disable-line no-useless-escape
 );
 var IS_SCRIPT_OR_DATA = seal(/^(?:\w+script|data):/i);
@@ -967,14 +1039,9 @@ var ATTR_WHITESPACE = seal(/[\u0000-\u0020\u00A0\u1680\u180E\u2000-\u2029\u205F\
 );
 var DOCTYPE_NAME = seal(/^html$/i);
 
-var _typeof$2 = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-function _toConsumableArray$1(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 var getGlobal = function getGlobal() {
   return typeof window === 'undefined' ? null : window;
 };
-
 /**
  * Creates a no-op policy for internal use only.
  * Don't export this function outside this module!
@@ -983,16 +1050,19 @@ var getGlobal = function getGlobal() {
  * @return {?TrustedTypePolicy} The policy created (or null, if Trusted Types
  * are not supported).
  */
-var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, document) {
-  if ((typeof trustedTypes === 'undefined' ? 'undefined' : _typeof$2(trustedTypes)) !== 'object' || typeof trustedTypes.createPolicy !== 'function') {
-    return null;
-  }
 
-  // Allow the callers to control the unique policy name
+
+var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes, document) {
+  if (_typeof$2(trustedTypes) !== 'object' || typeof trustedTypes.createPolicy !== 'function') {
+    return null;
+  } // Allow the callers to control the unique policy name
   // by adding a data-tt-policy-suffix to the script element with the DOMPurify.
   // Policy creation with duplicate names throws in Trusted Types.
+
+
   var suffix = null;
   var ATTR_NAME = 'data-tt-policy-suffix';
+
   if (document.currentScript && document.currentScript.hasAttribute(ATTR_NAME)) {
     suffix = document.currentScript.getAttribute(ATTR_NAME);
   }
@@ -1001,8 +1071,8 @@ var _createTrustedTypesPolicy = function _createTrustedTypesPolicy(trustedTypes,
 
   try {
     return trustedTypes.createPolicy(policyName, {
-      createHTML: function createHTML(html$$1) {
-        return html$$1;
+      createHTML: function createHTML(html) {
+        return html;
       }
     });
   } catch (_) {
@@ -1020,29 +1090,28 @@ function createDOMPurify() {
   var DOMPurify = function DOMPurify(root) {
     return createDOMPurify(root);
   };
-
   /**
    * Version label, exposed for easier checks
    * if DOMPurify is up to date or not
    */
-  DOMPurify.version = '2.3.6';
 
+
+  DOMPurify.version = '2.3.8';
   /**
    * Array of elements that DOMPurify removed during sanitation.
    * Empty if nothing was removed.
    */
+
   DOMPurify.removed = [];
 
   if (!window || !window.document || window.document.nodeType !== 9) {
     // Not running in a browser, provide a factory function
     // so that you can pass your own Window
     DOMPurify.isSupported = false;
-
     return DOMPurify;
   }
 
   var originalDocument = window.document;
-
   var document = window.document;
   var DocumentFragment = window.DocumentFragment,
       HTMLTemplateElement = window.HTMLTemplateElement,
@@ -1050,63 +1119,57 @@ function createDOMPurify() {
       Element = window.Element,
       NodeFilter = window.NodeFilter,
       _window$NamedNodeMap = window.NamedNodeMap,
-      NamedNodeMap = _window$NamedNodeMap === undefined ? window.NamedNodeMap || window.MozNamedAttrMap : _window$NamedNodeMap,
+      NamedNodeMap = _window$NamedNodeMap === void 0 ? window.NamedNodeMap || window.MozNamedAttrMap : _window$NamedNodeMap,
       HTMLFormElement = window.HTMLFormElement,
       DOMParser = window.DOMParser,
       trustedTypes = window.trustedTypes;
-
-
   var ElementPrototype = Element.prototype;
-
   var cloneNode = lookupGetter(ElementPrototype, 'cloneNode');
   var getNextSibling = lookupGetter(ElementPrototype, 'nextSibling');
   var getChildNodes = lookupGetter(ElementPrototype, 'childNodes');
-  var getParentNode = lookupGetter(ElementPrototype, 'parentNode');
-
-  // As per issue #47, the web-components registry is inherited by a
+  var getParentNode = lookupGetter(ElementPrototype, 'parentNode'); // As per issue #47, the web-components registry is inherited by a
   // new document created via createHTMLDocument. As per the spec
   // (http://w3c.github.io/webcomponents/spec/custom/#creating-and-passing-registries)
   // a new empty registry is used when creating a template contents owner
   // document, so we use that as our parent document to ensure nothing
   // is inherited.
+
   if (typeof HTMLTemplateElement === 'function') {
     var template = document.createElement('template');
+
     if (template.content && template.content.ownerDocument) {
       document = template.content.ownerDocument;
     }
   }
 
   var trustedTypesPolicy = _createTrustedTypesPolicy(trustedTypes, originalDocument);
-  var emptyHTML = trustedTypesPolicy ? trustedTypesPolicy.createHTML('') : '';
 
+  var emptyHTML = trustedTypesPolicy ? trustedTypesPolicy.createHTML('') : '';
   var _document = document,
       implementation = _document.implementation,
       createNodeIterator = _document.createNodeIterator,
       createDocumentFragment = _document.createDocumentFragment,
       getElementsByTagName = _document.getElementsByTagName;
   var importNode = originalDocument.importNode;
-
-
   var documentMode = {};
+
   try {
     documentMode = clone$1(document).documentMode ? document.documentMode : {};
   } catch (_) {}
 
   var hooks = {};
-
   /**
    * Expose whether this browser supports running the full DOMPurify.
    */
+
   DOMPurify.isSupported = typeof getParentNode === 'function' && implementation && typeof implementation.createHTMLDocument !== 'undefined' && documentMode !== 9;
-
-  var MUSTACHE_EXPR$$1 = MUSTACHE_EXPR,
-      ERB_EXPR$$1 = ERB_EXPR,
-      DATA_ATTR$$1 = DATA_ATTR,
-      ARIA_ATTR$$1 = ARIA_ATTR,
-      IS_SCRIPT_OR_DATA$$1 = IS_SCRIPT_OR_DATA,
-      ATTR_WHITESPACE$$1 = ATTR_WHITESPACE;
-  var IS_ALLOWED_URI$$1 = IS_ALLOWED_URI;
-
+  var MUSTACHE_EXPR$1 = MUSTACHE_EXPR,
+      ERB_EXPR$1 = ERB_EXPR,
+      DATA_ATTR$1 = DATA_ATTR,
+      ARIA_ATTR$1 = ARIA_ATTR,
+      IS_SCRIPT_OR_DATA$1 = IS_SCRIPT_OR_DATA,
+      ATTR_WHITESPACE$1 = ATTR_WHITESPACE;
+  var IS_ALLOWED_URI$1 = IS_ALLOWED_URI;
   /**
    * We consider the elements and attributes below to be safe. Ideally
    * don't add any new ones but feel free to remove unwanted ones.
@@ -1115,18 +1178,18 @@ function createDOMPurify() {
   /* allowed element names */
 
   var ALLOWED_TAGS = null;
-  var DEFAULT_ALLOWED_TAGS = addToSet({}, [].concat(_toConsumableArray$1(html), _toConsumableArray$1(svg), _toConsumableArray$1(svgFilters), _toConsumableArray$1(mathMl), _toConsumableArray$1(text)));
-
+  var DEFAULT_ALLOWED_TAGS = addToSet({}, [].concat(_toConsumableArray(html$1), _toConsumableArray(svg$1), _toConsumableArray(svgFilters), _toConsumableArray(mathMl$1), _toConsumableArray(text)));
   /* Allowed attribute names */
-  var ALLOWED_ATTR = null;
-  var DEFAULT_ALLOWED_ATTR = addToSet({}, [].concat(_toConsumableArray$1(html$1), _toConsumableArray$1(svg$1), _toConsumableArray$1(mathMl$1), _toConsumableArray$1(xml)));
 
+  var ALLOWED_ATTR = null;
+  var DEFAULT_ALLOWED_ATTR = addToSet({}, [].concat(_toConsumableArray(html), _toConsumableArray(svg), _toConsumableArray(mathMl), _toConsumableArray(xml)));
   /*
    * Configure how DOMPUrify should handle custom elements and their attributes as well as customized built-in elements.
    * @property {RegExp|Function|null} tagNameCheck one of [null, regexPattern, predicate]. Default: `null` (disallow any custom elements)
    * @property {RegExp|Function|null} attributeNameCheck one of [null, regexPattern, predicate]. Default: `null` (disallow any attributes not on the allow list)
    * @property {boolean} allowCustomizedBuiltInElements allow custom elements derived from built-ins if they pass CUSTOM_ELEMENT_HANDLING.tagNameCheck. Default: `false`.
    */
+
   var CUSTOM_ELEMENT_HANDLING = Object.seal(Object.create(null, {
     tagNameCheck: {
       writable: true,
@@ -1147,93 +1210,93 @@ function createDOMPurify() {
       value: false
     }
   }));
-
   /* Explicitly forbidden tags (overrides ALLOWED_TAGS/ADD_TAGS) */
+
   var FORBID_TAGS = null;
-
   /* Explicitly forbidden attributes (overrides ALLOWED_ATTR/ADD_ATTR) */
+
   var FORBID_ATTR = null;
-
   /* Decide if ARIA attributes are okay */
+
   var ALLOW_ARIA_ATTR = true;
-
   /* Decide if custom data attributes are okay */
+
   var ALLOW_DATA_ATTR = true;
-
   /* Decide if unknown protocols are okay */
-  var ALLOW_UNKNOWN_PROTOCOLS = false;
 
+  var ALLOW_UNKNOWN_PROTOCOLS = false;
   /* Output should be safe for common template engines.
    * This means, DOMPurify removes data attributes, mustaches and ERB
    */
+
   var SAFE_FOR_TEMPLATES = false;
-
   /* Decide if document with <html>... should be returned */
+
   var WHOLE_DOCUMENT = false;
-
   /* Track whether config is already set on this instance of DOMPurify. */
-  var SET_CONFIG = false;
 
+  var SET_CONFIG = false;
   /* Decide if all elements (e.g. style, script) must be children of
    * document.body. By default, browsers might move them to document.head */
-  var FORCE_BODY = false;
 
+  var FORCE_BODY = false;
   /* Decide if a DOM `HTMLBodyElement` should be returned, instead of a html
    * string (or a TrustedHTML object if Trusted Types are supported).
    * If `WHOLE_DOCUMENT` is enabled a `HTMLHtmlElement` will be returned instead
    */
-  var RETURN_DOM = false;
 
+  var RETURN_DOM = false;
   /* Decide if a DOM `DocumentFragment` should be returned, instead of a html
    * string  (or a TrustedHTML object if Trusted Types are supported) */
-  var RETURN_DOM_FRAGMENT = false;
 
+  var RETURN_DOM_FRAGMENT = false;
   /* Try to return a Trusted Type object instead of a string, return a string in
    * case Trusted Types are not supported  */
+
   var RETURN_TRUSTED_TYPE = false;
-
   /* Output should be free from DOM clobbering attacks? */
+
   var SANITIZE_DOM = true;
-
   /* Keep element content when removing element? */
-  var KEEP_CONTENT = true;
 
+  var KEEP_CONTENT = true;
   /* If a `Node` is passed to sanitize(), then performs sanitization in-place instead
    * of importing it into a new Document and returning a sanitized copy */
+
   var IN_PLACE = false;
-
   /* Allow usage of profiles like html, svg and mathMl */
-  var USE_PROFILES = {};
 
+  var USE_PROFILES = {};
   /* Tags to ignore content of when KEEP_CONTENT is true */
+
   var FORBID_CONTENTS = null;
   var DEFAULT_FORBID_CONTENTS = addToSet({}, ['annotation-xml', 'audio', 'colgroup', 'desc', 'foreignobject', 'head', 'iframe', 'math', 'mi', 'mn', 'mo', 'ms', 'mtext', 'noembed', 'noframes', 'noscript', 'plaintext', 'script', 'style', 'svg', 'template', 'thead', 'title', 'video', 'xmp']);
-
   /* Tags that are safe for data: URIs */
+
   var DATA_URI_TAGS = null;
   var DEFAULT_DATA_URI_TAGS = addToSet({}, ['audio', 'video', 'img', 'source', 'image', 'track']);
-
   /* Attributes safe for values like "javascript:" */
+
   var URI_SAFE_ATTRIBUTES = null;
   var DEFAULT_URI_SAFE_ATTRIBUTES = addToSet({}, ['alt', 'class', 'for', 'id', 'label', 'name', 'pattern', 'placeholder', 'role', 'summary', 'title', 'value', 'style', 'xmlns']);
-
   var MATHML_NAMESPACE = 'http://www.w3.org/1998/Math/MathML';
   var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
   var HTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
   /* Document namespace */
+
   var NAMESPACE = HTML_NAMESPACE;
   var IS_EMPTY_INPUT = false;
-
   /* Parsing of strict XHTML documents */
-  var PARSER_MEDIA_TYPE = void 0;
+
+  var PARSER_MEDIA_TYPE;
   var SUPPORTED_PARSER_MEDIA_TYPES = ['application/xhtml+xml', 'text/html'];
   var DEFAULT_PARSER_MEDIA_TYPE = 'text/html';
-  var transformCaseFunc = void 0;
-
+  var transformCaseFunc;
   /* Keep a reference to config to pass to hooks */
-  var CONFIG = null;
 
+  var CONFIG = null;
   /* Ideally, do not touch anything below this line */
+
   /* ______________________________________________ */
 
   var formElement = document.createElement('form');
@@ -1241,27 +1304,30 @@ function createDOMPurify() {
   var isRegexOrFunction = function isRegexOrFunction(testValue) {
     return testValue instanceof RegExp || testValue instanceof Function;
   };
-
   /**
    * _parseConfig
    *
    * @param  {Object} cfg optional config literal
    */
   // eslint-disable-next-line complexity
+
+
   var _parseConfig = function _parseConfig(cfg) {
     if (CONFIG && CONFIG === cfg) {
       return;
     }
-
     /* Shield configuration object from tampering */
-    if (!cfg || (typeof cfg === 'undefined' ? 'undefined' : _typeof$2(cfg)) !== 'object') {
+
+
+    if (!cfg || _typeof$2(cfg) !== 'object') {
       cfg = {};
     }
-
     /* Shield configuration object from prototype pollution */
-    cfg = clone$1(cfg);
 
+
+    cfg = clone$1(cfg);
     /* Set configuration parameters */
+
     ALLOWED_TAGS = 'ALLOWED_TAGS' in cfg ? addToSet({}, cfg.ALLOWED_TAGS) : DEFAULT_ALLOWED_TAGS;
     ALLOWED_ATTR = 'ALLOWED_ATTR' in cfg ? addToSet({}, cfg.ALLOWED_ATTR) : DEFAULT_ALLOWED_ATTR;
     URI_SAFE_ATTRIBUTES = 'ADD_URI_SAFE_ATTR' in cfg ? addToSet(clone$1(DEFAULT_URI_SAFE_ATTRIBUTES), cfg.ADD_URI_SAFE_ATTR) : DEFAULT_URI_SAFE_ATTRIBUTES;
@@ -1271,19 +1337,32 @@ function createDOMPurify() {
     FORBID_ATTR = 'FORBID_ATTR' in cfg ? addToSet({}, cfg.FORBID_ATTR) : {};
     USE_PROFILES = 'USE_PROFILES' in cfg ? cfg.USE_PROFILES : false;
     ALLOW_ARIA_ATTR = cfg.ALLOW_ARIA_ATTR !== false; // Default true
+
     ALLOW_DATA_ATTR = cfg.ALLOW_DATA_ATTR !== false; // Default true
+
     ALLOW_UNKNOWN_PROTOCOLS = cfg.ALLOW_UNKNOWN_PROTOCOLS || false; // Default false
+
     SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false; // Default false
+
     WHOLE_DOCUMENT = cfg.WHOLE_DOCUMENT || false; // Default false
+
     RETURN_DOM = cfg.RETURN_DOM || false; // Default false
+
     RETURN_DOM_FRAGMENT = cfg.RETURN_DOM_FRAGMENT || false; // Default false
+
     RETURN_TRUSTED_TYPE = cfg.RETURN_TRUSTED_TYPE || false; // Default false
+
     FORCE_BODY = cfg.FORCE_BODY || false; // Default false
+
     SANITIZE_DOM = cfg.SANITIZE_DOM !== false; // Default true
+
     KEEP_CONTENT = cfg.KEEP_CONTENT !== false; // Default true
+
     IN_PLACE = cfg.IN_PLACE || false; // Default false
-    IS_ALLOWED_URI$$1 = cfg.ALLOWED_URI_REGEXP || IS_ALLOWED_URI$$1;
+
+    IS_ALLOWED_URI$1 = cfg.ALLOWED_URI_REGEXP || IS_ALLOWED_URI$1;
     NAMESPACE = cfg.NAMESPACE || HTML_NAMESPACE;
+
     if (cfg.CUSTOM_ELEMENT_HANDLING && isRegexOrFunction(cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck)) {
       CUSTOM_ELEMENT_HANDLING.tagNameCheck = cfg.CUSTOM_ELEMENT_HANDLING.tagNameCheck;
     }
@@ -1296,11 +1375,9 @@ function createDOMPurify() {
       CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements = cfg.CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements;
     }
 
-    PARSER_MEDIA_TYPE =
-    // eslint-disable-next-line unicorn/prefer-includes
-    SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? PARSER_MEDIA_TYPE = DEFAULT_PARSER_MEDIA_TYPE : PARSER_MEDIA_TYPE = cfg.PARSER_MEDIA_TYPE;
+    PARSER_MEDIA_TYPE = // eslint-disable-next-line unicorn/prefer-includes
+    SUPPORTED_PARSER_MEDIA_TYPES.indexOf(cfg.PARSER_MEDIA_TYPE) === -1 ? PARSER_MEDIA_TYPE = DEFAULT_PARSER_MEDIA_TYPE : PARSER_MEDIA_TYPE = cfg.PARSER_MEDIA_TYPE; // HTML tags and attributes are not case-sensitive, converting to lowercase. Keeping XHTML as is.
 
-    // HTML tags and attributes are not case-sensitive, converting to lowercase. Keeping XHTML as is.
     transformCaseFunc = PARSER_MEDIA_TYPE === 'application/xhtml+xml' ? function (x) {
       return x;
     } : stringToLowerCase;
@@ -1312,36 +1389,39 @@ function createDOMPurify() {
     if (RETURN_DOM_FRAGMENT) {
       RETURN_DOM = true;
     }
-
     /* Parse profile info */
+
+
     if (USE_PROFILES) {
-      ALLOWED_TAGS = addToSet({}, [].concat(_toConsumableArray$1(text)));
+      ALLOWED_TAGS = addToSet({}, _toConsumableArray(text));
       ALLOWED_ATTR = [];
+
       if (USE_PROFILES.html === true) {
-        addToSet(ALLOWED_TAGS, html);
-        addToSet(ALLOWED_ATTR, html$1);
+        addToSet(ALLOWED_TAGS, html$1);
+        addToSet(ALLOWED_ATTR, html);
       }
 
       if (USE_PROFILES.svg === true) {
-        addToSet(ALLOWED_TAGS, svg);
-        addToSet(ALLOWED_ATTR, svg$1);
+        addToSet(ALLOWED_TAGS, svg$1);
+        addToSet(ALLOWED_ATTR, svg);
         addToSet(ALLOWED_ATTR, xml);
       }
 
       if (USE_PROFILES.svgFilters === true) {
         addToSet(ALLOWED_TAGS, svgFilters);
-        addToSet(ALLOWED_ATTR, svg$1);
+        addToSet(ALLOWED_ATTR, svg);
         addToSet(ALLOWED_ATTR, xml);
       }
 
       if (USE_PROFILES.mathMl === true) {
-        addToSet(ALLOWED_TAGS, mathMl);
-        addToSet(ALLOWED_ATTR, mathMl$1);
+        addToSet(ALLOWED_TAGS, mathMl$1);
+        addToSet(ALLOWED_ATTR, mathMl);
         addToSet(ALLOWED_ATTR, xml);
       }
     }
-
     /* Merge configuration parameters */
+
+
     if (cfg.ADD_TAGS) {
       if (ALLOWED_TAGS === DEFAULT_ALLOWED_TAGS) {
         ALLOWED_TAGS = clone$1(ALLOWED_TAGS);
@@ -1369,25 +1449,28 @@ function createDOMPurify() {
 
       addToSet(FORBID_CONTENTS, cfg.FORBID_CONTENTS);
     }
-
     /* Add #text in case KEEP_CONTENT is set to true */
+
+
     if (KEEP_CONTENT) {
       ALLOWED_TAGS['#text'] = true;
     }
-
     /* Add html, head and body to ALLOWED_TAGS in case WHOLE_DOCUMENT is true */
+
+
     if (WHOLE_DOCUMENT) {
       addToSet(ALLOWED_TAGS, ['html', 'head', 'body']);
     }
-
     /* Add tbody to ALLOWED_TAGS in case tables are permitted, see #286, #365 */
+
+
     if (ALLOWED_TAGS.table) {
       addToSet(ALLOWED_TAGS, ['tbody']);
       delete FORBID_TAGS.tbody;
-    }
-
-    // Prevent further manipulation of configuration.
+    } // Prevent further manipulation of configuration.
     // Not available in IE8, Safari 5, etc.
+
+
     if (freeze) {
       freeze(cfg);
     }
@@ -1396,19 +1479,21 @@ function createDOMPurify() {
   };
 
   var MATHML_TEXT_INTEGRATION_POINTS = addToSet({}, ['mi', 'mo', 'mn', 'ms', 'mtext']);
+  var HTML_INTEGRATION_POINTS = addToSet({}, ['foreignobject', 'desc', 'title', 'annotation-xml']); // Certain elements are allowed in both SVG and HTML
+  // namespace. We need to specify them explicitly
+  // so that they don't get erroneously deleted from
+  // HTML namespace.
 
-  var HTML_INTEGRATION_POINTS = addToSet({}, ['foreignobject', 'desc', 'title', 'annotation-xml']);
-
+  var COMMON_SVG_AND_HTML_ELEMENTS = addToSet({}, ['title', 'style', 'font', 'a', 'script']);
   /* Keep track of all possible SVG and MathML tags
    * so that we can perform the namespace checks
    * correctly. */
-  var ALL_SVG_TAGS = addToSet({}, svg);
+
+  var ALL_SVG_TAGS = addToSet({}, svg$1);
   addToSet(ALL_SVG_TAGS, svgFilters);
   addToSet(ALL_SVG_TAGS, svgDisallowed);
-
-  var ALL_MATHML_TAGS = addToSet({}, mathMl);
+  var ALL_MATHML_TAGS = addToSet({}, mathMl$1);
   addToSet(ALL_MATHML_TAGS, mathMlDisallowed);
-
   /**
    *
    *
@@ -1417,11 +1502,11 @@ function createDOMPurify() {
    *  namespace that a spec-compliant parser would never
    *  return. Return true otherwise.
    */
-  var _checkValidNamespace = function _checkValidNamespace(element) {
-    var parent = getParentNode(element);
 
-    // In JSDOM, if we're inside shadow DOM, then parentNode
+  var _checkValidNamespace = function _checkValidNamespace(element) {
+    var parent = getParentNode(element); // In JSDOM, if we're inside shadow DOM, then parentNode
     // can be null. We just simulate parent in this case.
+
     if (!parent || !parent.tagName) {
       parent = {
         namespaceURI: HTML_NAMESPACE,
@@ -1438,17 +1523,17 @@ function createDOMPurify() {
       // it should be killed.
       if (parent.namespaceURI === HTML_NAMESPACE) {
         return tagName === 'svg';
-      }
-
-      // The only way to switch from MathML to SVG is via
+      } // The only way to switch from MathML to SVG is via
       // svg if parent is either <annotation-xml> or MathML
       // text integration points.
+
+
       if (parent.namespaceURI === MATHML_NAMESPACE) {
         return tagName === 'svg' && (parentTagName === 'annotation-xml' || MATHML_TEXT_INTEGRATION_POINTS[parentTagName]);
-      }
-
-      // We only allow elements that are defined in SVG
+      } // We only allow elements that are defined in SVG
       // spec. All others are disallowed in SVG namespace.
+
+
       return Boolean(ALL_SVG_TAGS[tagName]);
     }
 
@@ -1458,16 +1543,16 @@ function createDOMPurify() {
       // it should be killed.
       if (parent.namespaceURI === HTML_NAMESPACE) {
         return tagName === 'math';
-      }
-
-      // The only way to switch from SVG to MathML is via
+      } // The only way to switch from SVG to MathML is via
       // <math> and HTML integration points
+
+
       if (parent.namespaceURI === SVG_NAMESPACE) {
         return tagName === 'math' && HTML_INTEGRATION_POINTS[parentTagName];
-      }
-
-      // We only allow elements that are defined in MathML
+      } // We only allow elements that are defined in MathML
       // spec. All others are disallowed in MathML namespace.
+
+
       return Boolean(ALL_MATHML_TAGS[tagName]);
     }
 
@@ -1481,32 +1566,30 @@ function createDOMPurify() {
 
       if (parent.namespaceURI === MATHML_NAMESPACE && !MATHML_TEXT_INTEGRATION_POINTS[parentTagName]) {
         return false;
-      }
-
-      // Certain elements are allowed in both SVG and HTML
-      // namespace. We need to specify them explicitly
-      // so that they don't get erronously deleted from
-      // HTML namespace.
-      var commonSvgAndHTMLElements = addToSet({}, ['title', 'style', 'font', 'a', 'script']);
-
-      // We disallow tags that are specific for MathML
+      } // We disallow tags that are specific for MathML
       // or SVG and should never appear in HTML namespace
-      return !ALL_MATHML_TAGS[tagName] && (commonSvgAndHTMLElements[tagName] || !ALL_SVG_TAGS[tagName]);
-    }
 
-    // The code should never reach this place (this means
+
+      return !ALL_MATHML_TAGS[tagName] && (COMMON_SVG_AND_HTML_ELEMENTS[tagName] || !ALL_SVG_TAGS[tagName]);
+    } // The code should never reach this place (this means
     // that the element somehow got namespace that is not
     // HTML, SVG or MathML). Return false just in case.
+
+
     return false;
   };
-
   /**
    * _forceRemove
    *
    * @param  {Node} node a DOM node
    */
+
+
   var _forceRemove = function _forceRemove(node) {
-    arrayPush(DOMPurify.removed, { element: node });
+    arrayPush(DOMPurify.removed, {
+      element: node
+    });
+
     try {
       // eslint-disable-next-line unicorn/prefer-dom-node-remove
       node.parentNode.removeChild(node);
@@ -1518,13 +1601,14 @@ function createDOMPurify() {
       }
     }
   };
-
   /**
    * _removeAttribute
    *
    * @param  {String} name an Attribute name
    * @param  {Node} node a DOM node
    */
+
+
   var _removeAttribute = function _removeAttribute(name, node) {
     try {
       arrayPush(DOMPurify.removed, {
@@ -1538,9 +1622,8 @@ function createDOMPurify() {
       });
     }
 
-    node.removeAttribute(name);
+    node.removeAttribute(name); // We void attribute values for unremovable "is"" attributes
 
-    // We void attribute values for unremovable "is"" attributes
     if (name === 'is' && !ALLOWED_ATTR[name]) {
       if (RETURN_DOM || RETURN_DOM_FRAGMENT) {
         try {
@@ -1553,17 +1636,18 @@ function createDOMPurify() {
       }
     }
   };
-
   /**
    * _initDocument
    *
    * @param  {String} dirty a string of dirty markup
    * @return {Document} a DOM, filled with the dirty markup
    */
+
+
   var _initDocument = function _initDocument(dirty) {
     /* Create a HTML document */
-    var doc = void 0;
-    var leadingWhitespace = void 0;
+    var doc;
+    var leadingWhitespace;
 
     if (FORCE_BODY) {
       dirty = '<remove></remove>' + dirty;
@@ -1583,19 +1667,21 @@ function createDOMPurify() {
      * Use the DOMParser API by default, fallback later if needs be
      * DOMParser not work for svg when has multiple root element.
      */
+
     if (NAMESPACE === HTML_NAMESPACE) {
       try {
         doc = new DOMParser().parseFromString(dirtyPayload, PARSER_MEDIA_TYPE);
       } catch (_) {}
     }
-
     /* Use createHTMLDocument in case DOMParser is not available */
+
+
     if (!doc || !doc.documentElement) {
       doc = implementation.createDocument(NAMESPACE, 'template', null);
+
       try {
         doc.documentElement.innerHTML = IS_EMPTY_INPUT ? '' : dirtyPayload;
-      } catch (_) {
-        // Syntax error if dirtyPayload is invalid xml
+      } catch (_) {// Syntax error if dirtyPayload is invalid xml
       }
     }
 
@@ -1604,47 +1690,49 @@ function createDOMPurify() {
     if (dirty && leadingWhitespace) {
       body.insertBefore(document.createTextNode(leadingWhitespace), body.childNodes[0] || null);
     }
-
     /* Work on whole document or just its body */
+
+
     if (NAMESPACE === HTML_NAMESPACE) {
       return getElementsByTagName.call(doc, WHOLE_DOCUMENT ? 'html' : 'body')[0];
     }
 
     return WHOLE_DOCUMENT ? doc.documentElement : body;
   };
-
   /**
    * _createIterator
    *
    * @param  {Document} root document/fragment to create iterator for
    * @return {Iterator} iterator instance
    */
+
+
   var _createIterator = function _createIterator(root) {
-    return createNodeIterator.call(root.ownerDocument || root, root,
-    // eslint-disable-next-line no-bitwise
+    return createNodeIterator.call(root.ownerDocument || root, root, // eslint-disable-next-line no-bitwise
     NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_COMMENT | NodeFilter.SHOW_TEXT, null, false);
   };
-
   /**
    * _isClobbered
    *
    * @param  {Node} elm element to check for clobbering attacks
    * @return {Boolean} true if clobbered, false if safe
    */
+
+
   var _isClobbered = function _isClobbered(elm) {
     return elm instanceof HTMLFormElement && (typeof elm.nodeName !== 'string' || typeof elm.textContent !== 'string' || typeof elm.removeChild !== 'function' || !(elm.attributes instanceof NamedNodeMap) || typeof elm.removeAttribute !== 'function' || typeof elm.setAttribute !== 'function' || typeof elm.namespaceURI !== 'string' || typeof elm.insertBefore !== 'function');
   };
-
   /**
    * _isNode
    *
    * @param  {Node} obj object to check whether it's a DOM node
    * @return {Boolean} true is object is a DOM node
    */
-  var _isNode = function _isNode(object) {
-    return (typeof Node === 'undefined' ? 'undefined' : _typeof$2(Node)) === 'object' ? object instanceof Node : object && (typeof object === 'undefined' ? 'undefined' : _typeof$2(object)) === 'object' && typeof object.nodeType === 'number' && typeof object.nodeName === 'string';
-  };
 
+
+  var _isNode = function _isNode(object) {
+    return _typeof$2(Node) === 'object' ? object instanceof Node : object && _typeof$2(object) === 'object' && typeof object.nodeType === 'number' && typeof object.nodeName === 'string';
+  };
   /**
    * _executeHook
    * Execute user configurable hooks
@@ -1653,6 +1741,8 @@ function createDOMPurify() {
    * @param  {Node} currentNode node to work on with the hook
    * @param  {Object} data additional hook parameters
    */
+
+
   var _executeHook = function _executeHook(entryPoint, currentNode, data) {
     if (!hooks[entryPoint]) {
       return;
@@ -1662,7 +1752,6 @@ function createDOMPurify() {
       hook.call(DOMPurify, currentNode, data, CONFIG);
     });
   };
-
   /**
    * _sanitizeElements
    *
@@ -1673,54 +1762,67 @@ function createDOMPurify() {
    * @param   {Node} currentNode to check for permission to exist
    * @return  {Boolean} true if node was killed, false if left alive
    */
+
+
   var _sanitizeElements = function _sanitizeElements(currentNode) {
-    var content = void 0;
-
+    var content;
     /* Execute a hook if present */
-    _executeHook('beforeSanitizeElements', currentNode, null);
 
+    _executeHook('beforeSanitizeElements', currentNode, null);
     /* Check if element is clobbered or can clobber */
+
+
     if (_isClobbered(currentNode)) {
       _forceRemove(currentNode);
+
       return true;
     }
-
     /* Check if tagname contains Unicode */
-    if (stringMatch(currentNode.nodeName, /[\u0080-\uFFFF]/)) {
+
+
+    if (regExpTest(/[\u0080-\uFFFF]/, currentNode.nodeName)) {
       _forceRemove(currentNode);
+
       return true;
     }
-
     /* Now let's check the element's type and name */
-    var tagName = transformCaseFunc(currentNode.nodeName);
 
+
+    var tagName = transformCaseFunc(currentNode.nodeName);
     /* Execute a hook if present */
+
     _executeHook('uponSanitizeElement', currentNode, {
       tagName: tagName,
       allowedTags: ALLOWED_TAGS
     });
-
     /* Detect mXSS attempts abusing namespace confusion */
-    if (!_isNode(currentNode.firstElementChild) && (!_isNode(currentNode.content) || !_isNode(currentNode.content.firstElementChild)) && regExpTest(/<[/\w]/g, currentNode.innerHTML) && regExpTest(/<[/\w]/g, currentNode.textContent)) {
+
+
+    if (currentNode.hasChildNodes() && !_isNode(currentNode.firstElementChild) && (!_isNode(currentNode.content) || !_isNode(currentNode.content.firstElementChild)) && regExpTest(/<[/\w]/g, currentNode.innerHTML) && regExpTest(/<[/\w]/g, currentNode.textContent)) {
       _forceRemove(currentNode);
+
       return true;
     }
-
     /* Mitigate a problem with templates inside select */
+
+
     if (tagName === 'select' && regExpTest(/<template/i, currentNode.innerHTML)) {
       _forceRemove(currentNode);
+
       return true;
     }
-
     /* Remove element if anything forbids its presence */
+
+
     if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
       /* Check if we have a custom element to handle */
       if (!FORBID_TAGS[tagName] && _basicCustomElementTest(tagName)) {
         if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, tagName)) return false;
         if (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(tagName)) return false;
       }
-
       /* Keep content except for bad-listed elements */
+
+
       if (KEEP_CONTENT && !FORBID_CONTENTS[tagName]) {
         var parentNode = getParentNode(currentNode) || currentNode.parentNode;
         var childNodes = getChildNodes(currentNode) || currentNode.childNodes;
@@ -1735,38 +1837,46 @@ function createDOMPurify() {
       }
 
       _forceRemove(currentNode);
+
       return true;
     }
-
     /* Check whether element has a valid namespace */
+
+
     if (currentNode instanceof Element && !_checkValidNamespace(currentNode)) {
       _forceRemove(currentNode);
+
       return true;
     }
 
     if ((tagName === 'noscript' || tagName === 'noembed') && regExpTest(/<\/no(script|embed)/i, currentNode.innerHTML)) {
       _forceRemove(currentNode);
+
       return true;
     }
-
     /* Sanitize element content to be template-safe */
+
+
     if (SAFE_FOR_TEMPLATES && currentNode.nodeType === 3) {
       /* Get the element's text content */
       content = currentNode.textContent;
-      content = stringReplace(content, MUSTACHE_EXPR$$1, ' ');
-      content = stringReplace(content, ERB_EXPR$$1, ' ');
+      content = stringReplace(content, MUSTACHE_EXPR$1, ' ');
+      content = stringReplace(content, ERB_EXPR$1, ' ');
+
       if (currentNode.textContent !== content) {
-        arrayPush(DOMPurify.removed, { element: currentNode.cloneNode() });
+        arrayPush(DOMPurify.removed, {
+          element: currentNode.cloneNode()
+        });
         currentNode.textContent = content;
       }
     }
-
     /* Execute a hook if present */
+
+
     _executeHook('afterSanitizeElements', currentNode, null);
 
     return false;
   };
-
   /**
    * _isValidAttribute
    *
@@ -1776,45 +1886,47 @@ function createDOMPurify() {
    * @return {Boolean} Returns true if `value` is valid, otherwise false.
    */
   // eslint-disable-next-line complexity
+
+
   var _isValidAttribute = function _isValidAttribute(lcTag, lcName, value) {
     /* Make sure attribute cannot clobber */
     if (SANITIZE_DOM && (lcName === 'id' || lcName === 'name') && (value in document || value in formElement)) {
       return false;
     }
-
     /* Allow valid data-* attributes: At least one character after "-"
         (https://html.spec.whatwg.org/multipage/dom.html#embedding-custom-non-visible-data-with-the-data-*-attributes)
         XML-compatible (https://html.spec.whatwg.org/multipage/infrastructure.html#xml-compatible and http://www.w3.org/TR/xml/#d0e804)
         We don't need to check the value; it's always URI safe. */
-    if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$$1, lcName)) ; else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$$1, lcName)) ; else if (!ALLOWED_ATTR[lcName] || FORBID_ATTR[lcName]) {
-      if (
-      // First condition does a very basic check if a) it's basically a valid custom element tagname AND
+
+
+    if (ALLOW_DATA_ATTR && !FORBID_ATTR[lcName] && regExpTest(DATA_ATTR$1, lcName)) ; else if (ALLOW_ARIA_ATTR && regExpTest(ARIA_ATTR$1, lcName)) ; else if (!ALLOWED_ATTR[lcName] || FORBID_ATTR[lcName]) {
+      if ( // First condition does a very basic check if a) it's basically a valid custom element tagname AND
       // b) if the tagName passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
       // and c) if the attribute name passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.attributeNameCheck
-      _basicCustomElementTest(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName)) ||
-      // Alternative, second condition checks if it's an `is`-attribute, AND
+      _basicCustomElementTest(lcTag) && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, lcTag) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(lcTag)) && (CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.attributeNameCheck, lcName) || CUSTOM_ELEMENT_HANDLING.attributeNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.attributeNameCheck(lcName)) || // Alternative, second condition checks if it's an `is`-attribute, AND
       // the value passes whatever the user has configured for CUSTOM_ELEMENT_HANDLING.tagNameCheck
       lcName === 'is' && CUSTOM_ELEMENT_HANDLING.allowCustomizedBuiltInElements && (CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof RegExp && regExpTest(CUSTOM_ELEMENT_HANDLING.tagNameCheck, value) || CUSTOM_ELEMENT_HANDLING.tagNameCheck instanceof Function && CUSTOM_ELEMENT_HANDLING.tagNameCheck(value))) ; else {
         return false;
       }
       /* Check value is safe. First, is attr inert? If so, is safe */
-    } else if (URI_SAFE_ATTRIBUTES[lcName]) ; else if (regExpTest(IS_ALLOWED_URI$$1, stringReplace(value, ATTR_WHITESPACE$$1, ''))) ; else if ((lcName === 'src' || lcName === 'xlink:href' || lcName === 'href') && lcTag !== 'script' && stringIndexOf(value, 'data:') === 0 && DATA_URI_TAGS[lcTag]) ; else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$$1, stringReplace(value, ATTR_WHITESPACE$$1, ''))) ; else if (!value) ; else {
+
+    } else if (URI_SAFE_ATTRIBUTES[lcName]) ; else if (regExpTest(IS_ALLOWED_URI$1, stringReplace(value, ATTR_WHITESPACE$1, ''))) ; else if ((lcName === 'src' || lcName === 'xlink:href' || lcName === 'href') && lcTag !== 'script' && stringIndexOf(value, 'data:') === 0 && DATA_URI_TAGS[lcTag]) ; else if (ALLOW_UNKNOWN_PROTOCOLS && !regExpTest(IS_SCRIPT_OR_DATA$1, stringReplace(value, ATTR_WHITESPACE$1, ''))) ; else if (!value) ; else {
       return false;
     }
 
     return true;
   };
-
   /**
    * _basicCustomElementCheck
    * checks if at least one dash is included in tagName, and it's not the first char
    * for more sophisticated checking see https://github.com/sindresorhus/validate-element-name
    * @param {string} tagName name of the tag of the node to sanitize
    */
+
+
   var _basicCustomElementTest = function _basicCustomElementTest(tagName) {
     return tagName.indexOf('-') > 0;
   };
-
   /**
    * _sanitizeAttributes
    *
@@ -1825,16 +1937,18 @@ function createDOMPurify() {
    *
    * @param  {Node} currentNode to sanitize
    */
+
+
   var _sanitizeAttributes = function _sanitizeAttributes(currentNode) {
-    var attr = void 0;
-    var value = void 0;
-    var lcName = void 0;
-    var l = void 0;
+    var attr;
+    var value;
+    var lcName;
+    var l;
     /* Execute a hook if present */
+
     _executeHook('beforeSanitizeAttributes', currentNode, null);
 
     var attributes = currentNode.attributes;
-
     /* Check if we have attributes; if not we might have a text node */
 
     if (!attributes) {
@@ -1848,56 +1962,66 @@ function createDOMPurify() {
       allowedAttributes: ALLOWED_ATTR
     };
     l = attributes.length;
-
     /* Go backwards over all attributes; safely remove bad ones */
+
     while (l--) {
       attr = attributes[l];
       var _attr = attr,
           name = _attr.name,
           namespaceURI = _attr.namespaceURI;
-
-      value = stringTrim(attr.value);
+      value = name === 'value' ? attr.value : stringTrim(attr.value);
       lcName = transformCaseFunc(name);
-
       /* Execute a hook if present */
+
       hookEvent.attrName = lcName;
       hookEvent.attrValue = value;
       hookEvent.keepAttr = true;
       hookEvent.forceKeepAttr = undefined; // Allows developers to see this is a property they can set
+
       _executeHook('uponSanitizeAttribute', currentNode, hookEvent);
+
       value = hookEvent.attrValue;
       /* Did the hooks approve of the attribute? */
+
       if (hookEvent.forceKeepAttr) {
         continue;
       }
-
       /* Remove attribute */
-      _removeAttribute(name, currentNode);
 
+
+      _removeAttribute(name, currentNode);
       /* Did the hooks approve of the attribute? */
+
+
       if (!hookEvent.keepAttr) {
         continue;
       }
-
       /* Work around a security issue in jQuery 3.0 */
+
+
       if (regExpTest(/\/>/i, value)) {
         _removeAttribute(name, currentNode);
+
         continue;
       }
-
       /* Sanitize attribute content to be template-safe */
-      if (SAFE_FOR_TEMPLATES) {
-        value = stringReplace(value, MUSTACHE_EXPR$$1, ' ');
-        value = stringReplace(value, ERB_EXPR$$1, ' ');
-      }
 
+
+      if (SAFE_FOR_TEMPLATES) {
+        value = stringReplace(value, MUSTACHE_EXPR$1, ' ');
+        value = stringReplace(value, ERB_EXPR$1, ' ');
+      }
       /* Is `value` valid for this attribute? */
+
+
       var lcTag = transformCaseFunc(currentNode.nodeName);
+
       if (!_isValidAttribute(lcTag, lcName, value)) {
         continue;
       }
-
       /* Handle invalid data-* attribute set by try-catching it */
+
+
       try {
         if (namespaceURI) {
           currentNode.setAttributeNS(namespaceURI, name, value);
@@ -1909,45 +2033,52 @@ function createDOMPurify() {
         arrayPop(DOMPurify.removed);
       } catch (_) {}
     }
-
     /* Execute a hook if present */
+
+
     _executeHook('afterSanitizeAttributes', currentNode, null);
   };
-
   /**
    * _sanitizeShadowDOM
    *
    * @param  {DocumentFragment} fragment to iterate over recursively
    */
-  var _sanitizeShadowDOM = function _sanitizeShadowDOM(fragment) {
-    var shadowNode = void 0;
-    var shadowIterator = _createIterator(fragment);
 
+
+  var _sanitizeShadowDOM = function _sanitizeShadowDOM(fragment) {
+    var shadowNode;
+
+    var shadowIterator = _createIterator(fragment);
     /* Execute a hook if present */
+
+
     _executeHook('beforeSanitizeShadowDOM', fragment, null);
 
     while (shadowNode = shadowIterator.nextNode()) {
       /* Execute a hook if present */
       _executeHook('uponSanitizeShadowNode', shadowNode, null);
-
       /* Sanitize tags and elements */
+
+
       if (_sanitizeElements(shadowNode)) {
         continue;
       }
-
       /* Deep shadow DOM detected */
+
+
       if (shadowNode.content instanceof DocumentFragment) {
         _sanitizeShadowDOM(shadowNode.content);
       }
-
       /* Check attributes, sanitize if necessary */
+
+
       _sanitizeAttributes(shadowNode);
     }
-
     /* Execute a hook if present */
+
+
     _executeHook('afterSanitizeShadowDOM', fragment, null);
   };
-
   /**
    * Sanitize
    * Public method providing core sanitation functionality
@@ -1956,34 +2087,41 @@ function createDOMPurify() {
    * @param {Object} configuration object
    */
   // eslint-disable-next-line complexity
+
+
   DOMPurify.sanitize = function (dirty, cfg) {
-    var body = void 0;
-    var importedNode = void 0;
-    var currentNode = void 0;
-    var oldNode = void 0;
-    var returnNode = void 0;
+    var body;
+    var importedNode;
+    var currentNode;
+    var oldNode;
+    var returnNode;
     /* Make sure we have a string to sanitize.
       DO NOT return early, as this will return the wrong type if
       the user has requested a DOM object rather than a string */
+
     IS_EMPTY_INPUT = !dirty;
+
     if (IS_EMPTY_INPUT) {
       dirty = '<!-->';
     }
-
     /* Stringify, in case dirty is an object */
+
+
     if (typeof dirty !== 'string' && !_isNode(dirty)) {
       // eslint-disable-next-line no-negated-condition
       if (typeof dirty.toString !== 'function') {
         throw typeErrorCreate('toString is not a function');
       } else {
         dirty = dirty.toString();
+
         if (typeof dirty !== 'string') {
           throw typeErrorCreate('dirty is not a string, aborting');
         }
       }
     }
-
     /* Check we can run. Otherwise fall back or ignore */
+
+
     if (!DOMPurify.isSupported) {
       if (_typeof$2(window.toStaticHTML) === 'object' || typeof window.toStaticHTML === 'function') {
         if (typeof dirty === 'string') {
@@ -1997,16 +2135,18 @@ function createDOMPurify() {
 
       return dirty;
     }
-
     /* Assign config vars */
+
+
     if (!SET_CONFIG) {
       _parseConfig(cfg);
     }
-
     /* Clean up removed elements */
-    DOMPurify.removed = [];
 
+
+    DOMPurify.removed = [];
     /* Check if dirty is correctly typed for IN_PLACE */
+
     if (typeof dirty === 'string') {
       IN_PLACE = false;
     }
@@ -2015,6 +2155,7 @@ function createDOMPurify() {
       /* Do some early pre-sanitization to avoid unsafe root nodes */
       if (dirty.nodeName) {
         var tagName = transformCaseFunc(dirty.nodeName);
+
         if (!ALLOWED_TAGS[tagName] || FORBID_TAGS[tagName]) {
           throw typeErrorCreate('root node is forbidden and cannot be sanitized in-place');
         }
@@ -2024,6 +2165,7 @@ function createDOMPurify() {
          elements being stripped by the parser */
       body = _initDocument('<!---->');
       importedNode = body.ownerDocument.importNode(dirty, true);
+
       if (importedNode.nodeType === 1 && importedNode.nodeName === 'BODY') {
         /* Node is already a body, use as is */
         body = importedNode;
@@ -2035,60 +2177,67 @@ function createDOMPurify() {
       }
     } else {
       /* Exit directly if we have nothing to do */
-      if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT &&
-      // eslint-disable-next-line unicorn/prefer-includes
+      if (!RETURN_DOM && !SAFE_FOR_TEMPLATES && !WHOLE_DOCUMENT && // eslint-disable-next-line unicorn/prefer-includes
       dirty.indexOf('<') === -1) {
         return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(dirty) : dirty;
       }
-
       /* Initialize the document to work on */
-      body = _initDocument(dirty);
 
+
+      body = _initDocument(dirty);
       /* Check we have a DOM node from the data */
+
       if (!body) {
         return RETURN_DOM ? null : RETURN_TRUSTED_TYPE ? emptyHTML : '';
       }
     }
-
     /* Remove first element node (ours) if FORCE_BODY is set */
+
+
     if (body && FORCE_BODY) {
       _forceRemove(body.firstChild);
     }
-
     /* Get node iterator */
-    var nodeIterator = _createIterator(IN_PLACE ? dirty : body);
 
+
+    var nodeIterator = _createIterator(IN_PLACE ? dirty : body);
     /* Now start iterating over the created document */
+
+
     while (currentNode = nodeIterator.nextNode()) {
       /* Fix IE's strange behavior with manipulated textNodes #89 */
       if (currentNode.nodeType === 3 && currentNode === oldNode) {
         continue;
       }
-
       /* Sanitize tags and elements */
+
+
       if (_sanitizeElements(currentNode)) {
         continue;
       }
-
       /* Shadow DOM detected, sanitize it */
+
+
       if (currentNode.content instanceof DocumentFragment) {
         _sanitizeShadowDOM(currentNode.content);
       }
-
       /* Check attributes, sanitize if necessary */
+
+
       _sanitizeAttributes(currentNode);
 
       oldNode = currentNode;
     }
 
     oldNode = null;
-
     /* If we sanitized `dirty` in-place, return it. */
+
     if (IN_PLACE) {
       return dirty;
     }
-
     /* Return sanitized string or DOM */
+
+
     if (RETURN_DOM) {
       if (RETURN_DOM_FRAGMENT) {
         returnNode = createDocumentFragment.call(body.ownerDocument);
@@ -2116,42 +2265,45 @@ function createDOMPurify() {
     }
 
     var serializedHTML = WHOLE_DOCUMENT ? body.outerHTML : body.innerHTML;
-
     /* Serialize doctype if allowed */
+
     if (WHOLE_DOCUMENT && ALLOWED_TAGS['!doctype'] && body.ownerDocument && body.ownerDocument.doctype && body.ownerDocument.doctype.name && regExpTest(DOCTYPE_NAME, body.ownerDocument.doctype.name)) {
       serializedHTML = '<!DOCTYPE ' + body.ownerDocument.doctype.name + '>\n' + serializedHTML;
     }
-
     /* Sanitize final string template-safe */
+
+
     if (SAFE_FOR_TEMPLATES) {
-      serializedHTML = stringReplace(serializedHTML, MUSTACHE_EXPR$$1, ' ');
-      serializedHTML = stringReplace(serializedHTML, ERB_EXPR$$1, ' ');
+      serializedHTML = stringReplace(serializedHTML, MUSTACHE_EXPR$1, ' ');
+      serializedHTML = stringReplace(serializedHTML, ERB_EXPR$1, ' ');
     }
 
     return trustedTypesPolicy && RETURN_TRUSTED_TYPE ? trustedTypesPolicy.createHTML(serializedHTML) : serializedHTML;
   };
-
   /**
    * Public method to set the configuration once
    * setConfig
    *
    * @param {Object} cfg configuration object
    */
+
+
   DOMPurify.setConfig = function (cfg) {
     _parseConfig(cfg);
+
     SET_CONFIG = true;
   };
-
   /**
    * Public method to remove the configuration
    * clearConfig
    *
    */
+
+
   DOMPurify.clearConfig = function () {
     CONFIG = null;
     SET_CONFIG = false;
   };
-
   /**
    * Public method to check if an attribute value is valid.
    * Uses last set config, if any. Otherwise, uses config defaults.
@@ -2162,6 +2314,8 @@ function createDOMPurify() {
    * @param  {string} value Attribute value.
    * @return {Boolean} Returns true if `value` is valid. Otherwise, returns false.
    */
+
+
   DOMPurify.isValidAttribute = function (tag, attr, value) {
     /* Initialize shared config vars if necessary. */
     if (!CONFIG) {
@@ -2172,7 +2326,6 @@ function createDOMPurify() {
     var lcName = transformCaseFunc(attr);
     return _isValidAttribute(lcTag, lcName, value);
   };
-
   /**
    * AddHook
    * Public method to add DOMPurify hooks
@@ -2180,6 +2333,8 @@ function createDOMPurify() {
    * @param {String} entryPoint entry point for the hook to add
    * @param {Function} hookFunction function to execute
    */
+
+
   DOMPurify.addHook = function (entryPoint, hookFunction) {
     if (typeof hookFunction !== 'function') {
       return;
@@ -2188,37 +2343,41 @@ function createDOMPurify() {
     hooks[entryPoint] = hooks[entryPoint] || [];
     arrayPush(hooks[entryPoint], hookFunction);
   };
-
   /**
    * RemoveHook
    * Public method to remove a DOMPurify hook at a given entryPoint
    * (pops it from the stack of hooks if more are present)
    *
    * @param {String} entryPoint entry point for the hook to remove
+   * @return {Function} removed(popped) hook
    */
+
+
   DOMPurify.removeHook = function (entryPoint) {
     if (hooks[entryPoint]) {
-      arrayPop(hooks[entryPoint]);
+      return arrayPop(hooks[entryPoint]);
     }
   };
-
   /**
    * RemoveHooks
    * Public method to remove all DOMPurify hooks at a given entryPoint
    *
    * @param  {String} entryPoint entry point for the hooks to remove
    */
+
+
   DOMPurify.removeHooks = function (entryPoint) {
     if (hooks[entryPoint]) {
       hooks[entryPoint] = [];
     }
   };
-
   /**
    * RemoveAllHooks
    * Public method to remove all DOMPurify hooks
    *
    */
+
+
   DOMPurify.removeAllHooks = function () {
     hooks = {};
   };
@@ -7060,34 +7219,34 @@ function sanitize(string, options) {
   return purify.sanitize(string, options);
 }
 
-function _toConsumableArray$2(arr) {
-  return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();
+function _toConsumableArray$1(arr) {
+  return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread$1();
 }
-function _nonIterableSpread() {
+function _nonIterableSpread$1() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray(o, minLen) {
+function _unsupportedIterableToArray$1(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray(o, minLen);
+    return _arrayLikeToArray$1(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray(o, minLen);
+    return _arrayLikeToArray$1(o, minLen);
 }
-function _iterableToArray(iter) {
+function _iterableToArray$1(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles(arr) {
+function _arrayWithoutHoles$1(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray(arr);
+    return _arrayLikeToArray$1(arr);
 }
-function _arrayLikeToArray(arr, len) {
+function _arrayLikeToArray$1(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -7224,7 +7383,7 @@ if (isClassListSupported()) {
     if (className.length > 0) {
       if (isSupportMultipleClassesArg(rootDocument)) {
         var _element$classList;
-        (_element$classList = element.classList).add.apply(_element$classList, _toConsumableArray$2(className));
+        (_element$classList = element.classList).add.apply(_element$classList, _toConsumableArray$1(className));
       } else {
         var len = 0;
         while (className[len]) {
@@ -7244,7 +7403,7 @@ if (isClassListSupported()) {
     if (className.length > 0) {
       if (isSupportMultipleClassesArg(rootDocument)) {
         var _element$classList2;
-        (_element$classList2 = element.classList).remove.apply(_element$classList2, _toConsumableArray$2(className));
+        (_element$classList2 = element.classList).remove.apply(_element$classList2, _toConsumableArray$1(className));
       } else {
         var len = 0;
         while (className[len]) {
@@ -9052,17 +9211,17 @@ function _inherits(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf(subClass, superClass);
+    _setPrototypeOf$1(subClass, superClass);
 }
-function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$1(o, p) {
+  _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf(o, p);
+  return _setPrototypeOf$1(o, p);
 }
 function _createSuper(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$1();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -9088,7 +9247,7 @@ function _assertThisInitialized(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct() {
+function _isNativeReflectConstruct$1() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -9266,17 +9425,17 @@ function _inherits$1(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$1(subClass, superClass);
+    _setPrototypeOf$2(subClass, superClass);
 }
-function _setPrototypeOf$1(o, p) {
-  _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$2(o, p) {
+  _setPrototypeOf$2 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$1(o, p);
+  return _setPrototypeOf$2(o, p);
 }
 function _createSuper$1(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$1();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$2();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$1(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -9302,7 +9461,7 @@ function _assertThisInitialized$1(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$1() {
+function _isNativeReflectConstruct$2() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -9412,17 +9571,17 @@ function _inherits$2(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$2(subClass, superClass);
+    _setPrototypeOf$3(subClass, superClass);
 }
-function _setPrototypeOf$2(o, p) {
-  _setPrototypeOf$2 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$3(o, p) {
+  _setPrototypeOf$3 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$2(o, p);
+  return _setPrototypeOf$3(o, p);
 }
 function _createSuper$2(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$2();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$3();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$2(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -9448,7 +9607,7 @@ function _assertThisInitialized$2(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$2() {
+function _isNativeReflectConstruct$3() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -9568,17 +9727,17 @@ function _inherits$3(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$3(subClass, superClass);
+    _setPrototypeOf$4(subClass, superClass);
 }
-function _setPrototypeOf$3(o, p) {
-  _setPrototypeOf$3 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$4(o, p) {
+  _setPrototypeOf$4 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$3(o, p);
+  return _setPrototypeOf$4(o, p);
 }
 function _createSuper$3(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$3();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$4();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$3(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -9604,7 +9763,7 @@ function _assertThisInitialized$3(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$3() {
+function _isNativeReflectConstruct$4() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -9728,17 +9887,17 @@ function _inherits$4(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$4(subClass, superClass);
+    _setPrototypeOf$5(subClass, superClass);
 }
-function _setPrototypeOf$4(o, p) {
-  _setPrototypeOf$4 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$5(o, p) {
+  _setPrototypeOf$5 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$4(o, p);
+  return _setPrototypeOf$5(o, p);
 }
 function _createSuper$4(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$4();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$5();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$4(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -9764,7 +9923,7 @@ function _assertThisInitialized$4(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$4() {
+function _isNativeReflectConstruct$5() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -9859,17 +10018,17 @@ function _inherits$5(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$5(subClass, superClass);
+    _setPrototypeOf$6(subClass, superClass);
 }
-function _setPrototypeOf$5(o, p) {
-  _setPrototypeOf$5 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$6(o, p) {
+  _setPrototypeOf$6 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$5(o, p);
+  return _setPrototypeOf$6(o, p);
 }
 function _createSuper$5(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$5();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$6();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$5(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -9895,7 +10054,7 @@ function _assertThisInitialized$5(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$5() {
+function _isNativeReflectConstruct$6() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -10342,40 +10501,40 @@ function isOverlayTypeOf(overlay, type) {
   return overlay instanceof registeredOverlays[type];
 }
 
-function _toConsumableArray$3(arr) {
-  return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$1(arr) || _nonIterableSpread$1();
+function _toConsumableArray$2(arr) {
+  return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _unsupportedIterableToArray$2(arr) || _nonIterableSpread$2();
 }
-function _nonIterableSpread$1() {
+function _nonIterableSpread$2() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArray$1(iter) {
+function _iterableToArray$2(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$1(arr) {
+function _arrayWithoutHoles$2(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$1(arr);
+    return _arrayLikeToArray$2(arr);
 }
 function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray$1(arr, i) || _nonIterableRest();
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray$2(arr, i) || _nonIterableRest();
 }
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$1(o, minLen) {
+function _unsupportedIterableToArray$2(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$1(o, minLen);
+    return _arrayLikeToArray$2(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$1(o, minLen);
+    return _arrayLikeToArray$2(o, minLen);
 }
-function _arrayLikeToArray$1(arr, len) {
+function _arrayLikeToArray$2(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -11070,7 +11229,7 @@ var Table = /* @__PURE__ */ function() {
     value: function _modifyRowHeaderWidth(rowHeaderWidthFactory) {
       var widths = isFunction$1(rowHeaderWidthFactory) ? rowHeaderWidthFactory() : null;
       if (Array.isArray(widths)) {
-        widths = _toConsumableArray$3(widths);
+        widths = _toConsumableArray$2(widths);
         widths[widths.length - 1] = this._correctRowHeaderWidth(widths[widths.length - 1]);
       } else {
         widths = this._correctRowHeaderWidth(widths);
@@ -11215,17 +11374,17 @@ function _inherits$6(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$6(subClass, superClass);
+    _setPrototypeOf$7(subClass, superClass);
 }
-function _setPrototypeOf$6(o, p) {
-  _setPrototypeOf$6 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$7(o, p) {
+  _setPrototypeOf$7 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$6(o, p);
+  return _setPrototypeOf$7(o, p);
 }
 function _createSuper$6(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$6();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$7();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$6(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -11251,7 +11410,7 @@ function _assertThisInitialized$6(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$6() {
+function _isNativeReflectConstruct$7() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -11452,17 +11611,17 @@ function _inherits$7(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$7(subClass, superClass);
+    _setPrototypeOf$8(subClass, superClass);
 }
-function _setPrototypeOf$7(o, p) {
-  _setPrototypeOf$7 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$8(o, p) {
+  _setPrototypeOf$8 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$7(o, p);
+  return _setPrototypeOf$8(o, p);
 }
 function _createSuper$7(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$7();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$8();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$7(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -11488,7 +11647,7 @@ function _assertThisInitialized$7(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$7() {
+function _isNativeReflectConstruct$8() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -11918,21 +12077,21 @@ function _typeof$d(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$d(obj);
 }
-function _construct(Parent, args, Class) {
-  if (_isNativeReflectConstruct$8()) {
-    _construct = Reflect.construct;
+function _construct$1(Parent, args, Class) {
+  if (_isNativeReflectConstruct$9()) {
+    _construct$1 = Reflect.construct;
   } else {
-    _construct = function _construct2(Parent2, args2, Class2) {
+    _construct$1 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
       a.push.apply(a, args2);
       var Constructor = Function.bind.apply(Parent2, a);
       var instance = new Constructor();
       if (Class2)
-        _setPrototypeOf$8(instance, Class2.prototype);
+        _setPrototypeOf$9(instance, Class2.prototype);
       return instance;
     };
   }
-  return _construct.apply(null, arguments);
+  return _construct$1.apply(null, arguments);
 }
 function _classCallCheck$q(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -11964,17 +12123,17 @@ function _inherits$8(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$8(subClass, superClass);
+    _setPrototypeOf$9(subClass, superClass);
 }
-function _setPrototypeOf$8(o, p) {
-  _setPrototypeOf$8 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$9(o, p) {
+  _setPrototypeOf$9 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$8(o, p);
+  return _setPrototypeOf$9(o, p);
 }
 function _createSuper$8(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$8();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$9();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$8(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -12000,7 +12159,7 @@ function _assertThisInitialized$8(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$8() {
+function _isNativeReflectConstruct$9() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -12037,7 +12196,7 @@ var BottomLeftCornerOverlay = /* @__PURE__ */ function(_Overlay) {
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
-      return _construct(BottomLeftCornerOverlayTable, args);
+      return _construct$1(BottomLeftCornerOverlayTable, args);
     }
   }, {
     key: "shouldBeRendered",
@@ -12148,17 +12307,17 @@ function _inherits$9(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$9(subClass, superClass);
+    _setPrototypeOf$a(subClass, superClass);
 }
-function _setPrototypeOf$9(o, p) {
-  _setPrototypeOf$9 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$a(o, p) {
+  _setPrototypeOf$a = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$9(o, p);
+  return _setPrototypeOf$a(o, p);
 }
 function _createSuper$9(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$9();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$a();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$9(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -12184,7 +12343,7 @@ function _assertThisInitialized$9(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$9() {
+function _isNativeReflectConstruct$a() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -12225,21 +12384,21 @@ function _typeof$f(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$f(obj);
 }
-function _construct$1(Parent, args, Class) {
-  if (_isNativeReflectConstruct$a()) {
-    _construct$1 = Reflect.construct;
+function _construct$2(Parent, args, Class) {
+  if (_isNativeReflectConstruct$b()) {
+    _construct$2 = Reflect.construct;
   } else {
-    _construct$1 = function _construct2(Parent2, args2, Class2) {
+    _construct$2 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
       a.push.apply(a, args2);
       var Constructor = Function.bind.apply(Parent2, a);
       var instance = new Constructor();
       if (Class2)
-        _setPrototypeOf$a(instance, Class2.prototype);
+        _setPrototypeOf$b(instance, Class2.prototype);
       return instance;
     };
   }
-  return _construct$1.apply(null, arguments);
+  return _construct$2.apply(null, arguments);
 }
 function _classCallCheck$s(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -12271,17 +12430,17 @@ function _inherits$a(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$a(subClass, superClass);
+    _setPrototypeOf$b(subClass, superClass);
 }
-function _setPrototypeOf$a(o, p) {
-  _setPrototypeOf$a = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$b(o, p) {
+  _setPrototypeOf$b = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$a(o, p);
+  return _setPrototypeOf$b(o, p);
 }
 function _createSuper$a(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$a();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$b();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$a(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -12307,7 +12466,7 @@ function _assertThisInitialized$a(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$a() {
+function _isNativeReflectConstruct$b() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -12354,7 +12513,7 @@ var BottomOverlay = /* @__PURE__ */ function(_Overlay) {
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
-      return _construct$1(BottomOverlayTable, args);
+      return _construct$2(BottomOverlayTable, args);
     }
   }, {
     key: "shouldBeRendered",
@@ -12610,17 +12769,17 @@ function _inherits$b(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$b(subClass, superClass);
+    _setPrototypeOf$c(subClass, superClass);
 }
-function _setPrototypeOf$b(o, p) {
-  _setPrototypeOf$b = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$c(o, p) {
+  _setPrototypeOf$c = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$b(o, p);
+  return _setPrototypeOf$c(o, p);
 }
 function _createSuper$b(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$b();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$c();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$b(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -12646,7 +12805,7 @@ function _assertThisInitialized$b(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$b() {
+function _isNativeReflectConstruct$c() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -12687,21 +12846,21 @@ function _typeof$h(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$h(obj);
 }
-function _construct$2(Parent, args, Class) {
-  if (_isNativeReflectConstruct$c()) {
-    _construct$2 = Reflect.construct;
+function _construct$3(Parent, args, Class) {
+  if (_isNativeReflectConstruct$d()) {
+    _construct$3 = Reflect.construct;
   } else {
-    _construct$2 = function _construct2(Parent2, args2, Class2) {
+    _construct$3 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
       a.push.apply(a, args2);
       var Constructor = Function.bind.apply(Parent2, a);
       var instance = new Constructor();
       if (Class2)
-        _setPrototypeOf$c(instance, Class2.prototype);
+        _setPrototypeOf$d(instance, Class2.prototype);
       return instance;
     };
   }
-  return _construct$2.apply(null, arguments);
+  return _construct$3.apply(null, arguments);
 }
 function _classCallCheck$u(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -12733,17 +12892,17 @@ function _inherits$c(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$c(subClass, superClass);
+    _setPrototypeOf$d(subClass, superClass);
 }
-function _setPrototypeOf$c(o, p) {
-  _setPrototypeOf$c = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$d(o, p) {
+  _setPrototypeOf$d = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$c(o, p);
+  return _setPrototypeOf$d(o, p);
 }
 function _createSuper$c(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$c();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$d();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$c(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -12769,7 +12928,7 @@ function _assertThisInitialized$c(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$c() {
+function _isNativeReflectConstruct$d() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -12806,7 +12965,7 @@ var LeftOverlay = /* @__PURE__ */ function(_Overlay) {
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
-      return _construct$2(LeftOverlayTable, args);
+      return _construct$3(LeftOverlayTable, args);
     }
   }, {
     key: "shouldBeRendered",
@@ -13085,17 +13244,17 @@ function _inherits$d(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$d(subClass, superClass);
+    _setPrototypeOf$e(subClass, superClass);
 }
-function _setPrototypeOf$d(o, p) {
-  _setPrototypeOf$d = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$e(o, p) {
+  _setPrototypeOf$e = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$d(o, p);
+  return _setPrototypeOf$e(o, p);
 }
 function _createSuper$d(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$d();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$e();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$d(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -13121,7 +13280,7 @@ function _assertThisInitialized$d(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$d() {
+function _isNativeReflectConstruct$e() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -13162,21 +13321,21 @@ function _typeof$j(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$j(obj);
 }
-function _construct$3(Parent, args, Class) {
-  if (_isNativeReflectConstruct$e()) {
-    _construct$3 = Reflect.construct;
+function _construct$4(Parent, args, Class) {
+  if (_isNativeReflectConstruct$f()) {
+    _construct$4 = Reflect.construct;
   } else {
-    _construct$3 = function _construct2(Parent2, args2, Class2) {
+    _construct$4 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
       a.push.apply(a, args2);
       var Constructor = Function.bind.apply(Parent2, a);
       var instance = new Constructor();
       if (Class2)
-        _setPrototypeOf$e(instance, Class2.prototype);
+        _setPrototypeOf$f(instance, Class2.prototype);
       return instance;
     };
   }
-  return _construct$3.apply(null, arguments);
+  return _construct$4.apply(null, arguments);
 }
 function _classCallCheck$w(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -13208,17 +13367,17 @@ function _inherits$e(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$e(subClass, superClass);
+    _setPrototypeOf$f(subClass, superClass);
 }
-function _setPrototypeOf$e(o, p) {
-  _setPrototypeOf$e = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$f(o, p) {
+  _setPrototypeOf$f = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$e(o, p);
+  return _setPrototypeOf$f(o, p);
 }
 function _createSuper$e(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$e();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$f();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$e(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -13244,7 +13403,7 @@ function _assertThisInitialized$e(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$e() {
+function _isNativeReflectConstruct$f() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -13281,7 +13440,7 @@ var TopLeftCornerOverlay = /* @__PURE__ */ function(_Overlay) {
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
-      return _construct$3(TopLeftCornerOverlayTable, args);
+      return _construct$4(TopLeftCornerOverlayTable, args);
     }
   }, {
     key: "shouldBeRendered",
@@ -13377,17 +13536,17 @@ function _inherits$f(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$f(subClass, superClass);
+    _setPrototypeOf$g(subClass, superClass);
 }
-function _setPrototypeOf$f(o, p) {
-  _setPrototypeOf$f = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$g(o, p) {
+  _setPrototypeOf$g = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$f(o, p);
+  return _setPrototypeOf$g(o, p);
 }
 function _createSuper$f(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$f();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$g();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$f(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -13413,7 +13572,7 @@ function _assertThisInitialized$f(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$f() {
+function _isNativeReflectConstruct$g() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -13454,21 +13613,21 @@ function _typeof$l(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$l(obj);
 }
-function _construct$4(Parent, args, Class) {
-  if (_isNativeReflectConstruct$g()) {
-    _construct$4 = Reflect.construct;
+function _construct$5(Parent, args, Class) {
+  if (_isNativeReflectConstruct$h()) {
+    _construct$5 = Reflect.construct;
   } else {
-    _construct$4 = function _construct2(Parent2, args2, Class2) {
+    _construct$5 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
       a.push.apply(a, args2);
       var Constructor = Function.bind.apply(Parent2, a);
       var instance = new Constructor();
       if (Class2)
-        _setPrototypeOf$g(instance, Class2.prototype);
+        _setPrototypeOf$h(instance, Class2.prototype);
       return instance;
     };
   }
-  return _construct$4.apply(null, arguments);
+  return _construct$5.apply(null, arguments);
 }
 function _classCallCheck$y(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -13500,17 +13659,17 @@ function _inherits$g(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$g(subClass, superClass);
+    _setPrototypeOf$h(subClass, superClass);
 }
-function _setPrototypeOf$g(o, p) {
-  _setPrototypeOf$g = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$h(o, p) {
+  _setPrototypeOf$h = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$g(o, p);
+  return _setPrototypeOf$h(o, p);
 }
 function _createSuper$g(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$g();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$h();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$g(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -13536,7 +13695,7 @@ function _assertThisInitialized$g(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$g() {
+function _isNativeReflectConstruct$h() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -13583,7 +13742,7 @@ var TopOverlay = /* @__PURE__ */ function(_Overlay) {
       for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
-      return _construct$4(TopOverlayTable, args);
+      return _construct$5(TopOverlayTable, args);
     }
   }, {
     key: "shouldBeRendered",
@@ -13806,25 +13965,25 @@ var TopOverlay = /* @__PURE__ */ function(_Overlay) {
 }(Overlay);
 
 function _slicedToArray$1(arr, i) {
-  return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _unsupportedIterableToArray$2(arr, i) || _nonIterableRest$1();
+  return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _unsupportedIterableToArray$3(arr, i) || _nonIterableRest$1();
 }
 function _nonIterableRest$1() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$2(o, minLen) {
+function _unsupportedIterableToArray$3(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$2(o, minLen);
+    return _arrayLikeToArray$3(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$2(o, minLen);
+    return _arrayLikeToArray$3(o, minLen);
 }
-function _arrayLikeToArray$2(arr, len) {
+function _arrayLikeToArray$3(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -16100,25 +16259,25 @@ var Walkontable = /* @__PURE__ */ function() {
 }();
 
 function _slicedToArray$2(arr, i) {
-  return _arrayWithHoles$2(arr) || _iterableToArrayLimit$2(arr, i) || _unsupportedIterableToArray$3(arr, i) || _nonIterableRest$2();
+  return _arrayWithHoles$2(arr) || _iterableToArrayLimit$2(arr, i) || _unsupportedIterableToArray$4(arr, i) || _nonIterableRest$2();
 }
 function _nonIterableRest$2() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$3(o, minLen) {
+function _unsupportedIterableToArray$4(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$3(o, minLen);
+    return _arrayLikeToArray$4(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$3(o, minLen);
+    return _arrayLikeToArray$4(o, minLen);
 }
-function _arrayLikeToArray$3(arr, len) {
+function _arrayLikeToArray$4(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -16823,34 +16982,34 @@ function getGlobalSingleton() {
   return globalSingleton;
 }
 
-function _toConsumableArray$4(arr) {
-  return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _unsupportedIterableToArray$4(arr) || _nonIterableSpread$2();
+function _toConsumableArray$3(arr) {
+  return _arrayWithoutHoles$3(arr) || _iterableToArray$3(arr) || _unsupportedIterableToArray$5(arr) || _nonIterableSpread$3();
 }
-function _nonIterableSpread$2() {
+function _nonIterableSpread$3() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$4(o, minLen) {
+function _unsupportedIterableToArray$5(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$4(o, minLen);
+    return _arrayLikeToArray$5(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$4(o, minLen);
+    return _arrayLikeToArray$5(o, minLen);
 }
-function _iterableToArray$2(iter) {
+function _iterableToArray$3(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$2(arr) {
+function _arrayWithoutHoles$3(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$4(arr);
+    return _arrayLikeToArray$5(arr);
 }
-function _arrayLikeToArray$4(arr, len) {
+function _arrayLikeToArray$5(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -16875,10 +17034,10 @@ function staticRegister() {
     return subCollection.has(name);
   }
   function getNames() {
-    return _toConsumableArray$4(subCollection.keys());
+    return _toConsumableArray$3(subCollection.keys());
   }
   function getValues() {
-    return _toConsumableArray$4(subCollection.values());
+    return _toConsumableArray$3(subCollection.values());
   }
   return {
     register,
@@ -16975,25 +17134,25 @@ function _typeof$n(obj) {
   }, _typeof$n(obj);
 }
 function _slicedToArray$3(arr, i) {
-  return _arrayWithHoles$3(arr) || _iterableToArrayLimit$3(arr, i) || _unsupportedIterableToArray$5(arr, i) || _nonIterableRest$3();
+  return _arrayWithHoles$3(arr) || _iterableToArrayLimit$3(arr, i) || _unsupportedIterableToArray$6(arr, i) || _nonIterableRest$3();
 }
 function _nonIterableRest$3() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$5(o, minLen) {
+function _unsupportedIterableToArray$6(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$5(o, minLen);
+    return _arrayLikeToArray$6(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$5(o, minLen);
+    return _arrayLikeToArray$6(o, minLen);
 }
-function _arrayLikeToArray$5(arr, len) {
+function _arrayLikeToArray$6(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -17040,17 +17199,17 @@ function _inherits$h(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$h(subClass, superClass);
+    _setPrototypeOf$i(subClass, superClass);
 }
-function _setPrototypeOf$h(o, p) {
-  _setPrototypeOf$h = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$i(o, p) {
+  _setPrototypeOf$i = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$h(o, p);
+  return _setPrototypeOf$i(o, p);
 }
 function _createSuper$h(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$h();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$i();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$h(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -17076,7 +17235,7 @@ function _assertThisInitialized$h(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$h() {
+function _isNativeReflectConstruct$i() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -17406,25 +17565,25 @@ var BaseEditor = /* @__PURE__ */ function() {
 mixin(BaseEditor, hooksRefRegisterer);
 
 function _slicedToArray$4(arr, i) {
-  return _arrayWithHoles$4(arr) || _iterableToArrayLimit$4(arr, i) || _unsupportedIterableToArray$6(arr, i) || _nonIterableRest$4();
+  return _arrayWithHoles$4(arr) || _iterableToArrayLimit$4(arr, i) || _unsupportedIterableToArray$7(arr, i) || _nonIterableRest$4();
 }
 function _nonIterableRest$4() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$6(o, minLen) {
+function _unsupportedIterableToArray$7(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$6(o, minLen);
+    return _arrayLikeToArray$7(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$6(o, minLen);
+    return _arrayLikeToArray$7(o, minLen);
 }
-function _arrayLikeToArray$6(arr, len) {
+function _arrayLikeToArray$7(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -17917,34 +18076,34 @@ _export({ target: 'Array', proto: true, forced: arrayLastIndexOf !== [].lastInde
   lastIndexOf: arrayLastIndexOf
 });
 
-function _toConsumableArray$5(arr) {
-  return _arrayWithoutHoles$3(arr) || _iterableToArray$3(arr) || _unsupportedIterableToArray$7(arr) || _nonIterableSpread$3();
+function _toConsumableArray$4(arr) {
+  return _arrayWithoutHoles$4(arr) || _iterableToArray$4(arr) || _unsupportedIterableToArray$8(arr) || _nonIterableSpread$4();
 }
-function _nonIterableSpread$3() {
+function _nonIterableSpread$4() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$7(o, minLen) {
+function _unsupportedIterableToArray$8(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$7(o, minLen);
+    return _arrayLikeToArray$8(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$7(o, minLen);
+    return _arrayLikeToArray$8(o, minLen);
 }
-function _iterableToArray$3(iter) {
+function _iterableToArray$4(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$3(arr) {
+function _arrayWithoutHoles$4(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$7(arr);
+    return _arrayLikeToArray$8(arr);
 }
-function _arrayLikeToArray$7(arr, len) {
+function _arrayLikeToArray$8(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -18114,10 +18273,10 @@ function htmlToGridSettings(element) {
   if (fixedRowsBottom.length) {
     settingsObj.fixedRowsBottom = fixedRowsBottom.length;
   }
-  var dataRows = [].concat(fixedRowsTop, _toConsumableArray$5(Array.from(checkElement.tBodies).reduce(function(sections, section) {
-    sections.push.apply(sections, _toConsumableArray$5(Array.from(section.rows)));
+  var dataRows = [].concat(fixedRowsTop, _toConsumableArray$4(Array.from(checkElement.tBodies).reduce(function(sections, section) {
+    sections.push.apply(sections, _toConsumableArray$4(Array.from(section.rows)));
     return sections;
-  }, [])), _toConsumableArray$5(fixedRowsBottom));
+  }, [])), _toConsumableArray$4(fixedRowsBottom));
   countRows = dataRows.length;
   var dataArr = new Array(countRows);
   for (var r = 0; r < countRows; r++) {
@@ -18181,34 +18340,34 @@ function htmlToGridSettings(element) {
   return settingsObj;
 }
 
-function _toConsumableArray$6(arr) {
-  return _arrayWithoutHoles$4(arr) || _iterableToArray$4(arr) || _unsupportedIterableToArray$8(arr) || _nonIterableSpread$4();
+function _toConsumableArray$5(arr) {
+  return _arrayWithoutHoles$5(arr) || _iterableToArray$5(arr) || _unsupportedIterableToArray$9(arr) || _nonIterableSpread$5();
 }
-function _nonIterableSpread$4() {
+function _nonIterableSpread$5() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$8(o, minLen) {
+function _unsupportedIterableToArray$9(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$8(o, minLen);
+    return _arrayLikeToArray$9(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$8(o, minLen);
+    return _arrayLikeToArray$9(o, minLen);
 }
-function _iterableToArray$4(iter) {
+function _iterableToArray$5(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$4(arr) {
+function _arrayWithoutHoles$5(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$8(arr);
+    return _arrayLikeToArray$9(arr);
 }
-function _arrayLikeToArray$8(arr, len) {
+function _arrayLikeToArray$9(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -18235,7 +18394,7 @@ function isNumeric(value) {
     } else if (value.length === 1) {
       return /\d/.test(value);
     }
-    var delimiter = Array.from(new Set(["."].concat(_toConsumableArray$6(additionalDelimiters)))).map(function(d) {
+    var delimiter = Array.from(new Set(["."].concat(_toConsumableArray$5(additionalDelimiters)))).map(function(d) {
       return "\\".concat(d);
     }).join("|");
     return new RegExp("^[+-]?\\s*(((".concat(delimiter, ")?\\d+((").concat(delimiter, ")\\d+)?(e[+-]?\\d+)?)|(0x[a-f\\d]+))$"), "i").test(value.trim());
@@ -18279,40 +18438,40 @@ function valueAccordingPercent(value, percent) {
   return parseInt(value * percent / 100, 10);
 }
 
-function _toConsumableArray$7(arr) {
-  return _arrayWithoutHoles$5(arr) || _iterableToArray$5(arr) || _unsupportedIterableToArray$9(arr) || _nonIterableSpread$5();
+function _toConsumableArray$6(arr) {
+  return _arrayWithoutHoles$6(arr) || _iterableToArray$6(arr) || _unsupportedIterableToArray$a(arr) || _nonIterableSpread$6();
 }
-function _nonIterableSpread$5() {
+function _nonIterableSpread$6() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArray$5(iter) {
+function _iterableToArray$6(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$5(arr) {
+function _arrayWithoutHoles$6(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$9(arr);
+    return _arrayLikeToArray$a(arr);
 }
 function _slicedToArray$5(arr, i) {
-  return _arrayWithHoles$5(arr) || _iterableToArrayLimit$5(arr, i) || _unsupportedIterableToArray$9(arr, i) || _nonIterableRest$5();
+  return _arrayWithHoles$5(arr) || _iterableToArrayLimit$5(arr, i) || _unsupportedIterableToArray$a(arr, i) || _nonIterableRest$5();
 }
 function _nonIterableRest$5() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$9(o, minLen) {
+function _unsupportedIterableToArray$a(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$9(o, minLen);
+    return _arrayLikeToArray$a(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$9(o, minLen);
+    return _arrayLikeToArray$a(o, minLen);
 }
-function _arrayLikeToArray$9(arr, len) {
+function _arrayLikeToArray$a(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -18378,7 +18537,7 @@ function createPriorityMap() {
   function getItems() {
     var order = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : ASC;
     var _ref2 = ORDER_MAP.get(order) || ORDER_MAP.get(ASC), _ref3 = _slicedToArray$5(_ref2, 2), left = _ref3[0], right = _ref3[1];
-    return _toConsumableArray$7(priorityMap).sort(function(a, b) {
+    return _toConsumableArray$6(priorityMap).sort(function(a, b) {
       return a[0] < b[0] ? left : right;
     }).map(function(item) {
       return item[1];
@@ -18390,40 +18549,40 @@ function createPriorityMap() {
   };
 }
 
-function _toConsumableArray$8(arr) {
-  return _arrayWithoutHoles$6(arr) || _iterableToArray$6(arr) || _unsupportedIterableToArray$a(arr) || _nonIterableSpread$6();
+function _toConsumableArray$7(arr) {
+  return _arrayWithoutHoles$7(arr) || _iterableToArray$7(arr) || _unsupportedIterableToArray$b(arr) || _nonIterableSpread$7();
 }
-function _nonIterableSpread$6() {
+function _nonIterableSpread$7() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArray$6(iter) {
+function _iterableToArray$7(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$6(arr) {
+function _arrayWithoutHoles$7(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$a(arr);
+    return _arrayLikeToArray$b(arr);
 }
 function _slicedToArray$6(arr, i) {
-  return _arrayWithHoles$6(arr) || _iterableToArrayLimit$6(arr, i) || _unsupportedIterableToArray$a(arr, i) || _nonIterableRest$6();
+  return _arrayWithHoles$6(arr) || _iterableToArrayLimit$6(arr, i) || _unsupportedIterableToArray$b(arr, i) || _nonIterableRest$6();
 }
 function _nonIterableRest$6() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$a(o, minLen) {
+function _unsupportedIterableToArray$b(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$a(o, minLen);
+    return _arrayLikeToArray$b(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$a(o, minLen);
+    return _arrayLikeToArray$b(o, minLen);
 }
-function _arrayLikeToArray$a(arr, len) {
+function _arrayLikeToArray$b(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -18493,7 +18652,7 @@ function createUniqueMap() {
     return uniqueMap.get(id);
   }
   function getItems() {
-    return _toConsumableArray$8(uniqueMap);
+    return _toConsumableArray$7(uniqueMap);
   }
   function hasItem(id) {
     return uniqueMap.has(id);
@@ -18508,34 +18667,34 @@ function createUniqueMap() {
   };
 }
 
-function _toConsumableArray$9(arr) {
-  return _arrayWithoutHoles$7(arr) || _iterableToArray$7(arr) || _unsupportedIterableToArray$b(arr) || _nonIterableSpread$7();
+function _toConsumableArray$8(arr) {
+  return _arrayWithoutHoles$8(arr) || _iterableToArray$8(arr) || _unsupportedIterableToArray$c(arr) || _nonIterableSpread$8();
 }
-function _nonIterableSpread$7() {
+function _nonIterableSpread$8() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$b(o, minLen) {
+function _unsupportedIterableToArray$c(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$b(o, minLen);
+    return _arrayLikeToArray$c(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$b(o, minLen);
+    return _arrayLikeToArray$c(o, minLen);
 }
-function _iterableToArray$7(iter) {
+function _iterableToArray$8(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$7(arr) {
+function _arrayWithoutHoles$8(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$b(arr);
+    return _arrayLikeToArray$c(arr);
 }
-function _arrayLikeToArray$b(arr, len) {
+function _arrayLikeToArray$c(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -18557,7 +18716,7 @@ function createUniqueSet() {
     uniqueSet.add(item);
   }
   function getItems() {
-    return _toConsumableArray$9(uniqueSet);
+    return _toConsumableArray$8(uniqueSet);
   }
   return {
     addItem,
@@ -18566,7 +18725,7 @@ function createUniqueSet() {
 }
 
 function _slicedToArray$7(arr, i) {
-  return _arrayWithHoles$7(arr) || _iterableToArrayLimit$7(arr, i) || _unsupportedIterableToArray$c(arr, i) || _nonIterableRest$7();
+  return _arrayWithHoles$7(arr) || _iterableToArrayLimit$7(arr, i) || _unsupportedIterableToArray$d(arr, i) || _nonIterableRest$7();
 }
 function _nonIterableRest$7() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
@@ -18603,34 +18762,34 @@ function _arrayWithHoles$7(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _toConsumableArray$a(arr) {
-  return _arrayWithoutHoles$8(arr) || _iterableToArray$8(arr) || _unsupportedIterableToArray$c(arr) || _nonIterableSpread$8();
+function _toConsumableArray$9(arr) {
+  return _arrayWithoutHoles$9(arr) || _iterableToArray$9(arr) || _unsupportedIterableToArray$d(arr) || _nonIterableSpread$9();
 }
-function _nonIterableSpread$8() {
+function _nonIterableSpread$9() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$c(o, minLen) {
+function _unsupportedIterableToArray$d(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$c(o, minLen);
+    return _arrayLikeToArray$d(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$c(o, minLen);
+    return _arrayLikeToArray$d(o, minLen);
 }
-function _iterableToArray$8(iter) {
+function _iterableToArray$9(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$8(arr) {
+function _arrayWithoutHoles$9(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$c(arr);
+    return _arrayLikeToArray$d(arr);
 }
-function _arrayLikeToArray$c(arr, len) {
+function _arrayLikeToArray$d(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -18658,7 +18817,7 @@ var uniquePluginsList = createUniqueMap({
   errorIdExists: ERROR_PLUGIN_REGISTERED
 });
 function getPluginsNames() {
-  return [].concat(_toConsumableArray$a(priorityPluginsQueue.getItems()), _toConsumableArray$a(uniquePluginsQueue.getItems()));
+  return [].concat(_toConsumableArray$9(priorityPluginsQueue.getItems()), _toConsumableArray$9(uniquePluginsQueue.getItems()));
 }
 function getPlugin(pluginName) {
   var unifiedPluginName = toUpperCaseFirst(pluginName);
@@ -18816,7 +18975,7 @@ function isRootInstance(object) {
 }
 
 function _slicedToArray$8(arr, i) {
-  return _arrayWithHoles$8(arr) || _iterableToArrayLimit$8(arr, i) || _unsupportedIterableToArray$d(arr, i) || _nonIterableRest$8();
+  return _arrayWithHoles$8(arr) || _iterableToArrayLimit$8(arr, i) || _unsupportedIterableToArray$e(arr, i) || _nonIterableRest$8();
 }
 function _nonIterableRest$8() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
@@ -18853,23 +19012,23 @@ function _arrayWithHoles$8(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _construct$5(Parent, args, Class) {
-  if (_isNativeReflectConstruct$i()) {
-    _construct$5 = Reflect.construct;
+function _construct$6(Parent, args, Class) {
+  if (_isNativeReflectConstruct$j()) {
+    _construct$6 = Reflect.construct;
   } else {
-    _construct$5 = function _construct2(Parent2, args2, Class2) {
+    _construct$6 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
       a.push.apply(a, args2);
       var Constructor = Function.bind.apply(Parent2, a);
       var instance = new Constructor();
       if (Class2)
-        _setPrototypeOf$i(instance, Class2.prototype);
+        _setPrototypeOf$j(instance, Class2.prototype);
       return instance;
     };
   }
-  return _construct$5.apply(null, arguments);
+  return _construct$6.apply(null, arguments);
 }
-function _isNativeReflectConstruct$i() {
+function _isNativeReflectConstruct$j() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -18884,41 +19043,41 @@ function _isNativeReflectConstruct$i() {
     return false;
   }
 }
-function _setPrototypeOf$i(o, p) {
-  _setPrototypeOf$i = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$j(o, p) {
+  _setPrototypeOf$j = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$i(o, p);
+  return _setPrototypeOf$j(o, p);
 }
-function _toConsumableArray$b(arr) {
-  return _arrayWithoutHoles$9(arr) || _iterableToArray$9(arr) || _unsupportedIterableToArray$d(arr) || _nonIterableSpread$9();
+function _toConsumableArray$a(arr) {
+  return _arrayWithoutHoles$a(arr) || _iterableToArray$a(arr) || _unsupportedIterableToArray$e(arr) || _nonIterableSpread$a();
 }
-function _nonIterableSpread$9() {
+function _nonIterableSpread$a() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$d(o, minLen) {
+function _unsupportedIterableToArray$e(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$d(o, minLen);
+    return _arrayLikeToArray$e(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$d(o, minLen);
+    return _arrayLikeToArray$e(o, minLen);
 }
-function _iterableToArray$9(iter) {
+function _iterableToArray$a(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$9(arr) {
+function _arrayWithoutHoles$a(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$d(arr);
+    return _arrayLikeToArray$e(arr);
 }
-function _arrayLikeToArray$d(arr, len) {
+function _arrayLikeToArray$e(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -19142,7 +19301,7 @@ var TableView = /* @__PURE__ */ function() {
     key: "translateFromRenderableToVisualCoords",
     value: function translateFromRenderableToVisualCoords(_ref) {
       var row = _ref.row, col = _ref.col;
-      return _construct$5(CellCoords, _toConsumableArray$b(this.translateFromRenderableToVisualIndex(row, col)));
+      return _construct$6(CellCoords, _toConsumableArray$a(this.translateFromRenderableToVisualIndex(row, col)));
     }
   }, {
     key: "translateFromRenderableToVisualIndex",
@@ -19228,7 +19387,7 @@ var TableView = /* @__PURE__ */ function() {
         },
         data: function data(renderableRow, renderableColumn) {
           var _this2$instance;
-          return (_this2$instance = _this2.instance).getDataAtCell.apply(_this2$instance, _toConsumableArray$b(_this2.translateFromRenderableToVisualIndex(renderableRow, renderableColumn)));
+          return (_this2$instance = _this2.instance).getDataAtCell.apply(_this2$instance, _toConsumableArray$a(_this2.translateFromRenderableToVisualIndex(renderableRow, renderableColumn)));
         },
         totalRows: function totalRows() {
           return _this2.countRenderableRows();
@@ -20185,34 +20344,34 @@ var IndexMap = /* @__PURE__ */ function() {
 }();
 mixin(IndexMap, localHooks);
 
-function _toConsumableArray$c(arr) {
-  return _arrayWithoutHoles$a(arr) || _iterableToArray$a(arr) || _unsupportedIterableToArray$e(arr) || _nonIterableSpread$a();
+function _toConsumableArray$b(arr) {
+  return _arrayWithoutHoles$b(arr) || _iterableToArray$b(arr) || _unsupportedIterableToArray$f(arr) || _nonIterableSpread$b();
 }
-function _nonIterableSpread$a() {
+function _nonIterableSpread$b() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$e(o, minLen) {
+function _unsupportedIterableToArray$f(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$e(o, minLen);
+    return _arrayLikeToArray$f(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$e(o, minLen);
+    return _arrayLikeToArray$f(o, minLen);
 }
-function _iterableToArray$a(iter) {
+function _iterableToArray$b(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$a(arr) {
+function _arrayWithoutHoles$b(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$e(arr);
+    return _arrayLikeToArray$f(arr);
 }
-function _arrayLikeToArray$e(arr, len) {
+function _arrayLikeToArray$f(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -20222,12 +20381,12 @@ function _arrayLikeToArray$e(arr, len) {
 }
 function getListWithInsertedItems(indexedValues, insertionIndex, insertedIndexes, insertedValuesMapping) {
   var firstInsertedIndex = insertedIndexes.length ? insertedIndexes[0] : void 0;
-  return [].concat(_toConsumableArray$c(indexedValues.slice(0, firstInsertedIndex)), _toConsumableArray$c(insertedIndexes.map(function(insertedIndex, ordinalNumber) {
+  return [].concat(_toConsumableArray$b(indexedValues.slice(0, firstInsertedIndex)), _toConsumableArray$b(insertedIndexes.map(function(insertedIndex, ordinalNumber) {
     if (isFunction$1(insertedValuesMapping)) {
       return insertedValuesMapping(insertedIndex, ordinalNumber);
     }
     return insertedValuesMapping;
-  })), _toConsumableArray$c(firstInsertedIndex === void 0 ? [] : indexedValues.slice(firstInsertedIndex)));
+  })), _toConsumableArray$b(firstInsertedIndex === void 0 ? [] : indexedValues.slice(firstInsertedIndex)));
 }
 function getListWithRemovedItems(indexedValues, removedIndexes) {
   return arrayFilter(indexedValues, function(_, index) {
@@ -20298,17 +20457,17 @@ function _inherits$i(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$j(subClass, superClass);
+    _setPrototypeOf$k(subClass, superClass);
 }
-function _setPrototypeOf$j(o, p) {
-  _setPrototypeOf$j = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$k(o, p) {
+  _setPrototypeOf$k = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$j(o, p);
+  return _setPrototypeOf$k(o, p);
 }
 function _createSuper$i(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$j();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$k();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$i(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -20334,7 +20493,7 @@ function _assertThisInitialized$i(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$j() {
+function _isNativeReflectConstruct$k() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -20416,17 +20575,17 @@ function _inherits$j(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$k(subClass, superClass);
+    _setPrototypeOf$l(subClass, superClass);
 }
-function _setPrototypeOf$k(o, p) {
-  _setPrototypeOf$k = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$l(o, p) {
+  _setPrototypeOf$l = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$k(o, p);
+  return _setPrototypeOf$l(o, p);
 }
 function _createSuper$j(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$k();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$l();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$j(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -20452,7 +20611,7 @@ function _assertThisInitialized$j(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$k() {
+function _isNativeReflectConstruct$l() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -20495,34 +20654,34 @@ var HidingMap = /* @__PURE__ */ function(_PhysicalIndexToValue) {
   return HidingMap2;
 }(PhysicalIndexToValueMap);
 
-function _toConsumableArray$d(arr) {
-  return _arrayWithoutHoles$b(arr) || _iterableToArray$b(arr) || _unsupportedIterableToArray$f(arr) || _nonIterableSpread$b();
+function _toConsumableArray$c(arr) {
+  return _arrayWithoutHoles$c(arr) || _iterableToArray$c(arr) || _unsupportedIterableToArray$g(arr) || _nonIterableSpread$c();
 }
-function _nonIterableSpread$b() {
+function _nonIterableSpread$c() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$f(o, minLen) {
+function _unsupportedIterableToArray$g(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$f(o, minLen);
+    return _arrayLikeToArray$g(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$f(o, minLen);
+    return _arrayLikeToArray$g(o, minLen);
 }
-function _iterableToArray$b(iter) {
+function _iterableToArray$c(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$b(arr) {
+function _arrayWithoutHoles$c(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$f(arr);
+    return _arrayLikeToArray$g(arr);
 }
-function _arrayLikeToArray$f(arr, len) {
+function _arrayLikeToArray$g(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -20531,7 +20690,7 @@ function _arrayLikeToArray$f(arr, len) {
   return arr2;
 }
 function getListWithInsertedItems$1(indexedValues, insertionIndex, insertedIndexes) {
-  return [].concat(_toConsumableArray$d(indexedValues.slice(0, insertionIndex)), _toConsumableArray$d(insertedIndexes), _toConsumableArray$d(indexedValues.slice(insertionIndex)));
+  return [].concat(_toConsumableArray$c(indexedValues.slice(0, insertionIndex)), _toConsumableArray$c(insertedIndexes), _toConsumableArray$c(indexedValues.slice(insertionIndex)));
 }
 function getListWithRemovedItems$1(indexedValues, removedIndexes) {
   return arrayFilter(indexedValues, function(index) {
@@ -20565,34 +20724,34 @@ function _typeof$s(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$s(obj);
 }
-function _toConsumableArray$e(arr) {
-  return _arrayWithoutHoles$c(arr) || _iterableToArray$c(arr) || _unsupportedIterableToArray$g(arr) || _nonIterableSpread$c();
+function _toConsumableArray$d(arr) {
+  return _arrayWithoutHoles$d(arr) || _iterableToArray$d(arr) || _unsupportedIterableToArray$h(arr) || _nonIterableSpread$d();
 }
-function _nonIterableSpread$c() {
+function _nonIterableSpread$d() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$g(o, minLen) {
+function _unsupportedIterableToArray$h(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$g(o, minLen);
+    return _arrayLikeToArray$h(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$g(o, minLen);
+    return _arrayLikeToArray$h(o, minLen);
 }
-function _iterableToArray$c(iter) {
+function _iterableToArray$d(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$c(arr) {
+function _arrayWithoutHoles$d(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$g(arr);
+    return _arrayLikeToArray$h(arr);
 }
-function _arrayLikeToArray$g(arr, len) {
+function _arrayLikeToArray$h(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -20655,17 +20814,17 @@ function _inherits$k(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$l(subClass, superClass);
+    _setPrototypeOf$m(subClass, superClass);
 }
-function _setPrototypeOf$l(o, p) {
-  _setPrototypeOf$l = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$m(o, p) {
+  _setPrototypeOf$m = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$l(o, p);
+  return _setPrototypeOf$m(o, p);
 }
 function _createSuper$k(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$l();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$m();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$k(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -20691,7 +20850,7 @@ function _assertThisInitialized$k(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$l() {
+function _isNativeReflectConstruct$m() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -20744,7 +20903,7 @@ var LinkedPhysicalIndexToValueMap = /* @__PURE__ */ function(_IndexMap) {
   }, {
     key: "setValues",
     value: function setValues(values) {
-      this.orderOfIndexes = _toConsumableArray$e(Array(values.length).keys());
+      this.orderOfIndexes = _toConsumableArray$d(Array(values.length).keys());
       _get$1(_getPrototypeOf$k(LinkedPhysicalIndexToValueMap2.prototype), "setValues", this).call(this, values);
     }
   }, {
@@ -20848,17 +21007,17 @@ function _inherits$l(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$m(subClass, superClass);
+    _setPrototypeOf$n(subClass, superClass);
 }
-function _setPrototypeOf$m(o, p) {
-  _setPrototypeOf$m = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$n(o, p) {
+  _setPrototypeOf$n = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$m(o, p);
+  return _setPrototypeOf$n(o, p);
 }
 function _createSuper$l(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$m();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$n();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$l(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -20884,7 +21043,7 @@ function _assertThisInitialized$l(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$m() {
+function _isNativeReflectConstruct$n() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -20990,17 +21149,17 @@ function _inherits$m(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$n(subClass, superClass);
+    _setPrototypeOf$o(subClass, superClass);
 }
-function _setPrototypeOf$n(o, p) {
-  _setPrototypeOf$n = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$o(o, p) {
+  _setPrototypeOf$o = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$n(o, p);
+  return _setPrototypeOf$o(o, p);
 }
 function _createSuper$m(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$n();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$o();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$m(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -21026,7 +21185,7 @@ function _assertThisInitialized$m(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$n() {
+function _isNativeReflectConstruct$o() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -21218,17 +21377,17 @@ function _inherits$n(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$o(subClass, superClass);
+    _setPrototypeOf$p(subClass, superClass);
 }
-function _setPrototypeOf$o(o, p) {
-  _setPrototypeOf$o = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$p(o, p) {
+  _setPrototypeOf$p = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$o(o, p);
+  return _setPrototypeOf$p(o, p);
 }
 function _createSuper$n(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$o();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$p();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$n(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -21254,7 +21413,7 @@ function _assertThisInitialized$n(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$o() {
+function _isNativeReflectConstruct$p() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -21594,34 +21753,34 @@ var ChangesObservable = /* @__PURE__ */ function() {
   return ChangesObservable2;
 }();
 
-function _toConsumableArray$f(arr) {
-  return _arrayWithoutHoles$d(arr) || _iterableToArray$d(arr) || _unsupportedIterableToArray$h(arr) || _nonIterableSpread$d();
+function _toConsumableArray$e(arr) {
+  return _arrayWithoutHoles$e(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$i(arr) || _nonIterableSpread$e();
 }
-function _nonIterableSpread$d() {
+function _nonIterableSpread$e() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$h(o, minLen) {
+function _unsupportedIterableToArray$i(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$h(o, minLen);
+    return _arrayLikeToArray$i(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$h(o, minLen);
+    return _arrayLikeToArray$i(o, minLen);
 }
-function _iterableToArray$d(iter) {
+function _iterableToArray$e(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$d(arr) {
+function _arrayWithoutHoles$e(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$h(arr);
+    return _arrayLikeToArray$i(arr);
 }
-function _arrayLikeToArray$h(arr, len) {
+function _arrayLikeToArray$i(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -21818,8 +21977,8 @@ var IndexMapper = /* @__PURE__ */ function() {
     key: "initToLength",
     value: function initToLength() {
       var length = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : this.getNumberOfIndexes();
-      this.notTrimmedIndexesCache = _toConsumableArray$f(new Array(length).keys());
-      this.notHiddenIndexesCache = _toConsumableArray$f(new Array(length).keys());
+      this.notTrimmedIndexesCache = _toConsumableArray$e(new Array(length).keys());
+      this.notHiddenIndexesCache = _toConsumableArray$e(new Array(length).keys());
       this.suspendOperations();
       this.indexesSequence.init(length);
       this.trimmingMapsCollection.initEvery(length);
@@ -21835,7 +21994,7 @@ var IndexMapper = /* @__PURE__ */ function() {
     value: function fitToLength(length) {
       var currentIndexCount = this.getNumberOfIndexes();
       if (length < currentIndexCount) {
-        var indexesToBeRemoved = _toConsumableArray$f(Array(this.getNumberOfIndexes() - length).keys()).map(function(i) {
+        var indexesToBeRemoved = _toConsumableArray$e(Array(this.getNumberOfIndexes() - length).keys()).map(function(i) {
           return i + length;
         });
         this.removeIndexes(indexesToBeRemoved);
@@ -22382,25 +22541,25 @@ function _typeof$w(obj) {
   }, _typeof$w(obj);
 }
 function _slicedToArray$9(arr, i) {
-  return _arrayWithHoles$9(arr) || _iterableToArrayLimit$9(arr, i) || _unsupportedIterableToArray$i(arr, i) || _nonIterableRest$9();
+  return _arrayWithHoles$9(arr) || _iterableToArrayLimit$9(arr, i) || _unsupportedIterableToArray$j(arr, i) || _nonIterableRest$9();
 }
 function _nonIterableRest$9() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$i(o, minLen) {
+function _unsupportedIterableToArray$j(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$i(o, minLen);
+    return _arrayLikeToArray$j(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$i(o, minLen);
+    return _arrayLikeToArray$j(o, minLen);
 }
-function _arrayLikeToArray$i(arr, len) {
+function _arrayLikeToArray$j(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -22495,17 +22654,17 @@ function _inherits$o(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$p(subClass, superClass);
+    _setPrototypeOf$q(subClass, superClass);
 }
-function _setPrototypeOf$p(o, p) {
-  _setPrototypeOf$p = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$q(o, p) {
+  _setPrototypeOf$q = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$p(o, p);
+  return _setPrototypeOf$q(o, p);
 }
 function _createSuper$o(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$p();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$q();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$o(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -22531,7 +22690,7 @@ function _assertThisInitialized$o(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$p() {
+function _isNativeReflectConstruct$q() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -23181,34 +23340,34 @@ function createHighlight$6(highlightType, options) {
   }, options));
 }
 
-function _toConsumableArray$g(arr) {
-  return _arrayWithoutHoles$e(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$j(arr) || _nonIterableSpread$e();
+function _toConsumableArray$f(arr) {
+  return _arrayWithoutHoles$f(arr) || _iterableToArray$f(arr) || _unsupportedIterableToArray$k(arr) || _nonIterableSpread$f();
 }
-function _nonIterableSpread$e() {
+function _nonIterableSpread$f() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$j(o, minLen) {
+function _unsupportedIterableToArray$k(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$j(o, minLen);
+    return _arrayLikeToArray$k(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$j(o, minLen);
+    return _arrayLikeToArray$k(o, minLen);
 }
-function _iterableToArray$e(iter) {
+function _iterableToArray$f(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$e(arr) {
+function _arrayWithoutHoles$f(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$j(arr);
+    return _arrayLikeToArray$k(arr);
 }
-function _arrayLikeToArray$j(arr, len) {
+function _arrayLikeToArray$k(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -23328,7 +23487,7 @@ var Highlight = /* @__PURE__ */ function(_Symbol$iterator) {
   }, {
     key: "getAreas",
     value: function getAreas() {
-      return _toConsumableArray$g(this.areas.values());
+      return _toConsumableArray$f(this.areas.values());
     }
   }, {
     key: "createOrGetHeader",
@@ -23346,7 +23505,7 @@ var Highlight = /* @__PURE__ */ function(_Symbol$iterator) {
   }, {
     key: "getHeaders",
     value: function getHeaders() {
-      return _toConsumableArray$g(this.headers.values());
+      return _toConsumableArray$f(this.headers.values());
     }
   }, {
     key: "createOrGetActiveHeader",
@@ -23364,12 +23523,12 @@ var Highlight = /* @__PURE__ */ function(_Symbol$iterator) {
   }, {
     key: "getActiveHeaders",
     value: function getActiveHeaders() {
-      return _toConsumableArray$g(this.activeHeaders.values());
+      return _toConsumableArray$f(this.activeHeaders.values());
     }
   }, {
     key: "getCustomSelections",
     value: function getCustomSelections() {
-      return _toConsumableArray$g(this.customSelections.values());
+      return _toConsumableArray$f(this.customSelections.values());
     }
   }, {
     key: "addCustomSelection",
@@ -23394,7 +23553,7 @@ var Highlight = /* @__PURE__ */ function(_Symbol$iterator) {
   }, {
     key: _Symbol$iterator,
     value: function value() {
-      return [this.cell, this.fill].concat(_toConsumableArray$g(this.areas.values()), _toConsumableArray$g(this.headers.values()), _toConsumableArray$g(this.activeHeaders.values()), _toConsumableArray$g(this.customSelections))[Symbol.iterator]();
+      return [this.cell, this.fill].concat(_toConsumableArray$f(this.areas.values()), _toConsumableArray$f(this.headers.values()), _toConsumableArray$f(this.activeHeaders.values()), _toConsumableArray$f(this.customSelections))[Symbol.iterator]();
     }
   }]);
   return Highlight2;
@@ -23636,25 +23795,25 @@ var Transformation = /* @__PURE__ */ function() {
 mixin(Transformation, localHooks);
 
 function _slicedToArray$a(arr, i) {
-  return _arrayWithHoles$a(arr) || _iterableToArrayLimit$a(arr, i) || _unsupportedIterableToArray$k(arr, i) || _nonIterableRest$a();
+  return _arrayWithHoles$a(arr) || _iterableToArrayLimit$a(arr, i) || _unsupportedIterableToArray$l(arr, i) || _nonIterableRest$a();
 }
 function _nonIterableRest$a() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$k(o, minLen) {
+function _unsupportedIterableToArray$l(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$k(o, minLen);
+    return _arrayLikeToArray$l(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$k(o, minLen);
+    return _arrayLikeToArray$l(o, minLen);
 }
-function _arrayLikeToArray$k(arr, len) {
+function _arrayLikeToArray$l(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -23846,25 +24005,25 @@ function isValidCoord(coord) {
 
 var _templateObject$4;
 function _slicedToArray$b(arr, i) {
-  return _arrayWithHoles$b(arr) || _iterableToArrayLimit$b(arr, i) || _unsupportedIterableToArray$l(arr, i) || _nonIterableRest$b();
+  return _arrayWithHoles$b(arr) || _iterableToArrayLimit$b(arr, i) || _unsupportedIterableToArray$m(arr, i) || _nonIterableRest$b();
 }
 function _nonIterableRest$b() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$l(o, minLen) {
+function _unsupportedIterableToArray$m(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$l(o, minLen);
+    return _arrayLikeToArray$m(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$l(o, minLen);
+    return _arrayLikeToArray$m(o, minLen);
 }
-function _arrayLikeToArray$l(arr, len) {
+function _arrayLikeToArray$m(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -25604,34 +25763,34 @@ var ColumnMeta = /* @__PURE__ */ function() {
   return ColumnMeta2;
 }();
 
-function _toConsumableArray$h(arr) {
-  return _arrayWithoutHoles$f(arr) || _iterableToArray$f(arr) || _unsupportedIterableToArray$m(arr) || _nonIterableSpread$f();
+function _toConsumableArray$g(arr) {
+  return _arrayWithoutHoles$g(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$n(arr) || _nonIterableSpread$g();
 }
-function _nonIterableSpread$f() {
+function _nonIterableSpread$g() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$m(o, minLen) {
+function _unsupportedIterableToArray$n(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$m(o, minLen);
+    return _arrayLikeToArray$n(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$m(o, minLen);
+    return _arrayLikeToArray$n(o, minLen);
 }
-function _iterableToArray$f(iter) {
+function _iterableToArray$g(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$f(arr) {
+function _arrayWithoutHoles$g(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$m(arr);
+    return _arrayLikeToArray$n(arr);
 }
-function _arrayLikeToArray$m(arr, len) {
+function _arrayLikeToArray$n(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -25729,7 +25888,7 @@ var CellMeta = /* @__PURE__ */ function() {
       var metas = [];
       var rows = Array.from(this.metas.values());
       for (var row = 0; row < rows.length; row++) {
-        metas.push.apply(metas, _toConsumableArray$h(rows[row].values()));
+        metas.push.apply(metas, _toConsumableArray$g(rows[row].values()));
       }
       return metas;
     }
@@ -26083,7 +26242,7 @@ function _typeof$B(obj) {
   }, _typeof$B(obj);
 }
 function _slicedToArray$c(arr, i) {
-  return _arrayWithHoles$c(arr) || _iterableToArrayLimit$c(arr, i) || _unsupportedIterableToArray$n(arr, i) || _nonIterableRest$c();
+  return _arrayWithHoles$c(arr) || _iterableToArrayLimit$c(arr, i) || _unsupportedIterableToArray$o(arr, i) || _nonIterableRest$c();
 }
 function _nonIterableRest$c() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
@@ -26120,34 +26279,34 @@ function _arrayWithHoles$c(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _toConsumableArray$i(arr) {
-  return _arrayWithoutHoles$g(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$n(arr) || _nonIterableSpread$g();
+function _toConsumableArray$h(arr) {
+  return _arrayWithoutHoles$h(arr) || _iterableToArray$h(arr) || _unsupportedIterableToArray$o(arr) || _nonIterableSpread$h();
 }
-function _nonIterableSpread$g() {
+function _nonIterableSpread$h() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$n(o, minLen) {
+function _unsupportedIterableToArray$o(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$n(o, minLen);
+    return _arrayLikeToArray$o(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$n(o, minLen);
+    return _arrayLikeToArray$o(o, minLen);
 }
-function _iterableToArray$g(iter) {
+function _iterableToArray$h(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$g(arr) {
+function _arrayWithoutHoles$h(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$n(arr);
+    return _arrayLikeToArray$o(arr);
 }
-function _arrayLikeToArray$n(arr, len) {
+function _arrayLikeToArray$o(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -26342,7 +26501,7 @@ function Core(rootElement, userSettings) {
         if (indexes.length === 0) {
           return [];
         }
-        var sortedIndexes = _toConsumableArray$i(indexes);
+        var sortedIndexes = _toConsumableArray$h(indexes);
         sortedIndexes.sort(function(_ref2, _ref3) {
           var _ref4 = _slicedToArray$c(_ref2, 1), indexA = _ref4[0];
           var _ref5 = _slicedToArray$c(_ref3, 1), indexB = _ref5[0];
@@ -26640,7 +26799,7 @@ function Core(rootElement, userSettings) {
                 }
               } else {
                 var _input$r;
-                (_input$r = input[r]).push.apply(_input$r, _toConsumableArray$i(new Array(pushedRightDataByRows[0].length).fill(null)));
+                (_input$r = input[r]).push.apply(_input$r, _toConsumableArray$h(new Array(pushedRightDataByRows[0].length).fill(null)));
               }
             } else {
               input.push(input[r % rlen].slice(0, numberOfRowsToPopulate).concat(pushedRightDataByRows[r]));
@@ -27512,12 +27671,12 @@ function Core(rootElement, userSettings) {
   };
   this.getDataAtCol = function(column) {
     var _ref13;
-    return (_ref13 = []).concat.apply(_ref13, _toConsumableArray$i(datamap.getRange(new CellCoords(0, column), new CellCoords(tableMeta.data.length - 1, column), datamap.DESTINATION_RENDERER)));
+    return (_ref13 = []).concat.apply(_ref13, _toConsumableArray$h(datamap.getRange(new CellCoords(0, column), new CellCoords(tableMeta.data.length - 1, column), datamap.DESTINATION_RENDERER)));
   };
   this.getDataAtProp = function(prop) {
     var _ref14;
     var range = datamap.getRange(new CellCoords(0, datamap.propToCol(prop)), new CellCoords(tableMeta.data.length - 1, datamap.propToCol(prop)), datamap.DESTINATION_RENDERER);
-    return (_ref14 = []).concat.apply(_ref14, _toConsumableArray$i(range));
+    return (_ref14 = []).concat.apply(_ref14, _toConsumableArray$h(range));
   };
   this.getSourceData = function(row, column, row2, column2) {
     var data;
@@ -28365,17 +28524,17 @@ function _inherits$p(subClass, superClass) {
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$q(subClass, superClass);
+    _setPrototypeOf$r(subClass, superClass);
 }
-function _setPrototypeOf$q(o, p) {
-  _setPrototypeOf$q = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$r(o, p) {
+  _setPrototypeOf$r = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$q(o, p);
+  return _setPrototypeOf$r(o, p);
 }
 function _createSuper$p(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$q();
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$r();
   return function _createSuperInternal() {
     var Super = _getPrototypeOf$p(Derived), result;
     if (hasNativeReflectConstruct) {
@@ -28401,7 +28560,7 @@ function _assertThisInitialized$p(self) {
   }
   return self;
 }
-function _isNativeReflectConstruct$q() {
+function _isNativeReflectConstruct$r() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)

@@ -5,8 +5,8 @@ const DriveCardContainer = styled.figure`
   position: relative;
   background-size: cover;
   background-position: center center;
-  width: 100%;
-  height: 100%;
+  width: ${(props) => props.width ? props.width : "100%"};
+  height: ${(props) => props.height ? props.height : "100%"};
   overflow: hidden;
   font-size: 10px;
   line-height: 12px;
@@ -37,13 +37,15 @@ const Info = styled.figcaption`
 `;
 const LabelContainer = styled.p`
   text-transform: capitalize;
+  text-align: ${(props) => props.textAlign ? props.textAlign : "left"};
+  line-height: ${(props) => props.lineHeight ? props.lineHeight : "normal"};
   margin: 7px;
   //width: 100%;
   color: #040f1a;
   font-family: helvetica;
   font-size: 12px;
   overflow: hidden;
-  white-space: nowrap;
+  white-space: ${(props) => props.whiteSpace ? props.whiteSpace : "nowrap"};
   text-overflow: ellipsis;
 `;
 const DriveCard = (props) => {
@@ -51,7 +53,9 @@ const DriveCard = (props) => {
   return /* @__PURE__ */ React.createElement(DriveCardContainer, {
     "data-cy": "driveCard",
     url: imageURL,
-    color: props.color
+    color: props.color,
+    width: props.width,
+    height: props.height
   }, /* @__PURE__ */ React.createElement(Image, {
     url: imageURL,
     color: props.color
@@ -59,7 +63,11 @@ const DriveCard = (props) => {
     style: {
       backgroundColor: props.isSelected ? "rgb(184, 210, 234)" : ""
     }
-  }, /* @__PURE__ */ React.createElement(LabelContainer, null, /* @__PURE__ */ React.createElement("b", {
+  }, /* @__PURE__ */ React.createElement(LabelContainer, {
+    textAlign: props.textAlign,
+    lineHeight: props.lineHeight,
+    whiteSpace: props.whiteSpace
+  }, /* @__PURE__ */ React.createElement("b", {
     "data-cy": "driveCardLabel"
   }, props.label)), props?.role?.map((item) => {
     return /* @__PURE__ */ React.createElement(LabelContainer, {
