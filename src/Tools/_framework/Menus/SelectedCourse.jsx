@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
 import { fetchDrivesSelector } from '../../../_reactComponents/Drive/NewDrive';
 import {
   faChalkboard,
@@ -12,9 +12,10 @@ import { useToast, toastType } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ColorImagePicker from '../../../_reactComponents/PanelHeaderComponents/ColorImagePicker';
-import { useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { coursePermissionsAndSettingsByCourseId, courseUsersByCourseId, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
+import axios from 'axios';
 
 export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
@@ -183,16 +184,24 @@ const CourseInfoPanel = function ({ courseId }) {
 };
 
 function ManageRoles({courseId}) {
+  const {canModifyRoles} = useRecoilValueLoadable(coursePermissionsAndSettingsByCourseId(courseId)).getValue();
+  const courseUsersRecoil = useRecoilValueLoadable(courseUsersByCourseId(courseId)).getValue();
+
   const [emailInput, setEmailInput] = useState('')
   const [isEmailValid, setIsEmailValid] = useState(false);
-  const [userEmails, setUserEmails] = useState([]);
+  const [userEmails, setUserEmails] = useState(courseUsersRecoil.map(({email, screenName}) => (<option value={email} key={email}>{screenName}</option>)));
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [selectedEmailRole, setSelectedEmailRole] = useState(null);
   
   const roles = ["Owner", "Admin", "View Only"];
 
-  const handleEmailChange = () => {
+  const handleEmailChange = async () => {
     if (isEmailValid) {
+      if (courseUsersRecoil.find((({email}) => (email === emailInput))) === undefined) {
+        //TODO: New user, add them to doenet
+      } 
+      //Add user permission (admin only for now), then cb on success.
+      // const {data: {success}} = await axios.post('/api/updateUserRole.php', { role: selectedEmailRole});
       setUserEmails((prev) => [...prev, <option value={emailInput} key={emailInput}>{emailInput}</option>]);
       setEmailInput('');
     };
@@ -207,15 +216,20 @@ function ManageRoles({courseId}) {
   }, [emailInput])
 
   const getRole = useCallback((email) => {
-    const temp = { "e.l.alvarez@icloud.com": "Owner", "alvar506@umn.edu": "Admin"}
-    return temp[email] ?? null;
-  }, [])
+    return courseUsersRecoil.find(({email: userEmail}) => (userEmail === email))?.roles[0] ?? null;
+  }, [courseUsersRecoil])
 
   useEffect(() => {
     //get the role assciation from somehere
     setSelectedEmailRole(getRole(selectedEmail));
-  }, [getRole, selectedEmail])
+  }, [getRole, selectedEmail]);
+
+  useLayoutEffect(() => {
+    setUserEmails(courseUsersRecoil.map(({email, screenName}) => (<option value={email} key={email}>{screenName}</option>)));
+  }, [courseUsersRecoil])
   //TODO csv add
+  if (canModifyRoles !== '1') return null;
+
   return (
     <>
       <RelatedItems
