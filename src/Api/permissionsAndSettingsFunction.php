@@ -31,7 +31,7 @@ function getpermissionsAndSettings($conn,$userId){
   AND c.isDeleted = '0'
   ORDER BY c.id DESC
   ";
-
+  //TODO: Kevin, Emilio – discus True / Flase vs '1' / '0' returns 
   $result = $conn->query($sql); 
   if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()){
