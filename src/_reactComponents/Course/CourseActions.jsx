@@ -502,6 +502,23 @@ export const coursePermissionsAndSettingsByCourseId = selectorFamily({
     },
 });
 
+//Could use pattern above
+export const courseUsersByCourseId = atomFamily({
+  key: 'courseUsersByCourseId',
+  default: [],
+  effects: courseId => [
+    async ({ setSelf, trigger }) => {
+      if (trigger === 'get') {
+        const { data } = await axios.get(
+          '/api/loadCourseUsers.php', { params:{ courseId } }
+        );
+        console.log(data)
+        setSelf(data.users);
+      }
+    },
+  ]
+})
+
 export const useCreateCourse = () => {
   const createCourse = useRecoilCallback(({ set }) => async () => {
     let {
