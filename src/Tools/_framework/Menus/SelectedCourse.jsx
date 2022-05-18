@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { fetchDrivesSelector } from '../../../_reactComponents/Drive/NewDrive';
 import {
@@ -8,20 +8,18 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCardMenu';
-import { driveColors } from '../../../_reactComponents/Drive/util';
 import { useToast, toastType } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ColorImagePicker from '../../../_reactComponents/PanelHeaderComponents/ColorImagePicker';
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
+import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
+import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 
 export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
-
-  // console.log("selection",selection)
 
   if (selection.length === 1 && selection[0]?.roleLabels[0] === 'Owner') {
     return (
@@ -165,6 +163,8 @@ const CourseInfoPanel = function ({ courseId }) {
         }}
       />
       <br />
+      <ManageRoles courseId={courseId}/>
+      <br />
       <ButtonGroup vertical>
         <Button
           width="menu"
@@ -182,9 +182,107 @@ const CourseInfoPanel = function ({ courseId }) {
   );
 };
 
+function ManageRoles({courseId}) {
+  const [emailInput, setEmailInput] = useState('')
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const [userEmails, setUserEmails] = useState([]);
+  const [selectedEmail, setSelectedEmail] = useState(null);
+  const [selectedEmailRole, setSelectedEmailRole] = useState(null);
+  
+  const roles = ["Owner", "Admin", "View Only"];
+
+  const handleEmailChange = () => {
+    if (isEmailValid) {
+      setUserEmails((prev) => [...prev, <option value={emailInput} key={emailInput}>{emailInput}</option>]);
+      setEmailInput('');
+    };
+  }
+
+  const handleRoleChange = () => {
+
+  }
+
+  useLayoutEffect(() => {
+    setIsEmailValid(validateEmail(emailInput));
+  }, [emailInput])
+
+  const getRole = useCallback((email) => {
+    const temp = { "e.l.alvarez@icloud.com": "Owner", "alvar506@umn.edu": "Admin"}
+    return temp[email] ?? null;
+  }, [])
+
+  useEffect(() => {
+    //get the role assciation from somehere
+    setSelectedEmailRole(getRole(selectedEmail));
+  }, [getRole, selectedEmail])
+  
+  return (
+    <>
+      <RelatedItems 
+        width="menu" 
+        label="Select User:"
+        options={userEmails} 
+        onChange={(e) => {
+          setSelectedEmail(e.target.value);
+          // let emailAddresses = Array.from(
+          //   e.target.selectedOptions,
+          //   (option) => option.value,
+          // );
+        }}
+        vertical
+      />
+      <br />
+      <DropdownMenu 
+        label="User"
+        title=""
+        items={roles.map((value, idx) => ([idx, value]))}
+        onChange={({value}) =>{ setSelectedEmailRole(value)}}
+        valueIndex={roles.indexOf(selectedEmailRole) + 1}
+        disabled={selectedEmailRole === 'Owner' || selectedEmailRole === null}
+      />
+      <Button
+        width="menu"
+        value="Assign Role"
+        onClick={({value}) =>{ console.log(value)}}
+        disabled={selectedEmailRole === 'Owner' || selectedEmailRole === null}
+      />
+      <Textfield 
+        width="menu" 
+        label="Add User:" 
+        placeholder="email" 
+        value={emailInput}
+        onChange={(e) => {setEmailInput(e.target.value)}} 
+        onKeyDown={(e) => {if(e.code === 'Enter' && isEmailValid) handleEmailChange()}} 
+        alert={emailInput !== '' && !isEmailValid}
+        vertical
+      />
+      <Button 
+        width="menu" 
+        value="Add User" 
+        onClick={handleEmailChange} 
+        disabled={!isEmailValid}
+      />
+    </>
+  )
+}
+
 function NewUser(props) {
   const [email, setEmail] = useState('');
   const addToast = useToast();
+
+  const addUserCB = useCallback((resp) => {
+    if (resp.success) {
+      props.setDriveUsers({
+        driveId: props.driveId,
+        type: `${props.type} step 2`,
+        email,
+        screenName: resp.screenName,
+        userId: resp.userId,
+      });
+    } else {
+      addToast(resp.message);
+    }
+  },[addToast, email, props])
 
   function addUser() {
     if (email) {
@@ -193,7 +291,7 @@ function NewUser(props) {
           driveId: props.driveId,
           type: props.type,
           email,
-          callback,
+          callback: addUserCB,
         });
         setEmail('');
         addToast(`Added: email ${email}`);
@@ -201,19 +299,7 @@ function NewUser(props) {
         addToast(`Not Added: Invalid email ${email}`);
       }
 
-      function callback(resp) {
-        if (resp.success) {
-          props.setDriveUsers({
-            driveId: props.driveId,
-            type: `${props.type} step 2`,
-            email,
-            screenName: resp.screenName,
-            userId: resp.userId,
-          });
-        } else {
-          addToast(resp.message);
-        }
-      }
+      
     }
   }
   return (
