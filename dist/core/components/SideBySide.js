@@ -290,8 +290,6 @@ export class SideBySide extends BlockComponent {
       },
       definition({ dependencyValues }) {
 
-        console.log(dependencyValues)
-
         let allMarginsSpecified = [];
         let marginsAbsolute = null;
 

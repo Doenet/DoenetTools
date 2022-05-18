@@ -49,7 +49,8 @@ export default function SelectedDataSources() {
       if (assignedSelectedDoenetIds.length == 0) {
         addToast(`No activities found`, toastType.INFO);
       } else {
-        console.log("Open Link to data for activities", assignedSelectedDoenetIds);
+        let searchParamsText = assignedSelectedDoenetIds.join("&data=");
+        window.open(`https://doenet.shinyapps.io/analyzer/?data=${searchParamsText}`, "_blank");
       }
     }
   }));

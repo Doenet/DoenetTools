@@ -22,7 +22,6 @@ if ($doenetId == "") {
 }
 
 if ($success) {
-    $firstPageId = null;
     $sql = "SELECT CAST(jsonDefinition as CHAR) AS json
         FROM course_content
         WHERE doenetId = '$doenetId'

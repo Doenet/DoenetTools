@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
-import { returnNVariables } from '../utils/math.js';
+import { normalizeMathExpression, returnNVariables } from '../utils/math.js';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style.js';
 import { returnInterpolatedFunction, returnNumericalFunctionFromFormula, returnReturnDerivativesOfInterpolatedFunction, returnSymbolicFunctionFromFormula } from '../utils/function.js';
 
@@ -723,9 +723,7 @@ export default class Function extends InlineComponent {
       targetVariableName: "variable1"
     };
 
-    stateVariableDefinitions.formula = {
-      public: true,
-      componentType: "math",
+    stateVariableDefinitions.unnormalizedFormula = {
       defaultValue: me.fromAst(0),
       hasEssential: true,
       returnDependencies: () => ({
@@ -747,11 +745,11 @@ export default class Function extends InlineComponent {
       definition: function ({ dependencyValues, usedDefault }) {
 
         if (dependencyValues.isInterpolatedFunction) {
-          return { setValue: { formula: me.fromAst('\uff3f') } };
+          return { setValue: { unnormalizedFormula: me.fromAst('\uff3f') } };
         } else if (dependencyValues.mathChild.length > 0) {
           return {
             setValue: {
-              formula: dependencyValues.mathChild[0].stateValues.value
+              unnormalizedFormula: dependencyValues.mathChild[0].stateValues.value
             }
           }
         } else if (dependencyValues.functionChild.length > 0 &&
@@ -759,13 +757,45 @@ export default class Function extends InlineComponent {
         ) {
           return {
             setValue: {
-              formula: dependencyValues.functionChild[0].stateValues.formula
+              unnormalizedFormula: dependencyValues.functionChild[0].stateValues.formula
             }
           }
         } else {
           return {
-            useEssentialOrDefaultValue: { formula: true }
+            useEssentialOrDefaultValue: { unnormalizedFormula: true }
           }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.formula = {
+      public: true,
+      componentType: "math",
+      returnDependencies: () => ({
+        unnormalizedFormula: {
+          dependencyType: "stateVariable",
+          variableName: "unnormalizedFormula"
+        },
+        simplify: {
+          dependencyType: "stateVariable",
+          variableName: "simplify"
+        },
+        expand: {
+          dependencyType: "stateVariable",
+          variableName: "expand"
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let formula = normalizeMathExpression({
+          value: dependencyValues.unnormalizedFormula,
+          simplify: dependencyValues.simplify,
+          expand: dependencyValues.expand,
+        });
+
+        return {
+          setValue: { formula }
         }
       }
 
@@ -2052,9 +2082,9 @@ export default class Function extends InlineComponent {
           // could be minimum, minimumLocation, or minimumValue
           let componentNum = Number(varName.slice(7));
           if (Number.isInteger(componentNum) && componentNum > 0) {
-            if(propIndex === 1) {
+            if (propIndex === 1) {
               return "minimumLocation" + componentNum;
-            } else if(propIndex === 2) {
+            } else if (propIndex === 2) {
               return "minimumValue" + componentNum;
             }
           }
@@ -2591,9 +2621,9 @@ export default class Function extends InlineComponent {
           // could be maximum, maximumLocation, or maximumValue
           let componentNum = Number(varName.slice(7));
           if (Number.isInteger(componentNum) && componentNum > 0) {
-            if(propIndex === 1) {
+            if (propIndex === 1) {
               return "maximumLocation" + componentNum;
-            } else if(propIndex === 2) {
+            } else if (propIndex === 2) {
               return "maximumValue" + componentNum;
             }
           }
@@ -2774,9 +2804,9 @@ export default class Function extends InlineComponent {
           // could be extremum, extremumLocation, or extremumValue
           let componentNum = Number(varName.slice(8));
           if (Number.isInteger(componentNum) && componentNum > 0) {
-            if(propIndex === 1) {
+            if (propIndex === 1) {
               return "extremumLocation" + componentNum;
-            } else if(propIndex === 2) {
+            } else if (propIndex === 2) {
               return "extremumValue" + componentNum;
             }
           }

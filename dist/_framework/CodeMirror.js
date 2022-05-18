@@ -135,7 +135,8 @@ export default function CodeMirror({setInternalValue, onBeforeChange, readOnly, 
     }
   }, [editorConfig, matchTag, doenetExtensions]);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
-    ref: parent
+    ref: parent,
+    style: {paddingBottom: "50vh"}
   }));
 }
 const tab = "  ";

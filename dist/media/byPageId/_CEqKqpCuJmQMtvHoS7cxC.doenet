@@ -1,7 +1,0 @@
-<graph>
-  <point name="B" label="B"> (8,-2) </point>
-  <point name="A" label="A"> (1,3) </point>
-  <point label="c" name="c"> (4,-2) </point>
-  <circle center="$c" through="$A" />
- <!--  <circle  through="$p $p2" /> -->
-</graph>

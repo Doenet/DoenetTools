@@ -50,12 +50,18 @@ export function parseAndCompile(inText) {
         let attrName = inText.substring(cursor.from, cursor.to);
         //skip the name and equals sign
         if (cursor.nextSibling() === false) {
+          if(attrName in attrs) {
+            throw Error(`Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`)
+          }
           attrs[attrName] = true;
         } else {
           cursor.nextSibling();
           //boundry fuddling to ignore the quotes
           let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
 
+          if(attrName in attrs) {
+            throw Error(`Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`)
+          }
           attrs[attrName] = attrValue;
         }
         //move out of Attribute to maintain loop invariant
@@ -123,12 +129,18 @@ export function parseAndCompile(inText) {
         let attrName = inText.substring(cursor.from, cursor.to);
 
         if (cursor.nextSibling() === false) {
+          if(attrName in attrs) {
+            throw Error(`Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`)
+          }
           attrs[attrName] = true;
         } else {
           cursor.nextSibling();
+          if(attrName in attrs) {
+            throw Error(`Duplicate attribute ${attrName}.  Found in component of type ${tagName} at indices ${cursor.from}-${cursor.to}`)
+          }
+
           //fuddling to ignore the quotes
           let attrValue = inText.substring(cursor.from + 1, cursor.to - 1);
-
           attrs[attrName] = attrValue;
         }
         //move out of Attribute to maintain loop invariant
@@ -161,8 +173,11 @@ export function parseAndCompile(inText) {
         return txt;
       }
     } else {
-      return null;
+      throw Error(`Invalid DoenetML at positions ${tc.node.from} to ${tc.node.to}.  Found ${inText.substring(tc.node.from, tc.node.to)}`)
     }
+  }
+  if(!inText) {
+    return [];
   }
   let tc = parse(inText);
   let out = [];
