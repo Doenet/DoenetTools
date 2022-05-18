@@ -861,7 +861,7 @@ export const PinAssignment = ({ courseId, doenetId }) => {
 export function AssignTo({ courseId, doenetId }) {
   const {
     value: { isGloballyAssigned },
-    updateAssignmentSettings,
+    updateActivityFlags,
   } = useActivity(courseId, doenetId);
 
   const { value: enrolledStudents } = useRecoilValue(
@@ -922,21 +922,13 @@ export function AssignTo({ courseId, doenetId }) {
   return (
     <>
       <br />
-      <InputWrapper>
-        <Checkbox
-          style={{ marginRight: '5px' }}
-          checked={!isGloballyAssigned}
-          onClick={() => {
-            updateAssignmentSettings({
-              keyToUpdate: 'isGloballyAssigned',
-              value: !isGloballyAssigned,
-              description: 'Restrict Assignment ',
-              valueDescription: isGloballyAssigned ? 'true' : 'false',
-            });
-          }}
-        />
-        <LabelText>Restrict Assignment To</LabelText>
-      </InputWrapper>
+      <CheckedFlag
+        courseId={courseId}
+        doenetId={doenetId}
+        keyToUpdate="isGloballyAssigned"
+        description="Restrict Assignment"
+        invert
+      />
       <RelatedItems
         width="menu"
         options={enrolledJSX}
