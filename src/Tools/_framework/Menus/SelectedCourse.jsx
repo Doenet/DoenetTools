@@ -189,7 +189,7 @@ function ManageRoles({courseId}) {
 
   const [emailInput, setEmailInput] = useState('')
   const [isEmailValid, setIsEmailValid] = useState(false);
-  const [userEmails, setUserEmails] = useState(courseUsersRecoil.map(({email, screenName}) => (<option value={email} key={email}>{screenName}</option>)));
+  const [userEmails, setUserEmails] = useState(courseUsersRecoil.map(({email, screenName}) => (<option value={email} key={email}>{screenName} ({email})</option>)));
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [selectedEmailRole, setSelectedEmailRole] = useState(null);
   
@@ -197,17 +197,15 @@ function ManageRoles({courseId}) {
 
   const handleEmailChange = async () => {
     if (isEmailValid) {
-      if (courseUsersRecoil.find((({email}) => (email === emailInput))) === undefined) {
-        //TODO: New user, add them to doenet
-      } 
-      //Add user permission (admin only for now), then cb on success.
+      //Add user permission (admin only for now), then cb on success. php will add new user if they dont exisit.
       // const {data: {success}} = await axios.post('/api/updateUserRole.php', { role: selectedEmailRole});
-      setUserEmails((prev) => [...prev, <option value={emailInput} key={emailInput}>{emailInput}</option>]);
+      setUserEmails((prev) => [...prev, <option value={emailInput} key={emailInput}>({emailInput})</option>]);
       setEmailInput('');
     };
   }
 
   const handleRoleChange = () => {
+    //TODO: write a php for changing role. or find one for perms updating ks
 
   }
 
@@ -225,7 +223,11 @@ function ManageRoles({courseId}) {
   }, [getRole, selectedEmail]);
 
   useLayoutEffect(() => {
-    setUserEmails(courseUsersRecoil.map(({email, screenName}) => (<option value={email} key={email}>{screenName}</option>)));
+    setUserEmails(courseUsersRecoil.map(
+      ({email, screenName}) => (
+        <option value={email} key={email}>{screenName} ({email})</option>
+      )
+    ));
   }, [courseUsersRecoil])
   //TODO csv add
   if (canModifyRoles !== '1') return null;
