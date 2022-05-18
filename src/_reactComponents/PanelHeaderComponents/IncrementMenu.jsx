@@ -417,18 +417,13 @@ export default function Increment(props) {
             {increaseIcon}
           </IncreaseButton>
         </IncrementBox>
-        {menuOptions && menuToggle && (
-          // <div style={{ display: 'flex' }}>
-          //   {!props.vertical && props.label ? (
-          //     <Label style={{ opacity: 0 }}>{props.label}</Label>
-          //   ) : null}
-            <Menu
-              ref={menuRef}
-              maxHeight={props.maxHeight ? props.maxHeight : '150px'}
-            >
-              {menuOptions}
-            </Menu>
-          // </div>
+        {!props.deactivateDropdown && menuOptions && menuToggle && (
+          <Menu
+            ref={menuRef}
+            maxHeight={props.maxHeight ? props.maxHeight : '150px'}
+          >
+            {menuOptions}
+          </Menu>
         )}
       </IncrementContainer>
       

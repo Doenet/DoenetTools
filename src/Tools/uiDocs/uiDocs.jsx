@@ -736,11 +736,17 @@ export default function attempt() {
           description: 'Add a placeholder for the field',
         },
         {
+          name: 'Deactivate Dropdown',
+          propPreview: '<Increment deactivateDropdown />',
+          propCode: { deactivateDropdown: true },
+          description: 'Deactivates the default dropdown when the increment menu is clicked.',
+        },
+        {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
           propCode: { disabled: true },
           description: 'Makes button not able to be used.',
-        },
+        }
       ],
     },
     {
