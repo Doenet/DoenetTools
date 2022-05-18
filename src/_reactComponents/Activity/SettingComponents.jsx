@@ -861,7 +861,6 @@ export const PinAssignment = ({ courseId, doenetId }) => {
 export function AssignTo({ courseId, doenetId }) {
   const {
     value: { isGloballyAssigned },
-    updateActivityFlags,
   } = useActivity(courseId, doenetId);
 
   const { value: enrolledStudents } = useRecoilValue(
@@ -921,7 +920,6 @@ export function AssignTo({ courseId, doenetId }) {
 
   return (
     <>
-      <br />
       <CheckedFlag
         courseId={courseId}
         doenetId={doenetId}
