@@ -179,7 +179,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
     //should rewrite using compartments once a more formal config component is established
     return (
         <>
-        <div ref={parent} ></div>
+        <div ref={parent} style={{paddingBottom: "50vh"}}></div>
         </>
     )
 }
