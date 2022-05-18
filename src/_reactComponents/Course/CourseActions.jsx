@@ -303,7 +303,7 @@ export function useInitCourseItems(courseId) {
   }, [getDataAndSetRecoil, courseId]);
 }
 
-//TODO: Kevin, useEffect cannot be asyc
+//TODO: Duane, useEffect cannot be asyc
 export function useSetCourseIdFromDoenetId(doenetId) {
   const item = useRecoilValue(itemByDoenetId('doenetId'));
   const setCourseId = useSetRecoilState(courseIdAtom);
