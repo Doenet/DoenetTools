@@ -13,11 +13,14 @@ const TitleContainer = styled.div`
   padding: 6px;
   background-color: var(--mainGray);
   cursor: pointer;
+  border-radius: ${props => props.isOpen ? '5px 5px 0 0' : 'var(--mainBorderRadius)'};
 ` 
 const InfoContainer = styled.div`
   padding: 6px;
   background-color: white;
   display: ${props => props.display};
+  border-radius: 0 0 5px 5px;
+  border-top: var(--mainBorder);
 ` 
 
 export default function Solution(props) {
@@ -72,6 +75,7 @@ export default function Solution(props) {
       <TitleContainer
         id={name + '_button'}
         onClick={onClickFunction}
+        isOpen={SVs.open}
       >
         <FontAwesomeIcon icon={puzzle} rotation={SVs.open ? 0 : 90} />
         <span style={{ margin: '0 5px' }}>Solution</span> 
