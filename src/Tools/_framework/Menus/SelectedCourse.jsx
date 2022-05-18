@@ -215,24 +215,20 @@ function ManageRoles({courseId}) {
     //get the role assciation from somehere
     setSelectedEmailRole(getRole(selectedEmail));
   }, [getRole, selectedEmail])
-  
+  //TODO csv add
   return (
     <>
-      <RelatedItems 
+      <RelatedItems
         width="menu" 
         label="Select User:"
         options={userEmails} 
         onChange={(e) => {
           setSelectedEmail(e.target.value);
-          // let emailAddresses = Array.from(
-          //   e.target.selectedOptions,
-          //   (option) => option.value,
-          // );
         }}
         vertical
       />
       <br />
-      <DropdownMenu 
+      <DropdownMenu
         label="User"
         title=""
         items={roles.map((value, idx) => ([idx, value]))}
@@ -243,20 +239,20 @@ function ManageRoles({courseId}) {
       <Button
         width="menu"
         value="Assign Role"
-        onClick={({value}) =>{ console.log(value)}}
+        onClick={handleRoleChange}
         disabled={selectedEmailRole === 'Owner' || selectedEmailRole === null}
       />
-      <Textfield 
+      <Textfield
         width="menu" 
         label="Add User:" 
         placeholder="email" 
         value={emailInput}
         onChange={(e) => {setEmailInput(e.target.value)}} 
-        onKeyDown={(e) => {if(e.code === 'Enter' && isEmailValid) handleEmailChange()}} 
+        onKeyDown={(e) => {if(e.code === 'Enter') handleEmailChange()}} 
         alert={emailInput !== '' && !isEmailValid}
         vertical
       />
-      <Button 
+      <Button
         width="menu" 
         value="Add User" 
         onClick={handleEmailChange} 
