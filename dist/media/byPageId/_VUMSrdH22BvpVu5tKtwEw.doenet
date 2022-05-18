@@ -1,5 +1,0 @@
-<variantControl nVariants="15" />
-
-One can change the number of variants via a <tag>variantControl</tag>.  Here we have <copy prop="nVariants" tname="_variantcontrol1" /> variants available.
-
-<p>A number: <selectFromSequence from="1" to="200000" /></p>

@@ -1,8 +1,0 @@
-<setup>
-  <math name="initValue">-1</math>
-
-  <selectFromSequence from="3" to="9" step="2" name="a" />
-  <function symbolic formula="x^$a+2" name="f" />
-</setup>
-
-<copy uri="doenet:contentId=c5dcd3cfbc56bf79198ed87611d0496ad431ffdec20f97c7681931a4c09b9b49" />
