@@ -642,6 +642,24 @@ export default function attempt() {
       use: 'Text input with increment and decrement buttons. Also has dropdown menu to select given values',
       props: [
         {
+          name: 'Width - Menu Panel',
+          propPreview: '<Increment width="menu" />',
+          propCode: { width: 'menu' },
+          description: 'Sets width to fill menu panel width',
+        },
+        {
+          name: 'Width',
+          propPreview: '<Increment width="100px" />',
+          propCode: { width: '100px' },
+          description: 'Sets width to custom amount',
+        },
+        {
+          name: 'Font',
+          propPreview: '<Increment font/>',
+          propCode: { font },
+          description: 'Sets menu with default font values',
+        },
+        {
           name: 'Font',
           propPreview: '<Increment font/>',
           propCode: { font },

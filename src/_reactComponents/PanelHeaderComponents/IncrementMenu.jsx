@@ -22,7 +22,7 @@ const IncrementBox = styled.div`
 
 const IncrementContainer = styled.div`
   position: relative;
-  max-width: 210px;
+  width: ${(props) => (props.width === 'menu' ? '100%' : props.width ? props.width : '210px')};
 `;
 
 const IncreaseButton = styled.button`
@@ -58,7 +58,7 @@ const DecreaseButton = styled.button`
 
 const TextField = styled.input`
   z-index: 0;
-  width: 70%;
+  width: 100%;
   text-align: center;
   resize: none;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
@@ -378,7 +378,7 @@ export default function Increment(props) {
     <Container label={props.label} vertical={props.vertical}>
       {props.label && <Label>{props.label}</Label> }
       {props.label && props.vertical && <br /> }
-      <IncrementContainer>
+      <IncrementContainer width={props.width}>
         <IncrementBox
           ref={containerRef}
           onBlur={containerOnBlur}

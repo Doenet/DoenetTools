@@ -247,6 +247,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
           }}
         />
         <Increment
+          width="menu"
           disabled={timeLimit === null}
           value={timeLimit}
           min={0}
@@ -314,6 +315,7 @@ export const AttempLimit = ({ courseId, doenetId }) => {
           }}
         />
         <Increment
+          width="menu"
           disabled={numberOfAttemptsAllowed === null}
           value={numberOfAttemptsAllowed}
           min={0}
@@ -360,29 +362,26 @@ export const AttemptAggregation = ({ courseId, doenetId }) => {
   return (
     <InputWrapper>
       <LabelText>Attempt Aggregation</LabelText>
-      <InputControl>
-        <DropdownMenu
-          width="menu"
-          valueIndex={attemptAggregation === 'm' ? 1 : 2}
-          items={[
-            ['m', 'Maximum'],
-            ['l', 'Last Attempt'],
-          ]}
-          onChange={({ value: val }) => {
-            let valueDescription = 'Maximum';
-            if (val === 'l') {
-              valueDescription = 'Last Attempt';
-            }
-            setAttemptAggregation(val);
-            updateAssignmentSettings({
-              keyToUpdate: 'attemptAggregation',
-              value: val,
-              description: 'Attempt Aggregation',
-              valueDescription,
-            });
-          }}
-        />
-      </InputControl>
+      <DropdownMenu
+        valueIndex={attemptAggregation === 'm' ? 1 : 2}
+        items={[
+          ['m', 'Maximum'],
+          ['l', 'Last Attempt'],
+        ]}
+        onChange={({ value: val }) => {
+          let valueDescription = 'Maximum';
+          if (val === 'l') {
+            valueDescription = 'Last Attempt';
+          }
+          setAttemptAggregation(val);
+          updateAssignmentSettings({
+            keyToUpdate: 'attemptAggregation',
+            value: val,
+            description: 'Attempt Aggregation',
+            valueDescription,
+          });
+        }}
+      />
     </InputWrapper>
   );
 };
@@ -401,35 +400,34 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
   return (
     <InputWrapper>
       <LabelText>Total Points Or Percent</LabelText>
-      <InputControl>
-        <Increment
-          value={totalPointsOrPercent}
-          min={0}
-          onBlur={() => {
-            if (recoilValue !== totalPointsOrPercent) {
-              let totalPointsOrPercentLocal = null;
-              if (
-                totalPointsOrPercent < 0 ||
-                totalPointsOrPercent === '' ||
-                isNaN(totalPointsOrPercent)
-              ) {
-                setTotalPointsOrPercent(0);
-                totalPointsOrPercentLocal = 0;
-              } else {
-                totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
-                setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
-              }
-
-              updateAssignmentSettings(doenetId, {
-                keyToUpdate: 'totalPointsOrPercent',
-                value: totalPointsOrPercentLocal,
-                description: 'Total Points Or Percent',
-              });
+      <Increment
+        width="menu"
+        value={totalPointsOrPercent}
+        min={0}
+        onBlur={() => {
+          if (recoilValue !== totalPointsOrPercent) {
+            let totalPointsOrPercentLocal = null;
+            if (
+              totalPointsOrPercent < 0 ||
+              totalPointsOrPercent === '' ||
+              isNaN(totalPointsOrPercent)
+            ) {
+              setTotalPointsOrPercent(0);
+              totalPointsOrPercentLocal = 0;
+            } else {
+              totalPointsOrPercentLocal = parseInt(totalPointsOrPercent);
+              setTotalPointsOrPercent(parseInt(totalPointsOrPercent));
             }
-          }}
-          onChange={(newValue) => setTotalPointsOrPercent(newValue)}
-        />
-      </InputControl>
+
+            updateAssignmentSettings(doenetId, {
+              keyToUpdate: 'totalPointsOrPercent',
+              value: totalPointsOrPercentLocal,
+              description: 'Total Points Or Percent',
+            });
+          }
+        }}
+        onChange={(newValue) => setTotalPointsOrPercent(newValue)}
+      />
     </InputWrapper>
   );
 };
