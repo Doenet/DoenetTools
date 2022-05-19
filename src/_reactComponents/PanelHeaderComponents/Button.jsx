@@ -2,7 +2,6 @@ import React from 'react';
 import styled from "styled-components";
 
 const StyledButton = styled.button`
-  margin: ${props => props.theme.margin};
   height: 24px;
   border-style: hidden;
   color: ${props => props.disabled ? 'black' : 'white'};
@@ -27,6 +26,7 @@ const Label = styled.span`
 const Container = styled.div`
   display: ${ props => props.label && !props.vertical && 'flex' };
   align-items: ${props => props.label && !props.vertical && 'center'};
+  margin: ${props => props.theme.margin}
 `;
 
 StyledButton.defaultProps = {
@@ -113,10 +113,12 @@ export default function Button(props) {
     <Container 
       label={props.label} 
       vertical={props.vertical} 
+      theme={props.theme}
     >
       { props.label && <Label>{props.label}</Label> }
       { props.label && props.vertical && <br />}
       <StyledButton 
+        theme={props.theme}
         disabled={props.disabled} 
         alert={props.alert} 
         width={props.width} 
