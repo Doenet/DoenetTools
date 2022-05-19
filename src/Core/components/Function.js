@@ -120,6 +120,11 @@ export default class Function extends InlineComponent {
       valueForFalse: 0,
     };
 
+    attributes.nearestPointAsCurve = {
+      createComponentOfType: "boolean",
+      createStateVariable: "nearestPointAsCurve",
+      defaultValue: false,
+    }
 
     // Note: specifying this attribute in DoenetML don't do anything
     // it is just for passing the definition when copy a property that returns a function
