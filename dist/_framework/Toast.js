@@ -81,20 +81,21 @@ const toastStack = atom({
   default: []
 });
 let id = 0;
+export const recoilAddToast = ({set}) => (msg, type = toastType.INFO, action = null) => {
+  set(toastStack, (old) => [
+    ...old,
+    /* @__PURE__ */ React.createElement(ToastMessage, {
+      key: id,
+      type,
+      action,
+      duration: type.timeout,
+      tId: id
+    }, msg)
+  ]);
+  id++;
+};
 export const useToast = () => {
-  const addToast = useRecoilCallback(({set}) => (msg, type = toastType.INFO, action = null) => {
-    set(toastStack, (old) => [
-      ...old,
-      /* @__PURE__ */ React.createElement(ToastMessage, {
-        key: id,
-        type,
-        action,
-        duration: type.timeout,
-        tId: id
-      }, msg)
-    ]);
-    id++;
-  }, []);
+  const addToast = useRecoilCallback(recoilAddToast, []);
   return addToast;
 };
 export const toastType = Object.freeze({

@@ -139,7 +139,10 @@ export default function DragPanel({
     $vertical: direction.vertical,
     $rounding: direction.rounding,
     $handleSize: handleSize,
-    ...bindX()
+    ...bindX(),
+    onClick: () => {
+      setOpen(!open);
+    }
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: id === "keyboard" ? faKeyboard : direction.vertical ? faGripLinesVertical : faGripLines
   })));

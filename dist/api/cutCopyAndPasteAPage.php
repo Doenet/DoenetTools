@@ -23,24 +23,24 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('isCopy', $_POST)) {
     $success = false;
     $message = 'Missing isCopy';
-} elseif (!array_key_exists('originalPageDoenetId', $_POST)) {
+} elseif (!array_key_exists('originalPageDoenetIds', $_POST)) {
     $success = false;
-    $message = 'Missing originalPageDoenetId';
-} elseif (!array_key_exists('sourceType', $_POST)) {
+    $message = 'Missing originalPageDoenetIds';
+} elseif (!array_key_exists('sourceTypes', $_POST)) {
     $success = false;
-    $message = 'Missing sourceType';
-} elseif (!array_key_exists('sourceDoenetId', $_POST)) {
+    $message = 'Missing sourceTypes';
+} elseif (!array_key_exists('sourceDoenetIds', $_POST)) {
     $success = false;
-    $message = 'Missing sourceDoenetId';
+    $message = 'Missing sourceDoenetIds';
 } elseif (!array_key_exists('destinationType', $_POST)) {
     $success = false;
     $message = 'Missing destinationType';
 } elseif (!array_key_exists('destinationDoenetId', $_POST)) {
     $success = false;
     $message = 'Missing destinationDoenetId';
-} elseif (!array_key_exists('sourceJSON', $_POST)) {
+} elseif (!array_key_exists('sourceJSONs', $_POST)) {
     $success = false;
-    $message = 'Missing sourceJSON';
+    $message = 'Missing sourceJSONs';
 } elseif (!array_key_exists('destinationJSON', $_POST)) {
     $success = false;
     $message = 'Missing destinationJSON';
@@ -50,16 +50,29 @@ if (!array_key_exists('courseId', $_POST)) {
 if ($success){
     $isCopy = mysqli_real_escape_string($conn, $_POST['isCopy']);
     $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
-    $originalPageDoenetId = mysqli_real_escape_string($conn, $_POST['originalPageDoenetId']);
-    $sourceType = mysqli_real_escape_string($conn, $_POST['sourceType']);
-    $sourceDoenetId = mysqli_real_escape_string($conn, $_POST['sourceDoenetId']);
+    $originalPageDoenetIds = array_map(function($item) use($conn) {
+       return array_map(function($inneritem) use($conn) {
+            return mysqli_real_escape_string($conn, $inneritem);
+        }, $item);
+      }, $_POST['originalPageDoenetIds']);
+    $sourceTypes = array_map(function($item) use($conn) {
+        return mysqli_real_escape_string($conn, $item);
+      }, $_POST['sourceTypes']);
+    $sourceDoenetIds = array_map(function($item) use($conn) {
+        return mysqli_real_escape_string($conn, $item);
+      }, $_POST['sourceDoenetIds']);
+    $sourceJSONs = array_map(function($item) use($conn) {
+        // return mysqli_real_escape_string($conn, $item);
+        return json_encode($item);
+    }, $_POST['sourceJSONs']);
+
     $destinationType = mysqli_real_escape_string($conn, $_POST['destinationType']);
     $destinationDoenetId = mysqli_real_escape_string($conn, $_POST['destinationDoenetId']);
+    $destinationJSON = json_encode($_POST['destinationJSON']);
+
     $clonePageLabel = mysqli_real_escape_string($conn, $_POST['clonePageLabel']);
     $clonePageParent = mysqli_real_escape_string($conn, $_POST['clonePageParent']);
 
-    $sourceJSON = json_encode($_POST['sourceJSON']);
-    $destinationJSON = json_encode($_POST['destinationJSON']);
 
 
     $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
@@ -70,67 +83,52 @@ if ($success){
 }
 
 if ($success) {
-    if ($isCopy){
-        $pageInsertedDoenetId = include "randomId.php";
-        $pageInsertedDoenetId = "_" . $pageInsertedDoenetId;
-        
+    for($i = 0; $i < count($sourceDoenetIds);$i++){
+        $sourceType = $sourceTypes[$i];
+        $sourceDoenetId = $sourceDoenetIds[$i];
+        $sourceJSON = $sourceJSONs[$i];
+        $originalPageDoenetIdArray = $originalPageDoenetIds[$i];
 
-        //Create a copy of original file for page
-        $sourceFilePath = "../media/byPageId/$originalPageDoenetId.doenet";
-        $destFilePath = "../media/byPageId/$pageInsertedDoenetId.doenet";
-        if (!copy($sourceFilePath, $destFilePath)) {
-          $success = false;
-          $message = "failed to copy media\n";
-        }
-        //Insert page into the pages table
-        $sql = "
-        INSERT INTO pages
-        (courseId,containingDoenetId,doenetId,label)
-        values
-        ('$courseId','$destinationDoenetId','$pageInsertedDoenetId','$clonePageLabel')
-        ";
-        $result = $conn->query($sql);
-        $pageInserted = array(
-            "type"=>"page",
-            "label"=>$clonePageLabel,
-            "containingDoenetId"=>$destinationDoenetId,
-            "doenetId"=>$pageInsertedDoenetId,
-            "parentDoenetId"=>$clonePageParent,
-          );
-    }else{
-        //UPDATE SOURCE
-        if ($sourceType == 'bank'){
+        //If source is the same as the destination only use destination so skip source update
+        if ($sourceDoenetId != $destinationDoenetId){
+            //UPDATE SOURCE
+            if ($sourceType == 'bank'){
+                $sql = "
+                UPDATE course_content
+                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.pages',JSON_MERGE('[]','$sourceJSON'))
+                WHERE doenetId='$sourceDoenetId'
+                AND courseId='$courseId'
+                ";
+                $result = $conn->query($sql);
+            }else if ($sourceType == 'activity'){
+                $sql = "
+                UPDATE course_content
+                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$sourceJSON'))
+                WHERE doenetId='$sourceDoenetId'
+                AND courseId='$courseId'
+                ";
+                $result = $conn->query($sql);
+            }
+            foreach ($originalPageDoenetIdArray as $originalPageDoenetId){
+            //Update page in the pages table
             $sql = "
-            UPDATE course_content
-            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.pages',JSON_MERGE('[]','$sourceJSON'))
-            WHERE doenetId='$sourceDoenetId'
+            UPDATE pages
+            SET containingDoenetId='$destinationDoenetId'
+            WHERE doenetId='$originalPageDoenetId'
             AND courseId='$courseId'
             ";
-            $result = $conn->query($sql);
-        }else if ($sourceType == 'activity'){
-            $sql = "
-            UPDATE course_content
-            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$sourceJSON'))
-            WHERE doenetId='$sourceDoenetId'
-            AND courseId='$courseId'
-            ";
-            $result = $conn->query($sql);
+                $result = $conn->query($sql);
+            }
         }
-        //Update page in the pages table
-        $sql = "
-        UPDATE pages
-        SET containingDoenetId='$destinationDoenetId'
-        WHERE doenetId='$originalPageDoenetId'
-        AND courseId='$courseId'
-        ";
-        $result = $conn->query($sql);
     }
-
     //UPDATE DESTINATION
-    if ($isCopy || $destinationDoenetId != $sourceDoenetId){
+    // if ($isCopy || $destinationDoenetId != $sourceDoenetId){
         //Replace destinationJSON with new doenetId for page
-        $target = $originalPageDoenetId . "2";
-        $destinationJSON = str_replace($target,$pageInsertedDoenetId,$destinationJSON);
+        // if ($isCopy){
+        //     $target = $originalPageDoenetId . "2";
+        //     $destinationJSON = str_replace($target,$pageInsertedDoenetId,$destinationJSON);
+        // }
+        
 
         if ($destinationType == 'bank'){
             $sql = "
@@ -149,22 +147,54 @@ if ($success) {
             ";
             $result = $conn->query($sql);
         }
-    }
+    // }
+    
+//     if ($isCopy){
+//         $pageInsertedDoenetId = include "randomId.php";
+//         $pageInsertedDoenetId = "_" . $pageInsertedDoenetId;
+        
+
+//         //Create a copy of original file for page
+//         $sourceFilePath = "../media/byPageId/$originalPageDoenetId.doenet";
+//         $destFilePath = "../media/byPageId/$pageInsertedDoenetId.doenet";
+//         if (!copy($sourceFilePath, $destFilePath)) {
+//           $success = false;
+//           $message = "failed to copy media\n";
+//         }
+//         //Insert page into the pages table
+//         $sql = "
+//         INSERT INTO pages
+//         (courseId,containingDoenetId,doenetId,label)
+//         values
+//         ('$courseId','$destinationDoenetId','$pageInsertedDoenetId','$clonePageLabel')
+//         ";
+//         $result = $conn->query($sql);
+//         $pageInserted = array(
+//             "type"=>"page",
+//             "label"=>$clonePageLabel,
+//             "containingDoenetId"=>$destinationDoenetId,
+//             "doenetId"=>$pageInsertedDoenetId,
+//             "parentDoenetId"=>$clonePageParent,
+//           );
+//     }else{
+
+//     }
+
+
 
     
 
   
-    // if ($makeMultiPage){
-    //     $sql = "
-    //     UPDATE course_content
-    //     SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.isSinglePage',false)
-    //     WHERE doenetId='$doenetId'
-    //     AND courseId='$courseId'
-    //     ";
-    //     $result = $conn->query($sql);
-    // }
+//     // if ($makeMultiPage){
+//     //     $sql = "
+//     //     UPDATE course_content
+//     //     SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.isSinglePage',false)
+//     //     WHERE doenetId='$doenetId'
+//     //     AND courseId='$courseId'
+//     //     ";
+//     //     $result = $conn->query($sql);
+//     // }
 }
-
 
 $response_arr = array(
     "success"=>$success,

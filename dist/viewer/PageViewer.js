@@ -619,7 +619,7 @@ export default function PageViewer(props) {
     }, "Save initial renderer states");
   }
   let noCoreWarning = null;
-  let pageStyle = {maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px"};
+  let pageStyle = {maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px", paddingBottom: "50vh"};
   if (!coreCreated.current) {
     noCoreWarning = /* @__PURE__ */ React.createElement("div", {
       style: {backgroundColor: "lightCyan", padding: "10px"}

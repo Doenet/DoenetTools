@@ -774,4 +774,64 @@ describe('Angle Tag Tests', function () {
 
   })
 
+  it('render as acute angle', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <booleaninput name="ra" label="render as acute" />
+  <graph>
+    <point name="A">(-6,5)</point>
+    <point name="B">(0,0)</point>
+    <point name="C">(4,2)</point>
+    <angle through="$A $B $C" renderAsAcuteAngle="$ra" />
+  </graph>
+  <copy prop="renderAsAcuteAngle" target="_angle1" assignNames="ra2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    // not sure how to test this
+    // but at least make sure we don't throw any errors.
+
+    // should start > pi
+    cy.get('#\\/ra2').should('have.text', 'false');
+
+    cy.get('#\\/ra_input').click();
+    // should now be < pi
+    cy.get('#\\/ra2').should('have.text', 'true');
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 1, y: -3 }
+      })
+    });
+    // should now be < pi
+
+
+    cy.get('#\\/ra_input').click();
+    // should still be < pi
+    cy.get('#\\/ra2').should('have.text', 'false');
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/C",
+        args: { x: -1, y: -5 }
+      })
+    });
+    // should now be > pi
+
+    cy.get('#\\/ra_input').click();
+    // should now be < pi
+    cy.get('#\\/ra2').should('have.text', 'true');
+
+
+  })
+
 });

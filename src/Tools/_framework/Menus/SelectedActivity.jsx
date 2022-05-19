@@ -6,13 +6,12 @@ import { toastType, useToast } from '@Toast';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState, atom } from 'recoil';
 import { useActivity } from '../../../_reactComponents/Activity/ActivityActions';
-import { AssignedDate, AssignTo, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent } from '../../../_reactComponents/Activity/SettingComponents';
+import { AssignedDate, AssignTo, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent } from '../../../_reactComponents/Activity/SettingComponents';
 import {
   itemByDoenetId,
   findFirstPageOfActivity,
   selectedCourseItems,
   useCourse,
-  courseIdAtom,
 } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
@@ -318,6 +317,8 @@ export function AssignmentSettings({ effectiveRole, doenetId, courseId }) {
         <ShowCorrectness courseId={courseId} doenetId={doenetId}/>
         <ShowCreditAchieved courseId={courseId} doenetId={doenetId}/>
         <ProctorMakesAvailable courseId={courseId} doenetId={doenetId}/>
+        <MakePublic courseId={courseId} doenetId={doenetId}/>
+        <ShowDoenetMLSource courseId={courseId} doenetId={doenetId}/>
       </div>
       <PinAssignment courseId={courseId} doenetId={doenetId}/>
     </>

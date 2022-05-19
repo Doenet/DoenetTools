@@ -309,7 +309,9 @@ export default function AssignmentViewer() {
   if (recoilDoenetId === "") {
     return null;
   }
-  if (stage === "Initializing") {
+  if (courseId === "__not_found__") {
+    return /* @__PURE__ */ React.createElement("h1", null, "Content not found or no permission to view content");
+  } else if (stage === "Initializing") {
     return null;
   } else if (stage === "Problem") {
     return /* @__PURE__ */ React.createElement("h1", null, message);
