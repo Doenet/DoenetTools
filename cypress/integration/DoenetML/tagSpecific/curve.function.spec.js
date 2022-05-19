@@ -309,6 +309,7 @@ describe('Function curve Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
 
+    cy.get('#\\/a2').should("contain.text", "1")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -433,6 +434,78 @@ describe('Function curve Tag Tests', function () {
 
   });
 
+  it('constrain to function 2', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function name="f" variables="u">
+      u^4-5u^2
+    </function>
+    
+    <point x='3' y='5'>
+    <constraints>
+      <constrainTo>$f</constrainTo>
+    </constraints>
+    </point>
+    
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(x).eq(3);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 1.5, y: -1.5 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(x).eq(1.5);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 0.1, y: -10 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(x).eq(0.1);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -0.1, y: -10 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(x).eq(-0.1);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+  });
+
   it('constrain to function, nearest point as curve', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -441,6 +514,207 @@ describe('Function curve Tag Tests', function () {
     <graph>
     <curve nearestPointAsCurve>
       <function variables="u">
+        u^4-5u^2
+      </function>
+    </curve>
+    
+    <point x='3' y='5'>
+    <constraints>
+      <constrainTo><copy target="_curve1" /></constrainTo>
+    </constraints>
+    </point>
+    
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.flipFunction).eq(false);
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(y).closeTo(5, 0.1);
+      expect(x).greaterThan(2);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 1.5, y: -1.5 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(y).closeTo(-1.5, 0.1);
+      expect(x).greaterThan(1.5);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 0.1, y: -10 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      let minimum2 = (stateVariables["/_function1"].stateValues.minima)[1];
+
+      expect(x).closeTo(minimum2[0], 0.1);
+      expect(y).closeTo(minimum2[1], 0.1);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -0.1, y: -10 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      let minimum1 = stateVariables["/_function1"].stateValues.minima[0];
+
+      expect(x).closeTo(minimum1[0], 0.1);
+      expect(y).closeTo(minimum1[1], 0.1);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+
+    // try a bunch of points at right to make sure stay on right branch
+    // which fails with nDiscretizationPoints too low (e.g., at 100) 
+    for (let v = -5; v <= -1; v += 0.1) {
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: "/_point1",
+          args: { x: 5, y: v }
+        })
+        let stateVariables = await win.returnAllStateVariables1();
+        let x = stateVariables['/_point1'].stateValues.xs[0];
+        let y = stateVariables['/_point1'].stateValues.xs[1];
+        expect(x).greaterThan(1.7)
+        expect(y).greaterThan(v);
+        expect(y).lessThan(v + 0.5)
+        expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+      })
+    }
+  });
+
+  it('constrain to function, nearest point as curve 2', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function name="f" variables="u" nearestPointAsCurve>
+      u^4-5u^2
+    </function>
+    
+    <point x='3' y='5'>
+    <constraints>
+      <constrainTo>$f</constrainTo>
+    </constraints>
+    </point>
+    
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(y).closeTo(5, 0.1);
+      expect(x).greaterThan(2);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 1.5, y: -1.5 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(y).closeTo(-1.5, 0.1);
+      expect(x).greaterThan(1.5);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: 0.1, y: -10 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      let minimum2 = (stateVariables["/f"].stateValues.minima)[1];
+
+      expect(x).closeTo(minimum2[0], 0.1);
+      expect(y).closeTo(minimum2[1], 0.1);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -0.1, y: -10 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      let minimum1 = stateVariables["/f"].stateValues.minima[0];
+
+      expect(x).closeTo(minimum1[0], 0.1);
+      expect(y).closeTo(minimum1[1], 0.1);
+      expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+    })
+
+
+    // try a bunch of points at right to make sure stay on right branch
+    // which fails with nDiscretizationPoints too low (e.g., at 100) 
+    for (let v = -5; v <= -1; v += 0.1) {
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: "/_point1",
+          args: { x: 5, y: v }
+        })
+        let stateVariables = await win.returnAllStateVariables1();
+        let x = stateVariables['/_point1'].stateValues.xs[0];
+        let y = stateVariables['/_point1'].stateValues.xs[1];
+        expect(x).greaterThan(1.7)
+        expect(y).greaterThan(v);
+        expect(y).lessThan(v + 0.5)
+        expect(y).closeTo(x * x * x * x - 5 * x * x, 1E-5);
+      })
+    }
+  });
+
+  it('constrain to function, nearest point as curve 3', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve>
+      <function variables="u" nearestPointAsCurve>
         u^4-5u^2
       </function>
     </curve>
@@ -758,6 +1032,108 @@ describe('Function curve Tag Tests', function () {
     <point x='5' y='3'>
     <constraints>
       <constrainTo><copy target="_curve1" /></constrainTo>
+    </constraints>
+    </point>
+    
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.flipFunction).eq(true);
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(x).closeTo(5, 0.1);
+      expect(y).greaterThan(2);
+      expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -1.5, y: 1.5 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      expect(x).closeTo(-1.5, 0.1);
+      expect(y).greaterThan(1.5);
+      expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -10, y: 0.1 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      let minimum2 = (stateVariables["/_function1"].stateValues.minima)[1];
+
+      expect(y).closeTo(minimum2[0], 0.1);
+      expect(x).closeTo(minimum2[1], 0.1);
+      expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -10, y: -0.1 }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
+      let x = stateVariables['/_point1'].stateValues.xs[0];
+      let y = stateVariables['/_point1'].stateValues.xs[1];
+      let minimum1 = stateVariables["/_function1"].stateValues.minima[0];
+
+      expect(y).closeTo(minimum1[0], 0.1);
+      expect(x).closeTo(minimum1[1], 0.1);
+      expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
+    })
+
+
+    // try a bunch of points at top to make sure stay on top branch
+    // which fails with nDiscretizationPoints too low (e.g., at 100) 
+    for (let v = -5; v <= -1; v += 0.1) {
+      cy.window().then(async (win) => {
+        await win.callAction1({
+          actionName: "movePoint",
+          componentName: "/_point1",
+          args: { x: v, y: 5 }
+        })
+        let stateVariables = await win.returnAllStateVariables1();
+        let x = stateVariables['/_point1'].stateValues.xs[0];
+        let y = stateVariables['/_point1'].stateValues.xs[1];
+        expect(y).greaterThan(1.7)
+        expect(x).greaterThan(v);
+        expect(x).lessThan(v + 0.5)
+        expect(x).closeTo(y * y * y * y - 5 * y * y, 1E-5);
+      })
+    }
+  });
+
+  it('constrain to inverse function, nearest point as curve 2', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve flipFunction>
+      <function variables="u">
+        u^4-5u^2
+      </function>
+    </curve>
+    
+    <point x='5' y='3'>
+    <constraints>
+      <constrainTo><copy target="_curve1"  nearestPointAsCurve/></constrainTo>
     </constraints>
     </point>
     
