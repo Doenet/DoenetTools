@@ -1,7 +1,0 @@
-<mathinput name='m' prefill='x^2' />
-<graph width='6in' height='6in'>
-   <function formula='$m' />
-    <point>(3$s,3)</point>
-
-</graph>
-<mathinput name='s' prefill='2'/>

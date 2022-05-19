@@ -1,7 +1,0 @@
-<aside boxed collapsible="true">
-This is boxed and collapsible
-</aside>
-
-<aside boxed collapsible="false">
-This is boxed and NOT collapsible
-</aside>

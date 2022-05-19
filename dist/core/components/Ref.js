@@ -105,16 +105,26 @@ export default class Ref extends InlineComponent {
         targetInactive: {
           dependencyType: "stateVariable",
           variableName: "targetInactive"
+        },
+        targetAttribute: {
+          dependencyType: "doenetAttribute",
+          attributeName: "target"
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.targetComponent === null || dependencyValues.targetInactive) {
-          return { setValue: { targetName: "" } }
-        } else {
-          if (dependencyValues.uri !== null) {
-            console.warn("Haven't implemented ref with uri and target, ignoring target.");
+        if (dependencyValues.uri) {
+          if (dependencyValues.targetAttribute) {
+            let targetName = dependencyValues.targetAttribute;
+            if (targetName[0] !== "/") {
+              targetName = "/" + targetName;
+            }
+            return { setValue: { targetName } }
+          } else {
             return { setValue: { targetName: "" } }
           }
+        } else if (dependencyValues.targetComponent === null || dependencyValues.targetInactive) {
+          return { setValue: { targetName: "" } }
+        } else {
           return { setValue: { targetName: dependencyValues.targetComponent.componentName } }
         }
       },

@@ -62,38 +62,7 @@ export default function Dashboard(props) {
       view: "",
       params: {courseId}
     })
-  })) : null, effectiveRole === "instructor" ? /* @__PURE__ */ React.createElement(Card, {
-    name: "Gradebook",
-    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faTasks
-    }),
-    value: "Gradebook",
-    onClick: () => setPageToolView((was) => {
-      return {
-        page: "course",
-        tool: "gradebook",
-        view: was.view,
-        params: {courseId}
-      };
-    })
-  }) : /* @__PURE__ */ React.createElement(Card, {
-    name: "Gradebook",
-    icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faTasks
-    }),
-    style: {marginLeft: "-600px"},
-    value: "Gradebook",
-    onClick: () => setPageToolView((was) => {
-      return {
-        page: "course",
-        tool: "gradebookStudent",
-        view: was.view,
-        params: {courseId, userId: profile.userId}
-      };
-    })
-  }))), /* @__PURE__ */ React.createElement("div", {
+  })) : null)), /* @__PURE__ */ React.createElement("div", {
     style: {marginTop: "10px", margin: "10px"}
-  }, /* @__PURE__ */ React.createElement(Next7Days, {
-    driveId: courseId
-  })));
+  }));
 }
