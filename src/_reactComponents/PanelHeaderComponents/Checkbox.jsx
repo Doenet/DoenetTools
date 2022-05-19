@@ -9,6 +9,7 @@ import styled from 'styled-components';
 const CheckboxContainer = styled.div`
   display: ${props => props.label && !props.vertical ? 'flex' : 'inline-block'};
   align-items: ${props => props.label && !props.vertical && 'center'};
+  margin-right: 5px;
 `
 
 const Label = styled.span`
