@@ -37,18 +37,17 @@ $tmp_dest = $uploads_dir . getFileName('tmp_' . $random_id,$type);
 
 //Test if user has permission to upload files
 
+$canUpload = FALSE;
 $sql = "
-SELECT du.canUpload as canUpload
-FROM drive_user AS du
-LEFT JOIN drive_content AS dc
-ON dc.driveId = du.driveId
-WHERE du.userId = '$userId'
-AND dc.doenetId = '$doenetId'
-AND du.canEditContent = '1'
+SELECT canUpload 
+FROM user 
+WHERE userId = '$userId'
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
-if ($row['canUpload'] == '0'){
+if ($row['canUpload'] == '1'){$canUpload = TRUE;}
+
+if (!$canUpload){
   $success = false;
   $msg = "You don't have permission to upload files.";
 }
@@ -88,7 +87,7 @@ if ($success){
   $width = 0;
   $height = 0;
   if ($mime_type == 'image/jpeg' || $mime_type == 'image/png'){
-    [$width,$height] = getimagesize($destination);
+    list($width,$height) = getimagesize($destination);
   }
 
   //Test if user already has this file in this activity
