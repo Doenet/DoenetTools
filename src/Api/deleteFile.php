@@ -66,8 +66,9 @@ if ($success){
     ";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
-    $fileLocation = $uploads_dir . getFileName($row['cid'],$row['fileType']);
-    unlink($fileLocation);
+    //TODO - could delete from others and that's bad
+    // $fileLocation = $uploads_dir . getFileName($row['cid'],$row['fileType']);
+    // unlink($fileLocation);
   }
 
   //Delete row of doenetId and cid for this user
