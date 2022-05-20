@@ -389,7 +389,6 @@ export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
   key: 'studentCourseItemOrderByCourseId',
   get:({courseId,sectionId})=> ({get})=>{
     let allStudentDoenetIdsInOrder = get(studentCourseItemOrderByCourseId(courseId));
-    console.log("allStudentDoenetIdsInOrder",allStudentDoenetIdsInOrder)
     let sectionDoenetIds = [];
     let inSection = false;
     let sectionDoenetIdsInSection = [sectionId];
@@ -405,7 +404,6 @@ export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
       }
       if (inSection){
         let itemObj = get(itemByDoenetId(doenetId));
-        console.log("itemObj",itemObj)
         if (itemObj.isAssigned && sectionDoenetIdsInSection.includes(itemObj.parentDoenetId)){
           sectionDoenetIds.push(doenetId);
           //If of type which has children then add to the section list
@@ -414,13 +412,11 @@ export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
           }
 
         }else{
-          // break;  //Can stop after we go up a level because there won't be any more
           continue;
         }
 
       }
     }
-    console.log("sectionDoenetIds",sectionDoenetIds)
     return sectionDoenetIds;
   }
 })
