@@ -391,7 +391,8 @@ export const CheckedSetting = ({
   doenetId,
   keyToUpdate,
   description,
-  label
+  label,
+  invert
 }) => {
   const {
     value: {[keyToUpdate]: recoilValue},
@@ -400,17 +401,17 @@ export const CheckedSetting = ({
   const [localValue, setLocalValue] = useState(recoilValue);
   useEffect(() => {
     setLocalValue(recoilValue);
-  }, [recoilValue]);
+  }, [invert, recoilValue]);
   return /* @__PURE__ */ React.createElement(InputWrapper, {
     flex: true
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
-    checked: localValue,
+    checked: invert ? !localValue : localValue,
     onClick: () => {
-      let valueDescription = "False";
+      let valueDescription = invert ? "True" : "Flase";
       let value = false;
       if (!localValue) {
-        valueDescription = "True";
+        valueDescription = invert ? "False" : "True";
         value = true;
       }
       setLocalValue(value);
@@ -428,7 +429,8 @@ export const CheckedFlag = ({
   doenetId,
   keyToUpdate,
   description,
-  label
+  label,
+  invert
 }) => {
   const {
     value: {[keyToUpdate]: recoilValue},
@@ -437,17 +439,17 @@ export const CheckedFlag = ({
   const [localValue, setLocalValue] = useState(recoilValue);
   useEffect(() => {
     setLocalValue(recoilValue);
-  }, [recoilValue]);
+  }, [recoilValue, invert]);
   return /* @__PURE__ */ React.createElement(InputWrapper, {
     flex: true
   }, /* @__PURE__ */ React.createElement(Checkbox, {
     style: {marginRight: "5px"},
-    checked: localValue,
+    checked: invert ? !localValue : localValue,
     onClick: () => {
-      let valueDescription = "False";
+      let valueDescription = invert ? "True" : "Flase";
       let value = false;
       if (!localValue) {
-        valueDescription = "True";
+        valueDescription = invert ? "False" : "True";
         value = true;
       }
       setLocalValue(value);
@@ -691,8 +693,7 @@ export const PinAssignment = ({courseId, doenetId}) => {
 };
 export function AssignTo({courseId, doenetId}) {
   const {
-    value: {isGloballyAssigned},
-    updateAssignmentSettings
+    value: {isGloballyAssigned}
   } = useActivity(courseId, doenetId);
   const {value: enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId));
   const [restrictedTo, setRestrictedTo] = useState([]);
@@ -741,18 +742,13 @@ export function AssignTo({courseId, doenetId}) {
       return allrows;
     }
   }, []);
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(InputWrapper, null, /* @__PURE__ */ React.createElement(Checkbox, {
-    style: {marginRight: "5px"},
-    checked: !isGloballyAssigned,
-    onClick: () => {
-      updateAssignmentSettings({
-        keyToUpdate: "isGloballyAssigned",
-        value: !isGloballyAssigned,
-        description: "Restrict Assignment ",
-        valueDescription: isGloballyAssigned ? "true" : "false"
-      });
-    }
-  }), /* @__PURE__ */ React.createElement(LabelText, null, "Restrict Assignment To")), /* @__PURE__ */ React.createElement(RelatedItems, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(CheckedFlag, {
+    courseId,
+    doenetId,
+    keyToUpdate: "isGloballyAssigned",
+    description: "Restrict Assignment",
+    invert: true
+  }), /* @__PURE__ */ React.createElement(RelatedItems, {
     width: "menu",
     options: enrolledJSX,
     disabled: isGloballyAssigned,

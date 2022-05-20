@@ -316,14 +316,13 @@ export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
       }
       if (inSection) {
         let itemObj = get(itemByDoenetId(doenetId));
-        console.log("itemObj", itemObj);
         if (itemObj.isAssigned && sectionDoenetIdsInSection.includes(itemObj.parentDoenetId)) {
           sectionDoenetIds.push(doenetId);
           if (itemObj.type == "section") {
             sectionDoenetIdsInSection.push(doenetId);
           }
         } else {
-          break;
+          continue;
         }
       }
     }
