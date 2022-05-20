@@ -2532,5 +2532,155 @@ describe('Specifying unique variant tests', function () {
 
   });
 
+  it('no variant control, 1 unique variant', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+        <text>a</text>
+        hello!
+      `,
+      }, "*");
+    })
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', `a`)
+
+    cy.window().then(async (win) => {
+
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a"])
+    })
+
+  });
+
+  it('no variant control, single select', () => {
+
+    let values = ["u", "v", "w"]
+
+    cy.log("get all values in order and they repeat in next variants")
+    for (let ind = 1; ind <= 4; ind++) {
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <select assignnames="x">u v w</select>
+      `,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.get('#\\/x .mjx-mrow').should('have.text', values[(ind - 1) % 3])
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/x'].stateValues.value).eq(values[(ind - 1) % 3])
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants).eqls(["a", "b", "c"])
+      })
+    }
+
+  });
+
+  it('no variant control, select and selectFromSequence', () => {
+
+    let values = ["u", "v", "w"]
+
+    cy.log("get first values in order")
+    for (let ind = 1; ind <= 3; ind++) {
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <select assignnames="x">u v w</select>
+        <selectfromsequence assignNames="n" />
+      `,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.get('#\\/x .mjx-mrow').should('have.text', values[ind - 1])
+      cy.get('#\\/n').should('have.text', ind.toString())
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/x'].stateValues.value).eq(values[ind - 1])
+        expect(stateVariables['/n'].stateValues.value).eq(ind)
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants.length).eq(30)
+      })
+    }
+
+  });
+
+  it('no variant control, 100 is still unique variants', () => {
+
+    cy.log("get first values in order")
+    for (let ind = 1; ind <= 5; ind++) {
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <selectfromsequence assignNames="n" length="100" />
+      `,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.get('#\\/n').should('have.text', ind.toString())
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/n'].stateValues.value).eq(ind)
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants.length).eq(100)
+      })
+    }
+
+  });
+
+  it('no variant control, 101 is not unique variants', () => {
+
+    let foundOneNotInOrder = false;
+
+    cy.log("don't get first values in order")
+    for (let ind = 1; ind <= 3; ind++) {
+
+      cy.window().then(async (win) => {
+        win.postMessage({
+          doenetML: `
+        <text>${ind}</text>
+        <selectfromsequence assignNames="n" length="101" />
+      `,
+          requestedVariantIndex: ind,
+        }, "*");
+      })
+      // to wait for page to load
+      cy.get('#\\/_text1').should('have.text', `${ind}`)
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        if (stateVariables['/n'].stateValues.value !== ind) {
+          foundOneNotInOrder = true;
+        }
+        expect(stateVariables["/_document1"].sharedParameters.allPossibleVariants.length).eq(100)
+      })
+
+    }
+
+    cy.window().then(async (win) => {
+      expect(foundOneNotInOrder).eq(true);
+    })
+
+  });
 
 });
