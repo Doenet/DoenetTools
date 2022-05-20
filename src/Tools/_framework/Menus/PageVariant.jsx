@@ -47,7 +47,8 @@ export default function PageVariant(props) {
 
   return <div style={style}>
     {warningVariantIsIgnored}
-    <div><label>Variant Index <input type="text" value={variantPanel.index} onKeyDown={(e) => {
+    <div>Number of variants: {allPossibleVariants.length}</div>
+    <div><label>Select variant Index <input type="text" value={variantPanel.index} onKeyDown={(e) => {
       if (e.key === 'Enter') { updateVariantInfoAtom() }
     }} onBlur={() => updateVariantInfoAtom()} onChange={(e) => {
       setVariantPanel(
@@ -58,7 +59,7 @@ export default function PageVariant(props) {
         })
     }} /></label></div>
 
-    <div><label>Variant Name
+    <div><label>Select variant name
       <select value={variantPanel.index} onChange={(e) => {
         setVariantInfo((was) => {
           let newObj = { ...was };

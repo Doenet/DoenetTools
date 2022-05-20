@@ -556,17 +556,16 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           } catch (e) {
             let strWithError = str.slice(firstIndMatched, firstIndMatched + matchLength);
             let startInd = firstIndMatched;
-            if(componentInd > 0 && serializedComponents[componentInd-1].range) {
-              let previousRange = serializedComponents[componentInd-1].range;
-              if(previousRange.closeEnd) {
+            if (componentInd > 0 && serializedComponents[componentInd - 1].range) {
+              let previousRange = serializedComponents[componentInd - 1].range;
+              if (previousRange.closeEnd) {
                 startInd += previousRange.closeEnd;
-              } else if(previousRange.selfCloseEnd) {
+              } else if (previousRange.selfCloseEnd) {
                 startInd += previousRange.selfCloseBegin;
               }
             }
 
-            console.log(serializedComponents[componentInd-1])
-            throw Error(`Error in macro at indices ${startInd}-${startInd+matchLength}.  Found: ${strWithError}`)
+            throw Error(`Error in macro at indices ${startInd}-${startInd + matchLength}.  Found: ${strWithError}`)
           }
 
           createAttributesFromProps(newComponents, componentInfoObjects);
@@ -1920,14 +1919,30 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
 
       // either didn't have a single section child or get number of varants wan't successful
 
-      serializedComponent.variants.numberOfVariantsPreIgnore = 100;
-      serializedComponent.variants.numberOfVariants = 100;
+      let numberOfVariants = 100;
+      let numberOfVariantsPreIgnore = 100;
+
+      // check if have one unique variant
+      let compClass = componentInfoObjects.allComponentClasses[serializedComponent.componentType];
+      let result = compClass.determineNumberOfUniqueVariants({
+        serializedComponent, componentInfoObjects
+      })
+
+      // if have 100 or fewer unique variants, set to unique
+      if(result.success && result.numberOfVariantsPreIgnore <= 100) {
+        numberOfVariantsPreIgnore = result.numberOfVariantsPreIgnore;
+        numberOfVariants = result.numberOfVariants;
+        serializedComponent.variants.uniqueVariants = true;
+      }
+
+      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
+      serializedComponent.variants.numberOfVariants = numberOfVariants;
       serializedComponent.variants.indicesToIgnore = [];
 
       return {
         success: true,
-        numberOfVariants: 100,
-        numberOfVariantsPreIgnore: 100,
+        numberOfVariants,
+        numberOfVariantsPreIgnore,
         indicesToIgnore: []
       };
 
