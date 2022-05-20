@@ -327,7 +327,6 @@ export default function Increment(props) {
       onClick: onMenuClick
     }, choice));
   }
-  console.log(props.menuOptions);
   return /* @__PURE__ */ React.createElement(Container, {
     label: props.label,
     vertical: props.vertical
