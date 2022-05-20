@@ -549,7 +549,26 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
         if (result.additionalAttributes) {
           let newDoenetML = `<copy target="${result.targetName}" ${result.additionalAttributes} />`;
 
-          let newComponents = parseAndCompile(newDoenetML);
+          let newComponents;
+
+          try {
+            newComponents = parseAndCompile(newDoenetML);
+          } catch (e) {
+            let strWithError = str.slice(firstIndMatched, firstIndMatched + matchLength);
+            let startInd = firstIndMatched;
+            if(componentInd > 0 && serializedComponents[componentInd-1].range) {
+              let previousRange = serializedComponents[componentInd-1].range;
+              if(previousRange.closeEnd) {
+                startInd += previousRange.closeEnd;
+              } else if(previousRange.selfCloseEnd) {
+                startInd += previousRange.selfCloseBegin;
+              }
+            }
+
+            console.log(serializedComponents[componentInd-1])
+            throw Error(`Error in macro at indices ${startInd}-${startInd+matchLength}.  Found: ${strWithError}`)
+          }
+
           createAttributesFromProps(newComponents, componentInfoObjects);
           markCreatedFromMacro(newComponents);
 
