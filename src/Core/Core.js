@@ -122,6 +122,12 @@ export default class Core {
           flags: this.flags,
         }))
       .then(this.finishCoreConstruction)
+      .catch(e => {
+        postMessage({
+          messageType: "inErrorState",
+          args: { errMsg: e.message }
+        })
+      })
   }
 
 

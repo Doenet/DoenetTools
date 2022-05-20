@@ -89,13 +89,13 @@ if ($success) {
     // if there is a time limit,
     // multiply by factor for user
     if ($timeLimit > 0) {
-        // have to use drive_content
-        // to get driveID from doenetID
+        // have to use course_content
+        // to get courseId from doenetID
         $sql = "SELECT timeLimitMultiplier 
             FROM enrollment e
-            INNER JOIN drive_content dc
-                ON dc.driveId = e.driveId
-            WHERE dc.doenetId = '$doenetId'
+            INNER JOIN course_content cc
+                ON cc.courseId = e.courseId
+            WHERE cc.doenetId = '$doenetId'
             AND e.userId = '$userId'
             ";
 

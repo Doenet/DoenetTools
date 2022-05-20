@@ -70,7 +70,7 @@ export default function Dashboard(props) {
           />
           </>
           : null}
-          {effectiveRole === 'instructor' ?
+          {/* {effectiveRole === 'instructor' ?
           <Card 
             name='Gradebook' 
             icon={<FontAwesomeIcon icon={faTasks}/>}
@@ -100,11 +100,11 @@ export default function Dashboard(props) {
 
             } 
           />
-          }
+          } */}
         </div>
       </div>
       <div style={{ marginTop: '10px', margin: '10px'}}>
-      <Next7Days driveId={courseId}/>
+      {/* <Next7Days driveId={courseId}/> */}
       </div>
     </div>
   );

@@ -1,8 +1,0 @@
-<title>Graph with random parameters</title>
-
-<selectFromSequence from="-4" to="4" assignNames="a" />
-<selectFromSequence from="-4" to="4" assignNames="b" />
-
-<p>Graph of <m>f(x) = <function name="f">$a*x+$b</function></m></p>
-
-<graph>$f</graph>

@@ -148,7 +148,9 @@ export default function DraftAssignmentViewer() {
 
   // console.log(`>>>>stage -${stage}-`)
 
-  if (stage === 'Initializing') {
+  if(courseId === "__not_found__") {
+    return <h1>Content not found or no permission to view content</h1>;
+  } else if (stage === 'Initializing') {
     // initializeValues(recoilDoenetId);
     return null;
   } else if (stage === 'Problem') {

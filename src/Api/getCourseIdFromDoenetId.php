@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
 include "db_connection.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray["userId"];
@@ -33,7 +34,21 @@ WHERE doenetId='$doenetId'
         $courseId = $row["courseId"];
     } else {
         $success = false;
-        $message = "Content not found";
+        $message = "Content not found or no permission to view content";
+    }
+}
+
+if ($success) {
+    $permissions = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $userId,
+        $courseId
+    );
+
+    if ($permissions["canViewCourse"] != "1") {
+        $course = null;
+        $success = false;
+        $message = "Content not found or no permission to view content";
     }
 }
 

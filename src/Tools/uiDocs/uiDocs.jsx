@@ -725,7 +725,7 @@ export default function attempt() {
         {
           name: 'Max',
           propPreview: '<Increment max={5}/>',
-          propCode: { min: 5 },
+          propCode: { max: 5 },
           description:
             'Restricts the menu to have values smaller or equal to max',
         },
@@ -793,7 +793,7 @@ export default function attempt() {
         },
         {
           name: 'onKeyDown',
-          propPreview: '<Increment onKewDown={(e) => console.log(e.key)} />',
+          propPreview: '<Increment onKeyDown={(e) => console.log(e.key)} />',
           propCode: { onKeyDown: (e) => console.log(e.key) },
           description: 'Function called when a key is pressed',
         },
@@ -804,11 +804,17 @@ export default function attempt() {
           description: 'Add a placeholder for the field',
         },
         {
+          name: 'Deactivate Dropdown',
+          propPreview: '<Increment deactivateDropdown />',
+          propCode: { deactivateDropdown: true },
+          description: 'Deactivates the default dropdown when the increment menu is clicked.',
+        },
+        {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
           propCode: { disabled: true },
           description: 'Makes button not able to be used.',
-        },
+        }
       ],
     },
     {

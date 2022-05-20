@@ -28,11 +28,6 @@ export default function SelectedOrder() {
   const [withReplacement,setWithReplacement] = useState(itemObj.withReplacement);
   let { create, updateOrderBehavior, deleteItem } = useCourse(courseId);
   // console.log("parentItemObj",parentItemObj)
-  //Can't delete top order
-  let deleteDisabled = false;
-  if (parentItemObj.type == 'activity'){
-    deleteDisabled = true;
-  }
 
   useEffect(()=>{
     if (itemObj.behavior != behavior){
@@ -45,6 +40,14 @@ export default function SelectedOrder() {
       setWithReplacement(itemObj.withReplacement)
     }
   },[itemObj.doenetId])
+
+  //Can't delete top order
+  let deleteDisabled = false;
+  let topOrderSoDisabled = false;
+  if (parentItemObj.type == 'activity'){
+    deleteDisabled = true;
+    topOrderSoDisabled = true;
+  }
 
 
   let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
@@ -102,6 +105,7 @@ if (behavior == 'select'){
   <DropdownMenu
         width="menu"
         items={items}
+        disabled={topOrderSoDisabled}
         // title="Order"
         defaultIndex={defaultIndex}
         onChange={({ value }) => {

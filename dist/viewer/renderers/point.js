@@ -8,6 +8,7 @@ export default function Point(props) {
   Point.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let pointJXG = useRef(null);
+  let shadowPointJXG = useRef(null);
   let pointerAtDown = useRef(false);
   let pointAtDown = useRef(false);
   let dragged = useRef(false);
@@ -20,11 +21,13 @@ export default function Point(props) {
   useEffect(() => {
     return () => {
       if (pointJXG.current !== null) {
-        pointJXG.current.off("drag");
-        pointJXG.current.off("down");
-        pointJXG.current.off("up");
+        shadowPointJXG.current.off("drag");
+        shadowPointJXG.current.off("down");
+        shadowPointJXG.current.off("up");
         board.removeObject(pointJXG.current);
+        board.removeObject(shadowPointJXG.current);
         pointJXG.current = null;
+        shadowPointJXG.current = null;
       }
     };
   }, []);
@@ -34,7 +37,7 @@ export default function Point(props) {
       name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed: true,
       layer: 10 * SVs.layer + 9,
       fillColor,
       strokeColor: SVs.selectedStyle.markerColor,
@@ -101,12 +104,18 @@ export default function Point(props) {
       jsxPointAttributes["visible"] = false;
     }
     let newPointJXG = board.create("point", coords, jsxPointAttributes);
-    newPointJXG.on("down", function(e) {
+    let shadowPointAttributes = {...jsxPointAttributes};
+    shadowPointAttributes.layer--;
+    shadowPointAttributes.fixed = !SVs.draggable || SVs.fixed;
+    shadowPointAttributes.showInfoBox = false;
+    shadowPointAttributes.withLabel = false;
+    let newShadowPointJXG = board.create("point", coords, shadowPointAttributes);
+    newShadowPointJXG.on("down", function(e) {
       pointerAtDown.current = [e.x, e.y];
-      pointAtDown.current = [...newPointJXG.coords.scrCoords];
+      pointAtDown.current = [...newShadowPointJXG.coords.scrCoords];
       dragged.current = false;
     });
-    newPointJXG.on("up", function(e) {
+    newShadowPointJXG.on("up", function(e) {
       if (dragged.current) {
         callAction({
           action: actions.movePoint,
@@ -120,8 +129,9 @@ export default function Point(props) {
           action: actions.switchPoint
         });
       }
+      dragged.current = false;
     });
-    newPointJXG.on("drag", function(e) {
+    newShadowPointJXG.on("drag", function(e) {
       var o = board.origin.scrCoords;
       let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
       calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0] - o[1]) / board.unitX;
@@ -143,11 +153,12 @@ export default function Point(props) {
         dragged.current = true;
       }
     });
-    return newPointJXG;
+    pointJXG.current = newPointJXG;
+    shadowPointJXG.current = newShadowPointJXG;
   }
   if (board) {
     if (pointJXG.current === null) {
-      pointJXG.current = createPointJXG();
+      createPointJXG();
     } else {
       let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
       if (pointJXG.current.visProp.fillcolor !== newFillColor) {
@@ -156,17 +167,25 @@ export default function Point(props) {
       let x = SVs.numericalXs?.[0];
       let y = SVs.numericalXs?.[1];
       pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+      if (!dragged.current) {
+        shadowPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+      }
       let visible = !SVs.hidden;
       if (Number.isFinite(x) && Number.isFinite(y)) {
         let actuallyChangedVisibility = pointJXG.current.visProp["visible"] !== visible;
         pointJXG.current.visProp["visible"] = visible;
         pointJXG.current.visPropCalc["visible"] = visible;
+        shadowPointJXG.current.visProp["visible"] = visible;
+        shadowPointJXG.current.visPropCalc["visible"] = visible;
         if (actuallyChangedVisibility) {
           pointJXG.current.setAttribute({visible});
+          shadowPointJXG.current.setAttribute({visible});
         }
       } else {
         pointJXG.current.visProp["visible"] = false;
         pointJXG.current.visPropCalc["visible"] = false;
+        shadowPointJXG.current.visProp["visible"] = false;
+        shadowPointJXG.current.visPropCalc["visible"] = false;
       }
       if (pointJXG.current.visProp.strokecolor !== SVs.selectedStyle.markerColor) {
         pointJXG.current.visProp.strokecolor = SVs.selectedStyle.markerColor;
@@ -182,12 +201,12 @@ export default function Point(props) {
         pointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
         pointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue");
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
-        pointJXG.current.visProp.fixed = false;
+        shadowPointJXG.current.visProp.fixed = false;
       } else {
         pointJXG.current.visProp.highlightfillcolor = newFillColor;
         pointJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.markerColor;
         pointJXG.current.visProp.showinfobox = false;
-        pointJXG.current.visProp.fixed = true;
+        shadowPointJXG.current.visProp.fixed = true;
       }
       if (sourceOfUpdate.sourceInformation && name in sourceOfUpdate.sourceInformation) {
         board.updateInfobox(pointJXG.current);
@@ -246,6 +265,8 @@ export default function Point(props) {
       }
       pointJXG.current.needsUpdate = true;
       pointJXG.current.update();
+      shadowPointJXG.current.needsUpdate = true;
+      shadowPointJXG.current.update();
       board.updateRenderer();
     }
     return /* @__PURE__ */ React.createElement("a", {

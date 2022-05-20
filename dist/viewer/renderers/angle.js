@@ -47,7 +47,7 @@ export default function Angle(props) {
     };
     previousWithLabel.current = SVs.showLabel && SVs.label !== "";
     let through;
-    if (SVs.renderAsAcuteAngle && SVs.degrees.evaluate_to_constant() % 360 > 180) {
+    if (SVs.renderAsAcuteAngle && me.fromAst(SVs.degrees).evaluate_to_constant() % 360 > 180) {
       through = [
         [...SVs.numericalPoints[2]],
         [...SVs.numericalPoints[1]],
@@ -78,7 +78,7 @@ export default function Angle(props) {
       deleteGraphicalObject();
     } else {
       let through;
-      if (SVs.renderAsAcuteAngle && SVs.degrees.evaluate_to_constant() % 360 > 180) {
+      if (SVs.renderAsAcuteAngle && me.fromAst(SVs.degrees).evaluate_to_constant() % 360 > 180) {
         through = [
           [...SVs.numericalPoints[2]],
           [...SVs.numericalPoints[1]],

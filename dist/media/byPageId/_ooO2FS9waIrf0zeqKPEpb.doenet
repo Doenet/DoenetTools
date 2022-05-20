@@ -1,6 +1,0 @@
-
-
-<p>Note, for the <attr>displaySmallAsZero</attr> attribute, the user has the option of specifying "true", in which case the default value to convert to 0 is 1E-14, or specifying a specific numerical tolerance for numbers that should be represented as 0.  The default value for the attribute is false, so 1E-16 will display as 1E-16.</p>
-<p><number>0.0000000000000001</number></p>
-<p><number displaySmallAsZero="true">0.0000000000000001</number></p>
-<p><number displaySmallAsZero="0.01">0.001</number></p>
