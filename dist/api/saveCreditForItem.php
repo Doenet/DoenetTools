@@ -113,7 +113,7 @@ if ($success) {
 
     // Get time began and creditOverride from user_assignment_attempt
     $sql = "SELECT 
-        NOW() AS now,
+        CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') AS now,
         began, 
         creditOverride, 
         credit
@@ -152,7 +152,7 @@ if ($success) {
     // look for a overrides in due date, credit, or number of attempts allowed for asssignment,
     // which includes check for user_assignment having an entry
     $sql = "SELECT 
-        NOW() AS now,
+        CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') AS now,
         dueDateOverride, 
         creditOverride, 
         numberOfAttemptsAllowedAdjustment,

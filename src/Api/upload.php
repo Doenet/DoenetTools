@@ -131,7 +131,7 @@ if ($success && !$already_have_file){
   INSERT INTO ipfs_to_upload 
   (cid,fileType,sizeInBytes,timestamp)
   VALUES
-  ('$cid','$type','$size',NOW())
+  ('$cid','$type','$size',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
   ";
   $result = $conn->query($sql);
 }
@@ -141,7 +141,7 @@ if ($success){
         INSERT INTO support_files 
         (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp)
         VALUES
-        ('$userId','$cid','$doenetId','$type','$description','$original_file_name','$size','$width','$height',NOW())
+        ('$userId','$cid','$doenetId','$type','$description','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
         ";
         $result = $conn->query($sql);
 }

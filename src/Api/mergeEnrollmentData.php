@@ -129,7 +129,7 @@ for($i = 0; $i < count($mergeEmail); $i++){
 		INSERT INTO enrollment
 		(courseId,userId,firstName,lastName,email,empId,dateEnrolled,section)
 		VALUES
-		('$courseId','$new_userId','$firstName','$lastName','$email','$id',NOW(),'$section')
+		('$courseId','$new_userId','$firstName','$lastName','$email','$id',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$section')
 		";
 		$result = $conn->query($sql);
 
