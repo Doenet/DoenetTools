@@ -3826,14 +3826,14 @@ describe('Specifying single variant document tests', function () {
 
     let doenetML = `
     <variantControl nvariants="100"/>
-    <p><choiceinput randomizeOrder name="c1">
+    <p><choiceinput shuffleOrder name="c1">
       <choice><lorem generateWords="3" /></choice>
       <choice><lorem generateWords="3" /></choice>
       <choice><lorem generateWords="3" /></choice>
       <choice><lorem generateWords="3" /></choice>
       <choice><lorem generateWords="3" /></choice>
     </choiceinput></p>
-    <p><choiceinput randomizeOrder inline name="c2">
+    <p><choiceinput shuffleOrder inline name="c2">
       <choice><lorem generateWords="3" /></choice>
       <choice><lorem generateWords="3" /></choice>
       <choice><lorem generateWords="3" /></choice>
@@ -4218,7 +4218,7 @@ describe('Specifying single variant document tests', function () {
 
     let doenetML = `
     <group name="g" newNamespace>
-      <choiceinput randomizeOrder name="ci">
+      <choiceinput shuffleOrder name="ci">
         <choice>a</choice>
         <choice>b</choice>
         <choice>c</choice>
