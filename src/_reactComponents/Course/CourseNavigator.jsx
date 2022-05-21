@@ -532,7 +532,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     >
     <div
       style={{
-        marginLeft: `${indentLevel * indentPx}px`,
+        
         display: 'grid',
         gridTemplateColumns: columnsCSS,
         gridTemplateRows: '1fr',
@@ -541,7 +541,13 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
         // marginBottom: '8px',
       }}
     >
-      <p style={{ display: 'inline', margin: '0px' }} >
+      <span style={{ 
+        marginLeft: `${indentLevel * indentPx}px`
+      }}>
+
+      <p style={{ 
+        display: 'inline', 
+        margin: '0px' }} >
        { numbered ?  <svg style={{verticalAlign:'middle'}} width="22" height="22" viewBox="0 0 22 22">
       <circle cx="11"
               cy="11"
@@ -563,6 +569,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
         </span>
         <span style={{marginLeft:'4px'}} data-cy="rowLabel">{label} </span>
       </p>
+      </span>
     {numberOfVisibleColumns > 1 ? <span style={{ textAlign: 'center' }}>{columnsJSX[0]}</span> : null}
     {numberOfVisibleColumns > 2 ? <span style={{ textAlign: 'center' }}>{columnsJSX[1]}</span> : null}
     {numberOfVisibleColumns > 3 ? <span style={{ textAlign: 'center' }}>{columnsJSX[2]}</span> : null}
