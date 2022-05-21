@@ -69,7 +69,7 @@ export default function DoenetMLOptions() {
 						dragClone
 					>
 						<MiniCard 
-							image={option.image}
+							// image={option.image}
 							label={option.label}
 							onClick={()=>{pasteToEditor(option.code)}}
 						/>
