@@ -219,7 +219,8 @@ function substituteDeprecations(serializedComponents) {
     tname: "target",
     triggerwithtnames: "triggerWithTargets",
     updatewithtname: "updateWithTarget",
-    paginatortname: "paginator"
+    paginatortname: "paginator",
+    randomizeorder: "shuffleOrder"
   }
 
   for (let component of serializedComponents) {

@@ -217,7 +217,7 @@ describe('Conditional Content Tag Tests', function () {
 
   <p>If this is the slope at an equilibrium of a discrete dynamical system, the equilibrium is
   <answer>
-    <choiceinput inline="true" randomizeOrder><choice>stable</choice><choice>unstable</choice></choiceinput>
+    <choiceinput inline="true" shuffleOrder><choice>stable</choice><choice>unstable</choice></choiceinput>
     <award><when>
       <copy prop="selectedvalue" target="_choiceinput1" />
       =
@@ -294,7 +294,7 @@ describe('Conditional Content Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>Require <choiceinput inline="true" name="c" randomizeOrder><choice>positive</choice><choice>negative</choice></choiceinput>.</p>
+  <p>Require <choiceinput inline="true" name="c" shuffleOrder><choice>positive</choice><choice>negative</choice></choiceinput>.</p>
 
   <p>Condition on <m>x</m>:
   <answer>
