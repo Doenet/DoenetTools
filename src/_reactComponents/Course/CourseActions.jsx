@@ -381,7 +381,6 @@ export const studentCourseItemOrderByCourseId = selectorFamily({
       //If of type for the student then add to the list
       return itemObj.isAssigned && (itemObj.type == 'activity' || itemObj.type == 'section')
     })
-
     return studentDoenetIds;
   }
 })
@@ -405,7 +404,6 @@ export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
       }
       if (inSection){
         let itemObj = get(itemByDoenetId(doenetId));
-        console.log("itemObj",itemObj)
         if (itemObj.isAssigned && sectionDoenetIdsInSection.includes(itemObj.parentDoenetId)){
           sectionDoenetIds.push(doenetId);
           //If of type which has children then add to the section list
@@ -414,7 +412,7 @@ export const studentCourseItemOrderByCourseIdBySection = selectorFamily({
           }
 
         }else{
-          break;  //Can stop after we go up a level because there won't be any more
+          continue;
         }
 
       }

@@ -45,9 +45,9 @@ if ($success) {
     $sql = "
         SELECT e.timeLimitMultiplier AS timeLimitMultiplier
         FROM enrollment AS e
-        LEFT JOIN drive_content AS dc
-        ON e.driveId = dc.driveId
-        WHERE dc.doenetId='$doenetId'
+        LEFT JOIN course_content AS cc
+        ON e.courseId = cc.courseId
+        WHERE cc.doenetId='$doenetId'
         AND e.userId = '$userId'";
 
     $result = $conn->query($sql);

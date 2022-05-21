@@ -372,7 +372,7 @@ export default function Increment(props) {
     ));
   }
 
-  console.log(props.menuOptions);
+  // console.log(props.menuOptions);
 
   return (
     <Container label={props.label} vertical={props.vertical}>
