@@ -115,7 +115,7 @@ export default function ToggleButton(props) {
   }, /* @__PURE__ */ React.createElement("p", {
     style: label
   }, label.value), /* @__PURE__ */ React.createElement(Button, {
-    id: "toggleButton",
+    id: props.id,
     style: toggleButton,
     disabled,
     alert,

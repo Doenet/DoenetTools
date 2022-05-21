@@ -108,7 +108,7 @@ export default class Curve extends GraphicalComponent {
 
     attributes.nearestPointAsCurve = {
       createComponentOfType: "boolean",
-      createStateVariable: "nearestPointAsCurve",
+      createStateVariable: "nearestPointAsCurvePrelim",
       defaultValue: false,
     }
 
@@ -2946,6 +2946,34 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.nearestPointAsCurve = {
+      returnDependencies: () => ({
+        nearestPointAsCurvePrelim: {
+          dependencyType: "stateVariable",
+          variableName: "nearestPointAsCurvePrelim"
+        },
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["nearestPointAsCurve"]
+        },
+        adapterSourceValue: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "nearestPointAsCurve"
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        let nearestPointAsCurve = dependencyValues.nearestPointAsCurvePrelim;
+        if (usedDefault.nearestPointAsCurvePrelim) {
+          if (dependencyValues.functionChild.length > 0) {
+            nearestPointAsCurve = dependencyValues.functionChild[0].stateValues.nearestPointAsCurve;
+          } else if (dependencyValues.adapterSourceValue !== null) {
+            nearestPointAsCurve = dependencyValues.adapterSourceValue;
+          }
+        }
+        return { setValue: { nearestPointAsCurve } }
+      }
+    }
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({

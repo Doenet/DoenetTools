@@ -152,7 +152,7 @@ if ($success){
         sortOrder,
         jsonDefinition)
         VALUES
-        ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$sortOrder','$jsonDefinition');
+        ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$sortOrder','$jsonDefinition');
         ";
         $conn->query($sql);
 
@@ -249,7 +249,7 @@ if ($success){
     sortOrder,
     jsonDefinition)
     VALUES
-    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$isAssigned','$sortOrder','$jsonDefinition')
+    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isAssigned','$sortOrder','$jsonDefinition')
     ";
     
     $result = $conn->query($sql); 

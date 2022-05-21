@@ -1,10 +1,12 @@
 import React from "../../_snowpack/pkg/react.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
+import {itemByDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export default function Ref(props) {
   let {name, SVs, children} = useDoenetRender(props);
   const pageToolView = useRecoilValue(pageToolViewAtom);
+  const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
   if (SVs.hidden) {
     return null;
   }
@@ -27,8 +29,14 @@ export default function Ref(props) {
     if (SVs.variantIndex) {
       url += `&variant=${SVs.variantIndex}`;
     }
+    let usePublic = false;
     if (pageToolView.page === "public") {
-      if (SVs.edit === true || SVs.edit === null && pageToolView.tool === "editor") {
+      usePublic = true;
+    } else if (Object.keys(itemInCourse).length === 0) {
+      usePublic = true;
+    }
+    if (usePublic) {
+      if (SVs.edit === true || SVs.edit === null && pageToolView.page === "public" && pageToolView.tool === "editor") {
         url = `tool=editor&${url}`;
       }
       url = `/public?${url}`;

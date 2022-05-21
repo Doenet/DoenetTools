@@ -46,6 +46,13 @@ export default class BooleanInput extends Input {
       forRenderer: true,
       public: true,
     };
+    attributes.asToggleButton = {
+      createComponentOfType: "boolean",
+      createStateVariable: "asToggleButton",
+      defaultValue: false,
+      forRenderer: true,
+      public: true,
+    }
     attributes.bindValueTo = {
       createComponentOfType: "boolean"
     };

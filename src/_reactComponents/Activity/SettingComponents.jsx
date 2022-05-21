@@ -487,6 +487,7 @@ export const CheckedSetting = ({
   keyToUpdate,
   description,
   label,
+  invert,
 }) => {
   const {
     value: { [keyToUpdate]: recoilValue },
@@ -496,17 +497,17 @@ export const CheckedSetting = ({
 
   useEffect(() => {
     setLocalValue(recoilValue);
-  }, [recoilValue]);
+  }, [invert, recoilValue]);
   return (
     <InputWrapper flex>
       <Checkbox
         style={{ marginRight: '5px' }}
-        checked={localValue}
+        checked={invert ? !localValue : localValue}
         onClick={() => {
-          let valueDescription = 'False';
+          let valueDescription = invert ? 'True' : 'Flase';
           let value = false;
           if (!localValue) {
-            valueDescription = 'True';
+            valueDescription = invert ? 'False' : 'True';
             value = true;
           }
           setLocalValue(value);
@@ -529,6 +530,7 @@ export const CheckedFlag = ({
   keyToUpdate,
   description,
   label,
+  invert,
 }) => {
   const {
     value: { [keyToUpdate]: recoilValue },
@@ -538,17 +540,17 @@ export const CheckedFlag = ({
 
   useEffect(() => {
     setLocalValue(recoilValue);
-  }, [recoilValue]);
+  }, [recoilValue, invert]);
   return (
     <InputWrapper flex>
       <Checkbox
         style={{ marginRight: '5px' }}
-        checked={localValue}
+        checked={invert ? !localValue : localValue}
         onClick={() => {
-          let valueDescription = 'False';
+          let valueDescription = invert ? 'True' : 'Flase';
           let value = false;
           if (!localValue) {
-            valueDescription = 'True';
+            valueDescription = invert ? 'False' : 'True';
             value = true;
           }
           setLocalValue(value);
@@ -857,7 +859,6 @@ export const PinAssignment = ({ courseId, doenetId }) => {
 export function AssignTo({ courseId, doenetId }) {
   const {
     value: { isGloballyAssigned },
-    updateAssignmentSettings,
   } = useActivity(courseId, doenetId);
 
   const { value: enrolledStudents } = useRecoilValue(
@@ -917,22 +918,13 @@ export function AssignTo({ courseId, doenetId }) {
 
   return (
     <>
-      <br />
-      <InputWrapper>
-        <Checkbox
-          style={{ marginRight: '5px' }}
-          checked={!isGloballyAssigned}
-          onClick={() => {
-            updateAssignmentSettings({
-              keyToUpdate: 'isGloballyAssigned',
-              value: !isGloballyAssigned,
-              description: 'Restrict Assignment ',
-              valueDescription: isGloballyAssigned ? 'true' : 'false',
-            });
-          }}
-        />
-        <LabelText>Restrict Assignment To</LabelText>
-      </InputWrapper>
+      <CheckedFlag
+        courseId={courseId}
+        doenetId={doenetId}
+        keyToUpdate="isGloballyAssigned"
+        description="Restrict Assignment"
+        invert
+      />
       <RelatedItems
         width="menu"
         options={enrolledJSX}

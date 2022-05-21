@@ -21,19 +21,19 @@ $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
 if ($courseId == '') {
     $success = false;
     $message = 'Internal Error: missing courseId';
-    http_response_code(400);
 }
 if ($doenetId == '') {
     $success = false;
     $message = 'Internal Error: missing doenetId';
-    http_response_code(400);
 }
 
 //bools only
 $settingKeys = [
     'isPublic',
     'userCanViewSource',
-    // "isDeleted", "isGloballyAssigned", "isAssigned"
+    'isGloballyAssigned',
+    // "isDeleted",
+    // "isAssigned"
 ];
 
 $proviedValues = [];
@@ -65,7 +65,8 @@ if (
 }
 
 if (
-    array_key_exists('userCanViewSource', $proviedValues) &&
+    (array_key_exists('userCanViewSource', $proviedValues) ||
+        array_key_exists('isGloballyAssigned', $proviedValues)) &&
     $permissions['canEditContent'] != '1'
 ) {
     $success = false;
@@ -93,17 +94,21 @@ if ($success) {
         }, $proviedValues)
     );
 
-    $sql = "UPDATE 
+    if (count($proviedValues) > 0) {
+        $sql = "UPDATE 
       `course_content` SET
       $updates
       WHERE courseId = '$courseId' AND doenetId = '$doenetId'
       ";
+        $result = $conn->query($sql);
 
-    $result = $conn->query($sql);
-
-    if ($result == false) {
+        if ($result == false) {
+            $success = false;
+            $message = 'Database error';
+        }
+    } else {
         $success = false;
-        $message = 'Database error';
+        $message = 'Invalid request';
     }
 }
 
