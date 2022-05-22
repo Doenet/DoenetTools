@@ -1,6 +1,8 @@
 import React, {useCallback, useState, useRef} from "../../_snowpack/pkg/react.js";
 import {useDropzone} from "../../_snowpack/pkg/react-dropzone.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
+import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
 import {
   useSetRecoilState,
   useRecoilValue,
@@ -87,7 +89,7 @@ function EditableText({text, submit}) {
 export default function SupportingFilesMenu(props) {
   const addToast = useToast();
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const [{canUpload, userQuotaBytesAvailable, supportingFiles, quotaBytes}, setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
+  const [{canUpload, userQuotaBytesAvailable, supportingFiles, quotaBytes, canEditContent}, setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
   let typesAllowed = ["image/jpeg", "image/png"];
   let [uploadProgress, setUploadProgress] = useState([]);
   let numberOfFilesUploading = useRef(0);
@@ -122,14 +124,27 @@ export default function SupportingFilesMenu(props) {
     });
   }, [doenetId]);
   const deleteFile = useRecoilCallback(({set}) => async (cid) => {
-    let {data} = await axios.get("/api/deleteFile.php", {params: {doenetId, cid}});
-    let {userQuotaBytesAvailable: userQuotaBytesAvailable2} = data;
-    set(supportingFilesAndPermissionByDoenetIdSelector(doenetId), (was) => {
-      let newObj = {...was};
-      newObj.supportingFiles = was.supportingFiles.filter((file) => file.cid !== cid);
-      newObj.userQuotaBytesAvailable = userQuotaBytesAvailable2;
-      return newObj;
-    });
+    try {
+      let resp = await axios.get("/api/deleteFile.php", {params: {doenetId, cid}});
+      if (resp.status < 300 && resp?.data?.success) {
+        addToast("File deleted.");
+        let {userQuotaBytesAvailable: userQuotaBytesAvailable2} = resp.data;
+        set(supportingFilesAndPermissionByDoenetIdSelector(doenetId), (was) => {
+          let newObj = {...was};
+          newObj.supportingFiles = was.supportingFiles.filter((file) => file.cid !== cid);
+          newObj.userQuotaBytesAvailable = userQuotaBytesAvailable2;
+          return newObj;
+        });
+      } else {
+        if (resp?.data?.success == false) {
+          addToast(resp?.data?.message, toastType.ERROR);
+        } else {
+          throw new Error(`response code: ${resp.status}`);
+        }
+      }
+    } catch (err) {
+      throw new Error(`Error deleting file ${err}`);
+    }
   }, [doenetId]);
   const onDrop = useCallback((files) => {
     let success = true;
@@ -276,18 +291,23 @@ export default function SupportingFilesMenu(props) {
       submit: (text) => {
         updateDescription(text, cid);
       }
-    })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("button", {
+    })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+      width: "menu"
+    }, canUpload ? /* @__PURE__ */ React.createElement(ActionButton, {
+      alert: true,
+      value: "Delete",
       onClick: () => {
         deleteFile(cid);
       }
-    }, "delete"), /* @__PURE__ */ React.createElement(CopyToClipboard, {
+    }) : null, /* @__PURE__ */ React.createElement(CopyToClipboard, {
       onCopy: () => addToast("Code copied to clipboard!", toastType.SUCCESS),
       text: doenetMLCode
-    }, /* @__PURE__ */ React.createElement("button", {
-      onClick: () => {
-      }
-    }, "Code ", /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faClipboard
+    }, /* @__PURE__ */ React.createElement(ActionButton, {
+      disabled: description == "",
+      icon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+        icon: faClipboard
+      }),
+      value: "Copy Code"
     })))), /* @__PURE__ */ React.createElement("hr", null)));
   });
   return /* @__PURE__ */ React.createElement("div", null, uploadingSection, /* @__PURE__ */ React.createElement("br", null), supportFilesJSX);

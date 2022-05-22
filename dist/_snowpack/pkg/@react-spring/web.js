@@ -889,28 +889,27 @@ function isAnimatedString(value) {
   return is.str(value) && (value[0] == '#' || /\d/.test(value) || !isSSR() && cssVariableRegex.test(value) || value in (colors$1 || {}));
 }
 
-const useOnce = effect => react.useEffect(effect, emptyDeps);
-const emptyDeps = [];
+const useLayoutEffect = typeof window !== 'undefined' && window.document && window.document.createElement ? react.useLayoutEffect : react.useEffect;
+
+const useIsMounted = () => {
+  const isMounted = react.useRef(false);
+  useLayoutEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+  return isMounted;
+};
 
 function useForceUpdate() {
   const update = react.useState()[1];
-  const mounted = react.useState(makeMountedRef)[0];
-  useOnce(mounted.unmount);
+  const isMounted = useIsMounted();
   return () => {
-    if (mounted.current) {
-      update({});
+    if (isMounted.current) {
+      update(Math.random());
     }
   };
-}
-
-function makeMountedRef() {
-  const mounted = {
-    current: true,
-    unmount: () => () => {
-      mounted.current = false;
-    }
-  };
-  return mounted;
 }
 
 function useMemoOne(getResult, inputs) {
@@ -959,6 +958,9 @@ function areInputsEqual(next, prev) {
   return true;
 }
 
+const useOnce = effect => react.useEffect(effect, emptyDeps);
+const emptyDeps = [];
+
 function usePrev(value) {
   const prevRef = react.useRef();
   react.useEffect(() => {
@@ -966,8 +968,6 @@ function usePrev(value) {
   });
   return prevRef.current;
 }
-
-const useLayoutEffect = typeof window !== 'undefined' && window.document && window.document.createElement ? react.useLayoutEffect : react.useEffect;
 
 const $node = Symbol.for('Animated:node');
 const isAnimated = value => !!value && value[$node] === value;
@@ -1240,14 +1240,14 @@ const withAnimated = (Component, host) => {
     const observer = new PropsObserver(callback, deps);
     const observerRef = react.useRef();
     useLayoutEffect(() => {
-      const lastObserver = observerRef.current;
       observerRef.current = observer;
       each(deps, dep => addFluidObserver(dep, observer));
-
-      if (lastObserver) {
-        each(lastObserver.deps, dep => removeFluidObserver(dep, lastObserver));
-        raf.cancel(lastObserver.update);
-      }
+      return () => {
+        if (observerRef.current) {
+          each(observerRef.current.deps, dep => removeFluidObserver(dep, observerRef.current));
+          raf.cancel(observerRef.current.update);
+        }
+      };
     });
     react.useEffect(callback, []);
     useOnce(() => () => {
@@ -3398,15 +3398,27 @@ function useTransition(data, props, deps) {
   useLayoutEffect(() => {
     usedTransitions.current = transitions;
   });
-  useOnce(() => () => {
+  useOnce(() => {
     each(usedTransitions.current, t => {
-      if (t.expired) {
-        clearTimeout(t.expirationId);
-      }
+      var _t$ctrl$ref;
 
-      detachRefs(t.ctrl, ref);
-      t.ctrl.stop(true);
+      (_t$ctrl$ref = t.ctrl.ref) == null ? void 0 : _t$ctrl$ref.add(t.ctrl);
+      const change = changes.get(t);
+
+      if (change) {
+        t.ctrl.start(change.payload);
+      }
     });
+    return () => {
+      each(usedTransitions.current, t => {
+        if (t.expired) {
+          clearTimeout(t.expirationId);
+        }
+
+        detachRefs(t.ctrl, ref);
+        t.ctrl.stop(true);
+      });
+    };
   });
   const keys = getKeys(items, propsFn ? propsFn() : props, prevTransitions);
   const expired = reset && usedTransitions.current || [];

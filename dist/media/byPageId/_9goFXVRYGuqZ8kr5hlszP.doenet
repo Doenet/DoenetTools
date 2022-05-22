@@ -1,5 +1,0 @@
-<setup>{$$a$$[{-6,6}, Integer],$$b$$[{-6,6}, Integer],$$c$$[{1,6}, Integer],$$d$$[{1,6}, Integer],$$p$$[{-1,1}, Choice],$$q$$[{-1,1}, Choice]}</setup>
-
-<p>Find the distance between the points ($$a$$, $$b$$) and ($$a$$+$$p$$*$$c$$, $$b$$+$$q$$*$$d$$).  Express your answer precisely, using a square root when necessary. </p> 
-
-VARIABLES: 

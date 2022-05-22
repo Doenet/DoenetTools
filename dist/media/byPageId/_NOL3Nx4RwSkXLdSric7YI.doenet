@@ -1,3 +1,0 @@
-<p>
-Now we can compare with the effects of another matrix: <math format="latex">B = ⎡⎢⎣√32−1212√32⎤⎥⎦[32−121232]\begin{bmatrix} \frac{\sqrt{3}}{2} & \frac{-1}{2} \\ \frac{1}{2} & \frac{\sqrt{3}}{2} \end{bmatrix}</math>. The graph below does the same as the first one, but with the new matrix. What do you notice?
-</p>

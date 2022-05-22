@@ -1,9 +1,0 @@
-<slider name='s'/>
-    $s
-<graph>
-  <point>($s,1)</point>
-  <function>$m</function>
-</graph>
-
-  <mathinput name='m'/>
-    <bug />

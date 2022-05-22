@@ -1,6 +1,6 @@
 .bp4-datepicker{
   background:#fff;
-  border-radius:3px;
+  border-radius:2px;
   display:-webkit-box;
   display:-ms-flexbox;
   display:flex;
@@ -21,7 +21,7 @@
   outline:none;
 }
 .bp4-datepicker .bp4-datepicker-day-wrapper{
-  border-radius:3px;
+  border-radius:2px;
   padding:7px;
 }
 .bp4-datepicker .DayPicker-Month{
@@ -82,7 +82,7 @@
   text-align:center;
   vertical-align:middle;
   width:30px;
-  border-radius:3px;
+  border-radius:2px;
   cursor:pointer;
 }
 .bp4-datepicker .DayPicker-Day.DayPicker-Day--outside{
@@ -100,11 +100,14 @@
 }
 .bp4-datepicker .DayPicker-Day.DayPicker-Day--selected{
   background-color:#2d72d2;
-  border-radius:3px;
+  border-radius:2px;
   color:#fff;
 }
 .bp4-datepicker .DayPicker-Day.DayPicker-Day--selected:hover{
   background-color:#215db0;
+}
+.bp4-datepicker .DayPicker-Day.DayPicker-Day--selected:active{
+  background-color:#184a90;
 }
 .bp4-datepicker .DayPicker-Day.DayPicker-Day--disabled{
   background:none;
@@ -197,7 +200,7 @@
 }
 
 .bp4-dark .bp4-datepicker{
-  background:#383e47;
+  background:#2f343c;
 }
 .bp4-dark .bp4-datepicker .DayPicker-WeekNumber{
   color:rgba(171, 179, 191, 0.6);
@@ -206,7 +209,7 @@
   color:rgba(171, 179, 191, 0.6);
 }
 .bp4-dark .bp4-datepicker .DayPicker-Day.DayPicker-Day--isToday .bp4-datepicker-day-wrapper{
-  border:1px solid rgba(255, 255, 255, 0.15);
+  border:1px solid rgba(255, 255, 255, 0.2);
 }
 .bp4-dark .bp4-datepicker .DayPicker-Day:hover, .bp4-dark .bp4-datepicker .DayPicker-Day:focus{
   background:rgba(143, 153, 168, 0.15);
@@ -219,7 +222,10 @@
   background-color:#2d72d2;
 }
 .bp4-dark .bp4-datepicker .DayPicker-Day.DayPicker-Day--selected:hover{
-  background-color:#4c90f0;
+  background-color:#215db0;
+}
+.bp4-dark .bp4-datepicker .DayPicker-Day.DayPicker-Day--selected:active{
+  background-color:#184a90;
 }
 .bp4-dark .bp4-datepicker .DayPicker-Day.DayPicker-Day--disabled{
   background:none;
@@ -270,6 +276,7 @@
 }
 .bp4-daterangepicker .DayPicker-Day--hovered-range{
   border-radius:0;
+  color:#215db0;
 }
 .bp4-daterangepicker .DayPicker-Day--hovered-range:not(.DayPicker-Day--selected):not(.DayPicker-Day--selected-range):not(.DayPicker-Day--selected-range-start):not(.DayPicker-Day--selected-range-end){
   background-color:rgba(45, 114, 210, 0.1);
@@ -277,9 +284,11 @@
 .bp4-daterangepicker .DayPicker-Day--selected-range{
   background-color:rgba(45, 114, 210, 0.1);
   border-radius:0;
+  color:#215db0;
 }
 .bp4-daterangepicker .DayPicker-Day--selected-range:hover{
   background-color:rgba(45, 114, 210, 0.2);
+  color:#215db0;
 }
 .bp4-daterangepicker .DayPicker-Day--selected-range-start:not(.DayPicker-Day--selected-range-end):not(.DayPicker-Day--hovered-range-end){
   border-bottom-right-radius:0;
@@ -298,12 +307,14 @@
   border-top-left-radius:0;
 }
 .bp4-dark .bp4-daterangepicker .DayPicker-Day--hovered-range{
+  color:#f6f7f9;
 }
 .bp4-dark .bp4-daterangepicker .DayPicker-Day--hovered-range:not(.DayPicker-Day--selected):not(.DayPicker-Day--selected-range):not(.DayPicker-Day--selected-range-start):not(.DayPicker-Day--selected-range-end){
   background-color:rgba(45, 114, 210, 0.2);
 }
 .bp4-dark .bp4-daterangepicker .DayPicker-Day--selected-range{
   background-color:rgba(45, 114, 210, 0.2);
+  color:#f6f7f9;
 }
 .bp4-dark .bp4-daterangepicker .DayPicker-Day--selected-range:hover{
   background-color:rgba(45, 114, 210, 0.4);
@@ -343,7 +354,7 @@
 }
 .bp4-timepicker .bp4-timepicker-input-row{
   background:#fff;
-  border-radius:3px;
+  border-radius:2px;
   -webkit-box-shadow:inset 0 0 0 1px rgba(17, 20, 24, 0.2), inset 0 1px 1px rgba(17, 20, 24, 0.5);
           box-shadow:inset 0 0 0 1px rgba(17, 20, 24, 0.2), inset 0 1px 1px rgba(17, 20, 24, 0.5);
   display:inline-block;
@@ -362,7 +373,7 @@
 .bp4-timepicker .bp4-timepicker-input{
   background:transparent;
   border:0;
-  border-radius:3px;
+  border-radius:2px;
   -webkit-box-shadow:0 0 0 0 rgba(45, 114, 210, 0), 0 0 0 0 rgba(45, 114, 210, 0);
           box-shadow:0 0 0 0 rgba(45, 114, 210, 0), 0 0 0 0 rgba(45, 114, 210, 0);
   color:#1c2127;
@@ -397,12 +408,12 @@
           box-shadow:none;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-primary{
-  -webkit-box-shadow:0 0 0 0 rgba(76, 144, 240, 0), 0 0 0 0 rgba(76, 144, 240, 0), 0 0 0 0 rgba(76, 144, 240, 0), inset 0 0 0 1px #4c90f0, inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
-          box-shadow:0 0 0 0 rgba(76, 144, 240, 0), 0 0 0 0 rgba(76, 144, 240, 0), 0 0 0 0 rgba(76, 144, 240, 0), inset 0 0 0 1px #4c90f0, inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
+  -webkit-box-shadow:0 0 0 0 rgba(76, 144, 240, 0), 0 0 0 0 rgba(76, 144, 240, 0), 0 0 0 0 rgba(76, 144, 240, 0), inset 0 0 0 1px #4c90f0, inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
+          box-shadow:0 0 0 0 rgba(76, 144, 240, 0), 0 0 0 0 rgba(76, 144, 240, 0), 0 0 0 0 rgba(76, 144, 240, 0), inset 0 0 0 1px #4c90f0, inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-primary:focus{
-  -webkit-box-shadow:inset 0 0 0 1px #4c90f0, inset 0 0 0 1px #4c90f0, 0 0 0 2px rgba(76, 144, 240, 0.3), inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
-          box-shadow:inset 0 0 0 1px #4c90f0, inset 0 0 0 1px #4c90f0, 0 0 0 2px rgba(76, 144, 240, 0.3), inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
+  -webkit-box-shadow:inset 0 0 0 1px #4c90f0, inset 0 0 0 1px #4c90f0, 0 0 0 2px rgba(76, 144, 240, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
+          box-shadow:inset 0 0 0 1px #4c90f0, inset 0 0 0 1px #4c90f0, 0 0 0 2px rgba(76, 144, 240, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-primary[readonly]{
   -webkit-box-shadow:inset 0 0 0 1px #4c90f0;
@@ -429,12 +440,12 @@
           box-shadow:none;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-success{
-  -webkit-box-shadow:0 0 0 0 rgba(50, 164, 103, 0), 0 0 0 0 rgba(50, 164, 103, 0), 0 0 0 0 rgba(50, 164, 103, 0), inset 0 0 0 1px #32a467, inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
-          box-shadow:0 0 0 0 rgba(50, 164, 103, 0), 0 0 0 0 rgba(50, 164, 103, 0), 0 0 0 0 rgba(50, 164, 103, 0), inset 0 0 0 1px #32a467, inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
+  -webkit-box-shadow:0 0 0 0 rgba(50, 164, 103, 0), 0 0 0 0 rgba(50, 164, 103, 0), 0 0 0 0 rgba(50, 164, 103, 0), inset 0 0 0 1px #32a467, inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
+          box-shadow:0 0 0 0 rgba(50, 164, 103, 0), 0 0 0 0 rgba(50, 164, 103, 0), 0 0 0 0 rgba(50, 164, 103, 0), inset 0 0 0 1px #32a467, inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-success:focus{
-  -webkit-box-shadow:inset 0 0 0 1px #32a467, inset 0 0 0 1px #32a467, 0 0 0 2px rgba(50, 164, 103, 0.3), inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
-          box-shadow:inset 0 0 0 1px #32a467, inset 0 0 0 1px #32a467, 0 0 0 2px rgba(50, 164, 103, 0.3), inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
+  -webkit-box-shadow:inset 0 0 0 1px #32a467, inset 0 0 0 1px #32a467, 0 0 0 2px rgba(50, 164, 103, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
+          box-shadow:inset 0 0 0 1px #32a467, inset 0 0 0 1px #32a467, 0 0 0 2px rgba(50, 164, 103, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-success[readonly]{
   -webkit-box-shadow:inset 0 0 0 1px #32a467;
@@ -461,12 +472,12 @@
           box-shadow:none;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-warning{
-  -webkit-box-shadow:0 0 0 0 rgba(236, 154, 60, 0), 0 0 0 0 rgba(236, 154, 60, 0), 0 0 0 0 rgba(236, 154, 60, 0), inset 0 0 0 1px #ec9a3c, inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
-          box-shadow:0 0 0 0 rgba(236, 154, 60, 0), 0 0 0 0 rgba(236, 154, 60, 0), 0 0 0 0 rgba(236, 154, 60, 0), inset 0 0 0 1px #ec9a3c, inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
+  -webkit-box-shadow:0 0 0 0 rgba(236, 154, 60, 0), 0 0 0 0 rgba(236, 154, 60, 0), 0 0 0 0 rgba(236, 154, 60, 0), inset 0 0 0 1px #ec9a3c, inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
+          box-shadow:0 0 0 0 rgba(236, 154, 60, 0), 0 0 0 0 rgba(236, 154, 60, 0), 0 0 0 0 rgba(236, 154, 60, 0), inset 0 0 0 1px #ec9a3c, inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-warning:focus{
-  -webkit-box-shadow:inset 0 0 0 1px #ec9a3c, inset 0 0 0 1px #ec9a3c, 0 0 0 2px rgba(236, 154, 60, 0.3), inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
-          box-shadow:inset 0 0 0 1px #ec9a3c, inset 0 0 0 1px #ec9a3c, 0 0 0 2px rgba(236, 154, 60, 0.3), inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
+  -webkit-box-shadow:inset 0 0 0 1px #ec9a3c, inset 0 0 0 1px #ec9a3c, 0 0 0 2px rgba(236, 154, 60, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
+          box-shadow:inset 0 0 0 1px #ec9a3c, inset 0 0 0 1px #ec9a3c, 0 0 0 2px rgba(236, 154, 60, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-warning[readonly]{
   -webkit-box-shadow:inset 0 0 0 1px #ec9a3c;
@@ -493,12 +504,12 @@
           box-shadow:none;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-danger{
-  -webkit-box-shadow:0 0 0 0 rgba(231, 106, 110, 0), 0 0 0 0 rgba(231, 106, 110, 0), 0 0 0 0 rgba(231, 106, 110, 0), inset 0 0 0 1px #e76a6e, inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
-          box-shadow:0 0 0 0 rgba(231, 106, 110, 0), 0 0 0 0 rgba(231, 106, 110, 0), 0 0 0 0 rgba(231, 106, 110, 0), inset 0 0 0 1px #e76a6e, inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
+  -webkit-box-shadow:0 0 0 0 rgba(231, 106, 110, 0), 0 0 0 0 rgba(231, 106, 110, 0), 0 0 0 0 rgba(231, 106, 110, 0), inset 0 0 0 1px #e76a6e, inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
+          box-shadow:0 0 0 0 rgba(231, 106, 110, 0), 0 0 0 0 rgba(231, 106, 110, 0), 0 0 0 0 rgba(231, 106, 110, 0), inset 0 0 0 1px #e76a6e, inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-danger:focus{
-  -webkit-box-shadow:inset 0 0 0 1px #e76a6e, inset 0 0 0 1px #e76a6e, 0 0 0 2px rgba(231, 106, 110, 0.3), inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
-          box-shadow:inset 0 0 0 1px #e76a6e, inset 0 0 0 1px #e76a6e, 0 0 0 2px rgba(231, 106, 110, 0.3), inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
+  -webkit-box-shadow:inset 0 0 0 1px #e76a6e, inset 0 0 0 1px #e76a6e, 0 0 0 2px rgba(231, 106, 110, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
+          box-shadow:inset 0 0 0 1px #e76a6e, inset 0 0 0 1px #e76a6e, 0 0 0 2px rgba(231, 106, 110, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-input.bp4-intent-danger[readonly]{
   -webkit-box-shadow:inset 0 0 0 1px #e76a6e;
@@ -547,8 +558,8 @@
 
 .bp4-dark .bp4-timepicker .bp4-timepicker-input-row{
   background:rgba(17, 20, 24, 0.3);
-  -webkit-box-shadow:inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
-          box-shadow:inset 0 1px 0 0 rgba(17, 20, 24, 0.6), inset -1px 0 0 rgba(17, 20, 24, 0.6), inset 1px 0 0 rgba(17, 20, 24, 0.6), inset 0 -1px 0 0 #8f99a8;
+  -webkit-box-shadow:inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
+          box-shadow:inset 0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 #8f99a8;
 }
 .bp4-dark .bp4-timepicker .bp4-timepicker-divider-text{
   color:#abb3bf;
@@ -566,7 +577,7 @@
 }
 .bp4-datetimepicker{
   background-color:#fff;
-  border-radius:3px;
+  border-radius:2px;
   padding:10px;
   text-align:center;
 }
@@ -586,30 +597,5 @@
 
 .bp4-dateinput-popover{
   padding:0;
-}
-.bp4-datepicker .DayPicker-Day.DayPicker-Day--selected:active, .bp4-daterangepicker .DayPicker-Day.DayPicker-Day--selected:active{
-  background-color:#184a90;
-}
-.bp4-dark .bp4-datepicker .DayPicker-Day.DayPicker-Day--selected:hover, .bp4-dark .bp4-daterangepicker .DayPicker-Day.DayPicker-Day--selected:hover{
-  background-color:#215db0;
-}
-.bp4-dark .bp4-datepicker .DayPicker-Day.DayPicker-Day--selected:active, .bp4-dark .bp4-daterangepicker .DayPicker-Day.DayPicker-Day--selected:active{
-  background-color:#184a90;
-}
-
-.bp4-daterangepicker .DayPicker-Day--hovered-range{
-  color:#215db0;
-}
-.bp4-daterangepicker .DayPicker-Day--selected-range{
-  color:#215db0;
-}
-.bp4-daterangepicker .DayPicker-Day--selected-range:hover{
-  color:#215db0;
-}
-.bp4-dark .bp4-daterangepicker .DayPicker-Day--hovered-range{
-  color:#f6f7f9;
-}
-.bp4-dark .bp4-daterangepicker .DayPicker-Day--selected-range{
-  color:#f6f7f9;
 }
 /*# sourceMappingURL=blueprint-datetime.css.map */
