@@ -1847,7 +1847,7 @@ describe('Specifying unique variant tests', function () {
 
     let doenetML = `
     <variantControl uniquevariants />
-    <choiceinput name="ci" randomizeOrder>
+    <choiceinput name="ci" shuffleOrder>
       <choice>red</choice>
       <choice>blue</choice>
       <choice>green</choice>
@@ -1973,7 +1973,7 @@ describe('Specifying unique variant tests', function () {
 
     let doenetML = `
     <variantControl uniquevariants />
-    <choiceinput name="ci" randomizeOrder>
+    <choiceinput name="ci" shuffleOrder>
       <choice><selectFromSequence from="1" to="2" assignNames="n" /></choice>
       <choice><selectFromSequence type="letters" from="a" to="b" assignNames="l" /></choice>
     </choiceinput>
