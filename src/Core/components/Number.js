@@ -622,6 +622,19 @@ export default class NumberComponent extends InlineComponent {
       isPublic: true
     });
 
+    stateVariableDefinitions.latex = {
+      isPublic: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        valueForDisplay: {
+          dependencyType: "stateVariable",
+          variableName: "valueForDisplay"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { latex: me.fromAst(dependencyValues.valueForDisplay).toLatex() } }
+      }
+    }
 
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({
