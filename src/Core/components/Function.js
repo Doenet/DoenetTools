@@ -777,6 +777,8 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.formula = {
       public: true,
       componentType: "math",
+      defaultValue: me.fromAst(0),
+      hasEssential: true,
       returnDependencies: () => ({
         unnormalizedFormula: {
           dependencyType: "stateVariable",
@@ -791,7 +793,14 @@ export default class Function extends InlineComponent {
           variableName: "expand"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
+        // need to communicate the case when
+        // the default value of 0 was used
+        if (usedDefault.unnormalizedFormula) {
+          return {
+            useEssentialOrDefaultValue: { formula: true }
+          }
+        }
 
         let formula = normalizeMathExpression({
           value: dependencyValues.unnormalizedFormula,
