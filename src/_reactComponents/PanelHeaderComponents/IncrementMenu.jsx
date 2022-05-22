@@ -22,7 +22,7 @@ const IncrementBox = styled.div`
 
 const IncrementContainer = styled.div`
   position: relative;
-  width: ${(props) => (props.width === 'menu' ? '100%' : props.width ? props.width : '210px')};
+  width: 100%;
 `;
 
 const IncreaseButton = styled.button`
@@ -378,7 +378,7 @@ export default function Increment(props) {
     <Container label={props.label} vertical={props.vertical}>
       {props.label && <Label>{props.label}</Label> }
       {props.label && props.vertical && <br /> }
-      <IncrementContainer width={props.width}>
+      <IncrementContainer>
         <IncrementBox
           ref={containerRef}
           onBlur={containerOnBlur}
