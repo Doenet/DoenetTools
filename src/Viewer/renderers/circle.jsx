@@ -20,8 +20,10 @@ export default function Circle(props) {
   let centerCoords = useRef(null);
 
   let lastCenterFromCore = useRef(null);
+  let throughAnglesFromCore = useRef(null);
 
   lastCenterFromCore.current = SVs.numericalCenter;
+  throughAnglesFromCore.current = SVs.throughAngles;
 
   useEffect(() => {
 
@@ -101,7 +103,7 @@ export default function Circle(props) {
       pointerAtDown.current = [e.x, e.y];
       centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
       radiusAtDown.current = newCircleJXG.radius;
-      throughAnglesAtDown.current = [...SVs.throughAngles];
+      throughAnglesAtDown.current = [...throughAnglesFromCore.current];
     });
 
     previousWithLabel.current = SVs.showLabel && SVs.label !== "";
