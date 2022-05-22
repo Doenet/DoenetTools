@@ -664,7 +664,9 @@ export default class Select extends CompositeComponent {
       withReplacement,
     }
 
-    if (withReplacement || numberToSelect === 1) {
+    if (numberOfVariantsByChild.length === 0) {
+      numberOfVariants = 1;
+    } else if (withReplacement || numberToSelect === 1) {
       let numberOfOptionsPerSelection = numberOfVariantsByChild.reduce((a, c) => a + c);
       numberOfVariants = Math.pow(numberOfOptionsPerSelection, numberToSelect);
     } else {
@@ -720,6 +722,12 @@ export default class Select extends CompositeComponent {
     let withReplacement = uniqueVariantData.withReplacement;
     let numberOfChildren = serializedComponent.children.length;
     let childrenToSelect = serializedComponent.children;
+
+
+    if (numberOfVariantsByChild.length === 0) {
+      return { success: true, desiredVariant: { indices: [] } }
+    }
+
 
     let combinations;
 
