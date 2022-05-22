@@ -218,7 +218,7 @@ ORDER BY firstName
 $result = $conn->query($sql);
 
 $enrollmentArray = array();
-if ($result->num_rows > 1) {
+if ($result->num_rows >= 1) {
 
 		while ($row = $result->fetch_assoc()){
 			$learner = array(
