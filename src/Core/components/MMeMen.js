@@ -14,8 +14,8 @@ export class M extends InlineComponent {
   static returnChildGroups() {
 
     return [{
-      group: "stringsTextsAndMaths",
-      componentTypes: ["string", "text", "math", "mathList", "m", "mathInput"]
+      group: "inline",
+      componentTypes: ["_inline"]
     }]
 
   }
@@ -31,16 +31,16 @@ export class M extends InlineComponent {
       defaultValue: "",
       hasEssential: true,
       returnDependencies: () => ({
-        stringTextMathChildren: {
+        inlineChildren: {
           dependencyType: "child",
-          childGroups: ["stringsTextsAndMaths"],
+          childGroups: ["inline"],
           variableNames: ["latex", "text"],
           variablesOptional: true,
         },
       }),
       definition: function ({ dependencyValues }) {
 
-        if (dependencyValues.stringTextMathChildren.length === 0) {
+        if (dependencyValues.inlineChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
               latex: true
@@ -50,12 +50,12 @@ export class M extends InlineComponent {
 
         let latex = "";
 
-        for (let child of dependencyValues.stringTextMathChildren) {
-          if (typeof child === "string") {
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child !== "object") {
             latex += child;
-          } else if (child.stateValues.latex) {
+          } else if (typeof child.stateValues.latex === "string") {
             latex += child.stateValues.latex
-          } else if (child.stateValues.text) {
+          } else if (typeof child.stateValues.text === "string") {
             latex += child.stateValues.text
           }
         }
@@ -69,9 +69,9 @@ export class M extends InlineComponent {
     stateVariableDefinitions.latexWithInputChildren = {
       forRenderer: true,
       returnDependencies: () => ({
-        stringTextMathChildren: {
+        inlineChildren: {
           dependencyType: "child",
-          childGroups: ["stringsTextsAndMaths"],
+          childGroups: ["inline"],
           variableNames: ["latex", "text"],
           variablesOptional: true,
         },
@@ -82,7 +82,7 @@ export class M extends InlineComponent {
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
 
-        if (dependencyValues.stringTextMathChildren.length === 0) {
+        if (dependencyValues.inlineChildren.length === 0) {
           return {
             setValue: {
               latexWithInputChildren: [dependencyValues.latex]
@@ -93,12 +93,12 @@ export class M extends InlineComponent {
         let latexWithInputChildren = [];
         let lastLatex = "";
         let inputInd = 0;
-        for (let child of dependencyValues.stringTextMathChildren) {
-          if (typeof child === "string") {
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child !== "object") {
             lastLatex += child;
           } else if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
-            baseComponentType: "mathInput"
+            baseComponentType: "input"
           })) {
             if (lastLatex.length > 0) {
               latexWithInputChildren.push(lastLatex);
@@ -107,9 +107,9 @@ export class M extends InlineComponent {
             latexWithInputChildren.push(inputInd);
             inputInd++;
           } else {
-            if (child.stateValues.latex) {
+            if (typeof child.stateValues.latex === "string") {
               lastLatex += child.stateValues.latex
-            } else if (child.stateValues.text) {
+            } else if (typeof child.stateValues.text === "string") {
               lastLatex += child.stateValues.text
             }
           }
