@@ -129,7 +129,7 @@ export default function ActionButton(props) {
           {label}
         </Label>
         <Button
-          id="actionButton"
+          id={props.id}
           style={actionButton}
           alert={alert}
           onClick={(e) => {
