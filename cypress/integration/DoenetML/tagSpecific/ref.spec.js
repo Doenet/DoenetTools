@@ -173,7 +173,7 @@ describe('ref Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', 'A link to a Doenet doc.')
 
     cy.get('#\\/_ref1').should('have.text', 'a Doenet doc').invoke('attr', 'href')
-      .then((href) => expect(href).eq("/#/course?tool=assignment&doenetId=abcdefg"));
+      .then((href) => expect(href).eq("/public?doenetId=abcdefg"));
 
   })
 

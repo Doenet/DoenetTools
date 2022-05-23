@@ -2845,16 +2845,16 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
 
-    let fishInd, choiceOrder;
+    let catInd, choiceOrder;
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/problem1/_select1"].stateValues.currentVariantName).eq("fish");
+      expect(stateVariables["/problem1/_select1"].stateValues.currentVariantName).eq("cat");
       let choices = stateVariables['/problem1/_choiceinput1'].stateValues.choiceTexts;
-      fishInd = choices.indexOf("blub") + 1;
+      catInd = choices.indexOf("meow") + 1;
       choiceOrder = stateVariables['/problem1/_choiceinput1'].stateValues.choiceOrder;
 
-      cy.get(cesc(`#/problem1/_choiceinput1_choice${fishInd}_input`)).click();
+      cy.get(cesc(`#/problem1/_choiceinput1_choice${catInd}_input`)).click();
     })
 
 
@@ -2884,10 +2884,10 @@ describe('Copy Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/problem1/_select1"].stateValues.currentVariantName).eq("fish");
+      expect(stateVariables["/problem1/_select1"].stateValues.currentVariantName).eq("cat");
       expect(stateVariables['/problem1/_choiceinput1'].stateValues.choiceOrder).eqls(choiceOrder);
       let choices = [...stateVariables['/problem1/_choiceinput1'].stateValues.choiceTexts];
-      expect(choices.indexOf("blub") + 1).eq(fishInd);
+      expect(choices.indexOf("meow") + 1).eq(catInd);
     })
 
 
@@ -2940,10 +2940,18 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
     cy.get(cesc('#/c6/grp')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/s1a')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/c10/s1b')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/c11/grp')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/c11/grp')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -2963,11 +2971,22 @@ describe('Copy Tag Tests', function () {
       cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c7s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c8s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c9s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c10s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c11s)).should('have.text', 'Section 1values: 1 2 3')
+
+      cy.get(cesc('#' + c7s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c8s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c9s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c10s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c11s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
 
       // put in window just so happens after above
       cy.window().then(async (win) => {
@@ -3133,10 +3152,18 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
     cy.get(cesc('#/c6/grp')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/s1a')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/c10/s1b')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/c11/grp')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/c11/grp')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3156,12 +3183,21 @@ describe('Copy Tag Tests', function () {
       cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c7s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c8s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c9s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c10s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c11s)).should('have.text', 'Section 1values: 1 2 3')
-
+      cy.get(cesc('#' + c7s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c8s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c9s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c10s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c11s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
       // put in window just so happens after above
       cy.window().then(async (win) => {
         expect(stateVariables["/c1/n1"].stateValues.value).eq(1)
@@ -3325,10 +3361,18 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
     cy.get(cesc('#/c6/grp')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/s1a')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/c10/s1b')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/c11/grp')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/c11/grp')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3348,11 +3392,21 @@ describe('Copy Tag Tests', function () {
       cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c7s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c8s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c9s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c10s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c11s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c7s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c8s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c9s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c10s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c11s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
 
       // put in window just so happens after above
       cy.window().then(async (win) => {
@@ -3517,10 +3571,18 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/c5/p1b')).should('have.text', 'values: 1 2 3')
     cy.get(cesc('#/c6/grp')).should('have.text', 'values: 1 2 3')
 
-    cy.get(cesc('#/_section1')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/s1a')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/c10/s1b')).should('have.text', 'Section 1values: 1 2 3')
-    cy.get(cesc('#/c11/grp')).should('have.text', 'Section 1values: 1 2 3')
+    cy.get(cesc('#/_section1')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/s1a')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
+    cy.get(cesc('#/c11/grp')).invoke('text').then(text => {
+      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+    })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -3540,11 +3602,21 @@ describe('Copy Tag Tests', function () {
       cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
-      cy.get(cesc('#' + c7s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c8s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c9s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c10s)).should('have.text', 'Section 1values: 1 2 3')
-      cy.get(cesc('#' + c11s)).should('have.text', 'Section 1values: 1 2 3')
+      cy.get(cesc('#' + c7s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c8s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c9s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c10s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
+      cy.get(cesc('#' + c11s)).invoke('text').then(text => {
+        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      })
 
       // put in window just so happens after above
       cy.window().then(async (win) => {
@@ -3927,7 +3999,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -3957,7 +4029,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -3992,7 +4064,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -4022,7 +4094,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -4052,7 +4124,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -4083,7 +4155,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -4113,7 +4185,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -4144,7 +4216,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -4174,7 +4246,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -4202,7 +4274,7 @@ describe('Copy Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);

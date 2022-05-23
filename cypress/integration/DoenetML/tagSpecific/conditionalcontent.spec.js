@@ -2565,7 +2565,7 @@ describe('Conditional Content Tag Tests', function () {
 
     cy.get('#\\/n textarea').type("1", { force: true }).blur();
 
-    cy.get('#\\/_document1').should('have.text', '\n  a\n  1\n  before\n  nothing: \n  after\n  ')
+    cy.get('#\\/_document1').should('contain.text', '\n  a\n  1\n  before\n  nothing: \n  after\n  ')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
