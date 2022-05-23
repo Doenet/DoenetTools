@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 
-const Container = styled.div`
+const Container = styled.aside`
   margin: 12px 0;
   border: var(--mainBorder);
   border-radius: var(--mainBorderRadius);
