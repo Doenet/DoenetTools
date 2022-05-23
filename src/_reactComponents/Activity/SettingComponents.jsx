@@ -570,7 +570,7 @@ export const CheckedSetting = ({
         style={{ marginRight: '5px' }}
         checked={invert ? !localValue : localValue}
         onClick={() => {
-          let valueDescription = invert ? 'True' : 'Flase';
+          let valueDescription = invert ? 'True' : 'False';
           let value = false;
           if (!localValue) {
             valueDescription = invert ? 'False' : 'True';
@@ -613,7 +613,7 @@ export const CheckedFlag = ({
         style={{ marginRight: '5px' }}
         checked={invert ? !localValue : localValue}
         onClick={() => {
-          let valueDescription = invert ? 'True' : 'Flase';
+          let valueDescription = invert ? 'True' : 'False';
           let value = false;
           if (!localValue) {
             valueDescription = invert ? 'False' : 'True';
