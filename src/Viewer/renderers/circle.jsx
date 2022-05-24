@@ -60,6 +60,16 @@ export default function Circle(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle),
     };
 
+    if(SVs.showLabel && SVs.label !== "") {
+      jsxCircleAttributes.label = {
+      };
+      if (SVs.applyStyleToLabel) {
+        jsxCircleAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      } else {
+        jsxCircleAttributes.label.strokeColor = "#000000";
+      }
+    }
+
     let newCircleJXG = board.create('circle',
       [[...SVs.numericalCenter], SVs.numericalRadius],
       jsxCircleAttributes
@@ -185,6 +195,18 @@ export default function Circle(props) {
         // circleJXG.current.setAttribute({visible: false})
       }
 
+      if (circleJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        circleJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        circleJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (circleJXG.current.visProp.dash !== newDash) {
+        circleJXG.current.visProp.dash = newDash;
+      }
+      if (circleJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        circleJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+      }
+
       circleJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
@@ -196,6 +218,11 @@ export default function Circle(props) {
       circleJXG.current.needsUpdate = true;
       circleJXG.current.update()
       if (circleJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          circleJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          circleJXG.current.label.visProp.strokecolor = "#000000";
+        }
         circleJXG.current.label.needsUpdate = true;
         circleJXG.current.label.update();
       }
