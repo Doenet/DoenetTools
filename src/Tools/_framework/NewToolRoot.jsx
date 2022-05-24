@@ -595,6 +595,7 @@ let navigationObj = {
       headerControls: ['EditorBreadCrumb', 'ViewerUpdateButton'],
       // onLeave: 'EditorLeave',
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
+      waitForMenuSuppression: true,
     },
     enrollment: {
       //allStudentsInCourse
