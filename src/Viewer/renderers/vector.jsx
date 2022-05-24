@@ -102,6 +102,13 @@ export default function Vector(props) {
     let newPoint2JXG = board.create('point', endpoints[1], headPointAttributes);
 
 
+    jsxVectorAttributes.label = {};
+    if (SVs.applyStyleToLabel) {
+      jsxVectorAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxVectorAttributes.label.strokeColor = "#000000";
+    }
+
     let newVectorJXG = board.create('arrow', [newPoint1JXG, newPoint2JXG], jsxVectorAttributes);
 
     newPoint1JXG.on('drag', e => onDragHandler(e, 0));
@@ -350,18 +357,35 @@ export default function Vector(props) {
         }
       }
 
+      if (vectorJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        vectorJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        vectorJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (vectorJXG.current.visProp.dash !== newDash) {
+        vectorJXG.current.visProp.dash = newDash;
+      }
+      if (vectorJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        vectorJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+      }
+
       vectorJXG.current.name = SVs.label;
       // vectorJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
-        this.vectorJXG.current.setAttribute({ withlabel: withlabel });
+        vectorJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
       }
 
       vectorJXG.current.needsUpdate = true;
       vectorJXG.current.update()
       if (vectorJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          vectorJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          vectorJXG.current.label.visProp.strokecolor = "#000000";
+        }
         vectorJXG.current.label.needsUpdate = true;
         vectorJXG.current.label.update();
       }

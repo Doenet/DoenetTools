@@ -67,6 +67,13 @@ export default class Function extends InlineComponent {
       public: true,
       forRenderer: true
     };
+    attributes.applyStyleToLabel = {
+      createComponentOfType: "boolean",
+      createStateVariable: "applyStyleToLabel",
+      defaultValue: false,
+      public: true,
+      forRenderer: true
+    };
 
     attributes.labelPosition = {
       createComponentOfType: "text",
