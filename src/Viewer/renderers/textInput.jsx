@@ -5,6 +5,7 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortaw
 import { sizeToCSS } from './utils/css';
 import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
+import styled from 'styled-components';
 
 export default function TextInput(props) {
   let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
@@ -139,112 +140,150 @@ export default function TextInput(props) {
     surroundingBorderColor = "#82a5ff";
   }
 
+  const TextArea = styled.textarea `
+    width: sizeToCSS(width);
+    // height: sizeToCSS(SVs.height),
+    height: 24px;
+    /* font-size: 14px; */
+    /* border-width: 1px; */
+    border: 2px solid black;
+    /* border-color: ${surroundingBorderColor}; */
+  `;
+
+  const Input = styled.input `
+    width: ${SVs.size * 10}px;
+    height: 24px;
+    /* font-size: 14px; */
+    /* border-width: 1px; */
+    border: 2px solid black;
+    /* border-color: ${surroundingBorderColor}; */
+  `;
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
 
     let checkWorkStyle = {
-      position: "relative",
-      width: "30px",
-      height: "24px",
-      fontSize: "20px",
-      fontWeight: "bold",
-      color: "#ffffff",
-      display: "inline-block",
-      textAlign: "center",
-      top: "3px",
-      padding: "2px",
+      cursor: 'pointer',
     }
+
+    const Button = styled.button `
+      position: relative;
+      width: 24px;
+      height: 24px;
+      color: #ffffff;
+      display: inline-block;
+      text-align: center;
+      padding: 2px;
+      border: none;
+      border-radius: var(--mainBorderRadius);
+      margin: 0px 10px 12px 10px;
+
+      &:hover {
+        background-color: var(--lightBlue);
+        color: black;
+      };
+    `;
 
     if (validationState === "unvalidated") {
       if (disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        checkWorkStyle.cursor = 'not-allowed'
       } else {
-        checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
       }
-      checkWorkButton = <button
-        id={name + '_submit'}
-        tabIndex="0"
-        disabled={disabled}
-        style={checkWorkStyle}
-        onClick={() => callAction({
-          action: actions.submitAnswer,
-        })}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') {
-            callAction({
-              action: actions.submitAnswer,
-            });
-          }
-        }}
-      >
-        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-      </button>
+      checkWorkButton = 
+        <Button
+          id={name + '_submit'}
+          tabIndex="0"
+          disabled={disabled}
+          style={checkWorkStyle}
+          onClick={() => callAction({
+            action: actions.submitAnswer,
+          })}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              callAction({
+                action: actions.submitAnswer,
+              });
+            }
+          }}
+        >
+          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        </Button>
     } else {
       if (SVs.showCorrectness) {
         if (validationState === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-          checkWorkButton = <span
-            id={name + '_correct'}
-            style={checkWorkStyle}
-          >
-            <FontAwesomeIcon icon={faCheck} />
-          </span>
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
+          checkWorkButton = 
+            <Button
+              id={name + '_correct'}
+              style={checkWorkStyle}
+            >
+              <FontAwesomeIcon icon={faCheck} />
+            </Button>
         } else if (validationState === "partialcorrect") {
           //partial credit
-
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
           checkWorkStyle.width = "50px";
 
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = <span
-            id={name + '_partial'}
-            style={checkWorkStyle}
-          >{partialCreditContents}</span>
+          checkWorkButton = 
+            <Button
+              id={name + '_partial'}
+              style={checkWorkStyle}
+            >
+              {partialCreditContents}
+            </Button>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-          checkWorkButton = <span
-            id={name + '_incorrect'}
-            style={checkWorkStyle}
-          ><FontAwesomeIcon icon={faTimes} /></span>
-
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+          checkWorkButton = 
+            <Button
+              id={name + '_incorrect'}
+              style={checkWorkStyle}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </Button>
         }
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkWorkButton = <span
-          id={name + '_saved'}
-          style={checkWorkStyle}
-        ><FontAwesomeIcon icon={faCloud} /></span>
-
+        checkWorkButton = 
+          <Button
+            id={name + '_saved'}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faCloud} />
+          </Button>
       }
     }
 
     if (SVs.numberOfAttemptsLeft < 0) {
-      checkWorkButton = <>
-        {checkWorkButton}
-        <span>
-          (no attempts remaining)
-        </span>
-      </>
+      checkWorkButton = 
+        <>
+          {checkWorkButton}
+          <span>(no attempts remaining)</span>
+        </>
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkWorkButton =
+        <>
+          {checkWorkButton}
+          <span>(1 attempt remaining)</span>
+        </>
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-
-      checkWorkButton = <>
-        {checkWorkButton}
-        <span>
-          (attempts remaining: {SVs.numberOfAttemptsLeft})
-        </span>
-      </>
+      checkWorkButton = 
+        <>
+          {checkWorkButton}
+          <span>({SVs.numberOfAttemptsLeft} attempts remaining)</span>
+        </>
     }
-
   }
 
   let input;
   if (SVs.expanded) {
-    input = <textarea
+    input = <TextArea
       key={inputKey}
       id={inputKey}
       value={rendererValue}
@@ -254,17 +293,9 @@ export default function TextInput(props) {
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
       onFocus={handleFocus}
-      style={{
-        width: sizeToCSS(SVs.width),
-        height: sizeToCSS(SVs.height),
-        fontSize: "14px",
-        borderWidth: "1px",
-        // borderColor: surroundingBorderColor,
-        padding: "4px",
-      }}
     />
   } else {
-    input = <input
+    input = <Input
       key={inputKey}
       id={inputKey}
       value={rendererValue}
@@ -274,21 +305,13 @@ export default function TextInput(props) {
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
       onFocus={handleFocus}
-      style={{
-        width: `${SVs.size * 10}px`,
-        height: "22px",
-        fontSize: "14px",
-        borderWidth: "1px",
-        borderColor: surroundingBorderColor,
-        padding: "4px",
-      }}
     />
   }
 
 
   return <React.Fragment>
     <a name={name} />
-    <span className="textInputSurroundingBox" id={name}>
+    <span className="textInputSurroundingBox" id={name} style={{marginBottom: "12px"}}>
       {input}
       {checkWorkButton}
     </span>
