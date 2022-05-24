@@ -391,7 +391,7 @@ export class ComponentSize extends InlineComponent {
     stateVariableDefinitions.math = mathStateVariableFromNumberStateVariable({
       numberVariableName: "number",
       mathVariableName: "math",
-      isPublic: true
+      pubilc: true
     });
 
     stateVariableDefinitions.isAbsolute = {
