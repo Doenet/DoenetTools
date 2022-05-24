@@ -421,6 +421,30 @@ export default class LineSegment extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.slope = {
+      public: true,
+      componentType: "number",
+      returnDependencies: () => ({
+        numericalEndpoints: {
+          dependencyType: "stateVariable",
+          variableName: "numericalEndpoints"
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.nDimensions !== 2) {
+          return { setValue: { slope: NaN } }
+        }
+
+        let ps = dependencyValues.numericalEndpoints;
+        let slope = (ps[1][1] - ps[0][1]) / (ps[1][0] - ps[0][0]);
+
+        return { setValue: { slope } }
+      }
+    }
 
     return stateVariableDefinitions;
   }

@@ -619,11 +619,11 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.math = mathStateVariableFromNumberStateVariable({
       numberVariableName: "value",
       mathVariableName: "math",
-      isPublic: true
+      public: true
     });
 
     stateVariableDefinitions.latex = {
-      isPublic: true,
+      public: true,
       componentType: "text",
       returnDependencies: () => ({
         valueForDisplay: {
