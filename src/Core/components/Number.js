@@ -623,7 +623,7 @@ export default class NumberComponent extends InlineComponent {
     });
 
     stateVariableDefinitions.latex = {
-      isPublic: true,
+      public: true,
       componentType: "text",
       returnDependencies: () => ({
         valueForDisplay: {
