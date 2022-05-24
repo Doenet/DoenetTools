@@ -24,12 +24,9 @@ list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 
 $canUpload = FALSE;
 $sql = "
-SELECT du.canUpload 
-FROM drive_user AS du
-LEFT JOIN drive_content AS dc
-ON dc.driveId = du.driveId
-WHERE du.userId = '$userId'
-AND dc.doenetId = '$doenetId'
+SELECT canUpload 
+FROM user 
+WHERE userId = '$userId'
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();

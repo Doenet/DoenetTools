@@ -7048,7 +7048,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p>The animal is a <answer>
-  <choiceinput inline randomizeOrder>
+  <choiceinput inline shuffleOrder>
     <choice credit="0.5">cat</choice>
     <choice credit="1">dog</choice>
     <choice>monkey</choice>
@@ -7278,7 +7278,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p>The animal is a <answer>
-  <choiceinput inline randomizeOrder>
+  <choiceinput inline shuffleOrder>
     <choice credit="0.5">cat</choice>
     <choice credit="1">dog</choice>
     <choice>monkey</choice>
@@ -7999,7 +7999,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p>The animal is a:</p>
   <answer>
-  <choiceinput randomizeOrder>
+  <choiceinput shuffleOrder>
     <choice credit="0.5">cat</choice>
     <choice credit="1">dog</choice>
     <choice>monkey</choice>
@@ -8820,7 +8820,7 @@ describe('Answer Tag Tests', function () {
     <p>Num: <mathinput name="num" prefill="3"/></p>
 
     <answer>
-    <choiceinput randomizeOrder>
+    <choiceinput shuffleOrder>
       <map>
         <template>
           <choice credit="$m">
@@ -9371,7 +9371,7 @@ describe('Answer Tag Tests', function () {
       <text>a</text>
       <p>Inline: <booleaninput name="inline" /> </p>
       <answer inline="$inline">
-        <choiceinput randomizeOrder>
+        <choiceinput shuffleOrder>
         <choice credit="0.5">cat</choice>
         <choice credit="1">dog</choice>
         <choice>monkey</choice>
@@ -10552,7 +10552,7 @@ describe('Answer Tag Tests', function () {
         
         <p>What does the $animal say?
           <answer name="ans">
-            <choiceinput randomizeOrder>
+            <choiceinput shuffleOrder>
             <choice credit="$animal=cat" >meow</choice>
             <choice credit="$animal=dog" >woof</choice>
             <choice credit="$animal=mouse" >squeak</choice>

@@ -121,6 +121,11 @@ export default function Curve(props) {
         position,
         anchorx,
       };
+      if (SVs.applyStyleToLabel) {
+        curveAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      } else {
+        curveAttributes.label.strokeColor = "#000000";
+      }
     }
 
 
@@ -630,6 +635,11 @@ export default function Curve(props) {
       if (curveJXG.current.hasLabel) {
         curveJXG.current.label.needsUpdate = true;
         curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.label !== "";
+        if (SVs.applyStyleToLabel) {
+          curveJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          curveJXG.current.label.visProp.strokecolor = "#000000";
+        }
         curveJXG.current.label.update();
       }
 

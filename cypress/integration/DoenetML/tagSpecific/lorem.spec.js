@@ -130,12 +130,15 @@ describe('Lorem Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
+  <selectFromSequence from="1" to="2" assignNames="n" />
   `,
-        requestedVariantIndex: 0
+        requestedVariantIndex: 1
       }, "*");
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+
+    cy.get(cesc('#/n')).should('have.text', '1');
 
     let paragraph0, paragraph1;
 
@@ -154,14 +157,16 @@ describe('Lorem Tag Tests', function () {
         doenetML: `
   <text>b</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
+  <selectFromSequence from="1" to="2" assignNames="n" />
   `,
-        requestedVariantIndex: 0
+        requestedVariantIndex: 1
       }, "*");
     });
 
 
     cy.get(cesc('#/_text1')).should('have.text', 'b');   // to wait for page to load
-
+    
+    cy.get(cesc('#/n')).should('have.text', '1');
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
@@ -177,13 +182,16 @@ describe('Lorem Tag Tests', function () {
         doenetML: `
   <text>c</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
+  <selectFromSequence from="1" to="2" assignNames="n" />
   `,
-        requestedVariantIndex: 1
+        requestedVariantIndex: 2
       }, "*");
     });
 
 
     cy.get(cesc('#/_text1')).should('have.text', 'c');   // to wait for page to load
+
+    cy.get(cesc('#/n')).should('have.text', '2');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -203,13 +211,16 @@ describe('Lorem Tag Tests', function () {
         doenetML: `
   <text>d</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
+  <selectFromSequence from="1" to="2" assignNames="n" />
   `,
-        requestedVariantIndex: 1
+        requestedVariantIndex: 2
       }, "*");
     });
 
 
     cy.get(cesc('#/_text1')).should('have.text', 'd');   // to wait for page to load
+
+    cy.get(cesc('#/n')).should('have.text', '2');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

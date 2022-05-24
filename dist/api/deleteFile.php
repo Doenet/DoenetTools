@@ -26,23 +26,22 @@ if ($doenetId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing cid';
 }
+//TODO: Do we need canEdit permission to delete?
 
 //Test if user has permission to delete files
-
+$canUpload = FALSE;
 $sql = "
-SELECT du.canUpload as canUpload
-FROM drive_user AS du
-LEFT JOIN drive_content AS dc
-ON dc.driveId = du.driveId
-WHERE du.userId = '$userId'
-AND dc.doenetId = '$doenetId'
-AND du.canEditContent = '1'
+SELECT canUpload 
+FROM user 
+WHERE userId = '$userId'
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
-if ($row['canUpload'] == '0'){
+if ($row['canUpload'] == '1'){$canUpload = TRUE;}
+
+if (!$canUpload){
   $success = false;
-  $msg = "You don't have permission to delete files.";
+  $message = "You don't have permission to delete files.";
 }
 
 if ($success){
@@ -67,8 +66,9 @@ if ($success){
     ";
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();
-    $fileLocation = $uploads_dir . getFileName($row['cid'],$row['fileType']);
-    unlink($fileLocation);
+    //TODO - could delete from others and that's bad
+    // $fileLocation = $uploads_dir . getFileName($row['cid'],$row['fileType']);
+    // unlink($fileLocation);
   }
 
   //Delete row of doenetId and cid for this user

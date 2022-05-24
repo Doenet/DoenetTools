@@ -67,6 +67,13 @@ export default class Function extends InlineComponent {
       public: true,
       forRenderer: true
     };
+    attributes.applyStyleToLabel = {
+      createComponentOfType: "boolean",
+      createStateVariable: "applyStyleToLabel",
+      defaultValue: false,
+      public: true,
+      forRenderer: true
+    };
 
     attributes.labelPosition = {
       createComponentOfType: "text",
@@ -120,6 +127,11 @@ export default class Function extends InlineComponent {
       valueForFalse: 0,
     };
 
+    attributes.nearestPointAsCurve = {
+      createComponentOfType: "boolean",
+      createStateVariable: "nearestPointAsCurve",
+      defaultValue: false,
+    }
 
     // Note: specifying this attribute in DoenetML don't do anything
     // it is just for passing the definition when copy a property that returns a function
@@ -772,6 +784,8 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.formula = {
       public: true,
       componentType: "math",
+      defaultValue: me.fromAst(0),
+      hasEssential: true,
       returnDependencies: () => ({
         unnormalizedFormula: {
           dependencyType: "stateVariable",
@@ -786,7 +800,14 @@ export default class Function extends InlineComponent {
           variableName: "expand"
         }
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
+        // need to communicate the case when
+        // the default value of 0 was used
+        if (usedDefault.unnormalizedFormula) {
+          return {
+            useEssentialOrDefaultValue: { formula: true }
+          }
+        }
 
         let formula = normalizeMathExpression({
           value: dependencyValues.unnormalizedFormula,

@@ -21,13 +21,22 @@ export default function DoenetMLEditor(props) {
   const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   let editorRef = useRef(null);
   let timeout = useRef(null);
+  let backupOldDraft = useRef(true);
   const saveDraft = useRecoilCallback(({snapshot, set}) => async (pageId, courseId2) => {
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     try {
-      const {data} = await axios.post("/api/saveDoenetML.php", {doenetML, pageId, courseId: courseId2});
+      const params = {
+        doenetML,
+        pageId,
+        courseId: courseId2,
+        backup: backupOldDraft.current
+      };
+      const {data} = await axios.post("/api/saveDoenetML.php", params);
       set(fileByPageId(pageId), doenetML);
       if (!data.success) {
         console.log("ERROR", data.message);
+      } else {
+        backupOldDraft.current = false;
       }
     } catch (error) {
       console.log("ERROR", error);
@@ -54,6 +63,7 @@ export default function DoenetMLEditor(props) {
     }
   }, [viewerDoenetML]);
   if (paramPageId !== initializedPageId) {
+    backupOldDraft.current = true;
     return null;
   }
   return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(CodeMirror, {

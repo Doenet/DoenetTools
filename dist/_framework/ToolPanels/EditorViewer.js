@@ -72,7 +72,9 @@ export default function EditorViewer() {
       setEditorInit("");
     };
   }, [paramPageId, pageInitiated]);
-  if (paramPageId !== initializedPageId) {
+  if (courseId === "__not_found__") {
+    return /* @__PURE__ */ React.createElement("h1", null, "Content not found or no permission to view content");
+  } else if (paramPageId !== initializedPageId) {
     return null;
   }
   let attemptNumber = 1;

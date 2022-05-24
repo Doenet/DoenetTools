@@ -1,0 +1,260 @@
+<problem>
+  <!-- <title>Riemann sum example - exponential</title> -->
+  
+  <setup>
+  
+  <function name='rate_func' variables='t' styleNumber="2">50*t*e^(-t)</function>
+  <number name='lh_five'>($$rate_func(0)+$$rate_func(2)+$$rate_func(4)+$$rate_func(6)+$$rate_func(8))*2</number>
+  <number name='rh_five'>($$rate_func(10)+$$rate_func(2)+$$rate_func(4)+$$rate_func(6)+$$rate_func(8))*2</number>
+  <number name='lh_ten'>($$rate_func(0)+$$rate_func(2)+$$rate_func(4)+$$rate_func(6)+$$rate_func(8)+$$rate_func(1)+$$rate_func(3)+$$rate_func(5)+$$rate_func(7)+$$rate_func(9))*1</number>
+  <number name='all_five'>($$rate_func(0)+$$rate_func(2)+$$rate_func(4)+$$rate_func(6)+$$rate_func(8)+$$rate_func(10))*2</number>
+  <number name='all_ten'>($$rate_func(0)+$$rate_func(2)+$$rate_func(4)+$$rate_func(6)+$$rate_func(8)+$$rate_func(1)+$$rate_func(3)+$$rate_func(5)+$$rate_func(7)+$$rate_func(9)+$$rate_func(10))*1</number>
+  <evaluate name="f0" function="$rate_func" input="0" />
+  <evaluate name="f1" function="$rate_func" input="1" />
+  <evaluate name="f2" function="$rate_func" input="2" />
+  <evaluate name="f3" function="$rate_func" input="3" />
+  <evaluate name="f4" function="$rate_func" input="4" />
+  <evaluate name="f5" function="$rate_func" input="5" />
+  <evaluate name="f6" function="$rate_func" input="6" />
+  <evaluate name="f7" function="$rate_func" input="7" />
+  <evaluate name="f8" function="$rate_func" input="8" />
+  <evaluate name="f9" function="$rate_func" input="9" />
+  <evaluate name="f10" function="$rate_func" input="10" />
+  <number name='one'>1</number>
+  <number name='five'>5</number>
+  <number name='ten'>10</number>
+  
+  </setup>
+  
+  
+  Suppose a population is increasing at a rate of <m><copy prop="formula" tname="rate_func" /></m> per year (<m>t</m> is measured in years).
+  
+  
+  <ol>
+  
+  <li>
+  <p>Estimate the total change in the population size over the first ten years using a left-hand Riemann sum with <m>5</m> intervals. Include at least 4 significant figures in your answer.
+  </p>
+  <p>
+  
+  
+  <answer>
+  <award symbolicEquality='true' allowedErrorInNumbers='0.001'>$lh_five </award>
+  <award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$lh_five </award>
+  <award symbolicEquality='true' allowedErrorInNumbers='0.001' credit='0' name='award1'>$all_five </award>
+  </answer>
+  </p>
+  <feedback condition="$award1">Don't include the right endpoint.</feedback>
+  <copy prop="feedbacks" tname="answer1" />
+  
+  
+  
+  
+  </li>
+  
+  <li>
+  <p>Estimate the total change in the population size over the first ten years using a right-hand Riemann sum with <m>5</m> intervals. Include at least 4 significant figures in your answer.
+  </p>
+  <p>
+  
+  
+  <answer>
+  <award symbolicEquality='true' allowedErrorInNumbers='0.001'>$rh_five </award>
+  <award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$rh_five </award>
+  <award symbolicEquality='true' allowedErrorInNumbers='0.001' credit='0' name='award3'>$all_five </award>
+  </answer>
+  </p>
+  <feedback condition="$award3">Don't include the left endpoint.</feedback>
+  <copy prop="feedbacks" tname="answer2" />
+  
+  
+  
+  
+  </li>
+  
+  <li>
+  <p>Estimate the total change in the population size over the first ten years using a left-hand Riemann sum with <m>10</m> intervals. Include at least 4 significant figures in your answer.
+  </p>
+  <p>
+  
+  
+  <answer>
+  <award symbolicEquality='true' allowedErrorInNumbers='0.001'>$lh_ten </award>
+  <award credit='0.5' symbolicEquality='true' allowedErrorInNumbers='0.01' feedbackCodes='numericalerror'>$lh_ten </award>
+  <award symbolicEquality='true' credit='0' name='award5'>$all_ten </award>
+  </answer>
+  </p>
+  <feedback condition="$award5">Don't include the right endpoint.</feedback>
+  <copy prop="feedbacks" tname="answer3" />
+  
+  
+  
+  
+  </li>
+  
+  <li>
+  <p>Use the following applets to visualize the Riemann sums.  In each, as you increase the nRectangles slider, you will only be able to modify the most recently added rectangle, so you will have to increase it one number at a time to build the rectangles until you have reach the correct number.  Set each rectangle by moving the corners so that one corner that has a point on it is on the graph at the left (or right) side of the interval, while the opposite corner is on the axis at the other end of the interval.</p>
+  
+  <p>Use use the following applet to represent the results of part 1, with a left-hand Riemann sum with <m>5</m> intervals.</p>
+  
+  
+  <!-- django tag applet, riemann_sum_construct, f=rate_func, x1=0, x2=10, nIntervals=5 side=0 xmin=-2 xmax=12 ymin=-3 ymax=20 xlabel="t" width=500 height=300 answer_nRectangles=five  answer_rectangle01Correct=one answer_rectangle02Correct=one answer_rectangle03Correct=one answer_rectangle04Correct=one answer_rectangle05Correct=one threshold_y=2 -->
+  
+  <setup>
+    <map name="vlines">
+      <template><line equation="x=$v" /></template>
+      <sources alias="v">
+        <sequence from="0" to="10" />
+      </sources>
+    </map>
+  
+    <group name="ptsOnFunc">
+      <point>(0, $f0)</point>
+      <point>(1, $f1)</point>
+      <point>(2, $f2)</point>
+      <point>(3, $f3)</point>
+      <point>(4, $f4)</point>
+      <point>(5, $f5)</point>
+      <point>(6, $f6)</point>
+      <point>(7, $f7)</point>
+      <point>(8, $f8)</point>
+      <point>(9, $f9)</point>
+      <point>(10, $f10)</point>
+    </group>
+    
+    <number name="zeroFixed" fixed>0</number>
+  </setup>
+  
+  <module name="module1">
+    <setup>
+    <number name="nRect1">0</number>
+    </setup>
+    
+  <updateValue label="Add rectangle" tname="nRect1" newValue="$nRect1+1" disabled="$nRect1 >= 10" />
+  <updateValue label="Remove rectangle" tname="nRect1" newValue="$nRect1-1" disabled="$nRect1 <= 0" />
+    
+  <graph width='500' height='300' xmin='-2' xmax='12' ymin='-3' ymax='20' xlabel='t'  fixAxes name="graph1">
+    $rate_func
+  
+    <map>
+      <template>
+        <point name="A" x="1" y="$zeroFixed" fixed="$nRect1 != $i" hide="$nRect1 != $i" >
+          <constraints>
+            <attractTo threshold="0.2">$vlines</attractTo>
+          </constraints>
+        </point>
+        <point name="B" x="2" y="2" fixed="$nRect1 != $i" hide="$nRect1 != $i" >
+          <constraints  baseOnGraph="graph1">
+            <attractTo threshold="0.02">$vlines</attractTo>
+            <attractTo threshold="0.02">$ptsOnFunc</attractTo>
+          </constraints>
+        </point>
+        <rectangle vertices="$A $B" fixed="$nRect1 != $i" />
+      </template>
+      <sources indexAlias="i" alias="v"><sequence length="$nRect1" /></sources>
+    </map>
+  </graph>
+  </module>
+  
+  <!--   <map>
+      <template>
+        <math>($(v{prop='vertex1'}), $(v{prop='vertex3'}))</math>
+      </template>
+      <sources alias="v"><collect tname="graph1" componentTypes="rectangle" /></sources>
+    </map>
+   -->
+  <p>
+  <answer name="RSL5">
+    <award>
+      <when matchPartial unorderedCompare>
+        <mathlist isResponse name="userRects1"><map>
+          <template>
+            <math>($(v{prop='vertex1'}), $(v{prop='vertex3'}))</math>
+          </template>
+          <sources alias="v"><collect tname="module1" componentTypes="rectangle" /></sources>
+        </map>
+        </mathlist>
+        =<mathlist>
+          <math>((2, 0), (0, $f0))</math>
+          <math>((4, 0), (2, $f2))</math>
+          <math>((6, 0), (4, $f4))</math>
+          <math>((8, 0), (6, $f6))</math>
+          <math>((10, 0), (8, $f8))</math>
+        </mathlist>
+      </when>
+    </award>
+    <award>
+      <when matchPartial unorderedCompare>
+        <copy tname="userRects1" isResponse="false" />
+        =<mathlist>
+          <math>((2, 0), (0, $f0))</math>
+          <math>((4, 0), (2, $f2))</math>
+          <math>((6, 0), (4, $f4))</math>
+          <math>((8, 0), (6, $f6))</math>
+          <math>((8, 0), (10, $f10))</math>
+        </mathlist>
+      </when>
+    </award>
+    <award credit="0" name="wrongRS5">
+      <when matchPartial unorderedCompare>
+        <copy tname="userRects1" isResponse="false" />
+        =<mathlist>
+          <math>((0, 0), (2, $f2))</math>
+          <math>((2, 0), (4, $f4))</math>
+          <math>((4, 0), (6, $f6))</math>
+          <math>((6, 0), (8, $f8))</math>
+        </mathlist>
+      </when>
+    </award>
+  
+  </answer>
+  </p>
+  
+
+  
+  </li>
+  
+  
+  </ol>
+  
+  
+  <solution>
+  
+  
+  <ol>
+  
+  <li>
+  <p>If we split ten years up into <m>5</m> intervals, each interval is <m>2</m> years long.  The endpoints of our intervals are <m>0</m>, <m>2</m>, <m>4</m>, <m>6</m>, and <m>8</m>.  The left-hand Riemann sum is then
+  </p>
+  <p>
+  
+  <m><round numberdigits="6">$f0</round>\cdot 2+<round numberdigits="6">$f2</round>\cdot 2+<round numberdigits="6">$f4</round>\cdot 2+<round numberdigits="6">$f6</round>\cdot 2+<round numberdigits="6">$f8</round>\cdot 2= <round numberdigits="6">$lh_five</round></m>.</p>
+  </li>
+  
+  <li>
+  <p>If we split ten years up into <m>5</m> intervals, each interval is <m>2</m> years long.  The endpoints of our intervals are <m>2</m>, <m>4</m>, <m>6</m>, <m>8</m>, and <m>10</m>.  The right-hand Riemann sum is then
+  </p>
+  <p>
+  
+  <m><round numberdigits="6">$f2</round>\cdot 2+<round numberdigits="6">$f4</round>\cdot 2+<round numberdigits="6">$f6</round>\cdot 2+<round numberdigits="6">$f8</round>\cdot 2+<round numberdigits="6">$f10</round>\cdot 2= <round numberdigits="6">$rh_five</round></m>.</p>
+  </li>
+  
+  <li>
+  <p>If we split ten years up into <m>10</m> intervals, each interval is <m>1</m> year long.  The endpoints of our intervals are <m>0</m>, <m>1</m>, <m>2</m>, <m>3</m>, <m>4</m>, <m>5</m>, <m>6</m>, <m>7</m>, <m>8</m>, and <m>9</m>.  The left-hand Riemann sum is then
+  </p>
+  <p>
+  
+  <m><round numberdigits="6">$f0</round>\cdot 1+<round numberdigits="6">$f1</round>\cdot 1+<round numberdigits="6">$f2</round>\cdot 1+<round numberdigits="6">$f3</round>\cdot1+<round numberdigits="6">$f4</round>\cdot 1+<round numberdigits="6">$f5</round>\cdot 1+<round numberdigits="6">$f6</round>\cdot 1+<round numberdigits="6">$f7</round>\cdot 1+<round numberdigits="6">$f8</round>\cdot 1+<round numberdigits="6">$f9</round>\cdot 1= <round numberdigits="6">$lh_ten</round></m>.</p>
+  </li>
+  
+  <li>
+  
+  </li>
+  
+  
+  </ol>
+  
+  </solution>
+  
+  
+  </problem>

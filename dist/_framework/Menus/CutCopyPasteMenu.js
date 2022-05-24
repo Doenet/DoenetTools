@@ -12,15 +12,13 @@ export default function CutCopyPasteMenu() {
   let cutObjs = useRecoilValue(cutCourseItems);
   let copiedObjs = useRecoilValue(copiedCourseItems);
   let selectedItems = useRecoilValue(selectedCourseItems);
-  let firstSelectedDoenetId = selectedItems[0];
-  let firstSelectedItemObj = useRecoilValue(itemByDoenetId(firstSelectedDoenetId));
   let canCopy = true;
   let canCut = true;
   let canPaste = true;
   if (cutObjs.length == 0 && copiedObjs.length == 0) {
     canPaste = false;
   }
-  if (selectedItems.length != 1 || firstSelectedItemObj?.type == "order") {
+  if (selectedItems.length == 0) {
     canCopy = false;
     canCut = false;
   }
@@ -71,5 +69,5 @@ export default function CutCopyPasteMenu() {
   });
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ActionButtonGroup, {
     width: "menu"
-  }, copyJSX, cutJSX, pasteJSX));
+  }, cutJSX, pasteJSX));
 }

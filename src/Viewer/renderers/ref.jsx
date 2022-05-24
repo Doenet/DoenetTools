@@ -1,13 +1,14 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
+import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
 import useDoenetRender from './useDoenetRenderer';
 
 export default function Ref(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
-
   const pageToolView = useRecoilValue(pageToolViewAtom);
+  const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
 
   if (SVs.hidden) {
     return null;
@@ -34,8 +35,14 @@ export default function Ref(props) {
       url += `&variant=${SVs.variantIndex}`;
     }
 
+    let usePublic = false;
     if (pageToolView.page === "public") {
-      if (SVs.edit === true || SVs.edit === null && pageToolView.tool === "editor") {
+      usePublic = true;
+    } else if (Object.keys(itemInCourse).length === 0) {
+      usePublic = true;
+    }
+    if (usePublic) {
+      if (SVs.edit === true || SVs.edit === null && pageToolView.page === "public" && pageToolView.tool === "editor") {
         url = `tool=editor&${url}`;
       }
       url = `/public?${url}`
@@ -45,7 +52,7 @@ export default function Ref(props) {
 
     haveValidTarget = true;
 
-    if(SVs.targetName) {
+    if (SVs.targetName) {
       url += "#" + SVs.targetName;
     }
   } else if (SVs.uri) {

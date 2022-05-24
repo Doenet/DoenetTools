@@ -1,6 +1,6 @@
-import { k as fails, _ as _export, O as objectGetOwnPropertyNamesExternal, g as global_1, P as objectToArray, f as functionUncurryThis, Q as toAbsoluteIndex, K as stringRepeat } from './common/es.string.starts-with-aa41bca0.js';
+import { k as fails, _ as _export, O as objectGetOwnPropertyNamesExternal, g as global_1, P as objectToArray, f as functionUncurryThis, Q as toAbsoluteIndex, K as stringRepeat } from './common/es.string.starts-with-6dcf56ee.js';
 import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-f5d70792.js';
-import './common/es.string.ends-with-fbb374f8.js';
+import './common/es.string.ends-with-48ba642b.js';
 
 var getOwnPropertyNames = objectGetOwnPropertyNamesExternal.f;
 
@@ -40702,7 +40702,7 @@ var INCORRECT_LENGTH = !!$fromCodePoint && $fromCodePoint.length != 1;
 
 // `String.fromCodePoint` method
 // https://tc39.es/ecma262/#sec-string.fromcodepoint
-_export({ target: 'String', stat: true, forced: INCORRECT_LENGTH }, {
+_export({ target: 'String', stat: true, arity: 1, forced: INCORRECT_LENGTH }, {
   // eslint-disable-next-line no-unused-vars -- required for `.length`
   fromCodePoint: function fromCodePoint(x) {
     var elements = [];

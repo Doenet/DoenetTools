@@ -26,9 +26,9 @@ if (!array_key_exists('courseId', $_POST)) {
 } elseif (!array_key_exists('itemType', $_POST)) {
     $success = false;
     $message = 'Missing itemType';
-} elseif (!array_key_exists('placeInFolderFlag', $_POST)) {
+} elseif (!array_key_exists('parentDoenetId', $_POST)) {
     $success = false;
-    $message = 'Missing placeInFolderFlag';
+    $message = 'Missing parentDoenetId';
 } 
 
 if ($userId == ''){
@@ -41,7 +41,7 @@ if ($success){
   $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
   $itemType = mysqli_real_escape_string($conn,$_POST["itemType"]);
   $previousContainingDoenetId = $_POST["previousContainingDoenetId"];
-  $placeInFolderFlag = $_POST["placeInFolderFlag"];
+  $parentDoenetId = $_POST["parentDoenetId"];
 
   //Optional cloneMode is '1' for true or '' for false
   $cloneMode = mysqli_real_escape_string($conn,$_POST["cloneMode"]);
@@ -70,76 +70,67 @@ if ($success){
 if ($success){
   $doenetId = include "randomId.php";
   $doenetId = "_" . $doenetId;
-
   $label = 'Untitled';
-
   $jsonDefinition = null;
   $isAssigned = 0;
 
-  if ($previousContainingDoenetId == $courseId) {
-    $sql = "SELECT sortOrder FROM `course_content` WHERE courseId = '$courseId' ORDER BY sortOrder DESC LIMIT 1";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
-    $prev =$row['sortOrder'] ?: "";
-    $next = "";
-    $parentDoenetId = $previousContainingDoenetId;
-  } else {
-    $sql = "SELECT sortOrder, parentDoenetId
-    FROM `course_content`
-    WHERE courseId = '$courseId' and sortOrder >= (Select sortOrder From `course_content` WHERE doenetId='$previousContainingDoenetId')
-    ORDER BY sortOrder
-    LIMIT 2";
-    $result = $conn->query($sql); 
-    $row = $result->fetch_assoc() ;
-    $prev = $row['sortOrder'] ?: "";
-    $parentDoenetId = $placeInFolderFlag == 'true' ? $previousContainingDoenetId : $row['parentDoenetId'];
-    $row = $result->fetch_assoc();
-    $next = $row['sortOrder'] ?: "";
-  }
+  $sql = "SELECT sortOrder
+  FROM `course_content`
+  WHERE courseId = '$courseId' 
+  AND sortOrder >= (Select sortOrder From `course_content` WHERE doenetId='$previousContainingDoenetId' AND isDeleted = 0)
+  AND isDeleted = 0
+  ORDER BY sortOrder
+  LIMIT 2";
+  $result = $conn->query($sql); 
+  $row = $result->fetch_assoc() ;
+  $prev = $row['sortOrder'] ?: "";
+  $row = $result->fetch_assoc();
+  $next = $row['sortOrder'] ?: "";
   $sortOrder = SortOrder\getSortOrder($prev, $next);
 
-//Defaults for each item type
-if ($itemType == 'section'){
-  $jsonDefinition = '{"isIncludedInStudentNavigation":true}';
-  $isAssigned = 1;
-}else if($itemType == 'activity'){
-  $pageDoenetId = include "randomId.php";
-  $pageDoenetId = "_" . $pageDoenetId;
+  //Defaults for each item type
+  if ($itemType == 'section'){
+    $jsonDefinition = '{"isIncludedInStudentNavigation":true}';
+    $isAssigned = 1;
+  }else if($itemType == 'activity'){
+    $pageDoenetId = include "randomId.php";
+    $pageDoenetId = "_" . $pageDoenetId;
 
-  $orderDoenetId = include "randomId.php";
-  $orderDoenetId = "_" . $orderDoenetId;
+    $orderDoenetId = include "randomId.php";
+    $orderDoenetId = "_" . $orderDoenetId;
 
-  $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": true,"order":{"type":"order","doenetId":"'.$orderDoenetId.'","behavior":"sequence","content":["'.$pageDoenetId.'"]},"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
+    $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": true,"order":{"type":"order","doenetId":"'.$orderDoenetId.'","behavior":"sequence","content":["'.$pageDoenetId.'"]},"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
 
-   //We need to clone an existing item
- if ($cloneMode == '1'){
-  //  echo "\n\nDangerousActivityOrder\n\n";
-  //  var_dump($DangerousActivityObj);
-   $label = "copy of $activityLabel";
-   $clonePageDoenetIds = [];
-   foreach ($pageDoenetIds as $pageDoenetId){
-    $clonePageDoenetId = include "randomId.php";
-    $clonePageDoenetId = "_" . $clonePageDoenetId;
+    //We need to clone an existing item
+  if ($cloneMode == '1'){
+    //  echo "\n\nDangerousActivityOrder\n\n";
+    //  var_dump($DangerousActivityObj);
+    $label = "copy of $activityLabel";
+    $clonePageDoenetIds = [];
+    foreach ($pageDoenetIds as $pageDoenetId){
+      $clonePageDoenetId = include "randomId.php";
+      $clonePageDoenetId = "_" . $clonePageDoenetId;
 
-    array_push($clonePageDoenetIds,$clonePageDoenetId);
-    $DangerousActivityObj = str_replace($pageDoenetId,$clonePageDoenetId,$DangerousActivityObj);
-   }
-   foreach ($orderDoenetIds as $sourceOrderDoenetId){
-    $cloneOrderDoenetId = include "randomId.php";
-    $cloneOrderDoenetId = "_" . $cloneOrderDoenetId;
+      array_push($clonePageDoenetIds,$clonePageDoenetId);
+      $DangerousActivityObj = str_replace($pageDoenetId,$clonePageDoenetId,$DangerousActivityObj);
+    }
+    foreach ($orderDoenetIds as $sourceOrderDoenetId){
+      $cloneOrderDoenetId = include "randomId.php";
+      $cloneOrderDoenetId = "_" . $cloneOrderDoenetId;
 
-    $DangerousActivityObj = str_replace($sourceOrderDoenetId,$cloneOrderDoenetId,$DangerousActivityObj);
-   }
+      $DangerousActivityObj = str_replace($sourceOrderDoenetId,$cloneOrderDoenetId,$DangerousActivityObj);
+    }
 
-  $jsonDefinition = $DangerousActivityObj;
-  
+    $jsonDefinition = $DangerousActivityObj;
+    
+    }
+    
+  }else if($itemType == 'bank'){
+    $jsonDefinition = '{"type":"bank","pages":[]}';
+  }else{
+    $success = FALSE;
+    $message = "Not able to make type $itemType";
   }
-  
-}else if($itemType == 'bank'){
-  $jsonDefinition = '{"type":"bank","pages":[]}';
-}else{
-  $success = FALSE;
-  $message = "Not able to make type $itemType";
 }
 
 if ($success){
@@ -161,7 +152,7 @@ if ($success){
         sortOrder,
         jsonDefinition)
         VALUES
-        ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$sortOrder','$jsonDefinition');
+        ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$sortOrder','$jsonDefinition');
         ";
         $conn->query($sql);
 
@@ -258,7 +249,7 @@ if ($success){
     sortOrder,
     jsonDefinition)
     VALUES
-    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',NOW(),'$isAssigned','$sortOrder','$jsonDefinition')
+    ('$itemType','$courseId','$doenetId','$parentDoenetId','$label',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$isAssigned','$sortOrder','$jsonDefinition')
     ";
     
     $result = $conn->query($sql); 
@@ -267,43 +258,44 @@ if ($success){
 
 }
 
+if ($success){
 
-$sql = "
-SELECT 
-doenetId,
-type,
-parentDoenetId,
-label,
-creationDate,
-isAssigned,
-isGloballyAssigned,
-isPublic,
-CAST(jsonDefinition as CHAR) AS json
-FROM course_content
-WHERE doenetId = '$doenetId'
-";
-$result = $conn->query($sql); 
-$row = $result->fetch_assoc();
-
-
-$itemEntered = array(
-  "doenetId"=>$row['doenetId'],
-  "type"=>$row['type'],
-  "parentDoenetId"=>$row['parentDoenetId'],
-  "label"=>$row['label'],
-  "creationDate"=>$row['creationDate'],
-  "isAssigned"=>$row['isAssigned'] == '1' ? true : false,
-  "isGloballyAssigned"=>$row['isGloballyAssigned'] == '1' ? true : false,
-  "isPublic"=>$row['isPublic'] == '1' ? true : false,
-);
-
-$json = json_decode($row['json'],true);
-// var_dump($json);
-$itemEntered = array_merge($json,$itemEntered);
+  $sql = "
+  SELECT 
+  doenetId,
+  type,
+  parentDoenetId,
+  label,
+  creationDate,
+  isAssigned,
+  isGloballyAssigned,
+  isPublic,
+  CAST(jsonDefinition as CHAR) AS json
+  FROM course_content
+  WHERE doenetId = '$doenetId'
+  ";
+  $result = $conn->query($sql); 
+  $row = $result->fetch_assoc();
 
 
-$itemEntered['isOpen'] = false;
-$itemEntered['isSelected'] = false;
+  $itemEntered = array(
+    "doenetId"=>$row['doenetId'],
+    "type"=>$row['type'],
+    "parentDoenetId"=>$row['parentDoenetId'],
+    "label"=>$row['label'],
+    "creationDate"=>$row['creationDate'],
+    "isAssigned"=>$row['isAssigned'] == '1' ? true : false,
+    "isGloballyAssigned"=>$row['isGloballyAssigned'] == '1' ? true : false,
+    "isPublic"=>$row['isPublic'] == '1' ? true : false,
+  );
+
+  $json = json_decode($row['json'],true);
+  // var_dump($json);
+  $itemEntered = array_merge($json,$itemEntered);
+
+
+  $itemEntered['isOpen'] = false;
+  $itemEntered['isSelected'] = false;
 
 }
 

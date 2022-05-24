@@ -1125,5 +1125,77 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('display tick labels', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph displayXAxisTickLabels="$b1" displayYAxisTickLabels="$b2">
+    </graph>
+    <booleaninput name="b1" />
+    <copy prop="displayXAxisTickLabels" target="_graph1" assignNames="b1a" />
+    <booleaninput name="b2" prefill="true" />
+    <copy prop="displayYAxisTickLabels" target="_graph1" assignNames="b2a" />
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+    cy.get('#\\/b1a').should('have.text', 'false')
+    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(false);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(true);
+    })
+
+
+    cy.get('#\\/b1_input').click();
+
+    cy.get('#\\/b1a').should('have.text', 'true')
+    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(true);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(true);
+    })
+
+    cy.get('#\\/b2_input').click();
+
+    cy.get('#\\/b1a').should('have.text', 'true')
+    cy.get('#\\/b2a').should('have.text', 'false')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(true);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(false);
+    })
+
+    cy.get('#\\/b1_input').click();
+
+    cy.get('#\\/b1a').should('have.text', 'false')
+    cy.get('#\\/b2a').should('have.text', 'false')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(false);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(false);
+    })
+
+    cy.get('#\\/b2_input').click();
+
+    cy.get('#\\/b1a').should('have.text', 'false')
+    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxisTickLabels).eq(false);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxisTickLabels).eq(true);
+    })
+
+
+
+  });
 
 });

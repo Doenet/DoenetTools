@@ -17,7 +17,7 @@ const DriveCardContainer = styled.figure`
   display: flex; // added
   flex-direction: column; // added
   justify-content: space-between;
-  
+  cursor: pointer;
   border: 2px solid #040f1a;
 `;
 
