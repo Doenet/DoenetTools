@@ -5,8 +5,8 @@ export default class Graph extends BlockComponent {
   static componentType = "graph";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.xmin = {
       createComponentOfType: "number",
       createStateVariable: "xminPrelim",
@@ -653,7 +653,7 @@ export default class Graph extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async changeAxisLimits({ xmin, xmax, ymin, ymax }) {
+  async changeAxisLimits({ xmin, xmax, ymin, ymax, actionId }) {
 
     let updateInstructions = [];
 
@@ -692,6 +692,7 @@ export default class Graph extends BlockComponent {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -706,14 +707,14 @@ export default class Graph extends BlockComponent {
 
   }
 
-  async addChildren({ serializedComponents }) {
+  async addChildren({ serializedComponents, actionId }) {
 
     if (serializedComponents && serializedComponents.length > 0) {
 
       let processResult = processAssignNames({
         serializedComponents,
         parentName: this.componentName,
-        parentCreatesNewNamespace: this.attributes.newNamespace && this.attributes.newNamespace.primitive,
+        parentCreatesNewNamespace: this.attributes.newNamespace?.primitive,
         componentInfoObjects: this.componentInfoObjects,
         indOffset: await this.stateValues.nChildrenAdded
       });
@@ -730,11 +731,14 @@ export default class Graph extends BlockComponent {
           stateVariable: "nChildrenAdded",
           value: await this.stateValues.nChildrenAdded + processResult.serializedComponents.length,
         }],
+        actionId,
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  async deleteChildren({ number }) {
+  async deleteChildren({ number, actionId }) {
 
     let numberToDelete = Math.min(number, await this.stateValues.nChildrenAdded);
 
@@ -754,8 +758,11 @@ export default class Graph extends BlockComponent {
           stateVariable: "nChildrenAdded",
           value: await this.stateValues.nChildrenAdded - numberToDelete,
         }],
+        actionId
       });
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }

@@ -5,10 +5,10 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 import { useCourseChooserCrumb, useDashboardCrumb, useEnrollmentCrumb } from '../../../_utils/breadcrumbUtil';
 
 export default function EnrollmentBreadCrumb() {
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const courseChooserCrumb = useCourseChooserCrumb();
-  const dashboardCrumb = useDashboardCrumb(driveId);
-  const enrollmentCrumb = useEnrollmentCrumb(driveId);
+  const dashboardCrumb = useDashboardCrumb(courseId);
+  const enrollmentCrumb = useEnrollmentCrumb(courseId);
   return (
     <Suspense fallback={<div>loading Breadcrumbs...</div>}>
       <BreadCrumb crumbs={[courseChooserCrumb,dashboardCrumb,enrollmentCrumb]}/>

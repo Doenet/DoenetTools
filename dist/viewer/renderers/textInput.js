@@ -3,10 +3,13 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {sizeToCSS} from "./utils/css.js";
+import {rendererState} from "./useDoenetRenderer.js";
+import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 export default function TextInput(props) {
-  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction} = useDoenetRender(props);
+  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   TextInput.baseStateVariable = "immediateValue";
   const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
   let valueToRevertTo = useRef(SVs.immediateValue);
   let focused = useRef(null);
   let immediateValueWhenSetState = useRef(null);
@@ -72,6 +75,11 @@ export default function TextInput(props) {
     let newValue = e.target.value;
     if (newValue !== rendererValue) {
       setRendererValue(newValue);
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      });
       immediateValueWhenSetState.current = SVs.immediateValue;
       callAction({
         action: actions.updateImmediateValue,

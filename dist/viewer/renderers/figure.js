@@ -29,7 +29,8 @@ export default function Figure(props) {
     }
   }
   return /* @__PURE__ */ React.createElement("figure", {
-    id: name
+    id: name,
+    style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), childrenToRender, /* @__PURE__ */ React.createElement("figcaption", {

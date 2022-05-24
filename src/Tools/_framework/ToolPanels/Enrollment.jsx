@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, {  useState } from 'react';
+// import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { atom, useSetRecoilState, useRecoilValue } from 'recoil';
 import { useToast, toastType } from '@Toast';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
+import { enrollmentByCourseId } from '../../../_reactComponents/Course/CourseActions';
 
 export const enrollmentTableDataAtom = atom({
   key: 'enrollmentTableDataAtom',
@@ -29,40 +30,26 @@ export const enrolllearnerAtom = atom({
   default: '',
 });
 
-export default function Enrollment(props) {
-  console.log('>>>===Enrollment');
+export default function Enrollment() {
+  // console.log('>>>===Enrollment');
 
   const toast = useToast();
 
   const process = useRecoilValue(processAtom);
+  // console.log("process",process)
   const setProcess = useSetRecoilState(processAtom);
   const headers = useRecoilValue(headersAtom);
   const entries = useRecoilValue(entriesAtom);
-  const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
-  const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
+  // const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
+  // const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
 
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  // const enrollmentTableData = useRecoilValue(enrollmentAtomFamily(courseId))
+  const {recoilUnWithdraw,recoilWithdraw,recoilMergeData,value:enrollmentTableData} = useRecoilValue(enrollmentByCourseId(courseId));
+
   let [showWithdrawn, setShowWithdrawn] = useState(false);
 
-  //Load Enrollment Data When CourseId changes
-  useEffect(() => {
-    if (driveId !== '') {
-      axios
-        .get('/api/getEnrollment.php', { params: { driveId } })
-        .then((resp) => {
-          // console.log(">>>>resp",resp.data)
-          //TODO: Make sure we don't overwrite existing data
-          let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableDataAtom(enrollmentArray);
-          setProcess('Display Enrollment');
-        })
-        .catch((error) => {
-          console.warn(error);
-        });
-    }
-  }, [driveId]);
-
-  if (!driveId) {
+  if (!courseId) {
     return null;
   }
 
@@ -255,7 +242,7 @@ export default function Enrollment(props) {
             key="merge"
             onClick={() => {
               const payload = {
-                driveId,
+                courseId,
                 mergeHeads,
                 mergeId,
                 mergeFirstName,
@@ -263,17 +250,11 @@ export default function Enrollment(props) {
                 mergeEmail,
                 mergeSection,
               };
-              console.log('>>>>payload', payload);
-              axios
-                .post('/api/mergeEnrollmentData.php', payload)
-                .then((resp) => {
-                  console.log('>>>>resp.data', resp.data);
-                  const enrollmentArray = resp.data.enrollmentArray;
-                  if (enrollmentArray) {
-                    setEnrollmentTableDataAtom(enrollmentArray);
-                  }
-                  setProcess('Display Enrollment');
-                });
+// console.log("recoilMergeData payload",payload)
+              recoilMergeData(payload).then(()=>{
+                setProcess('Display Enrollment');
+              })
+     
             }}
           ></Button>
         </>
@@ -301,46 +282,12 @@ export default function Enrollment(props) {
 
   const enrollLearners = (e, enrollLearner) => {
     e.preventDefault();
-
-    let payload = {
-      email: enrollLearner,
-      driveId: driveId,
-    };
-    axios.post('/api/unWithDrawStudents.php', payload).then((resp) => {
-      const payload = { params: { driveId } };
-      axios
-        .get('/api/getEnrollment.php', payload)
-        .then((resp) => {
-          let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableDataAtom(enrollmentArray);
-          setProcess('Display Enrollment');
-        })
-        .catch((error) => {
-          console.warn(error);
-        });
-    });
+    recoilUnWithdraw(enrollLearner);
   };
 
   const withDrawLearners = (e, withdrewLearner) => {
     e.preventDefault();
-
-    let payload = {
-      email: withdrewLearner,
-      driveId: driveId,
-    };
-    axios.post('/api/withDrawStudents.php', payload).then((resp) => {
-      const payload = { params: { driveId } };
-      axios
-        .get('/api/getEnrollment.php', payload)
-        .then((resp) => {
-          let enrollmentArray = resp.data.enrollmentArray;
-          setEnrollmentTableDataAtom(enrollmentArray);
-          setProcess('Display Enrollment');
-        })
-        .catch((error) => {
-          console.warn(error);
-        });
-    });
+    recoilWithdraw(withdrewLearner);
   };
 
   // let manualEnroll = (
@@ -364,7 +311,7 @@ export default function Enrollment(props) {
         <div>
           Show Withdrawn{' '}
           <Checkbox
-            onClick={(e) => {
+            onClick={() => {
               setShowWithdrawn(!showWithdrawn);
             }}
             checked={showWithdrawn}

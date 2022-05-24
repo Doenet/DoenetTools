@@ -15,8 +15,8 @@ export default class Slider extends BaseComponent {
 
   static variableForPlainMacro = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string",
       createStateVariable: "type",
@@ -632,7 +632,7 @@ export default class Slider extends BaseComponent {
   }
 
 
-  async changeValue({ value, transient }) {
+  async changeValue({ value, transient, actionId }) {
     if (!await this.stateValues.disabled) {
       if (transient) {
         return await this.coreFunctions.performUpdate({
@@ -642,7 +642,8 @@ export default class Slider extends BaseComponent {
             stateVariable: "value",
             value
           }],
-          transient
+          transient,
+          actionId
         });
       } else {
         return await this.coreFunctions.performUpdate({
@@ -652,6 +653,7 @@ export default class Slider extends BaseComponent {
             stateVariable: "value",
             value
           }],
+          actionId,
           event: {
             verb: "selected",
             object: {
@@ -665,6 +667,8 @@ export default class Slider extends BaseComponent {
           }
         });
       }
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

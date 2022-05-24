@@ -90,8 +90,7 @@ export default function ClassTimes(){
     newArr = sortClassTimes(newArr);
     set(classTimesAtom,newArr);
 
-    let path = await snapshot.getPromise(searchParamAtomFamily('path'));
-    let [driveId] = path.split(':');
+    let courseId = await snapshot.getPromise(searchParamAtomFamily('courseId'));
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -102,7 +101,7 @@ export default function ClassTimes(){
 
     }
 
-    let { data } = await axios.post('/api/updateClassTimes.php',{driveId,dotwIndexes,startTimes,endTimes})
+    let { data } = await axios.post('/api/updateClassTimes.php',{driveId: courseId,dotwIndexes,startTimes,endTimes})
     console.log(">>>>data",data)
   })
 
@@ -114,8 +113,7 @@ export default function ClassTimes(){
     newArr = sortClassTimes(newArr);
     set(classTimesAtom,newArr);
 
-     let path = await snapshot.getPromise(searchParamAtomFamily('path'));
-    let [driveId] = path.split(':');
+     let courseId = await snapshot.getPromise(searchParamAtomFamily('courseId'));
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -126,7 +124,7 @@ export default function ClassTimes(){
 
     }
 
-    let { data } = await axios.post('/api/updateClassTimes.php',{driveId,dotwIndexes,startTimes,endTimes})
+    let { data } = await axios.post('/api/updateClassTimes.php',{driveId: courseId,dotwIndexes,startTimes,endTimes})
     console.log(">>>>data",data)
    })
 
@@ -138,8 +136,7 @@ export default function ClassTimes(){
     newArr = sortClassTimes(newArr);
     set(classTimesAtom,newArr);
 
-     let path = await snapshot.getPromise(searchParamAtomFamily('path'));
-    let [driveId] = path.split(':');
+     let courseId = await snapshot.getPromise(searchParamAtomFamily('courseId'));
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -150,7 +147,7 @@ export default function ClassTimes(){
 
     }
 
-    let { data } = await axios.post('/api/updateClassTimes.php',{driveId,dotwIndexes,startTimes,endTimes})
+    let { data } = await axios.post('/api/updateClassTimes.php',{driveId: courseId,dotwIndexes,startTimes,endTimes})
     console.log(">>>>data",data)
    })
 

@@ -43,18 +43,18 @@ export default function ProgressBar(props) {
   var donut = /* @__PURE__ */ React.createElement(DonutG, null, /* @__PURE__ */ React.createElement(Circle, {
     id: "donut",
     cx: donutPosition,
-    fill: "rgb(238,161,119)",
+    fill: "var(--donutBody)",
     r: "12.5"
   }), /* @__PURE__ */ React.createElement(Circle, {
     id: "donut-topping",
     cx: donutPosition,
-    fill: "rgb(109,68,69)",
+    fill: "var(--donutTopping)",
     r: "10"
   }), /* @__PURE__ */ React.createElement(Circle, {
     id: "donut-hole",
     cx: donutPosition,
     r: "4",
-    fill: "#E2E2E2"
+    fill: "var(--mainGray)"
   }));
   var align = "flex";
   var alignItems = "none";
@@ -94,16 +94,17 @@ export default function ProgressBar(props) {
     height
   }, /* @__PURE__ */ React.createElement(Rect, {
     id: "main",
-    fill: "#E2E2E2",
+    fill: "var(--mainGray)",
     width: barWidth,
     height,
     radius,
     "aria-label": ariaLabel
   }), /* @__PURE__ */ React.createElement(Rect, {
     id: "moving",
-    fill: "#1A5A99",
+    fill: "var(--mainBlue)",
     width: fillWidth,
     height,
     radius
   }), props.donutIcon ? donut : ""), props.showProgress ? /* @__PURE__ */ React.createElement(Progress, null, percent) : "");
 }
+;

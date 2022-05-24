@@ -40,8 +40,8 @@ export class MatrixInput extends Input {
 
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.numRows = {
       createComponentOfType: "integer",
@@ -1799,7 +1799,7 @@ export class MatrixInput extends Input {
     return stateVariableDefinitions;
   }
 
-  async updateRawValues({ rawRendererValues, transient = false }) {
+  async updateRawValues({ rawRendererValues, transient = false, actionId }) {
     if (!await this.stateValues.disabled) {
       // we set transient to true so that each keystroke does not
       // add a row to the database
@@ -1811,12 +1811,15 @@ export class MatrixInput extends Input {
           stateVariable: "rawRendererValues",
           value: rawRendererValues,
         }],
-        transient
+        transient,
+        actionId,
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  async updateNumRows({ numRows }) {
+  async updateNumRows({ numRows, actionId }) {
     if (!await this.stateValues.disabled) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -1825,12 +1828,15 @@ export class MatrixInput extends Input {
           stateVariable: "numRows",
           value: numRows,
         }],
+        actionId,
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
 
-  async updateNumColumns({ numColumns }) {
+  async updateNumColumns({ numColumns, actionId }) {
     if (!await this.stateValues.disabled) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -1839,7 +1845,10 @@ export class MatrixInput extends Input {
           stateVariable: "numColumns",
           value: numColumns,
         }],
+        actionId
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -2663,9 +2672,11 @@ export default class MatrixComponentInput extends BaseComponent {
           componentName: this.componentName,
           stateVariable: "rawRendererValue",
           value: rawRendererValue,
-          sourceInformation: { actionId }
         }],
+        actionId,
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -2681,7 +2692,6 @@ export default class MatrixComponentInput extends BaseComponent {
           componentName: this.componentName,
           stateVariable: "value",
           value: immediateValue,
-          sourceInformation: { actionId }
         },
         // in case value ended up being a different value than requested
         // we set immediate value to whatever was the result
@@ -2727,6 +2737,7 @@ export default class MatrixComponentInput extends BaseComponent {
 
         await this.coreFunctions.performUpdate({
           updateInstructions,
+          actionId,
           event,
         });
 
@@ -2744,10 +2755,13 @@ export default class MatrixComponentInput extends BaseComponent {
             componentName: this.componentName,
             stateVariable: "rawRendererValue",
             valueOfStateVariable: "rawRendererValue",
-          }]
+          }],
+          actionId
         })
       }
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

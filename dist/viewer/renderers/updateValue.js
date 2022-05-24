@@ -6,8 +6,9 @@ export default function UpdateValue(props) {
   if (SVs.hidden) {
     return null;
   }
-  return /* @__PURE__ */ React.createElement("span", {
-    id: name
+  return /* @__PURE__ */ React.createElement("div", {
+    id: name,
+    margin: "12px 0"
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement(Button, {

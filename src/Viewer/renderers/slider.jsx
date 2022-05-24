@@ -7,6 +7,8 @@ import useDoenetRender from './useDoenetRenderer';
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 import { doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray } from "../../_reactComponents/PanelHeaderComponents/theme"
+import { useSetRecoilState } from 'recoil';
+import { rendererState } from './useDoenetRenderer';
 
 
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
@@ -164,7 +166,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       let maxAbs = Math.max(Math.abs(SVs.firstItem), Math.abs(SVs.lastItem));
       let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
       let roundDecimalsForTickSpacing = 1 - magnitudeOfMaxAbs;
-      let dTick = round_to_decimals(desiredDTick, roundDecimalsForTickSpacing)
+      let dTick = Math.max(round_to_decimals(desiredDTick, roundDecimalsForTickSpacing), 10 ** -roundDecimalsForTickSpacing);
       let numberOfTicks = Math.floor(tickSpan / dTick) + 1;
 
       let roundDecimals = 5 - magnitudeOfMaxAbs;
@@ -176,7 +178,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
 
     } else {
 
-      let desiredNumberOfTicks = Math.floor(SVs.width.size / maxValueWidth);
+      let desiredNumberOfTicks = Math.max(2, Math.floor(SVs.width.size / maxValueWidth));
       let dIndex = Math.ceil((SVs.nItems - 1) / (desiredNumberOfTicks - 1) - 1E-10);
       let numberOfTicks = Math.floor((SVs.nItems - 1) / dIndex + 1E-10) + 1;
 
@@ -310,13 +312,17 @@ function nearestValue(refval, points, SVs) {
 }
 
 export default function Slider(props) {
-  let {name, SVs, actions, callAction} = useDoenetRender(props);
-  // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
+  let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index, "ignoreUpdate", ignoreUpdate);
   // console.log(SVs)
+
+  Slider.baseStateVariable = 'index';
 
   const containerRef = useRef(null);
   // console.log("SVs",SVs);
   // let sorted_points = [...SVs.items].sort((p1, p2) => p1 - p2);
+
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   const [thumbXPos, setThumbXPos] = useState(0);
   const [thumbValue, setThumbValue] = useState(SVs.firstItem);
@@ -337,7 +343,7 @@ export default function Slider(props) {
 
   useEffect(() => {
     //console.log("ran");
-    if (!isMouseDown) {
+    if (!isMouseDown && !ignoreUpdate) {
       setThumbValue(SVs.value);
       setIndex(SVs.index);
       if (!(SVs.type === "text")) {
@@ -439,14 +445,31 @@ export default function Slider(props) {
       setIndex(valindexpair[1]);
 
 
-
-      callAction({action:actions.changeValue, args:{ value: valindexpair[0], transient: true }})
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: valindexpair[0], transient: true },
+        baseVariableValue: valindexpair[1],
+      })
     } else {
       let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
       setIndex(i);
       setThumbValue(SVs.items[i]);
 
-      callAction({action:actions.changeValue, args:{ value: SVs.items[i], transient: true }})
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: SVs.items[i], transient: true },
+        baseVariableValue: i,
+      })
 
     }
   }
@@ -476,7 +499,16 @@ export default function Slider(props) {
 
       setThumbXPos(valindexpair[1] * divisionWidth);
 
-      callAction({action:actions.changeValue, args:{ value: valindexpair[0]}})
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: valindexpair[0] },
+        baseVariableValue: valindexpair[1]
+      })
 
     } else {
       let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
@@ -487,7 +519,16 @@ export default function Slider(props) {
 
       setThumbXPos(i * divisionWidth);
 
-      callAction({action:actions.changeValue, args:{ value: SVs.items[i]}})
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: SVs.items[i] },
+        baseVariableValue: i
+      })
 
 
     }
@@ -504,14 +545,32 @@ export default function Slider(props) {
         setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
 
-      callAction({action:actions.changeValue, args:{ value: valindexpair[0], transient: true, skippable: true }})
+        setRendererState((was) => {
+          let newObj = { ...was };
+          newObj.ignoreUpdate = true;
+          return newObj;
+        })
+        callAction({
+          action: actions.changeValue,
+          args: { value: valindexpair[0], transient: true, skippable: true },
+          baseVariableValue: valindexpair[1]
+        })
 
       } else {
         let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
         setIndex(i);
         setThumbValue(SVs.items[i]);
 
-      callAction({action:actions.changeValue, args:{ value: SVs.items[i], transient: true, skippable: true }})
+        setRendererState((was) => {
+          let newObj = { ...was };
+          newObj.ignoreUpdate = true;
+          return newObj;
+        })
+        callAction({
+          action: actions.changeValue,
+          args: { value: SVs.items[i], transient: true, skippable: true },
+          baseVariableValue: i
+        })
 
       }
     }
@@ -530,7 +589,16 @@ export default function Slider(props) {
       val = SVs.items[index + 1];
     }
 
-    callAction({action:actions.changeValue, args:{ value: val }})
+    setRendererState((was) => {
+      let newObj = { ...was };
+      newObj.ignoreUpdate = true;
+      return newObj;
+    })
+    callAction({
+      action: actions.changeValue,
+      args: { value: val },
+      baseVariableValue: index + 1
+    })
 
     setThumbValue(val);
     setIndex(index + 1);
@@ -550,7 +618,16 @@ export default function Slider(props) {
       val = SVs.items[index - 1];
     }
 
-    callAction({action:actions.changeValue, args:{ value: val }})
+    setRendererState((was) => {
+      let newObj = { ...was };
+      newObj.ignoreUpdate = true;
+      return newObj;
+    })
+    callAction({
+      action: actions.changeValue,
+      args: { value: val },
+      baseVariableValue: index - 1
+    })
 
     setThumbValue(val);
     setIndex(index - 1);
@@ -627,7 +704,7 @@ export default function Slider(props) {
         {myLabel}
       </div>
       <SubContainer2 onMouseDown={handleDragEnter} onMouseUp={handleDragExit} onMouseMove={handleDragThrough} onMouseLeave={handleDragExit}>
-        <StyledSlider width={(`${SVs.width.size}px`)} data-cy="slider1">
+        <StyledSlider width={(`${SVs.width.size}px`)} data-cy={`${name}`}>
           {/* {valueDisplay} */}
           <StyledThumb style={{ left: `${thumbXPos - 4}px` }}
             data-cy={`${name}-handle`} />

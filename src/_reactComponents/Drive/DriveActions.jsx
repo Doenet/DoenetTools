@@ -76,7 +76,7 @@ export const useDragShadowCallbacks = () => {
         const dragShadow = {
           assignmentId: null,
           doenetId: null,
-          contentId: null,
+          cid: null,
           creationDate: '',
           isPublished: '0',
           itemId: dragShadowId,

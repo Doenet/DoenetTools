@@ -4,9 +4,9 @@ import {BreadCrumb} from "../../_reactComponents/PanelHeaderComponents/BreadCrum
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {useCourseChooserCrumb, useDashboardCrumb, useGradebookCrumbs} from "../../_utils/breadcrumbUtil.js";
 export default function GradebookBreadCrumb() {
-  const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const courseChooserCrumb = useCourseChooserCrumb();
-  const dashboardCrumb = useDashboardCrumb(driveId);
+  const dashboardCrumb = useDashboardCrumb(courseId);
   const gradebookCrumbs = useGradebookCrumbs();
   return /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "loading Breadcrumbs...")

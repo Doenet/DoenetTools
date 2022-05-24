@@ -14,7 +14,7 @@ $msg = "";
 $sql = "
 SELECT fileType
 FROM support_files
-WHERE contentId = '$cid'
+WHERE cid = '$cid'
 ";
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();

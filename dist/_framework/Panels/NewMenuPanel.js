@@ -118,7 +118,6 @@ const HomeButton = styled.button`
   font-size: 20px;
 `;
 function SelectionMenu(props) {
-  console.log("child", props.children);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {
       paddingBottom: "8px",
@@ -164,29 +163,34 @@ const LoadingFallback = styled.div`
   height: 100vh;
 `;
 export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], currentMenus = [], initOpen = [], setMenusOpen, displayProfile}) {
-  console.log(">>>===MenuPanel", hide);
   const currentSelectionMenu = useRecoilValue(selectedMenuPanelAtom);
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   let menusArray = [];
   const LazyMenuPanelCapObj = useRef({
     DriveInfoCap: lazy(() => import("../MenuPanelCaps/DriveInfoCap.js")),
+    DataCap: lazy(() => import("../MenuPanelCaps/DataCap.js")),
     EditorInfoCap: lazy(() => import("../MenuPanelCaps/EditorInfoCap.js")),
-    AssignmentInfoCap: lazy(() => import("../MenuPanelCaps/AssignmentInfoCap.js"))
+    AssignmentInfoCap: lazy(() => import("../MenuPanelCaps/AssignmentInfoCap.js")),
+    DraftActivityCap: lazy(() => import("../MenuPanelCaps/DraftActivityCap.js"))
   }).current;
   const LazyMenuObj = useRef({
     SelectedCourse: lazy(() => import("../Menus/SelectedCourse.js")),
     GradeSettings: lazy(() => import("../Menus/GradeSettings.js")),
-    SelectedDoenetML: lazy(() => import("../Menus/SelectedDoenetML.js")),
-    SelectedFolder: lazy(() => import("../Menus/SelectedFolder.js")),
-    SelectedCollection: lazy(() => import("../Menus/SelectedCollection.js")),
-    SelectedMulti: lazy(() => import("../Menus/SelectedMulti.js")),
+    SelectedSection: lazy(() => import("../Menus/SelectedSection.js")),
+    SelectedBank: lazy(() => import("../Menus/SelectedBank.js")),
+    SelectedDataSources: lazy(() => import("../Menus/SelectedDataSources.js")),
+    SelectedActivity: lazy(() => import("../Menus/SelectedActivity.js")),
+    SelectedOrder: lazy(() => import("../Menus/SelectedOrder.js")),
+    SelectedPage: lazy(() => import("../Menus/SelectedPage.js")),
     CreateCourse: lazy(() => import("../Menus/CreateCourse.js")),
     CourseEnroll: lazy(() => import("../Menus/CourseEnroll.js")),
     AddDriveItems: lazy(() => import("../Menus/AddDriveItems.js")),
+    CutCopyPasteMenu: lazy(() => import("../Menus/CutCopyPasteMenu.js")),
     EnrollStudents: lazy(() => import("../Menus/EnrollStudents.js")),
     DoenetMLSettings: lazy(() => import("../Menus/DoenetMLSettings.js")),
     VersionHistory: lazy(() => import("../Menus/VersionHistory.js")),
-    Variant: lazy(() => import("../Menus/Variant.js")),
+    PageVariant: lazy(() => import("../Menus/PageVariant.js")),
+    ActivityVariant: lazy(() => import("../Menus/ActivityVariant.js")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
     LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
     GradeUpload: lazy(() => import("../Menus/GradeUpload.js")),
@@ -219,7 +223,6 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     }, React.createElement(LazyMenuPanelCapObj[menuPanelCap])));
   }
   for (let [i, type] of Object.entries(currentMenus)) {
-    console.log(">>>menu", type);
     const mKey = `${type}`;
     const title = menusTitles[i];
     let isOpen = initOpen[i];

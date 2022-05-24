@@ -10,8 +10,8 @@ export class ComponentWithSelectableType extends BaseComponent {
 
   static includeBlankStringChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string"
     }
@@ -174,8 +174,8 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string"
     }
@@ -344,8 +344,8 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 export class ComponentListOfListsWithSelectableType extends ComponentWithSelectableType {
   static componentType = "_componentListOfListsWithSelectableType";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string"
     }

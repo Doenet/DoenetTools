@@ -12,8 +12,8 @@ export default class Circle extends Curve {
   };
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.through = {
       createComponentOfType: "_pointListComponent",
@@ -161,6 +161,19 @@ export default class Circle extends Curve {
             return [];
           }
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "throughPoints") {
+          return "throughPoint" + propIndex;
+        }
+        if (varName.slice(0, 12) === "throughPoint") {
+          // could be throughPoint or throughPointX
+          let throughPointNum = Number(varName.slice(12));
+          if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
+            return `throughPointX${throughPointNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nThroughPoints: {
@@ -314,6 +327,9 @@ export default class Circle extends Curve {
 
           if (dependencyValuesByKey[arrayKey].centerAttr !== null) {
             prescribedCenter[arrayKey] = dependencyValuesByKey[arrayKey].centerAttr.stateValues["x" + varEnding];
+            if (!prescribedCenter[arrayKey]) {
+              prescribedCenter[arrayKey] = me.fromAst('\uff3f');
+            }
           }
         }
 
@@ -2132,7 +2148,7 @@ export default class Circle extends Curve {
   }
 
 
-  async moveCircle({ center, radius, throughAngles, transient }) {
+  async moveCircle({ center, radius, throughAngles, transient, actionId }) {
 
     let instructions = [];
 
@@ -2187,11 +2203,13 @@ export default class Circle extends Curve {
     if (transient) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: instructions,
-        transient
+        transient,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions: instructions,
+        actionId,
         event: {
           verb: "interacted",
           object: {

@@ -4,8 +4,8 @@ export default class EquilibriumLine extends Line {
   static componentType = "equilibriumLine";
   static rendererType = "line";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.stable = {
       createComponentOfType: "boolean",
@@ -60,7 +60,7 @@ export default class EquilibriumLine extends Line {
 
   };
 
-  async switchLine() {
+  async switchLine({ actionId }) {
     if (await this.stateValues.switchable) {
       return await this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -69,6 +69,7 @@ export default class EquilibriumLine extends Line {
           stateVariable: "stable",
           value: !this.stateValues.stable,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -80,6 +81,8 @@ export default class EquilibriumLine extends Line {
           }
         }
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }

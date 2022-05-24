@@ -1,11 +1,12 @@
 describe('Math Display Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
   it('inline and display', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -28,7 +29,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('numbered equations', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -69,7 +70,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('dynamic numbered equations', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -103,6 +104,10 @@ describe('Math Display Tag Tests', function () {
     <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" target="n5/eq" />, equation <ref target="n5/eq" name="rn5" /></p>
     <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" target="n6/eq" />, equation <ref target="n6/eq" name="rn6" /></p>
     <p name="pz">z: <copy prop="equationTag" assignNames="etz" target="z" />, equation <ref target="z" name="rz" /></p>
+    <p>
+      <copy prop="value" target="m" assignNames="ma" />
+      <copy prop="value" target="n" assignNames="na" />
+    </p>
     `}, "*");
     });
 
@@ -123,7 +128,7 @@ describe('Math Display Tag Tests', function () {
       cy.get('#\\/rx').should('have.attr', 'href', `#/x`)
 
       for (let i = 1; i <= m; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           counter++;
           cy.get(`#\\/m${i}\\/eq`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}m(${counter})`)
@@ -137,7 +142,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
       for (let i = m + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
           cy.get(`#\\/etm${i}`).should('not.exist')
           cy.get(`#\\/rm${i}`).should('have.text', `???`)
@@ -145,7 +150,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`y(${counter})`)
@@ -157,7 +162,7 @@ describe('Math Display Tag Tests', function () {
       })
 
       for (let i = 1; i <= n; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           counter++;
           cy.get(`#\\/n${i}\\/eq`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}n(${counter})`)
@@ -172,7 +177,7 @@ describe('Math Display Tag Tests', function () {
       }
 
       for (let i = n + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
           cy.get(`#\\/etn${i}`).should('not.exist')
           cy.get(`#\\/rn${i}`).should('have.text', `???`)
@@ -181,7 +186,7 @@ describe('Math Display Tag Tests', function () {
       }
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`z(${counter})`)
@@ -197,28 +202,34 @@ describe('Math Display Tag Tests', function () {
 
 
     cy.get('#\\/m textarea').type(`{end}{backspace}4{enter}`, { force: true });
+    cy.get('#\\/ma').should('contain.text', '4')
     checkEquationNumbering(4, 1)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
+    cy.get('#\\/na').should('contain.text', '2')
     checkEquationNumbering(4, 2)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get('#\\/ma').should('contain.text', '0')
     checkEquationNumbering(0, 2)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get('#\\/na').should('contain.text', '6')
     checkEquationNumbering(0, 6)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get('#\\/ma').should('contain.text', '3')
     checkEquationNumbering(3, 6)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get('#\\/na').should('contain.text', '1')
     checkEquationNumbering(3, 1)
 
 
   });
 
   it('math inside', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -244,7 +255,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('align equations', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -310,7 +321,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('dynamic numbered aligned equations', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -348,6 +359,10 @@ describe('Math Display Tag Tests', function () {
     <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" target="n5/eq" />, equation <ref target="n5/eq" name="rn5" /></p>
     <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" target="n6/eq" />, equation <ref target="n6/eq" name="rn6" /></p>
     <p name="pz">z: <copy prop="equationTag" assignNames="etz" target="z" />, equation <ref target="z" name="rz" /></p>
+    <p>
+      <copy prop="value" target="m" assignNames="ma" />
+      <copy prop="value" target="n" assignNames="na" />
+    </p>
     `}, "*");
     });
 
@@ -368,7 +383,7 @@ describe('Math Display Tag Tests', function () {
       cy.get('#\\/rx').should('have.attr', 'href', `#/x`)
 
       for (let i = 1; i <= m; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           counter++;
           cy.get('#\\/ms').find('.mjx-mlabeledtr').eq(i - 1).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}m=${i + 10}`)
@@ -385,7 +400,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
       for (let i = m + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
           cy.get(`#\\/etm${i}`).should('not.exist')
           cy.get(`#\\/rm${i}`).should('have.text', `???`)
@@ -393,7 +408,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`y(${counter})`)
@@ -405,7 +420,7 @@ describe('Math Display Tag Tests', function () {
       })
 
       for (let i = 1; i <= n; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           counter++;
           cy.get('#\\/ns').find('.mjx-mlabeledtr').eq(i - 1).invoke('text').then((text) => {
             expect(text.trim()).equal(`${i}n=${i + 10}`)
@@ -423,7 +438,7 @@ describe('Math Display Tag Tests', function () {
       }
 
       for (let i = n + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
           cy.get(`#\\/etn${i}`).should('not.exist')
           cy.get(`#\\/rn${i}`).should('have.text', `???`)
@@ -432,7 +447,7 @@ describe('Math Display Tag Tests', function () {
       }
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`z(${counter})`)
@@ -448,28 +463,34 @@ describe('Math Display Tag Tests', function () {
 
 
     cy.get('#\\/m textarea').type(`{end}{backspace}4{enter}`, { force: true });
+    cy.get('#\\/ma').should('contain.text', '4')
     checkEquationNumbering(4, 1)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
+    cy.get('#\\/na').should('contain.text', '2')
     checkEquationNumbering(4, 2)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get('#\\/ma').should('contain.text', '0')
     checkEquationNumbering(0, 2)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get('#\\/na').should('contain.text', '6')
     checkEquationNumbering(0, 6)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get('#\\/ma').should('contain.text', '3')
     checkEquationNumbering(3, 6)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get('#\\/na').should('contain.text', '1')
     checkEquationNumbering(3, 1)
 
 
   });
 
   it('dynamic numbered aligned equations, numbering swapped', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -507,6 +528,10 @@ describe('Math Display Tag Tests', function () {
     <p name="pn5">n5: <copy prop="equationTag" assignNames="etn5" target="n5/eq" />, equation <ref target="n5/eq" name="rn5" /></p>
     <p name="pn6">n6: <copy prop="equationTag" assignNames="etn6" target="n6/eq" />, equation <ref target="n6/eq" name="rn6" /></p>
     <p name="pz">z: <copy prop="equationTag" assignNames="etz" target="z" />, equation <ref target="z" name="rz" /></p>
+    <p>
+      <copy prop="value" target="m" assignNames="ma" />
+      <copy prop="value" target="n" assignNames="na" />
+    </p>
     `}, "*");
     });
 
@@ -529,7 +554,7 @@ describe('Math Display Tag Tests', function () {
       let labeledMs = 0;
       let unlabeledMs = 0;
       for (let i = 1; i <= m; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           if (i % 2 === 1) {
             labeledMs++;
             counter++;
@@ -560,7 +585,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
       for (let i = m + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pm${i}`).should('have.text', `m${i}: , equation ???`)
           cy.get(`#\\/etm${i}`).should('not.exist')
           cy.get(`#\\/rm${i}`).should('have.text', `???`)
@@ -568,7 +593,7 @@ describe('Math Display Tag Tests', function () {
         })
       }
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`y(${counter})`)
@@ -582,7 +607,7 @@ describe('Math Display Tag Tests', function () {
       let labeledNs = 0;
       let unlabeledNs = 0;
       for (let i = 1; i <= n; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           if (i % 2 === 0) {
             labeledNs++;
             counter++;
@@ -614,7 +639,7 @@ describe('Math Display Tag Tests', function () {
       }
 
       for (let i = n + 1; i <= 6; i++) {
-        cy.window().then((win) => {
+        cy.window().then(async (win) => {
           cy.get(`#\\/pn${i}`).should('have.text', `n${i}: , equation ???`)
           cy.get(`#\\/etn${i}`).should('not.exist')
           cy.get(`#\\/rn${i}`).should('have.text', `???`)
@@ -623,7 +648,7 @@ describe('Math Display Tag Tests', function () {
       }
 
 
-      cy.window().then((win) => {
+      cy.window().then(async (win) => {
         counter++;
         cy.get('#\\/z').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal(`z(${counter})`)
@@ -639,28 +664,34 @@ describe('Math Display Tag Tests', function () {
 
 
     cy.get('#\\/m textarea').type(`{end}{backspace}4{enter}`, { force: true });
+    cy.get('#\\/ma').should('contain.text', '4')
     checkEquationNumbering(4, 1)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}2{enter}`, { force: true });
+    cy.get('#\\/na').should('contain.text', '2')
     checkEquationNumbering(4, 2)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}0{enter}`, { force: true });
+    cy.get('#\\/ma').should('contain.text', '0')
     checkEquationNumbering(0, 2)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}6{enter}`, { force: true });
+    cy.get('#\\/na').should('contain.text', '6')
     checkEquationNumbering(0, 6)
 
     cy.get('#\\/m textarea').type(`{end}{backspace}3{enter}`, { force: true });
+    cy.get('#\\/ma').should('contain.text', '3')
     checkEquationNumbering(3, 6)
 
     cy.get('#\\/n textarea').type(`{end}{backspace}1{enter}`, { force: true });
+    cy.get('#\\/na').should('contain.text', '1')
     checkEquationNumbering(3, 1)
 
 
   });
 
   it('add commas to large integers', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -685,7 +716,7 @@ describe('Math Display Tag Tests', function () {
   });
 
   it('include blank string children', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
@@ -709,6 +740,38 @@ describe('Math Display Tag Tests', function () {
     })
     cy.get('#\\/_md1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('βs')
+    })
+
+  })
+
+  it('aslist inside displayed math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    
+    <m>s=<aslist name="al"><sequence from="1" to="3" /></aslist></m>
+    <m>s=$al</m>
+    <me>s = $al</me>
+    <md>
+      <mrow>s \\amp= $al</mrow>
+    </md>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('s=1,2,3')
+    })
+    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('s=1,2,3')
+    })
+    cy.get('#\\/_me1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('s=1,2,3')
+    })
+    cy.get('#\\/_md1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('s=1,2,3')
     })
 
   })

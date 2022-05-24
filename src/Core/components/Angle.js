@@ -4,8 +4,8 @@ import me from 'math-expressions';
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.draggable = {
       createComponentOfType: "boolean",
       createStateVariable: "draggable",
@@ -19,12 +19,14 @@ export default class Angle extends GraphicalComponent {
       defaultValue: me.fromAst(1),
       public: true,
     };
-    attributes.renderAsAcuteAngle = {
-      createComponentOfType: "boolean",
-      createStateVariable: "renderAsAcuteAngle",
-      defaultValue: false,
+    attributes.chooseReflexAngle = {
+      createComponentOfType: "text",
+      createStateVariable: "chooseReflexAngle",
+      defaultValue: "never",
       public: true,
-      forRenderer: true
+      forRenderer: true,
+      toLowerCase: true,
+      validValues: ["never", "allowed", "always"]
     };
     attributes.inDegrees = {
       createComponentOfType: "boolean",
@@ -403,6 +405,10 @@ export default class Angle extends GraphicalComponent {
       public: true,
       componentType: "math",
       forRenderer: true,
+      additionalStateVariablesDefined: [{
+        variableName: "swapPointOrder",
+        forRenderer: true,
+      }],
       returnDependencies: () => ({
         radians: {
           dependencyType: "attributeComponent",
@@ -418,20 +424,28 @@ export default class Angle extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "points"
         },
+        chooseReflexAngle: {
+          dependencyType: "stateVariable",
+          variableName: "chooseReflexAngle"
+        },
 
       }),
       definition({ dependencyValues }) {
 
+        let swapPointOrder = false;
+
         if (dependencyValues.radians !== null) {
           return {
             setValue: {
-              radians: dependencyValues.radians.stateValues.value.simplify()
+              radians: dependencyValues.radians.stateValues.value.simplify(),
+              swapPointOrder
             }
           }
         } else if (dependencyValues.degrees !== null) {
           return {
             setValue: {
-              radians: dependencyValues.degrees.stateValues.value.multiply(me.fromAst(["/", 'pi', 180])).simplify()
+              radians: dependencyValues.degrees.stateValues.value.multiply(me.fromAst(["/", 'pi', 180])).simplify(),
+              swapPointOrder
             }
           }
         }
@@ -451,7 +465,7 @@ export default class Angle extends GraphicalComponent {
         let radians;
 
         if (foundNull) {
-          return { setValue: { radians: me.fromAst('\uff3f') } }
+          return { setValue: { radians: me.fromAst('\uff3f'), swapPointOrder } }
         } else {
           radians = Math.atan2(ps[2][1] - ps[1][1], ps[2][0] - ps[1][0]) -
             Math.atan2(ps[0][1] - ps[1][1], ps[0][0] - ps[1][0])
@@ -462,7 +476,19 @@ export default class Angle extends GraphicalComponent {
           radians += 2 * Math.PI;
         }
 
-        return { setValue: { radians: me.fromAst(radians) } }
+        if(radians > Math.PI) {
+          if (dependencyValues.chooseReflexAngle ==="never") {
+          radians = 2 * Math.PI - radians;
+          swapPointOrder = true;
+          }
+        } else if(dependencyValues.chooseReflexAngle === "always") {
+          radians = 2 * Math.PI - radians;
+          swapPointOrder = true;
+        }
+
+        return {
+          setValue: { radians: me.fromAst(radians), swapPointOrder },
+        }
       }
     }
 

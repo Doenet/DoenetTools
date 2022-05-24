@@ -8,8 +8,8 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
   static createsVariants = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     delete attributes.numberOfSamples;
 
@@ -181,7 +181,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
 
   static async createSerializedReplacements({ component, componentInfoObjects, flags }) {
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
     for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals"]) {

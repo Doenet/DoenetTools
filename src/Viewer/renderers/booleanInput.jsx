@@ -2,13 +2,18 @@ import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
+import { rendererState } from './useDoenetRenderer';
+import { useSetRecoilState } from 'recoil';
+import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
 
 export default function BooleanInput(props) {
-  let { name, SVs, actions, ignoreUpdate, callAction } = useDoenetRender(props);
+  let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   BooleanInput.baseStateVariable = "value";
 
   const [rendererValue, setRendererValue] = useState(SVs.value);
+
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   let valueWhenSetState = useRef(null);
 
@@ -36,10 +41,16 @@ export default function BooleanInput(props) {
 
   function onChangeHandler(e) {
 
-    let newValue = e.target.checked;
+    let newValue = !rendererValue;
 
     setRendererValue(newValue);
     valueWhenSetState.current = SVs.value;
+
+    setRendererState((was) => {
+      let newObj = { ...was };
+      newObj.ignoreUpdate = true;
+      return newObj;
+    })
 
     callAction({
       action: actions.updateBoolean,
@@ -162,20 +173,36 @@ export default function BooleanInput(props) {
     }
   }
 
+
+  let input;
+  if (SVs.asToggleButton) {
+    input =
+      <ToggleButton
+        id={inputKey}
+        key={inputKey}
+        isSelected={rendererValue}
+        onClick={onChangeHandler}
+        value={SVs.label}
+        disabled={disabled}
+      />;
+  } else {
+    input = <label>
+      <input
+        type="checkbox"
+        key={inputKey}
+        id={inputKey}
+        checked={rendererValue}
+        onChange={onChangeHandler}
+        disabled={disabled}
+      />
+      {SVs.label}
+    </label>;
+  }
+
   return <React.Fragment>
     <span id={name}>
       <a name={name} />
-      <label>
-        <input
-          type="checkbox"
-          key={inputKey}
-          id={inputKey}
-          checked={rendererValue}
-          onChange={onChangeHandler}
-          disabled={disabled}
-        />
-        {SVs.label}
-      </label>
+      {input}
       {checkWorkButton}
     </span>
   </React.Fragment>

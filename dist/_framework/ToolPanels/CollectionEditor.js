@@ -35,14 +35,14 @@ export default function CollectionEditor() {
     const release = snapshot.retain();
     try {
       const versionHistory = await snapshot.getPromise(itemHistoryAtom(doenetId2));
-      let contentId = null;
+      let cid = null;
       for (const version in versionHistory?.named) {
         if (versionHistory?.named[version]?.isReleased === "1") {
-          contentId = versionHistory.named[version].contentId;
+          cid = versionHistory.named[version].cid;
           break;
         }
       }
-      let response = await snapshot.getPromise(fileByContentId(contentId));
+      let response = await snapshot.getPromise(fileByContentId(cid));
       if (typeof response === "object") {
         response = response.data;
       }

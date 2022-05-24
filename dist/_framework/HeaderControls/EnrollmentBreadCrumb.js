@@ -4,10 +4,10 @@ import {BreadCrumb} from "../../_reactComponents/PanelHeaderComponents/BreadCrum
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {useCourseChooserCrumb, useDashboardCrumb, useEnrollmentCrumb} from "../../_utils/breadcrumbUtil.js";
 export default function EnrollmentBreadCrumb() {
-  const driveId = useRecoilValue(searchParamAtomFamily("driveId"));
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const courseChooserCrumb = useCourseChooserCrumb();
-  const dashboardCrumb = useDashboardCrumb(driveId);
-  const enrollmentCrumb = useEnrollmentCrumb(driveId);
+  const dashboardCrumb = useDashboardCrumb(courseId);
+  const enrollmentCrumb = useEnrollmentCrumb(courseId);
   return /* @__PURE__ */ React.createElement(Suspense, {
     fallback: /* @__PURE__ */ React.createElement("div", null, "loading Breadcrumbs...")
   }, /* @__PURE__ */ React.createElement(BreadCrumb, {

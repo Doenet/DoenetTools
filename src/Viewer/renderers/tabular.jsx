@@ -13,7 +13,8 @@ const tableStyle = {
   width: sizeToCSS(SVs.width),
   height: sizeToCSS(SVs.height),
   borderCollapse: "collapse",
-  borderColor: "black"
+  borderColor: "black", 
+  borderRadius: "var(--mainBorderRadius)"
 }
 if (SVs.top !== "none") {
   tableStyle.borderTopStyle = "solid";
@@ -26,10 +27,13 @@ if (SVs.top !== "none") {
   }
 }
 
-return <><a name={name} /><table id={name} style={tableStyle}>
-  <tbody>
-  {children}
-  </tbody>
-</table></>
+return (
+  <div style={{ margin: "12px 0" }} >
+    <a name={name} />
+    <table id={name} style={tableStyle}>
+      <tbody>{children}</tbody>
+    </table>
+  </div>
+  )
 }
 

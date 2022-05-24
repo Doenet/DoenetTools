@@ -3,8 +3,8 @@ import GraphicalComponent from './abstract/GraphicalComponent';
 export default class RegionBetweenCurveXAxis extends GraphicalComponent {
   static componentType = "regionBetweenCurveXAxis";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.boundaryValues = {
       createComponentOfType: "numberList",
@@ -51,7 +51,7 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
           lineDescription += "dotted ";
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColor;
+        lineDescription += dependencyValues.selectedStyle.lineColorWord;
 
         return { setValue: { styleDescription: lineDescription } };
       }
