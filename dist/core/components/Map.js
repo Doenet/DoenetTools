@@ -751,7 +751,7 @@ export default class Map extends CompositeComponent {
 
 
     if (numberOfVariantsByDescendant.length === 1 && numberOfVariantsByDescendant[0] === 1) {
-      // just have a template with on variant
+      // just have a template with one variant
       // so will have a single variant even if don't know how many times the template is repeated
       serializedComponent.variants.numberOfVariants = 1;
 
@@ -761,8 +761,6 @@ export default class Map extends CompositeComponent {
       }
     }
 
-    // TODO: if template has only one unique variant
-    // could treat as a normal component
     return { success: false };
   }
 

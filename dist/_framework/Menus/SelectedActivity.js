@@ -6,7 +6,7 @@ import {toastType, useToast} from "../Toast.js";
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {useRecoilValue, useSetRecoilState, atom} from "../../_snowpack/pkg/recoil.js";
 import {useActivity} from "../../_reactComponents/Activity/ActivityActions.js";
-import {AssignedDate, AssignTo, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent} from "../../_reactComponents/Activity/SettingComponents.js";
+import {AssignedDate, AssignTo, AssignUnassignActivity, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent} from "../../_reactComponents/Activity/SettingComponents.js";
 import {
   itemByDoenetId,
   findFirstPageOfActivity,
@@ -26,16 +26,14 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
     label: recoilLabel,
-    order,
-    isAssigned
+    order
   } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const {
     renameItem,
     create,
     compileActivity,
-    deleteItem,
-    updateAssignItem
+    deleteItem
   } = useCourse(courseId);
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
   const addToast = useToast();
@@ -85,10 +83,6 @@ export default function SelectedActivity() {
       doenetId,
       courseId
     }));
-  }
-  let assignActivityText = "Assign Activity";
-  if (isAssigned) {
-    assignActivityText = "Update Assigned Activity";
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement(ActionButtonGroup, {
     vertical: true
@@ -145,39 +139,10 @@ export default function SelectedActivity() {
         }
       });
     }
-  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ActionButtonGroup, {
-    vertical: true
-  }, /* @__PURE__ */ React.createElement(ActionButton, {
-    width: "menu",
-    value: assignActivityText,
-    onClick: () => {
-      compileActivity({
-        activityDoenetId: doenetId,
-        isAssigned: true,
-        courseId
-      });
-      updateAssignItem({
-        doenetId,
-        isAssigned: true,
-        successCallback: () => {
-          addToast("Activity Assigned", toastType.INFO);
-        }
-      });
-    }
-  }), isAssigned ? /* @__PURE__ */ React.createElement(ActionButton, {
-    width: "menu",
-    value: "Unassign Activity",
-    alert: true,
-    onClick: () => {
-      updateAssignItem({
-        doenetId,
-        isAssigned: false,
-        successCallback: () => {
-          addToast("Activity Unassigned", toastType.INFO);
-        }
-      });
-    }
-  }) : null), /* @__PURE__ */ React.createElement(Textfield, {
+  })), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(AssignUnassignActivity, {
+    doenetId,
+    courseId
+  }), /* @__PURE__ */ React.createElement(Textfield, {
     label: "Label",
     vertical: true,
     width: "menu",

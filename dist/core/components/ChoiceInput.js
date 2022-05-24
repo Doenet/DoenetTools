@@ -59,9 +59,9 @@ export default class Choiceinput extends Input {
     attributes.inline = {
       createComponentOfType: "boolean",
     };
-    attributes.randomizeOrder = {
+    attributes.shuffleOrder = {
       createPrimitiveOfType: "boolean",
-      createStateVariable: "randomizeOrder",
+      createStateVariable: "shuffleOrder",
       defaultValue: false,
       public: true,
     };
@@ -151,9 +151,9 @@ export default class Choiceinput extends Input {
           childGroups: ["choices"],
           variableNames: ["text"]
         },
-        randomizeOrder: {
+        shuffleOrder: {
           dependencyType: "stateVariable",
-          variableName: "randomizeOrder"
+          variableName: "shuffleOrder"
         },
         variantRng: {
           dependencyType: "value",
@@ -167,7 +167,7 @@ export default class Choiceinput extends Input {
       definition: function ({ dependencyValues }) {
         let numberChoices = dependencyValues.choiceChildren.length;
         let choiceOrder;
-        if (!dependencyValues.randomizeOrder) {
+        if (!dependencyValues.shuffleOrder) {
           choiceOrder = [...Array(numberChoices).keys()].map(x => x + 1)
         } else {
 
@@ -221,9 +221,9 @@ export default class Choiceinput extends Input {
           dependencyType: "stateVariable",
           variableName: "choiceOrder"
         },
-        randomizeOrder: {
+        shuffleOrder: {
           dependencyType: "stateVariable",
-          variableName: "randomizeOrder"
+          variableName: "shuffleOrder"
         },
         variantDescendants: {
           dependencyType: "descendant",
@@ -246,7 +246,7 @@ export default class Choiceinput extends Input {
           meta: { createdBy: componentName }
         };
 
-        if (dependencyValues.randomizeOrder) {
+        if (dependencyValues.shuffleOrder) {
           generatedVariantInfo.indices = dependencyValues.choiceOrder;
         }
 
@@ -1044,7 +1044,7 @@ export default class Choiceinput extends Input {
   }) {
 
 
-    if (!serializedComponent.attributes.randomizeOrder?.primitive) {
+    if (!serializedComponent.attributes.shuffleOrder?.primitive) {
       return super.determineNumberOfUniqueVariants({
         serializedComponent, componentInfoObjects
       });
@@ -1116,7 +1116,7 @@ export default class Choiceinput extends Input {
     }
 
 
-    if (!serializedComponent.attributes.randomizeOrder?.primitive) {
+    if (!serializedComponent.attributes.shuffleOrder?.primitive) {
       return super.getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects });
     }
 
