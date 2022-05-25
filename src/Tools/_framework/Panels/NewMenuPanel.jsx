@@ -129,6 +129,8 @@ border: 0px solid white;
 // border-top: 1px solid black;
 border-bottom: ${props => props.isOpen ? '2px solid black' : '0px solid black'} ;
 margin-top: 2px;
+cursor: pointer;
+user-select: none;
 `
 
 const SettingsButton = styled.button`
@@ -185,7 +187,8 @@ function Menu(props){
       paddingBottom: "4px", 
       paddingLeft: "4px",
       paddingRight: "4px",
-      backgroundColor:"white"}}>{props.children}</div>
+      backgroundColor:"white",
+      userSelect: "none"}}>{props.children}</div>
   </>
 }
 
