@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 
 
-export default function UpdateValue(props) {
+export default React.memo(function UpdateValue(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props,false);
 
   if (SVs.hidden) {
@@ -27,4 +27,4 @@ export default function UpdateValue(props) {
       </button> */}
     </div>
   )
-}
+})

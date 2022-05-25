@@ -22,7 +22,7 @@ import {
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
 
-export default function MathInput(props) {
+export default React.memo(function MathInput(props) {
   let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } =
     useDoenetRender(props);
 
@@ -331,4 +331,4 @@ export default function MathInput(props) {
       </span>
     </React.Fragment>
   );
-}
+})

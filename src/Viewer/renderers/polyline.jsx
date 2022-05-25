@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 
-export default function Polyline(props) {
+export default React.memo(function Polyline(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Polyline.ignoreActionsWithoutCore = true;
@@ -372,7 +372,7 @@ export default function Polyline(props) {
 
   // don't think we want to return anything if not in board
   return <><a name={name} /></>
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

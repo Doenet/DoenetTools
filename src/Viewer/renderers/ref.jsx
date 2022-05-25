@@ -4,7 +4,7 @@ import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Ref(props) {
+export default React.memo(function Ref(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
@@ -80,5 +80,5 @@ export default function Ref(props) {
     }
   }
 
-}
+})
 

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
-export default function Circle(props) {
+export default React.memo(function Circle(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
 
   Circle.ignoreActionsWithoutCore = true;
@@ -236,7 +236,7 @@ export default function Circle(props) {
 
   return <a name={name} />
 
-}
+})
 
 
 

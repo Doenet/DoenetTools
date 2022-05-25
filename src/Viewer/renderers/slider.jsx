@@ -310,7 +310,7 @@ function nearestValue(refval, points, SVs) {
 
 }
 
-export default function Slider(props) {
+export default React.memo(function Slider(props) {
   let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
   // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index, "ignoreUpdate", ignoreUpdate);
   // console.log(SVs)
@@ -675,4 +675,4 @@ export default function Slider(props) {
     </SliderContainer>
   );
 
-}
+})

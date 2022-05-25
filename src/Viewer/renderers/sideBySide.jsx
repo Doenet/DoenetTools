@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
 
-export default function sideBySide(props) {
+export default React.memo(function sideBySide(props) {
   let {name, SVs, children} = useDoenetRender(props);
   // console.log(">>>name: ", name, " value: ", SVs);
   // console.log(">>>children",children)
@@ -53,4 +53,4 @@ export default function sideBySide(props) {
       {styledChildren}
     </div>
   )
-}
+})

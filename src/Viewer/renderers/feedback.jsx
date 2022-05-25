@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment as thoughtBubble } from '@fortawesome/free-regular-svg-icons';
 
-export default function Feedback(props) {
+export default React.memo(function Feedback(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -46,4 +46,4 @@ export default function Feedback(props) {
       </aside>
     </>
   );
-}
+})

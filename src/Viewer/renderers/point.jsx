@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
-export default function Point(props) {
+export default React.memo(function Point(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Point.ignoreActionsWithoutCore = true;
@@ -392,7 +392,7 @@ export default function Point(props) {
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 
 
-}
+})
 
 function normalizeStyle(style) {
   if (style === "triangle") {

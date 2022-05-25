@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
 
-export default function Solution(props) {
+export default React.memo(function Solution(props) {
   let { name, SVs, children, actions, callAction } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -69,4 +69,4 @@ export default function Solution(props) {
       <span style={infoBlockStyle}>{childrenToRender}</span>
     </aside>
   );
-}
+})

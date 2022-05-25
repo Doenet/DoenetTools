@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
-export default function Angle(props) {
+export default React.memo(function Angle(props) {
   let { name, SVs } = useDoenetRender(props);
 
   const board = useContext(BoardContext);
@@ -164,6 +164,6 @@ export default function Angle(props) {
   }
 
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
-}
+})
 
 
