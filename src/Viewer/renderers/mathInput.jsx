@@ -296,7 +296,7 @@ export default function MathInput(props) {
       <a name={name} />
 
       <span className="textInputSurroundingBox" id={name} style={{marginBottom: "12px"}}>
-        <span>
+        <span style={{ marginRight: '10px' }}>
           <EditableMathField
             style={{border: "var(--mainBorder)"}}
             latex={rendererValue.current}
