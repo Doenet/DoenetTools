@@ -99,7 +99,11 @@ export default class Spreadsheet extends BlockComponent {
     }, {
       group: "cellBlocks",
       componentTypes: ["cellBlock"]
-    }]
+    }, {
+      group: "dataFrames",
+      componentTypes: ["dataFrame"]
+    }
+    ]
 
   }
 
@@ -150,18 +154,27 @@ export default class Spreadsheet extends BlockComponent {
         cellNamesByRowCol: {
           dependencyType: "stateVariable",
           variableName: "cellNamesByRowCol"
-        }
+        },
         // rowChildren: {
         //   dependencyType: "child",
         //   childLogicName: "zeroOrMoreRows"
         // }
+        dataFrameChild: {
+          dependencyType: "child",
+          childGroups: ["dataFrames"],
+          variableNames: ["numRows"]
+        }
       }),
       definition({ dependencyValues }) {
+        console.log(dependencyValues);
         let numRows = dependencyValues.minNumRows;
         if (!Number.isFinite(numRows)) {
           numRows = 4;
         }
         numRows = Math.max(numRows, dependencyValues.cellNamesByRowCol.length);
+        if (dependencyValues.dataFrameChild.length > 0) {
+          numRows = Math.max(numRows, dependencyValues.dataFrameChild[0].stateValues.numRows)
+        }
         // numRows = Math.max(numRows, dependencyValues.rowChildren.length)
         return { setValue: { numRows } }
       }
@@ -178,13 +191,19 @@ export default class Spreadsheet extends BlockComponent {
         cellNamesByRowCol: {
           dependencyType: "stateVariable",
           variableName: "cellNamesByRowCol"
-        }
+        },
         // rowChildren: {
         //   dependencyType: "child",
         //   childLogicName: "zeroOrMoreRows"
         // }
+        dataFrameChild: {
+          dependencyType: "child",
+          childGroups: ["dataFrames"],
+          variableNames: ["numCols"]
+        }
       }),
       definition({ dependencyValues }) {
+        console.log(dependencyValues);
         let numColumns = dependencyValues.minNumColumns;
         if (!Number.isFinite(numColumns)) {
           numColumns = 4;
@@ -193,6 +212,10 @@ export default class Spreadsheet extends BlockComponent {
           if (row) {
             numColumns = Math.max(numColumns, row.length);
           }
+        }
+
+        if (dependencyValues.dataFrameChild.length > 0) {
+          numColumns = Math.max(numColumns, dependencyValues.dataFrameChild[0].stateValues.numCols)
         }
         return { setValue: { numColumns } }
       }
@@ -458,17 +481,38 @@ export default class Spreadsheet extends BlockComponent {
             }
           }
         }
-        return { dependenciesByKey }
+
+        let globalDependencies = {
+          dataFrameChild: {
+            dependencyType: "child",
+            childGroups: ["dataFrames"],
+            variableNames: ["dataFrame", "numRows", "numCols"]
+          }
+        }
+
+        return { dependenciesByKey, globalDependencies }
       },
-      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey({ dependencyValuesByKey, globalDependencyValues, arrayKeys }) {
 
         let cells = {};
         let essentialCells = {};
 
+        let dataFrame = null;
+        let dataFrameNumRows, dataFrameNumCols
+
+        if (globalDependencyValues.dataFrameChild.length > 0) {
+          dataFrame = globalDependencyValues.dataFrameChild[0];
+          dataFrameNumRows = dataFrame.stateValues.numRows;
+          dataFrameNumCols = dataFrame.stateValues.numCols;
+        }
+
         for (let arrayKey of arrayKeys) {
+          let [rowInd, colInd] = arrayKey.split(',');
 
           if (dependencyValuesByKey[arrayKey].cellText !== undefined) {
             cells[arrayKey] = dependencyValuesByKey[arrayKey].cellText
+          } else if (rowInd < dataFrameNumRows && colInd < dataFrameNumCols) {
+            cells[arrayKey] = dataFrame.stateValues.dataFrame.data[rowInd][colInd]
           } else {
             essentialCells[arrayKey] = true;
           }
