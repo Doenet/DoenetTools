@@ -125,8 +125,8 @@ if ($success){
         }
 }
 
-$escapedType =  mysqli_real_escape_string($conn,$type);
 
+$escapedType = str_replace('\/', '/', $type);
 
 if ($success && !$already_have_file){
   //track upload for IPFS upload nanny to upload later
