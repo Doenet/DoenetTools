@@ -125,13 +125,16 @@ if ($success){
         }
 }
 
+$escapedType =  mysqli_real_escape_string($conn,$type);
+
+
 if ($success && !$already_have_file){
   //track upload for IPFS upload nanny to upload later
   $sql = "
   INSERT INTO ipfs_to_upload 
   (cid,fileType,sizeInBytes,timestamp)
   VALUES
-  ('$cid','$type','$size',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
+  ('$cid','$escapedType','$size',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
   ";
   $result = $conn->query($sql);
 }
@@ -141,12 +144,12 @@ if ($success){
         INSERT INTO support_files 
         (userId,cid,doenetId,fileType,description,asFileName,sizeInBytes,widthPixels,heightPixels,timestamp)
         VALUES
-        ('$userId','$cid','$doenetId','$type','$description','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
+        ('$userId','$cid','$doenetId','$escapedType','$description','$original_file_name','$size','$width','$height',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
         ";
         $result = $conn->query($sql);
 }
 if ($success){
-  //TODO: test at the top as well for over quota
+//   //TODO: test at the top as well for over quota
   list($userQuotaBytesAvailable,$quotaBytes) = getBytesAvailable($conn,$userId);
 }
 

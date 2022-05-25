@@ -370,7 +370,7 @@ export default function SupportingFilesMenu(props){
       <hr />
     </div>)
     }else if (fileType === 'text/csv'){
-      doenetMLCode = `<dataset source='${source}' hasHeader="true" />`
+      doenetMLCode = `<dataFrame source='${source}' hasHeader="true" />`
       let description_required_css = {};
     // if (description === ''){
     //   description_required_css = {border:"solid 2px #C1292E"}
