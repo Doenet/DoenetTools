@@ -6,7 +6,6 @@ import styled from "styled-components";
 import useDoenetRender from './useDoenetRenderer';
 import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
-import { doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray } from "../../_reactComponents/PanelHeaderComponents/theme"
 import { useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
 
@@ -362,6 +361,8 @@ export default function Slider(props) {
 
   if (SVs.disabled) {
     let controls = '';
+
+    // Imported ActionButton and ActionButtonGroup from PanelHeaderComponents
     if (SVs.showControls) {
       controls = <ActionButtonGroup style={{marginBottom: "12px"}}
       >
@@ -386,6 +387,7 @@ export default function Slider(props) {
       ticksAndLabels = labels;
     }
 
+    // Conditional label and showValue attributes
     let myLabel = null;
     if (SVs.label) {
       if (SVs.showValue) {
@@ -410,12 +412,6 @@ export default function Slider(props) {
         ref={containerRef}
       >
         <div style={{ height: SVs.label || SVs.showValue ? '20px' : '0px' }}>
-          {/* {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null} */}
-          {/* {
-            SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : 
-            (SVs.showValue ? <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel> : 
-            null)
-          } */}
           {myLabel}
         </div>
         <SubContainer2>
@@ -653,6 +649,8 @@ export default function Slider(props) {
   } else {
     ticksAndLabels = labels;
   }
+
+  // Imported ActionButton and ActionButtonGroup from PanelHeaderComponents
   let controls = '';
   if (SVs.showControls) {
     controls = <ActionButtonGroup style={{marginBottom: "12px"}}>
@@ -676,6 +674,7 @@ export default function Slider(props) {
     valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, userSelect: "none" }}>{SVs.valueForDisplay} </span>
   }
 
+  // Conditional label and showValue attributes
   let myLabel = null;
   if (SVs.label) {
     if (SVs.showValue) {
@@ -686,21 +685,16 @@ export default function Slider(props) {
       console.log("just label");
     }
   } else if (!SVs.label && SVs.showValue) {
-    myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
-    console.log("just value");
+      myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
+      console.log("just value");
   } else {
-    myLabel = null;
-    console.log("neither");
+      myLabel = null;
+      console.log("neither");
   }
 
   return (
     <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
       <div style={{ height: (SVs.label)  || (SVs.showValue) ? "20px" : "0px" }}>
-        {/* {
-          SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : 
-          (SVs.showValue ? <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel> : 
-          null)
-        } */}
         {myLabel}
       </div>
       <SubContainer2 onMouseDown={handleDragEnter} onMouseUp={handleDragExit} onMouseMove={handleDragThrough} onMouseLeave={handleDragExit}>
