@@ -1,6 +1,7 @@
 import readOnlyProxyHandler from "./ReadOnlyProxyHandler";
 import { deepClone, deepCompare } from "./utils/deepFunctions";
 import { ancestorsIncludingComposites, gatherDescendants } from "./utils/descendants";
+import { retrieveTextFileForCid } from "./utils/retrieveTextFile";
 import { convertComponentTarget } from "./utils/serializedStateProcessing";
 
 const dependencyTypeArray = [];
@@ -6918,3 +6919,36 @@ class DetermineDependenciesDependency extends Dependency {
 }
 
 dependencyTypeArray.push(DetermineDependenciesDependency);
+
+class FileDependency extends Dependency {
+  static dependencyType = "file";
+
+  setUpParameters() {
+    this.cid = this.definition.cid;
+    this.fileType = this.definition.fileType;
+  }
+
+  async getValue() {
+
+    let extension;
+
+    if (this.fileType.toLowerCase() === "csv") {
+      extension = "csv"
+    } else {
+      return {
+        value: null,
+        changes: {}
+      }
+    }
+
+    let fileContents = await retrieveTextFileForCid(this.cid, extension)
+
+    return {
+      value: fileContents,
+      changes: {}
+    }
+  }
+
+}
+
+dependencyTypeArray.push(FileDependency);

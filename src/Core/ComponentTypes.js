@@ -153,6 +153,7 @@ import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
 import OrbitalDiagramInput from './components/OrbitalDiagramInput';
 import OrbitalDiagram from './components/OrbitalDiagram';
+import DataFrame from './components/DataFrame';
 
 
 //Extended
@@ -304,7 +305,7 @@ const componentTypeArray = [
   RenderDoenetML,
   OrbitalDiagramInput,
   OrbitalDiagram,
-
+  DataFrame,
 
   BaseComponent,
   InlineComponent,
