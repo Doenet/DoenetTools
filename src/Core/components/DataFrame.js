@@ -196,6 +196,16 @@ export default class DataFrame extends BaseComponent {
                 data[rowInd][colInd] = Number(data[rowInd][colInd]);
               }
             }
+          } else {
+            for (let rowInd = 0; rowInd < numRows; rowInd++) {
+
+              let value = data[rowInd][colInd];
+              if([`"`,`'`].includes(value[0]) && value[value.length-1]===value[0]) {
+                value = value.substring(1,value.length-1);
+                data[rowInd][colInd] = value;
+              }
+              
+            }
           }
 
           colTypes.push(prescribedType);
