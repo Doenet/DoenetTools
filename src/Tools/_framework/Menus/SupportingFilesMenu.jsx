@@ -370,16 +370,20 @@ export default function SupportingFilesMenu(props){
       <hr />
     </div>)
     }else if (fileType === 'text/csv'){
-      doenetMLCode = `<dataset source='${source}'  />`
+      doenetMLCode = `<dataset source='${source}' hasHeader="true" />`
       let description_required_css = {};
     // if (description === ''){
     //   description_required_css = {border:"solid 2px #C1292E"}
     // }
+
+    //TODO:
+    //Checkbox for hasHeader attr hasHeader={T/F} default is true Also in DB
     
     supportFilesJSX.push(
     <div>
       <div>
-        <span style={{width:'116px'}}>fileName: {asFileName}</span>
+        <span style={{width:'116px'}}>fileName: <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,cid)}}/></span>
+        
       </div>
       <div>
         <ActionButtonGroup width="menu">
