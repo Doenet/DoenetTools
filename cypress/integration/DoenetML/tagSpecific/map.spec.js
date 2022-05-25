@@ -2499,6 +2499,40 @@ describe('Map Tag Tests', function () {
 
   });
 
+  it('properly create unique name to avoid duplicate names', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <map assignNames='(n1) (n2) '>
+      <template>
+        <number>$i</number>
+        <number>10*$i</number>
+      </template>
+      
+      <sources alias='i'><sequence from='1' to='2' /></sources>
+    </map>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/n1').should('have.text', '1')
+    cy.get('#\\/n2').should('have.text', '2')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let n1a = stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements.filter(s => s.componentType)[1].componentName;
+      let n2a = stateVariables[stateVariables["/_map1"].replacements[1].componentName].replacements.filter(s => s.componentType)[1].componentName;
+
+      expect(stateVariables["/n1"].stateValues.value).eq(1)
+      expect(stateVariables[n1a].stateValues.value).eq(10)
+      expect(stateVariables["/n2"].stateValues.value).eq(2)
+      expect(stateVariables[n2a].stateValues.value).eq(20)
+
+    })
+
+  });
 
 
 });
