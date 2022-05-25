@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 import { createFunctionFromDefinition } from '../../Core/utils/function';
 
 
-export default function CobwebPolyline(props) {
+export default React.memo(function CobwebPolyline(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   CobwebPolyline.ignoreActionsWithoutCore = true;
@@ -359,7 +359,7 @@ export default function CobwebPolyline(props) {
   // don't think we want to return anything if not in board
   return <><a name={name} /></>
 
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

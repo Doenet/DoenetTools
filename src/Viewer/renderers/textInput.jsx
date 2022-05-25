@@ -6,7 +6,7 @@ import { sizeToCSS } from './utils/css';
 import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 
-export default function TextInput(props) {
+export default React.memo(function TextInput(props) {
   let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   TextInput.baseStateVariable = "immediateValue";
@@ -295,4 +295,4 @@ export default function TextInput(props) {
 
   </React.Fragment>
 
-}
+})

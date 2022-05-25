@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 import me from 'math-expressions';
 
-export default function Ray(props) {
+export default React.memo(function Ray(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Ray.ignoreActionsWithoutCore = true;
@@ -244,7 +244,7 @@ export default function Ray(props) {
 
   return <><a name={name} /></>
 
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

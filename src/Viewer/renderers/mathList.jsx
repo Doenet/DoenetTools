@@ -2,7 +2,7 @@ import { MathJax } from 'better-react-mathjax';
 import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function MathList(props) {
+export default React.memo(function MathList(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
 
@@ -21,5 +21,5 @@ export default function MathList(props) {
   let withCommas = children.slice(1).reduce((a, b) => [...a, ', ', b], [children[0]])
 
   return <React.Fragment key={name}><a name={name} />{withCommas}</React.Fragment>;
-}
+})
 

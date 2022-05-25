@@ -4,9 +4,11 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 
-export default function Curve(props) {
+export default React.memo(function Curve(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
+  console.log({name,SVs});
+  
   Curve.ignoreActionsWithoutCore = true;
 
   const board = useContext(BoardContext);
@@ -814,7 +816,7 @@ export default function Curve(props) {
   // don't think we want to return anything if not in board
   return <><a name={name} /></>
 
-}
+})
 
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {

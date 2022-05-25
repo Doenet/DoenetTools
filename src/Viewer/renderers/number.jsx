@@ -2,7 +2,7 @@ import { MathJax } from 'better-react-mathjax';
 import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Number(props) {
+export default React.memo(function Number(props) {
   let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
 
@@ -15,4 +15,4 @@ export default function Number(props) {
     number = "\\(" + number + "\\)"
   }
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{number}</MathJax></span></>
-}
+})

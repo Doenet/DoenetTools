@@ -3,7 +3,7 @@ import useDoenetRenderer from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import CodeMirror from '../../Tools/_framework/CodeMirror';
 
-export default function CodeEditor(props){
+export default React.memo(function CodeEditor(props){
   let {name, SVs, children, actions, callAction } = useDoenetRenderer(props);
   let currentValue = useRef(SVs.immediateValue)
   let timer = useRef(null)
@@ -112,4 +112,4 @@ let editor = <div
   </div>
  ) 
 
-}
+})

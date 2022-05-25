@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
-export default function Vector(props) {
+export default React.memo(function Vector(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Vector.ignoreActionsWithoutCore = true;
@@ -410,7 +410,7 @@ export default function Vector(props) {
 
   let mathJaxify = "\\(" + me.fromAst(SVs.displacementCoords).toLatex() + "\\)";
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {
