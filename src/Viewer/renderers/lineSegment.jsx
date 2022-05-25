@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
-export default function LineSegment(props) {
+export default React.memo(function LineSegment(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
 
   LineSegment.ignoreActionsWithoutCore = true;
@@ -334,7 +334,7 @@ export default function LineSegment(props) {
   return <><a name={name} /></>
 
 
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

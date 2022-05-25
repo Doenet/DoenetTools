@@ -2,7 +2,7 @@ import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 
-export default function Tabular(props) {
+export default React.memo(function Tabular(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -35,5 +35,5 @@ return (
     </table>
   </div>
   )
-}
+})
 

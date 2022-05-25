@@ -5,7 +5,7 @@ import useDoenetRender from './useDoenetRenderer';
 
 export const BoardContext = createContext();
 
-export default function Graph(props) {
+export default React.memo(function Graph(props) {
   let { name, SVs, children, actions, callAction } = useDoenetRender(props);
   // console.log({ name, SVs, children, actions })
 
@@ -315,4 +315,4 @@ export default function Graph(props) {
       {children}
     </BoardContext.Provider>
   </>;
-}
+})

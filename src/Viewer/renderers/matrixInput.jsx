@@ -61,7 +61,7 @@ const Matrix = styled.div`
     };
   `;
 
-export default function MatrixInput(props) {
+export default React.memo(function MatrixInput(props) {
   let { name, SVs, actions, children, callAction } = useDoenetRender(props);
 
   let validationState = useRef(null);
@@ -276,7 +276,7 @@ export default function MatrixInput(props) {
       </div>
   </React.Fragment>
 
-}
+})
 
 
 

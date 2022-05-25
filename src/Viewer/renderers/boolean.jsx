@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Boolean(props) {
+export default React.memo(function Boolean(props) {
   let {name, SVs} = useDoenetRender(props,false);
 
   if (SVs.hidden) {
@@ -9,6 +9,6 @@ export default function Boolean(props) {
   }
 
   return <><a name={name} /><span id={name}>{SVs.text}</span></>
-}
+})
 
 

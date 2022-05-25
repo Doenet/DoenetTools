@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Ellipsis(props) {
+export default React.memo(function Ellipsis(props) {
   let {name, SVs} = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -9,4 +9,4 @@ export default function Ellipsis(props) {
   }
   
   return <><a name={name} />&hellip;</>;
-}
+})
