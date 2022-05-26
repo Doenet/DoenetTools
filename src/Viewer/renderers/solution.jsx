@@ -25,10 +25,8 @@ export default function Solution(props) {
       display: 'block',
       margin: '0px 4px 4px 4px',
       padding: '6px',
-      border: '2px solid black',
-      borderTop: '0',
-      backgroundColor: 'white',
-      borderRadius: '0 0 5px 5px'
+      border: '1px solid #ebebeb',
+      backgroundColor: '#fcfcfc',
     };
 
     if (SVs.canBeClosed) {
@@ -54,21 +52,20 @@ export default function Solution(props) {
   return (
     <aside id={name}>
       <a name={name} />
-      <div
+      <span
         id={name + '_button'}
         style={{
           display: 'block',
           margin: '4px 4px 0px 4px',
           padding: '6px',
-          border: 'var(--mainBorder)',
-          backgroundColor: 'var(--mainGray)',
+          border: '1px solid #ebebeb',
+          backgroundColor: '#ebebeb',
           cursor: cursorStyle,
-          borderRadius: SVs.open ? '5px 5px 0 0' : "var(--mainBorderRadius)" 
         }}
         onClick={onClickFunction}
       >
         {icon} Solution {SVs.message}
-      </div>
+      </span>
       <span style={infoBlockStyle}>{childrenToRender}</span>
     </aside>
   );
