@@ -1060,7 +1060,7 @@ export default function ActivityViewer(props) {
     </div>
   }
 
-  return <div style={{ marginBottom: "50vh" }}>
+  return <div style={{paddingBottom: "30vh"}}>
     {cidChangedAlert}
     {pageControls}
     {title}
