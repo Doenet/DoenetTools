@@ -247,7 +247,6 @@ export const TimeLimit = ({ courseId, doenetId }) => {
           }}
         />
         <Increment
-          width="menu"
           disabled={timeLimit === null}
           value={timeLimit}
           min={0}
@@ -315,7 +314,6 @@ export const AttempLimit = ({ courseId, doenetId }) => {
           }}
         />
         <Increment
-          width="menu"
           disabled={numberOfAttemptsAllowed === null}
           value={numberOfAttemptsAllowed}
           min={0}
@@ -401,7 +399,6 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
     <InputWrapper>
       <LabelText>Total Points Or Percent</LabelText>
       <Increment
-        width="menu"
         value={totalPointsOrPercent}
         min={0}
         onBlur={() => {
