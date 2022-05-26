@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-export default function Answer(props) {
+export default React.memo(function Answer(props) {
   let {name, SVs, actions, children, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -134,4 +134,4 @@ export default function Answer(props) {
       name
     }), inputChildrenToRender);
   }
-}
+});

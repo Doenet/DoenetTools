@@ -108,7 +108,7 @@ export default function ActionButton(props) {
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement(Button, {
-    id: "actionButton",
+    id: props.id,
     style: actionButton,
     alert,
     onClick: (e) => {

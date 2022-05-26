@@ -12,7 +12,8 @@ import {
   faLayerGroup,
   faFolderTree,
   faChevronRight,
-  faChevronDown
+  faChevronDown,
+  faCheck
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {
@@ -27,11 +28,10 @@ import {
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
-  studentCourseItemOrderByCourseId,
   studentCourseItemOrderByCourseIdBySection
 } from "./CourseActions.js";
 import "../../_utils/util.css.proxy.js";
-import {pageToolViewAtom, searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
+import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {mainPanelClickAtom} from "../../_framework/Panels/NewMainPanel.js";
 import {selectedMenuPanelAtom} from "../../_framework/Panels/NewMenuPanel.js";
 import {effectiveRoleAtom} from "../PanelHeaderComponents/RoleDropdown.js";
@@ -146,7 +146,7 @@ function StudentSection({courseId, doenetId, itemInfo, numberOfVisibleColumns, i
   let studentSectionItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId, sectionId: itemInfo.doenetId}));
   let previousSections = useRef([]);
   if (itemInfo.isOpen) {
-    let sectionItems = studentSectionItemOrder.map((doenetId2) => /* @__PURE__ */ React.createElement(Item, {
+    let sectionItems = studentSectionItemOrder.map((doenetId2) => /* @__PURE__ */ React.createElement(StudentItem, {
       key: `itemcomponent${doenetId2}`,
       courseNavigatorProps,
       previousSections,
@@ -183,9 +183,16 @@ function StudentSection({courseId, doenetId, itemInfo, numberOfVisibleColumns, i
   }
 }
 function StudentActivity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
+  let columnsJSX = [null];
+  if (itemInfo.dueDate) {
+    columnsJSX[0] = /* @__PURE__ */ React.createElement("span", {
+      key: `activityColumn2${doenetId}`
+    }, itemInfo.dueDate);
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
     courseId,
     courseNavigatorProps,
+    columnsJSX,
     numberOfVisibleColumns,
     icon: faFileCode,
     label: itemInfo.label,
@@ -263,6 +270,13 @@ function Item({courseId, doenetId, numberOfVisibleColumns, indentLevel, previous
 function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
   let authorSectionItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId, sectionId: itemInfo.doenetId}));
   let previousSections = useRef([]);
+  let columnsJSX = [null, null];
+  if (itemInfo.isAssigned) {
+    columnsJSX[0] = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      key: `activityColumn2${doenetId}`,
+      icon: faCheck
+    });
+  }
   if (itemInfo.isOpen) {
     let sectionItems = authorSectionItemOrder.map((doenetId2) => /* @__PURE__ */ React.createElement(Item, {
       key: `itemcomponent${doenetId2}`,
@@ -275,6 +289,7 @@ function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLe
     }));
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      columnsJSX,
       courseNavigatorProps,
       isBeingCut: itemInfo.isBeingCut,
       numberOfVisibleColumns,
@@ -289,6 +304,7 @@ function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLe
   } else {
     return /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      columnsJSX,
       courseNavigatorProps,
       isBeingCut: itemInfo.isBeingCut,
       numberOfVisibleColumns,
@@ -307,6 +323,7 @@ function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel
     let pages = itemInfo.pages.map((pageDoenetId, i) => {
       return /* @__PURE__ */ React.createElement(Page, {
         key: `Page${pageDoenetId}`,
+        courseNavigatorProps,
         courseId,
         doenetId: pageDoenetId,
         numberOfVisibleColumns,
@@ -344,10 +361,24 @@ function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel
   }
 }
 function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
+  let columnsJSX = [null, null];
+  if (itemInfo.isAssigned) {
+    columnsJSX[0] = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      key: `activityColumn2${doenetId}`,
+      icon: faCheck
+    });
+  }
+  if (itemInfo.isPublic) {
+    columnsJSX[1] = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      key: `activityColumn3${doenetId}`,
+      icon: faCheck
+    });
+  }
   if (itemInfo.isSinglePage) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
       courseNavigatorProps,
+      columnsJSX,
       numberOfVisibleColumns,
       icon: faFileCode,
       label: itemInfo.label,
@@ -361,6 +392,7 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
       courseNavigatorProps,
+      columnsJSX,
       numberOfVisibleColumns,
       icon: faFileCode,
       label: itemInfo.label,
@@ -383,6 +415,7 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
       courseNavigatorProps,
+      columnsJSX,
       numberOfVisibleColumns,
       icon: faFileCode,
       label: itemInfo.label,
@@ -500,7 +533,7 @@ function Page({courseId, doenetId, activityDoenetId, numberOfVisibleColumns, ind
     isBeingCut: recoilPageInfo.isBeingCut
   });
 }
-function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelected = false, indentLevel = 0, numbered, hasToggle = false, isOpen, isBeingCut = false, courseNavigatorProps}) {
+function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon, label, isSelected = false, indentLevel = 0, numbered, hasToggle = false, isOpen, isBeingCut = false, courseNavigatorProps}) {
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set}) => () => {
@@ -641,17 +674,17 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
     set(selectedCourseItems, newSelectedItems);
     courseNavigatorProps?.updateSelectMenu({selectedItems: newSelectedItems});
   }, [doenetId, courseId, setSelectionMenu]);
+  let handleDoubleClick = useRecoilCallback(() => async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    courseNavigatorProps?.doubleClickItem({doenetId, courseId});
+  }, [doenetId, courseId, courseNavigatorProps]);
   let bgcolor = "#ffffff";
   if (isSelected) {
     bgcolor = "hsl(209,54%,82%)";
   } else if (isBeingCut) {
     bgcolor = "#e2e2e2";
   }
-  let handleDoubleClick = useRecoilCallback(() => async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    courseNavigatorProps?.doubleClickItem({doenetId, courseId});
-  }, [doenetId, courseId, courseNavigatorProps]);
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
   const indentPx = 25;
   let activityJSX = /* @__PURE__ */ React.createElement("div", {
@@ -676,14 +709,20 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
     }
   }, /* @__PURE__ */ React.createElement("div", {
     style: {
-      marginLeft: `${indentLevel * indentPx}px`,
       display: "grid",
       gridTemplateColumns: columnsCSS,
       gridTemplateRows: "1fr",
       alignContent: "center"
     }
+  }, /* @__PURE__ */ React.createElement("span", {
+    style: {
+      marginLeft: `${indentLevel * indentPx}px`
+    }
   }, /* @__PURE__ */ React.createElement("p", {
-    style: {display: "inline", margin: "0px"}
+    style: {
+      display: "inline",
+      margin: "0px"
+    }
   }, numbered ? /* @__PURE__ */ React.createElement("svg", {
     style: {verticalAlign: "middle"},
     width: "22",
@@ -712,7 +751,15 @@ function Row({courseId, doenetId, numberOfVisibleColumns, icon, label, isSelecte
   })), /* @__PURE__ */ React.createElement("span", {
     style: {marginLeft: "4px"},
     "data-cy": "rowLabel"
-  }, label, " "))));
+  }, label, " "))), numberOfVisibleColumns > 1 ? /* @__PURE__ */ React.createElement("span", {
+    style: {textAlign: "center"}
+  }, columnsJSX[0]) : null, numberOfVisibleColumns > 2 ? /* @__PURE__ */ React.createElement("span", {
+    style: {textAlign: "center"}
+  }, columnsJSX[1]) : null, numberOfVisibleColumns > 3 ? /* @__PURE__ */ React.createElement("span", {
+    style: {textAlign: "center"}
+  }, columnsJSX[2]) : null, numberOfVisibleColumns > 4 ? /* @__PURE__ */ React.createElement("span", {
+    style: {textAlign: "center"}
+  }, columnsJSX[3]) : null));
   return /* @__PURE__ */ React.createElement(React.Fragment, null, activityJSX);
 }
 function getColumnsCSS(numberOfVisibleColumns) {
@@ -733,19 +780,21 @@ function CourseNavigationHeader({columnLabels, numberOfVisibleColumns, setNumber
     const maxColumns = columnLabels.length + 1;
     const breakpoints = [375, 500, 650, 800];
     if (width >= breakpoints[3] && numberOfVisibleColumns !== 5) {
-      const numberOfVisibleColumns2 = Math.min(maxColumns, 5);
-      setNumberOfVisibleColumns?.(numberOfVisibleColumns2);
+      const nextNumberOfVisibleColumns = Math.min(maxColumns, 5);
+      setNumberOfVisibleColumns?.(nextNumberOfVisibleColumns);
     } else if (width < breakpoints[3] && width >= breakpoints[2] && numberOfVisibleColumns !== 4) {
-      const numberOfVisibleColumns2 = Math.min(maxColumns, 4);
-      setNumberOfVisibleColumns?.(numberOfVisibleColumns2);
+      const nextNumberOfVisibleColumns = Math.min(maxColumns, 4);
+      setNumberOfVisibleColumns?.(nextNumberOfVisibleColumns);
     } else if (width < breakpoints[2] && width >= breakpoints[1] && numberOfVisibleColumns !== 3) {
-      const numberOfVisibleColumns2 = Math.min(maxColumns, 3);
-      setNumberOfVisibleColumns?.(numberOfVisibleColumns2);
+      const nextNumberOfVisibleColumns = Math.min(maxColumns, 3);
+      setNumberOfVisibleColumns?.(nextNumberOfVisibleColumns);
     } else if (width < breakpoints[1] && width >= breakpoints[0] && numberOfVisibleColumns !== 2) {
-      const numberOfVisibleColumns2 = Math.min(maxColumns, 2);
-      setNumberOfVisibleColumns?.(numberOfVisibleColumns2);
+      const nextNumberOfVisibleColumns = Math.min(maxColumns, 2);
+      setNumberOfVisibleColumns?.(nextNumberOfVisibleColumns);
     } else if (width < breakpoints[0] && numberOfVisibleColumns !== 1) {
       setNumberOfVisibleColumns?.(1);
+    } else if (numberOfVisibleColumns > maxColumns) {
+      setNumberOfVisibleColumns?.(maxColumns);
     }
   }, [columnLabels, numberOfVisibleColumns, setNumberOfVisibleColumns]);
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);

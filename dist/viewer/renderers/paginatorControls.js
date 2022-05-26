@@ -1,6 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function PaginatorControls(props) {
+export default React.memo(function PaginatorControls(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props, false);
   if (SVs.hidden) {
     return null;
@@ -22,4 +22,4 @@ export default function PaginatorControls(props) {
     },
     disabled: SVs.disabled || !(SVs.currentPage < SVs.nPages)
   }, SVs.nextLabel));
-}
+});

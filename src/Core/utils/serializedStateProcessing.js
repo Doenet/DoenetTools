@@ -219,7 +219,8 @@ function substituteDeprecations(serializedComponents) {
     tname: "target",
     triggerwithtnames: "triggerWithTargets",
     updatewithtname: "updateWithTarget",
-    paginatortname: "paginator"
+    paginatortname: "paginator",
+    randomizeorder: "shuffleOrder"
   }
 
   for (let component of serializedComponents) {
@@ -2179,7 +2180,7 @@ export function processAssignNames({
 
 
     if (!name) {
-      if (originalNamesAreConsistent && component.originalName) {
+      if (originalNamesAreConsistent && component.originalName && !component.doenetAttributes?.createUniqueName) {
         name = component.originalName.slice(originalNamespace.length + 1);
       } else {
         let longNameId = parentName + "|assignName|" + (indForNames).toString();

@@ -1,7 +1,7 @@
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Number(props) {
+export default React.memo(function Number(props) {
   let {name, SVs, actions, sourceOfUpdate} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -19,4 +19,4 @@ export default function Number(props) {
     inline: true,
     dynamic: true
   }, number)));
-}
+});

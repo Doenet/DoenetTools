@@ -1,6 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function TextOrInline(props) {
+export default React.memo(function TextOrInline(props) {
   let {name, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -10,4 +10,4 @@ export default function TextOrInline(props) {
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), children);
-}
+});

@@ -6,7 +6,7 @@ import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
 
-export default function BooleanInput(props) {
+export default React.memo(function BooleanInput(props) {
   let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   BooleanInput.baseStateVariable = "value";
@@ -207,4 +207,4 @@ export default function BooleanInput(props) {
     </span>
   </React.Fragment>
 
-}
+})

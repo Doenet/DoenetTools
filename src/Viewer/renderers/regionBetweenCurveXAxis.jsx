@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 import { createFunctionFromDefinition } from '../../Core/utils/function';
 
-export default function RegionBetweenCurveXAxis(props) {
+export default React.memo(function RegionBetweenCurveXAxis(props) {
   let { name, SVs } = useDoenetRender(props);
 
   RegionBetweenCurveXAxis.ignoreActionsWithoutCore = true;
@@ -123,4 +123,4 @@ export default function RegionBetweenCurveXAxis(props) {
 
   // don't think we want to return anything if not in board
   return <><a name={name} /></>
-}
+})

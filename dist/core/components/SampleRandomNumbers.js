@@ -586,6 +586,10 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   }
 
+  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
+
+    return { success: false };
+  }
 
   async resample({ actionId }) {
 

@@ -36,6 +36,7 @@ export default function Enrollment() {
   const toast = useToast();
 
   const process = useRecoilValue(processAtom);
+  // console.log("process",process)
   const setProcess = useSetRecoilState(processAtom);
   const headers = useRecoilValue(headersAtom);
   const entries = useRecoilValue(entriesAtom);
@@ -249,9 +250,10 @@ export default function Enrollment() {
                 mergeEmail,
                 mergeSection,
               };
-
-              recoilMergeData(payload)
-              setProcess('Display Enrollment');
+// console.log("recoilMergeData payload",payload)
+              recoilMergeData(payload).then(()=>{
+                setProcess('Display Enrollment');
+              })
      
             }}
           ></Button>

@@ -6,7 +6,7 @@ import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Section(props) {
+export default React.memo(function Section(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
   // console.log("name: ", name, " SVs: ", SVs," Children",children);
 
@@ -250,7 +250,7 @@ export default function Section(props) {
     case "none": return <>{content}</> ;
     default: return <section id={name} style={{ margin: "12px 0" }}> {content} </section>; 
   }
-}
+})
 
   // if (SVs.containerTag === "aside") {
   //   return <aside id={name} >

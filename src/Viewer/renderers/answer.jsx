@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
 
-export default function Answer(props) {
+export default React.memo(function Answer(props) {
   let { name, SVs, actions, children, callAction } = useDoenetRender(props);
 
 
@@ -177,4 +177,4 @@ export default function Answer(props) {
     return <span id={name} style={{marginBottom: "12px"}}><a name={name} />{inputChildrenToRender}</span>;
   }
 
-}
+})

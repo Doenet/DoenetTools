@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import cssesc from 'cssesc';
 import { sizeToCSS } from './utils/css';
 
-export default function Figure(props) {
+export default React.memo(function Figure(props) {
   let { name, SVs } = useDoenetRender(props);
 
 
@@ -78,4 +78,4 @@ export default function Figure(props) {
   console.warn("Nothing specified to embed");
   return null;
 
-}
+})
