@@ -5,8 +5,8 @@ export default class Option extends Group {
 
   static renderedDefault = false;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.selectForVariantNames = {
       createComponentOfType: "variantNames",
       createStateVariable: "selectForVariantNames",

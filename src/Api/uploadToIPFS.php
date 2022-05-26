@@ -12,7 +12,7 @@ $success = true;
 $uploads_dir = '../media/';
 
 $sql = "
-SELECT contentId,fileType,sizeInBytes
+SELECT cid,fileType,sizeInBytes
 FROM ipfs_to_upload
 ORDER BY timestamp
 ";
@@ -23,7 +23,7 @@ $count_uploaded = 0;
 $array_of_cid_to_delete = [];
 
 while($row = $result->fetch_assoc()) {
-  $cid = $row['contentId'];
+  $cid = $row['cid'];
   $type = $row['fileType'];
 
   $resource_path = $uploads_dir . getFileName($cid,$type);
@@ -66,7 +66,7 @@ foreach ($array_of_cid_to_delete as $cid){
   echo "uploaded $cid <br />";
   $sql = "
   DELETE FROM ipfs_to_upload
-  WHERE contentId = '$cid'
+  WHERE cid = '$cid'
   ";
   $result = $conn->query($sql);
 }

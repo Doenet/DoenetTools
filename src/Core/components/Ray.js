@@ -9,8 +9,8 @@ export default class Ray extends GraphicalComponent {
     moveRay: this.moveRay.bind(this),
   };
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",
@@ -61,7 +61,7 @@ export default class Ray extends GraphicalComponent {
           lineDescription += "dotted ";
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColor;
+        lineDescription += dependencyValues.selectedStyle.lineColorWord;
 
         return { setValue: { styleDescription: lineDescription } };
       }
@@ -1320,7 +1320,7 @@ export default class Ray extends GraphicalComponent {
   }
 
 
-  async moveRay({ endpointcoords, throughcoords, transient, skippable, sourceInformation }) {
+  async moveRay({ endpointcoords, throughcoords, transient, skippable, sourceInformation, actionId }) {
 
     let updateInstructions = [];
 
@@ -1430,11 +1430,13 @@ export default class Ray extends GraphicalComponent {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         transient,
-        skippable
+        skippable,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event: {
           verb: "interacted",
           object: {

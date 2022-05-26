@@ -1,10 +1,10 @@
-import { d as fails, _ as _export, J as objectGetOwnPropertyNamesExternal, g as global_1, K as objectToArray, L as toAbsoluteIndex, G as stringRepeat } from './common/es.string.starts-with-d5b5fac4.js';
+import { k as fails, _ as _export, O as objectGetOwnPropertyNamesExternal, g as global_1, P as objectToArray, f as functionUncurryThis, Q as toAbsoluteIndex, K as stringRepeat } from './common/es.string.starts-with-6dcf56ee.js';
 import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-f5d70792.js';
-import './common/es.string.ends-with-e8fa5a41.js';
+import './common/es.string.ends-with-48ba642b.js';
 
 var getOwnPropertyNames = objectGetOwnPropertyNamesExternal.f;
 
-// eslint-disable-next-line es/no-object-getownpropertynames -- required for testing
+// eslint-disable-next-line es-x/no-object-getownpropertynames -- required for testing
 var FAILS_ON_PRIMITIVES = fails(function () { return !Object.getOwnPropertyNames(1); });
 
 // `Object.getOwnPropertyNames` method
@@ -101,9 +101,9 @@ var runtime = (function (exports) {
   // This is a polyfill for %IteratorPrototype% for environments that
   // don't natively support it.
   var IteratorPrototype = {};
-  IteratorPrototype[iteratorSymbol] = function () {
+  define(IteratorPrototype, iteratorSymbol, function () {
     return this;
-  };
+  });
 
   var getProto = Object.getPrototypeOf;
   var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
@@ -117,8 +117,9 @@ var runtime = (function (exports) {
 
   var Gp = GeneratorFunctionPrototype.prototype =
     Generator.prototype = Object.create(IteratorPrototype);
-  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunction.prototype = GeneratorFunctionPrototype;
+  define(Gp, "constructor", GeneratorFunctionPrototype);
+  define(GeneratorFunctionPrototype, "constructor", GeneratorFunction);
   GeneratorFunction.displayName = define(
     GeneratorFunctionPrototype,
     toStringTagSymbol,
@@ -232,9 +233,9 @@ var runtime = (function (exports) {
   }
 
   defineIteratorMethods(AsyncIterator.prototype);
-  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
+  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
     return this;
-  };
+  });
   exports.AsyncIterator = AsyncIterator;
 
   // Note that simple async functions are implemented on top of
@@ -427,13 +428,13 @@ var runtime = (function (exports) {
   // iterator prototype chain incorrectly implement this, causing the Generator
   // object to not be returned from this call. This ensures that doesn't happen.
   // See https://github.com/facebook/regenerator/issues/274 for more details.
-  Gp[iteratorSymbol] = function() {
+  define(Gp, iteratorSymbol, function() {
     return this;
-  };
+  });
 
-  Gp.toString = function() {
+  define(Gp, "toString", function() {
     return "[object Generator]";
-  };
+  });
 
   function pushTryEntry(locs) {
     var entry = { tryLoc: locs[0] };
@@ -752,14 +753,19 @@ try {
 } catch (accidentalStrictMode) {
   // This module should not be running in strict mode, so the above
   // assignment should always work unless something is misconfigured. Just
-  // in case runtime.js accidentally runs in strict mode, we can escape
+  // in case runtime.js accidentally runs in strict mode, in modern engines
+  // we can explicitly access globalThis. In older engines we can escape
   // strict mode using a global Function call. This could conceivably fail
   // if a Content Security Policy forbids using Function, but in that case
   // the proper solution is to fix the accidental strict mode problem. If
   // you've misconfigured your bundler to force strict mode and applied a
   // CSP to forbid Function, and you're not willing to fix either of those
   // problems, please detail your unique predicament in a GitHub issue.
-  Function("r", "regeneratorRuntime = r")(runtime);
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
 }
 });
 
@@ -767,7 +773,7 @@ var globalIsFinite = global_1.isFinite;
 
 // `Number.isFinite` method
 // https://tc39.es/ecma262/#sec-number.isfinite
-// eslint-disable-next-line es/no-number-isfinite -- safe
+// eslint-disable-next-line es-x/no-number-isfinite -- safe
 var numberIsFinite = Number.isFinite || function isFinite(it) {
   return typeof it == 'number' && globalIsFinite(it);
 };
@@ -31036,12 +31042,15 @@ var Evaluator = /*#__PURE__*/function () {
 var log = Math.log;
 var LOG10E = Math.LOG10E;
 
+// eslint-disable-next-line es-x/no-math-log10 -- safe
+var mathLog10 = Math.log10 || function log10(x) {
+  return log(x) * LOG10E;
+};
+
 // `Math.log10` method
 // https://tc39.es/ecma262/#sec-math.log10
 _export({ target: 'Math', stat: true }, {
-  log10: function log10(x) {
-    return log(x) * LOG10E;
-  }
+  log10: mathLog10
 });
 
 function _slicedToArray$k(arr, i) { return _arrayWithHoles$k(arr) || _iterableToArrayLimit$k(arr, i) || _unsupportedIterableToArray$w(arr, i) || _nonIterableRest$k(); }
@@ -40682,16 +40691,18 @@ _export({ target: 'Math', stat: true }, {
   }
 });
 
+var RangeError$1 = global_1.RangeError;
 var fromCharCode = String.fromCharCode;
-// eslint-disable-next-line es/no-string-fromcodepoint -- required for testing
+// eslint-disable-next-line es-x/no-string-fromcodepoint -- required for testing
 var $fromCodePoint = String.fromCodePoint;
+var join = functionUncurryThis([].join);
 
 // length should be 1, old FF problem
 var INCORRECT_LENGTH = !!$fromCodePoint && $fromCodePoint.length != 1;
 
 // `String.fromCodePoint` method
 // https://tc39.es/ecma262/#sec-string.fromcodepoint
-_export({ target: 'String', stat: true, forced: INCORRECT_LENGTH }, {
+_export({ target: 'String', stat: true, arity: 1, forced: INCORRECT_LENGTH }, {
   // eslint-disable-next-line no-unused-vars -- required for `.length`
   fromCodePoint: function fromCodePoint(x) {
     var elements = [];
@@ -40700,12 +40711,11 @@ _export({ target: 'String', stat: true, forced: INCORRECT_LENGTH }, {
     var code;
     while (length > i) {
       code = +arguments[i++];
-      if (toAbsoluteIndex(code, 0x10FFFF) !== code) throw RangeError(code + ' is not a valid code point');
-      elements.push(code < 0x10000
+      if (toAbsoluteIndex(code, 0x10FFFF) !== code) throw RangeError$1(code + ' is not a valid code point');
+      elements[i] = code < 0x10000
         ? fromCharCode(code)
-        : fromCharCode(((code -= 0x10000) >> 10) + 0xD800, code % 0x400 + 0xDC00)
-      );
-    } return elements.join('');
+        : fromCharCode(((code -= 0x10000) >> 10) + 0xD800, code % 0x400 + 0xDC00);
+    } return join(elements, '');
   }
 });
 
@@ -47901,7 +47911,7 @@ TextPlugin.implementedFunctions = {
   }
 };
 
-// eslint-disable-next-line es/no-math-expm1 -- safe
+// eslint-disable-next-line es-x/no-math-expm1 -- safe
 var $expm1 = Math.expm1;
 var exp = Math.exp;
 
@@ -47921,7 +47931,7 @@ var exp$1 = Math.exp;
 var E$1 = Math.E;
 
 var FORCED = fails(function () {
-  // eslint-disable-next-line es/no-math-sinh -- required for testing
+  // eslint-disable-next-line es-x/no-math-sinh -- required for testing
   return Math.sinh(-2e-17) != -2e-17;
 });
 
@@ -47934,7 +47944,7 @@ _export({ target: 'Math', stat: true, forced: FORCED }, {
   }
 });
 
-// eslint-disable-next-line es/no-math-asinh -- required for testing
+// eslint-disable-next-line es-x/no-math-asinh -- required for testing
 var $asinh = Math.asinh;
 var log$1 = Math.log;
 var sqrt = Math.sqrt;
@@ -47950,7 +47960,7 @@ _export({ target: 'Math', stat: true, forced: !($asinh && 1 / $asinh(0) > 0) }, 
   asinh: asinh
 });
 
-// eslint-disable-next-line es/no-math-cosh -- required for testing
+// eslint-disable-next-line es-x/no-math-cosh -- required for testing
 var $cosh = Math.cosh;
 var abs$1 = Math.abs;
 var E$2 = Math.E;
@@ -47968,12 +47978,12 @@ var log$2 = Math.log;
 
 // `Math.log1p` method implementation
 // https://tc39.es/ecma262/#sec-math.log1p
-// eslint-disable-next-line es/no-math-log1p -- safe
+// eslint-disable-next-line es-x/no-math-log1p -- safe
 var mathLog1p = Math.log1p || function log1p(x) {
   return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : log$2(1 + x);
 };
 
-// eslint-disable-next-line es/no-math-acosh -- required for testing
+// eslint-disable-next-line es-x/no-math-acosh -- required for testing
 var $acosh = Math.acosh;
 var log$3 = Math.log;
 var sqrt$1 = Math.sqrt;
@@ -48007,7 +48017,7 @@ _export({ target: 'Math', stat: true }, {
   }
 });
 
-// eslint-disable-next-line es/no-math-atanh -- required for testing
+// eslint-disable-next-line es-x/no-math-atanh -- required for testing
 var $atanh = Math.atanh;
 var log$4 = Math.log;
 

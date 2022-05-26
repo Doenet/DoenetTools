@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {animated, useSpring} from "../../_snowpack/pkg/@react-spring/web.js";
-import {useGesture} from "../../_snowpack/pkg/react-use-gesture.js";
+import {useGesture} from "../../_snowpack/pkg/@use-gesture/react.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {
   faGripLinesVertical,
@@ -139,7 +139,10 @@ export default function DragPanel({
     $vertical: direction.vertical,
     $rounding: direction.rounding,
     $handleSize: handleSize,
-    ...bindX()
+    ...bindX(),
+    onClick: () => {
+      setOpen(!open);
+    }
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: id === "keyboard" ? faKeyboard : direction.vertical ? faGripLinesVertical : faGripLines
   })));

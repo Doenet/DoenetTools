@@ -38,7 +38,6 @@ export default function Card(props) {
   var icon = "";
   if (props.icon) {
     icon = props.icon;
-    console.log(icon);
   }
   const iconVisible = props.icon ? /* @__PURE__ */ React.createElement("div", {
     style: {padding: "8px", fontSize: "20px"}

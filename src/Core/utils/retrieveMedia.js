@@ -1,10 +1,10 @@
 import axios from "axios";
-import { CIDFromArrayBuffer } from "./cid";
+import { cidFromArrayBuffer } from "./cid";
 
-export async function retrieveMediaForCID(CID, mimeType) {
+export async function retrieveMediaForCid(cid, mimeType) {
 
   try {
-    return await retrieveMediaFromIPFS(CID);
+    return await retrieveMediaFromIPFS(cid);
   } catch (e) {
     // if have error from IPFS, fallback to retrieving from server
   };
@@ -13,23 +13,23 @@ export async function retrieveMediaForCID(CID, mimeType) {
   //look up in database
   if (!mimeType) {
     let { data } = await axios.get('/api/getMimeType.php', {
-      params: { cid: CID }
+      params: { cid: cid }
     });
     mimeType = data['mime-type'];
   }
 
-  return retrieveMediaFromServer(CID, mimeType);
+  return retrieveMediaFromServer(cid, mimeType);
 
 }
 
 
-async function retrieveMediaFromIPFS(CID) {
+async function retrieveMediaFromIPFS(cid) {
 
 
   let controller = new AbortController();
   let signal = controller.signal;
 
-  // If the IPFS gateway cannot find the CID,
+  // If the IPFS gateway cannot find the cid,
   // it hangs for a long time before timing out.
   // To avoid the long wait, abort the request after 1 second.
   let timeoutId = setTimeout(() => {
@@ -38,7 +38,7 @@ async function retrieveMediaFromIPFS(CID) {
 
 
   try {
-    let response = await fetch(`https://${CID}.ipfs.dweb.link/`, { signal });
+    let response = await fetch(`https://${cid}.ipfs.dweb.link/`, { signal });
 
     // if got a response, then we won't abort
     clearTimeout(timeoutId);
@@ -46,51 +46,51 @@ async function retrieveMediaFromIPFS(CID) {
     if (response.ok) {
       let mediaBlob = await response.blob();
 
-      let CIDRetrieved = await CIDFromArrayBuffer(await mediaBlob.arrayBuffer());
+      let CidRetrieved = await cidFromArrayBuffer(await mediaBlob.arrayBuffer());
 
-      if (CIDRetrieved === CID) {
+      if (CidRetrieved === cid) {
         let mediaURL = URL.createObjectURL(mediaBlob);
         return { mediaBlob, mediaURL };
       } else {
-        return Promise.reject(new Error("CID mismatch"));
+        return Promise.reject(new Error("cid mismatch"));
       }
     } else {
-      return Promise.reject(new Error(`CID not found: ${CID}`))
+      return Promise.reject(new Error(`cid not found: ${cid}`))
     }
 
   }
   catch (e) {
-    return Promise.reject(new Error(`CID not found: ${CID}`))
+    return Promise.reject(new Error(`cid not found: ${cid}`))
   }
 
 
 }
 
 
-async function retrieveMediaFromServer(CID, mimeType) {
+async function retrieveMediaFromServer(cid, mimeType) {
 
   try {
     let extension = extensionFromMimeType(mimeType)
 
-    let response = await fetch(`/media/${CID}.${extension}`);
+    let response = await fetch(`/media/${cid}.${extension}`);
 
     if (response.ok) {
       let mediaBlob = await response.blob();
 
-      let CIDRetrieved = await CIDFromArrayBuffer(await mediaBlob.arrayBuffer());
+      let CidRetrieved = await cidFromArrayBuffer(await mediaBlob.arrayBuffer());
 
-      if (CIDRetrieved === CID) {
+      if (CidRetrieved === cid) {
         let mediaURL = URL.createObjectURL(mediaBlob);
         return { mediaBlob, mediaURL };
       } else {
-        return Promise.reject(new Error("CID mismatch"));
+        return Promise.reject(new Error("cid mismatch"));
       }
     } else {
-      return Promise.reject(new Error(`CID not found: ${CID}`));
+      return Promise.reject(new Error(`cid not found: ${cid}`));
     }
   }
   catch (e) {
-    return Promise.reject(new Error(`CID not found: ${CID}`));
+    return Promise.reject(new Error(`cid not found: ${cid}`));
   }
 
 }

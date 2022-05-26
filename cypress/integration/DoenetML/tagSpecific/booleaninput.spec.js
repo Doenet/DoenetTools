@@ -11,6 +11,7 @@ function cesc(s) {
 describe('BooleanInput Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -36,7 +37,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(false);
       expect(stateVariables["/v1"].stateValues.value).eq(false);
       expect(stateVariables["/v2"].stateValues.value).eq(false);
@@ -52,7 +53,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
       expect(stateVariables["/v1"].stateValues.value).eq(true);
       expect(stateVariables["/v2"].stateValues.value).eq(true);
@@ -67,7 +68,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(false);
       expect(stateVariables["/v1"].stateValues.value).eq(false);
       expect(stateVariables["/v2"].stateValues.value).eq(false);
@@ -95,7 +96,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
       expect(stateVariables['/v1'].stateValues.value).eq(true);
     });
@@ -108,7 +109,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
       expect(stateVariables['/v1'].stateValues.value).eq(false);
     });
@@ -121,7 +122,7 @@ describe('BooleanInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
       expect(stateVariables['/v1'].stateValues.value).eq(true);
     });
@@ -149,7 +150,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/v1").should('have.text', "true");
     cy.get("#\\/v2").should('have.text', "false");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
       expect(stateVariables['/bi1a'].stateValues.value).eq(true);
       expect(stateVariables['/bi2'].stateValues.value).eq(false);
@@ -164,7 +165,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/v1").should('have.text', "false");
     cy.get("#\\/v2").should('have.text', "false");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(false);
       expect(stateVariables['/bi1a'].stateValues.value).eq(false);
       expect(stateVariables['/bi2'].stateValues.value).eq(false);
@@ -177,7 +178,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/v1").should('have.text', "true");
     cy.get("#\\/v2").should('have.text', "false");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
       expect(stateVariables['/bi1a'].stateValues.value).eq(true);
       expect(stateVariables['/bi2'].stateValues.value).eq(false);
@@ -191,7 +192,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/v1").should('have.text', "true");
     cy.get("#\\/v2").should('have.text', "true");
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/bi1'].stateValues.value).eq(true);
       expect(stateVariables['/bi1a'].stateValues.value).eq(true);
       expect(stateVariables['/bi2'].stateValues.value).eq(true);
@@ -222,7 +223,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get("#\\/b3").should('have.text', 'true');
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(true);
       expect(stateVariables['/_boolean1'].stateValues.value).eq(true);
       expect(stateVariables['/b2'].stateValues.value).eq(true);
@@ -240,7 +241,7 @@ describe('BooleanInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
       expect(stateVariables['/_boolean1'].stateValues.value).eq(false);
       expect(stateVariables['/b2'].stateValues.value).eq(false);
@@ -284,7 +285,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', `false`);
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
       expect(stateVariables['/_boolean1'].stateValues.value).eq(false);
     });
@@ -297,7 +298,7 @@ describe('BooleanInput Tag Tests', function () {
     cy.get('#\\/_boolean1').should('have.text', `false`);
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_booleaninput1'].stateValues.value).eq(false);
       expect(stateVariables['/_boolean1'].stateValues.value).eq(false);
     });
@@ -325,5 +326,118 @@ describe('BooleanInput Tag Tests', function () {
 
   })
 
+  it('boolean input as toggle button', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><booleanInput name="atb" label="As Toggle" /></p>
+    <p><booleanInput name="bi" label="hello" asToggleButton="$atb"/></p>
+
+    <copy prop="value" target="bi" assignNames="v1" />
+    <copy target="_copy1" assignNames="v2" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.log('Test values displayed in browser')
+
+    cy.get('#\\/atb_input').should('not.be.checked');
+    cy.get('#\\/bi_input').should('not.be.checked');
+    cy.get('#\\/v1').should('have.text', "false");
+    cy.get("#\\/v2").should('have.text', "false");
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/atb'].stateValues.value).eq(false);
+      expect(stateVariables['/bi'].stateValues.value).eq(false);
+      expect(stateVariables["/v1"].stateValues.value).eq(false);
+      expect(stateVariables["/v2"].stateValues.value).eq(false);
+      expect(stateVariables['/atb'].stateValues.label).eq("As Toggle");
+      expect(stateVariables['/bi'].stateValues.label).eq("hello");
+    });
+
+    cy.log('check the box')
+    cy.get('#\\/bi_input').click();
+
+    cy.log('Test values displayed in browser')
+    cy.get('#\\/atb_input').should('not.be.checked');
+    cy.get('#\\/bi_input').should('be.checked');
+    cy.get('#\\/v1').should('have.text', "true");
+    cy.get("#\\/v2").should('have.text', "true");
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/atb'].stateValues.value).eq(false);
+      expect(stateVariables['/bi'].stateValues.value).eq(true);
+      expect(stateVariables["/v1"].stateValues.value).eq(true);
+      expect(stateVariables["/v2"].stateValues.value).eq(true);
+    });
+
+    cy.log('set as toggle button')
+    cy.get('#\\/atb_input').click();
+
+    cy.log('Test values displayed in browser')
+    cy.get('#\\/atb_input').should('be.checked');
+    // TODO: how to check the renderer if ToggleButton is selected
+    //cy.get('#\\/bi_input').should('be.checked');
+    cy.get('#\\/v1').should('have.text', "true");
+    cy.get("#\\/v2").should('have.text', "true");
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/atb'].stateValues.value).eq(true);
+      expect(stateVariables['/bi'].stateValues.value).eq(true);
+      expect(stateVariables["/v1"].stateValues.value).eq(true);
+      expect(stateVariables["/v2"].stateValues.value).eq(true);
+    });
+
+
+    cy.log('turn off via toggle button')
+    cy.get('#\\/bi_input').click();
+
+    cy.log('Test values displayed in browser')
+    cy.get('#\\/atb_input').should('be.checked');
+    // TODO: how to check the renderer if ToggleButton is selected
+    //cy.get('#\\/bi_input').should('not.be.checked');
+    cy.get('#\\/v1').should('have.text', "false");
+    cy.get("#\\/v2").should('have.text', "false");
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/atb'].stateValues.value).eq(true);
+      expect(stateVariables['/bi'].stateValues.value).eq(false);
+      expect(stateVariables["/v1"].stateValues.value).eq(false);
+      expect(stateVariables["/v2"].stateValues.value).eq(false);
+    });
+
+
+    cy.log('turn on via toggle button')
+    cy.get('#\\/bi_input').click();
+
+    cy.log('Test values displayed in browser')
+    cy.get('#\\/atb_input').should('be.checked');
+    // TODO: how to check the renderer if ToggleButton is selected
+    //cy.get('#\\/bi_input').should('be.checked');
+    cy.get('#\\/v1').should('have.text', "true");
+    cy.get("#\\/v2").should('have.text', "true");
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/atb'].stateValues.value).eq(true);
+      expect(stateVariables['/bi'].stateValues.value).eq(true);
+      expect(stateVariables["/v1"].stateValues.value).eq(true);
+      expect(stateVariables["/v2"].stateValues.value).eq(true);
+    });
+
+  })
 
 });

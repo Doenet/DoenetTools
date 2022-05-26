@@ -12,6 +12,7 @@ function cesc(s) {
 describe('Endpoint Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -31,6 +32,8 @@ describe('Endpoint Tag Tests', function () {
   
     <booleaninput name="b1" />
     <booleaninput name="b2" />
+    <copy prop="value" target="b1" assignNames="b1a" />
+    <copy prop="value" target="b2" assignNames="b2a" />
 
     <copy target="g" assignNames="g2" />
     `}, "*");
@@ -39,146 +42,168 @@ describe('Endpoint Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g/A"].stateValues.open).eq(true);
-      expect(components["/g/B"].stateValues.open).eq(false);
-      expect(components["/g/C"].stateValues.open).eq(false);
-      expect(components["/g/D"].stateValues.open).eq(false);
-      expect(components["/g/A"].stateValues.xs.map(x => x.tree)).eqls([4, 0]);
-      expect(components["/g/B"].stateValues.xs.map(x => x.tree)).eqls([7, 0]);
-      expect(components["/g/C"].stateValues.xs.map(x => x.tree)).eqls([-9, 0]);
-      expect(components["/g/D"].stateValues.xs.map(x => x.tree)).eqls([-3, 0]);
+      expect(stateVariables["/g/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g/C"].stateValues.open).eq(false);
+      expect(stateVariables["/g/D"].stateValues.open).eq(false);
+      expect(stateVariables["/g/A"].stateValues.xs).eqls([4, 0]);
+      expect(stateVariables["/g/B"].stateValues.xs).eqls([7, 0]);
+      expect(stateVariables["/g/C"].stateValues.xs).eqls([-9, 0]);
+      expect(stateVariables["/g/D"].stateValues.xs).eqls([-3, 0]);
 
-      expect(components["/g2/A"].stateValues.open).eq(true);
-      expect(components["/g2/B"].stateValues.open).eq(false);
-      expect(components["/g2/C"].stateValues.open).eq(false);
-      expect(components["/g2/D"].stateValues.open).eq(false);
-      expect(components["/g2/A"].stateValues.xs.map(x => x.tree)).eqls([4, 0]);
-      expect(components["/g2/B"].stateValues.xs.map(x => x.tree)).eqls([7, 0]);
-      expect(components["/g2/C"].stateValues.xs.map(x => x.tree)).eqls([-9, 0]);
-      expect(components["/g2/D"].stateValues.xs.map(x => x.tree)).eqls([-3, 0]);
+      expect(stateVariables["/g2/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/D"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/A"].stateValues.xs).eqls([4, 0]);
+      expect(stateVariables["/g2/B"].stateValues.xs).eqls([7, 0]);
+      expect(stateVariables["/g2/C"].stateValues.xs).eqls([-9, 0]);
+      expect(stateVariables["/g2/D"].stateValues.xs).eqls([-3, 0]);
     })
 
     cy.log('switch C via boolean input')
     cy.get('#\\/b1_input').click();
+    cy.get('#\\/b1a').should('have.text', 'true')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g/A"].stateValues.open).eq(true);
-      expect(components["/g/B"].stateValues.open).eq(false);
-      expect(components["/g/C"].stateValues.open).eq(true);
-      expect(components["/g/D"].stateValues.open).eq(false);
+      expect(stateVariables["/g/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g/D"].stateValues.open).eq(false);
 
-      expect(components["/g2/A"].stateValues.open).eq(true);
-      expect(components["/g2/B"].stateValues.open).eq(false);
-      expect(components["/g2/C"].stateValues.open).eq(true);
-      expect(components["/g2/D"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.open).eq(false);
     })
 
     cy.log('switch D via boolean input')
     cy.get('#\\/b2_input').click();
+    cy.get('#\\/b2a').should('have.text', 'true')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g/A"].stateValues.open).eq(true);
-      expect(components["/g/B"].stateValues.open).eq(false);
-      expect(components["/g/C"].stateValues.open).eq(true);
-      expect(components["/g/D"].stateValues.open).eq(true);
+      expect(stateVariables["/g/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g/D"].stateValues.open).eq(true);
 
-      expect(components["/g2/A"].stateValues.open).eq(true);
-      expect(components["/g2/B"].stateValues.open).eq(false);
-      expect(components["/g2/C"].stateValues.open).eq(true);
-      expect(components["/g2/D"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.open).eq(true);
     })
 
 
     cy.log('switch A via first action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g/A"].actions.switchPoint();
+      await win.callAction1({
+        actionName: "switchPoint",
+        componentName: "/g/A",
+      });
 
-      expect(components["/g/A"].stateValues.open).eq(false);
-      expect(components["/g/B"].stateValues.open).eq(false);
-      expect(components["/g/C"].stateValues.open).eq(true);
-      expect(components["/g/D"].stateValues.open).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g2/A"].stateValues.open).eq(false);
-      expect(components["/g2/B"].stateValues.open).eq(false);
-      expect(components["/g2/C"].stateValues.open).eq(true);
-      expect(components["/g2/D"].stateValues.open).eq(true);
+      expect(stateVariables["/g/A"].stateValues.open).eq(false);
+      expect(stateVariables["/g/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g/D"].stateValues.open).eq(true);
+
+      expect(stateVariables["/g2/A"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.open).eq(true);
     })
 
 
 
     cy.log('switch A via second action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g2/A"].actions.switchPoint();
+      await win.callAction1({
+        actionName: "switchPoint",
+        componentName: "/g2/A",
+      });
 
-      expect(components["/g/A"].stateValues.open).eq(true);
-      expect(components["/g/B"].stateValues.open).eq(false);
-      expect(components["/g/C"].stateValues.open).eq(true);
-      expect(components["/g/D"].stateValues.open).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g2/A"].stateValues.open).eq(true);
-      expect(components["/g2/B"].stateValues.open).eq(false);
-      expect(components["/g2/C"].stateValues.open).eq(true);
-      expect(components["/g2/D"].stateValues.open).eq(true);
+      expect(stateVariables["/g/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g/D"].stateValues.open).eq(true);
+
+      expect(stateVariables["/g2/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.open).eq(true);
     })
 
     
     cy.log('cannot switch B via action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g/B"].actions.switchPoint();
+      await win.callAction1({
+        actionName: "switchPoint",
+        componentName: "/g/B",
+      });
 
-      expect(components["/g/A"].stateValues.open).eq(true);
-      expect(components["/g/B"].stateValues.open).eq(false);
-      expect(components["/g/C"].stateValues.open).eq(true);
-      expect(components["/g/D"].stateValues.open).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g2/A"].stateValues.open).eq(true);
-      expect(components["/g2/B"].stateValues.open).eq(false);
-      expect(components["/g2/C"].stateValues.open).eq(true);
-      expect(components["/g2/D"].stateValues.open).eq(true);
+      expect(stateVariables["/g/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g/D"].stateValues.open).eq(true);
+
+      expect(stateVariables["/g2/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.open).eq(true);
     })
 
 
     
     cy.log('cannot switch C via second action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g2/C"].actions.switchPoint();
+      await win.callAction1({
+        actionName: "switchPoint",
+        componentName: "/g2/C",
+      });
 
-      expect(components["/g/A"].stateValues.open).eq(true);
-      expect(components["/g/B"].stateValues.open).eq(false);
-      expect(components["/g/C"].stateValues.open).eq(true);
-      expect(components["/g/D"].stateValues.open).eq(true);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g2/A"].stateValues.open).eq(true);
-      expect(components["/g2/B"].stateValues.open).eq(false);
-      expect(components["/g2/C"].stateValues.open).eq(true);
-      expect(components["/g2/D"].stateValues.open).eq(true);
+      expect(stateVariables["/g/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g/D"].stateValues.open).eq(true);
+
+      expect(stateVariables["/g2/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.open).eq(true);
     })
 
    
     cy.log('switch D via second action')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      await components["/g2/D"].actions.switchPoint();
+      await win.callAction1({
+        actionName: "switchPoint",
+        componentName: "/g2/D",
+      });
 
-      expect(components["/g/A"].stateValues.open).eq(true);
-      expect(components["/g/B"].stateValues.open).eq(false);
-      expect(components["/g/C"].stateValues.open).eq(true);
-      expect(components["/g/D"].stateValues.open).eq(false);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/g2/A"].stateValues.open).eq(true);
-      expect(components["/g2/B"].stateValues.open).eq(false);
-      expect(components["/g2/C"].stateValues.open).eq(true);
-      expect(components["/g2/D"].stateValues.open).eq(false);
+      expect(stateVariables["/g/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g/D"].stateValues.open).eq(false);
+
+      expect(stateVariables["/g2/A"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/B"].stateValues.open).eq(false);
+      expect(stateVariables["/g2/C"].stateValues.open).eq(true);
+      expect(stateVariables["/g2/D"].stateValues.open).eq(false);
     })
 
 

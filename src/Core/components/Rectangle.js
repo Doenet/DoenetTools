@@ -6,8 +6,8 @@ export default class Rectangle extends Polygon {
   static rendererType = "polygon";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",
@@ -60,7 +60,7 @@ export default class Rectangle extends Polygon {
     stateVariableDefinitions.essentialVertex = {
       isArray: true,
       entryPrefixes: ["essentialVertexX"],
-      defaultValueByArrayKey: () =>  me.fromAst(0),
+      defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
       returnArraySizeDependencies: () => ({
         nVerticesSpecified: {
@@ -552,6 +552,19 @@ export default class Rectangle extends Polygon {
           }
         }
 
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "vertices") {
+          return "vertex" + propIndex;
+        }
+        if (varName.slice(0, 6) === "vertex") {
+          // could be vertex or vertexX
+          let vertexNum = Number(varName.slice(6));
+          if (Number.isInteger(vertexNum) && vertexNum > 0) {
+            return `vertexX${vertexNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       stateVariablesDeterminingDependencies: [
         "nVerticesSpecified",
@@ -1125,7 +1138,7 @@ export default class Rectangle extends Polygon {
     return stateVariableDefinitions;
   }
 
-  async movePolygon({ pointCoords, transient, sourceInformation }) {
+  async movePolygon({ pointCoords, transient, sourceInformation, actionId }) {
     let updateInstructions = [];
 
     let vertexComponents = {};
@@ -1138,7 +1151,8 @@ export default class Rectangle extends Polygon {
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "vertices",
-      value: vertexComponents
+      value: vertexComponents,
+      sourceInformation
     });
 
     if (Object.keys(pointCoords).length === 1) {
@@ -1223,11 +1237,13 @@ export default class Rectangle extends Polygon {
     if (transient) {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
-        transient
+        transient,
+        actionId
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event: {
           verb: "interacted",
           object: {

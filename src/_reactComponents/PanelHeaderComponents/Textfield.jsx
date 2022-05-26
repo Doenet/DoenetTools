@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 
 export default function Textfield(props) {
   const labelVisible = props.label ? 'static' : 'none';
-  const [text, setText] = useState("");
   const align = props.vertical ? 'static' : 'flex';
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
@@ -16,7 +15,7 @@ export default function Textfield(props) {
     fontFamily: 'Arial',
     borderRadius: 'var(--mainBorderRadius)',
     color: '#000',
-    value: `${text}`,
+    value: `${props.value}`,
     resize:'none',
     whiteSpace: 'nowrap',
     padding:"0px 5px 0px 5px",
@@ -97,7 +96,7 @@ export default function Textfield(props) {
     <>
       <div style={container}>
             <p style={label}>{label.value}</p>
-            <input type="text" ref={inputRef} placeholder={textfield.placeholder} defaultValue={textfield.value} aria-label={textfield.ariaLabel} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
+            <input type="text" ref={inputRef} value={props.value} placeholder={textfield.placeholder} aria-label={textfield.ariaLabel} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
       </div>
     </>
   )

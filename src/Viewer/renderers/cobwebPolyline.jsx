@@ -41,8 +41,6 @@ export default function CobwebPolyline(props) {
 
   function createCobwebPolylineJXG() {
 
-    console.log('create cobweb polyline')
-
     // if (SVs.numericalVertices.length !== SVs.nVertices ||
     //   SVs.numericalVertices.some(x => x.length !== 2)
     // ) {

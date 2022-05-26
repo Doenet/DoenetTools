@@ -9,8 +9,8 @@ export default class LineSegment extends GraphicalComponent {
     moveLineSegment: this.moveLineSegment.bind(this),
   };
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",
@@ -63,7 +63,7 @@ export default class LineSegment extends GraphicalComponent {
           lineDescription += "dotted ";
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColor;
+        lineDescription += dependencyValues.selectedStyle.lineColorWord;
 
         return { setValue: { styleDescription: lineDescription } };
       }
@@ -161,6 +161,19 @@ export default class LineSegment extends GraphicalComponent {
             return [];
           }
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "endpoints") {
+          return "endpoint" + propIndex;
+        }
+        if (varName.slice(0, 8) === "endpoint") {
+          // could be endpoint or endpointX
+          let endpointNum = Number(varName.slice(8));
+          if (Number.isInteger(endpointNum) && endpointNum > 0) {
+            return `endpointX${endpointNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nDimensions: {
@@ -413,7 +426,7 @@ export default class LineSegment extends GraphicalComponent {
   }
 
 
-  async moveLineSegment({ point1coords, point2coords, transient }) {
+  async moveLineSegment({ point1coords, point2coords, transient, actionId }) {
 
     let newComponents = {};
 
@@ -436,6 +449,7 @@ export default class LineSegment extends GraphicalComponent {
           value: newComponents
         }],
         transient: true,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -445,6 +459,7 @@ export default class LineSegment extends GraphicalComponent {
           stateVariable: "endpoints",
           value: newComponents
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

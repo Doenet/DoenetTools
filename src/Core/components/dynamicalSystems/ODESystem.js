@@ -6,8 +6,8 @@ export default class ODESystem extends InlineComponent {
   static componentType = "odesystem";
   static rendererType = "math";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.independentVariable = {
       createComponentOfType: "variable",
@@ -476,6 +476,7 @@ export default class ODESystem extends InlineComponent {
     }
 
     stateVariableDefinitions.numericalRHSf = {
+      additionalStateVariablesDefined: ["numericalRHSfDefinitions"],
       returnDependencies: () => ({
         validIndependentVariable: {
           dependencyType: "stateVariable",
@@ -532,7 +533,13 @@ export default class ODESystem extends InlineComponent {
         }
 
         if (!valid) {
-          return { setValue: { numericalRHSf: _ => NaN } }
+          let n = dependencyValues.rhss.length;
+          return {
+            setValue: {
+              numericalRHSf: () => NaN,
+              numericalRHSfDefinitions: Array(n).fill({})
+            }
+          }
         }
 
         return {
@@ -549,7 +556,16 @@ export default class ODESystem extends InlineComponent {
               } catch (e) {
                 return NaN;
               }
-            }
+            },
+            numericalRHSfDefinitions: dependencyValues.rhss.map(x => ({
+              functionType: "formula",
+              formula: x,
+              nInputs: varNames.length + 1,
+              variables: [indVarName, ...varNames],
+
+            }))
+
+
           }
         }
 
@@ -593,6 +609,9 @@ export default class ODESystem extends InlineComponent {
       public: true,
       componentType: "function",
       createWorkspace: true,
+      stateVariablesPrescribingAdditionalAttributes: {
+        fDefinition: "numericalSolutionFDefinitions"
+      },
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
@@ -753,6 +772,102 @@ export default class ODESystem extends InlineComponent {
       isAlias: true,
       targetVariableName: "numericalSolution1"
     };
+
+
+    stateVariableDefinitions.numericalSolutionFDefinitions = {
+      forRenderer: true,
+      isArray: true,
+      entryPrefixes: ["numericalSolutionFDefinition"],
+      returnArraySizeDependencies: () => ({
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        },
+      }),
+      returnArraySize({ dependencyValues }) {
+        return [dependencyValues.nDimensions];
+      },
+      returnArrayDependenciesByKey() {
+        let globalDependencies = {
+          nDimensions: {
+            dependencyType: "stateVariable",
+            variableName: "nDimensions"
+          },
+          validIndependentVariable: {
+            dependencyType: "stateVariable",
+            variableName: "validIndependentVariable"
+          },
+          independentVariable: {
+            dependencyType: "stateVariable",
+            variableName: "independentVariable"
+          },
+          validVariables: {
+            dependencyType: "stateVariable",
+            variableName: `validVariables`
+          },
+          variables: {
+            dependencyType: "stateVariable",
+            variableName: `variables`
+          },
+          chunkSize: {
+            dependencyType: "stateVariable",
+            variableName: `chunkSize`
+          },
+          tolerance: {
+            dependencyType: "stateVariable",
+            variableName: `tolerance`
+          },
+          maxIterations: {
+            dependencyType: "stateVariable",
+            variableName: `maxIterations`
+          },
+          haveNumericalInitialConditions: {
+            dependencyType: "stateVariable",
+            variableName: `haveNumericalInitialConditions`
+          },
+          t0: {
+            dependencyType: "stateVariable",
+            variableName: `t0`
+          },
+          x0s: {
+            dependencyType: "stateVariable",
+            variableName: `x0s`
+          },
+          numericalRHSfDefinitions: {
+            dependencyType: "stateVariable",
+            variableName: `numericalRHSfDefinitions`
+          }
+        }
+        return { globalDependencies }
+      },
+      arrayDefinitionByKey({ globalDependencyValues }) {
+        if (!globalDependencyValues.haveNumericalInitialConditions) {
+          return {
+            setValue: {
+              numericalSolutionFDefinitions: Array(globalDependencyValues.nDimensions).fill({})
+            }
+          }
+        }
+
+        return {
+          setValue: {
+            numericalSolutionFDefinitions: [...Array(globalDependencyValues.nDimensions).keys()].map(ind => ({
+              functionType: "ODESolution",
+              nDimensions: globalDependencyValues.nDimensions,
+              t0: globalDependencyValues.t0,
+              x0s: globalDependencyValues.x0s,
+              chunkSize: globalDependencyValues.chunkSize,
+              tolerance: globalDependencyValues.tolerance,
+              numericalRHSfDefinitions: globalDependencyValues.numericalRHSfDefinitions,
+              maxIterations: globalDependencyValues.maxIterations,
+              component: ind
+            }))
+
+          }
+        }
+
+      }
+    }
 
     return stateVariableDefinitions;
 

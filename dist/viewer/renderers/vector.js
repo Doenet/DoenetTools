@@ -2,6 +2,7 @@ import React, {useContext, useEffect, useState, useRef} from "../../_snowpack/pk
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default function Vector(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Vector.ignoreActionsWithoutCore = true;
@@ -18,13 +19,6 @@ export default function Vector(props) {
   let previousWithLabel = useRef(false);
   let lastPositionsFromCore = useRef(null);
   lastPositionsFromCore.current = SVs.numericalEndpoints;
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  });
   useEffect(() => {
     return () => {
       if (Object.keys(vectorJXG.current).length !== 0) {
@@ -63,7 +57,7 @@ export default function Vector(props) {
       fillColor: "none",
       strokeColor: "none",
       highlightStrokeColor: "none",
-      highlightFillColor: "lightgray",
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: layer + 1
     });
     if (!SVs.draggable || SVs.fixed) {
@@ -297,7 +291,11 @@ export default function Vector(props) {
     name
   }), /* @__PURE__ */ React.createElement("span", {
     id: name
-  }, mathJaxify));
+  }, /* @__PURE__ */ React.createElement(MathJax, {
+    hideUntilTypeset: "first",
+    inline: true,
+    dynamic: true
+  }, mathJaxify)));
 }
 function styleToDash(style) {
   if (style === "solid") {

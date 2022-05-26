@@ -3,8 +3,8 @@ import BlockComponent from './abstract/BlockComponent.js';
 export default class Video extends BlockComponent {
   static componentType = "video";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.width = {
       createComponentOfType: "_componentSize",

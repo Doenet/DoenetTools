@@ -8,9 +8,18 @@ function cesc(s) {
   return s;
 }
 
+function nInDOM(n) {
+  if (n < 0) {
+    return `−${Math.abs(n)}`
+  } else {
+    return String(n);
+  }
+}
+
 describe('Map Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -34,12 +43,12 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
-      let mathr1 = replacements[0].replacements[0];
-      let mathr1Anchor = '#' + mathr1.componentName;
-      let mathr2 = replacements[1].replacements[0];
-      let mathr2Anchor = '#' + mathr2.componentName;
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
+      let mathr1Name = stateVariables[replacements[0].componentName].replacements[0].componentName;
+      let mathr1Anchor = '#' + mathr1Name;
+      let mathr2Name = stateVariables[replacements[1].componentName].replacements[0].componentName;
+      let mathr2Anchor = '#' + mathr2Name;
 
       cy.log('Test values displayed in browser')
       cy.get(`${cesc(mathr1Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
@@ -51,8 +60,8 @@ describe('Map Tag Tests', function () {
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(() => {
-        expect(mathr1.stateValues.value.tree).eqls(['+', ['apply', 'sin', ['*', 2, 'x']], 1]);
-        expect(mathr2.stateValues.value.tree).eqls(['+', ['apply', 'sin', ['*', 2, 'y']], 2]);
+        expect(stateVariables[mathr1Name].stateValues.value).eqls(['+', ['apply', 'sin', ['*', 2, 'x']], 1]);
+        expect(stateVariables[mathr2Name].stateValues.value).eqls(['+', ['apply', 'sin', ['*', 2, 'y']], 2]);
       })
     })
   });
@@ -71,12 +80,12 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
-      let textr1 = replacements[0].replacements[0];
-      let textr1Anchor = '#' + textr1.componentName;
-      let textr2 = replacements[1].replacements[0];
-      let textr2Anchor = '#' + textr2.componentName;
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
+      let textr1Name = stateVariables[replacements[0].componentName].replacements[0].componentName;
+      let textr1Anchor = '#' + textr1Name;
+      let textr2Name = stateVariables[replacements[1].componentName].replacements[0].componentName;
+      let textr2Anchor = '#' + textr2Name;
 
       cy.log('Test values displayed in browser')
       cy.get(cesc(textr1Anchor)).should('have.text', "You are a squirrel!");
@@ -84,8 +93,7 @@ describe('Map Tag Tests', function () {
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(() => {
-        expect(textr1.stateValues.value).eq("You are a squirrel!");
-        expect(textr2.stateValues.value).eq("You are a bat!");
+        expect(stateVariables[textr1Name].stateValues.value).eq("You are a squirrel!");
       })
     })
   });
@@ -105,35 +113,35 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
-      let mathrs = replacements.map(x => x.replacements[0]);
-      let mathrAnchors = mathrs.map(x => '#' + x.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
+      let mathrNames = replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let mathrAnchors = mathrNames.map(x => cesc('#' + x));
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(mathrAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('1');
       });
-      cy.get(`${cesc(mathrAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4');
       });
-      cy.get(`${cesc(mathrAnchors[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('9');
       });
-      cy.get(`${cesc(mathrAnchors[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('16');
       });
-      cy.get(`${cesc(mathrAnchors[4])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[4]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('25');
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(() => {
-        expect(mathrs[0].stateValues.value.tree).eq(1);
-        expect(mathrs[1].stateValues.value.tree).eq(4);
-        expect(mathrs[2].stateValues.value.tree).eq(9);
-        expect(mathrs[3].stateValues.value.tree).eq(16);
-        expect(mathrs[4].stateValues.value.tree).eq(25);
+        expect(stateVariables[mathrNames[0]].stateValues.value).eq(1);
+        expect(stateVariables[mathrNames[1]].stateValues.value).eq(4);
+        expect(stateVariables[mathrNames[2]].stateValues.value).eq(9);
+        expect(stateVariables[mathrNames[3]].stateValues.value).eq(16);
+        expect(stateVariables[mathrNames[4]].stateValues.value).eq(25);
       })
     })
   });
@@ -158,39 +166,39 @@ describe('Map Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
-      let mathrs = replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let mathrAnchors = mathrs.map(x => '#' + x.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
+      let mathrNames = replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let mathrAnchors = mathrNames.map(x => cesc('#' + x));
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(mathrAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,21,−5)');
       });
-      cy.get(`${cesc(mathrAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1,1)');
       });
-      cy.get(`${cesc(mathrAnchors[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,22,−8)');
       });
-      cy.get(`${cesc(mathrAnchors[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,2,2)');
       });
-      cy.get(`${cesc(mathrAnchors[4])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[4]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,23,−11)');
       });
-      cy.get(`${cesc(mathrAnchors[5])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[5]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,3,3)');
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(() => {
-        expect(mathrs[0].stateValues.value.tree).eqls(["tuple", 1, 21, -5]);
-        expect(mathrs[1].stateValues.value.tree).eqls(["tuple", 1, 1, 1]);
-        expect(mathrs[2].stateValues.value.tree).eqls(["tuple", 2, 22, -8]);
-        expect(mathrs[3].stateValues.value.tree).eqls(["tuple", 2, 2, 2]);
-        expect(mathrs[4].stateValues.value.tree).eqls(["tuple", 3, 23, -11]);
-        expect(mathrs[5].stateValues.value.tree).eqls(["tuple", 3, 3, 3]);
+        expect(stateVariables[mathrNames[0]].stateValues.value).eqls(["tuple", 1, 21, -5]);
+        expect(stateVariables[mathrNames[1]].stateValues.value).eqls(["tuple", 1, 1, 1]);
+        expect(stateVariables[mathrNames[2]].stateValues.value).eqls(["tuple", 2, 22, -8]);
+        expect(stateVariables[mathrNames[3]].stateValues.value).eqls(["tuple", 2, 2, 2]);
+        expect(stateVariables[mathrNames[4]].stateValues.value).eqls(["tuple", 3, 23, -11]);
+        expect(stateVariables[mathrNames[5]].stateValues.value).eqls(["tuple", 3, 3, 3]);
       })
     })
   });
@@ -212,111 +220,111 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
-      let mathrs = replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let mathrAnchors = mathrs.map(x => '#' + x.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
+      let mathrNames = replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let mathrAnchors = mathrNames.map(x => cesc('#' + x));
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(mathrAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,21,−5)');
       });
-      cy.get(`${cesc(mathrAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1,1)');
       });
-      cy.get(`${cesc(mathrAnchors[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,21,−8)');
       });
-      cy.get(`${cesc(mathrAnchors[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1,2)');
       });
-      cy.get(`${cesc(mathrAnchors[4])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[4]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,23,−5)');
       });
-      cy.get(`${cesc(mathrAnchors[5])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[5]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2,1)');
       });
-      cy.get(`${cesc(mathrAnchors[6])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[6]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,23,−8)');
       });
-      cy.get(`${cesc(mathrAnchors[7])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[7]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2,2)');
       });
-      cy.get(`${cesc(mathrAnchors[8])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[8]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,21,−5)');
       });
-      cy.get(`${cesc(mathrAnchors[9])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[9]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1,1)');
       });
-      cy.get(`${cesc(mathrAnchors[10])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[10]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,21,−8)');
       });
-      cy.get(`${cesc(mathrAnchors[11])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[11]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,1,2)');
       });
-      cy.get(`${cesc(mathrAnchors[12])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[12]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,23,−5)');
       });
-      cy.get(`${cesc(mathrAnchors[13])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[13]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,2,1)');
       });
-      cy.get(`${cesc(mathrAnchors[14])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[14]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,23,−8)');
       });
-      cy.get(`${cesc(mathrAnchors[15])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[15]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,2,2)');
       });
-      cy.get(`${cesc(mathrAnchors[16])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[16]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,21,−5)');
       });
-      cy.get(`${cesc(mathrAnchors[17])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[17]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,1,1)');
       });
-      cy.get(`${cesc(mathrAnchors[18])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[18]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,21,−8)');
       });
-      cy.get(`${cesc(mathrAnchors[19])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[19]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,1,2)');
       });
-      cy.get(`${cesc(mathrAnchors[20])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[20]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,23,−5)');
       });
-      cy.get(`${cesc(mathrAnchors[21])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[21]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,2,1)');
       });
-      cy.get(`${cesc(mathrAnchors[22])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[22]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,23,−8)');
       });
-      cy.get(`${cesc(mathrAnchors[23])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[23]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,2,2)');
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(() => {
-        expect(mathrs[0].stateValues.value.tree).eqls(["tuple", 1, 21, -5]);
-        expect(mathrs[1].stateValues.value.tree).eqls(["tuple", 1, 1, 1]);
-        expect(mathrs[2].stateValues.value.tree).eqls(["tuple", 1, 21, -8]);
-        expect(mathrs[3].stateValues.value.tree).eqls(["tuple", 1, 1, 2]);
-        expect(mathrs[4].stateValues.value.tree).eqls(["tuple", 1, 23, -5]);
-        expect(mathrs[5].stateValues.value.tree).eqls(["tuple", 1, 2, 1]);
-        expect(mathrs[6].stateValues.value.tree).eqls(["tuple", 1, 23, -8]);
-        expect(mathrs[7].stateValues.value.tree).eqls(["tuple", 1, 2, 2]);
-        expect(mathrs[8].stateValues.value.tree).eqls(["tuple", 2, 21, -5]);
-        expect(mathrs[9].stateValues.value.tree).eqls(["tuple", 2, 1, 1]);
-        expect(mathrs[10].stateValues.value.tree).eqls(["tuple", 2, 21, -8]);
-        expect(mathrs[11].stateValues.value.tree).eqls(["tuple", 2, 1, 2]);
-        expect(mathrs[12].stateValues.value.tree).eqls(["tuple", 2, 23, -5]);
-        expect(mathrs[13].stateValues.value.tree).eqls(["tuple", 2, 2, 1]);
-        expect(mathrs[14].stateValues.value.tree).eqls(["tuple", 2, 23, -8]);
-        expect(mathrs[15].stateValues.value.tree).eqls(["tuple", 2, 2, 2]);
-        expect(mathrs[16].stateValues.value.tree).eqls(["tuple", 3, 21, -5]);
-        expect(mathrs[17].stateValues.value.tree).eqls(["tuple", 3, 1, 1]);
-        expect(mathrs[18].stateValues.value.tree).eqls(["tuple", 3, 21, -8]);
-        expect(mathrs[19].stateValues.value.tree).eqls(["tuple", 3, 1, 2]);
-        expect(mathrs[20].stateValues.value.tree).eqls(["tuple", 3, 23, -5]);
-        expect(mathrs[21].stateValues.value.tree).eqls(["tuple", 3, 2, 1]);
-        expect(mathrs[22].stateValues.value.tree).eqls(["tuple", 3, 23, -8]);
-        expect(mathrs[23].stateValues.value.tree).eqls(["tuple", 3, 2, 2]);
+        expect(stateVariables[mathrNames[0]].stateValues.value).eqls(["tuple", 1, 21, -5]);
+        expect(stateVariables[mathrNames[1]].stateValues.value).eqls(["tuple", 1, 1, 1]);
+        expect(stateVariables[mathrNames[2]].stateValues.value).eqls(["tuple", 1, 21, -8]);
+        expect(stateVariables[mathrNames[3]].stateValues.value).eqls(["tuple", 1, 1, 2]);
+        expect(stateVariables[mathrNames[4]].stateValues.value).eqls(["tuple", 1, 23, -5]);
+        expect(stateVariables[mathrNames[5]].stateValues.value).eqls(["tuple", 1, 2, 1]);
+        expect(stateVariables[mathrNames[6]].stateValues.value).eqls(["tuple", 1, 23, -8]);
+        expect(stateVariables[mathrNames[7]].stateValues.value).eqls(["tuple", 1, 2, 2]);
+        expect(stateVariables[mathrNames[8]].stateValues.value).eqls(["tuple", 2, 21, -5]);
+        expect(stateVariables[mathrNames[9]].stateValues.value).eqls(["tuple", 2, 1, 1]);
+        expect(stateVariables[mathrNames[10]].stateValues.value).eqls(["tuple", 2, 21, -8]);
+        expect(stateVariables[mathrNames[11]].stateValues.value).eqls(["tuple", 2, 1, 2]);
+        expect(stateVariables[mathrNames[12]].stateValues.value).eqls(["tuple", 2, 23, -5]);
+        expect(stateVariables[mathrNames[13]].stateValues.value).eqls(["tuple", 2, 2, 1]);
+        expect(stateVariables[mathrNames[14]].stateValues.value).eqls(["tuple", 2, 23, -8]);
+        expect(stateVariables[mathrNames[15]].stateValues.value).eqls(["tuple", 2, 2, 2]);
+        expect(stateVariables[mathrNames[16]].stateValues.value).eqls(["tuple", 3, 21, -5]);
+        expect(stateVariables[mathrNames[17]].stateValues.value).eqls(["tuple", 3, 1, 1]);
+        expect(stateVariables[mathrNames[18]].stateValues.value).eqls(["tuple", 3, 21, -8]);
+        expect(stateVariables[mathrNames[19]].stateValues.value).eqls(["tuple", 3, 1, 2]);
+        expect(stateVariables[mathrNames[20]].stateValues.value).eqls(["tuple", 3, 23, -5]);
+        expect(stateVariables[mathrNames[21]].stateValues.value).eqls(["tuple", 3, 2, 1]);
+        expect(stateVariables[mathrNames[22]].stateValues.value).eqls(["tuple", 3, 23, -8]);
+        expect(stateVariables[mathrNames[23]].stateValues.value).eqls(["tuple", 3, 2, 2]);
       })
     });
   });
@@ -340,52 +348,52 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements;
-      let mathrs = replacements.reduce(
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacements = stateVariables['/_map1'].replacements;
+      let mathrNames = replacements.reduce(
         (a, c) => [
           ...a,
-          ...c.replacements[0].replacements.reduce((a1, c1) => [...a1, ...c1.replacements], [])
+          ...stateVariables[stateVariables[c.componentName].replacements[0].componentName].replacements.reduce((a1, c1) => [...a1, ...stateVariables[c1.componentName].replacements.map(x => x.componentName)], [])
         ], []
       );
-      let mathrAnchors = mathrs.map(x => '#' + x.componentName);
+      let mathrAnchors = mathrNames.map(x => cesc('#' + x));
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(mathrAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−9');
       });
-      cy.get(`${cesc(mathrAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('3');
       });
-      cy.get(`${cesc(mathrAnchors[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('−8');
       });
-      cy.get(`${cesc(mathrAnchors[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('4');
       });
-      cy.get(`${cesc(mathrAnchors[4])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[4]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('6');
       });
-      cy.get(`${cesc(mathrAnchors[5])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[5]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('5');
       });
-      cy.get(`${cesc(mathrAnchors[6])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[6]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('7');
       });
-      cy.get(`${cesc(mathrAnchors[7])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${mathrAnchors[7]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('6');
       });
 
       cy.log('Test internal values are set to the correct values')
       cy.window().then(() => {
-        expect(mathrs[0].stateValues.value.tree).eq(-9);
-        expect(mathrs[1].stateValues.value.tree).eq(3);
-        expect(mathrs[2].stateValues.value.tree).eq(-8);
-        expect(mathrs[3].stateValues.value.tree).eq(4);
-        expect(mathrs[4].stateValues.value.tree).eq(6);
-        expect(mathrs[5].stateValues.value.tree).eq(5);
-        expect(mathrs[6].stateValues.value.tree).eq(7);
-        expect(mathrs[7].stateValues.value.tree).eq(6);
+        expect(stateVariables[mathrNames[0]].stateValues.value).eq(-9);
+        expect(stateVariables[mathrNames[1]].stateValues.value).eq(3);
+        expect(stateVariables[mathrNames[2]].stateValues.value).eq(-8);
+        expect(stateVariables[mathrNames[3]].stateValues.value).eq(4);
+        expect(stateVariables[mathrNames[4]].stateValues.value).eq(6);
+        expect(stateVariables[mathrNames[5]].stateValues.value).eq(5);
+        expect(stateVariables[mathrNames[6]].stateValues.value).eq(7);
+        expect(stateVariables[mathrNames[7]].stateValues.value).eq(6);
       })
     })
   });
@@ -415,84 +423,84 @@ describe('Map Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let graphs = components['/_map1'].replacements.map(x => x.replacements[0]);
-      let graphsChildren = graphs.map(x => x.activeChildren);
-      let graphs2 = components['/mapcopy'].replacements.map(x => x.replacements[0]);
-      let graphs2Children = graphs2.map(x => x.activeChildren);
+      let stateVariables = await win.returnAllStateVariables1();
+      let graphNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let graphChildNames = graphNames.map(x => stateVariables[x].activeChildren.map(x => x.componentName));
+      let graphNames2 = stateVariables['/mapcopy'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let graph2ChildNames = graphNames2.map(x => stateVariables[x].activeChildren.map(x => x.componentName));
 
-      expect(graphs[0].stateValues.graphicalDescendants.length).eq(8);
-      expect(graphs[1].stateValues.graphicalDescendants.length).eq(8);
-      expect(graphs2[0].stateValues.graphicalDescendants.length).eq(8);
-      expect(graphs2[1].stateValues.graphicalDescendants.length).eq(8);
+      expect(stateVariables[graphNames[0]].stateValues.graphicalDescendants.length).eq(8);
+      expect(stateVariables[graphNames[1]].stateValues.graphicalDescendants.length).eq(8);
+      expect(stateVariables[graphNames2[0]].stateValues.graphicalDescendants.length).eq(8);
+      expect(stateVariables[graphNames2[1]].stateValues.graphicalDescendants.length).eq(8);
 
-      expect(graphsChildren[0][0].stateValues.xs[0].tree).eq(-9);
-      expect(graphsChildren[0][0].stateValues.xs[1].tree).eq(-5);
-      expect(graphsChildren[0][1].stateValues.xs[0].tree).eq(3);
-      expect(graphsChildren[0][1].stateValues.xs[1].tree).eq(1);
-      expect(graphsChildren[0][2].stateValues.xs[0].tree).eq(-8);
-      expect(graphsChildren[0][2].stateValues.xs[1].tree).eq(-5);
-      expect(graphsChildren[0][3].stateValues.xs[0].tree).eq(4);
-      expect(graphsChildren[0][3].stateValues.xs[1].tree).eq(1);
-      expect(graphsChildren[0][4].stateValues.xs[0].tree).eq(-9);
-      expect(graphsChildren[0][4].stateValues.xs[1].tree).eq(5);
-      expect(graphsChildren[0][5].stateValues.xs[0].tree).eq(3);
-      expect(graphsChildren[0][5].stateValues.xs[1].tree).eq(2);
-      expect(graphsChildren[0][6].stateValues.xs[0].tree).eq(-8);
-      expect(graphsChildren[0][6].stateValues.xs[1].tree).eq(5);
-      expect(graphsChildren[0][7].stateValues.xs[0].tree).eq(4);
-      expect(graphsChildren[0][7].stateValues.xs[1].tree).eq(2);
+      expect(stateVariables[graphChildNames[0][0]].stateValues.xs[0]).eq(-9);
+      expect(stateVariables[graphChildNames[0][0]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graphChildNames[0][1]].stateValues.xs[0]).eq(3);
+      expect(stateVariables[graphChildNames[0][1]].stateValues.xs[1]).eq(1);
+      expect(stateVariables[graphChildNames[0][2]].stateValues.xs[0]).eq(-8);
+      expect(stateVariables[graphChildNames[0][2]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graphChildNames[0][3]].stateValues.xs[0]).eq(4);
+      expect(stateVariables[graphChildNames[0][3]].stateValues.xs[1]).eq(1);
+      expect(stateVariables[graphChildNames[0][4]].stateValues.xs[0]).eq(-9);
+      expect(stateVariables[graphChildNames[0][4]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graphChildNames[0][5]].stateValues.xs[0]).eq(3);
+      expect(stateVariables[graphChildNames[0][5]].stateValues.xs[1]).eq(2);
+      expect(stateVariables[graphChildNames[0][6]].stateValues.xs[0]).eq(-8);
+      expect(stateVariables[graphChildNames[0][6]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graphChildNames[0][7]].stateValues.xs[0]).eq(4);
+      expect(stateVariables[graphChildNames[0][7]].stateValues.xs[1]).eq(2);
 
-      expect(graphsChildren[1][0].stateValues.xs[0].tree).eq(6);
-      expect(graphsChildren[1][0].stateValues.xs[1].tree).eq(-5);
-      expect(graphsChildren[1][1].stateValues.xs[0].tree).eq(5);
-      expect(graphsChildren[1][1].stateValues.xs[1].tree).eq(1);
-      expect(graphsChildren[1][2].stateValues.xs[0].tree).eq(7);
-      expect(graphsChildren[1][2].stateValues.xs[1].tree).eq(-5);
-      expect(graphsChildren[1][3].stateValues.xs[0].tree).eq(6);
-      expect(graphsChildren[1][3].stateValues.xs[1].tree).eq(1);
-      expect(graphsChildren[1][4].stateValues.xs[0].tree).eq(6);
-      expect(graphsChildren[1][4].stateValues.xs[1].tree).eq(5);
-      expect(graphsChildren[1][5].stateValues.xs[0].tree).eq(5);
-      expect(graphsChildren[1][5].stateValues.xs[1].tree).eq(2);
-      expect(graphsChildren[1][6].stateValues.xs[0].tree).eq(7);
-      expect(graphsChildren[1][6].stateValues.xs[1].tree).eq(5);
-      expect(graphsChildren[1][7].stateValues.xs[0].tree).eq(6);
-      expect(graphsChildren[1][7].stateValues.xs[1].tree).eq(2);
+      expect(stateVariables[graphChildNames[1][0]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graphChildNames[1][0]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graphChildNames[1][1]].stateValues.xs[0]).eq(5);
+      expect(stateVariables[graphChildNames[1][1]].stateValues.xs[1]).eq(1);
+      expect(stateVariables[graphChildNames[1][2]].stateValues.xs[0]).eq(7);
+      expect(stateVariables[graphChildNames[1][2]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graphChildNames[1][3]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graphChildNames[1][3]].stateValues.xs[1]).eq(1);
+      expect(stateVariables[graphChildNames[1][4]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graphChildNames[1][4]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graphChildNames[1][5]].stateValues.xs[0]).eq(5);
+      expect(stateVariables[graphChildNames[1][5]].stateValues.xs[1]).eq(2);
+      expect(stateVariables[graphChildNames[1][6]].stateValues.xs[0]).eq(7);
+      expect(stateVariables[graphChildNames[1][6]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graphChildNames[1][7]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graphChildNames[1][7]].stateValues.xs[1]).eq(2);
 
-      expect(graphs2Children[0][0].stateValues.xs[0].tree).eq(-9);
-      expect(graphs2Children[0][0].stateValues.xs[1].tree).eq(-5);
-      expect(graphs2Children[0][1].stateValues.xs[0].tree).eq(3);
-      expect(graphs2Children[0][1].stateValues.xs[1].tree).eq(1);
-      expect(graphs2Children[0][2].stateValues.xs[0].tree).eq(-8);
-      expect(graphs2Children[0][2].stateValues.xs[1].tree).eq(-5);
-      expect(graphs2Children[0][3].stateValues.xs[0].tree).eq(4);
-      expect(graphs2Children[0][3].stateValues.xs[1].tree).eq(1);
-      expect(graphs2Children[0][4].stateValues.xs[0].tree).eq(-9);
-      expect(graphs2Children[0][4].stateValues.xs[1].tree).eq(5);
-      expect(graphs2Children[0][5].stateValues.xs[0].tree).eq(3);
-      expect(graphs2Children[0][5].stateValues.xs[1].tree).eq(2);
-      expect(graphs2Children[0][6].stateValues.xs[0].tree).eq(-8);
-      expect(graphs2Children[0][6].stateValues.xs[1].tree).eq(5);
-      expect(graphs2Children[0][7].stateValues.xs[0].tree).eq(4);
-      expect(graphs2Children[0][7].stateValues.xs[1].tree).eq(2);
+      expect(stateVariables[graph2ChildNames[0][0]].stateValues.xs[0]).eq(-9);
+      expect(stateVariables[graph2ChildNames[0][0]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graph2ChildNames[0][1]].stateValues.xs[0]).eq(3);
+      expect(stateVariables[graph2ChildNames[0][1]].stateValues.xs[1]).eq(1);
+      expect(stateVariables[graph2ChildNames[0][2]].stateValues.xs[0]).eq(-8);
+      expect(stateVariables[graph2ChildNames[0][2]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graph2ChildNames[0][3]].stateValues.xs[0]).eq(4);
+      expect(stateVariables[graph2ChildNames[0][3]].stateValues.xs[1]).eq(1);
+      expect(stateVariables[graph2ChildNames[0][4]].stateValues.xs[0]).eq(-9);
+      expect(stateVariables[graph2ChildNames[0][4]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graph2ChildNames[0][5]].stateValues.xs[0]).eq(3);
+      expect(stateVariables[graph2ChildNames[0][5]].stateValues.xs[1]).eq(2);
+      expect(stateVariables[graph2ChildNames[0][6]].stateValues.xs[0]).eq(-8);
+      expect(stateVariables[graph2ChildNames[0][6]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graph2ChildNames[0][7]].stateValues.xs[0]).eq(4);
+      expect(stateVariables[graph2ChildNames[0][7]].stateValues.xs[1]).eq(2);
 
-      expect(graphs2Children[1][0].stateValues.xs[0].tree).eq(6);
-      expect(graphs2Children[1][0].stateValues.xs[1].tree).eq(-5);
-      expect(graphs2Children[1][1].stateValues.xs[0].tree).eq(5);
-      expect(graphs2Children[1][1].stateValues.xs[1].tree).eq(1);
-      expect(graphs2Children[1][2].stateValues.xs[0].tree).eq(7);
-      expect(graphs2Children[1][2].stateValues.xs[1].tree).eq(-5);
-      expect(graphs2Children[1][3].stateValues.xs[0].tree).eq(6);
-      expect(graphs2Children[1][3].stateValues.xs[1].tree).eq(1);
-      expect(graphs2Children[1][4].stateValues.xs[0].tree).eq(6);
-      expect(graphs2Children[1][4].stateValues.xs[1].tree).eq(5);
-      expect(graphs2Children[1][5].stateValues.xs[0].tree).eq(5);
-      expect(graphs2Children[1][5].stateValues.xs[1].tree).eq(2);
-      expect(graphs2Children[1][6].stateValues.xs[0].tree).eq(7);
-      expect(graphs2Children[1][6].stateValues.xs[1].tree).eq(5);
-      expect(graphs2Children[1][7].stateValues.xs[0].tree).eq(6);
-      expect(graphs2Children[1][7].stateValues.xs[1].tree).eq(2);
+      expect(stateVariables[graph2ChildNames[1][0]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graph2ChildNames[1][0]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graph2ChildNames[1][1]].stateValues.xs[0]).eq(5);
+      expect(stateVariables[graph2ChildNames[1][1]].stateValues.xs[1]).eq(1);
+      expect(stateVariables[graph2ChildNames[1][2]].stateValues.xs[0]).eq(7);
+      expect(stateVariables[graph2ChildNames[1][2]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graph2ChildNames[1][3]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graph2ChildNames[1][3]].stateValues.xs[1]).eq(1);
+      expect(stateVariables[graph2ChildNames[1][4]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graph2ChildNames[1][4]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graph2ChildNames[1][5]].stateValues.xs[0]).eq(5);
+      expect(stateVariables[graph2ChildNames[1][5]].stateValues.xs[1]).eq(2);
+      expect(stateVariables[graph2ChildNames[1][6]].stateValues.xs[0]).eq(7);
+      expect(stateVariables[graph2ChildNames[1][6]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graph2ChildNames[1][7]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graph2ChildNames[1][7]].stateValues.xs[1]).eq(2);
 
     })
   });
@@ -520,87 +528,69 @@ describe('Map Tag Tests', function () {
     </template>
     <sources alias="n"><sequence from="-10" to="5" step="15"/></sources>
     </map>
-    <copy name="c1" prop="coords" target="/u/u/u/A" />
-    <copy name="c2" prop="coords" target="/u/u/v/A" />
-    <copy name="c3" prop="coords" target="/u/v/u/A" />
-    <copy name="c4" prop="coords" target="/u/v/v/A" />
-    <copy name="c5" prop="coords" target="/v/u/u/A" />
-    <copy name="c6" prop="coords" target="/v/u/v/A" />
-    <copy name="c7" prop="coords" target="/v/v/u/A" />
-    <copy name="c8" prop="coords" target="/v/v/v/A" />
+    <copy assignNames="c1" prop="coords" target="/u/u/u/A" />
+    <copy assignNames="c2" prop="coords" target="/u/u/v/A" />
+    <copy assignNames="c3" prop="coords" target="/u/v/u/A" />
+    <copy assignNames="c4" prop="coords" target="/u/v/v/A" />
+    <copy assignNames="c5" prop="coords" target="/v/u/u/A" />
+    <copy assignNames="c6" prop="coords" target="/v/u/v/A" />
+    <copy assignNames="c7" prop="coords" target="/v/v/u/A" />
+    <copy assignNames="c8" prop="coords" target="/v/v/v/A" />
     `}, "*");
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/c1 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9,−5)');
+    });
+    cy.get(`#\\/c2 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−8,−5)');
+    });
+    cy.get(`#\\/c3 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−9,5)');
+    });
+    cy.get(`#\\/c4 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(−8,5)');
+    });
+    cy.get(`#\\/c5 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(6,−5)');
+    });
+    cy.get(`#\\/c6 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,−5)');
+    });
+    cy.get(`#\\/c7 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(6,5)');
+    });
+    cy.get(`#\\/c8 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(7,5)');
+    });
+
+    cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1 = components['/c1'].replacements[0];
-      let coords1Anchor = cesc('#' + coords1.componentName);
-      let coords2 = components['/c2'].replacements[0];
-      let coords2Anchor = cesc('#' + coords2.componentName);
-      let coords3 = components['/c3'].replacements[0];
-      let coords3Anchor = cesc('#' + coords3.componentName);
-      let coords4 = components['/c4'].replacements[0];
-      let coords4Anchor = cesc('#' + coords4.componentName);
-      let coords5 = components['/c5'].replacements[0];
-      let coords5Anchor = cesc('#' + coords5.componentName);
-      let coords6 = components['/c6'].replacements[0];
-      let coords6Anchor = cesc('#' + coords6.componentName);
-      let coords7 = components['/c7'].replacements[0];
-      let coords7Anchor = cesc('#' + coords7.componentName);
-      let coords8 = components['/c8'].replacements[0];
-      let coords8Anchor = cesc('#' + coords8.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      cy.log('Test values displayed in browser')
-      cy.get(`${coords1Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−9,−5)');
-      });
-      cy.get(`${coords2Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−8,−5)');
-      });
-      cy.get(`${coords3Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−9,5)');
-      });
-      cy.get(`${coords4Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(−8,5)');
-      });
-      cy.get(`${coords5Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(6,−5)');
-      });
-      cy.get(`${coords6Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(7,−5)');
-      });
-      cy.get(`${coords7Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(6,5)');
-      });
-      cy.get(`${coords8Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(7,5)');
-      });
-
-      cy.log('Test internal values are set to the correct values')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        expect(components['/u/_graph1'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/v/_graph1'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/u/u/u/A'].stateValues.xs[0].tree).eq(-9);
-        expect(components['/u/u/u/A'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/u/u/v/A'].stateValues.xs[0].tree).eq(-8);
-        expect(components['/u/u/v/A'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/u/v/u/A'].stateValues.xs[0].tree).eq(-9);
-        expect(components['/u/v/u/A'].stateValues.xs[1].tree).eq(5);
-        expect(components['/u/v/v/A'].stateValues.xs[0].tree).eq(-8);
-        expect(components['/u/v/v/A'].stateValues.xs[1].tree).eq(5);
-        expect(components['/v/u/u/A'].stateValues.xs[0].tree).eq(6);
-        expect(components['/v/u/u/A'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/v/u/v/A'].stateValues.xs[0].tree).eq(7);
-        expect(components['/v/u/v/A'].stateValues.xs[1].tree).eq(-5);
-        expect(components['/v/v/u/A'].stateValues.xs[0].tree).eq(6);
-        expect(components['/v/v/u/A'].stateValues.xs[1].tree).eq(5);
-        expect(components['/v/v/v/A'].stateValues.xs[0].tree).eq(7);
-        expect(components['/v/v/v/A'].stateValues.xs[1].tree).eq(5);
-      })
+      expect(stateVariables['/u/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+      expect(stateVariables['/v/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+      expect(stateVariables['/u/u/u/A'].stateValues.xs[0]).eq(-9);
+      expect(stateVariables['/u/u/u/A'].stateValues.xs[1]).eq(-5);
+      expect(stateVariables['/u/u/v/A'].stateValues.xs[0]).eq(-8);
+      expect(stateVariables['/u/u/v/A'].stateValues.xs[1]).eq(-5);
+      expect(stateVariables['/u/v/u/A'].stateValues.xs[0]).eq(-9);
+      expect(stateVariables['/u/v/u/A'].stateValues.xs[1]).eq(5);
+      expect(stateVariables['/u/v/v/A'].stateValues.xs[0]).eq(-8);
+      expect(stateVariables['/u/v/v/A'].stateValues.xs[1]).eq(5);
+      expect(stateVariables['/v/u/u/A'].stateValues.xs[0]).eq(6);
+      expect(stateVariables['/v/u/u/A'].stateValues.xs[1]).eq(-5);
+      expect(stateVariables['/v/u/v/A'].stateValues.xs[0]).eq(7);
+      expect(stateVariables['/v/u/v/A'].stateValues.xs[1]).eq(-5);
+      expect(stateVariables['/v/v/u/A'].stateValues.xs[0]).eq(6);
+      expect(stateVariables['/v/v/u/A'].stateValues.xs[1]).eq(5);
+      expect(stateVariables['/v/v/v/A'].stateValues.xs[0]).eq(7);
+      expect(stateVariables['/v/v/v/A'].stateValues.xs[1]).eq(5);
     })
+
   });
 
   it('combination map nested inside map with graphs', () => {
@@ -624,29 +614,29 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let graphs = components['/_map1'].replacements.map(x => x.replacements[0]);
-      let graphsChildren = graphs.map(x => x.activeChildren);
+      let stateVariables = await win.returnAllStateVariables1();
+      let graphNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let graphChildNames = graphNames.map(x => stateVariables[x].activeChildren.map(x => x.componentName));
 
-      expect(graphs[0].stateValues.graphicalDescendants.length).eq(4);
-      expect(graphs[1].stateValues.graphicalDescendants.length).eq(4);
-      expect(graphsChildren[0][0].stateValues.xs[0].tree).eq(-9);
-      expect(graphsChildren[0][0].stateValues.xs[1].tree).eq(-5);
-      expect(graphsChildren[0][1].stateValues.xs[0].tree).eq(-9);
-      expect(graphsChildren[0][1].stateValues.xs[1].tree).eq(5);
-      expect(graphsChildren[0][2].stateValues.xs[0].tree).eq(-8);
-      expect(graphsChildren[0][2].stateValues.xs[1].tree).eq(-5);
-      expect(graphsChildren[0][3].stateValues.xs[0].tree).eq(-8);
-      expect(graphsChildren[0][3].stateValues.xs[1].tree).eq(5);
+      expect(stateVariables[graphNames[0]].stateValues.graphicalDescendants.length).eq(4);
+      expect(stateVariables[graphNames[1]].stateValues.graphicalDescendants.length).eq(4);
+      expect(stateVariables[graphChildNames[0][0]].stateValues.xs[0]).eq(-9);
+      expect(stateVariables[graphChildNames[0][0]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graphChildNames[0][1]].stateValues.xs[0]).eq(-9);
+      expect(stateVariables[graphChildNames[0][1]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graphChildNames[0][2]].stateValues.xs[0]).eq(-8);
+      expect(stateVariables[graphChildNames[0][2]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graphChildNames[0][3]].stateValues.xs[0]).eq(-8);
+      expect(stateVariables[graphChildNames[0][3]].stateValues.xs[1]).eq(5);
 
-      expect(graphsChildren[1][0].stateValues.xs[0].tree).eq(6);
-      expect(graphsChildren[1][0].stateValues.xs[1].tree).eq(-5);
-      expect(graphsChildren[1][1].stateValues.xs[0].tree).eq(6);
-      expect(graphsChildren[1][1].stateValues.xs[1].tree).eq(5);
-      expect(graphsChildren[1][2].stateValues.xs[0].tree).eq(7);
-      expect(graphsChildren[1][2].stateValues.xs[1].tree).eq(-5);
-      expect(graphsChildren[1][3].stateValues.xs[0].tree).eq(7);
-      expect(graphsChildren[1][3].stateValues.xs[1].tree).eq(5);
+      expect(stateVariables[graphChildNames[1][0]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graphChildNames[1][0]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graphChildNames[1][1]].stateValues.xs[0]).eq(6);
+      expect(stateVariables[graphChildNames[1][1]].stateValues.xs[1]).eq(5);
+      expect(stateVariables[graphChildNames[1][2]].stateValues.xs[0]).eq(7);
+      expect(stateVariables[graphChildNames[1][2]].stateValues.xs[1]).eq(-5);
+      expect(stateVariables[graphChildNames[1][3]].stateValues.xs[0]).eq(7);
+      expect(stateVariables[graphChildNames[1][3]].stateValues.xs[1]).eq(5);
 
     })
   });
@@ -670,23 +660,23 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacementNames = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementNames2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
       });
-      cy.get(`${cesc(replacementAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+8');
       });
-      cy.get(`${cesc(replacementAnchors[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
 
@@ -694,16 +684,16 @@ describe('Map Tag Tests', function () {
         expect(text.trim()).equal('x');
       });
 
-      cy.get(`${cesc(replacementAnchors2[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
       });
-      cy.get(`${cesc(replacementAnchors2[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors2[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+8');
       });
-      cy.get(`${cesc(replacementAnchors2[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
 
@@ -715,7 +705,7 @@ describe('Map Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <number name="length" hide>1</number>
+    <number name="length">1</number>
     <map>
     <template newnamespace><math simplify>
         <copy target="n" name="b"/> + <copy target="j" name="i"/> + <copy target="../a" /> 
@@ -732,26 +722,26 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacementNames = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementNames2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
       });
-      cy.get(`${cesc(replacementAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
       cy.get(`${cesc('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors2[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
       });
-      cy.get(`${cesc(replacementAnchors2[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
     })
@@ -759,43 +749,40 @@ describe('Map Tag Tests', function () {
 
     cy.log('Double the length then test again')
     cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
+    cy.get(cesc('#/length')).should('contain.text', '2')
 
     cy.window().then(async (win) => {
-      console.log('hello')
-      let components = Object.assign({}, win.state.components);
-      console.log(components["/_map1"].replacements)
-      let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      console.log(components["/mapcopy"].replacements)
-      console.log(components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []))
-      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacementNames = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementNames2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
 
-      cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
       });
-      cy.get(`${cesc(replacementAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+8');
       });
-      cy.get(`${cesc(replacementAnchors[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
       cy.get(`${cesc('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors2[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
       });
-      cy.get(`${cesc(replacementAnchors2[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors2[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+8');
       });
-      cy.get(`${cesc(replacementAnchors2[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
     });
@@ -803,63 +790,64 @@ describe('Map Tag Tests', function () {
 
     cy.log('Double the length again then test one more time')
     cy.get(cesc('#/_updatevalue1_button')).click(); //Update Button
+    cy.get(cesc('#/length')).should('contain.text', '4')
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/mapcopy'].replacements.reduce((a, c) => [...a, ...c.replacements], []);
-      let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacementNames = stateVariables['/_map1'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementNames2 = stateVariables['/mapcopy'].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements.map(x => x.componentName)], []);
+      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
 
-      cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
       });
-      cy.get(`${cesc(replacementAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+8');
       });
-      cy.get(`${cesc(replacementAnchors[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors[4])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[4]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+12');
       });
-      cy.get(`${cesc(replacementAnchors[5])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[5]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors[6])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[6]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+16');
       });
-      cy.get(`${cesc(replacementAnchors[7])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[7]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
       cy.get(`${cesc('#/a')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors2[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+4');
       });
-      cy.get(`${cesc(replacementAnchors2[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors2[2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+8');
       });
-      cy.get(`${cesc(replacementAnchors2[3])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[3]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors2[4])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[4]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+12');
       });
-      cy.get(`${cesc(replacementAnchors2[5])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[5]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
-      cy.get(`${cesc(replacementAnchors2[6])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[6]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x+2z+16');
       });
-      cy.get(`${cesc(replacementAnchors2[7])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[7]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x');
       });
 
@@ -887,31 +875,32 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
-      let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/_map2'].replacements.map(x => x.replacements[0]);
-      let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
-      let replacements3 = components['/mapcopy'].replacements.map(x => x.replacements[0]);
-      let replacementAnchors3 = replacements3.map(x => '#' + x.componentName)
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacementNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementNames2 = stateVariables['/_map2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
+      let replacementNames3 = stateVariables['/mapcopy'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let replacementAnchors3 = replacementNames3.map(x => cesc('#' + x))
+
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(x)');
       });
-      cy.get(`${cesc(replacementAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(2y)');
       });
-      cy.get(`${cesc(replacementAnchors2[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(q)');
       });
-      cy.get(`${cesc(replacementAnchors2[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(2p)');
       });
-      cy.get(`${cesc(replacementAnchors3[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors3[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(q)');
       });
-      cy.get(`${cesc(replacementAnchors3[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors3[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(2p)');
       });
     })
@@ -933,23 +922,23 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
-      let replacementAnchors = replacements.map(x => '#' + x.componentName)
-      let replacements2 = components['/mapcopy'].replacements.map(x => x.replacements[0]);
-      let replacementAnchors2 = replacements2.map(x => '#' + x.componentName)
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacementNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let replacementAnchors = replacementNames.map(x => cesc('#' + x))
+      let replacementNames2 = stateVariables['/mapcopy'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let replacementAnchors2 = replacementNames2.map(x => cesc('#' + x))
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(replacementAnchors[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(x)');
       });
-      cy.get(`${cesc(replacementAnchors[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(2y)');
       });
-      cy.get(`${cesc(replacementAnchors2[0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(x)');
       });
-      cy.get(`${cesc(replacementAnchors2[1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors2[1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('sin(2y)');
       });
     })
@@ -960,9 +949,9 @@ describe('Map Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <copy target="/hi/c/_point1" prop="coords" />
-    <copy target="/hi/s/_point1" prop="coords" />
-    <copy target="/hi/q/_point1" prop="coords" />
+    <copy target="/hi/c/_point1" prop="coords" assignNames="c1" />
+    <copy target="/hi/s/_point1" prop="coords" assignNames="c2" />
+    <copy target="/hi/q/_point1" prop="coords" assignNames="c3" />
     
     <grapH Name="hi" newNamespace >
     <map assignnames="q  c s">
@@ -976,44 +965,36 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
 
+
+    cy.log('Test values displayed in browser')
+
+    cy.get(`#\\/c1 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,−2)');
+    });
+    cy.get(`#\\/c2 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(2,−3)');
+    });
+    cy.get(`#\\/c3 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(1,−3)');
+    });
+
+    cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1 = components['/_copy1'].replacements[0];
-      let coords1Anchor = cesc('#' + coords1.componentName);
-      let coords2 = components['/_copy2'].replacements[0];
-      let coords2Anchor = cesc('#' + coords2.componentName);
-      let coords3 = components['/_copy3'].replacements[0];
-      let coords3Anchor = cesc('#' + coords3.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let replacements = components['/hi/_map1'].replacements.map(x => x.replacements[0]);
+      let replacementNames = stateVariables['/hi/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
 
-      cy.log('Test values displayed in browser')
-
-      cy.get(`${coords1Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(1,−2)');
-      });
-      cy.get(`${coords2Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(2,−3)');
-      });
-      cy.get(`${coords3Anchor} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(1,−3)');
-      });
-
-      cy.log('Test internal values are set to the correct values')
-      cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-
-        expect(components['/hi'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/hi/q/_point1'].stateValues.xs[0].tree).eq(1);
-        expect(components['/hi/q/_point1'].stateValues.xs[1].tree).eq(-3);
-        expect(components['/hi/c/_point1'].stateValues.xs[0].tree).eq(1);
-        expect(components['/hi/c/_point1'].stateValues.xs[1].tree).eq(-2);
-        expect(components['/hi/s/_point1'].stateValues.xs[0].tree).eq(2);
-        expect(components['/hi/s/_point1'].stateValues.xs[1].tree).eq(-3);
-        expect(replacements[3].stateValues.xs[0].tree).eq(2);
-        expect(replacements[3].stateValues.xs[1].tree).eq(-2);
-      })
+      expect(stateVariables['/hi'].stateValues.graphicalDescendants.length).eq(4);
+      expect(stateVariables['/hi/q/_point1'].stateValues.xs[0]).eq(1);
+      expect(stateVariables['/hi/q/_point1'].stateValues.xs[1]).eq(-3);
+      expect(stateVariables['/hi/c/_point1'].stateValues.xs[0]).eq(1);
+      expect(stateVariables['/hi/c/_point1'].stateValues.xs[1]).eq(-2);
+      expect(stateVariables['/hi/s/_point1'].stateValues.xs[0]).eq(2);
+      expect(stateVariables['/hi/s/_point1'].stateValues.xs[1]).eq(-3);
+      expect(stateVariables[replacementNames[3]].stateValues.xs[0]).eq(2);
+      expect(stateVariables[replacementNames[3]].stateValues.xs[1]).eq(-2);
     })
+
   });
 
   it('map copying source of other map', () => {
@@ -1072,27 +1053,27 @@ describe('Map Tag Tests', function () {
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let replacements = components['/_map1'].replacements.map(x => x.replacements[0]);
-      let replacementAnchors = replacements.map(x => x.replacements.map(y => '#' + y.replacements[0].componentName))
+      let stateVariables = await win.returnAllStateVariables1();
+      let replacementNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+      let replacementAnchors = replacementNames.map(x => stateVariables[x].replacements.map(y => cesc('#' + stateVariables[y.componentName].replacements[0].componentName)))
 
       cy.log('Test values displayed in browser')
-      cy.get(`${cesc(replacementAnchors[0][0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[0][0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,1)');
       });
-      cy.get(`${cesc(replacementAnchors[1][0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[1][0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,2)');
       });
-      cy.get(`${cesc(replacementAnchors[1][1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[1][1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,2)');
       });
-      cy.get(`${cesc(replacementAnchors[2][0])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[2][0]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(1,3)');
       });
-      cy.get(`${cesc(replacementAnchors[2][1])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[2][1]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(2,3)');
       });
-      cy.get(`${cesc(replacementAnchors[2][2])} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      cy.get(`${replacementAnchors[2][2]} .mjx-mrow`).eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(3,3)');
       });
 
@@ -1124,17 +1105,20 @@ describe('Map Tag Tests', function () {
     <copy name="copymapthroughp" target="_p1" />
     <copy name="copymapthroughp2" target="copymapthroughp" />
     <copy name="copymapthroughp3" target="copymapthroughp2" />
+
+    <copy prop="value" target="sequenceCount" assignNames="sequenceCount2" />
+    <copy prop="value" target="sequenceTo" assignNames="sequenceTo2" />
     `}, "*");
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let p4 = components['/copymapthroughp'].replacements[0];
+      let stateVariables = await win.returnAllStateVariables1();
+      let p4 = stateVariables['/copymapthroughp'].replacements[0];
       let p4Anchor = cesc('#' + p4.componentName);
-      let p5 = components['/copymapthroughp2'].replacements[0];
+      let p5 = stateVariables['/copymapthroughp2'].replacements[0];
       let p5Anchor = cesc('#' + p5.componentName);
-      let p6 = components['/copymapthroughp3'].replacements[0];
+      let p6 = stateVariables['/copymapthroughp3'].replacements[0];
       let p6Anchor = cesc('#' + p6.componentName);
 
 
@@ -1161,38 +1145,39 @@ describe('Map Tag Tests', function () {
 
       cy.log('make sequence length 1');
       cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
+      cy.get(cesc('#/sequenceCount2')).should('contain.text', '1');
 
-      cy.window().then(() => {
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let map1mathNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map1mathAnchors = map1mathNames.map(x => cesc('#' + x))
+        let map2mathNames = stateVariables['/copymap2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map2mathAnchors = map2mathNames.map(x => cesc('#' + x))
+        let map3mathNames = stateVariables['/copymap3'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map3mathAnchors = map3mathNames.map(x => cesc('#' + x))
+        let map4mathNames = stateVariables[stateVariables['/copymapthroughp'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map4mathAnchors = map4mathNames.map(x => cesc('#' + x))
+        let map5mathNames = stateVariables[stateVariables['/copymapthroughp2'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map5mathAnchors = map5mathNames.map(x => cesc('#' + x))
+        let map6mathNames = stateVariables[stateVariables['/copymapthroughp3'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map6mathAnchors = map6mathNames.map(x => cesc('#' + x))
 
-        let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
-        let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
-        let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
-        let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
-        let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
-
-        cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p2')).children(cesc(map2mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p3')).children(cesc(map3mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(p4Anchor).children(cesc(map4mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p4Anchor).children(map4mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(p5Anchor).children(cesc(map5mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p5Anchor).children(map5mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(p6Anchor).children(cesc(map6mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p6Anchor).children(map6mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
 
@@ -1200,6 +1185,7 @@ describe('Map Tag Tests', function () {
 
       cy.log('make sequence length 0 again');
       cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
+      cy.get(cesc('#/sequenceCount2')).should('contain.text', '0');
 
       cy.get(cesc('#/_p1')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
@@ -1222,56 +1208,57 @@ describe('Map Tag Tests', function () {
 
       cy.log('make sequence length 2');
       cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
+      cy.get(cesc('#/sequenceCount2')).should('contain.text', '2');
 
-      cy.window().then(() => {
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let map1mathNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map1mathAnchors = map1mathNames.map(x => cesc('#' + x))
+        let map2mathNames = stateVariables['/copymap2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map2mathAnchors = map2mathNames.map(x => cesc('#' + x))
+        let map3mathNames = stateVariables['/copymap3'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map3mathAnchors = map3mathNames.map(x => cesc('#' + x))
+        let map4mathNames = stateVariables[stateVariables['/copymapthroughp'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map4mathAnchors = map4mathNames.map(x => cesc('#' + x))
+        let map5mathNames = stateVariables[stateVariables['/copymapthroughp2'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map5mathAnchors = map5mathNames.map(x => cesc('#' + x))
+        let map6mathNames = stateVariables[stateVariables['/copymapthroughp3'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map6mathAnchors = map6mathNames.map(x => cesc('#' + x))
 
-        let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
-        let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
-        let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
-        let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
-        let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
-
-        cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p1')).children(map1mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('4');
         });
-        cy.get(cesc('#/_p2')).children(cesc(map2mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p2')).children(cesc(map2mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p2')).children(map2mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('4');
         });
-        cy.get(cesc('#/_p3')).children(cesc(map3mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(cesc('#/_p3')).children(cesc(map3mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p3')).children(map3mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('4');
         });
-        cy.get(p4Anchor).children(cesc(map4mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p4Anchor).children(map4mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(p4Anchor).children(cesc(map4mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p4Anchor).children(map4mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('4');
         });
-        cy.get(p5Anchor).children(cesc(map5mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p5Anchor).children(map5mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(p5Anchor).children(cesc(map5mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p5Anchor).children(map5mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('4');
         });
-        cy.get(p6Anchor).children(cesc(map6mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p6Anchor).children(map6mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('1');
         });
-        cy.get(p6Anchor).children(cesc(map6mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p6Anchor).children(map6mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('4');
         });
 
@@ -1280,63 +1267,64 @@ describe('Map Tag Tests', function () {
       cy.log('change limits');
       cy.get(cesc('#/sequenceFrom') + " textarea").type('{end}{backspace}3{enter}', { force: true });
       cy.get(cesc('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
+      cy.get(cesc('#/sequenceTo2')).should('contain.text', '5');
 
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let map1mathNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map1mathAnchors = map1mathNames.map(x => cesc('#' + x))
+        let map2mathNames = stateVariables['/copymap2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map2mathAnchors = map2mathNames.map(x => cesc('#' + x))
+        let map3mathNames = stateVariables['/copymap3'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map3mathAnchors = map3mathNames.map(x => cesc('#' + x))
+        let map4mathNames = stateVariables[stateVariables['/copymapthroughp'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map4mathAnchors = map4mathNames.map(x => cesc('#' + x))
+        let map5mathNames = stateVariables[stateVariables['/copymapthroughp2'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map5mathAnchors = map5mathNames.map(x => cesc('#' + x))
+        let map6mathNames = stateVariables[stateVariables['/copymapthroughp3'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map6mathAnchors = map6mathNames.map(x => cesc('#' + x))
 
-      cy.window().then(() => {
-
-        let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
-        let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
-        let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
-        let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
-        let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
-
-        cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p1')).children(map1mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(cesc('#/_p2')).children(cesc(map2mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p2')).children(cesc(map2mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p2')).children(map2mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(cesc('#/_p3')).children(cesc(map3mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p3')).children(cesc(map3mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p3')).children(map3mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(p4Anchor).children(cesc(map4mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p4Anchor).children(map4mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(p4Anchor).children(cesc(map4mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p4Anchor).children(map4mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(p5Anchor).children(cesc(map5mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p5Anchor).children(map5mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(p5Anchor).children(cesc(map5mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p5Anchor).children(map5mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(p6Anchor).children(cesc(map6mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p6Anchor).children(map6mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(p6Anchor).children(cesc(map6mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p6Anchor).children(map6mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
       });
 
       cy.log('make sequence length 0 again');
       cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
+      cy.get(cesc('#/sequenceCount2')).should('contain.text', '0');
 
       cy.get(cesc('#/_p1')).invoke('text').then((text) => {
         expect(text.trim()).equal('');
@@ -1359,74 +1347,75 @@ describe('Map Tag Tests', function () {
 
       cy.log('make sequence length 3');
       cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
+      cy.get(cesc('#/sequenceCount2')).should('contain.text', '3');
 
-      cy.window().then(() => {
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        let map1mathNames = stateVariables['/_map1'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map1mathAnchors = map1mathNames.map(x => cesc('#' + x))
+        let map2mathNames = stateVariables['/copymap2'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map2mathAnchors = map2mathNames.map(x => cesc('#' + x))
+        let map3mathNames = stateVariables['/copymap3'].replacements.map(x => stateVariables[x.componentName].replacements[0].componentName);
+        let map3mathAnchors = map3mathNames.map(x => cesc('#' + x))
+        let map4mathNames = stateVariables[stateVariables['/copymapthroughp'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map4mathAnchors = map4mathNames.map(x => cesc('#' + x))
+        let map5mathNames = stateVariables[stateVariables['/copymapthroughp2'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map5mathAnchors = map5mathNames.map(x => cesc('#' + x))
+        let map6mathNames = stateVariables[stateVariables['/copymapthroughp3'].replacements[0].componentName].activeChildren.filter(x => x.componentType === "math").map(x => x.componentName);
+        let map6mathAnchors = map6mathNames.map(x => cesc('#' + x))
 
-        let map1maths = components['/_map1'].replacements.map(x => x.replacements[0]);
-        let map1mathAnchors = map1maths.map(x => '#' + x.componentName)
-        let map2maths = components['/copymap2'].replacements.map(x => x.replacements[0]);
-        let map2mathAnchors = map2maths.map(x => '#' + x.componentName)
-        let map3maths = components['/copymap3'].replacements.map(x => x.replacements[0]);
-        let map3mathAnchors = map3maths.map(x => '#' + x.componentName)
-        let map4maths = components['/copymapthroughp'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map4mathAnchors = map4maths.map(x => '#' + x.componentName)
-        let map5maths = components['/copymapthroughp2'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map5mathAnchors = map5maths.map(x => '#' + x.componentName)
-        let map6maths = components['/copymapthroughp3'].replacements[0].activeChildren.filter(x => x.componentType === "math");
-        let map6mathAnchors = map6maths.map(x => '#' + x.componentName)
-
-        cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p1')).children(map1mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p1')).children(map1mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('16');
         });
-        cy.get(cesc('#/_p1')).children(cesc(map1mathAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p1')).children(map1mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(cesc('#/_p2')).children(cesc(map2mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p2')).children(map2mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p2')).children(cesc(map2mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p2')).children(map2mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('16');
         });
-        cy.get(cesc('#/_p2')).children(cesc(map2mathAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p2')).children(map2mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(cesc('#/_p3')).children(cesc(map3mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p3')).children(map3mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(cesc('#/_p3')).children(cesc(map3mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p3')).children(map3mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('16');
         });
-        cy.get(cesc('#/_p3')).children(cesc(map3mathAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(cesc('#/_p3')).children(map3mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(p4Anchor).children(cesc(map4mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p4Anchor).children(map4mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(p4Anchor).children(cesc(map4mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p4Anchor).children(map4mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('16');
         });
-        cy.get(p4Anchor).children(cesc(map4mathAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p4Anchor).children(map4mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(p5Anchor).children(cesc(map5mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p5Anchor).children(map5mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(p5Anchor).children(cesc(map5mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p5Anchor).children(map5mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('16');
         });
-        cy.get(p5Anchor).children(cesc(map5mathAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p5Anchor).children(map5mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
-        cy.get(p6Anchor).children(cesc(map6mathAnchors[0])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p6Anchor).children(map6mathAnchors[0]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('9');
         });
-        cy.get(p6Anchor).children(cesc(map6mathAnchors[1])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p6Anchor).children(map6mathAnchors[1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('16');
         });
-        cy.get(p6Anchor).children(cesc(map6mathAnchors[2])).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        cy.get(p6Anchor).children(map6mathAnchors[2]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
           expect(text.trim()).equal('25');
         });
       })
@@ -1454,59 +1443,45 @@ describe('Map Tag Tests', function () {
     </graph>
     <math name="q">1</math>
     <math name="r">1</math>
-    <copy name="c1" prop="coords" target="a/_point1" />
-    <copy name="c2" prop="coords" target="a/_point2" />
-    <copy name="c3" prop="coords" target="b/_point1" />
-    <copy name="c4" prop="coords" target="b/_point2" />
-    <copy name="c5" prop="coords" target="c/_point1" />
-    <copy name="c6" prop="coords" target="c/_point2" />
+    <copy assignNames="c1" prop="coords" target="a/_point1" />
+    <copy assignNames="c2" prop="coords" target="a/_point2" />
+    <copy assignNames="c3" prop="coords" target="b/_point1" />
+    <copy assignNames="c4" prop="coords" target="b/_point2" />
+    <copy assignNames="c5" prop="coords" target="c/_point1" />
+    <copy assignNames="c6" prop="coords" target="c/_point2" />
     `}, "*");
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.log('Test values displayed in browser')
-    cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1 = components['/c1'].replacements[0];
-      let coords1Anchor = '#' + coords1.componentName;
-      let coords2 = components['/c2'].replacements[0];
-      let coords2Anchor = '#' + coords2.componentName;
-      let coords3 = components['/c3'].replacements[0];
-      let coords3Anchor = '#' + coords3.componentName;
-      let coords4 = components['/c4'].replacements[0];
-      let coords4Anchor = '#' + coords4.componentName;
-      let coords5 = components['/c5'].replacements[0];
-      let coords5Anchor = '#' + coords5.componentName;
-      let coords6 = components['/c6'].replacements[0];
-      let coords6Anchor = '#' + coords6.componentName;
 
-      cy.get(`${cesc(coords1Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(4,2)');
-      });
-      cy.get(`${cesc(coords2Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(2,4)');
-      });
-      cy.get(`${cesc(coords3Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(9,3)');
-      });
-      cy.get(`${cesc(coords4Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(3,9)');
-      });
-      cy.get(`${cesc(coords5Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(16,4)');
-      });
-      cy.get(`${cesc(coords6Anchor)} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('(4,16)');
-      });
-      cy.get(`${cesc('#/q')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1');
-      });
-      cy.get(`${cesc('#/r')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal('1');
-      });
+    cy.get(`#\\/c1 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,2)');
+    });
+    cy.get(`#\\/c2 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(2,4)');
+    });
+    cy.get(`#\\/c3 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(9,3)');
+    });
+    cy.get(`#\\/c4 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,9)');
+    });
+    cy.get(`#\\/c5 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(16,4)');
+    });
+    cy.get(`#\\/c6 .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(4,16)');
+    });
+    cy.get(`${cesc('#/q')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1');
+    });
+    cy.get(`${cesc('#/r')} .mjx-mrow`).eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1');
+    });
 
-    })
+
 
 
     cy.window().then(async (win) => {
@@ -1516,14 +1491,14 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).eq(xs1[ind]);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).eq(xs2[ind]);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).eq(xs2[ind]);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).eq(xs1[ind]);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0]).eq(xs1[ind]);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1]).eq(xs2[ind]);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0]).eq(xs2[ind]);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1]).eq(xs1[ind]);
       }
     });
 
@@ -1535,15 +1510,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
 
-      await components['/a/_point1'].movePoint({ x: xs1[0], y: xs2[0] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/a/_point1",
+        args: { x: xs1[0], y: xs2[0] }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0]).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1]).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1555,15 +1534,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
 
-      await components['/a/_point2'].movePoint({ x: xs2[0], y: xs1[0] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/a/_point2",
+        args: { x: xs2[0], y: xs1[0] }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0]).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1]).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1575,15 +1558,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
 
-      await components['/b/_point1'].movePoint({ x: xs1[1], y: xs2[1] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/b/_point1",
+        args: { x: xs1[1], y: xs2[1] }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0]).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1]).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1595,15 +1582,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
 
-      await components['/b/_point2'].movePoint({ x: xs2[1], y: xs1[1] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/b/_point2",
+        args: { x: xs2[1], y: xs1[1] }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0]).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1]).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1615,15 +1606,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
 
-      await components['/c/_point1'].movePoint({ x: xs1[2], y: xs2[2] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/c/_point1",
+        args: { x: xs1[2], y: xs2[2] }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0]).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1]).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1635,15 +1630,19 @@ describe('Map Tag Tests', function () {
       let xs1 = s.map(v => v * v * q);
       let xs2 = s.map(v => v * r);
       let ns = ["a", "b", "c"];
-      let components = Object.assign({}, win.state.components);
 
-      await components['/c/_point2'].movePoint({ x: xs2[2], y: xs1[2] })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/c/_point2",
+        args: { x: xs2[2], y: xs1[2] }
+      })
+      let stateVariables = await win.returnAllStateVariables1();
       for (let ind = 0; ind < 3; ind++) {
         let namespace = ns[ind];
-        expect(components[`/${namespace}/_point1`].stateValues.xs[0].tree).closeTo(xs1[ind], 1E-14);
-        expect(components[`/${namespace}/_point1`].stateValues.xs[1].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[0].tree).closeTo(xs2[ind], 1E-14);
-        expect(components[`/${namespace}/_point2`].stateValues.xs[1].tree).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[0]).closeTo(xs1[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point1`].stateValues.xs[1]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[0]).closeTo(xs2[ind], 1E-14);
+        expect(stateVariables[`/${namespace}/_point2`].stateValues.xs[1]).closeTo(xs1[ind], 1E-14);
       }
     });
 
@@ -1678,16 +1677,18 @@ describe('Map Tag Tests', function () {
     <mathinput name="sequenceCount" prefill="0"/>
     
     <graph>
-    <copy name="copymap1" target="_map1" />
-    <copy name="copymap2" target="_map2" />
+    <copy name="copymap1" target="_map1" newNamespace />
+    <copy name="copymap2" target="_map2" newNamespace />
     </graph>
     <graph>
-    <copy name="copymap1b" target="copymap1" />
-    <copy name="copymap2b" target="copymap2" />
+    <copy name="copymap1b" target="copymap1" newNamespace />
+    <copy name="copymap2b" target="copymap2" newNamespace />
     </graph>
     
-    <copy name="graph4" target="_graph1" />
+    <copy name="g4" target="_graph1" newNamespace />
     <p><collect componentTypes="point" target="_graph1"/></p>
+    <copy prop="value" target="sequenceCount" assignNames="sequenceCount2" />
+    <copy prop="value" target="sequenceTo" assignNames="sequenceTo2" />
     `}, "*");
     });
 
@@ -1699,20 +1700,21 @@ describe('Map Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/g4/_graph1'].stateValues.graphicalDescendants.length).eq(0);
     })
 
     cy.log('make sequence length 1');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}1{enter}', { force: true });
+    cy.get(cesc('#/sequenceCount2')).should('contain.text', '1');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
-      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].componentName);
+      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].componentName);
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,1)');
@@ -1722,47 +1724,49 @@ describe('Map Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(2);
-        expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(2);
-        expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(2);
-        expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(2);
-        expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", 1, -1]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(2);
+        expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(2);
+        expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(2);
+        expect(stateVariables['/g4/_graph1'].stateValues.graphicalDescendants.length).eq(2);
+        expect(stateVariables['/a/_point1'].stateValues.coords).eqls(["vector", -1, 1]);
+        expect(stateVariables['/q/_point1'].stateValues.coords).eqls(["vector", 1, -1]);
+        expect(stateVariables['/copymap1/a/_point1'].stateValues.coords).eqls(["vector", -1, 1]);
+        expect(stateVariables['/copymap2/q/_point1'].stateValues.coords).eqls(["vector", 1, -1]);
+        expect(stateVariables['/copymap1b/a/_point1'].stateValues.coords).eqls(["vector", -1, 1]);
+        expect(stateVariables['/copymap2b/q/_point1'].stateValues.coords).eqls(["vector", 1, -1]);
+        expect(stateVariables['/g4/a/_point1'].stateValues.coords).eqls(["vector", -1, 1]);
+        expect(stateVariables['/g4/q/_point1'].stateValues.coords).eqls(["vector", 1, -1]);
       })
     })
 
     cy.log('make sequence length 0 again');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
+    cy.get(cesc('#/sequenceCount2')).should('contain.text', '0');
 
     cy.get(cesc('#/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('');
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/g4/_graph1'].stateValues.graphicalDescendants.length).eq(0);
     })
 
 
     cy.log('make sequence length 2');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}2{enter}', { force: true });
+    cy.get(cesc('#/sequenceCount2')).should('contain.text', '2');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
-      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
-      let coords3Anchor = cesc('#' + components["/_collect1"].replacements[2].adapterUsed.componentName);
-      let coords4Anchor = cesc('#' + components["/_collect1"].replacements[3].adapterUsed.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].componentName);
+      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].componentName);
+      let coords3Anchor = cesc('#' + stateVariables["/_collect1"].replacements[2].componentName);
+      let coords4Anchor = cesc('#' + stateVariables["/_collect1"].replacements[3].componentName);
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−1,1)');
@@ -1778,27 +1782,27 @@ describe('Map Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -1, 1]);
-        expect(components['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", 1, -1]);
-        expect(components['/b/_point1'].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/r/_point1'].stateValues.coords.tree).eqls(["vector", 2, -2]);
-        expect(components['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
-        expect(components['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 2, -2]);
-        expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -2, 2]);
-        expect(components['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 2, -2]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/g4/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/a/_point1'].stateValues.coords).eqls(["vector", -1, 1]);
+        expect(stateVariables['/q/_point1'].stateValues.coords).eqls(["vector", 1, -1]);
+        expect(stateVariables['/copymap1/a/_point1'].stateValues.coords).eqls(["vector", -1, 1]);
+        expect(stateVariables['/copymap2/q/_point1'].stateValues.coords).eqls(["vector", 1, -1]);
+        expect(stateVariables['/copymap1b/a/_point1'].stateValues.coords).eqls(["vector", -1, 1]);
+        expect(stateVariables['/copymap2b/q/_point1'].stateValues.coords).eqls(["vector", 1, -1]);
+        expect(stateVariables['/g4/a/_point1'].stateValues.coords).eqls(["vector", -1, 1]);
+        expect(stateVariables['/g4/q/_point1'].stateValues.coords).eqls(["vector", 1, -1]);
+        expect(stateVariables['/b/_point1'].stateValues.coords).eqls(["vector", -2, 2]);
+        expect(stateVariables['/r/_point1'].stateValues.coords).eqls(["vector", 2, -2]);
+        expect(stateVariables['/copymap1/b/_point1'].stateValues.coords).eqls(["vector", -2, 2]);
+        expect(stateVariables['/copymap2/r/_point1'].stateValues.coords).eqls(["vector", 2, -2]);
+        expect(stateVariables['/copymap1b/b/_point1'].stateValues.coords).eqls(["vector", -2, 2]);
+        expect(stateVariables['/copymap2b/r/_point1'].stateValues.coords).eqls(["vector", 2, -2]);
+        expect(stateVariables['/g4/b/_point1'].stateValues.coords).eqls(["vector", -2, 2]);
+        expect(stateVariables['/g4/r/_point1'].stateValues.coords).eqls(["vector", 2, -2]);
       })
 
     })
@@ -1806,13 +1810,14 @@ describe('Map Tag Tests', function () {
     cy.log('change limits');
     cy.get(cesc('#/sequenceFrom') + " textarea").type('{end}{backspace}3{enter}', { force: true });
     cy.get(cesc('#/sequenceTo') + " textarea").type('{end}{backspace}5{enter}', { force: true });
+    cy.get(cesc('#/sequenceTo2')).should('contain.text', '5');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
-      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
-      let coords3Anchor = cesc('#' + components["/_collect1"].replacements[2].adapterUsed.componentName);
-      let coords4Anchor = cesc('#' + components["/_collect1"].replacements[3].adapterUsed.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].componentName);
+      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].componentName);
+      let coords3Anchor = cesc('#' + stateVariables["/_collect1"].replacements[2].componentName);
+      let coords4Anchor = cesc('#' + stateVariables["/_collect1"].replacements[3].componentName);
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('(−3,9)');
@@ -1828,56 +1833,58 @@ describe('Map Tag Tests', function () {
       });
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(4);
-        expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/b/_point1'].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/r/_point1'].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/g4/_graph1'].stateValues.graphicalDescendants.length).eq(4);
+        expect(stateVariables['/a/_point1'].stateValues.coords).eqls(["vector", -3, 9]);
+        expect(stateVariables['/q/_point1'].stateValues.coords).eqls(["vector", 3, -9]);
+        expect(stateVariables['/copymap1/a/_point1'].stateValues.coords).eqls(["vector", -3, 9]);
+        expect(stateVariables['/copymap2/q/_point1'].stateValues.coords).eqls(["vector", 3, -9]);
+        expect(stateVariables['/copymap1b/a/_point1'].stateValues.coords).eqls(["vector", -3, 9]);
+        expect(stateVariables['/copymap2b/q/_point1'].stateValues.coords).eqls(["vector", 3, -9]);
+        expect(stateVariables['/g4/a/_point1'].stateValues.coords).eqls(["vector", -3, 9]);
+        expect(stateVariables['/g4/q/_point1'].stateValues.coords).eqls(["vector", 3, -9]);
+        expect(stateVariables['/b/_point1'].stateValues.coords).eqls(["vector", -5, 15]);
+        expect(stateVariables['/r/_point1'].stateValues.coords).eqls(["vector", 5, -15]);
+        expect(stateVariables['/copymap1/b/_point1'].stateValues.coords).eqls(["vector", -5, 15]);
+        expect(stateVariables['/copymap2/r/_point1'].stateValues.coords).eqls(["vector", 5, -15]);
+        expect(stateVariables['/copymap1b/b/_point1'].stateValues.coords).eqls(["vector", -5, 15]);
+        expect(stateVariables['/copymap2b/r/_point1'].stateValues.coords).eqls(["vector", 5, -15]);
+        expect(stateVariables['/g4/b/_point1'].stateValues.coords).eqls(["vector", -5, 15]);
+        expect(stateVariables['/g4/r/_point1'].stateValues.coords).eqls(["vector", 5, -15]);
       })
     })
 
     cy.log('make sequence length 0 again');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}0{enter}', { force: true });
+    cy.get(cesc('#/sequenceCount2')).should('contain.text', '0');
 
     cy.get(cesc('#/_p1')).invoke('text').then((text) => {
       expect(text.trim()).equal('');
     });
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
-      expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(0);
+      expect(stateVariables['/g4/_graph1'].stateValues.graphicalDescendants.length).eq(0);
     })
 
     cy.log('make sequence length 3');
     cy.get(cesc('#/sequenceCount') + " textarea").type('{end}{backspace}3{enter}', { force: true });
+    cy.get(cesc('#/sequenceCount2')).should('contain.text', '3');
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      let coords1Anchor = cesc('#' + components["/_collect1"].replacements[0].adapterUsed.componentName);
-      let coords2Anchor = cesc('#' + components["/_collect1"].replacements[1].adapterUsed.componentName);
-      let coords3Anchor = cesc('#' + components["/_collect1"].replacements[2].adapterUsed.componentName);
-      let coords4Anchor = cesc('#' + components["/_collect1"].replacements[3].adapterUsed.componentName);
-      let coords5Anchor = cesc('#' + components["/_collect1"].replacements[4].adapterUsed.componentName);
-      let coords6Anchor = cesc('#' + components["/_collect1"].replacements[5].adapterUsed.componentName);
+      let stateVariables = await win.returnAllStateVariables1();
+      let coords1Anchor = cesc('#' + stateVariables["/_collect1"].replacements[0].componentName);
+      let coords2Anchor = cesc('#' + stateVariables["/_collect1"].replacements[1].componentName);
+      let coords3Anchor = cesc('#' + stateVariables["/_collect1"].replacements[2].componentName);
+      let coords4Anchor = cesc('#' + stateVariables["/_collect1"].replacements[3].componentName);
+      let coords5Anchor = cesc('#' + stateVariables["/_collect1"].replacements[4].componentName);
+      let coords6Anchor = cesc('#' + stateVariables["/_collect1"].replacements[5].componentName);
 
 
       cy.get(cesc('#/_p1')).children(coords1Anchor).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1901,35 +1908,35 @@ describe('Map Tag Tests', function () {
 
 
       cy.window().then(async (win) => {
-        let components = Object.assign({}, win.state.components);
-        expect(components['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
-        expect(components['/_graph2'].stateValues.graphicalDescendants.length).eq(6);
-        expect(components['/_graph3'].stateValues.graphicalDescendants.length).eq(6);
-        expect(components['/graph4'].replacements[0].stateValues.graphicalDescendants.length).eq(6);
-        expect(components['/a/_point1'].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/q/_point1'].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/copymap1b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/copymap2b'].replacements[0].replacements[0].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/graph4'].replacements[0].activeChildren[0].stateValues.coords.tree).eqls(["vector", -3, 9]);
-        expect(components['/graph4'].replacements[0].activeChildren[3].stateValues.coords.tree).eqls(["vector", 3, -9]);
-        expect(components['/b/_point1'].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/r/_point1'].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/copymap1'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/copymap2'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/copymap1b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/copymap2b'].replacements[1].replacements[0].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/graph4'].replacements[0].activeChildren[1].stateValues.coords.tree).eqls(["vector", -4, 12]);
-        expect(components['/graph4'].replacements[0].activeChildren[4].stateValues.coords.tree).eqls(["vector", 4, -12]);
-        expect(components['/c/_point1'].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/s/_point1'].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/copymap1b'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/copymap2b'].replacements[2].replacements[0].stateValues.coords.tree).eqls(["vector", 5, -15]);
-        expect(components['/graph4'].replacements[0].activeChildren[2].stateValues.coords.tree).eqls(["vector", -5, 15]);
-        expect(components['/graph4'].replacements[0].activeChildren[5].stateValues.coords.tree).eqls(["vector", 5, -15]);
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_graph1'].stateValues.graphicalDescendants.length).eq(6);
+        expect(stateVariables['/_graph2'].stateValues.graphicalDescendants.length).eq(6);
+        expect(stateVariables['/_graph3'].stateValues.graphicalDescendants.length).eq(6);
+        expect(stateVariables['/g4/_graph1'].stateValues.graphicalDescendants.length).eq(6);
+        expect(stateVariables['/a/_point1'].stateValues.coords).eqls(["vector", -3, 9]);
+        expect(stateVariables['/q/_point1'].stateValues.coords).eqls(["vector", 3, -9]);
+        expect(stateVariables['/copymap1/a/_point1'].stateValues.coords).eqls(["vector", -3, 9]);
+        expect(stateVariables['/copymap2/q/_point1'].stateValues.coords).eqls(["vector", 3, -9]);
+        expect(stateVariables['/copymap1b/a/_point1'].stateValues.coords).eqls(["vector", -3, 9]);
+        expect(stateVariables['/copymap2b/q/_point1'].stateValues.coords).eqls(["vector", 3, -9]);
+        expect(stateVariables['/g4/a/_point1'].stateValues.coords).eqls(["vector", -3, 9]);
+        expect(stateVariables['/g4/q/_point1'].stateValues.coords).eqls(["vector", 3, -9]);
+        expect(stateVariables['/b/_point1'].stateValues.coords).eqls(["vector", -4, 12]);
+        expect(stateVariables['/r/_point1'].stateValues.coords).eqls(["vector", 4, -12]);
+        expect(stateVariables['/copymap1/b/_point1'].stateValues.coords).eqls(["vector", -4, 12]);
+        expect(stateVariables['/copymap2/r/_point1'].stateValues.coords).eqls(["vector", 4, -12]);
+        expect(stateVariables['/copymap1b/b/_point1'].stateValues.coords).eqls(["vector", -4, 12]);
+        expect(stateVariables['/copymap2b/r/_point1'].stateValues.coords).eqls(["vector", 4, -12]);
+        expect(stateVariables['/g4/b/_point1'].stateValues.coords).eqls(["vector", -4, 12]);
+        expect(stateVariables['/g4/r/_point1'].stateValues.coords).eqls(["vector", 4, -12]);
+        expect(stateVariables['/c/_point1'].stateValues.coords).eqls(["vector", -5, 15]);
+        expect(stateVariables['/s/_point1'].stateValues.coords).eqls(["vector", 5, -15]);
+        expect(stateVariables['/copymap1/c/_point1'].stateValues.coords).eqls(["vector", -5, 15]);
+        expect(stateVariables['/copymap2/s/_point1'].stateValues.coords).eqls(["vector", 5, -15]);
+        expect(stateVariables['/copymap1b/c/_point1'].stateValues.coords).eqls(["vector", -5, 15]);
+        expect(stateVariables['/copymap2b/s/_point1'].stateValues.coords).eqls(["vector", 5, -15]);
+        expect(stateVariables['/g4/c/_point1'].stateValues.coords).eqls(["vector", -5, 15]);
+        expect(stateVariables['/g4/s/_point1'].stateValues.coords).eqls(["vector", 5, -15]);
       })
     })
 
@@ -1952,82 +1959,92 @@ describe('Map Tag Tests', function () {
         </sources>
       </map>
     </math>
+    <copy prop="value" target="number" assignNames="number2" />
+    <copy prop="value" target="step" assignNames="step2" />
     `}, "*");
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');  //wait for window to load
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/number") + " textarea").type("10{enter}", { force: true });
+    cy.get(cesc("#/number2")).should('contain.text', "10")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/step") + " textarea").type("1{enter}", { force: true });
+    cy.get(cesc("#/step2")).should('contain.text', "1")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(10);
       for (let i = 0; i < 10; i++) {
         let j = i + 2;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables[stateVariables['/_math1'].activeChildren[i].componentName].stateValues.value).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}20{enter}", { force: true });
+    cy.get(cesc("#/number2")).should('contain.text', "20")
 
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(20);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(20);
       for (let i = 0; i < 20; i++) {
         let j = i + 2;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables[stateVariables['/_math1'].activeChildren[i].componentName].stateValues.value).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 
     cy.get(cesc("#/step") + " textarea").type("{end}{backspace}0.5{enter}", { force: true });
+    cy.get(cesc("#/step2")).should('contain.text', "0.5")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(20);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(20);
       for (let i = 0; i < 20; i++) {
         let j = 2 + i * 0.5;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables[stateVariables['/_math1'].activeChildren[i].componentName].stateValues.value).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}10{enter}", { force: true });
+    cy.get(cesc("#/number2")).should('contain.text', "10")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(10);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(10);
       for (let i = 0; i < 10; i++) {
         let j = 2 + i * 0.5;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables[stateVariables['/_math1'].activeChildren[i].componentName].stateValues.value).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 
-    cy.get(cesc("#/step") + " textarea").type("{end}{backspace}{backspace}{backspace}{enter}", { force: true });
+    cy.get(cesc("#/step") + " textarea").type("{ctrl+home}{shift+end}{backspace}{enter}", { force: true });
+    cy.get(cesc("#/step2")).should('contain.text', "\uff3f")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}{backspace}5{enter}", { force: true });
+    cy.get(cesc("#/number2")).should('contain.text', "5")
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(0);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(0);
     })
 
     cy.get(cesc("#/step") + " textarea").type("-3{enter}", { force: true });
+    cy.get(cesc("#/step2")).should('contain.text', `${nInDOM(-3)}`)
     cy.window().then(async (win) => {
-      let components = Object.assign({}, win.state.components);
-      expect(components['/_math1'].activeChildren.length).eq(5);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].activeChildren.length).eq(5);
       for (let i = 0; i < 5; i++) {
         let j = 2 - i * 3;
-        expect(components['/_math1'].activeChildren[i].stateValues.value.tree).eqls(["vector", j, ["apply", "sin", j]]);
+        expect(stateVariables[stateVariables['/_math1'].activeChildren[i].componentName].stateValues.value).eqls(["vector", j, ["apply", "sin", j]]);
       }
     })
 
@@ -2070,6 +2087,8 @@ describe('Map Tag Tests', function () {
     q3a: <copy target="q3" assignNames="q3a" />,
     q3b: <copy target="q3/pt" assignNames="q3b" />,
 
+    <p><copy prop="value" target="number" assignNames="number2" /></p>
+
     `}, "*");
     });
 
@@ -2099,6 +2118,7 @@ describe('Map Tag Tests', function () {
 
     cy.log('set number to be 2');
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}2{enter}", { force: true });
+    cy.get(cesc("#/number")).should('contain.text', '2');
 
     cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
@@ -2152,6 +2172,7 @@ describe('Map Tag Tests', function () {
 
     cy.log('set number to be 1');
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc("#/number")).should('contain.text', '1');
 
     cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
@@ -2191,6 +2212,7 @@ describe('Map Tag Tests', function () {
 
     cy.log('set number to be 3');
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}3{enter}", { force: true });
+    cy.get(cesc("#/number")).should('contain.text', '3');
 
     cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
@@ -2256,6 +2278,7 @@ describe('Map Tag Tests', function () {
 
     cy.log('set number back to zero');
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}0{enter}", { force: true });
+    cy.get(cesc("#/number")).should('contain.text', '0');
 
     cy.get(cesc('#/p1/pt')).should('not.exist');
     cy.get(cesc('#/p1a/pt')).should('not.exist');
@@ -2280,6 +2303,7 @@ describe('Map Tag Tests', function () {
 
     cy.log('set number back to 1');
     cy.get(cesc("#/number") + " textarea").type("{end}{backspace}1{enter}", { force: true });
+    cy.get(cesc("#/number")).should('contain.text', '1');
 
     cy.get(cesc('#/p1/pt')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2)')
@@ -2354,30 +2378,30 @@ describe('Map Tag Tests', function () {
     cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}{backspace}5{enter}', { force: true })
     cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}{backspace}6{enter}', { force: true })
 
+    cy.get(cesc('#/d/ind')).should('have.text', '6');
     cy.get(cesc('#/a/ind')).should('have.text', '1');
     cy.get(cesc('#/b/ind')).should('have.text', '2');
     cy.get(cesc('#/c/ind')).should('have.text', '5');
-    cy.get(cesc('#/d/ind')).should('have.text', '6');
 
     cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
     cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
     cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
     cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}x{enter}', { force: true })
 
+    cy.get(cesc('#/d/ind')).should('have.text', 'NaN');
     cy.get(cesc('#/a/ind')).should('have.text', '1');
     cy.get(cesc('#/b/ind')).should('have.text', '2');
     cy.get(cesc('#/c/ind')).should('have.text', 'NaN');
-    cy.get(cesc('#/d/ind')).should('have.text', 'NaN');
 
-    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}7{enter}', { force: true })
-    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}8{enter}', { force: true })
-    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}9{enter}', { force: true })
-    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{end}{backspace}{backspace}{backspace}10{enter}', { force: true })
+    cy.get(cesc('#/a/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}7{enter}', { force: true })
+    cy.get(cesc('#/b/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}8{enter}', { force: true })
+    cy.get(cesc('#/c/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}9{enter}', { force: true })
+    cy.get(cesc('#/d/_mathinput1') + " textarea").type('{ctrl+home}{shift+end}{backspace}10{enter}', { force: true })
 
+    cy.get(cesc('#/d/ind')).should('have.text', '10');
     cy.get(cesc('#/a/ind')).should('have.text', '1');
     cy.get(cesc('#/b/ind')).should('have.text', '2');
     cy.get(cesc('#/c/ind')).should('have.text', '9');
-    cy.get(cesc('#/d/ind')).should('have.text', '10');
 
 
   });
@@ -2401,6 +2425,13 @@ describe('Map Tag Tests', function () {
     <template>hi$a </template>
     <sources alias="a"><sequence length="$n2" /></sources>
     </map></p>
+
+    <p>
+      <copy prop="value" target="h1" assignNames="h1a" />
+      <copy prop="value" target="h2" assignNames="h2a" />
+      <copy prop="value" target="n1" assignNames="n1a" />
+      <copy prop="value" target="n2" assignNames="n2a" />
+    </p>
     `}, "*");
     });
 
@@ -2411,42 +2442,56 @@ describe('Map Tag Tests', function () {
 
     cy.get('#\\/n1 textarea').type("{end}{backspace}6{enter}", { force: true })
     cy.get('#\\/n2 textarea').type("{end}{backspace}6{enter}", { force: true })
+    cy.get('#\\/n2a').should('contain.text', '6');
+    cy.get('#\\/n1a').should('contain.text', '6');
 
     cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 ')
     cy.get('#\\/m2').should('have.text', 'map 2: ')
 
     cy.get('#\\/h1_input').click();
     cy.get('#\\/h2_input').click();
+    cy.get('#\\/h2a').should('contain.text', 'false');
+    cy.get('#\\/h1a').should('contain.text', 'true');
 
     cy.get('#\\/m1').should('have.text', 'map 1: ')
     cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 ')
 
     cy.get('#\\/n1 textarea').type("{end}{backspace}8{enter}", { force: true })
     cy.get('#\\/n2 textarea').type("{end}{backspace}8{enter}", { force: true })
+    cy.get('#\\/n2a').should('contain.text', '8');
+    cy.get('#\\/n1a').should('contain.text', '8');
 
     cy.get('#\\/m1').should('have.text', 'map 1: ')
     cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
 
     cy.get('#\\/h1_input').click();
     cy.get('#\\/h2_input').click();
+    cy.get('#\\/h2a').should('contain.text', 'true');
+    cy.get('#\\/h1a').should('contain.text', 'false');
 
     cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 hi4 hi5 hi6 hi7 hi8 ')
     cy.get('#\\/m2').should('have.text', 'map 2: ')
 
     cy.get('#\\/n1 textarea').type("{end}{backspace}3{enter}", { force: true })
     cy.get('#\\/n2 textarea').type("{end}{backspace}3{enter}", { force: true })
+    cy.get('#\\/n2a').should('contain.text', '3');
+    cy.get('#\\/n1a').should('contain.text', '3');
 
     cy.get('#\\/m1').should('have.text', 'map 1: hi1 hi2 hi3 ')
     cy.get('#\\/m2').should('have.text', 'map 2: ')
 
     cy.get('#\\/h1_input').click();
     cy.get('#\\/h2_input').click();
+    cy.get('#\\/h2a').should('contain.text', 'false');
+    cy.get('#\\/h1a').should('contain.text', 'true');
 
     cy.get('#\\/m1').should('have.text', 'map 1: ')
     cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 ')
 
     cy.get('#\\/n1 textarea').type("{end}{backspace}4{enter}", { force: true })
     cy.get('#\\/n2 textarea').type("{end}{backspace}4{enter}", { force: true })
+    cy.get('#\\/n2a').should('contain.text', '4');
+    cy.get('#\\/n1a').should('contain.text', '4');
 
     cy.get('#\\/m1').should('have.text', 'map 1: ')
     cy.get('#\\/m2').should('have.text', 'map 2: hi1 hi2 hi3 hi4 ')

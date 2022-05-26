@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import CypressTest from './CypressTest.jsx';
 import axios from 'axios';
-import {RecoilRoot} from 'recoil';
+import { RecoilRoot } from 'recoil';
+import { MathJaxContext } from 'better-react-mathjax';
+import { mathjaxConfig } from '../../Core/utils/math.js';
 
 
 // function CypressTest(props){
@@ -14,7 +16,13 @@ import {RecoilRoot} from 'recoil';
 
 ReactDOM.render(
   <RecoilRoot>
-    <CypressTest />
+    <MathJaxContext
+      version={2}
+      config={mathjaxConfig}
+      onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+    >
+      <CypressTest />
+    </MathJaxContext>
   </RecoilRoot>,
   document.getElementById('root'),
 );

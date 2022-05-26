@@ -41,8 +41,11 @@ export default function LoadEnrollment(props) {
   }, /* @__PURE__ */ React.createElement(Button, {
     width: "menu",
     value: "Import CSV file"
-  }))), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(CollapseSection, {
+  }))), /* @__PURE__ */ React.createElement("div", {
+    style: {height: "4px"}
+  }), /* @__PURE__ */ React.createElement(CollapseSection, {
     title: "Formatting Instructions",
-    collapsed: true
+    collapsed: true,
+    style: {marginTop: "12px"}
   }, /* @__PURE__ */ React.createElement("p", null, "Your file needs to contain an email address.  The parser will ignore columns which are not listed."), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("b", null, "Email (required)")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("b", null, "EmplID or ID")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("b", null, "First Name")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("b", null, "Last Name")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("b", null, "Section"))));
 }

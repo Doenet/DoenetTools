@@ -15,8 +15,8 @@ export default class MathComponent extends InlineComponent {
   static descendantCompositesMustHaveAReplacement = true;
   static descendantCompositesDefaultReplacementType = "math";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.format = {
       createComponentOfType: "text",
       createStateVariable: "format",
@@ -622,7 +622,13 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { latex: dependencyValues.valueForDisplay.toLatex() } };
+        let latex;
+        try {
+          latex = dependencyValues.valueForDisplay.toLatex();
+        } catch (e) {
+          latex = '\uff3f';
+        }
+        return { setValue: { latex } };
       }
     }
 
@@ -655,7 +661,13 @@ export default class MathComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { text: dependencyValues.valueForDisplay.toString() } };
+        let text;
+        try {
+          text = dependencyValues.valueForDisplay.toString();
+        } catch (e) {
+          text = '\uff3f';
+        }
+        return { setValue: { text } };
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let fromText = getFromText({

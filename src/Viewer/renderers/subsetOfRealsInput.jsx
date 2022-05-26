@@ -31,9 +31,8 @@ const ModeButton = styled.button`
 
 
 export default function subsetOfReals(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props,false);
-  let [mode,setMode] = useState("add remove points");
-    console.log(mode);
+  let { name, SVs, actions, callAction } = useDoenetRender(props, false);
+  let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
   let pointGrabbed = useRef(null);
 
@@ -267,71 +266,71 @@ export default function subsetOfReals(props) {
 
       if (mode === "move points") {
         if (pointGrabbed.current !== null) {
- 
-        callAction({
-          action: actions.movePoint,
-          args: {
-            pointInd: pointGrabbed.current,
-            value: xPosition,
-            transient: false
-          }
-        })
-        pointGrabbed.current = null;
 
-        }
-
-      } 
-
-        if (mode === "add remove points") {
-          if (pointGrabbed.current !== null) {
-            callAction({
-              action: actions.deletePoint,
-              args: pointGrabbed.current
-            })
-          } else if (!SVs.points.map(x => x.value).includes(xPosition)) {
-            callAction({
-              action: actions.addPoint,
-              args: xPosition
-            })
-          }
-        } else if (mode === "toggle") {
-          if (pointGrabbed.current !== null) {
-            callAction({
-              action: actions.togglePoint,
-              args: pointGrabbed.current
-            })
-          } else {
-            let intervalInd = 0;
-            for (let pt of SVs.points) {
-              if (pt.value < xPosition) {
-                intervalInd++;
-              }
+          callAction({
+            action: actions.movePoint,
+            args: {
+              pointInd: pointGrabbed.current,
+              value: xPosition,
+              transient: false
             }
-            callAction({
-              action: actions.toggleInterval,
-              args: intervalInd
-            })
-          }
+          })
+          pointGrabbed.current = null;
+
         }
+
+      }
+
+      if (mode === "add remove points") {
+        if (pointGrabbed.current !== null) {
+          callAction({
+            action: actions.deletePoint,
+            args: { pointInd: pointGrabbed.current }
+          })
+        } else if (!SVs.points.map(x => x.value).includes(xPosition)) {
+          callAction({
+            action: actions.addPoint,
+            args: { value: xPosition }
+          })
+        }
+      } else if (mode === "toggle") {
+        if (pointGrabbed.current !== null) {
+          callAction({
+            action: actions.togglePoint,
+            args: { pointInd: pointGrabbed.current }
+          })
+        } else {
+          let intervalInd = 0;
+          for (let pt of SVs.points) {
+            if (pt.value < xPosition) {
+              intervalInd++;
+            }
+          }
+          callAction({
+            action: actions.toggleInterval,
+            args: { intervalInd }
+          })
+        }
+      }
 
     } else if (inputState === "down") {
 
-        let pointInd = null;
-        for (let [ind, pt] of SVs.points.entries()) {
-          if (Math.abs(pt.value - xPosition) < pointHitTolerance) {
-            pointInd = ind;
-            break;
-          }
+      let pointInd = null;
+      for (let [ind, pt] of SVs.points.entries()) {
+        if (Math.abs(pt.value - xPosition) < pointHitTolerance) {
+          pointInd = ind;
+          break;
         }
+      }
 
-        if (pointInd !== null) {
-          pointGrabbed.current = pointInd;
-        }else{
-          pointGrabbed.current = null;
-        }
+      if (pointInd !== null) {
+        pointGrabbed.current = pointInd;
+      } else {
+        pointGrabbed.current = null;
+      }
     } else if (inputState === "move") {
       if (mode === "move points" && pointGrabbed.current !== null) {
-    
+
         callAction({
           action: actions.movePoint,
           args: {

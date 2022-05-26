@@ -6,8 +6,8 @@ export default class Award extends BaseComponent {
   static componentType = "award";
   static rendererType = undefined;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.credit = {
       createComponentOfType: "number",
@@ -171,6 +171,9 @@ export default class Award extends BaseComponent {
       group: "maths",
       componentTypes: ["math"]
     }, {
+      group: "numbers",
+      componentTypes: ["number"]
+    }, {
       group: "texts",
       componentTypes: ["text"]
     }, {
@@ -180,11 +183,17 @@ export default class Award extends BaseComponent {
       group: "mathLists",
       componentTypes: ["mathList"]
     }, {
+      group: "numberLists",
+      componentTypes: ["numberList"]
+    }, {
       group: "textLists",
       componentTypes: ["textList"]
     }, {
       group: "booleanLists",
       componentTypes: ["booleanList"]
+    }, {
+      group: "otherComparableTypes",
+      componentTypes: ["orbitalDiagram"]
     }]
 
   }
@@ -200,11 +209,10 @@ export default class Award extends BaseComponent {
         whenChild: {
           dependencyType: "child",
           childGroups: ["whens"],
-          variableNames: ["fractionSatisfied"]
         },
         typeChildren: {
           dependencyType: "child",
-          childGroups: ["maths", "texts", "booleans", "mathLists", "textLists", "booleanLists"],
+          childGroups: ["maths", "numbers", "texts", "booleans", "mathLists", "numberLists", "textLists", "booleanLists", "otherComparableTypes"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -248,6 +256,11 @@ export default class Award extends BaseComponent {
           childGroups: ["maths"],
           variableNames: ["value", "unordered"]
         },
+        numberChild: {
+          dependencyType: "child",
+          childGroups: ["numbers"],
+          variableNames: ["value"]
+        },
         textChild: {
           dependencyType: "child",
           childGroups: ["texts"],
@@ -263,6 +276,11 @@ export default class Award extends BaseComponent {
           childGroups: ["mathLists"],
           variableNames: ["maths", "unordered"]
         },
+        numberListChild: {
+          dependencyType: "child",
+          childGroups: ["numberLists"],
+          variableNames: ["numbers", "unordered"]
+        },
         textListChild: {
           dependencyType: "child",
           childGroups: ["textLists"],
@@ -272,6 +290,11 @@ export default class Award extends BaseComponent {
           dependencyType: "child",
           childGroups: ["booleanLists"],
           variableNames: ["booleans", "unordered"]
+        },
+        otherComparableChild: {
+          dependencyType: "child",
+          childGroups: ["otherComparableTypes"],
+          variableNames: ["value"]
         },
         answerInput: {
           dependencyType: "parentStateVariable",
@@ -583,6 +606,7 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
     textListChildrenByCode: {},
     booleanChildrenByCode: {},
     booleanListChildrenByCode: {},
+    otherChildrenByCode: {},
   };
 
   Object.assign(dependenciesForEvaluateLogic, dependencyValues);
@@ -593,14 +617,20 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
     dependenciesForEvaluateLogic.textChildrenByCode.comp2 = dependencyValues.textChild[0];
   } else if (dependencyValues.mathChild.length > 0) {
     dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = dependencyValues.mathChild[0];
+  } else if (dependencyValues.numberChild.length > 0) {
+    dependenciesForEvaluateLogic.numberChildrenByCode.comp2 = dependencyValues.numberChild[0];
   } else if (dependencyValues.booleanChild.length > 0) {
     dependenciesForEvaluateLogic.booleanChildrenByCode.comp2 = dependencyValues.booleanChild[0];
   } else if (dependencyValues.textListChild.length > 0) {
     dependenciesForEvaluateLogic.textListChildrenByCode.comp2 = dependencyValues.textListChild[0];
   } else if (dependencyValues.mathListChild.length > 0) {
     dependenciesForEvaluateLogic.mathListChildrenByCode.comp2 = dependencyValues.mathListChild[0];
+  } else if (dependencyValues.numberListChild.length > 0) {
+    dependenciesForEvaluateLogic.numberListChildrenByCode.comp2 = dependencyValues.numberListChild[0];
   } else if (dependencyValues.booleanListChild.length > 0) {
     dependenciesForEvaluateLogic.booleanListChildrenByCode.comp2 = dependencyValues.booleanListChild[0];
+  } else if (dependencyValues.otherComparableChild.length > 0) {
+    dependenciesForEvaluateLogic.otherChildrenByCode.comp2 = dependencyValues.otherComparableChild[0];
   }
 
   let answerValue = dependencyValues.answerInput.stateValues.immediateValue;

@@ -6,8 +6,8 @@ export default class FunctionIterates extends InlineComponent {
   static rendererType = undefined;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.nIterates = {
       createComponentOfType: "integer",
       createStateVariable: "nIterates",

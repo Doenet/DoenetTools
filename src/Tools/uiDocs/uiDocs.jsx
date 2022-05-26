@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { HashRouter as Router, Link, Route } from 'react-router-dom';
+import { BrowserRouter as Router,Routes, Link, Route, Outlet,useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 //=== COMPONENT IMPORTS ===
@@ -657,7 +657,7 @@ export default function attempt() {
         {
           name: 'Max',
           propPreview: '<Increment max={5}/>',
-          propCode: { min: 5 },
+          propCode: { max: 5 },
           description:
             'Restricts the menu to have values smaller or equal to max',
         },
@@ -725,7 +725,7 @@ export default function attempt() {
         },
         {
           name: 'onKeyDown',
-          propPreview: '<Increment onKewDown={(e) => console.log(e.key)} />',
+          propPreview: '<Increment onKeyDown={(e) => console.log(e.key)} />',
           propCode: { onKeyDown: (e) => console.log(e.key) },
           description: 'Function called when a key is pressed',
         },
@@ -736,11 +736,17 @@ export default function attempt() {
           description: 'Add a placeholder for the field',
         },
         {
+          name: 'Deactivate Dropdown',
+          propPreview: '<Increment deactivateDropdown />',
+          propCode: { deactivateDropdown: true },
+          description: 'Deactivates the default dropdown when the increment menu is clicked.',
+        },
+        {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
           propCode: { disabled: true },
           description: 'Makes button not able to be used.',
-        },
+        }
       ],
     },
     {
@@ -1575,9 +1581,10 @@ export default function attempt() {
   }
 
   //COMPONENT PAGES
-  function Components({ match }) {
+  function Components() {
+    const {componentId} = useParams();
     const component = dataStructure.find(
-      ({ id }) => id === match.params.componentId,
+      ({ id }) => id === componentId,
     );
     var display = component.code;
     var children = component.req_children;
@@ -1624,24 +1631,24 @@ export default function attempt() {
     );
   }
 
-  //ROUTER SECTION
-  return (
-    <Router>
-      <div>
+  //CENTRAL LAYOUT
+  function Layout() {
+    return (
+      <>
         <NavBar>
           <div style={{ marginLeft: '10px' }}>
             <h1>Components</h1>
             {/* <SearchBar width='110px'/> */}
           </div>
           <h3>
-            <Link to={`/new_components`} style={{ color: 'black' }}>
+            <Link to={`new_components`} style={{ color: 'black' }}>
               New Component Guidelines
             </Link>
           </h3>
           <List>
             {dataStructure.map(({ name, id }) => (
               <li key={id}>
-                <Link to={`/component/${id}`} style={{ color: 'black' }}>
+                <Link to={`component/${id}`} style={{ color: 'black' }}>
                   {name}
                 </Link>
               </li>
@@ -1649,11 +1656,21 @@ export default function attempt() {
           </List>
         </NavBar>
         <Content>
-          <Route exact path="/" component={Home} />
-          <Route path={`/new_components`} component={New} />
-          <Route path={`/component/:componentId`} component={Components} />
+          <Outlet/>
         </Content>
-      </div>
+      </>
+  )}
+
+  //ROUTER SECTION
+  return (
+    <Router>
+      <Routes>
+        <Route path="/uiDocs" element={<Layout/>}>
+          <Route index element={<Home/>} />
+          <Route path={`new_components`} element={<New/>} />
+          <Route path={`component/:componentId`} element={<Components/>} />
+        </Route>
+      </Routes>
     </Router>
   );
 }

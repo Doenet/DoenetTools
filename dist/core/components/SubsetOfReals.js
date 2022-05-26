@@ -10,8 +10,8 @@ export default class SubsetOfReals extends MathComponent {
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "subsetValue";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.createIntervals.defaultValue = true;
 
     attributes.variable = {

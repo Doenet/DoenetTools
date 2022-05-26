@@ -5,8 +5,8 @@ export default class AttractTo extends ConstraintComponent {
   static componentType = "attractTo";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.threshold = {
       createComponentOfType: "number",
 

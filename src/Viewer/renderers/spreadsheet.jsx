@@ -16,45 +16,47 @@ export default function SpreadsheetRenderer(props) {
     return null;
   }
   
-
-  return <div id={name}>
-  <a name={name} />
-  <HotTable
-    licenseKey='non-commercial-and-evaluation'
-    data={SVs.cells.map(x => [...x])}
-    colHeaders={SVs.columnHeaders}
-    rowHeaders={SVs.rowHeaders}
-    width={sizeToCSS(SVs.width)}
-    height={sizeToCSS(SVs.height)}
-    // beforeChange={this.actions.onChange} 
-    afterChange={(changes, source) => callAction({action:actions.onChange, args:{ changes, source }})}
-    formulas={{
-      engine: HyperFormula
-    }}
-    fixedRowsTop={SVs.fixedRowsTop}
-    fixedColumnsLeft={SVs.fixedColumnsLeft}
-    hiddenColumns={{
-      columns: SVs.hiddenColumns.map(x => x - 1),
-      indicators: false
-    }}
-    hiddenRows={{
-      rows: SVs.hiddenRows.map(x => x - 1),
-      indicators: false
-    }}
-    // contextMenu={
-    //   {
-    //     items: {
-    //       'row_above': {
-    //         // name: 'Insert row above this one'
-    //       },
-    //       'row_below':{
-    //         // name: 'Insert row below this one'
-    //       },
-    //     }
-    //   }
-    // }
-    stretchH="all"
-  /></div>
-
+  return (
+    <div id={name} style={{ margin: "12px 0" }} >
+      <a name={name} />
+      <HotTable
+        // style={{ borderRadius:"var(--mainBorderRadius)", border:"var(--mainBorder)" }}
+        licenseKey='non-commercial-and-evaluation'
+        data={SVs.cells.map(x => [...x])}
+        colHeaders={SVs.columnHeaders}
+        rowHeaders={SVs.rowHeaders}
+        width={sizeToCSS(SVs.width)}
+        height={sizeToCSS(SVs.height)}
+        // beforeChange={this.actions.onChange} 
+        afterChange={(changes, source) => callAction({action:actions.onChange, args:{ changes, source }})}
+        formulas={{
+          engine: HyperFormula
+        }}
+        fixedRowsTop={SVs.fixedRowsTop}
+        fixedColumnsLeft={SVs.fixedColumnsLeft}
+        hiddenColumns={{
+          columns: SVs.hiddenColumns.map(x => x - 1),
+          indicators: false
+        }}
+        hiddenRows={{
+          rows: SVs.hiddenRows.map(x => x - 1),
+          indicators: false
+        }}
+        // contextMenu={
+        //   {
+        //     items: {
+        //       'row_above': {
+        //         // name: 'Insert row above this one'
+        //       },
+        //       'row_below':{
+        //         // name: 'Insert row below this one'
+        //       },
+        //     }
+        //   }
+        // }
+        stretchH="all"
+      />
+    </div>
+  )
 }
 
