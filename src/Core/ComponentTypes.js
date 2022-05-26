@@ -151,6 +151,7 @@ import RegionHalfPlane from './components/RegionHalfPlane';
 import CodeEditor from './components/CodeEditor';
 import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
+import HasSameFactoring from './components/HasSameFactoring';
 import OrbitalDiagramInput from './components/OrbitalDiagramInput';
 import OrbitalDiagram from './components/OrbitalDiagram';
 import DataFrame from './components/DataFrame';
@@ -303,6 +304,7 @@ const componentTypeArray = [
   CodeEditor,
   CodeViewer,
   RenderDoenetML,
+  HasSameFactoring,
   OrbitalDiagramInput,
   OrbitalDiagram,
   DataFrame,
