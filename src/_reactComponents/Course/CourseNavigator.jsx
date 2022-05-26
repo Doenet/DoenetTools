@@ -236,7 +236,7 @@ function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,
 function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
   if (itemInfo.isOpen){
     let pages = itemInfo.pages.map((pageDoenetId,i)=>{
-      return <Page key={`Page${pageDoenetId}`} courseId={courseId} doenetId={pageDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1} />
+      return <Page key={`Page${pageDoenetId}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={pageDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1} />
     })
 
   return <>

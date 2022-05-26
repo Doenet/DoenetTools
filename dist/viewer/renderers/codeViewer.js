@@ -2,7 +2,7 @@ import React, {useState, useRef} from "../../_snowpack/pkg/react.js";
 import useDoenetRenderer from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-export default function CodeViewer(props) {
+export default React.memo(function CodeViewer(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRenderer(props, false);
   if (SVs.hidden) {
     return null;
@@ -41,4 +41,4 @@ export default function CodeViewer(props) {
     className: "codeViewerSurroundingBox",
     id: name
   }, contentPanel));
-}
+});

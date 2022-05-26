@@ -6,7 +6,7 @@ border: '2px solid red';
 margin: 2px;
 outline: none;
 `;
-export default function orbitalDiagramInput(props) {
+export default React.memo(function orbitalDiagramInput(props) {
   let {name, SVs, actions, callAction} = useDoenetRenderer(props);
   let selectedRowIndex0 = SVs.selectedRowIndex - 1;
   let selectedBoxIndex0 = SVs.selectedBoxIndex - 1;
@@ -143,8 +143,8 @@ export default function orbitalDiagramInput(props) {
     }, "Remove Arrow"));
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, controls, rowsJSX);
-}
-function OrbitalRow({rowNumber, updateRowText, selectedRow, setSelectedRow, orbitalText, boxes, selectedBox, setSelectedBox, deselect, name}) {
+});
+const OrbitalRow = React.memo(function OrbitalRow2({rowNumber, updateRowText, selectedRow, setSelectedRow, orbitalText, boxes, selectedBox, setSelectedBox, deselect, name}) {
   let rowStyle = {
     width: "800px",
     height: "44px",
@@ -193,8 +193,8 @@ function OrbitalRow({rowNumber, updateRowText, selectedRow, setSelectedRow, orbi
     updateRowText,
     name
   }), boxesJSX);
-}
-function OrbitalText({rowNumber, updateRowText, orbitalText, name}) {
+});
+const OrbitalText = React.memo(function OrbitalText2({rowNumber, updateRowText, orbitalText, name}) {
   return /* @__PURE__ */ React.createElement("input", {
     id: `OrbitalText${rowNumber}${name}`,
     style: {marginRight: "4px", height: "14px"},
@@ -206,8 +206,8 @@ function OrbitalText({rowNumber, updateRowText, orbitalText, name}) {
       updateRowText(newValue);
     }
   });
-}
-function OrbitalBox({boxNum, arrows = "", setSelectedBox, isSelected, rowNumber, name}) {
+});
+const OrbitalBox = React.memo(function OrbitalBox2({boxNum, arrows = "", setSelectedBox, isSelected, rowNumber, name}) {
   const firstUp = /* @__PURE__ */ React.createElement("polyline", {
     key: `orbitalboxfirstUp${boxNum}`,
     id: `firstUp${boxNum}`,
@@ -293,4 +293,4 @@ function OrbitalBox({boxNum, arrows = "", setSelectedBox, isSelected, rowNumber,
     height: "40",
     style: {fill: "white", stroke: boxColor, strokeWidth, fillOpacity: "1", strokeOpacity: "1"}
   }), arrowsJSX);
-}
+});

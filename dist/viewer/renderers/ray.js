@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState, useRef} from "../../_snowpack/pk
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
-export default function Ray(props) {
+export default React.memo(function Ray(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Ray.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -41,6 +41,12 @@ export default function Ray(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle),
       straightFirst: false
     };
+    jsxRayAttributes.label = {};
+    if (SVs.applyStyleToLabel) {
+      jsxRayAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxRayAttributes.label.strokeColor = "#000000";
+    }
     let through = [
       [...SVs.numericalEndpoint],
       [...SVs.numericalThroughpoint]
@@ -129,6 +135,17 @@ export default function Ray(props) {
         rayJXG.current.visProp["visible"] = false;
         rayJXG.current.visPropCalc["visible"] = false;
       }
+      if (rayJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        rayJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        rayJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (rayJXG.current.visProp.dash !== newDash) {
+        rayJXG.current.visProp.dash = newDash;
+      }
+      if (rayJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        rayJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+      }
       rayJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
@@ -138,6 +155,11 @@ export default function Ray(props) {
       rayJXG.current.needsUpdate = true;
       rayJXG.current.update();
       if (rayJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          rayJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        } else {
+          rayJXG.current.label.visProp.strokecolor = "#000000";
+        }
         rayJXG.current.label.needsUpdate = true;
         rayJXG.current.label.update();
       }
@@ -150,7 +172,7 @@ export default function Ray(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }));
-}
+});
 function styleToDash(style) {
   if (style === "solid") {
     return 0;

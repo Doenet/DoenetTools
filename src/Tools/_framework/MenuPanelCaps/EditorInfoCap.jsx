@@ -28,10 +28,19 @@ export default function EditorInfoCap(){
  <div style={{ marginBottom: "5px",padding:'1px 5px' }}>{pageInfo.label}</div> 
  </>
 
-if (activityInfo.isSinglePage){
+if (activityInfo.isSinglePage ){
   activityPageJSX = <>
   <div style={{ marginBottom: "1px", marginTop:"5px" }}>Activity</div> 
   <div style={{ marginBottom: "5px",padding:'1px 5px' }}>{activityInfo.label}</div> 
+  </>
+}
+
+if (activityInfo.type == 'bank'){
+  activityPageJSX = <>
+  <div style={{ marginBottom: "1px", marginTop:"5px" }}>Collection</div> 
+  <div style={{ marginBottom: "5px",padding:'1px 5px' }}>{activityInfo.label}</div> 
+  <div style={{ marginBottom: "1px", marginTop:"5px" }}>Page</div> 
+ <div style={{ marginBottom: "5px",padding:'1px 5px' }}>{pageInfo.label}</div> 
   </>
 }
 
