@@ -68,14 +68,14 @@ export default class DataFrame extends BaseComponent {
     };
 
     stateVariableDefinitions.dataFrame = {
-      stateVariablesDeterminingDependencies: ["cid"],
+      stateVariablesDeterminingDependencies: ["cid", "source"],
       additionalStateVariablesDefined: [
         {
           variableName: "numRows",
           public: true,
           componentType: "integer"
         }, {
-          variableName: "numCols",
+          variableName: "numColumns",
           public: true,
           componentType: "integer"
         }, {
@@ -87,6 +87,7 @@ export default class DataFrame extends BaseComponent {
         fileContents: {
           dependencyType: "file",
           cid: stateValues.cid,
+          uri: stateValues.source,
           fileType: "csv"
         },
         hasHeader: {
@@ -106,11 +107,11 @@ export default class DataFrame extends BaseComponent {
         let originalData = dependencyValues.fileContents.trim().split("\n")
           .map(x => x.split(","))
 
-        let numCols = originalData[0]?.length;
+        let numColumns = originalData[0]?.length;
 
         let foundInconsistentRow = false;
         for (let row of originalData.slice(1)) {
-          if (row.length !== numCols) {
+          if (row.length !== numColumns) {
             foundInconsistentRow = true;
             break;
           }
@@ -118,10 +119,10 @@ export default class DataFrame extends BaseComponent {
 
         if (foundInconsistentRow) {
           console.warn(`Data has invalid shape.  Rows has inconsistent lengths. Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numCols, colTypes } }
+          return { setValue: { dataFrame: null, numRows, numColumns, colTypes } }
         }
 
-        // know that all rows have length numCols
+        // know that all rows have length numColumns
         let dataFrame = {};
 
         let data = [];
@@ -130,22 +131,22 @@ export default class DataFrame extends BaseComponent {
           dataFrame.columns = originalData[0];
           data = originalData.slice(1);
         } else {
-          dataFrame.columns = [...Array(numCols).keys()].map(x => `col${x + 1}`);
+          dataFrame.columns = [...Array(numColumns).keys()].map(x => `col${x + 1}`);
           data = originalData;
         }
 
         if ([...new Set(dataFrame.columns)].length < dataFrame.columns) {
           console.warn(`Data has duplicate column names.  Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numCols, colTypes } }
+          return { setValue: { dataFrame: null, numRows, numColumns, colTypes } }
         }
 
         if (dataFrame.columns.includes("")) {
           console.warn(`Data is missing a column name.  Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numCols, colTypes } }
+          return { setValue: { dataFrame: null, numRows, numColumns, colTypes } }
         }
 
         let numRows = data.length;
-        dataFrame.shape = [numRows, numCols];
+        dataFrame.shape = [numRows, numColumns];
 
 
 
@@ -154,7 +155,7 @@ export default class DataFrame extends BaseComponent {
         // Default colType is auto
 
 
-        for (let colInd = 0; colInd < numCols; colInd++) {
+        for (let colInd = 0; colInd < numColumns; colInd++) {
           let prescribedType = dependencyValues.colTypesPrelim[colInd].toLowerCase();
           if (!["number", "string"].includes(prescribedType)) {
             prescribedType = "auto";
@@ -215,7 +216,7 @@ export default class DataFrame extends BaseComponent {
 
         dataFrame.data = data;
 
-        return { setValue: { dataFrame, numRows, numCols, colTypes } };
+        return { setValue: { dataFrame, numRows, numColumns, colTypes } };
       },
 
     }
@@ -226,13 +227,13 @@ export default class DataFrame extends BaseComponent {
       isArray: true,
       entryPrefixes: ["mean"],
       returnArraySizeDependencies: () => ({
-        numCols: {
+        numColumns: {
           dependencyType: "stateVariable",
-          variableName: "numCols",
+          variableName: "numColumns",
         },
       }),
       returnArraySize({ dependencyValues }) {
-        return [dependencyValues.numCols];
+        return [dependencyValues.numColumns];
       },
       returnArrayDependenciesByKey() {
         let globalDependencies = {
@@ -240,9 +241,9 @@ export default class DataFrame extends BaseComponent {
             dependencyType: "stateVariable",
             variableName: "dataFrame",
           },
-          numCols: {
+          numColumns: {
             dependencyType: "stateVariable",
-            variableName: "numCols"
+            variableName: "numColumns"
           },
           numRows: {
             dependencyType: "stateVariable",

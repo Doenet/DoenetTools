@@ -6925,6 +6925,7 @@ class FileDependency extends Dependency {
 
   setUpParameters() {
     this.cid = this.definition.cid;
+    this.uri = this.definition.uri;
     this.fileType = this.definition.fileType;
   }
 
@@ -6932,20 +6933,39 @@ class FileDependency extends Dependency {
 
     let extension;
 
-    if (this.fileType.toLowerCase() === "csv") {
-      extension = "csv"
-    } else {
+    if (this.cid) {
+      if (this.fileType.toLowerCase() === "csv") {
+        extension = "csv"
+      } else {
+        return {
+          value: null,
+          changes: {}
+        }
+      }
+
+      let fileContents = await retrieveTextFileForCid(this.cid, extension)
+
       return {
-        value: null,
+        value: fileContents,
         changes: {}
       }
-    }
+    } else {
+      // no cid.  Try to find from uri
+      let response = await fetch(this.uri);
 
-    let fileContents = await retrieveTextFileForCid(this.cid, extension)
+      if (response.ok) {
+        let fileContents = await response.text();
+        return {
+          value: fileContents,
+          changes: {}
+        }
+      } else {
+        return {
+          value: null,
+          changes: {}
+        }
+      }
 
-    return {
-      value: fileContents,
-      changes: {}
     }
   }
 

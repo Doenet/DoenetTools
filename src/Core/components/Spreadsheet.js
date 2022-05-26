@@ -199,7 +199,7 @@ export default class Spreadsheet extends BlockComponent {
         dataFrameChild: {
           dependencyType: "child",
           childGroups: ["dataFrames"],
-          variableNames: ["numCols"]
+          variableNames: ["numColumns"]
         }
       }),
       definition({ dependencyValues }) {
@@ -215,7 +215,7 @@ export default class Spreadsheet extends BlockComponent {
         }
 
         if (dependencyValues.dataFrameChild.length > 0) {
-          numColumns = Math.max(numColumns, dependencyValues.dataFrameChild[0].stateValues.numCols)
+          numColumns = Math.max(numColumns, dependencyValues.dataFrameChild[0].stateValues.numColumns)
         }
         return { setValue: { numColumns } }
       }
@@ -486,7 +486,7 @@ export default class Spreadsheet extends BlockComponent {
           dataFrameChild: {
             dependencyType: "child",
             childGroups: ["dataFrames"],
-            variableNames: ["dataFrame", "numRows", "numCols"]
+            variableNames: ["dataFrame", "numRows", "numColumns"]
           }
         }
 
@@ -498,12 +498,12 @@ export default class Spreadsheet extends BlockComponent {
         let essentialCells = {};
 
         let dataFrame = null;
-        let dataFrameNumRows, dataFrameNumCols
+        let dataFrameNumRows, dataFrameNumColumns
 
         if (globalDependencyValues.dataFrameChild.length > 0) {
           dataFrame = globalDependencyValues.dataFrameChild[0];
           dataFrameNumRows = dataFrame.stateValues.numRows;
-          dataFrameNumCols = dataFrame.stateValues.numCols;
+          dataFrameNumColumns = dataFrame.stateValues.numColumns;
         }
 
         for (let arrayKey of arrayKeys) {
@@ -511,7 +511,7 @@ export default class Spreadsheet extends BlockComponent {
 
           if (dependencyValuesByKey[arrayKey].cellText !== undefined) {
             cells[arrayKey] = dependencyValuesByKey[arrayKey].cellText
-          } else if (rowInd < dataFrameNumRows && colInd < dataFrameNumCols) {
+          } else if (rowInd < dataFrameNumRows && colInd < dataFrameNumColumns) {
             cells[arrayKey] = dataFrame.stateValues.dataFrame.data[rowInd][colInd]
           } else {
             essentialCells[arrayKey] = true;
