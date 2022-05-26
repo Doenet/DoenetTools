@@ -88,7 +88,7 @@ export default function Section(props) {
 
   let checkworkComponent = null;
 
-
+  
   if (SVs.createSubmitAllButton) {
   
     updateValidationState();
