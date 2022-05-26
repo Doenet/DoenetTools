@@ -88,12 +88,12 @@ export default function Section(props) {
 
   let checkworkComponent = null;
 
-
+    
   if (SVs.createSubmitAllButton) {
 
     updateValidationState();
 
-
+    
     let checkWorkStyle = {
       height: "23px",
       display: "inline-block",
