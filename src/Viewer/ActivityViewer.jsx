@@ -12,6 +12,8 @@ import { useToast, toastType } from '@Toast';
 import { nanoid } from 'nanoid';
 import { enumerateCombinations } from '../Core/utils/enumeration';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../_utils/activityUtils';
+import Button from '../_reactComponents/PanelHeaderComponents/Button';
+import ButtonGroup from '../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 let rngClass = prng_alea;
 
@@ -1049,18 +1051,21 @@ export default function ActivityViewer(props) {
 
   let pageControls = null;
   if (nPages > 1) {
-    pageControls = <>
-      <button data-cy={"previous"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
-      <button data-cy={"next"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
+    pageControls = <div style={{paddingLeft: "20px"}}>
+      <ButtonGroup>
+        <Button data-cy={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
+        <Button data-cy={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
+      </ButtonGroup>
       <p>Page {currentPage} of {nPages}</p>
-    </>
+    </div>
   }
 
-  return <div style={{ marginBottom: "200px" }}>
+  return <div style={{ marginBottom: "50vh" }}>
     {cidChangedAlert}
     {pageControls}
     {title}
     {pages}
+    {pageControls}
   </div>
 }
 
