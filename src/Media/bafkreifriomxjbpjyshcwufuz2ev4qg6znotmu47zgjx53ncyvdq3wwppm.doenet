@@ -1,0 +1,214 @@
+<document><title><tag>award</tag> component</title>
+<p><ref createButton="true" uri="doenet:doenetId=_DG5JOeFNTc5rpWuf2uA-q">Back to Component Index</ref></p>
+
+<section><title>Associated Attributes</title>
+<sideBySide>
+  <ul>
+    <li><attr>credit</attr>  <em>(number)</em></li>
+    <li><attr>matchPartial</attr>  <em>(boolean)</em>  </li>
+    <li><attr>symbolicEquality</attr>  <em>(boolean)</em></li>
+    <li><attr>simplifyOnCompare</attr>  <em>(text)</em></li>
+    <li><attr>expandOnCompare</attr>  <em>(boolean)</em></li>
+    <li><attr>unorderedCompare</attr>  <em>(boolean)</em></li>
+    <li><attr>matchByExactPosition</attr>  <em>(boolean)</em>
+    <li><attr>allowedErrorInNumbers</attr>  <em>(number)</em></li></li>
+  </ul>
+  <ul>
+    <li><attr>allowedErrorInNumbersExponents</attr>  <em>(boolean)</em></li>
+    <li><attr>allowedErrorIsAbsolute</attr>  <em>(boolean)</em></li>
+    <li><attr>nSignErrorsMatched</attr>  <em>(number)</em></li>
+    <li><attr>nPeriodicSetMatchesRequired</attr>  <em>(integer)</em></li>
+    <li><attr>feedbackCodes</attr>  <em>(textList)</em></li>
+    <li><attr>feedbackText</attr>  <em>(text)</em></li>
+    <li><attr>disableAfterCorrect</attr>  <em>(boolean)</em></li>
+    <li><attr>targetsAreResponses</attr>  <em>(string)</em></li>
+  </ul>
+</sideBySide>
+
+</section>
+
+
+<section><title>Description</title>
+<!--use <ref> on all component names (other than the one indexed from this file) in this section only-->
+  <p>The <tag>award</tag><idx><tag>award</tag></idx> component defines conditions for awarding credit and evaluating user responses.  An <tag>award</tag> is the child of an <ref uri="doenet:doenetId=_oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref> and can be used to refine credit awarded when partial credit is desired. See examples below.  See also <ref uri="doenet:doenetId=_oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref> and the <ref uri="doenet:doenetId=_rfzcqXgwWHbgfpyqlChy2">advanced answer form page</ref> for more examples involving <tag>award</tag>.</p>
+</section> 
+
+  
+<section><title>Usage Examples</title>
+
+<subsection><title>Example 1:  Using <tag>award</tag> to define two correct responses</title>
+<p>In the sample code below, the <tag>award</tag> component is used to define two equally correct responses within an <ref uri="doenet:doenetId=_oqsskIj4WFljMigaogOCM"><tag>answer</tag></ref> block.  By default a numerical answer checker is used, so any mathematically equivalent responses are accepted.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 1)</title>
+
+<pre>
+&lt;p&gt;What is one possible value for the square root of 4?
+  &lt;answer&gt;
+    &lt;award&gt;2&lt;/award&gt;
+    &lt;award&gt;-2&lt;/award&gt;
+  &lt;/answer&gt;
+&lt;/p&gt;
+</pre>
+ 
+        </example>  
+      </subsection>
+
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 1)</title>
+<p>What is one possible value for the square root of 4?
+  <answer>
+    <award>2</award>
+    <award>-2</award>
+  </answer>
+</p>
+</example>
+
+
+<!--******************************************************-->
+    
+
+<subsection><title>Example 2: Using <tag>award</tag> to define multiple responses with varying credit</title>
+
+<p>In the sample code below, the <attr>credit</attr> attribute is employed to assign 50% credit to a close answer.</p>
+  
+  <p>In this case, the <attr>symbolicEquality</attr> attribute is used so that the factored form is not acceptable.  We use it in conjunction with the <attr>simplifyOnCompare</attr> attribute to ensure acceptance of some algebraically equivalent responses that don't involve expanding.  These attributes should be used together in combination when some flexibility in user input is desired (i.e. in this case, when <m>(x^2 + 3x + 2)</m> and <m>(2 + 3x + x^2)</m> are both acceptable).  
+</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 2)</title>
+<pre>
+Expand &lt;m&gt;(x+1)(x+2)&lt;/m&gt;:
+&lt;answer&gt;
+  &lt;award symbolicEquality simplifyOnCompare&gt;
+    &lt;math&gt;x^2+3x+2&lt;/math&gt;
+  &lt;/award&gt;
+  
+  &lt;award credit="0.5" symbolicEquality simplifyOnCompare&gt;
+    &lt;math&gt;x^2+2x+2&lt;/math&gt;
+  &lt;/award&gt;
+&lt;/answer&gt;
+</pre>
+ 
+        </example>  
+      </subsection>
+
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 2)</title>
+  Expand <m>(x+1)(x+2)</m>:
+  <answer>
+    <award symbolicEquality simplifyOnCompare>
+      <math>x^2+3x+2</math>
+    </award>
+    
+    <award credit="0.5" symbolicEquality simplifyOnCompare>
+      <math>x^2+2x+2</math>
+    </award>
+  </answer>
+</example>
+ 
+
+<!--******************************************************-->
+
+<subsection><title>Example 3: Using <tag>award</tag> with <attr>expandOnCompare</attr></title>
+<p>In the sample code below, the <attr>expandOnCompare</attr> attribute is used within the <tag>award</tag> block which allows Doenet to accept both <m>x^2 - 4</m> and <m>(x-2)(x+2)</m> as valid responses.  Partial credit is assigned to an answer with a sign error, and the <tag>award</tag> is given a <c>name</c> of <c>signError</c> in order to reference it later in a <ref uri="doenet:doenetId=_WwagbtTRGpBV7WYO1upAN"><tag>feedback</tag></ref> block using the <attr>condition</attr> attribute.</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 3)</title>
+<pre>
+&lt;graph&gt;
+  &lt;curve&gt;x^2-4&lt;/curve&gt;
+  &lt;point label="(2,0)" fixed&gt;(2,0)&lt;/point&gt;
+  &lt;point label="(-2,0)" fixed labelPosition="upperleft"&gt;(-2,0)&lt;/point&gt;
+  &lt;point label="(0,-4)" fixed labelPosition="lowerleft"&gt;(0,-4)&lt;/point&gt;
+&lt;/graph&gt;
+
+&lt;p&gt;What function is graphed above?&lt;/p&gt;
+&lt;m&gt;f(x) = &lt;/m&gt;&lt;answer&gt;
+  &lt;award symbolicEquality expandOnCompare&gt;x^2-4&lt;/award&gt;
+&lt;award credit="0.25" name="signError"&gt;x^2+4&lt;/award&gt;
+&lt;/answer&gt;
+
+&lt;feedback condition="&dollar;signError"&gt;Check the sign of your
+  answer.  What happens when you substitute &lt;m&gt;x=0&lt;/m&gt; 
+  into your expression?&lt;/feedback&gt;
+
+</pre>
+ 
+        </example>  
+      </subsection>
+
+<!--*******************************************************-->
+ 
+
+<example><title>What Doenet Renders (Example 3)</title>
+<graph>
+  <curve>x^2-4</curve>
+  <point label="(2,0)" fixed>(2,0)</point>
+  <point label="(-2,0)" fixed labelPosition="upperleft">(-2,0)</point>
+  <point label="(0,-4)" fixed labelPosition="lowerleft">(0,-4)</point>
+</graph>
+
+<p>What function is graphed above?</p>
+<m>f(x) = </m><answer>
+  <award symbolicEquality expandOnCompare>x^2-4</award>
+  <award credit="0.25" name="signError">x^2+4</award>
+</answer>
+
+<feedback condition="$signError">Check the sign of your answer.  What happens when you substitute <m>x=0</m> into your expression?</feedback>
+</example>
+
+
+
+<!--******************************************************-->
+<!--    
+  
+<subsection><title>Example 4: </title>
+<p>In the sample code below...</p>
+
+<example boxed="true"><title>Sample DoenetML code (Example 4)</title>
+<pre>
+
+</pre>
+ 
+        </example>  
+      </subsection>
+   -->
+<!--*******************************************************-->
+<!-- 
+
+<example><title>What Doenet Renders (Example 4)</title>
+
+</example>
+   -->
+
+
+
+
+<!--****************************************************
+  Edge cases Section
+********************************************************-->
+<!--<aside newNameSpace><title>Edge case:    </title>
+
+
+<subsection><title>Sample DoenetML code: </title>
+<pre>
+
+</pre>
+ 
+  </subsection>
+   -->
+<!--*******************************************************-->
+<!-- 
+ 
+<subsection><title>What Doenet Renders:</title>
+
+</subsection>
+    </cell>
+  </row>
+-->
+
+  
+</section>
+</document>

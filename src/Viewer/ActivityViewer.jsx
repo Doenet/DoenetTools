@@ -1052,20 +1052,21 @@ export default function ActivityViewer(props) {
 
   let pageControls = null;
   if (nPages > 1) {
-    pageControls = <>
+    pageControls = <div style={{paddingLeft: "20px"}}>
       <ButtonGroup>
         <Button data-cy={"previous"} disabled={currentPage === 1} onClick={clickPrevious} value="Previous page"></Button>
         <Button data-cy={"next"} disabled={currentPage === nPages} onClick={clickNext} value="Next page"></Button>
       </ButtonGroup>
       <p>Page {currentPage} of {nPages}</p>
-    </>
+    </div>
   }
 
-  return <div style={{ marginBottom: "200px" }}>
+  return <div style={{ marginBottom: "50vh" }}>
     {cidChangedAlert}
     {pageControls}
     {title}
     {pages}
+    {pageControls}
   </div>
 }
 

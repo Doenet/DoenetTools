@@ -885,7 +885,7 @@ export default function PageViewer(props) {
   }
 
   let noCoreWarning = null;
-  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px", paddingBottom: "50vh" };
+  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
   if (!coreCreated.current) {
     noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
       <p>Waiting for core to be created....</p>
