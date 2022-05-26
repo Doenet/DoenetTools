@@ -5,7 +5,7 @@ import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionBut
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
 import ToggleButtonGroup from '../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup';
-import MathJax from 'react-mathjax';
+// import MathJax from 'react-mathjax';
 
 const TextNoSelect = styled.text`
   -webkit-user-select: none;
@@ -53,29 +53,10 @@ export default function subsetOfReals(props) {
       setMode("move points");
     }
   }
-  //Build control buttons
-  // const activeButtonColor = "var(--lightBlue)";
-  // const inactiveButtonColor = "var(--mainGray)";
-  // let primaryColor = "red";
-
-
-  // let addRemovePointsStyle = { backgroundColor: inactiveButtonColor };
-  // if (mode === "add remove points") {
-  //   addRemovePointsStyle = { backgroundColor: activeButtonColor };
-  // }
-
-  // let toggleStyle = { backgroundColor: inactiveButtonColor };
-  // if (mode === "toggle") {
-  //   toggleStyle = { backgroundColor: activeButtonColor };
-  // }
-
-  // let movePointsStyle = { backgroundColor: inactiveButtonColor };
-  // if (mode === "move points") {
-  //   movePointsStyle = { backgroundColor: activeButtonColor };
-  // }
-
+ 
   let controlButtons = null;
   if(!SVs.fixed) {
+    // Using ToggleButton and ActionButton from PanelHeaderComponents
     controlButtons =
     <>
       <ToggleButtonGroup onClick={handleTogglePoints}>
@@ -104,6 +85,7 @@ export default function subsetOfReals(props) {
           onClick={()=> callAction({
             action: actions.setToR,
           })}
+          /* TODO: change the "R" to be the real numbers symbol, similar to the syntax below */
           // value={<MathJax.Node inline formula={'a_b'} />}
           value='R'
         >
@@ -112,7 +94,7 @@ export default function subsetOfReals(props) {
     </>
   }
 
-  //Build axis
+  // Build axis
   let firstHashXPosition = 40;
   let xBetweenHashes = 36;
   let hashLines = [];
@@ -153,7 +135,7 @@ export default function subsetOfReals(props) {
 
     let xPosition = xValueToXPosition(pt.value);
 
-    let currentFillColor = "var(--mainPurple)";
+    let currentFillColor = "var(--mainPurple)"; // New CSS variable color
     if (!closed) {
       currentFillColor = "white";
     }
@@ -174,7 +156,7 @@ export default function subsetOfReals(props) {
 
   }
 
-  //Build lines
+  // Build lines
   let storedLines = [];
   for (let intervalObj of SVs.intervals) {
     if (intervalObj.right < intervalObj.left || !intervalObj.inSubset) { continue; } // Ignore imposible Intervals
@@ -233,8 +215,8 @@ export default function subsetOfReals(props) {
   function xValueToXPosition(xValue) {
     // let minValue = -10;
     // let maxValue = 10;
-    //Shift to positive numbers
-    //TODO: Calculate shiftAmount and intervalValueWidth
+    // Shift to positive numbers
+    // TODO: Calculate shiftAmount and intervalValueWidth
     let shiftAmount = 10;
     let intervalValueWidth = 1;
     let shiftedXValue = xValue + shiftAmount;
