@@ -7,8 +7,47 @@ import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+const TextArea = styled.textarea `
+  width: ${props => props.width};
+  // height: sizeToCSS(SVs.height),
+  height: 24px;
+  /* font-size: 14px; */
+  /* border-width: 1px; */
+  border: 2px solid black;
+  /* border-color: ${surroundingBorderColor}; */
+`;
+
+const Input = styled.input `
+  width: ${props => props.inputWidth}px;
+  height: 24px;
+  /* font-size: 14px; */
+  /* border-width: 1px; */
+  border: 2px solid black;
+  /* border-color: ${surroundingBorderColor}; */
+`;
+
+const Button = styled.button `
+  position: relative;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  display: inline-block;
+  text-align: center;
+  padding: 2px;
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 10px 12px 10px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
+
 export default function TextInput(props) {
   let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  let width = sizeToCSS(SVs.width);
+  let inputWidth = SVs.size * 10;
 
   TextInput.baseStateVariable = "immediateValue";
 
@@ -140,25 +179,6 @@ export default function TextInput(props) {
     surroundingBorderColor = "#82a5ff";
   }
 
-  const TextArea = styled.textarea `
-    width: sizeToCSS(width);
-    // height: sizeToCSS(SVs.height),
-    height: 24px;
-    /* font-size: 14px; */
-    /* border-width: 1px; */
-    border: 2px solid black;
-    /* border-color: ${surroundingBorderColor}; */
-  `;
-
-  const Input = styled.input `
-    width: ${SVs.size * 10}px;
-    height: 24px;
-    /* font-size: 14px; */
-    /* border-width: 1px; */
-    border: 2px solid black;
-    /* border-color: ${surroundingBorderColor}; */
-  `;
-
   //Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
@@ -166,24 +186,6 @@ export default function TextInput(props) {
     let checkWorkStyle = {
       cursor: 'pointer',
     }
-
-    const Button = styled.button `
-      position: relative;
-      width: 24px;
-      height: 24px;
-      color: #ffffff;
-      display: inline-block;
-      text-align: center;
-      padding: 2px;
-      border: none;
-      border-radius: var(--mainBorderRadius);
-      margin: 0px 10px 12px 10px;
-
-      &:hover {
-        background-color: var(--lightBlue);
-        color: black;
-      };
-    `;
 
     if (validationState === "unvalidated") {
       if (disabled) {
@@ -284,6 +286,7 @@ export default function TextInput(props) {
   let input;
   if (SVs.expanded) {
     input = <TextArea
+      width={width}
       key={inputKey}
       id={inputKey}
       value={rendererValue}
@@ -296,6 +299,7 @@ export default function TextInput(props) {
     />
   } else {
     input = <Input
+      inputWidth={inputWidth}
       key={inputKey}
       id={inputKey}
       value={rendererValue}
