@@ -5,7 +5,6 @@ import {
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
-import {useToast} from "../../_framework/Toast.js";
 import {DateToDateString} from "../../_utils/dateUtilityFunction.js";
 import DateTime from "../PanelHeaderComponents/DateTime.js";
 import {useActivity} from "./ActivityActions.js";
@@ -13,9 +12,12 @@ import Checkbox from "../PanelHeaderComponents/Checkbox.js";
 import Increment from "../PanelHeaderComponents/IncrementMenu.js";
 import DropdownMenu from "../PanelHeaderComponents/DropdownMenu.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {enrollmentByCourseId} from "../Course/CourseActions.js";
+import {enrollmentByCourseId, itemByDoenetId, useCourse} from "../Course/CourseActions.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import RelatedItems from "../PanelHeaderComponents/RelatedItems.js";
+import ActionButtonGroup from "../PanelHeaderComponents/ActionButtonGroup.js";
+import ActionButton from "../PanelHeaderComponents/ActionButton.js";
+import {toastType, useToast} from "../../_framework/Toast.js";
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
   display: ${(props) => props.flex ? "flex" : "block"};
@@ -33,6 +35,53 @@ const InputControl = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
+export const AssignUnassignActivity = ({doenetId, courseId}) => {
+  const {
+    compileActivity,
+    updateAssignItem
+  } = useCourse(courseId);
+  const {
+    isAssigned
+  } = useRecoilValue(itemByDoenetId(doenetId));
+  const addToast = useToast();
+  let assignActivityText = "Assign Activity";
+  if (isAssigned) {
+    assignActivityText = "Update Assigned Activity";
+  }
+  return /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+    vertical: true
+  }, /* @__PURE__ */ React.createElement(ActionButton, {
+    width: "menu",
+    value: assignActivityText,
+    onClick: () => {
+      compileActivity({
+        activityDoenetId: doenetId,
+        isAssigned: true,
+        courseId
+      });
+      updateAssignItem({
+        doenetId,
+        isAssigned: true,
+        successCallback: () => {
+          addToast("Activity Assigned", toastType.INFO);
+        }
+      });
+    }
+  }), isAssigned ? /* @__PURE__ */ React.createElement(ActionButton, {
+    width: "menu",
+    value: "Unassign Activity",
+    alert: true,
+    onClick: () => {
+      updateAssignItem({
+        doenetId,
+        isAssigned: false,
+        successCallback: () => {
+          addToast("Activity Unassigned", toastType.INFO);
+        }
+      });
+    }
+  }) : null);
+};
 export const AssignedDate = ({doenetId, courseId}) => {
   const addToast = useToast();
   const {
@@ -408,7 +457,7 @@ export const CheckedSetting = ({
     style: {marginRight: "5px"},
     checked: invert ? !localValue : localValue,
     onClick: () => {
-      let valueDescription = invert ? "True" : "Flase";
+      let valueDescription = invert ? "True" : "False";
       let value = false;
       if (!localValue) {
         valueDescription = invert ? "False" : "True";
@@ -446,7 +495,7 @@ export const CheckedFlag = ({
     style: {marginRight: "5px"},
     checked: invert ? !localValue : localValue,
     onClick: () => {
-      let valueDescription = invert ? "True" : "Flase";
+      let valueDescription = invert ? "True" : "False";
       let value = false;
       if (!localValue) {
         valueDescription = invert ? "False" : "True";

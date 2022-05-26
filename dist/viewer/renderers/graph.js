@@ -72,7 +72,8 @@ export default function Graph(props) {
           offset: [-5, -15]
         },
         minorTicks: 4,
-        precision: 4
+        precision: 4,
+        drawLabels: SVs.displayXAxisTickLabels
       };
       if (SVs.grid === "dense") {
         xaxisOptions.ticks.majorHeight = -1;
@@ -117,7 +118,8 @@ export default function Graph(props) {
           offset: [12, -2]
         },
         minorTicks: 4,
-        precision: 4
+        precision: 4,
+        drawLabels: SVs.displayYAxisTickLabels
       };
       if (SVs.grid === "dense") {
         yaxisOptions.ticks.majorHeight = -1;
@@ -190,6 +192,7 @@ export default function Graph(props) {
     }
     if (SVs.displayXAxis) {
       xaxis.current.name = SVs.xlabel;
+      xaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayXAxisTickLabels});
       if (xaxis.current.hasLabel) {
         let position = "rt";
         let offset = [5, 10];
@@ -208,6 +211,7 @@ export default function Graph(props) {
     }
     if (SVs.displayYAxis) {
       yaxis.current.name = SVs.ylabel;
+      yaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayYAxisTickLabels});
       if (yaxis.current.hasLabel) {
         let position = "rt";
         let offset = [-10, -5];

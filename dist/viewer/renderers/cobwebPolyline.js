@@ -24,7 +24,6 @@ export default function CobwebPolyline(props) {
     };
   }, []);
   function createCobwebPolylineJXG() {
-    console.log("create cobweb polyline");
     let functionAttributes = {
       visible: !SVs.hidden,
       withLabel: false,
