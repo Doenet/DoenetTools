@@ -21,7 +21,7 @@ const ModeButton = styled.button`
   margin-left: 1px;
   margin-top: 1px;
 `;
-export default function subsetOfReals(props) {
+export default React.memo(function subsetOfReals(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props, false);
   let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
@@ -293,4 +293,4 @@ export default function subsetOfReals(props) {
     y2: "40",
     style: {stroke: "black", strokeWidth: "2"}
   }), storedPoints, labels));
-}
+});

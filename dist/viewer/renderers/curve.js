@@ -2,8 +2,9 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import {createFunctionFromDefinition} from "../../core/utils/function.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
-export default function Curve(props) {
+export default React.memo(function Curve(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  console.log({name, SVs});
   Curve.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let curveJXG = useRef(null);
@@ -640,7 +641,7 @@ export default function Curve(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }));
-}
+});
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {
     return 2;

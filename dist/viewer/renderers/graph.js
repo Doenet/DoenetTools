@@ -2,7 +2,7 @@ import React, {useEffect, useState, useRef, createContext} from "../../_snowpack
 import {sizeToCSS} from "./utils/css.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export const BoardContext = createContext();
-export default function Graph(props) {
+export default React.memo(function Graph(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
   const [board, setBoard] = useState(null);
   const previousDimensions = useRef(null);
@@ -262,4 +262,4 @@ export default function Graph(props) {
   }), /* @__PURE__ */ React.createElement(BoardContext.Provider, {
     value: board
   }, children));
-}
+});

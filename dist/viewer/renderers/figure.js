@@ -1,6 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Figure(props) {
+export default React.memo(function Figure(props) {
   let {name, SVs, children} = useDoenetRender(props);
   if (SVs.hidden || !children) {
     return null;
@@ -36,4 +36,4 @@ export default function Figure(props) {
   }), childrenToRender, /* @__PURE__ */ React.createElement("figcaption", {
     id: name + "_caption"
   }, caption));
-}
+});

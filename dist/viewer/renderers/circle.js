@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
-export default function Circle(props) {
+export default React.memo(function Circle(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   Circle.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -156,7 +156,7 @@ export default function Circle(props) {
   return /* @__PURE__ */ React.createElement("a", {
     name
   });
-}
+});
 function styleToDash(style) {
   if (style === "solid") {
     return 0;

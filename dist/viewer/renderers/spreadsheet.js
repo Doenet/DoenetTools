@@ -6,7 +6,7 @@ import "../../_snowpack/pkg/handsontable/dist/handsontable.full.css.proxy.js";
 import {sizeToCSS} from "./utils/css.js";
 import {registerAllModules} from "../../_snowpack/pkg/handsontable/registry.js";
 registerAllModules();
-export default function SpreadsheetRenderer(props) {
+export default React.memo(function SpreadsheetRenderer(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -39,4 +39,4 @@ export default function SpreadsheetRenderer(props) {
     },
     stretchH: "all"
   }));
-}
+});

@@ -281,7 +281,7 @@ function nearestValue(refval, points, SVs) {
   }
   return [val, index];
 }
-export default function Slider(props) {
+export default React.memo(function Slider(props) {
   let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   Slider.baseStateVariable = "index";
   const containerRef = useRef(null);
@@ -572,4 +572,4 @@ export default function Slider(props) {
   }), ticksAndLabels)), /* @__PURE__ */ React.createElement("div", {
     style: {height: SVs.showControls ? "20px" : "0px"}
   }, controls));
-}
+});

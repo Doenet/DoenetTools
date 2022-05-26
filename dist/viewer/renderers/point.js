@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
-export default function Point(props) {
+export default React.memo(function Point(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Point.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -303,7 +303,7 @@ export default function Point(props) {
     inline: true,
     dynamic: true
   }, mathJaxify)));
-}
+});
 function normalizeStyle(style) {
   if (style === "triangle") {
     return "triangleup";

@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
-export default function Vector(props) {
+export default React.memo(function Vector(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Vector.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -318,7 +318,7 @@ export default function Vector(props) {
     inline: true,
     dynamic: true
   }, mathJaxify)));
-}
+});
 function styleToDash(style) {
   if (style === "solid") {
     return 0;

@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
-export default function LineSegment(props) {
+export default React.memo(function LineSegment(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   LineSegment.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -251,7 +251,7 @@ export default function LineSegment(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }));
-}
+});
 function styleToDash(style) {
   if (style === "solid") {
     return 0;
