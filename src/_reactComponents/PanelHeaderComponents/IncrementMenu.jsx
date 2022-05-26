@@ -14,6 +14,7 @@ const Container = styled.div`
   margin: 0;
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+  background-color: var(--canvas);
 
 `;
 
@@ -22,12 +23,12 @@ const IncreaseButton = styled.button`
   border-radius: 0px 2px 2px 0px;
   height: 100%;
   width: 36px;
-  color: ${(props) => (props.disabled ? 'var(--canvastext)' : 'var(--canvas)')};
+  color: ${(props) => (props.disabled ? 'var(--canvas)' : 'var(--canvastext)')};
   font-size: 18px;
   border: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-    color: var(--canvastext);
+    color: var(--canvas);
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
 `;
@@ -38,12 +39,12 @@ const DecreaseButton = styled.button`
   text-align: center;
   height: 100%;
   width: 36px;
-  color: ${(props) => (props.disabled ? 'var(--canvastext)' : 'var(--canvas)')};
+  color: ${(props) => (props.disabled ? 'var(--canvas)' : 'var(--canvastext)')};
   font-size: 18px;
   border: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-    color: var(--canvastext);
+    color: var(--canvas);
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
 `;

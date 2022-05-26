@@ -1,0 +1,5 @@
+<document xmlns="https://doenet.org/spec/doenetml/v0.1.0" type="activity" itemWeights = "1" isSinglePage>
+  <order behavior="sequence">
+    <page cid="bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku" />
+  </order>
+</document>

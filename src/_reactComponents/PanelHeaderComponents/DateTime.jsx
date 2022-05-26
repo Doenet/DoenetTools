@@ -62,7 +62,8 @@ export default function DateTime(props) {
         ) : null}
         <input
           {...propsRI}
-          style={{ border: borderColor, cursor: cursorStyle, width: width, ...props.style }}
+          style={{ border: borderColor, cursor: cursorStyle, width: width, color:'var(--canvastext)', backgroundColor: 'var(--canvas)',...props.style
+           }}
           ref={inputRef}
           onChange={(e) => {
             setCursorStart(e.target.selectionStart);
@@ -81,6 +82,7 @@ export default function DateTime(props) {
               e.target.blur();
             }
           }}
+          
         />
       </div>
     );
@@ -97,6 +99,8 @@ export default function DateTime(props) {
         style={{
           cursor: 'not-allowed',
          //cs color: 'var(--canvastext)',
+         color:'var(--canvastext)',
+         backgroundColor: 'var(--canvas)',
           height: '18px',
           width: '170px',
           border: '2px solid var(--mainGray)',
@@ -119,6 +123,7 @@ export default function DateTime(props) {
           ? false
           : true
       }
+      
       inputProps={inputProps}
       onChange={(dateObjectOrString) => {
         setValue(dateObjectOrString);
@@ -136,6 +141,7 @@ export default function DateTime(props) {
         } else {
           setValue(lastValid);
         }
+      
 
         if (props.onBlur) {
           props.onBlur({

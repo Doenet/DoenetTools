@@ -491,7 +491,9 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
 },[doenetId, courseId, setSelectionMenu])
 
   let bgcolor = 'var(--canvas)';
+  let color = 'var(--canvastext)';
   if (isSelected){
+    color= 'black';
     bgcolor = 'var(--lightBlue)';
   }else if (isBeingCut){
     bgcolor = 'var(--mainGray)'; //grey
@@ -520,6 +522,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       border: '0px',
       borderBottom: '2px solid var(--canvastext)',
       backgroundColor: bgcolor,
+      color: color,
       width: 'auto',
       // marginLeft: marginSize,
     }}

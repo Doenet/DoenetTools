@@ -4,8 +4,9 @@ import { EditorState, Transaction, StateEffect } from '@codemirror/state';
 import { selectLine, deleteLine, cursorLineUp } from '@codemirror/commands';
 import { EditorView, keymap } from '@codemirror/view';
 import { styleTags, tags as t } from "@codemirror/highlight";
-import { lineNumbers } from "@codemirror/gutter";
-import { LRLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp } from '@codemirror/language';
+import { gutter, lineNumbers } from "@codemirror/gutter";
+import { LRLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp, } from '@codemirror/language';
+import {HighlightStyle } from '@codemirror/highlight';
 import { completeFromSchema } from '@codemirror/lang-xml';
 import { parser } from "../../Parser/doenet";
 import { atom, useRecoilValue } from "recoil";
@@ -27,28 +28,51 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
 
     let colorTheme = EditorView.theme({
         "&": {
-          color: "green",
-          backgroundColor: "#034"
+          color: "var(--canvastext)",
+          //backgroundColor: "var(--canvas)",
         },
         ".cm-content": {
-          caretColor: "#0e9"
+          caretColor: "#0e9",
+          borderDownColor: "var(--canvastext)"
+         
+         
         },
         ".cm-editor": {
             caretColor: "#0e9",
-            backgroundColor: "var(--canvas)"
+            backgroundColor: "var(--canvas)",
+           
           },
         "&.cm-focused .cm-cursor": {
-          borderLeftColor: "#0e9"
+          backgroundColor:"var(--lightBlue)",
+          borderLeftColor: "var(--canvastext)",
+          
         },
         "&.cm-focused .cm-selectionBackground, ::selection": {
-          backgroundColor: "#074"
+          backgroundColor: "var(--lightBlue)",
+         
+        },
+        "&.cm-focused":{
+            color:"var(--canvastext)",
+        },
+        "cm-selectionLayer":{
+            backgroundColor: "var(--mainGreen)"
         },
         ".cm-gutters": {
-          backgroundColor: "#045",
-          color: "#ddd",
-          border: "none"
+          backgroundColor: "var(--mainGray)",
+          color: "black",
+          border: "none",
+        },
+        ".cm-activeLine":{
+            backgroundColor: "var(--lightBlue)",
+            color:"black",
         }
+       
       })
+      const myHighlightStyle = HighlightStyle.define([
+        {tag: t.keyword, color: "orange"},
+        {tag: t.comment, color: "blue", fontStyle: "italic"}
+      ])
+      
 
     let editorConfig = useRecoilValue(editorConfigStateAtom);
     view = useRef(null);
@@ -100,6 +124,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         basicSetup,
         doenet(doenetSchema),
         EditorView.lineWrapping,
+        myHighlightStyle,
         colorTheme,
         tabExtension,
         cutExtension,
@@ -318,6 +343,7 @@ props : [
         "EntityReference CharacterReference": t.character,
         Comment: t.blockComment,
         Macro: t.macroName,
+        
         })
 ]
 });

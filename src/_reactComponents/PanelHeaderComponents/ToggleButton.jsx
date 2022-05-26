@@ -26,7 +26,7 @@ const Button = styled.button`
 
   &:hover {
     // Button color lightens on hover
-    color: ${(props) => (props.disabled ? 'var(--mainGray)' : 'var(--canvastext)')};
+    color: ${(props) => (props.disabled ? 'var(--mainGray)' : 'black')};
     background-color: ${(props) =>
       props.alert
         ? 'var(--lightRed)'

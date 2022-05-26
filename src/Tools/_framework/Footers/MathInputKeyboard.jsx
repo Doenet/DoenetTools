@@ -88,7 +88,7 @@ const Button = styled.button`
   height: 30px;
   color: var(--mainBlue);
   border: 2px solid var(--mainBlue);
-  background: var(--canvas);
+  background: white;
   border-radius: 5px;
 `;
 
@@ -98,7 +98,7 @@ const Button33 = styled.button`
   color: var(--mainBlue);
   border: 2px solid var(--mainBlue);
   border-radius: 5px;
-  background: var(--canvas);
+  background: white;
 `;
 
 const White15Button = styled.button`
@@ -107,7 +107,7 @@ const White15Button = styled.button`
   height: 30px;
   background: var(--mainBlue);
   border: none;
-  color: var(--canvas);
+  color: white;
   border-radius: 5px;
 `;
 
@@ -116,7 +116,7 @@ const CursorButton = styled.button`
   height: 30px;
   background: var(--mainBlue);
   border: none;
-  color: var(--canvas);
+  color: white;
   border-radius: 5px;
 `;
 
@@ -125,7 +125,7 @@ const DeleteButton = styled.button`
   height: 30px;
   background: var(--mainBlue);
   border: none;
-  color: var(--canvas);
+  color: white;
   border-radius: 5px;
 `;
 
@@ -134,7 +134,7 @@ const EnterButton = styled.button`
   height: 30px;
   background: var(--mainBlue);
   border: none;
-  color: var(--canvas);
+  color: white;
   border-radius: 5px;
 `;
 
@@ -144,7 +144,7 @@ const White20Button = styled.button`
   height: 30px;
   background: var(--mainBlue);
   border: none;
-  color: var(--canvas);
+  color: white;
   border-radius: 5px;
 `;
 
@@ -154,7 +154,7 @@ const LetterButton = styled.button`
   height: 30px;
   color: var(--mainBlue);
   border: 2px solid var(--mainBlue);
-  background: var(--canvas);
+  background: white;
   border-radius: 5px;
 `;
 

@@ -19,12 +19,17 @@ export default function Graph(props) {
   const resizingBoard = useRef(false);
   const boardJustInitialized = useRef(false);
 
+  
+
   //Draw Board after mounting component
   useEffect(() => {
     let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
     previousBoundingbox.current = boundingbox;
 
     JXG.Options.layer.numlayers = 100;
+    JXG.Options.navbar.highlightFillColor="var(--canvastext)";
+    JXG.Options.navbar.strokeColor="var(--canvastext)";
+    console.log(JXG.Options.navbar);
 
     let board = window.JXG.JSXGraph.initBoard(name,
       {
@@ -34,9 +39,10 @@ export default function Graph(props) {
         showNavigation: SVs.showNavigation && !SVs.fixAxes,
         keepAspectRatio: SVs.identicalAxisScales,
         zoom: { wheel: !SVs.fixAxes },
-        pan: { enabled: !SVs.fixAxes }
+        pan: { enabled: !SVs.fixAxes },
+        
       });
-
+     
     board.itemsRenderedLowQuality = {};
 
     board.on('boundingbox', () => {
@@ -82,7 +88,8 @@ export default function Graph(props) {
         xaxisOptions.label = {
           position,
           offset,
-          anchorx
+          anchorx,
+          strokeColor: "var(--canvastext)"
         };
       }
       xaxisOptions.ticks = {
@@ -92,7 +99,9 @@ export default function Graph(props) {
         },
         minorTicks: 4,
         precision: 4,
+        strokeColor: 'var(--canvastext)',
       }
+      xaxisOptions.strokeColor="var(--canvastext)"
 
       if (SVs.grid === "dense") {
         xaxisOptions.ticks.majorHeight = -1;
@@ -132,9 +141,11 @@ export default function Graph(props) {
         yaxisOptions.label = {
           position,
           offset,
-          anchorx
+          anchorx,
+          strokeColor: "var(--canvastext)"
         }
       }
+        yaxisOptions.strokeColor = "var(--canvastext)"
       yaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
@@ -142,6 +153,7 @@ export default function Graph(props) {
         },
         minorTicks: 4,
         precision: 4,
+        strokeColor: "var(--canvastext)"
       }
 
       if (SVs.grid === "dense") {
@@ -181,8 +193,12 @@ export default function Graph(props) {
   if (SVs.hidden) {
     divStyle.display = "none";
   }
-  divStyle.border = "2px solid black";
+  divStyle.border = "2px solid var(--canvastext)";
   divStyle.margin = "12px";
+  divStyle.backgroundColor = "var(--canvas)";
+  divStyle.color="var(--canvastext)";
+  
+  
   if (!board) {
     return <>
       <a name={name} />

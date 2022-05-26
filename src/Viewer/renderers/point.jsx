@@ -47,7 +47,7 @@ export default function Point(props) {
   }, [])
 
   function createPointJXG() {
-    let fillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+    let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
 
     //things to be passed to JSXGraph as attributes
     let jsxPointAttributes = {
@@ -220,7 +220,7 @@ export default function Point(props) {
       createPointJXG();
     } else {
       //if values update
-      let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+      let newFillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
       if (pointJXG.current.visProp.fillcolor !== newFillColor) {
         pointJXG.current.visProp.fillcolor = newFillColor;
       }

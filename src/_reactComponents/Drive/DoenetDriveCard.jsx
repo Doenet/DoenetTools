@@ -38,6 +38,7 @@ const Info = styled.figcaption`
   height: 65px;
   width: inherit;
   background: var(--canvas);
+  
 `;
 
 const LabelContainer = styled.p`
@@ -67,14 +68,18 @@ const DriveCard = (props) => {
       <Image url={imageURL} color={props.color} />
       <Info
         style={{
+          //color: props.isSelected ? 'black' : '',
           backgroundColor: props.isSelected ? 'var(--lightBlue)' : '',
         }}
       >
-        <LabelContainer textAlign={props.textAlign} lineHeight={props.lineHeight} whiteSpace={props.whiteSpace}>
+        <LabelContainer textAlign={props.textAlign} lineHeight={props.lineHeight} whiteSpace={props.whiteSpace} 
+        style={{
+          color: props.isSelected ? 'black' : 'var(--canvastext)',
+        }}>
           <b data-cy="driveCardLabel">{props.label}</b>
         </LabelContainer>
         {props?.role?.map((item) => {
-          return <LabelContainer key={item}>{item}</LabelContainer>;
+          return <LabelContainer key={item} style={{color:props.isSelected ? 'black' : 'var(--canvastext)'}}>{item}</LabelContainer>;
         })}
       </Info>
     </DriveCardContainer>

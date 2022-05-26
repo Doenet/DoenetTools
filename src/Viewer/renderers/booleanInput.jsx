@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
+import { removeBlankStringChildren } from '../../Core/utils/serializedStateProcessing';
 
 export default function BooleanInput(props) {
   let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
@@ -76,7 +77,7 @@ export default function BooleanInput(props) {
     height: "24px",
     fontSize: "20px",
     fontWeight: "bold",
-    color: "#ffffff",
+    color: "ffffff",
     display: "inline-block",
     textAlign: "center",
     top: "3px",
@@ -136,7 +137,7 @@ export default function BooleanInput(props) {
           >{partialCreditContents}</span>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkStyle.backgroundColor = "var(--mainRed)";
           checkWorkButton = <span
             id={name + '_incorrect'}
             style={checkWorkStyle}
@@ -183,6 +184,7 @@ export default function BooleanInput(props) {
           checked={rendererValue}
           onChange={onChangeHandler}
           disabled={disabled}
+          
         />
         {SVs.label}
       </label>

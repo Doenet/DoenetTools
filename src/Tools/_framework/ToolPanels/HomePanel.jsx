@@ -39,7 +39,7 @@ const CloudColorSection = styled(CloudColor)`
 
 const LightBlueColor = styled.div`
 background-color: var(--lightBlue);
-color:var(--canvastext);
+color: black;
 `;
 const LightBlueColorSection = styled(LightBlueColor)`
   padding: 20px 10px 60px 10px;
@@ -134,7 +134,7 @@ export default function HomePage(props) {
         <Paragraph>
           For more background and information on the Doenet project, see{' '}
           <a
-            style={{ color: '#6d4445' }}
+            style={{ color: 'var(--whiteBlankLink)' }}
             href="https://www.mathvalues.org/masterblog/reimagining-online-mathematics"
           >
             this MAA DUE Point article
@@ -259,11 +259,11 @@ export default function HomePage(props) {
       <SectionText>
         <Headings className="section-headline">Workshop on developing learning experiments in Doenet</Headings>
         <Paragraph>
-          Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our <a href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop</a> for a hands-on introduction to authoring and running experiments, led
+          Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our <a style={{color:"var(--whiteBlankLink)"}}href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop</a> for a hands-on introduction to authoring and running experiments, led
           by the developers of Doenet.  Designed for instructors of college STEM courses, the workshop will be held from May 23 - May 26, 2022, at the University of Minnesota.
         </Paragraph>
         <Paragraph>
-          For more information and to apply to the workshop, see the <a href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop site</a>.
+          For more information and to apply to the workshop, see the <a style= {{color:"var(--whiteBlankLink)"}} href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop site</a>.
         </Paragraph>
       </SectionText>
     </CloudColorSection>

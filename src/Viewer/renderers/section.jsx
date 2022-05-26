@@ -91,13 +91,13 @@ export default function Section(props) {
   
   if (SVs.createSubmitAllButton) {
   
-    updateValidationState();
+    updateValidationState();21
 
   
     let checkWorkStyle = {
       height: "23px",
       display: "inline-block",
-      backgroundColor: "rgb(2, 117, 216)",
+      backgroundColor: "var(--mainBlue)",
       padding: "1px 6px 1px 6px",
       color: "white",
       fontWeight: "bold",
@@ -126,7 +126,7 @@ export default function Section(props) {
 
     if (SVs.showCorrectness) {
       if (validationState.current === "correct") {
-        checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+        checkWorkStyle.backgroundColor = "var(--mainGreen)";
         checkworkComponent = (
           <span id={name + "_correct"}
             style={checkWorkStyle}
@@ -136,7 +136,7 @@ export default function Section(props) {
         Correct
           </span>);
       } else if (validationState.current === "incorrect") {
-        checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+        checkWorkStyle.backgroundColor = "var(--mainRed)";
         checkworkComponent = (
           <span id={name + "_incorrect"}
             style={checkWorkStyle}
@@ -146,7 +146,7 @@ export default function Section(props) {
         Incorrect
           </span>);
       } else if (validationState.current === "partialcorrect") {
-        checkWorkStyle.backgroundColor = "#efab34";
+        checkWorkStyle.backgroundColor = "var(--mainYellow)";
         let percent = Math.round(SVs.creditAchieved * 100);
         let partialCreditContents = `${percent}% Correct`;
 
@@ -160,7 +160,7 @@ export default function Section(props) {
     } else {
       // showCorrectness is false
       if (validationState.current !== "unvalidated") {
-        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkStyle.backgroundColor = "var(--mainPurple)";
         checkworkComponent = (
           <span id={name + "_saved"}
             style={checkWorkStyle}
