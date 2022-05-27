@@ -146,7 +146,7 @@ export default class HasSameFactoring extends BooleanComponent {
 
         if (!(Array.isArray(expr1.tree) && expr1.tree[0] === "*")) {
           if (!(Array.isArray(expr2.tree) && expr2.tree[0] === "*")) {
-            // neither expression is a product, some they have the same factoring
+            // neither expression is a product, so they have the same factoring
             return { setValue: { value: true } }
           } else {
             return { setValue: { value: false } }
