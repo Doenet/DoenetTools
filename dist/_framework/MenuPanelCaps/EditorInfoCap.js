@@ -34,6 +34,17 @@ export default function EditorInfoCap() {
       style: {marginBottom: "5px", padding: "1px 5px"}
     }, activityInfo.label));
   }
+  if (activityInfo.type == "bank") {
+    activityPageJSX = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
+      style: {marginBottom: "1px", marginTop: "5px"}
+    }, "Collection"), /* @__PURE__ */ React.createElement("div", {
+      style: {marginBottom: "5px", padding: "1px 5px"}
+    }, activityInfo.label), /* @__PURE__ */ React.createElement("div", {
+      style: {marginBottom: "1px", marginTop: "5px"}
+    }, "Page"), /* @__PURE__ */ React.createElement("div", {
+      style: {marginBottom: "5px", padding: "1px 5px"}
+    }, pageInfo.label));
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: {position: "relative", width: "100%", height: "135px", overflow: "hidden"}
   }, /* @__PURE__ */ React.createElement("img", {

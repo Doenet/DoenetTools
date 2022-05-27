@@ -4,7 +4,7 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import {faCheck, faLevelDownAlt, faTimes, faCloud} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {rendererState} from "./useDoenetRenderer.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
-export default function ChoiceInput(props) {
+export default React.memo(function ChoiceInput(props) {
   let {name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   ChoiceInput.baseStateVariable = "selectedIndices";
   const [rendererSelectedIndices, setRendererSelectedIndices] = useState(SVs.selectedIndices);
@@ -304,4 +304,4 @@ export default function ChoiceInput(props) {
       name
     }), choiceDoenetTags), checkworkComponent);
   }
-}
+});

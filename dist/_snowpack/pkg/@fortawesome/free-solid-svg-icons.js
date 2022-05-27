@@ -95,6 +95,12 @@ var faCircleExclamation = {
   icon: [512, 512, ["exclamation-circle"], "f06a", "M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM232 152C232 138.8 242.8 128 256 128s24 10.75 24 24v128c0 13.25-10.75 24-24 24S232 293.3 232 280V152zM256 400c-17.36 0-31.44-14.08-31.44-31.44c0-17.36 14.07-31.44 31.44-31.44s31.44 14.08 31.44 31.44C287.4 385.9 273.4 400 256 400z"]
 };
 var faExclamationCircle = faCircleExclamation;
+var faCircleQuestion = {
+  prefix: 'fas',
+  iconName: 'circle-question',
+  icon: [512, 512, [62108, "question-circle"], "f059", "M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256s256-114.6 256-256S397.4 0 256 0zM256 400c-18 0-32-14-32-32s13.1-32 32-32c17.1 0 32 14 32 32S273.1 400 256 400zM325.1 258L280 286V288c0 13-11 24-24 24S232 301 232 288V272c0-8 4-16 12-21l57-34C308 213 312 206 312 198C312 186 301.1 176 289.1 176h-51.1C225.1 176 216 186 216 198c0 13-11 24-24 24s-24-11-24-24C168 159 199 128 237.1 128h51.1C329 128 360 159 360 198C360 222 347 245 325.1 258z"]
+};
+var faQuestionCircle = faCircleQuestion;
 var faCloud = {
   prefix: 'fas',
   iconName: 'cloud',
@@ -251,4 +257,4 @@ var faXmark = {
 };
 var faTimes = faXmark;
 
-export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBan, faBars, faBookOpen, faCalendarPlus, faCalendarTimes, faCaretDown, faCaretRight, faChalkboard, faChartPie, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faCog, faExclamationCircle, faExternalLinkAlt, faFileCode, faFileExport, faFolder, faFolderTree, faGripLines, faGripLinesVertical, faHome, faKeyboard, faLayerGroup, faLevelDownAlt, faLightbulb, faMinus, faPercentage, faPlus, faPuzzlePiece, faSearch, faSort, faSortDown, faSortUp, faTasks, faTh, faThumbtack, faTimes, faUser };
+export { faAngleLeft, faAngleRight, faArrowLeft, faArrowUp, faBackspace, faBan, faBars, faBookOpen, faCalendarPlus, faCalendarTimes, faCaretDown, faCaretRight, faChalkboard, faChartPie, faCheck, faChevronDown, faChevronLeft, faChevronRight, faCloud, faCode, faCog, faExclamationCircle, faExternalLinkAlt, faFileCode, faFileExport, faFolder, faFolderTree, faGripLines, faGripLinesVertical, faHome, faKeyboard, faLayerGroup, faLevelDownAlt, faLightbulb, faMinus, faPercentage, faPlus, faPuzzlePiece, faQuestionCircle, faSearch, faSort, faSortDown, faSortUp, faTasks, faTh, faThumbtack, faTimes, faUser };

@@ -4,7 +4,7 @@ import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_sn
 import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Section(props) {
+export default React.memo(function Section(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -202,4 +202,4 @@ export default function Section(props) {
         style: {margin: "12px 0"}
       }, " ", content, " ");
   }
-}
+});

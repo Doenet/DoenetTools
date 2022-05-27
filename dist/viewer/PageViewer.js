@@ -626,7 +626,9 @@ export default function PageViewer(props) {
     }, /* @__PURE__ */ React.createElement("p", null, "Waiting for core to be created...."));
     pageStyle.backgroundColor = "#F0F0F0";
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, noCoreWarning, /* @__PURE__ */ React.createElement("div", {
+  return /* @__PURE__ */ React.createElement(ErrorBoundary, {
+    setIsInErrorState: props.setIsInErrorState
+  }, noCoreWarning, /* @__PURE__ */ React.createElement("div", {
     style: pageStyle
   }, documentRenderer));
 }
@@ -642,4 +644,22 @@ export async function renderersloadComponent(promises, rendererClassNames) {
     }
   }
   return rendererClasses;
+}
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {hasError: false};
+  }
+  static getDerivedStateFromError(error) {
+    return {hasError: true};
+  }
+  componentDidCatch(error, errorInfo) {
+    this.props.setIsInErrorState?.(true);
+  }
+  render() {
+    if (this.state.hasError) {
+      return /* @__PURE__ */ React.createElement("h1", null, "Something went wrong.");
+    }
+    return this.props.children;
+  }
 }

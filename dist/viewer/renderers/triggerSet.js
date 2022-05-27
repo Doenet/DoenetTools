@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-export default function TriggerSet(props) {
+export default React.memo(function TriggerSet(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props, false);
   if (SVs.hidden) {
     return null;
@@ -17,4 +17,4 @@ export default function TriggerSet(props) {
     disabled: SVs.disabled,
     value: SVs.label
   }));
-}
+});

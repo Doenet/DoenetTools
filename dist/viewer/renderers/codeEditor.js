@@ -2,7 +2,7 @@ import React, {useState, useRef} from "../../_snowpack/pkg/react.js";
 import useDoenetRenderer from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import CodeMirror from "../../_framework/CodeMirror.js";
-export default function CodeEditor(props) {
+export default React.memo(function CodeEditor(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRenderer(props);
   let currentValue = useRef(SVs.immediateValue);
   let timer = useRef(null);
@@ -74,4 +74,4 @@ export default function CodeEditor(props) {
       flexDirection: "column"
     }
   }, editor, viewer));
-}
+});

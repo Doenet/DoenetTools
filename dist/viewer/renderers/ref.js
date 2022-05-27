@@ -3,7 +3,7 @@ import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {pageToolViewAtom} from "../../_framework/NewToolRoot.js";
 import {itemByDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Ref(props) {
+export default React.memo(function Ref(props) {
   let {name, SVs, children} = useDoenetRender(props);
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
@@ -81,4 +81,4 @@ export default function Ref(props) {
       }, linkContent);
     }
   }
-}
+});

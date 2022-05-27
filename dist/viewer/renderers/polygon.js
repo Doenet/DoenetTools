@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
-export default function Polygon(props) {
+export default React.memo(function Polygon(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Polygon.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -56,6 +56,12 @@ export default function Polygon(props) {
       vertices: jsxPointAttributes.current,
       borders: jsxBorderAttributes
     };
+    jsxPolygonAttributes.label = {};
+    if (SVs.applyStyleToLabel) {
+      jsxPolygonAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxPolygonAttributes.label.strokeColor = "#000000";
+    }
     if (SVs.selectedStyle.fillColor !== "none") {
       jsxPolygonAttributes.fillColor = SVs.selectedStyle.fillColor;
     }
@@ -213,6 +219,16 @@ export default function Polygon(props) {
       polygonJXG.current.visProp.fixed = !SVs.draggable || SVs.fixed;
       polygonJXG.current.visProp["visible"] = visibleNow;
       polygonJXG.current.visPropCalc["visible"] = visibleNow;
+      polygonJXG.current.name = SVs.label;
+      if (polygonJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          polygonJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        } else {
+          polygonJXG.current.label.visProp.strokecolor = "#000000";
+        }
+        polygonJXG.current.label.needsUpdate = true;
+        polygonJXG.current.label.update();
+      }
       polygonJXG.current.needsUpdate = true;
       polygonJXG.current.update().updateVisibility();
       for (let i = 0; i < polygonJXG.current.borders.length; i++) {
@@ -220,6 +236,17 @@ export default function Polygon(props) {
         border.visProp.visible = visibleNow;
         border.visPropCalc.visible = visibleNow;
         border.visProp.fixed = !SVs.draggable || SVs.fixed;
+        if (border.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+          border.visProp.strokecolor = SVs.selectedStyle.lineColor;
+          border.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+        }
+        let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+        if (border.visProp.dash !== newDash) {
+          border.visProp.dash = newDash;
+        }
+        if (border.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+          border.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+        }
         border.needsUpdate = true;
         border.update();
       }
@@ -233,7 +260,7 @@ export default function Polygon(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }));
-}
+});
 function styleToDash(style) {
   if (style === "solid") {
     return 0;

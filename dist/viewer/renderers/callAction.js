@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-export default function CallAction(props) {
+export default React.memo(function CallAction(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -16,4 +16,4 @@ export default function CallAction(props) {
     disabled: SVs.disabled,
     value: SVs.label
   }));
-}
+});

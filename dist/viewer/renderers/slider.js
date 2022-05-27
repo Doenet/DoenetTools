@@ -155,14 +155,14 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       let maxAbs2 = Math.max(Math.abs(SVs.firstItem), Math.abs(SVs.lastItem));
       let magnitudeOfMaxAbs2 = Math.round(Math.log(maxAbs2) / Math.log(10));
       let roundDecimalsForTickSpacing = 1 - magnitudeOfMaxAbs2;
-      let dTick = round_to_decimals(desiredDTick, roundDecimalsForTickSpacing);
+      let dTick = Math.max(round_to_decimals(desiredDTick, roundDecimalsForTickSpacing), 10 ** -roundDecimalsForTickSpacing);
       let numberOfTicks = Math.floor(tickSpan / dTick) + 1;
       let roundDecimals2 = 5 - magnitudeOfMaxAbs2;
       tickValues = [...Array(numberOfTicks).keys()].map((i) => SVs.from + dTick * i);
       tickIndices = tickValues.map((x) => Math.round((x - SVs.from) / SVs.step));
       tickValues = tickValues.map((x) => round_to_decimals(x, roundDecimals2));
     } else {
-      let desiredNumberOfTicks = Math.floor(SVs.width.size / maxValueWidth);
+      let desiredNumberOfTicks = Math.max(2, Math.floor(SVs.width.size / maxValueWidth));
       let dIndex = Math.ceil((SVs.nItems - 1) / (desiredNumberOfTicks - 1) - 1e-10);
       let numberOfTicks = Math.floor((SVs.nItems - 1) / dIndex + 1e-10) + 1;
       tickIndices = [...Array(numberOfTicks).keys()].map((i) => Math.round(dIndex * i));
@@ -281,7 +281,7 @@ function nearestValue(refval, points, SVs) {
   }
   return [val, index];
 }
-export default function Slider(props) {
+export default React.memo(function Slider(props) {
   let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   Slider.baseStateVariable = "index";
   const containerRef = useRef(null);
@@ -572,4 +572,4 @@ export default function Slider(props) {
   }), ticksAndLabels)), /* @__PURE__ */ React.createElement("div", {
     style: {height: SVs.showControls ? "20px" : "0px"}
   }, controls));
-}
+});
