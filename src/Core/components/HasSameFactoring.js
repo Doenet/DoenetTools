@@ -21,6 +21,7 @@ export default class HasSameFactoring extends BooleanComponent {
       defaultValue: false
     }
 
+    // Note: monomialFactorMustMatch implies restrictDivision
     attributes.monomialFactorMustMatch = {
       createComponentOfType: "boolean",
       createStateVariable: "monomialFactorMustMatch",
@@ -98,9 +99,6 @@ export default class HasSameFactoring extends BooleanComponent {
         let expr1 = dependencyValues.mathChildren[0].stateValues.value;
         let expr2 = dependencyValues.mathChildren[1].stateValues.value;
 
-        console.log('expr1: ', expr1.tree)
-        console.log('expr2: ', expr2.tree)
-
         let result = checkEquality({
           object1: expr1, object2: expr2,
           isUnordered: false, partialMatches: false,
@@ -122,7 +120,7 @@ export default class HasSameFactoring extends BooleanComponent {
           expr2 = me.fromAst(expr2.tree[1]);
         }
 
-        if (!dependencyValues.restrictDivision) {
+        if (!dependencyValues.restrictDivision && !dependencyValues.monomialFactorMustMatch) {
           // if have a ratio where denominator is a constant
           // ignore denominator
           if (Array.isArray(expr1.tree) && expr1.tree[0] === "/"
@@ -158,6 +156,18 @@ export default class HasSameFactoring extends BooleanComponent {
         };
 
         // both expressions are products and are mathematically equivalent
+
+        if (dependencyValues.monomialFactorMustMatch) {
+          let monomial1 = findMonomialFromFactors(expr1.tree.slice(1));
+          let monomial2 = findMonomialFromFactors(expr2.tree.slice(1));
+          if (!monomial1.equals(monomial2)) {
+            // also OK if monomials are opposites
+            let monomial2Opposite = me.fromAst(['-', monomial2.tree]);
+            if (!monomial1.equals(monomial2Opposite)) {
+              return { setValue: { value: false } }
+            }
+          }
+        }
 
         let nonConstantFactors1 = expr1.tree.slice(1).filter(x => me.fromAst(x).variables().length > 0);
         let nonConstantFactors2 = expr2.tree.slice(1).filter(x => me.fromAst(x).variables().length > 0);
@@ -246,5 +256,41 @@ function expandPositiveIntegerPowers(tree) {
   }
 
   return tree;
+
+}
+
+function findMonomialFromFactors(factors) {
+
+  let monomialFactors = [];
+
+  let inMonomial = false;
+
+  for (let factor of factors) {
+    if (typeof factor === "string" || me.fromAst(factor).variables().length === 0) {
+      if(!inMonomial) {
+        if(monomialFactors.length > 0) {
+          // found a second monomial
+          return me.fromAst('\uff3f')
+        } else {
+          inMonomial = true;
+        }
+      }
+      monomialFactors.push(factor);
+    } else {
+      inMonomial = false;
+    }
+  }
+
+  let monomialTree;
+
+  if (monomialFactors.length === 0) {
+    monomialTree = 1;
+  } else if (monomialFactors.length === 1) {
+    monomialTree = monomialFactors[0];
+  } else {
+    monomialTree = ['*', ...monomialFactors];
+  }
+
+  return me.fromAst(monomialTree);
 
 }
