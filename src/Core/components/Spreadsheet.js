@@ -166,7 +166,6 @@ export default class Spreadsheet extends BlockComponent {
         }
       }),
       definition({ dependencyValues }) {
-        console.log(dependencyValues);
         let numRows = dependencyValues.minNumRows;
         if (!Number.isFinite(numRows)) {
           numRows = 4;
@@ -203,7 +202,6 @@ export default class Spreadsheet extends BlockComponent {
         }
       }),
       definition({ dependencyValues }) {
-        console.log(dependencyValues);
         let numColumns = dependencyValues.minNumColumns;
         if (!Number.isFinite(numColumns)) {
           numColumns = 4;

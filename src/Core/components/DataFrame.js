@@ -22,7 +22,6 @@ export default class DataFrame extends BaseComponent {
       public: true
     }
 
-
     attributes.colTypes = {
       createComponentOfType: "textList",
       createStateVariable: "colTypesPrelim",
@@ -69,20 +68,23 @@ export default class DataFrame extends BaseComponent {
 
     stateVariableDefinitions.dataFrame = {
       stateVariablesDeterminingDependencies: ["cid", "source"],
-      additionalStateVariablesDefined: [
-        {
-          variableName: "numRows",
-          public: true,
-          componentType: "integer"
-        }, {
-          variableName: "numColumns",
-          public: true,
-          componentType: "integer"
-        }, {
-          variableName: "colTypes",
-          public: true,
-          componentType: "textList"
-        }],
+      additionalStateVariablesDefined: [{
+        variableName: "numRows",
+        public: true,
+        componentType: "integer"
+      }, {
+        variableName: "numColumns",
+        public: true,
+        componentType: "integer"
+      }, {
+        variableName: "colTypes",
+        public: true,
+        componentType: "textList"
+      }, {
+        variableName: "columnNames",
+        public: true,
+        componentType: "textList"
+      }],
       returnDependencies: ({ stateValues }) => ({
         fileContents: {
           dependencyType: "file",
@@ -102,10 +104,10 @@ export default class DataFrame extends BaseComponent {
       }),
       definition: function ({ dependencyValues, componentName }) {
 
-        let colTypes = [];
+        let colTypes = [], columnNames = [];
 
         let originalData = dependencyValues.fileContents.trim().split("\n")
-          .map(x => x.split(","))
+          .map(x => x.trim().split(",").map(y => y.trim()))
 
         let numColumns = originalData[0]?.length;
 
@@ -119,7 +121,7 @@ export default class DataFrame extends BaseComponent {
 
         if (foundInconsistentRow) {
           console.warn(`Data has invalid shape.  Rows has inconsistent lengths. Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numColumns, colTypes } }
+          return { setValue: { dataFrame: null, numRows, numColumns, colTypes, columnNames } }
         }
 
         // know that all rows have length numColumns
@@ -128,7 +130,12 @@ export default class DataFrame extends BaseComponent {
         let data = [];
 
         if (dependencyValues.hasHeader) {
-          dataFrame.columns = originalData[0];
+          dataFrame.columns = originalData[0].map(value => {
+            if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
+              value = value.substring(1, value.length - 1);
+            }
+            return value;
+          });
           data = originalData.slice(1);
         } else {
           dataFrame.columns = [...Array(numColumns).keys()].map(x => `col${x + 1}`);
@@ -137,12 +144,12 @@ export default class DataFrame extends BaseComponent {
 
         if ([...new Set(dataFrame.columns)].length < dataFrame.columns) {
           console.warn(`Data has duplicate column names.  Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numColumns, colTypes } }
+          return { setValue: { dataFrame: null, numRows, numColumns, colTypes, columnNames } }
         }
 
         if (dataFrame.columns.includes("")) {
           console.warn(`Data is missing a column name.  Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numColumns, colTypes } }
+          return { setValue: { dataFrame: null, numRows, numColumns, colTypes, columnNames } }
         }
 
         let numRows = data.length;
@@ -201,11 +208,11 @@ export default class DataFrame extends BaseComponent {
             for (let rowInd = 0; rowInd < numRows; rowInd++) {
 
               let value = data[rowInd][colInd];
-              if([`"`,`'`].includes(value[0]) && value[value.length-1]===value[0]) {
-                value = value.substring(1,value.length-1);
-                data[rowInd][colInd] = value;
+              if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
+                value = value.substring(1, value.length - 1);
               }
-              
+              data[rowInd][colInd] = value;
+
             }
           }
 
@@ -216,7 +223,7 @@ export default class DataFrame extends BaseComponent {
 
         dataFrame.data = data;
 
-        return { setValue: { dataFrame, numRows, numColumns, colTypes } };
+        return { setValue: { dataFrame, numRows, numColumns, colTypes, columnNames: dataFrame.columns } };
       },
 
     }
