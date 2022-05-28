@@ -8,13 +8,11 @@ export const BoardContext = createContext();
 
 export default React.memo(function Chart(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
-  // console.log({ name, SVs, actions })
+  // console.log({ name, SVs })
 
 
   //Draw chart after mounting component
   useEffect(() => {
-
-    console.log(SVs.dataFrame)
 
     if (SVs.dataFrame !== null) {
 
@@ -30,12 +28,20 @@ export default React.memo(function Chart(props) {
 
       let data = [];
 
-      for(let colInd of colInds) {
-        data.push({
-          x: extractColumn(SVs.dataFrame.data, colInd),
-          type: "histogram",
-          name: SVs.dataFrame.columnNames[colInd]
-        })
+      for (let colInd of colInds) {
+        if (SVs.type === "box") {
+          data.push({
+            y: extractColumn(SVs.dataFrame.data, colInd),
+            type: "box",
+            name: SVs.dataFrame.columnNames[colInd]
+          })
+        } else {
+          data.push({
+            x: extractColumn(SVs.dataFrame.data, colInd),
+            type: "histogram",
+            name: SVs.dataFrame.columnNames[colInd]
+          })
+        }
       }
 
       Plotly.newPlot(name, {

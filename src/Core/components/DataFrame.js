@@ -163,7 +163,7 @@ export default class DataFrame extends BaseComponent {
 
 
         for (let colInd = 0; colInd < numColumns; colInd++) {
-          let prescribedType = dependencyValues.columnTypesPrelim[colInd].toLowerCase();
+          let prescribedType = dependencyValues.columnTypesPrelim[colInd]?.toLowerCase();
           if (!["number", "string"].includes(prescribedType)) {
             prescribedType = "auto";
           }

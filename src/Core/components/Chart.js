@@ -13,7 +13,8 @@ export default class Chart extends BlockComponent {
       createStateVariable: "type",
       defaultValue: "histogram",
       toLowerCase: true,
-      validValues: ["histogram", "dotplot", "frequencytable", "boxplot", "barchart"]
+      validValues: ["histogram", "dotplot", "frequencytable", "box", "bar"],
+      forRenderer: true,
     }
 
     attributes.column = {
