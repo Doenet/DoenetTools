@@ -136,7 +136,7 @@ export default function NavigationPanel() {
         
       }else{
         //Find first page
-        let pageDoenetId = findFirstPageOfActivity(clickedItem.order);
+        let pageDoenetId = findFirstPageOfActivity(clickedItem.content);
         if (pageDoenetId == null){
           addToast(`ERROR: No page found in activity`, toastType.INFO);
         }else{
@@ -144,7 +144,7 @@ export default function NavigationPanel() {
               page: 'course',
               tool: 'editor',
               view: prev.view,
-              params: { pageId:pageDoenetId, doenetId },
+              params: { doenetId, pageId:pageDoenetId },
           }})
         }
       }

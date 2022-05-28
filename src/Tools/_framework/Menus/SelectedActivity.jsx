@@ -27,7 +27,7 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
     label: recoilLabel,
-    order
+    content
   } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const {
@@ -44,7 +44,7 @@ export default function SelectedActivity() {
     setItemTextFieldLabel(recoilLabel);
   }, [recoilLabel]);
 
-  let firstPageDoenetId = findFirstPageOfActivity(order);
+  let firstPageDoenetId = findFirstPageOfActivity(content);
 
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;

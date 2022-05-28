@@ -113,33 +113,24 @@ export const enrollmentByCourseId = selectorFamily({
 
 })
 
-
-function buildDoenetIdToParentDoenetIdObj(orderObj){
+function buildDoenetIdToParentDoenetIdObj(contentArray,orderDoenetId=null){
   let returnObj = {}
-  orderObj.content.map((item)=>{
+  contentArray.map((item)=>{
     if (item?.type == "order"){
-      returnObj[item.doenetId] = orderObj.doenetId;
-      let childObj = buildDoenetIdToParentDoenetIdObj(item);
+      let childObj = buildDoenetIdToParentDoenetIdObj(item.content,item.doenetId);
       returnObj = {...childObj,...returnObj}
-    }else{
-      returnObj[item] = orderObj.doenetId;
+    }else if (orderDoenetId !== null){
+      returnObj[orderDoenetId] = item;
     }
     returnObj
   })
   return returnObj;
 }
 
-export function findFirstPageOfActivity(orderObj){
-  if (!orderObj?.content){
-    return null;
-  }
-  //No pages or orders in order so return null
-  if (orderObj.content.length == 0){
-    return null;
-  }
+export function findFirstPageOfActivity(content){
   let response = null;
 
-  for (let item of orderObj.content){
+  for (let item of content){
     // console.log("item",item)
 
     if (typeof item === 'string' || item instanceof String){
@@ -148,7 +139,7 @@ export function findFirstPageOfActivity(orderObj){
       break;
     }else{
       //First item of content is another order
-      let nextOrderResponse = findFirstPageOfActivity(item);
+      let nextOrderResponse = findFirstPageOfActivity(item.content);
     
       if (typeof nextOrderResponse === 'string' || nextOrderResponse instanceof String){
         response = nextOrderResponse;
@@ -162,41 +153,40 @@ export function findFirstPageOfActivity(orderObj){
 }
 
 //Recursive Function for order which adds orders to the itemByDoenetId
-function findOrderAndPageDoenetIdsAndSetOrderObjs(set,orderObj,assignmentDoenetId,parentDoenetId){
+function findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray,assignmentDoenetId,orderDoenetId=null}){
   let orderAndPagesDoenetIds = [];
-  //Guard for when there is no order
-  if (orderObj){
-    //Store order objects for UI
-    let numberToSelect = orderObj.numberToSelect;
-    if (numberToSelect == undefined){
-      numberToSelect = 1;
-    }
-    let withReplacement = orderObj.withReplacement;
-    if (withReplacement == undefined){
-      withReplacement = false;
-    }
-    set(itemByDoenetId(orderObj.doenetId), {
-      type: "order",
-      doenetId: orderObj.doenetId, 
-      behavior:orderObj.behavior,
-      numberToSelect,
-      withReplacement,
-      containingDoenetId:assignmentDoenetId,
-      isOpen:false,
-      isSelected:false,
-      parentDoenetId
-    });
-    orderAndPagesDoenetIds.push(orderObj.doenetId);
-    for (let orderItem of orderObj.content){
-      if (orderItem?.type == 'order'){
-        let moreOrderDoenetIds = findOrderAndPageDoenetIdsAndSetOrderObjs(set,orderItem,assignmentDoenetId,orderObj.doenetId);
-        orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
+   
+    for (let item of contentArray){
+      if (item?.type == 'order'){
+        //TODO handle order
+         //Store order objects for UI
+    // let numberToSelect = orderObj.numberToSelect;
+    // if (numberToSelect == undefined){
+    //   numberToSelect = 1;
+    // }
+    // let withReplacement = orderObj.withReplacement;
+    // if (withReplacement == undefined){
+    //   withReplacement = false;
+    // }
+    // set(itemByDoenetId(orderObj.doenetId), {
+    //   type: "order",
+    //   doenetId: orderObj.doenetId, 
+    //   behavior:orderObj.behavior,
+    //   numberToSelect,
+    //   withReplacement,
+    //   containingDoenetId:assignmentDoenetId,
+    //   isOpen:false,
+    //   isSelected:false,
+    //   parentDoenetId
+    // });
+    // orderAndPagesDoenetIds.push(orderObj.doenetId);
+        // let moreOrderDoenetIds = findOrderAndPageDoenetIdsAndSetOrderObjs(set,orderItem,assignmentDoenetId,orderObj.doenetId);
+        // orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
       }else{
         //Page 
-        orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,orderItem];
+        orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,item];
       }
     }
-  }
   return orderAndPagesDoenetIds;
 }
 
@@ -261,7 +251,7 @@ export function useInitCourseItems(courseId) {
 
           if(data.success) {
             //DoenetIds depth first search and going into json structures
-            // console.log("data",data)
+            console.log("data",data)
             //TODO: make more efficent for student only view
             let pageDoenetIdToParentDoenetId = {};
             let doenetIds = data.items.reduce((items,item)=>{
@@ -269,11 +259,19 @@ export function useInitCourseItems(courseId) {
                 items.push(item.doenetId)
               }
               if (item.type === 'activity'){
-                let newPageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.order);
+                //TODO: needs testing with orders
+                let newPageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.content);
                 pageDoenetIdToParentDoenetId = {...pageDoenetIdToParentDoenetId,...newPageDoenetIdToParentDoenetId}
-
-                let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs(set,item.order,item.doenetId,item.doenetId);
-                items = [...items,...ordersAndPages];
+                console.log("newPageDoenetIdToParentDoenetId",newPageDoenetIdToParentDoenetId)
+                //HERE!
+                let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs({
+                  set,
+                  contentArray:item.content,
+                  assignmentDoenetId:item.doenetId
+                });
+                if (item.isMultipage){
+                  items = [...items,...ordersAndPages];
+                }
               }else if (item.type === 'bank'){
                 item.pages.map((childDoenetId)=>{
                   pageDoenetIdToParentDoenetId[childDoenetId] = item.doenetId;
@@ -863,11 +861,11 @@ export const useCourse = (courseId) => {
               itemType,
               parentDoenetId,
           });
-          // console.log('activityData', data);
+          console.log('activityData', data);
           let createdActivityDoenentId = data.doenetId;
           newDoenetId = createdActivityDoenentId;
           //Activity
-          set(itemByDoenetId(createdActivityDoenentId), {
+          let newActivityObj = {
             //Defaults for future assignment settings
             timeLimit: null,
             numberOfAttemptsAllowed: null,
@@ -883,30 +881,13 @@ export const useCourse = (courseId) => {
             pinnedAfterDate: null,
             pinnedUntilDate: null,
             ...data.itemEntered,
-          });
-
-          //Order
-          let createdOrderDoenetId = data.itemEntered.order.doenetId;
-          let numberToSelect = 1;
-          let withReplacement = false;
-         
-          let createdOrderObj = {
-            type: "order",
-            doenetId:createdOrderDoenetId,
-            behavior:"sequence",
-            numberToSelect,
-            withReplacement,
-            parentDoenetId:createdActivityDoenentId,
-            isOpen:false,
-            isSelected:false,
-            containingDoenetId:createdActivityDoenentId
           }
-          set(itemByDoenetId(createdOrderDoenetId), createdOrderObj); 
+          set(itemByDoenetId(createdActivityDoenentId), newActivityObj);
 
           //Page
           let createdPageObj = {
             ...data.pageEntered,
-            parentDoenetId:createdOrderDoenetId
+            parentDoenetId:createdActivityDoenentId
           }
           set(itemByDoenetId(data.pageDoenetId), createdPageObj); 
 
@@ -914,10 +895,12 @@ export const useCourse = (courseId) => {
           let indexOfPrevious = newAuthorItemDoenetIds.indexOf(previousDoenetId);
           if (indexOfPrevious == -1){
             //Place new item at the end as the prevousDoenetId isn't visible
-            newAuthorItemDoenetIds.push(createdActivityDoenentId,createdOrderDoenetId,createdPageObj.doenetId);
+            newAuthorItemDoenetIds.push(createdActivityDoenentId);
+            // newAuthorItemDoenetIds.push(createdActivityDoenentId,createdPageObj.doenetId);
           }else{
             //insert right after the index
-            newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,createdActivityDoenentId,createdOrderDoenetId,createdPageObj.doenetId)
+            newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,createdActivityDoenentId)
+            // newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,createdActivityDoenentId,createdPageObj.doenetId)
           }
           set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
         } else if (itemType == 'bank') {
