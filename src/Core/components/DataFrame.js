@@ -22,9 +22,9 @@ export default class DataFrame extends BaseComponent {
       public: true
     }
 
-    attributes.colTypes = {
+    attributes.columnTypes = {
       createComponentOfType: "textList",
-      createStateVariable: "colTypesPrelim",
+      createStateVariable: "columnTypesPrelim",
       defaultValue: [],
     }
 
@@ -77,7 +77,7 @@ export default class DataFrame extends BaseComponent {
         public: true,
         componentType: "integer"
       }, {
-        variableName: "colTypes",
+        variableName: "columnTypes",
         public: true,
         componentType: "textList"
       }, {
@@ -96,15 +96,15 @@ export default class DataFrame extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "hasHeader"
         },
-        colTypesPrelim: {
+        columnTypesPrelim: {
           dependencyType: "stateVariable",
-          variableName: "colTypesPrelim"
+          variableName: "columnTypesPrelim"
         },
 
       }),
       definition: function ({ dependencyValues, componentName }) {
 
-        let colTypes = [], columnNames = [];
+        let columnTypes = [], columnNames = [];
 
         let originalData = dependencyValues.fileContents.trim().split("\n")
           .map(x => x.trim().split(",").map(y => y.trim()))
@@ -121,7 +121,7 @@ export default class DataFrame extends BaseComponent {
 
         if (foundInconsistentRow) {
           console.warn(`Data has invalid shape.  Rows has inconsistent lengths. Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numColumns, colTypes, columnNames } }
+          return { setValue: { dataFrame: null, numRows, numColumns, columnTypes, columnNames } }
         }
 
         // know that all rows have length numColumns
@@ -130,7 +130,7 @@ export default class DataFrame extends BaseComponent {
         let data = [];
 
         if (dependencyValues.hasHeader) {
-          dataFrame.columns = originalData[0].map(value => {
+          dataFrame.columnNames = originalData[0].map(value => {
             if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
               value = value.substring(1, value.length - 1);
             }
@@ -138,18 +138,18 @@ export default class DataFrame extends BaseComponent {
           });
           data = originalData.slice(1);
         } else {
-          dataFrame.columns = [...Array(numColumns).keys()].map(x => `col${x + 1}`);
+          dataFrame.columnNames = [...Array(numColumns).keys()].map(x => `col${x + 1}`);
           data = originalData;
         }
 
-        if ([...new Set(dataFrame.columns)].length < dataFrame.columns) {
+        if ([...new Set(dataFrame.columnNames)].length < dataFrame.columnNames) {
           console.warn(`Data has duplicate column names.  Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numColumns, colTypes, columnNames } }
+          return { setValue: { dataFrame: null, numRows, numColumns, columnTypes, columnNames } }
         }
 
-        if (dataFrame.columns.includes("")) {
+        if (dataFrame.columnNames.includes("")) {
           console.warn(`Data is missing a column name.  Found in componentName :${componentName}`);
-          return { setValue: { dataFrame: null, numRows, numColumns, colTypes, columnNames } }
+          return { setValue: { dataFrame: null, numRows, numColumns, columnTypes, columnNames } }
         }
 
         let numRows = data.length;
@@ -158,12 +158,12 @@ export default class DataFrame extends BaseComponent {
 
 
         // data is an array of array of strings
-        // uses colType to convert to acceptable format
-        // Default colType is auto
+        // uses columnType to convert to acceptable format
+        // Default columnType is auto
 
 
         for (let colInd = 0; colInd < numColumns; colInd++) {
-          let prescribedType = dependencyValues.colTypesPrelim[colInd].toLowerCase();
+          let prescribedType = dependencyValues.columnTypesPrelim[colInd].toLowerCase();
           if (!["number", "string"].includes(prescribedType)) {
             prescribedType = "auto";
           }
@@ -216,14 +216,15 @@ export default class DataFrame extends BaseComponent {
             }
           }
 
-          colTypes.push(prescribedType);
+          columnTypes.push(prescribedType);
 
         }
 
 
         dataFrame.data = data;
+        dataFrame.columnTypes = columnTypes;
 
-        return { setValue: { dataFrame, numRows, numColumns, colTypes, columnNames: dataFrame.columns } };
+        return { setValue: { dataFrame, numRows, numColumns, columnTypes, columnNames: dataFrame.columnNames } };
       },
 
     }
@@ -256,9 +257,9 @@ export default class DataFrame extends BaseComponent {
             dependencyType: "stateVariable",
             variableName: "numRows",
           },
-          colTypes: {
+          columnTypes: {
             dependencyType: "stateVariable",
-            variableName: "colTypes",
+            variableName: "columnTypes",
           }
         };
 
@@ -272,7 +273,7 @@ export default class DataFrame extends BaseComponent {
         for (let arrayKey of arrayKeys) {
           let theMean = 0;
           let numValues = 0;
-          if (globalDependencyValues.colTypes[arrayKey] === "number") {
+          if (globalDependencyValues.columnTypes[arrayKey] === "number") {
             for (let rowInd = 0; rowInd < globalDependencyValues.numRows; rowInd++) {
               let theValue = globalDependencyValues.dataFrame.data[rowInd][arrayKey];
               if (theValue !== null) {

@@ -1070,7 +1070,7 @@ export default class Spreadsheet extends BlockComponent {
 
   async onChange({ changes, source, actionId }) {
 
-    if (source !== "loadData") {
+    if (source === "edit") {
       let cellChanges = {};
       for (let change of changes) {
         let [row, col, prev, value] = change;

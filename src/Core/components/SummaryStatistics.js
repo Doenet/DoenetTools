@@ -14,7 +14,6 @@ export default class SummaryStatistics extends BlockComponent {
       createComponentOfType: "text",
       createStateVariable: "desiredColumn",
       defaultValue: null,
-      public: true,
     }
 
     attributes.statisticsToDisplay = {
@@ -23,6 +22,7 @@ export default class SummaryStatistics extends BlockComponent {
       defaultValue: ["all"],
     }
 
+    // TODO: enable feature where compute summary statistics for each value of a column
     attributes.byCategoryColumn = {
       createComponentOfType: "text",
       createStateVariable: "byCategoryColumn",
@@ -96,7 +96,7 @@ export default class SummaryStatistics extends BlockComponent {
         variableName: "columnName",
         public: true,
         componentType: "text",
-         forRenderer: true, 
+        forRenderer: true,
       }],
       returnDependencies() {
         return {
@@ -112,14 +112,12 @@ export default class SummaryStatistics extends BlockComponent {
 
         }
       },
-      definition: function ({ dependencyValues }) {
+      definition({ dependencyValues }) {
 
-        console.log('definition of dataColumn', dependencyValues)
-
-        let dataColumn = null, columnName=null;
+        let dataColumn = null, columnName = null;
         if (dependencyValues.targetComponent?.stateValues.dataFrame) {
           let dataFrame = dependencyValues.targetComponent.stateValues.dataFrame;
-          let colInd = dataFrame.columns.indexOf(dependencyValues.desiredColumn);
+          let colInd = dataFrame.columnNames.indexOf(dependencyValues.desiredColumn);
           if (colInd !== -1) {
             columnName = dependencyValues.desiredColumn;
             dataColumn = [];
