@@ -4,6 +4,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
 import styled from 'styled-components';
 
+// Moved most of checkWorkStyle styling into Button
+const Button = styled.button `
+  position: relative;
+  height: 24px;
+  display: inline-block;
+  color: white;
+  background-color: var(--mainBlue);
+  /* padding: 2px; */
+  /* border: var(--mainBorder); */
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 10px 12px 10px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
+
 export default function Answer(props) {
   let { name, SVs, actions, children, callAction } = useDoenetRender(props);
 
@@ -52,25 +71,6 @@ export default function Answer(props) {
     let checkWorkStyle = {
       cursor: 'pointer',
     }
-
-    // Moved most of checkWorkStyle styling into Button
-    const Button = styled.button `
-      position: relative;
-      height: 24px;
-      display: inline-block;
-      color: white;
-      background-color: var(--mainBlue);
-      /* padding: 2px; */
-      /* border: var(--mainBorder); */
-      border: none;
-      border-radius: var(--mainBorderRadius);
-      margin: 0px 10px 12px 10px;
-
-      &:hover {
-        background-color: var(--lightBlue);
-        color: black;
-      };
-    `;
 
     if (disabled) {
       checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");

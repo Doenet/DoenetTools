@@ -7,33 +7,15 @@ import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
-const TextArea = styled.textarea `
-  width: ${props => props.width};
-  // height: sizeToCSS(SVs.height),
-  height: 24px;
-  /* font-size: 14px; */
-  /* border-width: 1px; */
-  border: 2px solid black;
-  /* border-color: ${surroundingBorderColor}; */
-`;
-
-const Input = styled.input `
-  width: ${props => props.inputWidth}px;
-  height: 24px;
-  /* font-size: 14px; */
-  /* border-width: 1px; */
-  border: 2px solid black;
-  /* border-color: ${surroundingBorderColor}; */
-`;
-
+// Moved most of checkWorkStyle styling into Button
 const Button = styled.button `
   position: relative;
-  width: 24px;
   height: 24px;
-  color: #ffffff;
   display: inline-block;
-  text-align: center;
-  padding: 2px;
+  color: white;
+  background-color: var(--mainBlue);
+  /* padding: 2px; */
+  /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
   margin: 0px 10px 12px 10px;
@@ -44,11 +26,25 @@ const Button = styled.button `
   };
 `;
 
+const TextArea = styled.textarea `
+  width: ${props => props.textAreaWidth};
+  height: 20px;
+  font-size: 14px;
+  border: ${props => props.surroundingBorder};
+`;
+
+const Input = styled.input `
+  width: ${props => props.inputWidth}px;
+  height: 20px;
+  font-size: 14px;
+  border: ${props => props.surroundingBorder};
+`;
+
 export default function TextInput(props) {
   let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
-  let width = sizeToCSS(SVs.width);
-  let inputWidth = SVs.size * 10;
 
+  let textAreaWidth = sizeToCSS(SVs.width);
+  let inputWidth = SVs.size * 10;
   TextInput.baseStateVariable = "immediateValue";
 
   const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
@@ -174,10 +170,11 @@ export default function TextInput(props) {
 
   const inputKey = name + '_input';
 
-  let surroundingBorderColor = "#efefef";
+  let surroundingBorder = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
   if (focused.current) {
-    surroundingBorderColor = "#82a5ff";
+    surroundingBorder = "2px solid var(--lightBlue)";
   }
+
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
@@ -190,29 +187,28 @@ export default function TextInput(props) {
     if (validationState === "unvalidated") {
       if (disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-        checkWorkStyle.cursor = 'not-allowed'
       } else {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");;
       }
       checkWorkButton = 
-        <Button
-          id={name + '_submit'}
-          tabIndex="0"
-          disabled={disabled}
-          style={checkWorkStyle}
-          onClick={() => callAction({
-            action: actions.submitAnswer,
-          })}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              callAction({
-                action: actions.submitAnswer,
-              });
-            }
-          }}
-        >
-          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-        </Button>
+      <Button
+        id={name + '_submit'}
+        tabIndex="0"
+        disabled={disabled}
+        style={checkWorkStyle}
+        onClick={() => callAction({
+          action: actions.submitAnswer,
+        })}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            callAction({
+              action: actions.submitAnswer,
+            });
+          }
+        }}
+      >
+        <FontAwesomeIcon style={{marginRight: "4px", paddingLeft: "2px"}} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+      </Button>
     } else {
       if (SVs.showCorrectness) {
         if (validationState === "correct") {
@@ -226,6 +222,7 @@ export default function TextInput(props) {
             </Button>
         } else if (validationState === "partialcorrect") {
           //partial credit
+
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
           checkWorkStyle.width = "50px";
@@ -240,7 +237,7 @@ export default function TextInput(props) {
             </Button>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");;
           checkWorkButton = 
             <Button
               id={name + '_incorrect'}
@@ -248,6 +245,7 @@ export default function TextInput(props) {
             >
               <FontAwesomeIcon icon={faTimes} />
             </Button>
+
         }
       } else {
         // showCorrectness is false
@@ -259,34 +257,38 @@ export default function TextInput(props) {
           >
             <FontAwesomeIcon icon={faCloud} />
           </Button>
+
       }
     }
 
     if (SVs.numberOfAttemptsLeft < 0) {
-      checkWorkButton = 
-        <>
-          {checkWorkButton}
-          <span>(no attempts remaining)</span>
-        </>
+      checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (no attempts remaining)
+        </span>
+      </>
     } else if (SVs.numberOfAttemptsLeft == 1) {
-      checkWorkButton =
-        <>
-          {checkWorkButton}
-          <span>(1 attempt remaining)</span>
-        </>
+      checkworkComponent = <>
+        {checkworkComponent}
+        <span>
+          (1 attempt remaining)
+        </span>
+      </>
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-      checkWorkButton = 
-        <>
-          {checkWorkButton}
-          <span>({SVs.numberOfAttemptsLeft} attempts remaining)</span>
-        </>
+      checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (attempts remaining: {SVs.numberOfAttemptsLeft})
+        </span>
+      </>
     }
+
   }
 
   let input;
   if (SVs.expanded) {
     input = <TextArea
-      width={width}
       key={inputKey}
       id={inputKey}
       value={rendererValue}
@@ -296,10 +298,11 @@ export default function TextInput(props) {
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
       onFocus={handleFocus}
+      textAreaWidth={textAreaWidth}
+      surroundingBorder={surroundingBorder}
     />
   } else {
     input = <Input
-      inputWidth={inputWidth}
       key={inputKey}
       id={inputKey}
       value={rendererValue}
@@ -309,6 +312,8 @@ export default function TextInput(props) {
       onKeyDown={handleKeyDown}
       onBlur={handleBlur}
       onFocus={handleFocus}
+      inputWidth={inputWidth}
+      surroundingBorder={surroundingBorder}
     />
   }
 
