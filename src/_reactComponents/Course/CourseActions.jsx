@@ -127,11 +127,10 @@ function buildDoenetIdToParentDoenetIdObj(contentArray,orderDoenetId=null){
   return returnObj;
 }
 
-export function findFirstPageOfActivity(content){
+export function findFirstPageOfActivity(content = []){
   let response = null;
 
   for (let item of content){
-    // console.log("item",item)
 
     if (typeof item === 'string' || item instanceof String){
       //First content is a string so return the doenetId
@@ -830,7 +829,7 @@ export const useCourse = (courseId) => {
             let lastItemObj = await snapshot.getPromise(itemByDoenetId(lastItemInSectionDoenetId));
             if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
               previousContainingDoenetId = lastItemObj.containingDoenetId;
-            }else if (lastItemObj.type == 'bank' || lastItemObj.type == 'section'){
+            }else if (lastItemObj.type == 'activity' || lastItemObj.type == 'bank' || lastItemObj.type == 'section'){
               previousContainingDoenetId = lastItemObj.doenetId;
             }
 
@@ -854,6 +853,13 @@ export const useCourse = (courseId) => {
         }
         //Get selection information to know previous doenetId by order
         if (itemType == 'activity') {
+
+          console.log("props to create activity", {
+            previousContainingDoenetId,
+            courseId,
+            itemType,
+            parentDoenetId,
+        })
  
           let { data } = await axios.post('/api/createCourseItem.php', {
               previousContainingDoenetId,

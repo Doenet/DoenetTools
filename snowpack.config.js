@@ -59,6 +59,15 @@ module.exports = {
       },
     },
     {
+      src: '/media/byPageId/.*',
+      dest: (req, res) => {
+        return proxy.web(req, res, {
+          hostname: 'apache',
+          port: 80,
+        });
+      },
+    },
+    {
       match: 'routes',
       src: '/temp.*',
       dest: '/temp/index.html',
