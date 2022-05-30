@@ -14,21 +14,21 @@ const TextNoSelect = styled.text`
   user-select: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 `;
-const ModeButton = styled.button`
-  &:focus {
-    outline: 0;
-  }
-  width: 120px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-  margin-left: 1px;
-  margin-top: 1px;
-`;
 
-
+// Used before ActionButton and ToggleButton were implemented
+// const ModeButton = styled.button`
+//   &:focus {
+//     outline: 0;
+//   }
+//   width: 120px;
+//   -webkit-user-select: none;
+//   -moz-user-select: none;
+//   -ms-user-select: none;
+//   user-select: none;
+//   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+//   margin-left: 1px;
+//   margin-top: 1px;
+// `;
 
 export default function subsetOfReals(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props, false);
@@ -127,7 +127,7 @@ export default function subsetOfReals(props) {
     );
   }
 
-  //Build points
+  // Build points
   let storedPoints = [];
 
   for (let pt of SVs.points) {
@@ -153,7 +153,6 @@ export default function subsetOfReals(props) {
         fill={currentFillColor}
       />
     );
-
   }
 
   // Build lines
@@ -245,7 +244,6 @@ export default function subsetOfReals(props) {
     let pointHitTolerance = 0.2;
 
     if (inputState === "up") {
-
       if (mode === "move points") {
         if (pointGrabbed.current !== null) {
 
@@ -258,11 +256,8 @@ export default function subsetOfReals(props) {
             }
           })
           pointGrabbed.current = null;
-
         }
-
       }
-
       if (mode === "add remove points") {
         if (pointGrabbed.current !== null) {
           callAction({
@@ -294,9 +289,7 @@ export default function subsetOfReals(props) {
           })
         }
       }
-
     } else if (inputState === "down") {
-
       let pointInd = null;
       for (let [ind, pt] of SVs.points.entries()) {
         if (Math.abs(pt.value - xPosition) < pointHitTolerance) {
@@ -321,7 +314,6 @@ export default function subsetOfReals(props) {
             transient: true
           }
         })
-
       }
     } else if (inputState == "leave") {
       if (mode === "move points") {
@@ -339,9 +331,6 @@ export default function subsetOfReals(props) {
         }
       }
     }
-
-
-
   }
 
  return  (
@@ -389,5 +378,4 @@ export default function subsetOfReals(props) {
     </svg>
   </>
   );
-
 }
