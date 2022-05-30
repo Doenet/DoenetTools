@@ -5559,8 +5559,6 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}" + answer[1], { delay: 5, force: true }).blur();
       cy.get('#\\/_mathinput2 textarea').type("{ctrl+home}{shift+end}{backspace}" + answer[2], { delay: 5, force: true }).blur();
       cy.get('#\\/_mathinput3 textarea').type("{end}{backspace}" + answer[3], { delay: 5, force: true }).blur();
-      // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-      cy.wait(0)
       cy.get('#\\/_answer1_submit').click();
 
       cy.get('#\\/sr1 .mjx-mrow').should('have.text', answer[1])
@@ -6409,8 +6407,6 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Submit answer")
     cy.get('#\\/_mathinput2 textarea').blur();
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
@@ -6508,8 +6504,6 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
@@ -6526,8 +6520,6 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -6659,8 +6651,6 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'rain');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
@@ -6763,8 +6753,6 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'rain');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
@@ -6788,8 +6776,6 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'x');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
