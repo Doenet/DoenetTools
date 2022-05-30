@@ -28,23 +28,25 @@ const Button = styled.button `
 
 const TextArea = styled.textarea `
   width: ${props => props.textAreaWidth};
-  height: 20px;
+  height: ${props => props.textAreaHeight}; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
-  border: ${props => props.surroundingBorder};
+  border: ${props => props.surroundingBorder}; // Turns blue on focus
 `;
 
 const Input = styled.input `
   width: ${props => props.inputWidth}px;
-  height: 20px;
+  height: 20px; // Same height as the checkWorkButton, accounting for the borders
   font-size: 14px;
-  border: ${props => props.surroundingBorder};
+  border: ${props => props.surroundingBorder}; // Turns blue on focus
 `;
 
 export default function TextInput(props) {
   let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
-  let textAreaWidth = sizeToCSS(SVs.width);
-  let inputWidth = SVs.size * 10;
+  let textAreaWidth = sizeToCSS(SVs.width); // TextArea prop
+  let textAreaHeight = sizeToCSS(SVs.height); // TextArea prop
+  let inputWidth = SVs.size * 10; // Input prop
+
   TextInput.baseStateVariable = "immediateValue";
 
   const [rendererValue, setRendererValue] = useState(SVs.immediateValue);
@@ -65,7 +67,6 @@ export default function TextInput(props) {
   } else {
     immediateValueWhenSetState.current = null;
   }
-
 
   let validationState = 'unvalidated';
   if (SVs.valueHasBeenValidated) {
@@ -159,24 +160,21 @@ export default function TextInput(props) {
     }
   }
 
-
   if (SVs.hidden) {
     return null;
   }
-
-
 
   let disabled = SVs.disabled;
 
   const inputKey = name + '_input';
 
+  // textInput turns blue when focused, otherwise maintains the main border
   let surroundingBorder = getComputedStyle(document.documentElement).getPropertyValue("--mainBorder");
   if (focused.current) {
     surroundingBorder = "2px solid var(--lightBlue)";
   }
 
-
-  //Assume we don't have a check work button
+  // Assume we don't have a check work button
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
 
@@ -188,7 +186,7 @@ export default function TextInput(props) {
       if (disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
       } else {
-        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");;
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
       }
       checkWorkButton = 
       <Button
@@ -222,7 +220,6 @@ export default function TextInput(props) {
             </Button>
         } else if (validationState === "partialcorrect") {
           //partial credit
-
           let percent = Math.round(SVs.creditAchieved * 100);
           let partialCreditContents = `${percent} %`;
           checkWorkStyle.width = "50px";
@@ -237,7 +234,7 @@ export default function TextInput(props) {
             </Button>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");;
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
           checkWorkButton = 
             <Button
               id={name + '_incorrect'}
@@ -245,7 +242,6 @@ export default function TextInput(props) {
             >
               <FontAwesomeIcon icon={faTimes} />
             </Button>
-
         }
       } else {
         // showCorrectness is false
@@ -257,7 +253,6 @@ export default function TextInput(props) {
           >
             <FontAwesomeIcon icon={faCloud} />
           </Button>
-
       }
     }
 
@@ -283,7 +278,6 @@ export default function TextInput(props) {
         </span>
       </>
     }
-
   }
 
   let input;
@@ -299,6 +293,7 @@ export default function TextInput(props) {
       onBlur={handleBlur}
       onFocus={handleFocus}
       textAreaWidth={textAreaWidth}
+      textAreaHeight={textAreaHeight}
       surroundingBorder={surroundingBorder}
     />
   } else {
