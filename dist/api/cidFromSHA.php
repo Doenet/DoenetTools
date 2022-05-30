@@ -8,16 +8,16 @@ function cidFromSHA($SHA){
   // (eventually we want dag-pb)
   $multiHash =  $algorithm . $hashLen . $SHA; 
   $multiCodec = '55'; //raw binary
-  $CIDversion = '01'; //2nd version of Multiformat (starts at 0) 
+  $cidVersion = '01'; //2nd version of Multiformat (starts at 0) 
 
-  $hexCID = $CIDversion . $multiCodec . $multiHash;
+  $hexCid = $cidVersion . $multiCodec . $multiHash;
 
-  $encoded = Base32::encode(hex2bin($hexCID));
+  $encoded = Base32::encode(hex2bin($hexCid));
   $encoded = str_replace("=","",$encoded);
 
   $base = 'b'; //code https://github.com/multiformats/multibase/blob/master/multibase.csv
-  $CID = $base . $encoded;
-  return $CID;
+  $cid = $base . $encoded;
+  return $cid;
 }
 
 ?>

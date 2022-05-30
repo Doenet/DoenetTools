@@ -11,12 +11,13 @@ function cesc(s) {
 describe('Lorem Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
 
   it('paragraphs, sentences, and words', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -44,6 +45,10 @@ describe('Lorem Tag Tests', function () {
   
     <p><lorem name="lWords" generateWords="$numWords" assignNames="a b c d e f g" /></p>
   </section>
+
+  <p>
+    <copy prop="value" target="words/numWords" assignNames="numWords" />
+  </p>
   `}, "*");
     });
 
@@ -51,31 +56,31 @@ describe('Lorem Tag Tests', function () {
 
     let names = ["a", "b", "c", "d", "e", "f"]
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       let nParagraphs = 3, nSentences = 3, nWords = 3;
 
-      expect(components["/paragraphs/lPars"].replacements.length).eq(nParagraphs);
-      expect(components["/sentences/lSens"].replacements.length).eq(2 * nSentences - 1);
-      expect(components["/words/lWords"].replacements.length).eq(2 * nWords - 1);
+      expect(stateVariables["/paragraphs/lPars"].replacements.length).eq(nParagraphs);
+      expect(stateVariables["/sentences/lSens"].replacements.length).eq(2 * nSentences - 1);
+      expect(stateVariables["/words/lWords"].replacements.length).eq(2 * nWords - 1);
 
-      for (let [ind, repl] of components["/paragraphs/lPars"].replacements.entries()) {
-        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text', repl.activeChildren[0])
+      for (let [ind, repl] of stateVariables["/paragraphs/lPars"].replacements.entries()) {
+        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
-      for (let [ind, repl] of components["/sentences/lSens"].replacements.entries()) {
+      for (let [ind, repl] of stateVariables["/sentences/lSens"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0])
+        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
-      for (let [ind, repl] of components["/words/lWords"].replacements.entries()) {
+      for (let [ind, repl] of stateVariables["/words/lWords"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0])
+        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
 
@@ -85,32 +90,33 @@ describe('Lorem Tag Tests', function () {
     cy.get(cesc("#/sentences/numSens") + " textarea").type("{end}{backspace}2{enter}", { force: true });
     cy.get(cesc("#/words/numWords") + " textarea").type("{end}{backspace}5{enter}", { force: true });
 
+    cy.get(cesc("#/numWords")).should('contain.text', '5');
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
       let nParagraphs = 6, nSentences = 2, nWords = 5;
 
-      expect(components["/paragraphs/lPars"].replacements.length).eq(nParagraphs);
-      expect(components["/sentences/lSens"].replacements.length).eq(2 * nSentences - 1);
-      expect(components["/words/lWords"].replacements.length).eq(2 * nWords - 1);
+      expect(stateVariables["/paragraphs/lPars"].replacements.length).eq(nParagraphs);
+      expect(stateVariables["/sentences/lSens"].replacements.length).eq(2 * nSentences - 1);
+      expect(stateVariables["/words/lWords"].replacements.length).eq(2 * nWords - 1);
 
-      for (let [ind, repl] of components["/paragraphs/lPars"].replacements.entries()) {
-        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text', repl.activeChildren[0])
+      for (let [ind, repl] of stateVariables["/paragraphs/lPars"].replacements.entries()) {
+        cy.get(cesc(`#/paragraphs/${names[ind]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
-      for (let [ind, repl] of components["/sentences/lSens"].replacements.entries()) {
+      for (let [ind, repl] of stateVariables["/sentences/lSens"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0])
+        cy.get(cesc(`#/sentences/${names[ind / 2]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
-      for (let [ind, repl] of components["/words/lWords"].replacements.entries()) {
+      for (let [ind, repl] of stateVariables["/words/lWords"].replacements.entries()) {
         if (ind % 2 === 1) {
           continue;
         }
-        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', repl.activeChildren[0])
+        cy.get(cesc(`#/words/${names[ind / 2]}`)).should('have.text', stateVariables[repl.componentName].activeChildren[0])
       }
 
 
@@ -119,72 +125,80 @@ describe('Lorem Tag Tests', function () {
   })
 
   it('changes only with variant', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
+  <selectFromSequence from="1" to="2" assignNames="n" />
   `,
-        requestedVariant: { index: 0 },
+        requestedVariantIndex: 1
       }, "*");
     });
 
     cy.get(cesc('#/_text1')).should('have.text', 'a');   // to wait for page to load
 
+    cy.get(cesc('#/n')).should('have.text', '1');
+
     let paragraph0, paragraph1;
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      expect(components["/lPars"].replacements.length).eq(1);
-      paragraph0 = components["/lPars"].replacements[0].activeChildren[0]
+      expect(stateVariables["/lPars"].replacements.length).eq(1);
+      paragraph0 = stateVariables[stateVariables["/lPars"].replacements[0].componentName].activeChildren[0]
       cy.get(cesc('#/a')).should('have.text', paragraph0)
 
     });
 
-    
-    cy.window().then((win) => {
+
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>b</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
+  <selectFromSequence from="1" to="2" assignNames="n" />
   `,
-        requestedVariant: { index: 0 },
+        requestedVariantIndex: 1
       }, "*");
     });
 
 
     cy.get(cesc('#/_text1')).should('have.text', 'b');   // to wait for page to load
+    
+    cy.get(cesc('#/n')).should('have.text', '1');
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
-
-      expect(components["/lPars"].replacements.length).eq(1);
-      expect(components["/lPars"].replacements[0].activeChildren[0]).eq(paragraph0);
+      expect(stateVariables["/lPars"].replacements.length).eq(1);
+      expect(stateVariables[stateVariables["/lPars"].replacements[0].componentName].activeChildren[0]).eq(paragraph0);
       cy.get(cesc('#/a')).should('have.text', paragraph0)
 
     });
 
-    
-    cy.window().then((win) => {
+
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>c</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
+  <selectFromSequence from="1" to="2" assignNames="n" />
   `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 2
       }, "*");
     });
 
 
     cy.get(cesc('#/_text1')).should('have.text', 'c');   // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.get(cesc('#/n')).should('have.text', '2');
 
-      expect(components["/lPars"].replacements.length).eq(1);
-      
-      paragraph1 = components["/lPars"].replacements[0].activeChildren[0];
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/lPars"].replacements.length).eq(1);
+
+      paragraph1 = stateVariables[stateVariables["/lPars"].replacements[0].componentName].activeChildren[0];
       expect(paragraph1).not.eq(paragraph0);
       cy.get(cesc('#/a')).should('have.text', paragraph1)
 
@@ -192,24 +206,27 @@ describe('Lorem Tag Tests', function () {
     });
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>d</text>
   <lorem name="lPars" generateParagraphs="1" assignNames="a" />
+  <selectFromSequence from="1" to="2" assignNames="n" />
   `,
-        requestedVariant: { index: 1 },
+        requestedVariantIndex: 2
       }, "*");
     });
 
 
     cy.get(cesc('#/_text1')).should('have.text', 'd');   // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.get(cesc('#/n')).should('have.text', '2');
 
-      expect(components["/lPars"].replacements.length).eq(1);
-      expect(components["/lPars"].replacements[0].activeChildren[0]).eq(paragraph1);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/lPars"].replacements.length).eq(1);
+      expect(stateVariables[stateVariables["/lPars"].replacements[0].componentName].activeChildren[0]).eq(paragraph1);
       cy.get(cesc('#/a')).should('have.text', paragraph1)
 
 

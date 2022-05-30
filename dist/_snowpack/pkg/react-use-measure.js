@@ -1,4 +1,4 @@
-import { r as react } from './common/index-f66788ca.js';
+import { r as react } from './common/index-61623f21.js';
 import './common/_commonjsHelpers-f5d70792.js';
 
 /**
@@ -70,14 +70,17 @@ debounce.debounce = debounce;
 
 var debounce_1 = debounce;
 
-function useMeasure({
-  debounce: debounce$1,
-  scroll,
-  polyfill
-} = {
-  debounce: 0,
-  scroll: false
-}) {
+function useMeasure(_temp) {
+  let {
+    debounce,
+    scroll,
+    polyfill,
+    offsetSize
+  } = _temp === void 0 ? {
+    debounce: 0,
+    scroll: false,
+    offsetSize: false
+  } : _temp;
   const ResizeObserver = polyfill || (typeof window === 'undefined' ? class ResizeObserver {} : window.ResizeObserver);
 
   if (!ResizeObserver) {
@@ -102,8 +105,8 @@ function useMeasure({
     lastBounds: bounds
   }); // set actual debounce values early, so effects know if they should react accordingly
 
-  const scrollDebounce = debounce$1 ? typeof debounce$1 === 'number' ? debounce$1 : debounce$1.scroll : null;
-  const resizeDebounce = debounce$1 ? typeof debounce$1 === 'number' ? debounce$1 : debounce$1.resize : null; // make sure to update state only as long as the component is truly mounted
+  const scrollDebounce = debounce ? typeof debounce === 'number' ? debounce : debounce.scroll : null;
+  const resizeDebounce = debounce ? typeof debounce === 'number' ? debounce : debounce.resize : null; // make sure to update state only as long as the component is truly mounted
 
   const mounted = react.useRef(false);
   react.useEffect(() => {
@@ -134,12 +137,18 @@ function useMeasure({
         x,
         y
       };
+
+      if (state.current.element instanceof HTMLElement && offsetSize) {
+        size.height = state.current.element.offsetHeight;
+        size.width = state.current.element.offsetWidth;
+      }
+
       Object.freeze(size);
       if (mounted.current && !areBoundsEqual(state.current.lastBounds, size)) set(state.current.lastBounds = size);
     };
 
-    return [callback, resizeDebounce ? debounce_1.debounce(callback, resizeDebounce) : callback, scrollDebounce ? debounce_1.debounce(callback, scrollDebounce) : callback];
-  }, [set, scrollDebounce, resizeDebounce]); // cleanup current scroll-listeners / observers
+    return [callback, resizeDebounce ? debounce_1(callback, resizeDebounce) : callback, scrollDebounce ? debounce_1(callback, scrollDebounce) : callback];
+  }, [set, offsetSize, scrollDebounce, resizeDebounce]); // cleanup current scroll-listeners / observers
 
   function removeListeners() {
     if (state.current.scrollContainers) {

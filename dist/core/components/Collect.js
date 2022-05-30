@@ -15,8 +15,8 @@ export default class Collect extends CompositeComponent {
 
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     // delete off attributes from base component that should apply to replacements instead
     // (using acceptAnyAttribute)
@@ -198,6 +198,7 @@ export default class Collect extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "componentTypesToCollect", "targetName", "propName", "componentIndex", "propIndex"
       ],
+      additionalStateVariablesDefined: ["effectivePropNameByComponent"],
       returnDependencies: function ({ stateValues }) {
         if (!stateValues.targetName) {
           return {};
@@ -216,7 +217,6 @@ export default class Collect extends CompositeComponent {
         if (stateValues.propName) {
           descendants.variableNames = [stateValues.propName];
           descendants.variablesOptional = true;
-          descendants.componentIndex = stateValues.componentIndex;
           descendants.propIndex = stateValues.propIndex;
           descendants.publicCaseInsensitiveVariableMatch = true;
           descendants.useMappedVariableNames = true;
@@ -227,6 +227,10 @@ export default class Collect extends CompositeComponent {
           maximumNumber: {
             dependencyType: "stateVariable",
             variableName: "maximumNumber"
+          },
+          propName: {
+            dependencyType: "stateVariable",
+            variableName: "propName"
           }
         }
       },
@@ -245,8 +249,22 @@ export default class Collect extends CompositeComponent {
           collectedComponents = collectedComponents.slice(0, maxnum)
         }
 
+        let effectivePropNameByComponent = [];
+
+        for (let comp of collectedComponents) {
+          let propName;
+          if (comp.stateValues) {
+            propName = Object.keys(comp.stateValues)[0];
+          }
+          if (!propName && dependencyValues.propName) {
+            // a propName was specified, but it just wasn't found
+            propName = dependencyValues.propName;
+          }
+          effectivePropNameByComponent.push(propName)
+        }
+
         return {
-          setValue: { collectedComponents }
+          setValue: { collectedComponents, effectivePropNameByComponent }
         }
 
       }
@@ -319,7 +337,7 @@ export default class Collect extends CompositeComponent {
 
     workspace.uniqueIdentifiersUsedByCollected = {};
 
-    let compositeAttributesObj = this.createAttributesObject({});
+    let compositeAttributesObj = this.createAttributesObject();
 
     let collectedComponents = await component.stateValues.collectedComponents;
     for (let collectedNum = 0; collectedNum < collectedComponents.length; collectedNum++) {
@@ -388,9 +406,9 @@ export default class Collect extends CompositeComponent {
       return { serializedReplacements, propVariablesCopiedByReplacement };
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
-    let propName = await component.stateValues.propName;
+    let propName = (await component.stateValues.effectivePropNameByComponent)[collectedNum];
     if (propName) {
 
       let results = await replacementFromProp({
@@ -500,7 +518,7 @@ export default class Collect extends CompositeComponent {
 
     let recreateRemaining = false;
 
-    let compositeAttributesObj = this.createAttributesObject({});
+    let compositeAttributesObj = this.createAttributesObject();
 
     for (let collectedNum = 0; collectedNum < maxCollectedLength; collectedNum++) {
       let collected = collectedComponents[collectedNum];

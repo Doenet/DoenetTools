@@ -6,13 +6,14 @@ import "../../_snowpack/pkg/handsontable/dist/handsontable.full.css.proxy.js";
 import {sizeToCSS} from "./utils/css.js";
 import {registerAllModules} from "../../_snowpack/pkg/handsontable/registry.js";
 registerAllModules();
-export default function SpreadsheetRenderer(props) {
+export default React.memo(function SpreadsheetRenderer(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
   }
   return /* @__PURE__ */ React.createElement("div", {
-    id: name
+    id: name,
+    style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement(HotTable, {
@@ -38,4 +39,4 @@ export default function SpreadsheetRenderer(props) {
     },
     stretchH: "all"
   }));
-}
+});

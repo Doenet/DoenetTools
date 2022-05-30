@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 import me from 'math-expressions';
+import { MathJax } from 'better-react-mathjax';
 
 
-export default function Line(props) {
+export default React.memo(function Line(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
 
   Line.ignoreActionsWithoutCore = true;
@@ -23,13 +24,6 @@ export default function Line(props) {
 
   lastPositionsFromCore.current = SVs.numericalPoints;
 
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  })
 
   useEffect(() => {
 
@@ -67,6 +61,12 @@ export default function Line(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
     };
 
+    jsxLineAttributes.label = {};
+    if (SVs.applyStyleToLabel) {
+      jsxLineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxLineAttributes.label.strokeColor = "#000000";
+    }
 
     let through = [
       [...SVs.numericalPoints[0]],
@@ -234,6 +234,11 @@ export default function Line(props) {
       lineJXG.current.needsUpdate = true;
       lineJXG.current.update()
       if (lineJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          lineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          lineJXG.current.label.visProp.strokecolor = "#000000";
+        }
         lineJXG.current.label.needsUpdate = true;
         lineJXG.current.label.update();
       }
@@ -251,8 +256,8 @@ export default function Line(props) {
 
 
   let mathJaxify = "\\(" + me.fromAst(SVs.equation).toLatex() + "\\)";
-  return <><a name={name} /><span id={name}>{mathJaxify}</span></>
-}
+  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+})
 
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {

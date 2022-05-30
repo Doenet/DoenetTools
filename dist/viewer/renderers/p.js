@@ -1,6 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRenderer from "./useDoenetRenderer.js";
-export default function P(props) {
+export default React.memo(function P(props) {
   let {name, SVs, children} = useDoenetRenderer(props);
   if (SVs.hidden) {
     return null;
@@ -10,4 +10,4 @@ export default function P(props) {
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), children);
-}
+});

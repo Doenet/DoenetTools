@@ -10,12 +10,11 @@ export default class SampleRandomNumbers extends CompositeComponent {
   static assignNamesToReplacements = true;
 
   static createsVariants = true;
-  static alwaysSetUpVariant = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
@@ -462,7 +461,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   static async createSerializedReplacements({ component, componentInfoObjects, startNum = 0, flags }) {
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
     for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals"]) {
@@ -587,8 +586,12 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   }
 
+  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
 
-  async resample() {
+    return { success: false };
+  }
+
+  async resample({ actionId }) {
 
     let sampledValues = sampleFromRandomNumbers({
       type: await this.stateValues.type,
@@ -609,7 +612,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
         componentName: this.componentName,
         stateVariable: "sampledValues",
         value: sampledValues,
-      }]
+      }],
+      actionId
     });
 
   }

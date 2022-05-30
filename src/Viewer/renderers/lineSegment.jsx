@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
-export default function LineSegment(props) {
+export default React.memo(function LineSegment(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
 
   LineSegment.ignoreActionsWithoutCore = true;
@@ -60,6 +60,13 @@ export default function LineSegment(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
     };
+
+    jsxSegmentAttributes.label = {};
+    if (SVs.applyStyleToLabel) {
+      jsxSegmentAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxSegmentAttributes.label.strokeColor = "#000000";
+    }
 
 
     let jsxPointAttributes = Object.assign({}, jsxSegmentAttributes);
@@ -276,6 +283,18 @@ export default function LineSegment(props) {
         // lineSegmentJXG.current.setAttribute({visible: false})
       }
 
+      if (lineSegmentJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        lineSegmentJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        lineSegmentJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (lineSegmentJXG.current.visProp.dash !== newDash) {
+        lineSegmentJXG.current.visProp.dash = newDash;
+      }
+      if (lineSegmentJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        lineSegmentJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+      }
+
       lineSegmentJXG.current.name = SVs.label;
       // lineSegmentJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
@@ -288,6 +307,11 @@ export default function LineSegment(props) {
       lineSegmentJXG.current.needsUpdate = true;
       lineSegmentJXG.current.update()
       if (lineSegmentJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          lineSegmentJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          lineSegmentJXG.current.label.visProp.strokecolor = "#000000";
+        }
         lineSegmentJXG.current.label.needsUpdate = true;
         lineSegmentJXG.current.label.update();
       }
@@ -310,7 +334,7 @@ export default function LineSegment(props) {
   return <><a name={name} /></>
 
 
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

@@ -11,6 +11,7 @@ function cesc(s) {
 describe('MathInput Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
@@ -72,7 +73,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 1]);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 1]);
       expect(stateVariables['/mi2'].stateValues.immediateValue).to.eq('\uFF3F');
@@ -84,6 +85,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Type 2 in first mathinput");
     cy.get('#\\/mi1 textarea').type(`{end}2`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'x+12')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x+12')
@@ -119,7 +121,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 12]);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 12]);
       expect(stateVariables['/mi2'].stateValues.immediateValue).to.eq('\uFF3F');
@@ -146,7 +148,7 @@ describe('MathInput Tag Tests', function () {
 
     // cy.log('Test internal values are set to the correct values')
     // cy.window().then(async (win) => {
-    //   stateVariables = await win.returnAllStateVariables();
+    //   stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 1]);
     //   expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 1]);
     //   expect(stateVariables['/mi2'].stateValues.immediateValue).to.eq('\uFF3F');
@@ -158,6 +160,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Changing to 3 in first mathinput");
     cy.get('#\\/mi1 textarea').type(`{end}{backspace}3`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'x+13')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x+13')
@@ -193,7 +196,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 13]);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 13]);
       expect(stateVariables['/mi2'].stateValues.immediateValue).to.eq('\uFF3F');
@@ -205,6 +208,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Pressing Enter in first mathinput");
     cy.get('#\\/mi1 textarea').type(`{enter}`, { force: true });
+    cy.get(`#\\/v1`).should('contain.text', 'x+13')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
@@ -242,7 +246,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 13]);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 13]);
       expect(stateVariables['/mi2'].stateValues.immediateValue).to.eq('\uFF3F');
@@ -269,7 +273,7 @@ describe('MathInput Tag Tests', function () {
 
     // cy.log('Test internal values are set to the correct values')
     // cy.window().then(async (win) => {
-    //   stateVariables = await win.returnAllStateVariables();
+    //   stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 13]);
     //   expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 13]);
     //   expect(stateVariables['/mi2'].stateValues.immediateValue).to.eq('\uFF3F');
@@ -283,6 +287,7 @@ describe('MathInput Tag Tests', function () {
     cy.log("Erasing 13 and typing y second mathinput");
     cy.get('#\\/mi1 textarea').blur();
     cy.get(`#\\/mi1a textarea`).type(`{end}{backspace}{backspace}y`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'x+y')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x+y')
@@ -320,7 +325,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).to.eq('\uFF3F');
@@ -332,6 +337,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Changing focus to first mathinput");
     cy.get('#\\/mi1 textarea').focus();
+    cy.get(`#\\/v1`).should('contain.text', 'x+y')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x+y')
@@ -369,7 +375,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).to.eq('\uFF3F');
@@ -397,7 +403,7 @@ describe('MathInput Tag Tests', function () {
 
     // cy.log('Test internal values are set to the correct values')
     // cy.window().then(async (win) => {
-    //   stateVariables = await win.returnAllStateVariables();
+    //   stateVariables = await win.returnAllStateVariables1();
     //   expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
     //   expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
     //   expect(stateVariables['/mi2'].stateValues.immediateValue).to.eq('\uFF3F');
@@ -411,6 +417,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Typing pq in third mathinput");
     cy.get('#\\/mi2 textarea').type(`pq`, { force: true });
+    cy.get(`#\\/iv2`).should('contain.text', 'pq')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'pq')
@@ -447,7 +454,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'p', 'q']);
@@ -462,6 +469,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Pressing enter in third mathinput");
     cy.get('#\\/mi2 textarea').type(`{enter}`, { force: true });
+    cy.get(`#\\/v2`).should('contain.text', 'pq')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
@@ -496,7 +504,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', 'y']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'p', 'q']);
@@ -509,7 +517,8 @@ describe('MathInput Tag Tests', function () {
     // type abc in mathinput 2
 
     cy.log("Typing abc in second mathinput");
-    cy.get(`#\\/mi1a textarea`).type(`{end}{backspace}{backspace}{backspace}abc`, { force: true });
+    cy.get(`#\\/mi1a textarea`).type(`{ctrl+home}{shift+end}{backspace}abc`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'abc')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abc')
@@ -547,7 +556,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'p', 'q']);
@@ -561,6 +570,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Leave second mathinput");
     cy.get(`#\\/mi1a textarea`).blur();
+    cy.get(`#\\/v1`).should('contain.text', 'abc')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abc')
@@ -598,7 +608,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'p', 'q']);
@@ -610,7 +620,13 @@ describe('MathInput Tag Tests', function () {
     // Enter abc in mathinput 1
 
     cy.log("Enter abc in first mathinput");
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}abc{enter}`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}`, { force: true });
+    // pause after deleting so can detect change (given going from abc back to abc)
+    cy.get(`#\\/iv1`).should('contain.text', '＿')
+    cy.get('#\\/mi1 textarea').type(`abc{enter}`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'abc')
+    cy.wait(100);  // since can't detect effect of {enter} given that v1 is already abc
+    cy.get(`#\\/v1`).should('contain.text', 'abc')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abc')
@@ -646,7 +662,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'p', 'q']);
@@ -659,7 +675,8 @@ describe('MathInput Tag Tests', function () {
     // type u/v in mathinput 3
 
     cy.log("Typing u/v in third mathinput");
-    cy.get('#\\/mi2 textarea').type(`{end}{backspace}{backspace}{backspace}u/v`, { force: true });
+    cy.get('#\\/mi2 textarea').type(`{ctrl+home}{shift+end}{backspace}u/v`, { force: true });
+    cy.get(`#\\/iv2`).should('contain.text', 'uv')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'uv')
@@ -695,7 +712,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['/', 'u', 'v']);
@@ -709,6 +726,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Typing d in first mathinput");
     cy.get('#\\/mi1 textarea').type(`{end}d`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'abcd')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abcd')
@@ -746,7 +764,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c', 'd']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c', 'd']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['/', 'u', 'v']);
@@ -758,6 +776,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Leaving first mathinput");
     cy.get('#\\/mi1 textarea').blur();
+    cy.get(`#\\/v1`).should('contain.text', 'abcd')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'abcd')
@@ -795,7 +814,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c', 'd']);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['*', 'a', 'b', 'c', 'd']);
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['/', 'u', 'v']);
@@ -805,7 +824,8 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log("Clearing second mathinput");
-    cy.get(`#\\/mi1a textarea`).type("{end}{backspace}{backspace}{backspace}{backspace}", { force: true });
+    cy.get(`#\\/mi1a textarea`).type("{ctrl+home}{shift+end}{backspace}", { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', '\uFF3F')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('not.contain.text', 'a')
@@ -843,7 +863,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).to.eq('\uFF3F');
       expect(stateVariables['/mi1a'].stateValues.immediateValue).to.eq('\uFF3F');
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['/', 'u', 'v']);
@@ -854,6 +874,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Focus on third mathinput");
     cy.get('#\\/mi2 textarea').focus();
+    cy.get(`#\\/v1`).should('contain.text', '\uFF3F')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('not.contain.text', 'abcd')
@@ -891,7 +912,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).to.eq('\uFF3F');
       expect(stateVariables['/mi1a'].stateValues.immediateValue).to.eq('\uFF3F');
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['/', 'u', 'v']);
@@ -903,7 +924,6 @@ describe('MathInput Tag Tests', function () {
 
   });
 
-  // TODO: add that can get back after reload
   it('mathinput references with invalid math expressions', () => {
     let doenetML = `
     <text>a</text>
@@ -913,15 +933,16 @@ describe('MathInput Tag Tests', function () {
     <copy prop='immediatevalue' target="mi1" assignNames="iv1"  />
     <copy prop='value' target="mi1a" assignNames="v1a" />
     <copy prop='immediatevalue' target="mi1a" assignNames="iv1a"  />
+    <p><booleaninput name="bi" /> <copy prop="value" target="bi" assignNames="b" /></p>
     `;
 
     cy.get('#testRunner_toggleControls').click();
-    cy.get('#testRunner_allowLocalPageState').click()
+    cy.get('#testRunner_allowLocalState').click()
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
 
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML }, "*");
     });
@@ -951,7 +972,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('＿');
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('＿');
       expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
@@ -960,7 +981,16 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log("Type x- in first mathinput");
-    cy.get('#\\/mi1 textarea').type(`x-`, { force: true }).blur();
+    cy.get('#\\/mi1 textarea').type(`x`, { force: true });
+    // pause so that can detect change
+    cy.get(`#\\/iv1`).should('contain.text', 'x')
+    cy.get('#\\/mi1 textarea').type(`-`, { force: true }).blur();
+    cy.get(`#\\/iv1`).should('contain.text', '\uFF3F')
+
+    // since v1 was already invalid, can't be sure when have waited long enough
+    // so click boolean input and wait for its effect to take
+    cy.get('#\\/bi_input').click()
+    cy.get('#\\/b').should('have.text', 'true')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−')
@@ -987,28 +1017,31 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('＿');
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('＿');
       expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
       expect(stateVariables['/mi1a'].stateValues.value).eqls('＿');
     });
 
+    // pause 2 seconds to make sure 1 second debounce for saving was satisfied
+    cy.wait(2000);
+
     cy.log('reload page')
+    cy.reload();
 
-    cy.window().then((win) => {
-      win.postMessage({
-        doenetML: "<text>b</text>" }, "*");
-    });
-
-    cy.get('#\\/_text1').should('have.text', 'b');  // to wait until loaded
-    
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    // the DOM will display even before core is ready
+    // so to make sure core has loaded, click boolean and wait for it to change
+    cy.get("#\\/b").should('have.text', 'true');
+    cy.get('#\\/bi_input').click();
+    cy.get("#\\/b").should('have.text', 'false');
 
 
     cy.log('Test values displayed in browser')
@@ -1036,7 +1069,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('＿');
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('＿');
       expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
@@ -1045,6 +1078,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Add y in copied mathinput");
     cy.get('#\\/mi1a textarea').type(`{end}y`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'x−y')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y')
@@ -1071,7 +1105,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
       expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
@@ -1081,6 +1115,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("blur");
     cy.get('#\\/mi1a textarea').blur();
+    cy.get(`#\\/v1`).should('contain.text', 'x−y')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', 'x−y')
@@ -1110,7 +1145,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
@@ -1120,6 +1155,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log("Add * in copied mathinput");
     cy.get('#\\/mi1a textarea').type(`{end}*`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', '\uFF3F')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y·')
@@ -1149,7 +1185,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('＿');
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('＿');
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
@@ -1158,7 +1194,9 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log("Add z in first mathinput");
+    cy.get('#\\/mi1 textarea').type(`{end}`, { force: true });
     cy.get('#\\/mi1 textarea').type(`{end}z`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'x−yz')
 
     cy.log('Test values displayed in browser')
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y·z')
@@ -1188,7 +1226,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
       expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
@@ -1227,7 +1265,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('Test internal values are set to the correct values')
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
@@ -1280,7 +1318,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x']]);
       expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x']]);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x']]);
@@ -1289,7 +1327,10 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}xy`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}xy`, { force: true, delay: 50 });
+
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
 
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'xy')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'xy')
@@ -1300,8 +1341,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
     })
 
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2x')
     });
@@ -1320,7 +1359,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x']]);
       expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x']]);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x']]);
@@ -1332,6 +1371,10 @@ describe('MathInput Tag Tests', function () {
     cy.log('press enter')
     cy.get('#\\/mi1 textarea').type(`{enter}`, { force: true });
 
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'xy')
+
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'xy')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'xy')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
@@ -1341,9 +1384,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
     })
 
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'xy')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'xy')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'xy')
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy')
@@ -1363,7 +1403,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['*', 'x', 'y']);
       expect(stateVariables['/_math1'].stateValues.value).eqls(['*', 'x', 'y']);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['*', 'x', 'y']);
@@ -1375,6 +1415,11 @@ describe('MathInput Tag Tests', function () {
     cy.log('enter new values in referenced')
     cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}{backspace}qr{enter}`, { force: true }).blur();
 
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'qr')
 
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'qr')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'qr')
@@ -1385,11 +1430,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('qr')
     })
 
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'qr')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'qr')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'qr')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'qr')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'qr')
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('qr')
@@ -1409,7 +1449,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['*', 'q', 'r']);
       expect(stateVariables['/_math1'].stateValues.value).eqls(['*', 'q', 'r']);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['*', 'q', 'r']);
@@ -1417,8 +1457,8 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/mi2'].stateValues.immediateValue).eqls(['*', 'q', 'r']);
     });
 
-    cy.wait(500);
 
+    cy.reload();
 
     cy.log('prefill ignored');
     cy.window().then(async (win) => {
@@ -1464,7 +1504,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x']]);
       expect(stateVariables['/_math1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x']]);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x']]);
@@ -1473,7 +1513,7 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.wait(500)
+    cy.reload();
 
     cy.log("normal downstream rules apply")
     cy.window().then(async (win) => {
@@ -1519,7 +1559,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', ['*', 3, 'x'], 1]);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['+', ['*', 3, 'x'], 1]);
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', ['*', 3, 'x'], 1]);
@@ -1530,7 +1570,13 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}{backspace}{backspace}{backspace}xy{enter}`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}xy{enter}`, { force: true });
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
 
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'xy')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'xy')
@@ -1540,12 +1586,6 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
     })
-
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'xy')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'xy')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'xy')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('xy')
@@ -1565,7 +1605,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['*', 'x', 'y']);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['*', 'x', 'y']);
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'x', 'y']);
@@ -1578,6 +1618,12 @@ describe('MathInput Tag Tests', function () {
     cy.log('enter new values in reffed')
     cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}{backspace}qr{enter}`, { force: true });
 
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'qr')
+
 
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'qr')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'qr')
@@ -1587,12 +1633,6 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('qr')
     })
-
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'qr')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'qr')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'qr')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'qr')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'qr')
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('qr')
@@ -1613,7 +1653,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['*', 'q', 'r']);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['*', 'q', 'r']);
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'q', 'r']);
@@ -1672,7 +1712,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 1, ['*', 2, 'x', 'z']]);
@@ -1681,7 +1721,13 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}xy`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{end}{rightarrow}{backspace}{backspace}{backspace}{backspace}{backspace}xy`, { force: true, delay: 50 });
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
 
 
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'xy')
@@ -1693,13 +1739,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('xy')
     })
 
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
-
-
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2xz')
     });
@@ -1719,7 +1758,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'x', 'y']);
@@ -1731,6 +1770,11 @@ describe('MathInput Tag Tests', function () {
     cy.log('value revert when press enter')
     cy.get('#\\/mi1 textarea').type(`{enter}`, { force: true });
 
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', '1+2xz')
 
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', '1+2xz')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', '1+2xz')
@@ -1741,13 +1785,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2xz')
     })
 
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', '1+2xz')
-
-
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2xz')
     });
@@ -1767,7 +1804,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 1, ['*', 2, 'x', 'z']]);
@@ -1777,7 +1814,14 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log('type new values in copy')
-    cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}{backspace}{backspace}{backspace}{backspace}qr`, { force: true });
+    cy.get(`#\\/mi2 textarea`).type(`{ctrl+home}{shift+end}{backspace}qr`, { force: true });
+
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'qr')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'qr')
+
 
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'qr')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'qr')
@@ -1788,13 +1832,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('qr')
     })
 
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'qr')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'qr')
-
-
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2xz')
     });
@@ -1814,7 +1851,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['*', 'q', 'r']);
@@ -1827,6 +1864,13 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi2 textarea`).blur();
 
 
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', '1+2xz')
+
+
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', '1+2xz')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', '1+2xz')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
@@ -1835,13 +1879,6 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1+2xz')
     })
-
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', '1+2xz')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', '1+2xz')
-
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('1+2xz')
@@ -1862,7 +1899,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi2'].stateValues.value).eqls(['+', 1, ['*', 2, 'x', 'z']]);
       expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 1, ['*', 2, 'x', 'z']]);
@@ -1918,7 +1955,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eq('x');
       expect(stateVariables['/mi2'].stateValues.value).eq('x');
       expect(stateVariables['/mi1'].stateValues.immediateValue).eq('x');
@@ -1927,8 +1964,17 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{end}{backspace}y`, { force: true });
+    // Note: had to add a larger delay in typing 
+    // or MathJax consistently didn't correctly update the second immediate value.
+    // (At least when delay core's response by 1 second)
+    // Not sure what is going on here.
+    cy.get('#\\/mi1 textarea').type(`{end}{backspace}y`, { force: true, delay: 100 });
 
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'y')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'y')
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
 
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'y')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'y')
@@ -1938,13 +1984,6 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('y')
     })
-
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'y')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'y')
-
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
@@ -1965,7 +2004,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eq('x');
       expect(stateVariables['/mi2'].stateValues.value).eq('x');
       expect(stateVariables['/mi1'].stateValues.immediateValue).eq('y');
@@ -1977,6 +2016,12 @@ describe('MathInput Tag Tests', function () {
     cy.log('value revert when press enter')
     cy.get('#\\/mi1 textarea').type(`{enter}`, { force: true });
 
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
+
 
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'x')
@@ -1986,12 +2031,6 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
     })
-
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'x')
 
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2013,7 +2052,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eq('x');
       expect(stateVariables['/mi2'].stateValues.value).eq('x');
       expect(stateVariables['/mi1'].stateValues.immediateValue).eq('x');
@@ -2025,6 +2064,12 @@ describe('MathInput Tag Tests', function () {
     cy.log('type new values in copy')
     cy.get(`#\\/mi2 textarea`).type(`{end}{backspace}z`, { force: true });
 
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'z')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'z')
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
+
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'z')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'z')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
@@ -2033,12 +2078,6 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('z')
     })
-
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'z')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'z')
 
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2060,7 +2099,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eq('x');
       expect(stateVariables['/mi2'].stateValues.value).eq('x');
       expect(stateVariables['/mi1'].stateValues.immediateValue).eq('z');
@@ -2073,6 +2112,13 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi2 textarea`).blur();
 
 
+    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
+    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
+
+
     cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x')
     cy.get(`#\\/mi2 .mq-editable-field`).should('contain.text', 'x')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
@@ -2081,13 +2127,6 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
     })
-
-    cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/value2 .mjx-mrow`).should('contain.text', 'x')
-    cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'x')
-
 
     cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x')
@@ -2108,7 +2147,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi1'].stateValues.value).eq('x');
       expect(stateVariables['/mi2'].stateValues.value).eq('x');
       expect(stateVariables['/mi1'].stateValues.immediateValue).eq('x');
@@ -2152,7 +2191,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 1]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 1]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 1]);
@@ -2163,6 +2202,8 @@ describe('MathInput Tag Tests', function () {
     cy.log('type 2 first mathinput')
     cy.get('#\\/_mathinput1 textarea').type(`{end}2`, { force: true });
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
+
     cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+1')
     cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
@@ -2172,7 +2213,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+1')
     })
 
-    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
     });
@@ -2187,7 +2227,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 1]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 1]);
@@ -2198,6 +2238,11 @@ describe('MathInput Tag Tests', function () {
     cy.log('press enter')
     cy.get('#\\/_mathinput1 textarea').type(`{enter}`, { force: true });
 
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
+
     cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
@@ -2207,10 +2252,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
     })
 
-    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
 
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
@@ -2226,7 +2267,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 12]);
@@ -2236,6 +2277,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('type 3 in second mathinput')
     cy.get('#\\/_mathinput2 textarea').type(`{end}3`, { force: true });
+
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
 
     cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+123')
@@ -2254,7 +2297,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('x+12')
     });
 
-    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/secondimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
     });
@@ -2263,7 +2305,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 123]);
@@ -2272,6 +2314,11 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('leave second mathinput')
     cy.get('#\\/_mathinput2 textarea').blur();
+
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
 
     cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+123')
     cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+123')
@@ -2283,10 +2330,6 @@ describe('MathInput Tag Tests', function () {
     })
 
 
-    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
-    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+123')
-    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
-    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
     });
@@ -2301,7 +2344,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 123]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 123]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 123]);
@@ -2343,7 +2386,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 1]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 1]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 1]);
@@ -2354,6 +2397,11 @@ describe('MathInput Tag Tests', function () {
     cy.log('type 2 first mathinput')
     cy.get('#\\/_mathinput1 textarea').type(`{end}2`, { force: true });
 
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+1')
+
     cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
@@ -2363,10 +2411,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
     })
 
-    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+1')
-    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
+
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
     });
@@ -2381,7 +2426,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 1]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 12]);
@@ -2392,6 +2437,11 @@ describe('MathInput Tag Tests', function () {
     cy.log('press enter')
     cy.get('#\\/_mathinput1 textarea').type(`{enter}`, { force: true });
 
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+12')
+
     cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
@@ -2401,10 +2451,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+12')
     })
 
-    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
     });
@@ -2419,7 +2465,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 12]);
@@ -2430,6 +2476,11 @@ describe('MathInput Tag Tests', function () {
     cy.log('type 3 in second mathinput')
     cy.get('#\\/_mathinput2 textarea').type(`{end}3`, { force: true });
 
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+12')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
+
     cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+12')
     cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+123')
     cy.get(`#\\/_mathinput1 .mq-editable-field`).invoke('text').then((text) => {
@@ -2438,11 +2489,6 @@ describe('MathInput Tag Tests', function () {
     cy.get(`#\\/_mathinput2 .mq-editable-field`).invoke('text').then((text) => {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+123')
     })
-
-    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+12')
-    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
-    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+12')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+12')
     });
@@ -2457,7 +2503,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 12]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 123]);
@@ -2466,6 +2512,12 @@ describe('MathInput Tag Tests', function () {
 
     cy.log('leave second mathinput')
     cy.get('#\\/_mathinput2 textarea').blur();
+
+
+    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+123')
+    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
 
     cy.get(`#\\/_mathinput1 .mq-editable-field`).should('contain.text', 'x+123')
     cy.get(`#\\/_mathinput2 .mq-editable-field`).should('contain.text', 'x+123')
@@ -2476,11 +2528,6 @@ describe('MathInput Tag Tests', function () {
       expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x+123')
     })
 
-    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
-    cy.get('#\\/originalvalue .mjx-mrow').should('contain.text', 'x+123')
-    cy.get('#\\/secondimmediate .mjx-mrow').should('contain.text', 'x+123')
-    cy.get('#\\/secondvalue .mjx-mrow').should('contain.text', 'x+123')
-    cy.get('#\\/originalimmediate .mjx-mrow').should('contain.text', 'x+123')
     cy.get('#\\/originalimmediate').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('x+123')
     });
@@ -2495,7 +2542,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_mathinput1'].stateValues.immediateValue).eqls(['+', 'x', 123]);
       expect(stateVariables['/_mathinput1'].stateValues.value).eqls(['+', 'x', 123]);
       expect(stateVariables['/_mathinput2'].stateValues.immediateValue).eqls(['+', 'x', 123]);
@@ -2522,7 +2569,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(1,2,3)')
     })
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}(2,3){enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}(2,3){enter}', { force: true });
     cy.get('#\\/b .mjx-mrow').should('contain.text', '(2,3)')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('(2,3)')
@@ -2557,15 +2604,15 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'f', 'x']);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'f', 'x']);
       expect(stateVariables['/b'].stateValues.value).eqls(['*', 'f', 'x']);
       expect(stateVariables['/b2'].stateValues.value).eqls(['*', 'f', 'x']);
     });
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}g(f){enter}', { force: true });
-    cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}g(f){enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}g(f){enter}', { force: true });
+    cy.get('#\\/b textarea').type('{ctrl+home}{shift+end}{backspace}g(f){enter}', { force: true });
 
 
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'g(f)')
@@ -2578,15 +2625,15 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'g', 'f']);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'g', 'f']);
       expect(stateVariables['/b'].stateValues.value).eqls(['*', 'g', 'f']);
       expect(stateVariables['/b2'].stateValues.value).eqls(['*', 'g', 'f']);
     });
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}h(q){enter}', { force: true });
-    cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}h(q){enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}h(q){enter}', { force: true });
+    cy.get('#\\/b textarea').type('{ctrl+home}{shift+end}{backspace}h(q){enter}', { force: true });
 
 
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'hq')
@@ -2599,7 +2646,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['*', 'h', 'q']);
       expect(stateVariables['/a2'].stateValues.value).eqls(['*', 'h', 'q']);
       expect(stateVariables['/b'].stateValues.value).eqls(['apply', 'h', 'q']);
@@ -2607,8 +2654,8 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}q(z){enter}', { force: true });
-    cy.get('#\\/b textarea').type('{end}{backspace}{backspace}{backspace}{backspace}q(z){enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}q(z){enter}', { force: true });
+    cy.get('#\\/b textarea').type('{ctrl+home}{shift+end}{backspace}q(z){enter}', { force: true });
 
 
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'qz')
@@ -2621,7 +2668,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['*', 'q', 'z']);
       expect(stateVariables['/a2'].stateValues.value).eqls(['*', 'q', 'z']);
       expect(stateVariables['/b'].stateValues.value).eqls(['apply', 'q', 'z']);
@@ -2646,6 +2693,8 @@ describe('MathInput Tag Tests', function () {
     <p>b2: <mathinput name="b2" bindValueTo="$b"  displayDigits="3" /></p>
     <p>b3: <copy target="b2" prop="value" assignNames="b3" /></p>
     <p>b4: <copy target="b2" prop="immediateValue" assignNames="b4" /></p>
+    <p>b5: <copy target="b2" prop="value" assignNames="b5" displayDigits="16" /></p>
+    <p>b6: <copy target="b2" prop="immediateValue" assignNames="b6" displayDigits="16" /></p>
     `}, "*");
     });
 
@@ -2674,7 +2723,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 2, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 2, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 2, 'x']]);
@@ -2690,10 +2739,10 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/b4'].stateValues.valueForDisplay).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
     });
 
-    cy.wait(500);
 
     cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}345.15389319{ctrl+end}', { force: true });
 
+    cy.get('#\\/a5 .mjx-mrow').should('contain.text', 'sin(345.15389319x)')
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.15389319x)')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(2x)')
     cy.get('#\\/a3 .mjx-mrow').should('contain.text', 'sin(345.15x)')
@@ -2706,8 +2755,16 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('sin(345.15x)')
     })
+    cy.get('#\\/a4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(2x)')
+    })
+    cy.get('#\\/a5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(345.15389319x)')
+    })
 
     cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}2.047529344518{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000073013048309{ctrl+end}', { force: true });
+
+    cy.get('#\\/b6 .mjx-mrow').should('contain.text', '2.047529344518e0.0000073013048309y')
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(345.15x)')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'sin(345.15x)')
@@ -2760,7 +2817,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       console.log(stateVariables['/a3'].stateValues.value)
       console.log(['apply', 'sin', ['*', 345.15389319, 'x']]);
 
@@ -2798,7 +2855,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 345.15, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
@@ -2824,7 +2881,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
@@ -2853,7 +2910,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/b'].stateValues.value).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
       expect(stateVariables['/b2'].stateValues.value).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
       expect(stateVariables['/b2'].stateValues.valueForDisplay).eqls(['*', 2.05, ['^', 'e', ['*', 0.0000073, 'y']]]);
@@ -2883,7 +2940,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/b'].stateValues.value).eqls(['*', 6.05, ['^', 'e', ['*', 0.0000073, 'y']]]);
       expect(stateVariables['/b2'].stateValues.value).eqls(['*', 6.05, ['^', 'e', ['*', 0.0000073, 'y']]]);
       expect(stateVariables['/b2'].stateValues.valueForDisplay).eqls(['*', 6.05, ['^', 'e', ['*', 0.0000073, 'y']]]);
@@ -2936,7 +2993,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 2, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 2, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 2, 'x']]);
@@ -2953,7 +3010,6 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.wait(500)
 
     cy.get('#\\/a textarea').type('{end}{leftArrow}{leftArrow}{backspace}345.15389319{ctrl+end}', { force: true });
 
@@ -3025,7 +3081,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 345.15, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
@@ -3059,7 +3115,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 345.15, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 345.15389319, 'x']]);
@@ -3085,7 +3141,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 345.14, 'x']]);
@@ -3117,7 +3173,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/b'].stateValues.value).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
       expect(stateVariables['/b2'].stateValues.value).eqls(['*', 2.047529344518, ['^', 'e', ['*', 0.0000073013048309, 'y']]]);
       expect(stateVariables['/b2'].stateValues.valueForDisplay).eqls(['*', 2.04752934, ['^', 'e', ['*', 0.0000073, 'y']]]);
@@ -3149,7 +3205,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/b'].stateValues.value).eqls(['*', 6.04752934, ['^', 'e', ['*', 0.0000073, 'y']]]);
       expect(stateVariables['/b2'].stateValues.value).eqls(['*', 6.04752934, ['^', 'e', ['*', 0.0000073, 'y']]]);
       expect(stateVariables['/b2'].stateValues.valueForDisplay).eqls(['*', 6.04752934, ['^', 'e', ['*', 0.0000073, 'y']]]);
@@ -3234,7 +3290,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 2, 'x']]);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 2, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 2, 'x']]);
@@ -3262,8 +3318,6 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/d4'].stateValues.value).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
       expect(stateVariables['/d4'].stateValues.valueForDisplay).eqls(['*', 10, ['^', 'e', ['*', 3, 'y']]]);
     });
-
-    cy.wait(500)
 
     cy.get('#\\/a textarea').type('{ctrl+end}{leftArrow}{leftArrow}{backspace}0.000000000000000472946384739473{enter}', { force: true });
     cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{rightArrow}{backspace}{backspace}0.0000000000000934720357236{ctrl+end}{leftArrow}{leftArrow}{backspace}0.0000000000000073013048309{enter}', { force: true });
@@ -3335,7 +3389,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       console.log(stateVariables['/a'].stateValues.value)
       console.log(['apply', 'sin', ['*', 4.72946384739473e-16, 'x']])
       console.log(stateVariables['/a3'].stateValues.value)
@@ -3370,7 +3424,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/a textarea').type('{home}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{rightArrow}{backspace}5{enter}', { force: true });
     cy.get('#\\/b2 textarea').type('{ctrl+home}{rightArrow}{backspace}8{enter}', { force: true });
-    cy.get('#\\/c textarea').type('{end}{leftArrow}{leftArrow}3{enter}', { force: true });
+    cy.get('#\\/c textarea').type('{end}{leftArrow}{leftArrow}3{enter}', { force: true, delay: 100 });
     cy.get('#\\/d2 textarea').type('{ctrl+home}{rightArrow}{backspace}6{enter}', { force: true }).blur();
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'sin(5.7295')
@@ -3437,32 +3491,32 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
-      expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a2'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a3'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/a3'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, ['-', 16]], 'x']]);
-      expect(stateVariables['/b'].stateValues.value).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b2'].stateValues.value).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b2'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b3'].stateValues.value).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b3'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b4'].stateValues.value).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
-      expect(stateVariables['/b4'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, ['-', 14]], ['^', 'e', ['*', 7.3, ['^', 10, ['-', 15]], 'y']]]);
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/a'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a2'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a2'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a3'].stateValues.value).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/a3'].stateValues.valueForDisplay).eqls(['apply', 'sin', ['*', 5.7295, ['^', 10, -16], 'x']]);
+      expect(stateVariables['/b'].stateValues.value).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b2'].stateValues.value).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b2'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b3'].stateValues.value).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b3'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b4'].stateValues.value).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
+      expect(stateVariables['/b4'].stateValues.valueForDisplay).eqls(['*', 8.35, ['^', 10, -14], ['^', 'e', ['*', 7.3, ['^', 10, -15], 'y']]]);
       expect(stateVariables['/c'].stateValues.value).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c'].stateValues.valueForDisplay).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c2'].stateValues.value).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c2'].stateValues.valueForDisplay).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c3'].stateValues.value).eqls(['apply', 'sin', 30]);
       expect(stateVariables['/c3'].stateValues.valueForDisplay).eqls(['apply', 'sin', 30]);
-      expect(stateVariables['/d'].stateValues.value).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
-      expect(stateVariables['/d2'].stateValues.value).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
+      expect(stateVariables['/d'].stateValues.value).eqls(['*', 6.35, ['^', 10, -14]]);
+      expect(stateVariables['/d2'].stateValues.value).eqls(['*', 6.35, ['^', 10, -14]]);
       expect(stateVariables['/d2'].stateValues.valueForDisplay).eqls(6.35e-14);
-      expect(stateVariables['/d3'].stateValues.value).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
+      expect(stateVariables['/d3'].stateValues.value).eqls(['*', 6.35, ['^', 10, -14]]);
       expect(stateVariables['/d3'].stateValues.valueForDisplay).eqls(6.35e-14);
-      expect(stateVariables['/d4'].stateValues.value).eqls(['*', 6.35, ['^', 10, ['-', 14]]]);
+      expect(stateVariables['/d4'].stateValues.value).eqls(['*', 6.35, ['^', 10, -14]]);
       expect(stateVariables['/d4'].stateValues.valueForDisplay).eqls(6.35e-14);
     });
 
@@ -3497,7 +3551,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eq(3);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eq(3)
       expect(stateVariables['/p'].stateValues.xs[0]).eq(3)
@@ -3525,7 +3579,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eq(2.4295639461593);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eq(2.4296)
       expect(stateVariables['/p'].stateValues.xs[0]).eq(2.4295639461593)
@@ -3537,7 +3591,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      await win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/p",
         args: { x: 7.936497798143, y: 2.142218345836 }
@@ -3558,7 +3612,7 @@ describe('MathInput Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/a'].stateValues.value).eq(7.936497798143);
         expect(stateVariables['/a'].stateValues.valueForDisplay).eq(7.9365)
         expect(stateVariables['/p'].stateValues.xs[0]).eq(7.936497798143)
@@ -3602,7 +3656,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eq(3);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eq(3)
       expect(stateVariables['/p'].stateValues.xs[0]).eq(3)
@@ -3630,7 +3684,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eq(2.4295639461593);
       expect(stateVariables['/a'].stateValues.valueForDisplay).eq(2.4296)
       expect(stateVariables['/p'].stateValues.xs[0]).eq(2.4295639461593)
@@ -3642,7 +3696,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      await win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/p",
         args: { x: 7.936497798143, y: 2.142218345836 }
@@ -3663,7 +3717,7 @@ describe('MathInput Tag Tests', function () {
       })
 
       cy.window().then(async (win) => {
-        let stateVariables = await win.returnAllStateVariables();
+        let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/a'].stateValues.value).eq(7.936497798143);
         expect(stateVariables['/a'].stateValues.valueForDisplay).eq(7.9365)
         expect(stateVariables['/p'].stateValues.xs[0]).eq(7.936497798143)
@@ -3690,6 +3744,8 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '＿')
 
     cy.get('#\\/a textarea').type('sqrt4{enter}', { force: true });
 
@@ -3723,6 +3779,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '＿')
+
     cy.log(`unicode α U+03B1`)
     cy.get('#\\/a textarea').type('α{enter}', { force: true });
 
@@ -3740,7 +3798,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('α')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls("alpha");
       expect(stateVariables['/a2'].stateValues.value).eqls("alpha");
       expect(stateVariables['/a3'].stateValues.value).eqls("alpha");
@@ -3765,7 +3823,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('αβ')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(["*", "alpha", "beta"]);
       expect(stateVariables['/a2'].stateValues.value).eqls(["*", "alpha", "beta"]);
       expect(stateVariables['/a3'].stateValues.value).eqls(["*", "alpha", "beta"]);
@@ -3790,7 +3848,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('y−z')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(["+", "y", ["-", "z"]]);
       expect(stateVariables['/a2'].stateValues.value).eqls(["+", "y", ["-", "z"]]);
       expect(stateVariables['/a3'].stateValues.value).eqls(["+", "y", ["-", "z"]]);
@@ -3798,7 +3856,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`normal minus`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}a-b{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}a-b{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'a−b')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'a−b')
@@ -3814,7 +3872,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('a−b')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(["+", "a", ["-", "b"]]);
       expect(stateVariables['/a2'].stateValues.value).eqls(["+", "a", ["-", "b"]]);
       expect(stateVariables['/a3'].stateValues.value).eqls(["+", "a", ["-", "b"]]);
@@ -3822,7 +3880,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode ⋅ U+22C5 is multiplication`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u22C5z{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}y\u22C5z{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'y⋅z')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'yz')
@@ -3838,7 +3896,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('yz')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(["*", "y", "z"]);
       expect(stateVariables['/a2'].stateValues.value).eqls(["*", "y", "z"]);
       expect(stateVariables['/a3'].stateValues.value).eqls(["*", "y", "z"]);
@@ -3846,7 +3904,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`normal *`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}a*b{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}a*b{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'a\u00B7b')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'ab')
@@ -3862,7 +3920,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('ab')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(["*", "a", "b"]);
       expect(stateVariables['/a2'].stateValues.value).eqls(["*", "a", "b"]);
       expect(stateVariables['/a3'].stateValues.value).eqls(["*", "a", "b"]);
@@ -3870,7 +3928,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode · U+00B7 becomes multiplication`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}y\u00B7z{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}y\u00B7z{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'y\u00B7z')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'yz')
@@ -3886,7 +3944,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('yz')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(["*", "y", "z"]);
       expect(stateVariables['/a2'].stateValues.value).eqls(["*", "y", "z"]);
       expect(stateVariables['/a3'].stateValues.value).eqls(["*", "y", "z"]);
@@ -3895,7 +3953,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode × U+00D7 becomes multiplication`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}u\u00D7v{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}u\u00D7v{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'u\u00D7v')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'uv')
@@ -3911,7 +3969,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('uv')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(["*", "u", "v"]);
       expect(stateVariables['/a2'].stateValues.value).eqls(["*", "u", "v"]);
       expect(stateVariables['/a3'].stateValues.value).eqls(["*", "u", "v"]);
@@ -3919,7 +3977,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode ∪ U+222A becomes union`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u222AB{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}A\u222AB{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'A\u222AB')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'A\u222AB')
@@ -3935,7 +3993,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('A\u222AB')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(["union", "A", "B"]);
       expect(stateVariables['/a2'].stateValues.value).eqls(["union", "A", "B"]);
       expect(stateVariables['/a3'].stateValues.value).eqls(["union", "A", "B"]);
@@ -3944,7 +4002,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode ∩ U+2229 becomes intersect`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}A\u2229B{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}A\u2229B{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', 'A\u2229B')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', 'A\u2229B')
@@ -3960,7 +4018,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('A\u2229B')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(["intersect", "A", "B"]);
       expect(stateVariables['/a2'].stateValues.value).eqls(["intersect", "A", "B"]);
       expect(stateVariables['/a3'].stateValues.value).eqls(["intersect", "A", "B"]);
@@ -3969,7 +4027,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode ∞ U+221E becomes infinity`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u221E{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}\u221E{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '\u221E')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '\u221E')
@@ -3985,7 +4043,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('\u221E')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eq(Infinity);
       expect(stateVariables['/a2'].stateValues.value).eq(Infinity);
       expect(stateVariables['/a3'].stateValues.value).eq(Infinity);
@@ -3994,7 +4052,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode µ U+u00B5 becomes mu`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u00B5{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}\u00B5{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '\u00B5')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '\u03BC')
@@ -4010,7 +4068,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('\u03BC')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eq("mu");
       expect(stateVariables['/a2'].stateValues.value).eq("mu");
       expect(stateVariables['/a3'].stateValues.value).eq("mu");
@@ -4019,7 +4077,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.log(`unicode μ U+u03BC becomes mu`)
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}\u03BC{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}\u03BC{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '\u03BC')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '\u03BC')
@@ -4035,7 +4093,7 @@ describe('MathInput Tag Tests', function () {
       expect(text.trim()).equal('\u03BC')
     })
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eq("mu");
       expect(stateVariables['/a2'].stateValues.value).eq("mu");
       expect(stateVariables['/a3'].stateValues.value).eq("mu");
@@ -4055,6 +4113,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '＿')
 
     cy.get('#\\/a textarea').type('3^2{rightArrow}5{enter}', { force: true });
 
@@ -4063,76 +4122,76 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/a3 .mjx-mrow').should('contain.text', '45')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['*', ['^', 3, 2], 5]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['*', ['^', 3, 2], 5]);
       expect(stateVariables['/a3'].stateValues.value).eqls(45);
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^25{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^25{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '325')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '325')
     cy.get('#\\/a3 .mjx-mrow').should('contain.text', '847288609400')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['^', 3, 25]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['^', 3, 25]);
       expect(stateVariables['/a3'].stateValues.value).eqls(847288609443);
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^2x{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^2x{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '32x')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '32x')
     cy.get('#\\/a3 .mjx-mrow').should('contain.text', '32x')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['^', 3, ['*', 2, 'x']]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['^', 3, ['*', 2, 'x']]);
       expect(stateVariables['/a3'].stateValues.value).eqls(['^', 3, ['*', 2, 'x']]);
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^2{rightarrow}x{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^2{rightarrow}x{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '32x')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '32x')
     cy.get('#\\/a3 .mjx-mrow').should('contain.text', '9x')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['*', ['^', 3, 2], 'x']);
       expect(stateVariables['/a2'].stateValues.value).eqls(['*', ['^', 3, 2], 'x']);
       expect(stateVariables['/a3'].stateValues.value).eqls(['*', 9, 'x']);
     });
 
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^x2{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^x2{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '3x2')
     cy.get('#\\/a2 .mjx-mrow').should('contain.text', '3x2')
     cy.get('#\\/a3 .mjx-mrow').should('contain.text', '3x2')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['^', 3, 'x2']);
       expect(stateVariables['/a2'].stateValues.value).eqls(['^', 3, 'x2']);
       expect(stateVariables['/a3'].stateValues.value).eqls(['^', 3, 'x2']);
     });
 
-    cy.get('#\\/a textarea').type('{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}3^x{rightarrow}2{enter}', { force: true });
+    cy.get('#\\/a textarea').type('{ctrl+home}{shift+end}{backspace}3^x{rightarrow}2{enter}', { force: true });
 
     cy.get('#\\/a .mq-editable-field').should('contain.text', '3x2')
-    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '3x2')
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '3x⋅2')
     cy.get('#\\/a3 .mjx-mrow').should('contain.text', '2⋅3x')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/a'].stateValues.value).eqls(['*', ['^', 3, 'x'], 2]);
       expect(stateVariables['/a2'].stateValues.value).eqls(['*', ['^', 3, 'x'], 2]);
       expect(stateVariables['/a3'].stateValues.value).eqls(['*', 2, ['^', 3, 'x']]);
@@ -4182,7 +4241,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.rawRendererValue).eq('1')
       expect(stateVariables['/mi'].stateValues.immediateValue).eq(1)
       expect(stateVariables['/mi'].stateValues.value).eq(1)
@@ -4209,7 +4268,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.rawRendererValue).eq('-7')
       expect(stateVariables['/mi'].stateValues.immediateValue).eq(-7)
       expect(stateVariables['/mi'].stateValues.value).eq(-7)
@@ -4220,7 +4279,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('move point A')
 
     cy.window().then(async (win) => {
-      await win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/A",
         args: { x: 3.9, y: -8.4 }
@@ -4244,7 +4303,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.rawRendererValue).eq('4')
       expect(stateVariables['/mi'].stateValues.immediateValue).eq(4)
       expect(stateVariables['/mi'].stateValues.value).eq(4)
@@ -4258,7 +4317,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('move point B')
 
     cy.window().then(async (win) => {
-      await win.callAction({
+      await win.callAction1({
         actionName: "movePoint",
         componentName: "/B",
         args: { x: 5.1, y: 1.3 }
@@ -4283,7 +4342,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.rawRendererValue).eq('5')
       expect(stateVariables['/mi'].stateValues.immediateValue).eq(5)
       expect(stateVariables['/mi'].stateValues.value).eq(5)
@@ -4366,6 +4425,7 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    cy.get('#\\/mns .mjx-mrow').should('contain.text', '＿')
     cy.get('#\\/mins textarea').type("xy{enter}", { force: true })
     cy.get('#\\/mis textarea').type("xy{enter}", { force: true })
     cy.get('#\\/mns .mjx-mrow').should('contain.text', 'xy')
@@ -4378,7 +4438,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mins'].stateValues.value).eqls("xy");
       expect(stateVariables['/mis'].stateValues.value).eqls(["*", "x", "y"]);
       expect(stateVariables['/mns'].stateValues.value).eqls("xy");
@@ -4397,7 +4457,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mins'].stateValues.value).eqls("xy0");
       expect(stateVariables['/mis'].stateValues.value).eqls("xy0");
       expect(stateVariables['/mns'].stateValues.value).eqls("xy0");
@@ -4416,7 +4476,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mins'].stateValues.value).eqls(["_", "xy", "uv"]);
       expect(stateVariables['/mis'].stateValues.value).eqls(["*", "x", ["_", "y", ["*", "u", "v"]]]);
       expect(stateVariables['/mns'].stateValues.value).eqls(["_", "xy", "uv"]);
@@ -4447,7 +4507,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "list", ["ldots"], "x", "y", "z", ["ldots"]
       ]);
@@ -4467,7 +4527,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "list", ["ldots"], "x", "y", "a", ["ldots"]
       ]);
@@ -4488,7 +4548,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "list", ["ldots"], "b", "y", "a", ["ldots"]
       ]);
@@ -4509,7 +4569,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "list", ["ldots"], "b", "y", "c", ["ldots"]
       ]);
@@ -4530,7 +4590,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "list", ["ldots"], "b", "y", "d", ["ldots"]
       ]);
@@ -4551,7 +4611,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "list", ["ldots"], "e", "y", "d", ["ldots"]
       ]);
@@ -4572,7 +4632,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "list", ["ldots"], "f", "y", "d", ["ldots"]
       ]);
@@ -4593,7 +4653,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "list", ["ldots"], "f", "y", "g", ["ldots"]
       ]);
@@ -4641,7 +4701,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/varWithNum'].stateValues.value).eq("x2");
       expect(stateVariables['/varWithNum2'].stateValues.value).eq("x2");
       expect(stateVariables['/varWithNum3'].stateValues.value).eq("x2");
@@ -4681,7 +4741,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/varWithNum'].stateValues.value).eq("xu9j");
       expect(stateVariables['/varWithNum2'].stateValues.value).eq("xu9j");
       expect(stateVariables['/varWithNum3'].stateValues.value).eq("xu9j");
@@ -4780,7 +4840,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/union1'].stateValues.value).eqls(["union", "A", "B"]);
       expect(stateVariables['/union2'].stateValues.value).eqls(["union", "A", "B"]);
       expect(stateVariables['/union3'].stateValues.value).eqls(["union", "A", "B"]);
@@ -4830,7 +4890,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/splits1'].stateValues.value).eqls("xy");
       expect(stateVariables['/splits2'].stateValues.value).eqls("xy");
       expect(stateVariables['/splits3'].stateValues.value).eqls(["*", "x", "y"]);
@@ -4904,7 +4964,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/splits1'].stateValues.value).eqls(["*", "x", "y", "z"]);
       expect(stateVariables['/splits2'].stateValues.value).eqls("xyz");
       expect(stateVariables['/splits3'].stateValues.value).eqls(["*", "x", "y", "z"]);
@@ -4959,7 +5019,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/hFunction1'].stateValues.value).eqls(["apply", "h", "x"]);
       expect(stateVariables['/hFunction2'].stateValues.value).eqls(["apply", "h", "x"]);
       expect(stateVariables['/hFunction3'].stateValues.value).eqls(["*", "h", "x"]);
@@ -4975,12 +5035,12 @@ describe('MathInput Tag Tests', function () {
     })
 
 
-    cy.get('#\\/hFunction1 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction2 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction3 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction4 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction5 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
-    cy.get('#\\/hFunction6 textarea').type("{end}{backspace}{backspace}{backspace}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction1 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction2 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction3 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction4 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction5 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
+    cy.get('#\\/hFunction6 textarea').type("{ctrl+home}{shift+end}{backspace}h(y){enter}", { force: true })
 
     cy.get(`#\\/hFunction1 .mq-editable-field`).should('contain.text', 'h(y)');
     cy.get(`#\\/hFunction2 .mq-editable-field`).should('contain.text', 'h(y)');
@@ -5033,7 +5093,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/hFunction1'].stateValues.value).eqls(["*", "h", "y"]);
       expect(stateVariables['/hFunction2'].stateValues.value).eqls(["apply", "h", "y"]);
       expect(stateVariables['/hFunction3'].stateValues.value).eqls(["*", "h", "y"]);
@@ -5080,7 +5140,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "or", ["=", "x", 1], ["=", "u", "x"]
       ]);
@@ -5090,7 +5150,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.log('inequalities with and')
-    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}x>3 and x <= 5{enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}x>3 and x <= 5{enter}", { force: true })
 
     // cy.get(`#\\/mi .mq-editable-field`).should('contain.text', 'x>3 and x≤5');
     cy.get('#\\/m .mjx-mrow').should('contain.text', '(x>3)∧(x≤5)')
@@ -5104,7 +5164,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "and", [">", "x", 3], ["le", "x", 5]
       ]);
@@ -5115,7 +5175,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log(`don't convert if not word`)
-    cy.get('#\\/mi textarea').type("{end}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}AandBorC{enter}", { force: true })
+    cy.get('#\\/mi textarea').type("{ctrl+home}{shift+end}{backspace}AandBorC{enter}", { force: true })
 
 
     // cy.get(`#\\/mi .mq-editable-field`).should('contain.text', 'AandBorC');
@@ -5130,7 +5190,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "*", "A", "a", "n", "d", "B", "o", "r", "C"
       ]);
@@ -5154,7 +5214,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "or", ["and", "A", "B"], "C"
       ]);
@@ -5192,7 +5252,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "*", "A", "U", "C"
       ]);
@@ -5217,7 +5277,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "union", "A", "B"
       ]);
@@ -5240,7 +5300,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "*", "A", "U", "B"
       ]);
@@ -5263,7 +5323,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/mi'].stateValues.value).eqls([
         "union", "A", "B"
       ]);
@@ -5353,7 +5413,7 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/mipf .mq-editable-field').should('have.text', '(1,2)')
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/mi"].stateValues.value).eqls(["tuple", 1, 2])
       expect(stateVariables["/mi"].stateValues.prefill).eqls(["tuple", 1, 2])
     });
@@ -5375,7 +5435,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/mi"].stateValues.value).eqls(["tuple", 1, 5])
       expect(stateVariables["/mi"].stateValues.prefill).eqls(["tuple", 1, 5])
     });
@@ -5397,7 +5457,7 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/mi"].stateValues.value).eqls(["tuple", 1, 9])
       expect(stateVariables["/mi"].stateValues.prefill).eqls(["tuple", 1, 5])
     });
@@ -5420,12 +5480,79 @@ describe('MathInput Tag Tests', function () {
     })
 
     cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables();
+      let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/mi"].stateValues.value).eqls(["tuple", 1, 9])
       expect(stateVariables["/mi"].stateValues.prefill).eqls(["tuple", 1, 7])
     });
 
   });
+
+  it('check ignoreUpdate bug 1', () => {
+    // if set core to delay 1 second on updates
+    // then the refresh on blur (from the focus field recoil atoms changing)
+    // would cause rendererValue.current to be changed to the old SV value
+    // as the update wouldn't be ignored
+  
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>n: <mathinput name="n" prefill="10" /></p>
+  <p>Value of n: <copy prop="value" target="n" assignNames="n2" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    // by highlighting and typing a number, we make sure the rendererValue changes directly 
+    // from 10 to 20 and back to 10 (without other changes that would hide the bug)
+    cy.get('#\\/n textarea').type("{home}{shift+rightArrow}2", {force: true}).blur();
+    cy.get('#\\/n2').should('contain.text', "20");
+
+    cy.get('#\\/n textarea').type("{home}{shift+rightArrow}1", {force: true}).blur();
+    cy.get('#\\/n2').should('contain.text', "10");
+
+
+  });
+
+
+  it('check ignoreUpdate bug 1', () => {
+    // if set core to delay 1 second on updates
+    // the extra update from focusing another mathinput wasn't being ignored
+    // leading rendererValue to get out of sync
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>c: <mathinput name="c" prefill="x" /></p>
+    <p>c2: <copy prop="value" target="c" assignNames="c2" /></p>
+    <p>d: <mathinput name="d" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    cy.get('#\\/c textarea').type('{end}y{enter}', { force: true });
+    cy.get('#\\/d textarea').focus();
+
+    cy.get('#\\/c2').should('contain.text', 'xy')
+    cy.get('#\\/c .mq-editable-field').should('contain.text', 'xy')
+    cy.get('#\\/c2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("xy");
+    })
+
+    // need next update to go back to x for the bug to be revealed
+    cy.get('#\\/c textarea').type('{end}{backspace}{enter}', { force: true });
+    cy.get('#\\/c2').should('not.contain.text', 'xy')
+    cy.get('#\\/c .mq-editable-field').should('contain.text', 'x')
+    cy.get('#\\/c2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x");
+    })
+  })
 
 
 });

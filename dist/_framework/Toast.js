@@ -76,6 +76,28 @@ const Button = styled("button")`
   color: black;
   font-size: 1em;
 `;
+const toastStack = atom({
+  key: "toastStack",
+  default: []
+});
+let id = 0;
+export const recoilAddToast = ({set}) => (msg, type = toastType.INFO, action = null) => {
+  set(toastStack, (old) => [
+    ...old,
+    /* @__PURE__ */ React.createElement(ToastMessage, {
+      key: id,
+      type,
+      action,
+      duration: type.timeout,
+      tId: id
+    }, msg)
+  ]);
+  id++;
+};
+export const useToast = () => {
+  const addToast = useRecoilCallback(recoilAddToast, []);
+  return addToast;
+};
 export const toastType = Object.freeze({
   ERROR: {
     timeout: -1,
@@ -103,27 +125,6 @@ export const toastType = Object.freeze({
     background: "rgba(26,90,153,1)"
   }
 });
-const toastStack = atom({
-  key: "toastStack",
-  default: []
-});
-let id = 0;
-export const useToast = () => {
-  const addToast = useRecoilCallback(({set}) => (msg, type = toastType.INFO, action = null) => {
-    set(toastStack, (old) => [
-      ...old,
-      /* @__PURE__ */ React.createElement(ToastMessage, {
-        key: id,
-        type,
-        action,
-        duration: type.timeout,
-        tId: id
-      }, msg)
-    ]);
-    id++;
-  }, []);
-  return addToast;
-};
 export default function Toast() {
   const toasts = useRecoilValue(toastStack);
   return /* @__PURE__ */ React.createElement(ToastContainer, null, toasts.map((toast) => toast));

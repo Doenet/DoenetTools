@@ -8,8 +8,8 @@ export default class NumberComponent extends InlineComponent {
 
   static variableForPlainMacro = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.displayDigits = {
       createComponentOfType: "integer",
       createStateVariable: "displayDigits",
@@ -334,7 +334,8 @@ export default class NumberComponent extends InlineComponent {
                         mathChildrenByCode: {},
                         mathListChildrenByCode: {},
                         numberChildrenByCode: {},
-                        numberListChildrenByCode: {}
+                        numberListChildrenByCode: {},
+                        otherChildrenByCode: {},
                       },
                       valueOnInvalid: NaN
                     })
@@ -412,6 +413,7 @@ export default class NumberComponent extends InlineComponent {
           dependencyValues.numberListChildrenByCode = {};
           dependencyValues.textListChildrenByCode = {};
           dependencyValues.booleanListChildrenByCode = {};
+          dependencyValues.otherChildrenByCode = {};
 
           let fractionSatisfied = evaluateLogic({
             logicTree: dependencyValues.parsedExpression.tree,
@@ -620,6 +622,19 @@ export default class NumberComponent extends InlineComponent {
       isPublic: true
     });
 
+    stateVariableDefinitions.latex = {
+      public: true,
+      componentType: "text",
+      returnDependencies: () => ({
+        valueForDisplay: {
+          dependencyType: "stateVariable",
+          variableName: "valueForDisplay"
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { latex: me.fromAst(dependencyValues.valueForDisplay).toLatex() } }
+      }
+    }
 
     stateVariableDefinitions.canBeModified = {
       returnDependencies: () => ({

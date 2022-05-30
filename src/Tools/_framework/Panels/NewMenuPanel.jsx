@@ -148,7 +148,7 @@ const HomeButton = styled.button`
 `;
 
 function SelectionMenu(props){
-  console.log("child", props.children);
+  // console.log("child", props.children);
   return <>
     <div style={{
       // paddingTop: "4px", 
@@ -201,7 +201,7 @@ const LoadingFallback = styled.div`
 `;
 
 export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], currentMenus=[], initOpen=[], setMenusOpen, displayProfile }) {
-console.log(">>>===MenuPanel", hide)
+// console.log(">>>===MenuPanel", hide)
 // console.log(">>>menuPanelCap",menuPanelCap)
 // console.log(">>>currentMenus",currentMenus)
 
@@ -213,24 +213,30 @@ console.log(">>>===MenuPanel", hide)
   // const profilePicName = profile.profilePicture;
   const LazyMenuPanelCapObj = useRef({
     DriveInfoCap:lazy(() => import('../MenuPanelCaps/DriveInfoCap')),
+    DataCap:lazy(() => import('../MenuPanelCaps/DataCap')),
     EditorInfoCap:lazy(() => import('../MenuPanelCaps/EditorInfoCap')),
     AssignmentInfoCap:lazy(() => import('../MenuPanelCaps/AssignmentInfoCap')),
+    DraftActivityCap:lazy(() => import('../MenuPanelCaps/DraftActivityCap')),
   }).current;
 
   const LazyMenuObj = useRef({
     SelectedCourse:lazy(() => import('../Menus/SelectedCourse')),
     GradeSettings:lazy(() => import('../Menus/GradeSettings')),
-    SelectedDoenetML:lazy(() => import('../Menus/SelectedDoenetML')),
-    SelectedFolder:lazy(() => import('../Menus/SelectedFolder')),
-    SelectedCollection:lazy(() => import('../Menus/SelectedCollection')),
-    SelectedMulti:lazy(() => import('../Menus/SelectedMulti.jsx')),
+    SelectedSection:lazy(() => import('../Menus/SelectedSection')),
+    SelectedBank:lazy(() => import('../Menus/SelectedBank')),
+    SelectedDataSources:lazy(() => import('../Menus/SelectedDataSources')),
+    SelectedActivity:lazy(() => import('../Menus/SelectedActivity')),
+    SelectedOrder:lazy(() => import('../Menus/SelectedOrder')),
+    SelectedPage:lazy(() => import('../Menus/SelectedPage')),
     CreateCourse:lazy(() => import('../Menus/CreateCourse')),
     CourseEnroll:lazy(() => import('../Menus/CourseEnroll')),
     AddDriveItems:lazy(() => import('../Menus/AddDriveItems')),
+    CutCopyPasteMenu:lazy(() => import('../Menus/CutCopyPasteMenu')),
     EnrollStudents:lazy(() => import('../Menus/EnrollStudents')),
     DoenetMLSettings:lazy(() => import('../Menus/DoenetMLSettings')),
     VersionHistory:lazy(() => import('../Menus/VersionHistory')),
-    Variant:lazy(() => import('../Menus/Variant')),
+    PageVariant:lazy(() => import('../Menus/PageVariant')),
+    ActivityVariant:lazy(() => import('../Menus/ActivityVariant')),
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
     LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
     GradeUpload:lazy(() => import('../Menus/GradeUpload')),
@@ -278,7 +284,7 @@ console.log(">>>===MenuPanel", hide)
 
   //Show menus
   for (let [i,type] of Object.entries(currentMenus)){
-    console.log(">>>menu",type)
+    // console.log(">>>menu",type)
     const mKey = `${type}`;
     const title = menusTitles[i]
     let isOpen = initOpen[i]

@@ -1,14 +1,8 @@
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Number(props) {
+export default React.memo(function Number(props) {
   let {name, SVs, actions, sourceOfUpdate} = useDoenetRender(props);
-  useEffect(() => {
-    if (window.MathJax && SVs.renderAsMath) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  });
   if (SVs.hidden) {
     return null;
   }
@@ -20,5 +14,9 @@ export default function Number(props) {
     name
   }), /* @__PURE__ */ React.createElement("span", {
     id: name
-  }, number));
-}
+  }, /* @__PURE__ */ React.createElement(MathJax, {
+    hideUntilTypeset: "first",
+    inline: true,
+    dynamic: true
+  }, number)));
+});

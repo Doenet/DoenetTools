@@ -16,8 +16,8 @@ export default class Point extends GraphicalComponent {
   static primaryStateVariableForDefinition = "coordsShadow";
   static stateVariableForAttributeValue = "coords";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.draggable = {
       createComponentOfType: "boolean",
       createStateVariable: "draggable",
@@ -229,7 +229,7 @@ export default class Point extends GraphicalComponent {
 
         return {
           setValue: {
-            styleDescription: dependencyValues.selectedStyle.markerColor
+            styleDescription: dependencyValues.selectedStyle.markerColorWord
           }
         };
       }
@@ -246,7 +246,7 @@ export default class Point extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let pointDescription = dependencyValues.selectedStyle.markerColor;
+        let pointDescription = dependencyValues.selectedStyle.markerColorWord;
         if (dependencyValues.selectedStyle.markerStyle === "circle") {
           pointDescription += " point";
         } else {
@@ -1039,7 +1039,7 @@ export default class Point extends GraphicalComponent {
 
   static adapters = ["coords"];
 
-  async movePoint({ x, y, z, transient }) {
+  async movePoint({ x, y, z, transient, actionId }) {
     let components = {};
     if (x !== undefined) {
       components[0] = me.fromAst(x);
@@ -1058,7 +1058,8 @@ export default class Point extends GraphicalComponent {
           stateVariable: "xs",
           value: components,
         }],
-        transient
+        transient,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1068,6 +1069,7 @@ export default class Point extends GraphicalComponent {
           stateVariable: "xs",
           value: components,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {

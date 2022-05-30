@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 import me from 'math-expressions';
 
-export default function Ray(props) {
+export default React.memo(function Ray(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Ray.ignoreActionsWithoutCore = true;
@@ -61,6 +61,13 @@ export default function Ray(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle),
       straightFirst: false,
     };
+
+    jsxRayAttributes.label = {};
+    if (SVs.applyStyleToLabel) {
+      jsxRayAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxRayAttributes.label.strokeColor = "#000000";
+    }
 
     let through = [
       [...SVs.numericalEndpoint],
@@ -193,6 +200,18 @@ export default function Ray(props) {
         // rayJXG.current.setAttribute({visible: false})
       }
 
+      if (rayJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        rayJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        rayJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (rayJXG.current.visProp.dash !== newDash) {
+        rayJXG.current.visProp.dash = newDash;
+      }
+      if (rayJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        rayJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+      }
+
       rayJXG.current.name = SVs.label;
       // rayJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
@@ -205,6 +224,11 @@ export default function Ray(props) {
       rayJXG.current.needsUpdate = true;
       rayJXG.current.update()
       if (rayJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          rayJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          rayJXG.current.label.visProp.strokecolor = "#000000";
+        }
         rayJXG.current.label.needsUpdate = true;
         rayJXG.current.label.update();
       }
@@ -220,7 +244,7 @@ export default function Ray(props) {
 
   return <><a name={name} /></>
 
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

@@ -2,12 +2,13 @@
 describe('Pluralize Tag Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
 
   })
 
   it('number followed by noun', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 
@@ -36,7 +37,7 @@ describe('Pluralize Tag Tests', function () {
   })
 
   it('single word', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 
@@ -59,7 +60,7 @@ describe('Pluralize Tag Tests', function () {
   })
 
   it('number followed by noun with plural form', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   
@@ -88,7 +89,7 @@ describe('Pluralize Tag Tests', function () {
   })
 
   it('single word, with plural form', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 
@@ -111,7 +112,7 @@ describe('Pluralize Tag Tests', function () {
   })
 
   it('number followed by noun, based on number', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 
@@ -141,7 +142,7 @@ describe('Pluralize Tag Tests', function () {
 
 
   it('single word, based on number', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
 
@@ -177,7 +178,7 @@ describe('Pluralize Tag Tests', function () {
 
 
   it('phrases', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p><pluralize>one dog three cat two squirrel or 1 cat plus 7 goose</pluralize></p>
@@ -192,7 +193,7 @@ describe('Pluralize Tag Tests', function () {
 
 
   it('dynamic', () => {
-    cy.window().then((win) => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <p>How many geese? <textinput name="ngeese" prefill="1" /></p>

@@ -54,7 +54,7 @@ $result = $conn->query($sql);
 
   if ($result->num_rows < 1){
     $sql = "UPDATE user_assignment_attempt_item
-        SET viewedSolution = '1', viewedSolutionDate = NOW()
+        SET viewedSolution = '1', viewedSolutionDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
         WHERE doenetId = '$doenetId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'

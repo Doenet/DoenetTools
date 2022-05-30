@@ -4,8 +4,8 @@ import { returnSelectedStyleStateVariableDefinition } from '../../utils/style.js
 export default class GraphicalComponent extends BaseComponent {
   static componentType = "_graphical";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.label = {
       createComponentOfType: "text",
       createStateVariable: "label",
@@ -17,6 +17,13 @@ export default class GraphicalComponent extends BaseComponent {
       createComponentOfType: "boolean",
       createStateVariable: "showLabel",
       defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+    attributes.applyStyleToLabel = {
+      createComponentOfType: "boolean",
+      createStateVariable: "applyStyleToLabel",
+      defaultValue: false,
       public: true,
       forRenderer: true
     };

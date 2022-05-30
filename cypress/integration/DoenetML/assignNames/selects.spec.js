@@ -12,11 +12,12 @@ function cesc(s) {
 describe('selects assignName Tests', function () {
 
   beforeEach(() => {
+    cy.clearIndexedDB();
     cy.visit('/cypressTest')
   })
 
-  it('assignNamesShifts in selects', () => {
-    cy.window().then((win) => {
+  it('assignNamesSkip in selects', () => {
+    cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
@@ -52,35 +53,38 @@ describe('selects assignName Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.window().then((win) => {
-      let components = Object.assign({}, win.state.components);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
 
-      let selectedIndices = components["/_select1"].stateValues.selectedIndices;
+      let selectedIndices = stateVariables["/_select1"].stateValues.selectedIndices;
 
-      let cNames = ["/a","/b", "/c", "/d", "/e", "/f"];
+      let cNames = ["/a", "/b", "/c", "/d", "/e", "/f"];
 
-      for(let [j, index] of selectedIndices.entries()) {
+      for (let [j, index] of selectedIndices.entries()) {
 
-        let comp = components[cNames[j]];
+        let comp = stateVariables[cNames[j]];
         let anchor = cesc('#' + cNames[j]);
         let cType = index === 6 ? "number" : "text";
 
+        let optionReplacement = stateVariables[stateVariables[stateVariables["/_select1"].replacements[j].componentName].replacements[1].componentName]
+
+
         expect(comp.componentType).eq(cType);
 
-        if(index === 1) {
+        if (index === 1) {
           cy.get(anchor).should('have.text', 'hi');
-        } else if(index === 2) {
-          let color = comp.replacementOf.replacementOf.stateValues.selectedIndices[0] === 1 ? "orange" : "red";
+        } else if (index === 2) {
+          let color = optionReplacement.stateValues.selectedIndices[0] === 1 ? "orange" : "red";
           cy.get(anchor).should('have.text', color);
-        } else if(index === 3) {
+        } else if (index === 3) {
           cy.get(anchor).should('have.text', 'hop');
-        } else if(index === 4) {
-          let letter = numberToLetters(comp.replacementOf.stateValues.selectedIndices[0], true);
+        } else if (index === 4) {
+          let letter = numberToLetters(optionReplacement.stateValues.selectedIndices[0], true);
           cy.get(anchor).should('have.text', letter);
-        } else if(index === 5) {
-          let word = ["once", "upon", "a", "time"][comp.replacementOf.replacementOf.stateValues.selectedIndices[0]-1];
+        } else if (index === 5) {
+          let word = ["once", "upon", "a", "time"][optionReplacement.stateValues.selectedIndices[0] - 1];
           cy.get(anchor).should('have.text', word);
-        } else if(index === 6) {
+        } else if (index === 6) {
           cy.get(anchor).invoke('text').then(text => {
             expect(Number(text)).lte(1);
             expect(Number(text)).gte(0);

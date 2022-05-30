@@ -2,7 +2,8 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
-export default function Line(props) {
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
+export default React.memo(function Line(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   Line.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -14,13 +15,6 @@ export default function Line(props) {
   let pointCoords = useRef(null);
   let lastPositionsFromCore = useRef(null);
   lastPositionsFromCore.current = SVs.numericalPoints;
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  });
   useEffect(() => {
     return () => {
       if (Object.keys(lineJXG.current).length !== 0) {
@@ -45,6 +39,12 @@ export default function Line(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed)
     };
+    jsxLineAttributes.label = {};
+    if (SVs.applyStyleToLabel) {
+      jsxLineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxLineAttributes.label.strokeColor = "#000000";
+    }
     let through = [
       [...SVs.numericalPoints[0]],
       [...SVs.numericalPoints[1]]
@@ -161,6 +161,11 @@ export default function Line(props) {
       lineJXG.current.needsUpdate = true;
       lineJXG.current.update();
       if (lineJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          lineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        } else {
+          lineJXG.current.label.visProp.strokecolor = "#000000";
+        }
         lineJXG.current.label.needsUpdate = true;
         lineJXG.current.label.update();
       }
@@ -178,8 +183,12 @@ export default function Line(props) {
     name
   }), /* @__PURE__ */ React.createElement("span", {
     id: name
-  }, mathJaxify));
-}
+  }, /* @__PURE__ */ React.createElement(MathJax, {
+    hideUntilTypeset: "first",
+    inline: true,
+    dynamic: true
+  }, mathJaxify)));
+});
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {
     return 2;

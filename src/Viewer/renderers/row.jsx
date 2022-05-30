@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Row(props) {
+export default React.memo(function Row(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -26,6 +26,6 @@ export default function Row(props) {
     return <tr id={name} style={style}>{children}</tr>
 
 
-}
+})
 
 

@@ -2,13 +2,17 @@ import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
+import { rendererState } from './useDoenetRenderer';
+import { useSetRecoilState } from 'recoil';
 
-export default function ChoiceInput(props) {
-  let { name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, callAction } = useDoenetRender(props);
+export default React.memo(function ChoiceInput(props) {
+  let { name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   ChoiceInput.baseStateVariable = "selectedIndices";
 
   const [rendererSelectedIndices, setRendererSelectedIndices] = useState(SVs.selectedIndices);
+
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   let selectedIndicesWhenSetState = useRef(null);
 
@@ -68,6 +72,12 @@ export default function ChoiceInput(props) {
 
       setRendererSelectedIndices(newSelectedIndices);
       selectedIndicesWhenSetState.current = SVs.selectedIndices;
+
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
 
       callAction({
         action: actions.updateSelectedIndices,
@@ -378,4 +388,4 @@ export default function ChoiceInput(props) {
 
   }
 
-}
+})

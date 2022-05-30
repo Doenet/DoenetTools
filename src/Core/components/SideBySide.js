@@ -6,8 +6,8 @@ export class SideBySide extends BlockComponent {
   static renderChildren = true;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.width = {
       createComponentOfType: "_componentSize",
@@ -289,8 +289,6 @@ export class SideBySide extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-
-        console.log(dependencyValues)
 
         let allMarginsSpecified = [];
         let marginsAbsolute = null;
@@ -1041,8 +1039,8 @@ export class SbsGroup extends BlockComponent {
   static rendererType = "container";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.width = {
       createComponentOfType: "_componentSize",

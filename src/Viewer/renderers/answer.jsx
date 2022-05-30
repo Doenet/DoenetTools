@@ -1,10 +1,10 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
+import styled from 'styled-components';
 
-
-export default function Answer(props) {
+export default React.memo(function Answer(props) {
   let { name, SVs, actions, children, callAction } = useDoenetRender(props);
 
 
@@ -50,17 +50,30 @@ export default function Answer(props) {
     }
 
     let checkWorkStyle = {
-      height: "23px",
-      display: "inline-block",
-      backgroundColor: "rgb(2, 117, 216)",
-      padding: "1px 6px 1px 6px",
-      color: "white",
-      fontWeight: "bold",
-      //marginBottom: "30px",  //Space after check work
+      cursor: 'pointer',
     }
 
+    // Moved most of checkWorkStyle styling into Button
+    const Button = styled.button `
+      position: relative;
+      height: 24px;
+      display: inline-block;
+      color: white;
+      background-color: var(--mainBlue);
+      /* padding: 2px; */
+      /* border: var(--mainBorder); */
+      border: none;
+      border-radius: var(--mainBorderRadius);
+      margin: 0px 10px 12px 10px;
+
+      &:hover {
+        background-color: var(--lightBlue);
+        color: black;
+      };
+    `;
+
     if (disabled) {
-      checkWorkStyle.backgroundColor = "rgb(200,200,200)";
+      checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     }
 
     let checkWorkText = "Check Work";
@@ -68,7 +81,7 @@ export default function Answer(props) {
       checkWorkText = "Submit Response";
     }
     let checkworkComponent = (
-      <button id={name + "_submit"}
+      <Button id={name + "_submit"}
         tabIndex="0"
         disabled={disabled}
         style={checkWorkStyle}
@@ -79,56 +92,56 @@ export default function Answer(props) {
           }
         }}
       >
-        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        <FontAwesomeIcon style={{marginRight: "4px", paddingLeft: "2px"}} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
         &nbsp;
         {checkWorkText}
-      </button>);
+      </Button>);
 
     if (SVs.showCorrectness) {
       if (validationState === "correct") {
-        checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
         checkworkComponent = (
-          <span id={name + "_correct"}
+          <Button id={name + "_correct"}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCheck} />
             &nbsp;
             Correct
-          </span>);
+          </Button>);
       } else if (validationState === "incorrect") {
-        checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
         checkworkComponent = (
-          <span id={name + "_incorrect"}
+          <Button id={name + "_incorrect"}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faTimes} />
             &nbsp;
             Incorrect
-          </span>);
+          </Button>);
       } else if (validationState === "partialcorrect") {
         checkWorkStyle.backgroundColor = "#efab34";
         let percent = Math.round(SVs.creditAchieved * 100);
         let partialCreditContents = `${percent}% Correct`;
 
         checkworkComponent = (
-          <span id={name + "_partial"}
+          <Button id={name + "_partial"}
             style={checkWorkStyle}
           >
             {partialCreditContents}
-          </span>);
+          </Button>);
       }
     } else {
       // showCorrectness is false
       if (validationState !== "unvalidated") {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkworkComponent = (
-          <span id={name + "_saved"}
+          <Button id={name + "_saved"}
             style={checkWorkStyle}
           >
             <FontAwesomeIcon icon={faCloud} />
             &nbsp;
             Response Saved
-          </span>);
+          </Button>);
       }
     }
 
@@ -139,23 +152,29 @@ export default function Answer(props) {
           (no attempts remaining)
         </span>
       </>
-    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
-
+    } else if (SVs.numberOfAttemptsLeft == 1) {
       checkworkComponent = <>
         {checkworkComponent}
         <span>
-          (attempts remaining: {SVs.numberOfAttemptsLeft})
+          (1 attempt remaining)
+        </span>
+      </>
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+      checkworkComponent = <>
+        {checkworkComponent}
+        <span>
+          ({SVs.numberOfAttemptsLeft} attempts remaining)
         </span>
       </>
     }
 
-    return <span id={name}>
+    return <span id={name} style={{display: "flex"}}>
       <a name={name} />
       {inputChildrenToRender}
       {checkworkComponent}
     </span>;
   } else {
-    return <span id={name}><a name={name} />{inputChildrenToRender}</span>;
+    return <span id={name} style={{marginBottom: "12px"}}><a name={name} />{inputChildrenToRender}</span>;
   }
 
-}
+})

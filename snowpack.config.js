@@ -16,6 +16,7 @@ module.exports = {
     'src/Tools/uiDocs': '/uiDocs',
     'src/Media': { url: '/media', static: true, resolve: false },
     'src/Media/profile_pictures': '/profile_pictures',
+    'src/Media/byPageId': '/media/byPageId',
     'src/Parser': '/parser',
     'src/Api': '/api',
     'src/Tools/_framework': '/_framework',
@@ -56,6 +57,36 @@ module.exports = {
           port: 80,
         });
       },
+    },
+    {
+      match: 'routes',
+      src: '/temp.*',
+      dest: '/temp/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/test.*',
+      dest: '/test/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/uiDocs.*',
+      dest: '/uiDocs/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/cypressTest.*',
+      dest: '/cypressTest/index.html',
+    },
+    {
+      match: 'routes',
+      src: '/chat.*',
+      dest: '/chat/index.html',
+    },
+    {
+      match: 'routes',
+      src: '.*',
+      dest: '/index.html',
     },
   ],
 

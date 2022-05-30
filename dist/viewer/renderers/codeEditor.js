@@ -2,7 +2,7 @@ import React, {useState, useRef} from "../../_snowpack/pkg/react.js";
 import useDoenetRenderer from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import CodeMirror from "../../_framework/CodeMirror.js";
-export default function CodeEditor(props) {
+export default React.memo(function CodeEditor(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRenderer(props);
   let currentValue = useRef(SVs.immediateValue);
   let timer = useRef(null);
@@ -59,16 +59,19 @@ export default function CodeEditor(props) {
       }
     }
   }));
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+  return /* @__PURE__ */ React.createElement("div", {
+    style: {margin: "12px 0"}
+  }, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("div", {
     style: {
-      padding: "0px",
-      border: "1px solid black",
+      padding: "0",
+      border: "var(--mainBorder)",
+      borderRadius: "var(--mainBorderRadius)",
       height: sizeToCSS(componentHeight),
       width: sizeToCSS(componentWidth),
       display: "flex",
       flexDirection: "column"
     }
   }, editor, viewer));
-}
+});

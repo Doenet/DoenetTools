@@ -5,7 +5,7 @@ import {faLightbulb as lightOff} from "../../_snowpack/pkg/@fortawesome/free-sol
 import {faLightbulb as lightOn} from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
 import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-export default function Hint(props) {
+export default React.memo(function Hint(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
   if (!SVs.showHints) {
     return null;
@@ -41,10 +41,13 @@ export default function Hint(props) {
     info = childrenToRender;
     infoBlockStyle = {
       display: "block",
-      margin: "0px 4px 4px 4px",
+      margin: "0px 4px 12px 4px",
       padding: "6px",
-      border: "1px solid #C9C9C9",
-      backgroundColor: "#fcfcfc"
+      border: "2px solid black",
+      borderTop: "0px",
+      borderBottomLeftRadius: "5px",
+      borderBottomRightRadius: "5px",
+      backgroundColor: "white"
     };
     onClickFunction = () => {
       callAction({
@@ -58,9 +61,20 @@ export default function Hint(props) {
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {
-    style: {display: "block", margin: "4px 4px 0px 4px", padding: "6px", border: "1px solid #C9C9C9", backgroundColor: "#ebebeb", cursor: "pointer"},
+    style: {
+      display: "block",
+      margin: SVs.open ? "12px 4px 0px 4px" : "12px 4px 12px 4px",
+      padding: "6px",
+      border: "2px solid black",
+      borderTopLeftRadius: "5px",
+      borderTopRightRadius: "5px",
+      borderBottomLeftRadius: SVs.open ? "0px" : "5px",
+      borderBottomRightRadius: SVs.open ? "0px" : "5px",
+      backgroundColor: "var(--mainGray)",
+      cursor: "pointer"
+    },
     onClick: onClickFunction
   }, twirlIcon, " ", icon, " ", title, " (click to ", openCloseText, ")"), /* @__PURE__ */ React.createElement("span", {
     style: infoBlockStyle
   }, info));
-}
+});

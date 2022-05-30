@@ -19,7 +19,7 @@ import MenuPanel from './Panels/NewMenuPanel';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
 
-import { useHistory, useLocation } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -53,7 +53,7 @@ export const profileAtom = atom({
         // localStorage.setItem('Profile', JSON.stringify(data.profile));
         return data.profile;
       } catch (error) {
-        console.log('Error loading user profile', error.message);
+        console.error('Error loading user profile', error.message);
         return {};
       }
     },
@@ -104,7 +104,7 @@ export default function ToolRoot() {
     NotFound: lazy(() => import('./ToolPanels/NotFound')),
     AccountSettings: lazy(() => import('./ToolPanels/AccountSettings')),
     HomePanel: lazy(() => import('./ToolPanels/HomePanel')),
-    Content: lazy(() => import('./ToolPanels/Content')),
+    PublicActivityViewer: lazy(() => import('./ToolPanels/PublicActivityViewer')),
     DriveCards: lazy(() => import('./ToolPanels/DriveCards')),
     SignIn: lazy(() => import('./ToolPanels/SignIn')),
     SignOut: lazy(() => import('./ToolPanels/SignOut')),
@@ -119,13 +119,15 @@ export default function ToolRoot() {
     GradebookAttempt: lazy(() => import('./ToolPanels/GradebookAttempt')),
     EditorViewer: lazy(() => import('./ToolPanels/EditorViewer')),
     AssignmentViewer: lazy(() => import('./ToolPanels/AssignmentViewer')),
-    SurveyListViewer: lazy(() => import('./ToolPanels/SurveyListViewer')),
+    DraftAssignmentViewer: lazy(() => import('./ToolPanels/DraftAssignmentViewer')),
+    DataPanel: lazy(() => import('./ToolPanels/DataPanel')),
     SurveyDataViewer: lazy(() => import('./ToolPanels/SurveyDataViewer')),
     DoenetMLEditor: lazy(() => import('./ToolPanels/DoenetMLEditor')),
     Enrollment: lazy(() => import('./ToolPanels/Enrollment')),
-    CollectionEditor: lazy(() => import('./ToolPanels/CollectionEditor')),
     ChooseLearnerPanel: lazy(() => import('./ToolPanels/ChooseLearnerPanel')),
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
+    GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
+    GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -136,9 +138,6 @@ export default function ToolRoot() {
     NavigationBreadCrumb: lazy(() =>
       import('./HeaderControls/NavigationBreadCrumb'),
     ),
-    CollectionBreadCrumb: lazy(() =>
-      import('./HeaderControls/CollectionBreadCrumb'),
-    ),
     ChooserBreadCrumb: lazy(() => import('./HeaderControls/ChooserBreadCrumb')),
     DashboardBreadCrumb: lazy(() =>
       import('./HeaderControls/DashboardBreadCrumb'),
@@ -146,7 +145,7 @@ export default function ToolRoot() {
     EnrollmentBreadCrumb: lazy(() =>
       import('./HeaderControls/EnrollmentBreadCrumb'),
     ),
-    SurveyBreadCrumb: lazy(() => import('./HeaderControls/SurveyBreadCrumb')),
+    DataBreadCrumb: lazy(() => import('./HeaderControls/DataBreadCrumb')),
     EditorBreadCrumb: lazy(() => import('./HeaderControls/EditorBreadCrumb')),
     GradebookBreadCrumb: lazy(() =>
       import('./HeaderControls/GradebookBreadCrumb'),
@@ -311,7 +310,7 @@ export default function ToolRoot() {
   let headerControls = null;
   if (toolRootMenusAndPanels.headerControls) {
     headerControls = [];
-    for (const [i, controlName] of Object.entries(
+    for (const [, controlName] of Object.entries(
       toolRootMenusAndPanels.headerControls,
     )) {
       const controlObj = LazyControlObj[controlName];
@@ -433,19 +432,6 @@ export default function ToolRoot() {
 // footer: {height,open,component}
 
 let navigationObj = {
-  content: {
-    default: {
-      pageName: 'Content',
-      currentMenus: [],
-      menusTitles: [],
-      menusInitOpen: [],
-      currentMainPanel: 'Content',
-      supportPanelOptions: [],
-      supportPanelTitles: [],
-      supportPanelIndex: 0,
-      hasNoMenuPanel: true,
-    },
-  },
   exam: {
     default: {
       defaultTool: 'chooseLearner',
@@ -510,6 +496,16 @@ let navigationObj = {
       onLeave: 'DashboardLeave',
       waitForMenuSuppression: true,
     },
+    draftactivity: {
+      pageName: 'DraftActivity',
+      menuPanelCap: 'DraftActivityCap',
+      currentMainPanel: 'DraftAssignmentViewer',
+      currentMenus: ['ActivityVariant'],
+      menusTitles: ['Activity Variant'],
+      menusInitOpen: [],
+      headerControls: ['AssignmentBreadCrumb'],
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
+    },
     gradebook: {
       pageName: 'Gradebook',
       currentMainPanel: 'Gradebook',
@@ -568,9 +564,11 @@ let navigationObj = {
       pageName: 'Course',
       currentMainPanel: 'NavigationPanel',
       menuPanelCap: 'DriveInfoCap',
-      currentMenus: ['AddDriveItems'],
-      menusTitles: ['Add Items'],
-      menusInitOpen: [true],
+      // currentMenus: ['AddDriveItems','CutCopyPasteMenu'],
+      // menusTitles: ['Add Items','Cut, Copy and Paste'],
+      currentMenus: ['CutCopyPasteMenu','AddDriveItems'],
+      menusTitles: ['Cut, Copy and Paste','Add Items'],
+      menusInitOpen: [true,true],
       headerControls: ['NavigationBreadCrumb'],
       onLeave: 'NavigationLeave',
       waitForMenuSuppression: true,
@@ -581,31 +579,23 @@ let navigationObj = {
       menuPanelCap: 'EditorInfoCap',
       currentMainPanel: 'EditorViewer',
       currentMenus: [
-        'VersionHistory',
-        'Variant',
+        'PageVariant',
         'AssignmentSettingsMenu',
         'SupportingFilesMenu',
       ],
       menusTitles: [
-        'Version History',
-        'Variant',
+        'Page Variant',
         'Assignment Settings',
         'Supporting Files',
       ],
-      menusInitOpen: [false, false, false],
+      menusInitOpen: [false, false],
       supportPanelOptions: ['DoenetMLEditor'],
       supportPanelTitles: ['DoenetML Editor'],
       supportPanelIndex: 0,
       headerControls: ['EditorBreadCrumb', 'ViewerUpdateButton'],
-      onLeave: 'EditorLeave',
+      // onLeave: 'EditorLeave',
       footer: { height: 250, open: false, component: 'MathInputKeyboard' },
-    },
-    collection: {
-      currentMainPanel: 'CollectionEditor',
-      headerControls: ['CollectionBreadCrumb'],
-      currentMenus: ['AssignmentSettingsMenu', 'GroupSettings'],
-      menusTitles: ['Assignment Settings', 'Group Settings'],
-      menusInitOpen: [false, false],
+      waitForMenuSuppression: true,
     },
     enrollment: {
       //allStudentsInCourse
@@ -624,18 +614,13 @@ let navigationObj = {
       headerControls: ['EnrollmentBreadCrumb'],
       // headerControls: ["BackButton"],
     },
-    surveyList: {
-      pageName: 'surveyList',
-      menuPanelCap: 'DriveInfoCap',
-      currentMainPanel: 'SurveyListViewer',
-      headerControls: ['SurveyBreadCrumb'],
+    data: {
+      pageName: 'data',
+      menuPanelCap: 'DataCap',
+      currentMainPanel: 'DataPanel', 
+      headerControls: ['DataBreadCrumb'],
     },
-    surveyData: {
-      pageName: 'surveyData',
-      menuPanelCap: 'DriveInfoCap',
-      currentMainPanel: 'SurveyDataViewer',
-      headerControls: ['SurveyBreadCrumb'],
-    },
+  
   },
   home: {
     default: {
@@ -660,6 +645,36 @@ let navigationObj = {
       currentMainPanel: 'NotFound',
       supportPanelOptions: [],
       hasNoMenuPanel: true,
+    },
+  },
+  public:{
+    default:{
+      pageName:"PublicActivityViewer",
+      currentMenus:[],
+      menusTitles:[],
+      menusInitOpen:[],
+      currentMainPanel:"PublicActivityViewer",
+      supportPanelOptions:[],
+      supportPanelTitles:[],
+      supportPanelIndex:0,
+      hasNoMenuPanel: true,
+    },
+    editor: {
+      //singleFile
+      pageName: 'GuestEditor',
+      currentMainPanel: 'GuestEditorViewer',
+      currentMenus: [
+        'PageVariant',
+      ],
+      menusTitles: [
+        'Page Variant',
+      ],
+      menusInitOpen: [false],
+      supportPanelOptions: ['GuestDoenetMLEditor'],
+      supportPanelTitles: ['DoenetML Editor'],
+      supportPanelIndex: 0,
+      headerControls: ['ViewerUpdateButton'],
+      footer: { height: 250, open: false, component: 'MathInputKeyboard' },
     },
   },
   settings: {
@@ -736,7 +751,7 @@ function OnLeave() {
 
   const LazyEnterLeaveObj = useRef({
     NavigationLeave: lazy(() => import('./EnterLeave/NavigationLeave')),
-    EditorLeave: lazy(() => import('./EnterLeave/EditorLeave')),
+    // EditorLeave: lazy(() => import('./EnterLeave/EditorLeave')),
     CourseChooserLeave: lazy(() => import('./EnterLeave/CourseChooserLeave')),
     DashboardLeave: lazy(() => import('./EnterLeave/DashboardLeave')),
     GradebookAssignmentLeave: lazy(() =>
@@ -787,7 +802,7 @@ function RootController(props) {
   let currentParams = useRef({});
   let lastLocationStr = useRef('');
   let location = useLocation();
-  let history = useHistory();
+  let navigate = useNavigate();
   let lastSearchObj = useRef({});
 
   const setSearchParamAtom = useRecoilCallback(({ set }) => (paramObj) => {
@@ -862,9 +877,10 @@ function RootController(props) {
     nextPageToolView.page = location.pathname.replaceAll('/', '').toLowerCase();
     if (nextPageToolView.page === '') {
       nextPageToolView.page = 'home';
-      const url = window.location.origin + window.location.pathname + '#home';
+      const url = window.location.origin + window.location.pathname + 'home';
       //update url without pushing on to history
       window.history.replaceState('', '', url);
+      // navigate('/home', { replace: true });
     }
     let searchParamObj = Object.fromEntries(
       new URLSearchParams(location.search),
@@ -917,14 +933,12 @@ function RootController(props) {
       nextMenusAndPanels = navigationObj[nextPageToolView.page].default;
       if (Object.keys(nextMenusAndPanels).includes('defaultTool')) {
         const url =
-          window.location.origin +
           window.location.pathname +
-          '#' +
           location.pathname +
           '?' +
           encodeParams({ tool: nextMenusAndPanels.defaultTool });
         //update url without pushing on to history
-        window.history.replaceState('', '', url);
+        // navigate(url, {replace: true});
         nextMenusAndPanels =
           navigationObj[nextPageToolView.page][nextMenusAndPanels.defaultTool];
       }
@@ -1038,7 +1052,8 @@ function RootController(props) {
 
     //Don't add to the url history if it's the same location the browser is at
     if (location.pathname !== pathname || location.search !== search) {
-      history.push(urlPush);
+      console.log('urlpush:', urlPush);
+      navigate(urlPush);
     }
   }
 

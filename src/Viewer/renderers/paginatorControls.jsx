@@ -2,7 +2,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function PaginatorControls(props) {
+export default React.memo(function PaginatorControls(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props,false);
 
   if (SVs.hidden) {
@@ -20,5 +20,5 @@ export default function PaginatorControls(props) {
         disabled={SVs.disabled || !(SVs.currentPage < SVs.nPages)}
       >{SVs.nextLabel}</button>
     </p>;
-}
+})
 

@@ -2,10 +2,13 @@ import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-export default function ChoiceInput(props) {
-  let {name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, callAction} = useDoenetRender(props);
+import {rendererState} from "./useDoenetRenderer.js";
+import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+export default React.memo(function ChoiceInput(props) {
+  let {name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   ChoiceInput.baseStateVariable = "selectedIndices";
   const [rendererSelectedIndices, setRendererSelectedIndices] = useState(SVs.selectedIndices);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
   let selectedIndicesWhenSetState = useRef(null);
   if (!ignoreUpdate && selectedIndicesWhenSetState.current !== SVs.selectedIndices) {
     setRendererSelectedIndices(SVs.selectedIndices);
@@ -51,6 +54,11 @@ export default function ChoiceInput(props) {
     if (rendererSelectedIndices.length !== newSelectedIndices.length || rendererSelectedIndices.some((v, i) => v != newSelectedIndices[i])) {
       setRendererSelectedIndices(newSelectedIndices);
       selectedIndicesWhenSetState.current = SVs.selectedIndices;
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      });
       callAction({
         action: actions.updateSelectedIndices,
         args: {
@@ -296,4 +304,4 @@ export default function ChoiceInput(props) {
       name
     }), choiceDoenetTags), checkworkComponent);
   }
-}
+});
