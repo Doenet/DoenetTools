@@ -130,7 +130,6 @@ export default function TextInput(props) {
       action: actions.updateValue,
       baseVariableValue: rendererValue,
     });
-
   }
 
   function onChangeHandler(e) {
@@ -312,7 +311,6 @@ export default function TextInput(props) {
     />
   }
 
-
   return <React.Fragment>
     <a name={name} />
     <span className="textInputSurroundingBox" id={name} style={{marginBottom: "12px"}}>
@@ -321,5 +319,4 @@ export default function TextInput(props) {
     </span>
 
   </React.Fragment>
-
 }
