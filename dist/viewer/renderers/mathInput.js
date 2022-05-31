@@ -20,6 +20,26 @@ import {
 } from "../../_framework/Footers/MathInputSelector.js";
 import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {rendererState} from "./useDoenetRenderer.js";
+const Button = styled.button`
+    position: relative;
+    width: 24px;
+    height: 24px;
+    color: #ffffff;
+    background-color: var(--mainBlue);
+    display: inline-block;
+    text-align: center;
+    padding: 2px;
+    z-index: 0;
+    /* border: var(--mainBorder); */
+    border: none;
+    border-radius: var(--mainBorderRadius);
+    margin: 0px 10px 12px 10px;
+
+    &:hover {
+      background-color: var(--lightBlue);
+      color: black;
+    };
+  `;
 export default function MathInput(props) {
   let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   MathInput.baseStateVariable = "rawRendererValue";
@@ -102,11 +122,6 @@ export default function MathInput(props) {
         action: actions.updateValue,
         baseVariableValue: rendererValue.current
       });
-      if (e.relatedTarget?.id === checkWorkButton?.props.id && includeCheckWork.current && validationState.current === "unvalidated") {
-        callAction({
-          action: actions.submitAnswer
-        });
-      }
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
       setFocusedFieldID(null);
@@ -138,26 +153,6 @@ export default function MathInput(props) {
     let checkWorkStyle = {
       cursor: "pointer"
     };
-    const Button = styled.button`
-    position: relative;
-    width: 24px;
-    height: 24px;
-    color: #ffffff;
-    background-color: var(--mainBlue);
-    display: inline-block;
-    text-align: center;
-    padding: 2px;
-    z-index: 0;
-    /* border: var(--mainBorder); */
-    border: none;
-    border-radius: var(--mainBorderRadius);
-    margin: 0px 10px 12px 10px;
-
-    &:hover {
-      background-color: var(--lightBlue);
-      color: black;
-    };
-  `;
     if (validationState.current === "unvalidated") {
       if (SVs.disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
