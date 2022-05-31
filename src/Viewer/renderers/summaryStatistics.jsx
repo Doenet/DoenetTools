@@ -17,7 +17,7 @@ const tableStyle = {
   borderRadius: "var(--mainBorderRadius)"
 }
 
-let options = ["mean", "stdev", "n", "minimum", "quartile1", "median", "quartile3", "maximum", "sum"];
+let options = ["mean", "stdev", "variance", "stderr", "count", "minimum", "quartile1", "median", "quartile3", "maximum", "range", "sum"];
 
 let columns = options.filter(x=>x in SVs.summaryStatistics);
 

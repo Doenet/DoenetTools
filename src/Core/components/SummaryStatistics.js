@@ -19,7 +19,7 @@ export default class SummaryStatistics extends BlockComponent {
     attributes.statisticsToDisplay = {
       createComponentOfType: "textList",
       createStateVariable: "statisticsToDisplayPrelim",
-      defaultValue: ["all"],
+      defaultValue: ["default"],
     }
 
     // TODO: enable feature where compute summary statistics for each value of a column
@@ -71,13 +71,15 @@ export default class SummaryStatistics extends BlockComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let options = ["mean", "stdev", "n", "minimum", "quartile1", "median", "quartile3", "maximum", "sum"];
+        let options = ["mean", "stdev", "variance", "stderr", "count", "minimum", "quartile1", "median", "quartile3", "maximum", "range", "sum"];
 
         let statisticsToDisplay = [];
 
         let desiredStats = dependencyValues.statisticsToDisplayPrelim.map(x => x.toLowerCase());
 
-        if (desiredStats.includes("all")) {
+        if (desiredStats.includes("default")) {
+          statisticsToDisplay = ["mean", "stdev", "count", "minimum", "quartile1", "median", "quartile3", "maximum"];
+        } else if (desiredStats.includes("all")) {
           statisticsToDisplay = [...options];
         } else {
           for (let stat of options) {
@@ -135,7 +137,7 @@ export default class SummaryStatistics extends BlockComponent {
       },
     };
 
-    stateVariableDefinitions.n = {
+    stateVariableDefinitions.count = {
       public: true,
       componentType: "integer",
       returnDependencies: () => ({
@@ -146,12 +148,12 @@ export default class SummaryStatistics extends BlockComponent {
       }),
       definition({ dependencyValues }) {
 
-        let n = null;
+        let count = null;
         if (dependencyValues.dataColumn) {
-          n = dependencyValues.dataColumn.length;
+          count = dependencyValues.dataColumn.length;
         }
 
-        return { setValue: { n } }
+        return { setValue: { count } }
 
       }
     }
@@ -228,6 +230,57 @@ export default class SummaryStatistics extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.variance = {
+      public: true,
+      componentType: "number",
+      stateVariablesPrescribingAdditionalAttributes: {
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
+      returnDependencies: () => ({
+        dataColumn: {
+          dependencyType: "stateVariable",
+          variableName: "dataColumn"
+        },
+      }),
+      definition({ dependencyValues }) {
+        let variance = null;
+        if (dependencyValues.dataColumn) {
+          variance = me.math.var(dependencyValues.dataColumn)
+        }
+
+        return { setValue: { variance } };
+      }
+    }
+
+    stateVariableDefinitions.stderr = {
+      public: true,
+      componentType: "number",
+      stateVariablesPrescribingAdditionalAttributes: {
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
+      returnDependencies: () => ({
+        stdev: {
+          dependencyType: "stateVariable",
+          variableName: "stdev"
+        },
+        count: {
+          dependencyType: "stateVariable",
+          variableName: "count"
+        },
+      }),
+      definition({ dependencyValues }) {
+        let stderr = null;
+        if (dependencyValues.stdev !== null) {
+          stderr = dependencyValues.stdev / Math.sqrt(dependencyValues.count);
+        }
+
+        return { setValue: { stderr } };
+      }
+    }
 
     stateVariableDefinitions.minimum = {
       public: true,
@@ -251,7 +304,6 @@ export default class SummaryStatistics extends BlockComponent {
         return { setValue: { minimum } };
       }
     }
-
 
     stateVariableDefinitions.maximum = {
       public: true,
@@ -345,6 +397,36 @@ export default class SummaryStatistics extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.range = {
+      public: true,
+      componentType: "number",
+      stateVariablesPrescribingAdditionalAttributes: {
+        displayDigits: "displayDigits",
+        displayDecimals: "displayDecimals",
+        displaySmallAsZero: "displaySmallAsZero",
+      },
+      returnDependencies: () => ({
+        minimum: {
+          dependencyType: "stateVariable",
+          variableName: "minimum"
+        },
+        maximum: {
+          dependencyType: "stateVariable",
+          variableName: "maximum"
+        },
+      }),
+      definition({ dependencyValues }) {
+        let range = null;
+        if (dependencyValues.minimum !== null) {
+          range = dependencyValues.maximum - dependencyValues.minimum;
+        }
+
+        return { setValue: { range } };
+      }
+    }
+
+
+
     stateVariableDefinitions.summaryStatistics = {
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["statisticsToDisplay"],
@@ -377,10 +459,22 @@ export default class SummaryStatistics extends BlockComponent {
             variableName: "stdev"
           }
         }
-        if (stateValues.statisticsToDisplay.includes("n")) {
-          dependencies.n = {
+        if (stateValues.statisticsToDisplay.includes("variance")) {
+          dependencies.variance = {
             dependencyType: "stateVariable",
-            variableName: "n"
+            variableName: "variance"
+          }
+        }
+        if (stateValues.statisticsToDisplay.includes("stderr")) {
+          dependencies.stderr = {
+            dependencyType: "stateVariable",
+            variableName: "stderr"
+          }
+        }
+        if (stateValues.statisticsToDisplay.includes("count")) {
+          dependencies.count = {
+            dependencyType: "stateVariable",
+            variableName: "count"
           }
         }
         if (stateValues.statisticsToDisplay.includes("minimum")) {
@@ -413,6 +507,18 @@ export default class SummaryStatistics extends BlockComponent {
             variableName: "maximum"
           }
         }
+        if (stateValues.statisticsToDisplay.includes("range")) {
+          dependencies.range = {
+            dependencyType: "stateVariable",
+            variableName: "range"
+          }
+        }
+        if (stateValues.statisticsToDisplay.includes("sum")) {
+          dependencies.sum = {
+            dependencyType: "stateVariable",
+            variableName: "sum"
+          }
+        }
 
         return dependencies;
 
@@ -432,9 +538,21 @@ export default class SummaryStatistics extends BlockComponent {
             dependencyValues, usedDefault
           });
         }
-        if (dependencyValues.n !== undefined) {
-          summaryStatistics.n = roundForDisplay({
-            value: dependencyValues.n,
+        if (dependencyValues.variance !== undefined) {
+          summaryStatistics.variance = roundForDisplay({
+            value: dependencyValues.variance,
+            dependencyValues, usedDefault
+          });
+        }
+        if (dependencyValues.stderr !== undefined) {
+          summaryStatistics.stderr = roundForDisplay({
+            value: dependencyValues.stderr,
+            dependencyValues, usedDefault
+          });
+        }
+        if (dependencyValues.count !== undefined) {
+          summaryStatistics.count = roundForDisplay({
+            value: dependencyValues.count,
             dependencyValues, usedDefault
           });
         }
@@ -465,6 +583,18 @@ export default class SummaryStatistics extends BlockComponent {
         if (dependencyValues.maximum !== undefined) {
           summaryStatistics.maximum = roundForDisplay({
             value: dependencyValues.maximum,
+            dependencyValues, usedDefault
+          });
+        }
+        if (dependencyValues.range !== undefined) {
+          summaryStatistics.range = roundForDisplay({
+            value: dependencyValues.range,
+            dependencyValues, usedDefault
+          });
+        }
+        if (dependencyValues.sum !== undefined) {
+          summaryStatistics.sum = roundForDisplay({
+            value: dependencyValues.sum,
             dependencyValues, usedDefault
           });
         }
