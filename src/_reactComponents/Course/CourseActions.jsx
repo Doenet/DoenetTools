@@ -742,6 +742,19 @@ export const useCourse = (courseId) => {
     return {order:null,previousDoenetId:null};
   }
 
+  function getIdsOfActivitiesChildren(content=[]){
+    let childDoenetIds = []
+    for (let item of content){
+      if (item?.type == 'order'){
+        let childrenOfOrder = getIdsOfActivitiesChildren(item.content);
+        childDoenetIds = [...childDoenetIds,...childrenOfOrder];
+      }else{
+        childDoenetIds.push(item);
+      }
+    }
+    return childDoenetIds;
+  }
+
   const create = useRecoilCallback(
     ({ set, snapshot }) =>
       async ({ itemType, parentDoenetId, previousDoenetId, previousContainingDoenetId }) => {
@@ -867,7 +880,7 @@ export const useCourse = (courseId) => {
               itemType,
               parentDoenetId,
           });
-          console.log('activityData', data);
+          // console.log('activityData', data);
           let createdActivityDoenentId = data.doenetId;
           newDoenetId = createdActivityDoenentId;
           //Activity
@@ -962,7 +975,7 @@ export const useCourse = (courseId) => {
                     selectedItemObj.type == 'page'){
             containingDoenetId = selectedItemObj.containingDoenetId;
           } 
-          
+          console.log("HERE!!! containingDoenetId",containingDoenetId)
           //Create a page.  Get the new page object.
           let { data } = await axios.get('/api/createPageOrOrder.php', {
               params: {
@@ -986,17 +999,17 @@ export const useCourse = (courseId) => {
 
           //Update the Global Item Order Activity or Collection
           if (selectedItemObj.type == 'activity'){
-            let newJSON = {...selectedItemObj.order};
-            let insertedAfterDoenetId = selectedItemObj.order.content[selectedItemObj.order.content.length - 1];
+            let newJSON = {...selectedItemObj.content};
+            let insertedAfterDoenetId = selectedItemObj.content[selectedItemObj.content.length - 1];
             if (itemType == 'page'){
-              pageThatWasCreated.parentDoenetId = selectedItemObj.order.doenetId;
-              newJSON.content = [...selectedItemObj.order.content,pageThatWasCreated.doenetId]
+              pageThatWasCreated.parentDoenetId = selectedItemObj.doenetId;
+              newJSON = [...selectedItemObj.content,pageThatWasCreated.doenetId]
             }else if (itemType == 'order'){
               
-              newJSON.content = [...selectedItemObj.order.content,orderObj]
+              newJSON = [...selectedItemObj.content,orderObj]
             }
             let newActivityObj = {...selectedItemObj}
-            newActivityObj.order = newJSON;
+            newActivityObj.content = newJSON;
             let makeMultiPage = false;
             if (newActivityObj.isSinglePage){
               makeMultiPage = true;
@@ -1011,10 +1024,8 @@ export const useCourse = (courseId) => {
             // console.log("data",data)
             
             set(itemByDoenetId(newActivityObj.doenetId),newActivityObj)
-            let newItemDoenetId = orderDoenetIdThatWasCreated;
             if (itemType == 'page'){
               set(itemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
-              newItemDoenetId = pageThatWasCreated.doenetId;
             }else if (itemType == 'order'){
               orderObj = {...orderObj,
                 isOpen:false,
@@ -1024,11 +1035,23 @@ export const useCourse = (courseId) => {
               }
               set(itemByDoenetId(orderObj.doenetId),orderObj)
             }
+
+            //TODO: can we use this after the bank, order and page below?????
+
+            //Update author order
             set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
               let next = [...prev];
-              next.splice(next.indexOf(insertedAfterDoenetId)+1,0,newItemDoenetId);
+            //Find the number of previous child items of activity and remove those
+            //If was single page then there wouldn't be any
+            if (!makeMultiPage){
+              //remove previous activity children from next
+            }
+            //Add all the children of the new contents under the activity
+            let newChildrenDoenetIds = getIdsOfActivitiesChildren(newJSON);
+              next.splice(next.indexOf(selectedItemObj.doenetId)+1,0,...newChildrenDoenetIds);
               return next;
             });
+           
 
           }else if (selectedItemObj.type == 'bank'){
             //Can only be an itemType of page (no orders allowed)
@@ -1192,6 +1215,7 @@ export const useCourse = (courseId) => {
                 
             }
           }
+
         
           // // console.log("updatedContainingObj",updatedContainingObj)
 

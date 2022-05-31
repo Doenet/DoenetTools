@@ -263,9 +263,12 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
      </>
   }
   if (itemInfo.isOpen){
+    let childRows = []
+
+
     return <>
     <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} columnsJSX={columnsJSX} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
-    <Order key={`Order${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+    {childRows}
      </>
   }else{
     return <>
