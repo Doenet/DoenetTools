@@ -825,19 +825,20 @@ export default function attempt() {
         '<MiniCard />',
       req_props: null,
       req_children: null,
-      use: 'A static mini card with an image and label.',
+      use: 'A static mini card with description.',
       props: [
-        {
-          name: 'Image',
-          propPreview: '<MiniCard image="http://mathinsight.org/media/image/image/giant_anteater.jpg" />',
-          propCode: { image: "http://mathinsight.org/media/image/image/giant_anteater.jpg" },
-          description: 'Adds an image to the top section of the component.',
-        },
         {
           name: 'Label',
           propPreview: '<MiniCard label="Code" />',
           propCode: { label: "Code" },
           description: 'Adds a label to the bottom section of the component.',
+        },
+        {
+          name: 'onClick',
+          propPreview:
+            '<MiniCard onClick={() => console.log("clicked")} />',
+          propCode: { onClick: () => console.log('clicked') },
+          description: 'Function called when card is clicked',
         }
       ],
     },
