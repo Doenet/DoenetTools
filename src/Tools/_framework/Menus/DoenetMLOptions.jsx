@@ -4,7 +4,7 @@ import MiniCard from '../../../_reactComponents/PanelHeaderComponents/MiniCard';
 import { useState, useEffect } from 'react';
 import { DragDropContainer } from 'react-drag-drop-container';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-import { groups, options } from '../../../Core/DoenetMLInfo'
+import { options } from '../../../Core/DoenetMLInfo'
 import { 
 	textEditorDoenetMLAtom, 
 	updateTextEditorDoenetMLAtom, 
@@ -30,21 +30,28 @@ const GridContainer = styled.div`
 
 export default function DoenetMLOptions() {
 	
+	const [groups, setGroups] = useState(["All"]);
 	const [currentOptions, setCurrentOptions] = useState(options)
-	const [selectedGroup, setSelectedGroup] = useState("all")
+	const [selectedGroup, setSelectedGroup] = useState("All")
 	const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
 	const setUpdateInternalValue = useSetRecoilState(updateTextEditorDoenetMLAtom);
 	
 	useEffect(() => {
-		selectedGroup !== "all" ? setCurrentOptions(options.filter(option => option.label.charAt(0).toLowerCase() == selectedGroup.toLowerCase())) : setCurrentOptions(options)
+		//initialize the groups according to the first letter
+		let groupSet = options.map(option => option.name.charAt(0).toUpperCase())
+		setGroups([...groups,...groupSet.filter((group, index) => groupSet.indexOf(group) === index)])
+	}, [])
+	
+	useEffect(() => {
+		selectedGroup !== "All" ? setCurrentOptions(options.filter(option => option.name.charAt(0).toUpperCase() === selectedGroup)) : setCurrentOptions(options)
 	}, [selectedGroup])
 
 	const updateViewer = useRecoilCallback(({snapshot, set}) => 
 		async ()=>{
-		const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom)
-		const isErrorState = await snapshot.getPromise(editorViewerErrorStateAtom)
-		if (isErrorState) set(refreshNumberAtom,(was)=>was+1)
-		set(viewerDoenetMLAtom, textEditorDoenetML)
+			const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom)
+			const isErrorState = await snapshot.getPromise(editorViewerErrorStateAtom)
+			if (isErrorState) set(refreshNumberAtom,(was)=>was+1)
+			set(viewerDoenetMLAtom, textEditorDoenetML)
 		}
 	)
 
@@ -59,6 +66,7 @@ export default function DoenetMLOptions() {
 			<DropdownMenu 
 				items={groups.map((group, index) => [index, group])}
 				onChange={({label}) => setSelectedGroup(label)}
+				defaultIndex={1}
 			/>
 			<GridContainer>
 				{currentOptions.map((option, index) => (
@@ -69,8 +77,7 @@ export default function DoenetMLOptions() {
 						dragClone
 					>
 						<MiniCard 
-							// image={option.image}
-							label={option.label}
+							label={option.name}
 							onClick={()=>{pasteToEditor(option.code)}}
 						/>
 					</DragDropContainer>
