@@ -859,7 +859,7 @@ export default function ActivityViewer(props) {
     }
 
     recordEvent(event);
-
+    document.getElementById('MainPanelContentWrapper').scrollTop = 0;
   }
 
   function clickPrevious() {
@@ -873,7 +873,7 @@ export default function ActivityViewer(props) {
     }
 
     recordEvent(event);
-
+    document.getElementById('MainPanelContentWrapper').scrollTop = 0;
   }
 
   function recordEvent(event) {
