@@ -8,7 +8,8 @@ const CardContainer = styled.div`
   border: var(--mainBorder);
   border-radius: var(--mainBorderRadius);
   height: 45px;
-  width: 100px;
+  min-width: 90px;
+  max-width: 100px;
   background: white;
   padding: 10px 5px;
 `
@@ -37,7 +38,7 @@ const CardContainer = styled.div`
 const Label = styled.span`
   font-size: 12px;
   text-align: center;
-  line-height: 1.1
+  line-height: 1.1;
 ` 
 
 const MiniCard = (props) => {
