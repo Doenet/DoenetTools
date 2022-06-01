@@ -3,6 +3,23 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
+const Button = styled.button`
+  position: relative;
+  height: 24px;
+  display: inline-block;
+  color: white;
+  background-color: var(--mainBlue);
+  /* padding: 2px; */
+  /* border: var(--mainBorder); */
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 10px 12px 10px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
 export default React.memo(function Answer(props) {
   let {name, SVs, actions, children, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
@@ -36,23 +53,6 @@ export default React.memo(function Answer(props) {
     let checkWorkStyle = {
       cursor: "pointer"
     };
-    const Button = styled.button`
-      position: relative;
-      height: 24px;
-      display: inline-block;
-      color: white;
-      background-color: var(--mainBlue);
-      /* padding: 2px; */
-      /* border: var(--mainBorder); */
-      border: none;
-      border-radius: var(--mainBorderRadius);
-      margin: 0px 10px 12px 10px;
-
-      &:hover {
-        background-color: var(--lightBlue);
-        color: black;
-      };
-    `;
     if (disabled) {
       checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     }

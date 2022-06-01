@@ -1,8 +1,8 @@
-import { e as getListWithInsertedItems$2, f as getListWithRemovedItems$2, h as getListWithInsertedItems$3, i as getListWithRemovedItems$3, s as setCaretPosition, j as extend, k as isImmediatePropagationStopped, K as KEY_CODES, l as stopImmediatePropagation, n as TextEditor, o as isDefined, p as addClass, q as getScrollbarWidth, t as outerWidth, u as textRenderer, v as stringify, w as getCaretPosition, x as getSelectionEndPosition, y as pivot, z as offset, A as outerHeight, D as getTrimmingContainer, E as arrayMap, F as stripTags, G as isPrintableChar, I as hasClass, B as BaseEditor, J as hooks$1, L as EventManager, M as isFunctionKey, N as deepExtend, H as Hooks, O as empty, P as removeClass, Q as objectEach, R as fastInnerHTML, S as EDITOR_STATE, U as getCssTransform, V as resetCssTransform, W as getComputedStyle, X as _register, Y as baseRenderer, Z as CellCoords, $ as isEmpty, a0 as partial, a1 as isKey, a2 as isNumeric, a3 as rangeEach, a4 as _register$1, a5 as _getEditorInstance, a6 as _register$2, _ as _register$3, T as TextCellType, a7 as defineGetter, a8 as getPluginsNames, a9 as arrayEach, aa as hasPlugin, ab as hasItem, ac as hasItem$1, ad as hasItem$2, ae as hasItem$3, af as isObject, ag as PhysicalIndexToValueMap, ah as hasOwnProperty, ai as isPercentValue, aj as valueAccordingPercent, ak as ViewportColumnsCalculator, al as arrayReduce, am as arrayFilter, an as cancelAnimationFrame, ao as requestAnimationFrame, ap as CellRange, aq as isVisible, ar as getIncreasedIndexes, as as getDecreasedIndexes, at as IndexMap, au as warn, av as arrayUnique, aw as fastInnerText, ax as LinkedPhysicalIndexToValueMap, ay as isRightClick, az as staticRegister, aA as IndexesSequence, aB as isUndefined, aC as isFunction, aD as isPressedCtrlKey, aE as toSingleLine, aF as mixin, aG as localHooks, aH as debounce, aI as closest, aJ as deepClone, aK as isChildOf, aL as CONTEXTMENU_ITEMS_EDIT_COMMENT, aM as CONTEXTMENU_ITEMS_ADD_COMMENT, aN as CONTEXTMENU_ITEMS_REMOVE_COMMENT, aO as CONTEXTMENU_ITEMS_READ_ONLY_COMMENT, aP as CONTEXTMENU_ITEMS_ALIGNMENT, aQ as CONTEXTMENU_ITEMS_ALIGNMENT_LEFT, aR as CONTEXTMENU_ITEMS_ALIGNMENT_CENTER, aS as CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT, aT as CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY, aU as CONTEXTMENU_ITEMS_ALIGNMENT_TOP, aV as CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE, aW as CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM, aX as CONTEXTMENU_ITEMS_CLEAR_COLUMN, aY as CONTEXTMENU_ITEMS_INSERT_LEFT, aZ as CONTEXTMENU_ITEMS_INSERT_RIGHT, a_ as CONTEXTMENU_ITEMS_READ_ONLY, a$ as CONTEXTMENU_ITEMS_REDO, b0 as CONTEXTMENU_ITEMS_REMOVE_COLUMN, b1 as transformSelectionToColumnDistance, b2 as CONTEXTMENU_ITEMS_REMOVE_ROW, b3 as transformSelectionToRowDistance, b4 as CONTEXTMENU_ITEMS_ROW_ABOVE, b5 as CONTEXTMENU_ITEMS_ROW_BELOW, b6 as CONTEXTMENU_ITEMS_NO_ITEMS, b7 as CONTEXTMENU_ITEMS_UNDO, b8 as getWindowScrollTop, b9 as getWindowScrollLeft, ba as getParentWindow, C as Core, bb as isInput, bc as isWindowsOS, bd as isMobileBrowser, be as isIpadOS, bf as CONTEXTMENU_ITEMS_COPY, bg as CONTEXTMENU_ITEMS_CUT, bh as selectElementIfAllowed, bi as stringify$1, bj as _dataToHTML, bk as sanitize, bl as htmlToGridSettings, bm as parse, bn as getSelectionText, bo as CONTEXTMENU_ITEMS_BORDERS_BOTTOM, bp as CONTEXTMENU_ITEMS_BORDERS_LEFT, bq as CONTEXTMENU_ITEMS_REMOVE_BORDERS, br as CONTEXTMENU_ITEMS_BORDERS_RIGHT, bs as CONTEXTMENU_ITEMS_BORDERS_TOP, bt as detectSelectionType, bu as normalizeSelectionFactory, bv as CONTEXTMENU_ITEMS_BORDERS, bw as clone, bx as substitute, by as FILTERS_CONDITIONS_NONE, bz as FILTERS_CONDITIONS_EMPTY, bA as FILTERS_CONDITIONS_NOT_EMPTY, bB as FILTERS_CONDITIONS_EQUAL, bC as FILTERS_CONDITIONS_NOT_EQUAL, bD as FILTERS_CONDITIONS_GREATER_THAN, bE as FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL, bF as FILTERS_CONDITIONS_LESS_THAN, bG as FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL, bH as FILTERS_CONDITIONS_AFTER, bI as FILTERS_CONDITIONS_BEFORE, bJ as FILTERS_CONDITIONS_BETWEEN, bK as FILTERS_CONDITIONS_NOT_BETWEEN, bL as FILTERS_CONDITIONS_BEGINS_WITH, bM as FILTERS_CONDITIONS_ENDS_WITH, bN as FILTERS_CONDITIONS_CONTAINS, bO as FILTERS_CONDITIONS_NOT_CONTAIN, bP as FILTERS_CONDITIONS_TOMORROW, bQ as FILTERS_CONDITIONS_TODAY, bR as FILTERS_CONDITIONS_YESTERDAY, bS as getComparisonFunction, bT as FILTERS_LABELS_CONJUNCTION, bU as FILTERS_LABELS_DISJUNCTION, bV as FILTERS_NAMESPACE, bW as FILTERS_BUTTONS_PLACEHOLDER_VALUE, bX as FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE, bY as FILTERS_CONDITIONS_NAMESPACE, bZ as FILTERS_BUTTONS_PLACEHOLDER_SEARCH, b_ as FILTERS_BUTTONS_SELECT_ALL, b$ as FILTERS_BUTTONS_CLEAR, c0 as dataRowToChangesArray, c1 as FILTERS_VALUES_BLANK_CELLS, c2 as FILTERS_BUTTONS_OK, c3 as FILTERS_BUTTONS_CANCEL, c4 as curry, c5 as TrimmingMap, c6 as FILTERS_DIVS_FILTER_BY_CONDITION, c7 as FILTERS_DIVS_FILTER_BY_VALUE, c8 as isArrayOfArrays, c9 as error, ca as toUpperCaseFirst, cb as CONTEXTMENU_ITEMS_HIDE_COLUMN, cc as CONTEXTMENU_ITEMS_SHOW_COLUMN, cd as HidingMap, ce as CONTEXTMENU_ITEMS_HIDE_ROW, cf as CONTEXTMENU_ITEMS_SHOW_ROW, cg as CONTEXTMENU_ITEMS_FREEZE_COLUMN, ch as CONTEXTMENU_ITEMS_UNFREEZE_COLUMN, ci as isDetached, cj as ViewportRowsCalculator, ck as rangeEachReverse, cl as CONTEXTMENU_ITEMS_UNMERGE_CELLS, cm as CONTEXTMENU_ITEMS_MERGE_CELLS, cn as HEADER_TYPE, co as ACTIVE_HEADER_TYPE, cp as isLeftClick, cq as CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD, cr as CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD, cs as isArrayOfObjects, ct as isTouchSupported, cu as inherit, cv as registerPlugin } from '../common/textType-1aff190f.js';
-import { s as fixRegexpWellKnownSymbolLogic, t as requireObjectCoercible, u as getMethod, v as functionCall, w as toString_1, x as anObject, y as regexpExecAbstract, I as collection, J as collectionWeak, f as functionUncurryThis, k as fails, _ as _export } from '../common/es.string.starts-with-6dcf56ee.js';
-import { c as createCommonjsModule, a as commonjsGlobal, d as commonjsRequire } from '../common/_commonjsHelpers-f5d70792.js';
+import { e as getListWithInsertedItems$2, f as getListWithRemovedItems$2, h as getListWithInsertedItems$3, i as getListWithRemovedItems$3, s as setCaretPosition, j as extend, k as TextEditor, S as SHORTCUTS_GROUP_NAVIGATION, l as stopImmediatePropagation, n as isDefined, o as addClass, p as getScrollbarWidth, q as outerWidth, t as textRenderer, u as stringify, v as getCaretPosition, w as getSelectionEndPosition, x as pivot, y as offset, z as outerHeight, A as getTrimmingContainer, D as arrayMap, E as stripTags, K as KEY_CODES, F as isPrintableChar, G as hasClass, B as BaseEditor, I as EventManager, J as isFunctionKey, L as deepExtend, H as Hooks, M as empty, N as removeClass, O as objectEach, P as fastInnerHTML, Q as EDITOR_STATE, R as _register, U as baseRenderer, V as isEmpty, W as SHORTCUTS_GROUP_EDITOR, X as isNumeric, Y as rangeEach, Z as _register$1, $ as _getEditorInstance, a0 as _register$2, _ as _register$3, T as TextCellType, a1 as defineGetter, a2 as getPluginsNames, a3 as arrayEach, a4 as hasPlugin, a5 as hasItem, a6 as hasItem$1, a7 as hasItem$2, a8 as hasItem$3, a9 as isObject, aa as PhysicalIndexToValueMap, ab as hasOwnProperty, ac as isPercentValue, ad as valueAccordingPercent, ae as ViewportColumnsCalculator, af as arrayReduce, ag as arrayFilter, ah as cancelAnimationFrame, ai as requestAnimationFrame, aj as isVisible, ak as getIncreasedIndexes, al as getDecreasedIndexes, am as IndexMap, an as warn, ao as arrayUnique, ap as fastInnerText, aq as LinkedPhysicalIndexToValueMap, ar as isRightClick, as as staticRegister, at as IndexesSequence, au as isUndefined, av as isFunction, aw as toSingleLine, ax as mixin, ay as localHooks, az as debounce, aA as closest, aB as deepClone, aC as isChildOf, aD as CONTEXTMENU_ITEMS_EDIT_COMMENT, aE as CONTEXTMENU_ITEMS_ADD_COMMENT, aF as CONTEXTMENU_ITEMS_REMOVE_COMMENT, aG as CONTEXTMENU_ITEMS_READ_ONLY_COMMENT, aH as CONTEXTMENU_ITEMS_ALIGNMENT, aI as CONTEXTMENU_ITEMS_ALIGNMENT_LEFT, aJ as CONTEXTMENU_ITEMS_ALIGNMENT_CENTER, aK as CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT, aL as CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY, aM as CONTEXTMENU_ITEMS_ALIGNMENT_TOP, aN as CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE, aO as CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM, aP as CONTEXTMENU_ITEMS_CLEAR_COLUMN, aQ as CONTEXTMENU_ITEMS_INSERT_LEFT, aR as CONTEXTMENU_ITEMS_INSERT_RIGHT, aS as CONTEXTMENU_ITEMS_READ_ONLY, aT as CONTEXTMENU_ITEMS_REDO, aU as CONTEXTMENU_ITEMS_REMOVE_COLUMN, aV as transformSelectionToColumnDistance, aW as CONTEXTMENU_ITEMS_REMOVE_ROW, aX as transformSelectionToRowDistance, aY as CONTEXTMENU_ITEMS_ROW_ABOVE, aZ as CONTEXTMENU_ITEMS_ROW_BELOW, a_ as CONTEXTMENU_ITEMS_NO_ITEMS, a$ as CONTEXTMENU_ITEMS_UNDO, b0 as getWindowScrollTop, b1 as getWindowScrollLeft, b2 as getParentWindow, b3 as isWindowsOS, b4 as isMobileBrowser, b5 as isIpadOS, C as Core, b6 as isInput, b7 as CONTEXTMENU_ITEMS_COPY, b8 as CONTEXTMENU_ITEMS_CUT, b9 as selectElementIfAllowed, ba as stringify$1, bb as _dataToHTML, bc as sanitize, bd as htmlToGridSettings, be as parse, bf as getSelectionText, bg as CONTEXTMENU_ITEMS_BORDERS_BOTTOM, bh as CONTEXTMENU_ITEMS_BORDERS_LEFT, bi as CONTEXTMENU_ITEMS_REMOVE_BORDERS, bj as CONTEXTMENU_ITEMS_BORDERS_RIGHT, bk as CONTEXTMENU_ITEMS_BORDERS_TOP, bl as detectSelectionType, bm as normalizeSelectionFactory, bn as CONTEXTMENU_ITEMS_BORDERS, bo as clone, bp as substitute, bq as FILTERS_CONDITIONS_NONE, br as FILTERS_CONDITIONS_EMPTY, bs as FILTERS_CONDITIONS_NOT_EMPTY, bt as FILTERS_CONDITIONS_EQUAL, bu as FILTERS_CONDITIONS_NOT_EQUAL, bv as FILTERS_CONDITIONS_GREATER_THAN, bw as FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL, bx as FILTERS_CONDITIONS_LESS_THAN, by as FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL, bz as FILTERS_CONDITIONS_AFTER, bA as FILTERS_CONDITIONS_BEFORE, bB as FILTERS_CONDITIONS_BETWEEN, bC as FILTERS_CONDITIONS_NOT_BETWEEN, bD as FILTERS_CONDITIONS_BEGINS_WITH, bE as FILTERS_CONDITIONS_ENDS_WITH, bF as FILTERS_CONDITIONS_CONTAINS, bG as FILTERS_CONDITIONS_NOT_CONTAIN, bH as FILTERS_CONDITIONS_TOMORROW, bI as FILTERS_CONDITIONS_TODAY, bJ as FILTERS_CONDITIONS_YESTERDAY, bK as getComparisonFunction, bL as FILTERS_LABELS_CONJUNCTION, bM as FILTERS_LABELS_DISJUNCTION, bN as FILTERS_NAMESPACE, bO as FILTERS_BUTTONS_PLACEHOLDER_VALUE, bP as FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE, bQ as FILTERS_CONDITIONS_NAMESPACE, bR as isKey, bS as FILTERS_BUTTONS_PLACEHOLDER_SEARCH, bT as FILTERS_BUTTONS_SELECT_ALL, bU as FILTERS_BUTTONS_CLEAR, bV as partial, bW as dataRowToChangesArray, bX as FILTERS_VALUES_BLANK_CELLS, bY as FILTERS_BUTTONS_OK, bZ as FILTERS_BUTTONS_CANCEL, b_ as curry, b$ as TrimmingMap, c0 as FILTERS_DIVS_FILTER_BY_CONDITION, c1 as FILTERS_DIVS_FILTER_BY_VALUE, c2 as isArrayOfArrays, c3 as error, c4 as toUpperCaseFirst, c5 as CONTEXTMENU_ITEMS_HIDE_COLUMN, c6 as CONTEXTMENU_ITEMS_SHOW_COLUMN, c7 as HidingMap, c8 as CONTEXTMENU_ITEMS_HIDE_ROW, c9 as CONTEXTMENU_ITEMS_SHOW_ROW, ca as CONTEXTMENU_ITEMS_FREEZE_COLUMN, cb as CONTEXTMENU_ITEMS_UNFREEZE_COLUMN, cc as isDetached, cd as ViewportRowsCalculator, ce as rangeEachReverse, cf as CONTEXTMENU_ITEMS_UNMERGE_CELLS, cg as CONTEXTMENU_ITEMS_MERGE_CELLS, ch as HEADER_TYPE, ci as ACTIVE_HEADER_TYPE, cj as isLeftClick, ck as CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD, cl as CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD, cm as isArrayOfObjects, cn as isTouchSupported, co as inherit, cp as registerPlugin } from '../common/textType-ccf2a8c4.js';
+import { r as fixRegexpWellKnownSymbolLogic, s as requireObjectCoercible, t as getMethod, u as functionCall, v as toString_1, w as anObject, x as regexpExecAbstract, I as collection, J as collectionWeak, f as functionUncurryThis, k as fails, _ as _export } from '../common/es.string.starts-with-a75d39b5.js';
 import { h as hooks } from '../common/moment-640234e6.js';
-import '../common/es.string.ends-with-48ba642b.js';
+import { c as createCommonjsModule, a as commonjsGlobal, d as commonjsRequire } from '../common/_commonjsHelpers-f5d70792.js';
+import '../common/es.string.ends-with-e08f4e9c.js';
 
 var alterStrategies = new Map([["indexesSequence", {
   getListWithInsertedItems: getListWithInsertedItems$2,
@@ -138,6 +138,7 @@ function _getPrototypeOf(o) {
   };
   return _getPrototypeOf(o);
 }
+var SHORTCUTS_GROUP = "handsontableEditor";
 var EDITOR_TYPE = "handsontable";
 var HandsontableEditor = /* @__PURE__ */ function(_TextEditor) {
   _inherits(HandsontableEditor2, _TextEditor);
@@ -165,6 +166,7 @@ var HandsontableEditor = /* @__PURE__ */ function(_TextEditor) {
         this.htEditor.deselectCell();
       }
       setCaretPosition(this.TEXTAREA, 0, this.TEXTAREA.value.length);
+      this.refreshDimensions();
     }
   }, {
     key: "close",
@@ -200,7 +202,8 @@ var HandsontableEditor = /* @__PURE__ */ function(_TextEditor) {
           }
           parent.instance.destroyEditor();
         },
-        preventWheel: true
+        preventWheel: true,
+        layoutDirection: this.hot.isRtl() ? "rtl" : "ltr"
       };
       if (this.cellProperties.handsontable) {
         extend(options, cellProperties.handsontable);
@@ -251,53 +254,83 @@ var HandsontableEditor = /* @__PURE__ */ function(_TextEditor) {
       });
     }
   }, {
-    key: "onBeforeKeyDown",
-    value: function onBeforeKeyDown(event) {
-      if (isImmediatePropagationStopped(event)) {
-        return;
-      }
-      var innerHOT = this.htEditor.getInstance();
-      var rowToSelect;
-      var selectedRow;
-      if (event.keyCode === KEY_CODES.ARROW_DOWN) {
-        if (!innerHOT.getSelectedLast() && !innerHOT.flipped) {
-          rowToSelect = 0;
-        } else if (innerHOT.getSelectedLast()) {
-          if (innerHOT.flipped) {
-            rowToSelect = innerHOT.getSelectedLast()[0] + 1;
-          } else if (!innerHOT.flipped) {
-            var lastRow = innerHOT.countRows() - 1;
-            selectedRow = innerHOT.getSelectedLast()[0];
-            rowToSelect = Math.min(lastRow, selectedRow + 1);
-          }
-        }
-      } else if (event.keyCode === KEY_CODES.ARROW_UP) {
-        if (!innerHOT.getSelectedLast() && innerHOT.flipped) {
-          rowToSelect = innerHOT.countRows() - 1;
-        } else if (innerHOT.getSelectedLast()) {
-          if (innerHOT.flipped) {
-            selectedRow = innerHOT.getSelectedLast()[0];
-            rowToSelect = Math.max(0, selectedRow - 1);
+    key: "registerShortcuts",
+    value: function registerShortcuts() {
+      var _this2 = this;
+      var shortcutManager = this.hot.getShortcutManager();
+      var editorContext = shortcutManager.getContext("editor");
+      _get(_getPrototypeOf(HandsontableEditor2.prototype), "registerShortcuts", this).call(this);
+      var contextConfig = {
+        group: SHORTCUTS_GROUP,
+        relativeToGroup: SHORTCUTS_GROUP_NAVIGATION,
+        position: "before"
+      };
+      var action = function action2(rowToSelect, event) {
+        var innerHOT = _this2.htEditor.getInstance();
+        if (rowToSelect !== void 0) {
+          if (rowToSelect < 0 || innerHOT.flipped && rowToSelect > innerHOT.countRows() - 1) {
+            innerHOT.deselectCell();
           } else {
-            selectedRow = innerHOT.getSelectedLast()[0];
-            rowToSelect = selectedRow - 1;
+            innerHOT.selectCell(rowToSelect, 0);
+          }
+          if (innerHOT.getData().length) {
+            event.preventDefault();
+            stopImmediatePropagation(event);
+            _this2.hot.listen();
+            _this2.TEXTAREA.focus();
+            return false;
           }
         }
-      }
-      if (rowToSelect !== void 0) {
-        if (rowToSelect < 0 || innerHOT.flipped && rowToSelect > innerHOT.countRows() - 1) {
-          innerHOT.deselectCell();
-        } else {
-          innerHOT.selectCell(rowToSelect, 0);
-        }
-        if (innerHOT.getData().length) {
-          event.preventDefault();
-          stopImmediatePropagation(event);
-          this.hot.listen();
-          this.TEXTAREA.focus();
-        }
-      }
-      _get(_getPrototypeOf(HandsontableEditor2.prototype), "onBeforeKeyDown", this).call(this, event);
+      };
+      editorContext.addShortcuts([{
+        keys: [["ArrowUp"]],
+        callback: function callback(event) {
+          var innerHOT = _this2.htEditor.getInstance();
+          var rowToSelect;
+          var selectedRow;
+          if (!innerHOT.getSelectedLast() && innerHOT.flipped) {
+            rowToSelect = innerHOT.countRows() - 1;
+          } else if (innerHOT.getSelectedLast()) {
+            if (innerHOT.flipped) {
+              selectedRow = innerHOT.getSelectedLast()[0];
+              rowToSelect = Math.max(0, selectedRow - 1);
+            } else {
+              selectedRow = innerHOT.getSelectedLast()[0];
+              rowToSelect = selectedRow - 1;
+            }
+          }
+          return action(rowToSelect, event);
+        },
+        preventDefault: false
+      }, {
+        keys: [["ArrowDown"]],
+        callback: function callback(event) {
+          var innerHOT = _this2.htEditor.getInstance();
+          var rowToSelect;
+          var selectedRow;
+          if (!innerHOT.getSelectedLast() && !innerHOT.flipped) {
+            rowToSelect = 0;
+          } else if (innerHOT.getSelectedLast()) {
+            if (innerHOT.flipped) {
+              rowToSelect = innerHOT.getSelectedLast()[0] + 1;
+            } else if (!innerHOT.flipped) {
+              var lastRow = innerHOT.countRows() - 1;
+              selectedRow = innerHOT.getSelectedLast()[0];
+              rowToSelect = Math.min(lastRow, selectedRow + 1);
+            }
+          }
+          return action(rowToSelect, event);
+        },
+        preventDefault: false
+      }], contextConfig);
+    }
+  }, {
+    key: "unregisterShortcuts",
+    value: function unregisterShortcuts() {
+      _get(_getPrototypeOf(HandsontableEditor2.prototype), "unregisterShortcuts", this).call(this);
+      var shortcutManager = this.hot.getShortcutManager();
+      var editorContext = shortcutManager.getContext("editor");
+      editorContext.removeShortcutsByGroup(SHORTCUTS_GROUP);
     }
   }], [{
     key: "EDITOR_TYPE",
@@ -546,6 +579,9 @@ var AutocompleteEditor = /* @__PURE__ */ function(_HandsontableEditor) {
       if (scrollbarWidth === 0 && priv.isMacOS) {
         scrollbarWidth += 15;
       }
+      this.addHook("beforeKeyDown", function(event) {
+        return _this3.onBeforeKeyDown(event);
+      });
       choicesListHot.updateSettings({
         colWidths: trimDropdown ? [outerWidth(this.TEXTAREA) - 2] : void 0,
         width: trimDropdown ? outerWidth(this.TEXTAREA) + scrollbarWidth : void 0,
@@ -653,9 +689,9 @@ var AutocompleteEditor = /* @__PURE__ */ function(_HandsontableEditor) {
       var textareaOffset = offset(this.TEXTAREA);
       var textareaHeight = outerHeight(this.TEXTAREA);
       var dropdownHeight = this.getDropdownHeight();
-      var trimmingContainer = getTrimmingContainer(this.hot.view.wt.wtTable.TABLE);
+      var trimmingContainer = getTrimmingContainer(this.hot.view._wt.wtTable.TABLE);
       var trimmingContainerScrollTop = trimmingContainer.scrollTop;
-      var headersHeight = outerHeight(this.hot.view.wt.wtTable.THEAD);
+      var headersHeight = outerHeight(this.hot.view._wt.wtTable.THEAD);
       var containerOffset = {
         row: 0,
         col: 0
@@ -683,7 +719,7 @@ var AutocompleteEditor = /* @__PURE__ */ function(_HandsontableEditor) {
         var lastRowHeight = 0;
         var height = null;
         do {
-          lastRowHeight = this.htEditor.getRowHeight(i) || this.htEditor.view.wt.wtSettings.settings.defaultRowHeight;
+          lastRowHeight = this.htEditor.getRowHeight(i) || this.htEditor.view._wt.getSetting("defaultRowHeight");
           tempHeight += lastRowHeight;
           i += 1;
         } while (tempHeight < spaceAvailable);
@@ -706,10 +742,8 @@ var AutocompleteEditor = /* @__PURE__ */ function(_HandsontableEditor) {
     key: "unflipDropdown",
     value: function unflipDropdown() {
       var dropdownStyle = this.htEditor.rootElement.style;
-      if (dropdownStyle.position === "absolute") {
-        dropdownStyle.position = "";
-        dropdownStyle.top = "";
-      }
+      dropdownStyle.position = "absolute";
+      dropdownStyle.top = "";
       this.htEditor.flipped = void 0;
     }
   }, {
@@ -721,7 +755,7 @@ var AutocompleteEditor = /* @__PURE__ */ function(_HandsontableEditor) {
         height: this.getDropdownHeight(),
         width: trimDropdown ? void 0 : currentDropdownWidth
       });
-      this.htEditor.view.wt.wtTable.alignOverlaysWithTrimmingContainer();
+      this.htEditor.view._wt.wtTable.alignOverlaysWithTrimmingContainer();
     }
   }, {
     key: "setDropdownHeight",
@@ -800,7 +834,6 @@ var AutocompleteEditor = /* @__PURE__ */ function(_HandsontableEditor) {
           }, timeOffset);
         }
       }
-      _get$1(_getPrototypeOf$1(AutocompleteEditor2.prototype), "onBeforeKeyDown", this).call(this, event);
     }
   }], [{
     key: "EDITOR_TYPE",
@@ -2346,7 +2379,7 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
     key: "init",
     value: function init() {
       var _this2 = this;
-      if (typeof hooks$1 !== "function") {
+      if (typeof hooks !== "function") {
         throw new Error("You need to include moment.js to your project.");
       }
       if (typeof pikaday !== "function") {
@@ -2368,6 +2401,7 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
       this.datePickerStyle.top = 0;
       this.datePickerStyle.left = 0;
       this.datePickerStyle.zIndex = 9999;
+      this.datePicker.setAttribute("dir", this.hot.isRtl() ? "rtl" : "ltr");
       addClass(this.datePicker, "htDatepickerHolder");
       this.hot.rootDocument.body.appendChild(this.datePicker);
       var eventManager = new EventManager(this);
@@ -2432,15 +2466,22 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
       var isMouseDown = this.instance.view.isMouseDown();
       var isMeta = event ? isFunctionKey(event.keyCode) : false;
       var dateStr;
-      this.datePickerStyle.top = "".concat(this.hot.rootWindow.pageYOffset + offset.top + outerHeight(this.TD), "px");
-      this.datePickerStyle.left = "".concat(this.hot.rootWindow.pageXOffset + offset.left, "px");
+      this.datePicker.style.display = "block";
       this.$datePicker = new pikaday(this.getDatePickerConfig());
       this.$datePicker._onInputFocus = function() {
       };
+      this.datePickerStyle.top = "".concat(this.hot.rootWindow.pageYOffset + offset.top + outerHeight(this.TD), "px");
+      var pickerLeftPosition = this.hot.rootWindow.pageXOffset;
+      if (this.hot.isRtl()) {
+        pickerLeftPosition = offset.right - outerWidth(this.datePicker);
+      } else {
+        pickerLeftPosition = offset.left;
+      }
+      this.datePickerStyle.left = "".concat(pickerLeftPosition, "px");
       if (this.originalValue) {
         dateStr = this.originalValue;
-        if (hooks$1(dateStr, dateFormat, true).isValid()) {
-          this.$datePicker.setMoment(hooks$1(dateStr, dateFormat), true);
+        if (hooks(dateStr, dateFormat, true).isValid()) {
+          this.$datePicker.setMoment(hooks(dateStr, dateFormat), true);
         }
         if (this.getValue() !== this.originalValue) {
           this.setValue(this.originalValue);
@@ -2450,8 +2491,8 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
         }
       } else if (this.cellProperties.defaultDate) {
         dateStr = this.cellProperties.defaultDate;
-        if (hooks$1(dateStr, dateFormat, true).isValid()) {
-          this.$datePicker.setMoment(hooks$1(dateStr, dateFormat), true);
+        if (hooks(dateStr, dateFormat, true).isValid()) {
+          this.$datePicker.setMoment(hooks(dateStr, dateFormat), true);
         }
         if (!isMeta && !isMouseDown) {
           this.setValue("");
@@ -2459,7 +2500,6 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
       } else {
         this.$datePicker.gotoToday();
       }
-      this.datePickerStyle.display = "block";
     }
   }, {
     key: "hideDatepicker",
@@ -2484,10 +2524,11 @@ var DateEditor = /* @__PURE__ */ function(_TextEditor) {
       options.bound = false;
       options.format = options.format || this.defaultDateFormat;
       options.reposition = options.reposition || false;
+      options.isRTL = false;
       options.onSelect = function(value) {
         var dateStr = value;
         if (!isNaN(dateStr.getTime())) {
-          dateStr = hooks$1(dateStr).format(_this4.cellProperties.dateFormat || _this4.defaultDateFormat);
+          dateStr = hooks(dateStr).format(_this4.cellProperties.dateFormat || _this4.defaultDateFormat);
         }
         _this4.setValue(dateStr);
         _this4.hideDatepicker();
@@ -3051,6 +3092,7 @@ function _getPrototypeOf$7(o) {
   return _getPrototypeOf$7(o);
 }
 var EDITOR_VISIBLE_CLASS_NAME = "ht_editor_visible";
+var SHORTCUTS_GROUP$1 = "selectEditor";
 var EDITOR_TYPE$7 = "select";
 var SelectEditor = /* @__PURE__ */ function(_BaseEditor) {
   _inherits$7(SelectEditor2, _BaseEditor);
@@ -3081,13 +3123,12 @@ var SelectEditor = /* @__PURE__ */ function(_BaseEditor) {
   }, {
     key: "open",
     value: function open() {
-      var _this = this;
       this._opened = true;
       this.refreshDimensions();
       this.select.style.display = "";
-      this.addHook("beforeKeyDown", function() {
-        return _this.onBeforeKeyDown();
-      });
+      var shortcutManager = this.hot.getShortcutManager();
+      shortcutManager.setActiveContextName("editor");
+      this.registerShortcuts();
     }
   }, {
     key: "close",
@@ -3097,6 +3138,7 @@ var SelectEditor = /* @__PURE__ */ function(_BaseEditor) {
       if (hasClass(this.select, EDITOR_VISIBLE_CLASS_NAME)) {
         removeClass(this.select, EDITOR_VISIBLE_CLASS_NAME);
       }
+      this.unregisterShortcuts();
       this.clearHooks();
     }
   }, {
@@ -3107,24 +3149,24 @@ var SelectEditor = /* @__PURE__ */ function(_BaseEditor) {
   }, {
     key: "registerHooks",
     value: function registerHooks() {
-      var _this2 = this;
+      var _this = this;
       this.addHook("afterScrollHorizontally", function() {
-        return _this2.refreshDimensions();
+        return _this.refreshDimensions();
       });
       this.addHook("afterScrollVertically", function() {
-        return _this2.refreshDimensions();
+        return _this.refreshDimensions();
       });
       this.addHook("afterColumnResize", function() {
-        return _this2.refreshDimensions();
+        return _this.refreshDimensions();
       });
       this.addHook("afterRowResize", function() {
-        return _this2.refreshDimensions();
+        return _this.refreshDimensions();
       });
     }
   }, {
     key: "prepare",
     value: function prepare(row, col, prop, td, value, cellProperties) {
-      var _this3 = this;
+      var _this2 = this;
       _get$5(_getPrototypeOf$7(SelectEditor2.prototype), "prepare", this).call(this, row, col, prop, td, value, cellProperties);
       var selectOptions = this.cellProperties.selectOptions;
       var options;
@@ -3135,10 +3177,10 @@ var SelectEditor = /* @__PURE__ */ function(_BaseEditor) {
       }
       empty(this.select);
       objectEach(options, function(optionValue, key) {
-        var optionElement = _this3.hot.rootDocument.createElement("OPTION");
+        var optionElement = _this2.hot.rootDocument.createElement("OPTION");
         optionElement.value = key;
         fastInnerHTML(optionElement, optionValue);
-        _this3.select.appendChild(optionElement);
+        _this2.select.appendChild(optionElement);
       });
     }
   }, {
@@ -3173,84 +3215,51 @@ var SelectEditor = /* @__PURE__ */ function(_BaseEditor) {
         this.close();
         return;
       }
-      var wtOverlays = this.hot.view.wt.wtOverlays;
-      var currentOffset = offset(this.TD);
-      var containerOffset = offset(this.hot.rootElement);
-      var scrollableContainer = wtOverlays.scrollableElement;
-      var editorSection = this.checkEditorSection();
-      var width = outerWidth(this.TD) + 1;
-      var height = outerHeight(this.TD) + 1;
-      var editTop = currentOffset.top - containerOffset.top - 1 - (scrollableContainer.scrollTop || 0);
-      var editLeft = currentOffset.left - containerOffset.left - 1 - (scrollableContainer.scrollLeft || 0);
-      var cssTransformOffset;
-      switch (editorSection) {
-        case "top":
-          cssTransformOffset = getCssTransform(wtOverlays.topOverlay.clone.wtTable.holder.parentNode);
-          break;
-        case "left":
-          cssTransformOffset = getCssTransform(wtOverlays.leftOverlay.clone.wtTable.holder.parentNode);
-          break;
-        case "top-left-corner":
-          cssTransformOffset = getCssTransform(wtOverlays.topLeftCornerOverlay.clone.wtTable.holder.parentNode);
-          break;
-        case "bottom-left-corner":
-          cssTransformOffset = getCssTransform(wtOverlays.bottomLeftCornerOverlay.clone.wtTable.holder.parentNode);
-          break;
-        case "bottom":
-          cssTransformOffset = getCssTransform(wtOverlays.bottomOverlay.clone.wtTable.holder.parentNode);
-          break;
-      }
-      var renderableRow = this.hot.rowIndexMapper.getRenderableFromVisualIndex(this.row);
-      var renderableColumn = this.hot.columnIndexMapper.getRenderableFromVisualIndex(this.col);
-      var nrOfRenderableRowIndexes = this.hot.rowIndexMapper.getRenderableIndexesLength();
-      var firstRowIndexOfTheBottomOverlay = nrOfRenderableRowIndexes - this.hot.view.wt.getSetting("fixedRowsBottom");
-      if (renderableRow <= 0 || renderableRow === firstRowIndexOfTheBottomOverlay) {
-        editTop += 1;
-      }
-      if (renderableColumn <= 0) {
-        editLeft += 1;
-      }
+      var _this$getEditedCellRe = this.getEditedCellRect(), top = _this$getEditedCellRe.top, start = _this$getEditedCellRe.start, width = _this$getEditedCellRe.width, height = _this$getEditedCellRe.height;
       var selectStyle = this.select.style;
-      if (cssTransformOffset && cssTransformOffset !== -1) {
-        selectStyle[cssTransformOffset[0]] = cssTransformOffset[1];
-      } else {
-        resetCssTransform(this.select);
-      }
-      var cellComputedStyle = getComputedStyle(this.TD, this.hot.rootWindow);
-      if (parseInt(cellComputedStyle.borderTopWidth, 10) > 0) {
-        height -= 1;
-      }
-      if (parseInt(cellComputedStyle.borderLeftWidth, 10) > 0) {
-        width -= 1;
-      }
       selectStyle.height = "".concat(height, "px");
-      selectStyle.minWidth = "".concat(width, "px");
-      selectStyle.top = "".concat(editTop, "px");
-      selectStyle.left = "".concat(editLeft, "px");
+      selectStyle.width = "".concat(width, "px");
+      selectStyle.top = "".concat(top, "px");
+      selectStyle[this.hot.isRtl() ? "right" : "left"] = "".concat(start, "px");
       selectStyle.margin = "0px";
       addClass(this.select, EDITOR_VISIBLE_CLASS_NAME);
     }
   }, {
-    key: "onBeforeKeyDown",
-    value: function onBeforeKeyDown() {
-      var previousOptionIndex = this.select.selectedIndex - 1;
-      var nextOptionIndex = this.select.selectedIndex + 1;
-      switch (event.keyCode) {
-        case KEY_CODES.ARROW_UP:
-          if (previousOptionIndex >= 0) {
-            this.select[previousOptionIndex].selected = true;
-          }
-          stopImmediatePropagation(event);
-          event.preventDefault();
-          break;
-        case KEY_CODES.ARROW_DOWN:
-          if (nextOptionIndex <= this.select.length - 1) {
-            this.select[nextOptionIndex].selected = true;
-          }
-          stopImmediatePropagation(event);
-          event.preventDefault();
-          break;
+    key: "registerShortcuts",
+    value: function registerShortcuts() {
+      var _this3 = this;
+      var shortcutManager = this.hot.getShortcutManager();
+      var editorContext = shortcutManager.getContext("editor");
+      var contextConfig = {
+        group: SHORTCUTS_GROUP$1
+      };
+      if (this.isInFullEditMode() === false) {
+        return;
       }
+      editorContext.addShortcuts([{
+        keys: [["ArrowUp"]],
+        callback: function callback() {
+          var previousOptionIndex = _this3.select.selectedIndex - 1;
+          if (previousOptionIndex >= 0) {
+            _this3.select[previousOptionIndex].selected = true;
+          }
+        }
+      }, {
+        keys: [["ArrowDown"]],
+        callback: function callback() {
+          var nextOptionIndex = _this3.select.selectedIndex + 1;
+          if (nextOptionIndex <= _this3.select.length - 1) {
+            _this3.select[nextOptionIndex].selected = true;
+          }
+        }
+      }], contextConfig);
+    }
+  }, {
+    key: "unregisterShortcuts",
+    value: function unregisterShortcuts() {
+      var shortcutManager = this.hot.getShortcutManager();
+      var editorContext = shortcutManager.getContext("editor");
+      editorContext.removeShortcutsByGroup(SHORTCUTS_GROUP$1);
     }
   }], [{
     key: "EDITOR_TYPE",
@@ -3260,6 +3269,149 @@ var SelectEditor = /* @__PURE__ */ function(_BaseEditor) {
   }]);
   return SelectEditor2;
 }(BaseEditor);
+
+function _typeof$8(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$8 = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$8(obj);
+}
+function _classCallCheck$8(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$8(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$8(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$8(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$8(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _get$6() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$6 = Reflect.get;
+  } else {
+    _get$6 = function _get2(target, property, receiver) {
+      var base = _superPropBase$6(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$6.apply(this, arguments);
+}
+function _superPropBase$6(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$8(object);
+    if (object === null)
+      break;
+  }
+  return object;
+}
+function _inherits$8(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$8(subClass, superClass);
+}
+function _setPrototypeOf$8(o, p) {
+  _setPrototypeOf$8 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$8(o, p);
+}
+function _createSuper$8(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$8();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$8(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$8(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$8(this, result);
+  };
+}
+function _possibleConstructorReturn$8(self, call) {
+  if (call && (_typeof$8(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$8(self);
+}
+function _assertThisInitialized$8(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$8() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$8(o) {
+  _getPrototypeOf$8 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$8(o);
+}
+var EDITOR_TYPE$8 = "time";
+var TimeEditor = /* @__PURE__ */ function(_TextEditor) {
+  _inherits$8(TimeEditor2, _TextEditor);
+  var _super = _createSuper$8(TimeEditor2);
+  function TimeEditor2() {
+    _classCallCheck$8(this, TimeEditor2);
+    return _super.apply(this, arguments);
+  }
+  _createClass$8(TimeEditor2, [{
+    key: "prepare",
+    value: function prepare(row, col, prop, td, value, cellProperties) {
+      _get$6(_getPrototypeOf$8(TimeEditor2.prototype), "prepare", this).call(this, row, col, prop, td, value, cellProperties);
+      this.TEXTAREA.dir = "ltr";
+    }
+  }], [{
+    key: "EDITOR_TYPE",
+    get: function get() {
+      return EDITOR_TYPE$8;
+    }
+  }]);
+  return TimeEditor2;
+}(TextEditor);
 
 function registerAllEditors() {
   _register(BaseEditor);
@@ -3272,6 +3424,7 @@ function registerAllEditors() {
   _register(PasswordEditor);
   _register(SelectEditor);
   _register(TextEditor);
+  _register(TimeEditor);
 }
 
 var RENDERER_TYPE = "html";
@@ -3298,7 +3451,7 @@ function autocompleteRenderer(instance, TD, row, col, prop, value, cellPropertie
     var eventManager = new EventManager(instance);
     instance.acArrowListener = function(event) {
       if (hasClass(event.target, "htAutocompleteArrow")) {
-        instance.view.wt.getSetting("onCellDblClick", null, new CellCoords(row, col), TD);
+        instance.view._wt.getSetting("onCellDblClick", null, instance._createCellCoords(row, col), TD);
       }
     };
     eventManager.addEventListener(instance.rootElement, "mousedown", instance.acArrowListener);
@@ -3314,6 +3467,7 @@ var isCheckboxListenerAdded = new WeakMap();
 var BAD_VALUE_CLASS = "htBadValue";
 var ATTR_ROW = "data-row";
 var ATTR_COLUMN = "data-col";
+var SHORTCUTS_GROUP$2 = "checkboxRenderer";
 var RENDERER_TYPE$2 = "checkbox";
 Hooks.getSingleton().add("modifyAutoColumnSizeSeed", function(bundleSeed, cellMeta, cellValue) {
   var label = cellMeta.label, type = cellMeta.type, row = cellMeta.row, column = cellMeta.column, prop = cellMeta.prop;
@@ -3395,27 +3549,38 @@ function checkboxRenderer(instance, TD, row, col, prop, value, cellProperties) {
   }
   if (!isListeningKeyDownEvent.has(instance)) {
     isListeningKeyDownEvent.set(instance, true);
-    instance.addHook("beforeKeyDown", onBeforeKeyDown);
+    registerShortcuts();
   }
-  function onBeforeKeyDown(event) {
-    var toggleKeys = "SPACE|ENTER";
-    var switchOffKeys = "DELETE|BACKSPACE";
-    var isKeyCode = partial(isKey, event.keyCode);
-    if (!instance.getSettings().enterBeginsEditing && isKeyCode("ENTER")) {
-      return;
-    }
-    if (isKeyCode("".concat(toggleKeys, "|").concat(switchOffKeys)) && !isImmediatePropagationStopped(event)) {
-      eachSelectedCheckboxCell(function() {
-        stopImmediatePropagation(event);
-        event.preventDefault();
-      });
-    }
-    if (isKeyCode(toggleKeys)) {
-      changeSelectedCheckboxesState();
-    }
-    if (isKeyCode(switchOffKeys)) {
-      changeSelectedCheckboxesState(true);
-    }
+  function registerShortcuts() {
+    var shortcutManager = instance.getShortcutManager();
+    var gridContext = shortcutManager.getContext("grid");
+    var config = {
+      group: SHORTCUTS_GROUP$2
+    };
+    gridContext.addShortcuts([{
+      keys: [["space"]],
+      callback: function callback() {
+        changeSelectedCheckboxesState();
+        return !areSelectedCheckboxCells();
+      }
+    }, {
+      keys: [["enter"]],
+      callback: function callback() {
+        changeSelectedCheckboxesState();
+        return !areSelectedCheckboxCells();
+      },
+      runOnlyIf: function runOnlyIf() {
+        return instance.getSettings().enterBeginsEditing;
+      }
+    }, {
+      keys: [["delete"], ["backspace"]],
+      callback: function callback() {
+        changeSelectedCheckboxesState(true);
+        return !areSelectedCheckboxCells();
+      },
+      relativeToGroup: SHORTCUTS_GROUP_EDITOR,
+      position: "before"
+    }], config);
   }
   function changeSelectedCheckboxesState() {
     var uncheckCheckbox = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : false;
@@ -3424,8 +3589,8 @@ function checkboxRenderer(instance, TD, row, col, prop, value, cellProperties) {
       return;
     }
     for (var key = 0; key < selRange.length; key++) {
-      var _selRange$key$getTopL = selRange[key].getTopLeftCorner(), startRow = _selRange$key$getTopL.row, startColumn = _selRange$key$getTopL.col;
-      var _selRange$key$getBott = selRange[key].getBottomRightCorner(), endRow = _selRange$key$getBott.row, endColumn = _selRange$key$getBott.col;
+      var _selRange$key$getTopS = selRange[key].getTopStartCorner(), startRow = _selRange$key$getTopS.row, startColumn = _selRange$key$getTopS.col;
+      var _selRange$key$getBott = selRange[key].getBottomEndCorner(), endRow = _selRange$key$getBott.row, endColumn = _selRange$key$getBott.col;
       var changes = [];
       for (var visualRow = startRow; visualRow <= endRow; visualRow += 1) {
         for (var visualColumn = startColumn; visualColumn <= endColumn; visualColumn += 1) {
@@ -3459,32 +3624,33 @@ function checkboxRenderer(instance, TD, row, col, prop, value, cellProperties) {
       }
     }
   }
-  function eachSelectedCheckboxCell(callback) {
+  function areSelectedCheckboxCells() {
     var selRange = instance.getSelectedRange();
     if (!selRange) {
       return;
     }
     for (var key = 0; key < selRange.length; key++) {
-      var topLeft = selRange[key].getTopLeftCorner();
-      var bottomRight = selRange[key].getBottomRightCorner();
+      var topLeft = selRange[key].getTopStartCorner();
+      var bottomRight = selRange[key].getBottomEndCorner();
       for (var visualRow = topLeft.row; visualRow <= bottomRight.row; visualRow++) {
         for (var visualColumn = topLeft.col; visualColumn <= bottomRight.col; visualColumn++) {
           var cachedCellProperties = instance.getCellMeta(visualRow, visualColumn);
           if (cachedCellProperties.type !== "checkbox") {
-            return;
+            return false;
           }
           var cell = instance.getCell(visualRow, visualColumn);
           if (cell === null || cell === void 0) {
-            callback(visualRow, visualColumn, cachedCellProperties);
+            return true;
           } else {
             var checkboxes = cell.querySelectorAll("input[type=checkbox]");
             if (checkboxes.length > 0 && !cachedCellProperties.readOnly) {
-              callback(checkboxes);
+              return true;
             }
           }
         }
       }
     }
+    return false;
   }
 }
 checkboxRenderer.RENDERER_TYPE = RENDERER_TYPE$2;
@@ -3600,6 +3766,7 @@ function numericRenderer(instance, TD, row, col, prop, value, cellProperties) {
       classArr.push("htNumeric");
     }
     cellProperties.className = classArr.join(" ");
+    TD.dir = "ltr";
   }
   textRenderer(instance, TD, row, col, prop, newValue, cellProperties);
 }
@@ -3618,6 +3785,13 @@ function passwordRenderer(instance, TD, row, col, prop, value, cellProperties) {
 }
 passwordRenderer.RENDERER_TYPE = RENDERER_TYPE$4;
 
+var RENDERER_TYPE$5 = "time";
+function timeRenderer(instance, TD, row, col, prop, value, cellProperties) {
+  textRenderer.apply(this, [instance, TD, row, col, prop, value, cellProperties]);
+  TD.dir = "ltr";
+}
+timeRenderer.RENDERER_TYPE = RENDERER_TYPE$5;
+
 function registerAllRenderers() {
   _register$1(autocompleteRenderer);
   _register$1(baseRenderer);
@@ -3626,6 +3800,7 @@ function registerAllRenderers() {
   _register$1(numericRenderer);
   _register$1(passwordRenderer);
   _register$1(textRenderer);
+  _register$1(timeRenderer);
 }
 
 var VALIDATOR_TYPE = "autocomplete";
@@ -3715,8 +3890,8 @@ function dateValidator(value, callback) {
   if (valueToValidate === null || valueToValidate === void 0) {
     valueToValidate = "";
   }
-  var isValidFormat = hooks$1(valueToValidate, this.dateFormat || dateEditor.defaultDateFormat, true).isValid();
-  var isValidDate = hooks$1(new Date(valueToValidate)).isValid() || isValidFormat;
+  var isValidFormat = hooks(valueToValidate, this.dateFormat || dateEditor.defaultDateFormat, true).isValid();
+  var isValidDate = hooks(new Date(valueToValidate)).isValid() || isValidFormat;
   if (this.allowEmpty && valueToValidate === "") {
     isValidDate = true;
     isValidFormat = true;
@@ -3742,8 +3917,8 @@ function dateValidator(value, callback) {
 }
 dateValidator.VALIDATOR_TYPE = VALIDATOR_TYPE$1;
 function correctFormat(value, dateFormat) {
-  var dateFromDate = hooks$1(getNormalizedDate(value));
-  var dateFromMoment = hooks$1(value, dateFormat);
+  var dateFromDate = hooks(getNormalizedDate(value));
+  var dateFromMoment = hooks(value, dateFormat);
   var isAlphanumeric = value.search(/[A-z]/g) > -1;
   var date;
   if (dateFromDate.isValid() && dateFromDate.format("x") === dateFromMoment.format("x") || !dateFromMoment.isValid() || isAlphanumeric) {
@@ -3788,9 +3963,9 @@ function timeValidator(value, callback) {
   if (twoDigitValue) {
     valueToValidate += ":00";
   }
-  var date = hooks$1(valueToValidate, STRICT_FORMATS, true).isValid() ? hooks$1(valueToValidate) : hooks$1(valueToValidate, timeFormat);
+  var date = hooks(valueToValidate, STRICT_FORMATS, true).isValid() ? hooks(valueToValidate) : hooks(valueToValidate, timeFormat);
   var isValidTime = date.isValid();
-  var isValidFormat = hooks$1(valueToValidate, timeFormat, true).isValid() && !twoDigitValue;
+  var isValidFormat = hooks(valueToValidate, timeFormat, true).isValid() && !twoDigitValue;
   if (this.allowEmpty && valueToValidate === "") {
     isValidTime = true;
     isValidFormat = true;
@@ -3881,8 +4056,8 @@ var PasswordCellType = {
 var CELL_TYPE$7 = "time";
 var TimeCellType = {
   CELL_TYPE: CELL_TYPE$7,
-  editor: TextEditor,
-  renderer: textRenderer,
+  editor: TimeEditor,
+  renderer: timeRenderer,
   validator: timeValidator
 };
 
@@ -3897,6 +4072,12 @@ function registerAllCellTypes() {
   _register$3(TextCellType);
   _register$3(TimeCellType);
 }
+
+// `WeakSet` constructor
+// https://tc39.es/ecma262/#sec-weakset-constructor
+collection('WeakSet', function (init) {
+  return function WeakSet() { return init(this, arguments.length ? arguments[0] : undefined); };
+}, collectionWeak);
 
 function _slicedToArray(arr, i) {
   return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
@@ -3957,12 +4138,12 @@ function _arrayWithHoles(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$8(instance, Constructor) {
+function _classCallCheck$9(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$8(target, props) {
+function _defineProperties$9(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -3972,23 +4153,40 @@ function _defineProperties$8(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$8(Constructor, protoProps, staticProps) {
+function _createClass$9(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$8(Constructor.prototype, protoProps);
+    _defineProperties$9(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$8(Constructor, staticProps);
+    _defineProperties$9(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
+}
+function _classPrivateMethodInitSpec(obj, privateSet) {
+  _checkPrivateRedeclaration(obj, privateSet);
+  privateSet.add(obj);
+}
+function _checkPrivateRedeclaration(obj, privateCollection) {
+  if (privateCollection.has(obj)) {
+    throw new TypeError("Cannot initialize the same private elements twice on an object");
+  }
+}
+function _classPrivateMethodGet(receiver, privateSet, fn) {
+  if (!privateSet.has(receiver)) {
+    throw new TypeError("attempted to get private field on non-instance");
+  }
+  return fn;
 }
 var DEPS_TYPE_CHECKERS = new Map([["plugin", hasPlugin], ["cell-type", hasItem], ["editor", hasItem$1], ["renderer", hasItem$2], ["validator", hasItem$3]]);
 var PLUGIN_KEY = "base";
 var privatePool$1 = new WeakMap();
 var missingDependeciesMsgs = [];
 var initializedPlugins = null;
+var _isRelevantToSettings = /* @__PURE__ */ new WeakSet();
 var BasePlugin = /* @__PURE__ */ function() {
   function BasePlugin2(hotInstance) {
     var _this = this;
-    _classCallCheck$8(this, BasePlugin2);
+    _classCallCheck$9(this, BasePlugin2);
+    _classPrivateMethodInitSpec(this, _isRelevantToSettings);
     defineGetter(this, "hot", hotInstance, {
       writable: false
     });
@@ -4011,7 +4209,7 @@ var BasePlugin = /* @__PURE__ */ function() {
       return _this.init();
     });
   }
-  _createClass$8(BasePlugin2, [{
+  _createClass$9(BasePlugin2, [{
     key: "init",
     value: function init() {
       var _this2 = this;
@@ -4120,6 +4318,7 @@ var BasePlugin = /* @__PURE__ */ function() {
   }, {
     key: "onUpdateSettings",
     value: function onUpdateSettings(newSettings) {
+      var relevantToSettings = _classPrivateMethodGet(this, _isRelevantToSettings, _isRelevantToSettings2).call(this, newSettings);
       if (this.isEnabled) {
         if (this.enabled && !this.isEnabled()) {
           this.disablePlugin();
@@ -4127,7 +4326,7 @@ var BasePlugin = /* @__PURE__ */ function() {
         if (!this.enabled && this.isEnabled()) {
           this.enablePlugin();
         }
-        if (this.enabled && this.isEnabled()) {
+        if (this.enabled && this.isEnabled() && relevantToSettings) {
           this.updatePlugin(newSettings);
         }
       }
@@ -4157,9 +4356,29 @@ var BasePlugin = /* @__PURE__ */ function() {
     get: function get() {
       return PLUGIN_KEY;
     }
+  }, {
+    key: "SETTING_KEYS",
+    get: function get() {
+      return [this.PLUGIN_KEY];
+    }
   }]);
   return BasePlugin2;
 }();
+function _isRelevantToSettings2(settings) {
+  if (!settings) {
+    return false;
+  }
+  var settingKeys = this.constructor.SETTING_KEYS;
+  if (typeof settingKeys === "boolean") {
+    return settingKeys;
+  }
+  for (var i = 0; i < settingKeys.length; i++) {
+    if (settings[settingKeys[i]] !== void 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 function _slicedToArray$1(arr, i) {
   return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _unsupportedIterableToArray$1(arr, i) || _nonIterableRest$1();
@@ -4220,12 +4439,12 @@ function _arrayWithHoles$1(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$9(instance, Constructor) {
+function _classCallCheck$a(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$9(target, props) {
+function _defineProperties$a(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -4235,17 +4454,17 @@ function _defineProperties$9(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$9(Constructor, protoProps, staticProps) {
+function _createClass$a(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$9(Constructor.prototype, protoProps);
+    _defineProperties$a(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$9(Constructor, staticProps);
+    _defineProperties$a(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var GhostTable = /* @__PURE__ */ function() {
   function GhostTable2(hotInstance) {
-    _classCallCheck$9(this, GhostTable2);
+    _classCallCheck$a(this, GhostTable2);
     this.hot = hotInstance;
     this.container = null;
     this.injected = false;
@@ -4256,7 +4475,7 @@ var GhostTable = /* @__PURE__ */ function() {
       useHeaders: true
     };
   }
-  _createClass$9(GhostTable2, [{
+  _createClass$a(GhostTable2, [{
     key: "addRow",
     value: function addRow(row, samples) {
       if (this.columns.length) {
@@ -4487,7 +4706,7 @@ var GhostTable = /* @__PURE__ */ function() {
     key: "createColElement",
     value: function createColElement(column) {
       var col = this.hot.rootDocument.createElement("col");
-      col.style.width = "".concat(this.hot.view.wt.wtTable.getStretchedColumnWidth(column), "px");
+      col.style.width = "".concat(this.hot.view._wt.wtTable.getStretchedColumnWidth(column), "px");
       return col;
     }
   }, {
@@ -4565,12 +4784,12 @@ function _defineProperty$1(obj, key, value) {
   }
   return obj;
 }
-function _classCallCheck$a(instance, Constructor) {
+function _classCallCheck$b(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$a(target, props) {
+function _defineProperties$b(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -4580,23 +4799,23 @@ function _defineProperties$a(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$a(Constructor, protoProps, staticProps) {
+function _createClass$b(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$a(Constructor.prototype, protoProps);
+    _defineProperties$b(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$a(Constructor, staticProps);
+    _defineProperties$b(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var SamplesGenerator = /* @__PURE__ */ function() {
   function SamplesGenerator2(dataFactory) {
-    _classCallCheck$a(this, SamplesGenerator2);
+    _classCallCheck$b(this, SamplesGenerator2);
     this.samples = null;
     this.dataFactory = dataFactory;
     this.customSampleCount = null;
     this.allowDuplicates = false;
   }
-  _createClass$a(SamplesGenerator2, [{
+  _createClass$b(SamplesGenerator2, [{
     key: "getSampleCount",
     value: function getSampleCount() {
       if (this.customSampleCount) {
@@ -4691,13 +4910,13 @@ var SamplesGenerator = /* @__PURE__ */ function() {
   return SamplesGenerator2;
 }();
 
-function _typeof$8(obj) {
+function _typeof$9(obj) {
   "@babel/helpers - typeof";
-  return _typeof$8 = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$9 = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$8(obj);
+  }, _typeof$9(obj);
 }
 function _slicedToArray$2(arr, i) {
   return _arrayWithHoles$2(arr) || _iterableToArrayLimit$2(arr, i) || _unsupportedIterableToArray$2(arr, i) || _nonIterableRest$2();
@@ -4758,12 +4977,12 @@ function _arrayWithHoles$2(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$b(instance, Constructor) {
+function _classCallCheck$c(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$b(target, props) {
+function _defineProperties$c(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -4773,20 +4992,20 @@ function _defineProperties$b(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$b(Constructor, protoProps, staticProps) {
+function _createClass$c(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$b(Constructor.prototype, protoProps);
+    _defineProperties$c(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$b(Constructor, staticProps);
+    _defineProperties$c(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$6() {
+function _get$7() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$6 = Reflect.get;
+    _get$7 = Reflect.get;
   } else {
-    _get$6 = function _get2(target, property, receiver) {
-      var base = _superPropBase$6(target, property);
+    _get$7 = function _get2(target, property, receiver) {
+      var base = _superPropBase$7(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -4796,60 +5015,60 @@ function _get$6() {
       return desc.value;
     };
   }
-  return _get$6.apply(this, arguments);
+  return _get$7.apply(this, arguments);
 }
-function _superPropBase$6(object, property) {
+function _superPropBase$7(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$8(object);
+    object = _getPrototypeOf$9(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$8(subClass, superClass) {
+function _inherits$9(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$8(subClass, superClass);
+    _setPrototypeOf$9(subClass, superClass);
 }
-function _setPrototypeOf$8(o, p) {
-  _setPrototypeOf$8 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$9(o, p) {
+  _setPrototypeOf$9 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$8(o, p);
+  return _setPrototypeOf$9(o, p);
 }
-function _createSuper$8(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$8();
+function _createSuper$9(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$9();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$8(Derived), result;
+    var Super = _getPrototypeOf$9(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$8(this).constructor;
+      var NewTarget = _getPrototypeOf$9(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$8(this, result);
+    return _possibleConstructorReturn$9(this, result);
   };
 }
-function _possibleConstructorReturn$8(self, call) {
-  if (call && (_typeof$8(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$9(self, call) {
+  if (call && (_typeof$9(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$8(self);
+  return _assertThisInitialized$9(self);
 }
-function _assertThisInitialized$8(self) {
+function _assertThisInitialized$9(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$8() {
+function _isNativeReflectConstruct$9() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -4864,11 +5083,11 @@ function _isNativeReflectConstruct$8() {
     return false;
   }
 }
-function _getPrototypeOf$8(o) {
-  _getPrototypeOf$8 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$9(o) {
+  _getPrototypeOf$9 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$8(o);
+  return _getPrototypeOf$9(o);
 }
 Hooks.getSingleton().register("modifyAutoColumnSizeSeed");
 var PLUGIN_KEY$1 = "autoColumnSize";
@@ -4876,13 +5095,13 @@ var PLUGIN_PRIORITY = 10;
 var privatePool$2 = new WeakMap();
 var COLUMN_SIZE_MAP_NAME = "autoColumnSize";
 var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$8(AutoColumnSize2, _BasePlugin);
-  var _super = _createSuper$8(AutoColumnSize2);
+  _inherits$9(AutoColumnSize2, _BasePlugin);
+  var _super = _createSuper$9(AutoColumnSize2);
   function AutoColumnSize2(hotInstance) {
     var _this;
-    _classCallCheck$b(this, AutoColumnSize2);
+    _classCallCheck$c(this, AutoColumnSize2);
     _this = _super.call(this, hotInstance);
-    privatePool$2.set(_assertThisInitialized$8(_this), {
+    privatePool$2.set(_assertThisInitialized$9(_this), {
       cachedColumnHeaders: []
     });
     _this.ghostTable = new GhostTable(_this.hot);
@@ -4911,7 +5130,7 @@ var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$b(AutoColumnSize2, [{
+  _createClass$c(AutoColumnSize2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return this.hot.getSettings()[PLUGIN_KEY$1] !== false && !this.hot.getSettings().colWidths;
@@ -4931,7 +5150,7 @@ var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
       this.addHook("afterLoadData", function() {
         return _this2.onAfterLoadData.apply(_this2, arguments);
       });
-      this.addHook("beforeChange", function(changes) {
+      this.addHook("beforeChangeRender", function(changes) {
         return _this2.onBeforeChange(changes);
       });
       this.addHook("afterFormulasValuesUpdate", function(changes) {
@@ -4946,7 +5165,7 @@ var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
       this.addHook("afterInit", function() {
         return _this2.onAfterInit();
       });
-      _get$6(_getPrototypeOf$8(AutoColumnSize2.prototype), "enablePlugin", this).call(this);
+      _get$7(_getPrototypeOf$9(AutoColumnSize2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
@@ -4956,13 +5175,13 @@ var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
         this.clearCache(changedColumns);
         this.calculateVisibleColumnsWidth();
       }
-      _get$6(_getPrototypeOf$8(AutoColumnSize2.prototype), "updatePlugin", this).call(this);
+      _get$7(_getPrototypeOf$9(AutoColumnSize2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
       var _this3 = this;
-      _get$6(_getPrototypeOf$8(AutoColumnSize2.prototype), "disablePlugin", this).call(this);
+      _get$7(_getPrototypeOf$9(AutoColumnSize2.prototype), "disablePlugin", this).call(this);
       this.addHook("beforeColumnResize", function(size, column, isDblClick) {
         return _this3.onBeforeColumnResize(size, column, isDblClick);
       });
@@ -5092,7 +5311,7 @@ var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "recalculateAllColumnsWidth",
     value: function recalculateAllColumnsWidth() {
-      if (this.hot.view && this.hot.view.wt.wtTable.isVisible()) {
+      if (this.hot.view && this.hot.view._wt.wtTable.isVisible()) {
         this.clearCache();
         this.calculateAllColumnsWidth();
       }
@@ -5130,7 +5349,7 @@ var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "getFirstVisibleColumn",
     value: function getFirstVisibleColumn() {
-      var wot = this.hot.view.wt;
+      var wot = this.hot.view._wt;
       if (wot.wtViewport.columnsVisibleCalculator) {
         var firstFullyVisibleColumn = wot.wtTable.getFirstVisibleColumn();
         if (firstFullyVisibleColumn !== -1) {
@@ -5148,7 +5367,7 @@ var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "getLastVisibleColumn",
     value: function getLastVisibleColumn() {
-      var wot = this.hot.view.wt;
+      var wot = this.hot.view._wt;
       if (wot.wtViewport.columnsVisibleCalculator) {
         var lastFullyVisibleColumn = wot.wtTable.getLastVisibleColumn();
         if (lastFullyVisibleColumn !== -1) {
@@ -5267,7 +5486,7 @@ var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
     key: "destroy",
     value: function destroy() {
       this.ghostTable.clean();
-      _get$6(_getPrototypeOf$8(AutoColumnSize2.prototype), "destroy", this).call(this);
+      _get$7(_getPrototypeOf$9(AutoColumnSize2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -5278,6 +5497,11 @@ var AutoColumnSize = /* @__PURE__ */ function(_BasePlugin) {
     key: "PLUGIN_PRIORITY",
     get: function get() {
       return PLUGIN_PRIORITY;
+    }
+  }, {
+    key: "SETTING_KEYS",
+    get: function get() {
+      return true;
     }
   }, {
     key: "CALCULATION_STEP",
@@ -5323,26 +5547,26 @@ function getDeltas(start, end, data, direction) {
   }
   return deltas;
 }
-function getDragDirectionAndRange(startSelection, endSelection) {
+function getDragDirectionAndRange(startSelection, endSelection, cellCoordsFactory) {
   var startOfDragCoords;
   var endOfDragCoords;
   var directionOfDrag;
   if (endSelection[0] === startSelection[0] && endSelection[1] < startSelection[1]) {
     directionOfDrag = "left";
-    startOfDragCoords = new CellCoords(endSelection[0], endSelection[1]);
-    endOfDragCoords = new CellCoords(endSelection[2], startSelection[1] - 1);
+    startOfDragCoords = cellCoordsFactory(endSelection[0], endSelection[1]);
+    endOfDragCoords = cellCoordsFactory(endSelection[2], startSelection[1] - 1);
   } else if (endSelection[2] === startSelection[2] && endSelection[0] === startSelection[0] && endSelection[3] > startSelection[3]) {
     directionOfDrag = "right";
-    startOfDragCoords = new CellCoords(endSelection[0], startSelection[3] + 1);
-    endOfDragCoords = new CellCoords(endSelection[2], endSelection[3]);
+    startOfDragCoords = cellCoordsFactory(endSelection[0], startSelection[3] + 1);
+    endOfDragCoords = cellCoordsFactory(endSelection[2], endSelection[3]);
   } else if (endSelection[0] < startSelection[0] && endSelection[1] === startSelection[1]) {
     directionOfDrag = "up";
-    startOfDragCoords = new CellCoords(endSelection[0], endSelection[1]);
-    endOfDragCoords = new CellCoords(startSelection[0] - 1, endSelection[3]);
+    startOfDragCoords = cellCoordsFactory(endSelection[0], endSelection[1]);
+    endOfDragCoords = cellCoordsFactory(startSelection[0] - 1, endSelection[3]);
   } else if (endSelection[2] > startSelection[2] && endSelection[1] === startSelection[1]) {
     directionOfDrag = "down";
-    startOfDragCoords = new CellCoords(startSelection[2] + 1, endSelection[1]);
-    endOfDragCoords = new CellCoords(endSelection[2], endSelection[3]);
+    startOfDragCoords = cellCoordsFactory(startSelection[2] + 1, endSelection[1]);
+    endOfDragCoords = cellCoordsFactory(endSelection[2], endSelection[3]);
   }
   if (startOfDragCoords) {
     startOfDragCoords.normalize();
@@ -5386,13 +5610,13 @@ function getMappedFillHandleSetting(fillHandle) {
   return mappedSettings;
 }
 
-function _typeof$9(obj) {
+function _typeof$a(obj) {
   "@babel/helpers - typeof";
-  return _typeof$9 = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$a = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$9(obj);
+  }, _typeof$a(obj);
 }
 function _toConsumableArray(arr) {
   return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray$3(arr) || _nonIterableSpread();
@@ -5464,559 +5688,6 @@ function _iterableToArrayLimit$3(arr, i) {
   return _arr;
 }
 function _arrayWithHoles$3(arr) {
-  if (Array.isArray(arr))
-    return arr;
-}
-function _classCallCheck$c(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$c(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$c(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$c(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$c(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _get$7() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$7 = Reflect.get;
-  } else {
-    _get$7 = function _get2(target, property, receiver) {
-      var base = _superPropBase$7(target, property);
-      if (!base)
-        return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    };
-  }
-  return _get$7.apply(this, arguments);
-}
-function _superPropBase$7(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$9(object);
-    if (object === null)
-      break;
-  }
-  return object;
-}
-function _inherits$9(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$9(subClass, superClass);
-}
-function _setPrototypeOf$9(o, p) {
-  _setPrototypeOf$9 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$9(o, p);
-}
-function _createSuper$9(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$9();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$9(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$9(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$9(this, result);
-  };
-}
-function _possibleConstructorReturn$9(self, call) {
-  if (call && (_typeof$9(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$9(self);
-}
-function _assertThisInitialized$9(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$9() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$9(o) {
-  _getPrototypeOf$9 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$9(o);
-}
-Hooks.getSingleton().register("modifyAutofillRange");
-Hooks.getSingleton().register("beforeAutofill");
-Hooks.getSingleton().register("afterAutofill");
-var PLUGIN_KEY$2 = "autofill";
-var PLUGIN_PRIORITY$1 = 20;
-var INSERT_ROW_ALTER_ACTION_NAME = "insert_row";
-var INTERVAL_FOR_ADDING_ROW = 200;
-var Autofill = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$9(Autofill2, _BasePlugin);
-  var _super = _createSuper$9(Autofill2);
-  function Autofill2(hotInstance) {
-    var _this;
-    _classCallCheck$c(this, Autofill2);
-    _this = _super.call(this, hotInstance);
-    _this.eventManager = new EventManager(_assertThisInitialized$9(_this));
-    _this.addingStarted = false;
-    _this.mouseDownOnCellCorner = false;
-    _this.mouseDragOutside = false;
-    _this.handleDraggedCells = 0;
-    _this.directions = [];
-    _this.autoInsertRow = false;
-    return _this;
-  }
-  _createClass$c(Autofill2, [{
-    key: "isEnabled",
-    value: function isEnabled() {
-      return this.hot.getSettings().fillHandle;
-    }
-  }, {
-    key: "enablePlugin",
-    value: function enablePlugin() {
-      var _this2 = this;
-      if (this.enabled) {
-        return;
-      }
-      this.mapSettings();
-      this.registerEvents();
-      this.addHook("afterOnCellCornerMouseDown", function(event) {
-        return _this2.onAfterCellCornerMouseDown(event);
-      });
-      this.addHook("afterOnCellCornerDblClick", function(event) {
-        return _this2.onCellCornerDblClick(event);
-      });
-      this.addHook("beforeOnCellMouseOver", function(_, coords) {
-        return _this2.onBeforeCellMouseOver(coords);
-      });
-      _get$7(_getPrototypeOf$9(Autofill2.prototype), "enablePlugin", this).call(this);
-    }
-  }, {
-    key: "updatePlugin",
-    value: function updatePlugin() {
-      this.disablePlugin();
-      this.enablePlugin();
-      _get$7(_getPrototypeOf$9(Autofill2.prototype), "updatePlugin", this).call(this);
-    }
-  }, {
-    key: "disablePlugin",
-    value: function disablePlugin() {
-      this.clearMappedSettings();
-      _get$7(_getPrototypeOf$9(Autofill2.prototype), "disablePlugin", this).call(this);
-    }
-  }, {
-    key: "getSelectionData",
-    value: function getSelectionData() {
-      var _this3 = this;
-      var selection = this.hot.getSelectedRangeLast();
-      var _selection$getTopLeft = selection.getTopLeftCorner(), startRow = _selection$getTopLeft.row, startCol = _selection$getTopLeft.col;
-      var _selection$getBottomR = selection.getBottomRightCorner(), endRow = _selection$getBottomR.row, endCol = _selection$getBottomR.col;
-      var copyableRanges = this.hot.runHooks("modifyCopyableRange", [{
-        startRow,
-        startCol,
-        endRow,
-        endCol
-      }]);
-      var copyableRows = [];
-      var copyableColumns = [];
-      var data = [];
-      arrayEach(copyableRanges, function(range) {
-        for (var visualRow = range.startRow; visualRow <= range.endRow; visualRow += 1) {
-          if (copyableRows.indexOf(visualRow) === -1) {
-            copyableRows.push(visualRow);
-          }
-        }
-        for (var visualColumn = range.startCol; visualColumn <= range.endCol; visualColumn += 1) {
-          if (copyableColumns.indexOf(visualColumn) === -1) {
-            copyableColumns.push(visualColumn);
-          }
-        }
-      });
-      arrayEach(copyableRows, function(row) {
-        var rowSet = [];
-        arrayEach(copyableColumns, function(column) {
-          rowSet.push(_this3.hot.getCopyableData(row, column));
-        });
-        data.push(rowSet);
-      });
-      return data;
-    }
-  }, {
-    key: "fillIn",
-    value: function fillIn() {
-      if (this.hot.selection.highlight.getFill().isEmpty()) {
-        return false;
-      }
-      var _this$hot$selection$h = this.hot.selection.highlight.getFill().getVisualCorners(), _this$hot$selection$h2 = _slicedToArray$3(_this$hot$selection$h, 4), fillStartRow = _this$hot$selection$h2[0], fillStartColumn = _this$hot$selection$h2[1], fillEndRow = _this$hot$selection$h2[2], fillEndColumn = _this$hot$selection$h2[3];
-      var selectionRangeLast = this.hot.getSelectedRangeLast();
-      var topLeftCorner = selectionRangeLast.getTopLeftCorner();
-      var bottomRightCorner = selectionRangeLast.getBottomRightCorner();
-      this.resetSelectionOfDraggedArea();
-      var cornersOfSelectedCells = [topLeftCorner.row, topLeftCorner.col, bottomRightCorner.row, bottomRightCorner.col];
-      var cornersOfSelectionAndDragAreas = this.hot.runHooks("modifyAutofillRange", [Math.min(topLeftCorner.row, fillStartRow), Math.min(topLeftCorner.col, fillStartColumn), Math.max(bottomRightCorner.row, fillEndRow), Math.max(bottomRightCorner.col, fillEndColumn)], cornersOfSelectedCells);
-      var _getDragDirectionAndR = getDragDirectionAndRange(cornersOfSelectedCells, cornersOfSelectionAndDragAreas), directionOfDrag = _getDragDirectionAndR.directionOfDrag, startOfDragCoords = _getDragDirectionAndR.startOfDragCoords, endOfDragCoords = _getDragDirectionAndR.endOfDragCoords;
-      if (startOfDragCoords && startOfDragCoords.row > -1 && startOfDragCoords.col > -1) {
-        var selectionData = this.getSelectionData();
-        var sourceRange = selectionRangeLast.clone();
-        var targetRange = new CellRange(startOfDragCoords, startOfDragCoords, endOfDragCoords);
-        var beforeAutofillHookResult = this.hot.runHooks("beforeAutofill", selectionData, sourceRange, targetRange, directionOfDrag);
-        if (beforeAutofillHookResult === false) {
-          this.hot.selection.highlight.getFill().clear();
-          this.hot.render();
-          return false;
-        }
-        var deltas = getDeltas(startOfDragCoords, endOfDragCoords, selectionData, directionOfDrag);
-        var fillData = beforeAutofillHookResult;
-        var res = beforeAutofillHookResult;
-        if (["up", "left"].indexOf(directionOfDrag) > -1 && !(res.length === 1 && res[0].length === 0)) {
-          fillData = [];
-          if (directionOfDrag === "up") {
-            var dragLength = endOfDragCoords.row - startOfDragCoords.row + 1;
-            var fillOffset = dragLength % res.length;
-            for (var i = 0; i < dragLength; i++) {
-              fillData.push(res[(i + (res.length - fillOffset)) % res.length]);
-            }
-          } else {
-            var _dragLength = endOfDragCoords.col - startOfDragCoords.col + 1;
-            var _fillOffset = _dragLength % res[0].length;
-            for (var _i2 = 0; _i2 < res.length; _i2++) {
-              fillData.push([]);
-              for (var j = 0; j < _dragLength; j++) {
-                fillData[_i2].push(res[_i2][(j + (res[_i2].length - _fillOffset)) % res[_i2].length]);
-              }
-            }
-          }
-        }
-        this.hot.populateFromArray(startOfDragCoords.row, startOfDragCoords.col, fillData, endOfDragCoords.row, endOfDragCoords.col, "".concat(this.pluginName, ".fill"), null, directionOfDrag, deltas);
-        this.setSelection(cornersOfSelectionAndDragAreas);
-        this.hot.runHooks("afterAutofill", fillData, sourceRange, targetRange, directionOfDrag);
-        this.hot.render();
-      } else {
-        this.hot._refreshBorders();
-      }
-      return true;
-    }
-  }, {
-    key: "reduceSelectionAreaIfNeeded",
-    value: function reduceSelectionAreaIfNeeded(coords) {
-      if (coords.row < 0) {
-        coords.row = 0;
-      }
-      if (coords.col < 0) {
-        coords.col = 0;
-      }
-      return coords;
-    }
-  }, {
-    key: "getCoordsOfDragAndDropBorders",
-    value: function getCoordsOfDragAndDropBorders(coordsOfSelection) {
-      var currentSelection = this.hot.getSelectedRangeLast();
-      var bottomRightCorner = currentSelection.getBottomRightCorner();
-      var coords = coordsOfSelection;
-      if (this.directions.includes(DIRECTIONS.vertical) && this.directions.includes(DIRECTIONS.horizontal)) {
-        var topLeftCorner = currentSelection.getTopLeftCorner();
-        if (bottomRightCorner.col <= coordsOfSelection.col || topLeftCorner.col >= coordsOfSelection.col) {
-          coords = new CellCoords(bottomRightCorner.row, coordsOfSelection.col);
-        }
-        if (bottomRightCorner.row < coordsOfSelection.row || topLeftCorner.row > coordsOfSelection.row) {
-          coords = new CellCoords(coordsOfSelection.row, bottomRightCorner.col);
-        }
-      } else if (this.directions.includes(DIRECTIONS.vertical)) {
-        coords = new CellCoords(coordsOfSelection.row, bottomRightCorner.col);
-      } else if (this.directions.includes(DIRECTIONS.horizontal)) {
-        coords = new CellCoords(bottomRightCorner.row, coordsOfSelection.col);
-      } else {
-        return;
-      }
-      return this.reduceSelectionAreaIfNeeded(coords);
-    }
-  }, {
-    key: "showBorder",
-    value: function showBorder(coordsOfSelection) {
-      var coordsOfDragAndDropBorders = this.getCoordsOfDragAndDropBorders(coordsOfSelection);
-      if (coordsOfDragAndDropBorders) {
-        this.redrawBorders(coordsOfDragAndDropBorders);
-      }
-    }
-  }, {
-    key: "addRow",
-    value: function addRow() {
-      var _this4 = this;
-      this.hot._registerTimeout(function() {
-        _this4.hot.alter(INSERT_ROW_ALTER_ACTION_NAME, void 0, 1, "".concat(_this4.pluginName, ".fill"));
-        _this4.addingStarted = false;
-      }, INTERVAL_FOR_ADDING_ROW);
-    }
-  }, {
-    key: "addNewRowIfNeeded",
-    value: function addNewRowIfNeeded() {
-      if (!this.hot.selection.highlight.getFill().isEmpty() && this.addingStarted === false && this.autoInsertRow) {
-        var cornersOfSelectedCells = this.hot.getSelectedLast();
-        var cornersOfSelectedDragArea = this.hot.selection.highlight.getFill().getVisualCorners();
-        var nrOfTableRows = this.hot.countRows();
-        if (cornersOfSelectedCells[2] < nrOfTableRows - 1 && cornersOfSelectedDragArea[2] === nrOfTableRows - 1) {
-          this.addingStarted = true;
-          this.addRow();
-        }
-      }
-    }
-  }, {
-    key: "getIndexOfLastAdjacentFilledInRow",
-    value: function getIndexOfLastAdjacentFilledInRow(cornersOfSelectedCells) {
-      var data = this.hot.getData();
-      var nrOfTableRows = this.hot.countRows();
-      var lastFilledInRowIndex;
-      for (var rowIndex = cornersOfSelectedCells[2] + 1; rowIndex < nrOfTableRows; rowIndex++) {
-        for (var columnIndex = cornersOfSelectedCells[1]; columnIndex <= cornersOfSelectedCells[3]; columnIndex++) {
-          var dataInCell = data[rowIndex][columnIndex];
-          if (dataInCell) {
-            return -1;
-          }
-        }
-        var dataInNextLeftCell = data[rowIndex][cornersOfSelectedCells[1] - 1];
-        var dataInNextRightCell = data[rowIndex][cornersOfSelectedCells[3] + 1];
-        if (!!dataInNextLeftCell || !!dataInNextRightCell) {
-          lastFilledInRowIndex = rowIndex;
-        }
-      }
-      return lastFilledInRowIndex;
-    }
-  }, {
-    key: "addSelectionFromStartAreaToSpecificRowIndex",
-    value: function addSelectionFromStartAreaToSpecificRowIndex(selectStartArea, rowIndex) {
-      this.hot.selection.highlight.getFill().clear().add(new CellCoords(selectStartArea[0], selectStartArea[1])).add(new CellCoords(rowIndex, selectStartArea[3])).commit();
-    }
-  }, {
-    key: "setSelection",
-    value: function setSelection(cornersOfArea) {
-      var _this$hot;
-      (_this$hot = this.hot).selectCell.apply(_this$hot, _toConsumableArray(arrayMap(cornersOfArea, function(index) {
-        return Math.max(index, 0);
-      })).concat([false, false]));
-    }
-  }, {
-    key: "selectAdjacent",
-    value: function selectAdjacent() {
-      var cornersOfSelectedCells = this.hot.getSelectedLast();
-      var lastFilledInRowIndex = this.getIndexOfLastAdjacentFilledInRow(cornersOfSelectedCells);
-      if (lastFilledInRowIndex === -1 || lastFilledInRowIndex === void 0) {
-        return false;
-      }
-      this.addSelectionFromStartAreaToSpecificRowIndex(cornersOfSelectedCells, lastFilledInRowIndex);
-      return true;
-    }
-  }, {
-    key: "resetSelectionOfDraggedArea",
-    value: function resetSelectionOfDraggedArea() {
-      this.handleDraggedCells = 0;
-      this.hot.selection.highlight.getFill().clear();
-    }
-  }, {
-    key: "redrawBorders",
-    value: function redrawBorders(coords) {
-      this.hot.selection.highlight.getFill().clear().add(this.hot.getSelectedRangeLast().from).add(this.hot.getSelectedRangeLast().to).add(coords).commit();
-      this.hot.view.render();
-    }
-  }, {
-    key: "getIfMouseWasDraggedOutside",
-    value: function getIfMouseWasDraggedOutside(event) {
-      var documentElement = this.hot.rootDocument.documentElement;
-      var tableBottom = offset(this.hot.table).top - (this.hot.rootWindow.pageYOffset || documentElement.scrollTop) + outerHeight(this.hot.table);
-      var tableRight = offset(this.hot.table).left - (this.hot.rootWindow.pageXOffset || documentElement.scrollLeft) + outerWidth(this.hot.table);
-      return event.clientY > tableBottom && event.clientX <= tableRight;
-    }
-  }, {
-    key: "registerEvents",
-    value: function registerEvents() {
-      var _this5 = this;
-      var documentElement = this.hot.rootDocument.documentElement;
-      this.eventManager.addEventListener(documentElement, "mouseup", function() {
-        return _this5.onMouseUp();
-      });
-      this.eventManager.addEventListener(documentElement, "mousemove", function(event) {
-        return _this5.onMouseMove(event);
-      });
-    }
-  }, {
-    key: "onCellCornerDblClick",
-    value: function onCellCornerDblClick() {
-      var selectionApplied = this.selectAdjacent();
-      if (selectionApplied) {
-        this.fillIn();
-      }
-    }
-  }, {
-    key: "onAfterCellCornerMouseDown",
-    value: function onAfterCellCornerMouseDown() {
-      this.handleDraggedCells = 1;
-      this.mouseDownOnCellCorner = true;
-    }
-  }, {
-    key: "onBeforeCellMouseOver",
-    value: function onBeforeCellMouseOver(coords) {
-      if (this.mouseDownOnCellCorner && !this.hot.view.isMouseDown() && this.handleDraggedCells) {
-        this.handleDraggedCells += 1;
-        this.showBorder(coords);
-        this.addNewRowIfNeeded();
-      }
-    }
-  }, {
-    key: "onMouseUp",
-    value: function onMouseUp() {
-      if (this.handleDraggedCells) {
-        if (this.handleDraggedCells > 1) {
-          this.fillIn();
-        }
-        this.handleDraggedCells = 0;
-        this.mouseDownOnCellCorner = false;
-      }
-    }
-  }, {
-    key: "onMouseMove",
-    value: function onMouseMove(event) {
-      var mouseWasDraggedOutside = this.getIfMouseWasDraggedOutside(event);
-      if (this.addingStarted === false && this.handleDraggedCells > 0 && mouseWasDraggedOutside) {
-        this.mouseDragOutside = true;
-        this.addingStarted = true;
-      } else {
-        this.mouseDragOutside = false;
-      }
-      if (this.mouseDragOutside && this.autoInsertRow) {
-        this.addRow();
-      }
-    }
-  }, {
-    key: "clearMappedSettings",
-    value: function clearMappedSettings() {
-      this.directions.length = 0;
-      this.autoInsertRow = false;
-    }
-  }, {
-    key: "mapSettings",
-    value: function mapSettings() {
-      var mappedSettings = getMappedFillHandleSetting(this.hot.getSettings().fillHandle);
-      this.directions = mappedSettings.directions;
-      this.autoInsertRow = mappedSettings.autoInsertRow;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      _get$7(_getPrototypeOf$9(Autofill2.prototype), "destroy", this).call(this);
-    }
-  }], [{
-    key: "PLUGIN_KEY",
-    get: function get() {
-      return PLUGIN_KEY$2;
-    }
-  }, {
-    key: "PLUGIN_PRIORITY",
-    get: function get() {
-      return PLUGIN_PRIORITY$1;
-    }
-  }]);
-  return Autofill2;
-}(BasePlugin);
-
-function _typeof$a(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$a = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$a(obj);
-}
-function _slicedToArray$4(arr, i) {
-  return _arrayWithHoles$4(arr) || _iterableToArrayLimit$4(arr, i) || _unsupportedIterableToArray$4(arr, i) || _nonIterableRest$4();
-}
-function _nonIterableRest$4() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$4(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$4(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$4(o, minLen);
-}
-function _arrayLikeToArray$4(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
-function _iterableToArrayLimit$4(arr, i) {
-  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-  if (_i == null)
-    return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _s, _e;
-  try {
-    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-      if (i && _arr.length === i)
-        break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null)
-        _i["return"]();
-    } finally {
-      if (_d)
-        throw _e;
-    }
-  }
-  return _arr;
-}
-function _arrayWithHoles$4(arr) {
   if (Array.isArray(arr))
     return arr;
 }
@@ -6132,45 +5803,34 @@ function _getPrototypeOf$a(o) {
   };
   return _getPrototypeOf$a(o);
 }
-var PLUGIN_KEY$3 = "autoRowSize";
-var PLUGIN_PRIORITY$2 = 40;
-var ROW_WIDTHS_MAP_NAME = "autoRowSize";
-var AutoRowSize = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$a(AutoRowSize2, _BasePlugin);
-  var _super = _createSuper$a(AutoRowSize2);
-  function AutoRowSize2(hotInstance) {
+Hooks.getSingleton().register("modifyAutofillRange");
+Hooks.getSingleton().register("beforeAutofill");
+Hooks.getSingleton().register("afterAutofill");
+var PLUGIN_KEY$2 = "autofill";
+var PLUGIN_PRIORITY$1 = 20;
+var SETTING_KEYS = ["fillHandle"];
+var INSERT_ROW_ALTER_ACTION_NAME = "insert_row";
+var INTERVAL_FOR_ADDING_ROW = 200;
+var Autofill = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$a(Autofill2, _BasePlugin);
+  var _super = _createSuper$a(Autofill2);
+  function Autofill2(hotInstance) {
     var _this;
-    _classCallCheck$d(this, AutoRowSize2);
+    _classCallCheck$d(this, Autofill2);
     _this = _super.call(this, hotInstance);
-    _this.rowHeightsMap = void 0;
-    _this.headerHeight = null;
-    _this.ghostTable = new GhostTable(_this.hot);
-    _this.samplesGenerator = new SamplesGenerator(function(row, col) {
-      var cellValue;
-      if (row >= 0) {
-        cellValue = _this.hot.getDataAtCell(row, col);
-      } else if (row === -1) {
-        cellValue = _this.hot.getColHeader(col);
-      }
-      return {
-        value: cellValue
-      };
-    });
-    _this.firstCalculation = true;
-    _this.inProgress = false;
-    _this.measuredRows = 0;
-    _this.rowHeightsMap = new PhysicalIndexToValueMap();
-    _this.hot.rowIndexMapper.registerMap(ROW_WIDTHS_MAP_NAME, _this.rowHeightsMap);
-    _this.addHook("beforeRowResize", function(size, row, isDblClick) {
-      return _this.onBeforeRowResize(size, row, isDblClick);
-    });
+    _this.eventManager = new EventManager(_assertThisInitialized$a(_this));
+    _this.addingStarted = false;
+    _this.mouseDownOnCellCorner = false;
+    _this.mouseDragOutside = false;
+    _this.handleDraggedCells = 0;
+    _this.directions = [];
+    _this.autoInsertRow = false;
     return _this;
   }
-  _createClass$d(AutoRowSize2, [{
+  _createClass$d(Autofill2, [{
     key: "isEnabled",
     value: function isEnabled() {
-      var settings = this.hot.getSettings()[PLUGIN_KEY$3];
-      return settings === true || isObject(settings);
+      return this.hot.getSettings().fillHandle;
     }
   }, {
     key: "enablePlugin",
@@ -6179,341 +5839,351 @@ var AutoRowSize = /* @__PURE__ */ function(_BasePlugin) {
       if (this.enabled) {
         return;
       }
-      this.setSamplingOptions();
-      this.addHook("afterLoadData", function() {
-        return _this2.onAfterLoadData.apply(_this2, arguments);
+      this.mapSettings();
+      this.registerEvents();
+      this.addHook("afterOnCellCornerMouseDown", function(event) {
+        return _this2.onAfterCellCornerMouseDown(event);
       });
-      this.addHook("beforeChange", function(changes) {
-        return _this2.onBeforeChange(changes);
+      this.addHook("afterOnCellCornerDblClick", function(event) {
+        return _this2.onCellCornerDblClick(event);
       });
-      this.addHook("beforeColumnResize", function() {
-        return _this2.recalculateAllRowsHeight();
+      this.addHook("beforeOnCellMouseOver", function(_, coords) {
+        return _this2.onBeforeCellMouseOver(coords);
       });
-      this.addHook("beforeViewRender", function(force) {
-        return _this2.onBeforeViewRender(force);
-      });
-      this.addHook("modifyRowHeight", function(height, row) {
-        return _this2.getRowHeight(row, height);
-      });
-      this.addHook("modifyColumnHeaderHeight", function() {
-        return _this2.getColumnHeaderHeight();
-      });
-      _get$8(_getPrototypeOf$a(AutoRowSize2.prototype), "enablePlugin", this).call(this);
+      _get$8(_getPrototypeOf$a(Autofill2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "updatePlugin",
+    value: function updatePlugin() {
+      this.disablePlugin();
+      this.enablePlugin();
+      _get$8(_getPrototypeOf$a(Autofill2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
+      this.clearMappedSettings();
+      _get$8(_getPrototypeOf$a(Autofill2.prototype), "disablePlugin", this).call(this);
+    }
+  }, {
+    key: "getSelectionData",
+    value: function getSelectionData() {
       var _this3 = this;
-      this.headerHeight = null;
-      _get$8(_getPrototypeOf$a(AutoRowSize2.prototype), "disablePlugin", this).call(this);
-      this.addHook("beforeRowResize", function(size, row, isDblClick) {
-        return _this3.onBeforeRowResize(size, row, isDblClick);
-      });
-    }
-  }, {
-    key: "calculateRowsHeight",
-    value: function calculateRowsHeight() {
-      var _this4 = this;
-      var rowRange = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {
-        from: 0,
-        to: this.hot.countRows() - 1
-      };
-      var colRange = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {
-        from: 0,
-        to: this.hot.countCols() - 1
-      };
-      var force = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
-      var rowsRange = typeof rowRange === "number" ? {
-        from: rowRange,
-        to: rowRange
-      } : rowRange;
-      var columnsRange = typeof colRange === "number" ? {
-        from: colRange,
-        to: colRange
-      } : colRange;
-      if (this.hot.getColHeader(0) !== null) {
-        var samples = this.samplesGenerator.generateRowSamples(-1, columnsRange);
-        this.ghostTable.addColumnHeadersRow(samples.get(-1));
-      }
-      rangeEach(rowsRange.from, rowsRange.to, function(row) {
-        if (force || _this4.rowHeightsMap.getValueAtIndex(row) === null) {
-          var _samples = _this4.samplesGenerator.generateRowSamples(row, columnsRange);
-          arrayEach(_samples, function(_ref) {
-            var _ref2 = _slicedToArray$4(_ref, 2), rowIndex = _ref2[0], sample = _ref2[1];
-            return _this4.ghostTable.addRow(rowIndex, sample);
-          });
-        }
-      });
-      if (this.ghostTable.rows.length) {
-        this.hot.batchExecution(function() {
-          _this4.ghostTable.getHeights(function(row, height) {
-            if (row < 0) {
-              _this4.headerHeight = height;
-            } else {
-              _this4.rowHeightsMap.setValueAtIndex(_this4.hot.toPhysicalRow(row), height);
-            }
-          });
-        }, true);
-        this.measuredRows = rowsRange.to + 1;
-        this.ghostTable.clean();
-      }
-    }
-  }, {
-    key: "calculateAllRowsHeight",
-    value: function calculateAllRowsHeight() {
-      var _this5 = this;
-      var colRange = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {
-        from: 0,
-        to: this.hot.countCols() - 1
-      };
-      var current = 0;
-      var length = this.hot.countRows() - 1;
-      var timer = null;
-      this.inProgress = true;
-      var loop = function loop2() {
-        if (!_this5.hot) {
-          cancelAnimationFrame(timer);
-          _this5.inProgress = false;
-          return;
-        }
-        _this5.calculateRowsHeight({
-          from: current,
-          to: Math.min(current + AutoRowSize2.CALCULATION_STEP, length)
-        }, colRange);
-        current = current + AutoRowSize2.CALCULATION_STEP + 1;
-        if (current < length) {
-          timer = requestAnimationFrame(loop2);
-        } else {
-          cancelAnimationFrame(timer);
-          _this5.inProgress = false;
-          _this5.hot.view.adjustElementsSize(true);
-          if (_this5.hot.view.wt.wtOverlays.leftOverlay.needFullRender) {
-            _this5.hot.view.wt.wtOverlays.leftOverlay.clone.draw();
+      var selection = this.hot.getSelectedRangeLast();
+      var _selection$getTopStar = selection.getTopStartCorner(), startRow = _selection$getTopStar.row, startCol = _selection$getTopStar.col;
+      var _selection$getBottomE = selection.getBottomEndCorner(), endRow = _selection$getBottomE.row, endCol = _selection$getBottomE.col;
+      var copyableRanges = this.hot.runHooks("modifyCopyableRange", [{
+        startRow,
+        startCol,
+        endRow,
+        endCol
+      }]);
+      var copyableRows = [];
+      var copyableColumns = [];
+      var data = [];
+      arrayEach(copyableRanges, function(range) {
+        for (var visualRow = range.startRow; visualRow <= range.endRow; visualRow += 1) {
+          if (copyableRows.indexOf(visualRow) === -1) {
+            copyableRows.push(visualRow);
           }
         }
-      };
-      var syncLimit = this.getSyncCalculationLimit();
-      if (this.firstCalculation && syncLimit >= 0) {
-        this.calculateRowsHeight({
-          from: 0,
-          to: syncLimit
-        }, colRange);
-        this.firstCalculation = false;
-        current = syncLimit + 1;
-      }
-      if (current < length) {
-        loop();
-      } else {
-        this.inProgress = false;
-        this.hot.view.adjustElementsSize(false);
-      }
-    }
-  }, {
-    key: "setSamplingOptions",
-    value: function setSamplingOptions() {
-      var setting = this.hot.getSettings()[PLUGIN_KEY$3];
-      var samplingRatio = setting && hasOwnProperty(setting, "samplingRatio") ? setting.samplingRatio : void 0;
-      var allowSampleDuplicates = setting && hasOwnProperty(setting, "allowSampleDuplicates") ? setting.allowSampleDuplicates : void 0;
-      if (samplingRatio && !isNaN(samplingRatio)) {
-        this.samplesGenerator.setSampleCount(parseInt(samplingRatio, 10));
-      }
-      if (allowSampleDuplicates) {
-        this.samplesGenerator.setAllowDuplicates(allowSampleDuplicates);
-      }
-    }
-  }, {
-    key: "recalculateAllRowsHeight",
-    value: function recalculateAllRowsHeight() {
-      if (isVisible(this.hot.view.wt.wtTable.TABLE)) {
-        this.clearCache();
-        this.calculateAllRowsHeight();
-      }
-    }
-  }, {
-    key: "getSyncCalculationLimit",
-    value: function getSyncCalculationLimit() {
-      var settings = this.hot.getSettings()[PLUGIN_KEY$3];
-      var limit = AutoRowSize2.SYNC_CALCULATION_LIMIT;
-      var rowsLimit = this.hot.countRows() - 1;
-      if (isObject(settings)) {
-        limit = settings.syncLimit;
-        if (isPercentValue(limit)) {
-          limit = valueAccordingPercent(rowsLimit, limit);
-        } else {
-          limit >>= 0;
+        for (var visualColumn = range.startCol; visualColumn <= range.endCol; visualColumn += 1) {
+          if (copyableColumns.indexOf(visualColumn) === -1) {
+            copyableColumns.push(visualColumn);
+          }
         }
-      }
-      return Math.min(limit, rowsLimit);
-    }
-  }, {
-    key: "getRowHeight",
-    value: function getRowHeight(row) {
-      var defaultHeight = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : void 0;
-      var cachedHeight = row < 0 ? this.headerHeight : this.rowHeightsMap.getValueAtIndex(this.hot.toPhysicalRow(row));
-      var height = defaultHeight;
-      if (cachedHeight !== null && cachedHeight > (defaultHeight || 0)) {
-        height = cachedHeight;
-      }
-      return height;
-    }
-  }, {
-    key: "getColumnHeaderHeight",
-    value: function getColumnHeaderHeight() {
-      return this.headerHeight;
-    }
-  }, {
-    key: "getFirstVisibleRow",
-    value: function getFirstVisibleRow() {
-      var wot = this.hot.view.wt;
-      if (wot.wtViewport.rowsVisibleCalculator) {
-        return wot.wtTable.getFirstVisibleRow();
-      }
-      if (wot.wtViewport.rowsRenderCalculator) {
-        return wot.wtTable.getFirstRenderedRow();
-      }
-      return -1;
-    }
-  }, {
-    key: "getLastVisibleRow",
-    value: function getLastVisibleRow() {
-      var wot = this.hot.view.wt;
-      if (wot.wtViewport.rowsVisibleCalculator) {
-        return wot.wtTable.getLastVisibleRow();
-      }
-      if (wot.wtViewport.rowsRenderCalculator) {
-        return wot.wtTable.getLastRenderedRow();
-      }
-      return -1;
-    }
-  }, {
-    key: "clearCache",
-    value: function clearCache() {
-      this.headerHeight = null;
-      this.rowHeightsMap.init();
-    }
-  }, {
-    key: "clearCacheByRange",
-    value: function clearCacheByRange(range) {
-      var _this6 = this;
-      var _ref3 = typeof range === "number" ? {
-        from: range,
-        to: range
-      } : range, from = _ref3.from, to = _ref3.to;
-      this.hot.batchExecution(function() {
-        rangeEach(Math.min(from, to), Math.max(from, to), function(row) {
-          _this6.rowHeightsMap.setValueAtIndex(row, null);
+      });
+      arrayEach(copyableRows, function(row) {
+        var rowSet = [];
+        arrayEach(copyableColumns, function(column) {
+          rowSet.push(_this3.hot.getCopyableData(row, column));
         });
-      }, true);
+        data.push(rowSet);
+      });
+      return data;
     }
   }, {
-    key: "isNeedRecalculate",
-    value: function isNeedRecalculate() {
-      return !!arrayFilter(this.rowHeightsMap.getValues().slice(0, this.measuredRows), function(item) {
-        return item === null;
-      }).length;
+    key: "fillIn",
+    value: function fillIn() {
+      var _this4 = this;
+      if (this.hot.selection.highlight.getFill().isEmpty()) {
+        return false;
+      }
+      var _this$hot$selection$h = this.hot.selection.highlight.getFill().getVisualCorners(), _this$hot$selection$h2 = _slicedToArray$3(_this$hot$selection$h, 4), fillStartRow = _this$hot$selection$h2[0], fillStartColumn = _this$hot$selection$h2[1], fillEndRow = _this$hot$selection$h2[2], fillEndColumn = _this$hot$selection$h2[3];
+      var selectionRangeLast = this.hot.getSelectedRangeLast();
+      var topStartCorner = selectionRangeLast.getTopStartCorner();
+      var bottomEndCorner = selectionRangeLast.getBottomEndCorner();
+      this.resetSelectionOfDraggedArea();
+      var cornersOfSelectedCells = [topStartCorner.row, topStartCorner.col, bottomEndCorner.row, bottomEndCorner.col];
+      var cornersOfSelectionAndDragAreas = this.hot.runHooks("modifyAutofillRange", [Math.min(topStartCorner.row, fillStartRow), Math.min(topStartCorner.col, fillStartColumn), Math.max(bottomEndCorner.row, fillEndRow), Math.max(bottomEndCorner.col, fillEndColumn)], cornersOfSelectedCells);
+      var _getDragDirectionAndR = getDragDirectionAndRange(cornersOfSelectedCells, cornersOfSelectionAndDragAreas, function(row, column) {
+        return _this4.hot._createCellCoords(row, column);
+      }), directionOfDrag = _getDragDirectionAndR.directionOfDrag, startOfDragCoords = _getDragDirectionAndR.startOfDragCoords, endOfDragCoords = _getDragDirectionAndR.endOfDragCoords;
+      if (startOfDragCoords && startOfDragCoords.row > -1 && startOfDragCoords.col > -1) {
+        var selectionData = this.getSelectionData();
+        var sourceRange = selectionRangeLast.clone();
+        var targetRange = this.hot._createCellRange(startOfDragCoords, startOfDragCoords, endOfDragCoords);
+        var beforeAutofillHookResult = this.hot.runHooks("beforeAutofill", selectionData, sourceRange, targetRange, directionOfDrag);
+        if (beforeAutofillHookResult === false) {
+          this.hot.selection.highlight.getFill().clear();
+          this.hot.render();
+          return false;
+        }
+        var deltas = getDeltas(startOfDragCoords, endOfDragCoords, selectionData, directionOfDrag);
+        var fillData = beforeAutofillHookResult;
+        var res = beforeAutofillHookResult;
+        if (["up", "left"].indexOf(directionOfDrag) > -1 && !(res.length === 1 && res[0].length === 0)) {
+          fillData = [];
+          if (directionOfDrag === "up") {
+            var dragLength = endOfDragCoords.row - startOfDragCoords.row + 1;
+            var fillOffset = dragLength % res.length;
+            for (var i = 0; i < dragLength; i++) {
+              fillData.push(res[(i + (res.length - fillOffset)) % res.length]);
+            }
+          } else {
+            var _dragLength = endOfDragCoords.col - startOfDragCoords.col + 1;
+            var _fillOffset = _dragLength % res[0].length;
+            for (var _i2 = 0; _i2 < res.length; _i2++) {
+              fillData.push([]);
+              for (var j = 0; j < _dragLength; j++) {
+                fillData[_i2].push(res[_i2][(j + (res[_i2].length - _fillOffset)) % res[_i2].length]);
+              }
+            }
+          }
+        }
+        this.hot.populateFromArray(startOfDragCoords.row, startOfDragCoords.col, fillData, endOfDragCoords.row, endOfDragCoords.col, "".concat(this.pluginName, ".fill"), null, directionOfDrag, deltas);
+        this.setSelection(cornersOfSelectionAndDragAreas);
+        this.hot.runHooks("afterAutofill", fillData, sourceRange, targetRange, directionOfDrag);
+        this.hot.render();
+      } else {
+        this.hot._refreshBorders();
+      }
+      return true;
     }
   }, {
-    key: "onBeforeViewRender",
-    value: function onBeforeViewRender() {
-      var force = this.hot.renderCall;
-      var fixedRowsBottom = this.hot.getSettings().fixedRowsBottom;
-      var firstVisibleRow = this.getFirstVisibleRow();
-      var lastVisibleRow = this.getLastVisibleRow();
-      if (firstVisibleRow === -1 || lastVisibleRow === -1) {
+    key: "reduceSelectionAreaIfNeeded",
+    value: function reduceSelectionAreaIfNeeded(coords) {
+      if (coords.row < 0) {
+        coords.row = 0;
+      }
+      if (coords.col < 0) {
+        coords.col = 0;
+      }
+      return coords;
+    }
+  }, {
+    key: "getCoordsOfDragAndDropBorders",
+    value: function getCoordsOfDragAndDropBorders(coordsOfSelection) {
+      var currentSelection = this.hot.getSelectedRangeLast();
+      var bottomRightCorner = currentSelection.getBottomEndCorner();
+      var coords = coordsOfSelection;
+      if (this.directions.includes(DIRECTIONS.vertical) && this.directions.includes(DIRECTIONS.horizontal)) {
+        var topStartCorner = currentSelection.getTopStartCorner();
+        if (bottomRightCorner.col <= coordsOfSelection.col || topStartCorner.col >= coordsOfSelection.col) {
+          coords = this.hot._createCellCoords(bottomRightCorner.row, coordsOfSelection.col);
+        }
+        if (bottomRightCorner.row < coordsOfSelection.row || topStartCorner.row > coordsOfSelection.row) {
+          coords = this.hot._createCellCoords(coordsOfSelection.row, bottomRightCorner.col);
+        }
+      } else if (this.directions.includes(DIRECTIONS.vertical)) {
+        coords = this.hot._createCellCoords(coordsOfSelection.row, bottomRightCorner.col);
+      } else if (this.directions.includes(DIRECTIONS.horizontal)) {
+        coords = this.hot._createCellCoords(bottomRightCorner.row, coordsOfSelection.col);
+      } else {
         return;
       }
-      this.calculateRowsHeight({
-        from: firstVisibleRow,
-        to: lastVisibleRow
-      }, void 0, force);
-      if (fixedRowsBottom) {
-        var totalRows = this.hot.countRows() - 1;
-        this.calculateRowsHeight({
-          from: totalRows - fixedRowsBottom,
-          to: totalRows
-        });
-      }
-      if (this.isNeedRecalculate() && !this.inProgress) {
-        this.calculateAllRowsHeight();
+      return this.reduceSelectionAreaIfNeeded(coords);
+    }
+  }, {
+    key: "showBorder",
+    value: function showBorder(coordsOfSelection) {
+      var coordsOfDragAndDropBorders = this.getCoordsOfDragAndDropBorders(coordsOfSelection);
+      if (coordsOfDragAndDropBorders) {
+        this.redrawBorders(coordsOfDragAndDropBorders);
       }
     }
   }, {
-    key: "onBeforeRowMove",
-    value: function onBeforeRowMove(from, to) {
-      this.clearCacheByRange({
-        from,
-        to
-      });
-      this.calculateAllRowsHeight();
+    key: "addRow",
+    value: function addRow() {
+      var _this5 = this;
+      this.hot._registerTimeout(function() {
+        _this5.hot.alter(INSERT_ROW_ALTER_ACTION_NAME, void 0, 1, "".concat(_this5.pluginName, ".fill"));
+        _this5.addingStarted = false;
+      }, INTERVAL_FOR_ADDING_ROW);
     }
   }, {
-    key: "onBeforeRowResize",
-    value: function onBeforeRowResize(size, row, isDblClick) {
-      var newSize = size;
-      if (isDblClick) {
-        this.calculateRowsHeight(row, void 0, true);
-        newSize = this.getRowHeight(row);
+    key: "addNewRowIfNeeded",
+    value: function addNewRowIfNeeded() {
+      if (!this.hot.selection.highlight.getFill().isEmpty() && this.addingStarted === false && this.autoInsertRow) {
+        var cornersOfSelectedCells = this.hot.getSelectedLast();
+        var cornersOfSelectedDragArea = this.hot.selection.highlight.getFill().getVisualCorners();
+        var nrOfTableRows = this.hot.countRows();
+        if (cornersOfSelectedCells[2] < nrOfTableRows - 1 && cornersOfSelectedDragArea[2] === nrOfTableRows - 1) {
+          this.addingStarted = true;
+          this.addRow();
+        }
       }
-      return newSize;
     }
   }, {
-    key: "onAfterLoadData",
-    value: function onAfterLoadData() {
-      var _this7 = this;
-      if (this.hot.view) {
-        this.recalculateAllRowsHeight();
-      } else {
-        setTimeout(function() {
-          if (_this7.hot) {
-            _this7.recalculateAllRowsHeight();
+    key: "getIndexOfLastAdjacentFilledInRow",
+    value: function getIndexOfLastAdjacentFilledInRow(cornersOfSelectedCells) {
+      var data = this.hot.getData();
+      var nrOfTableRows = this.hot.countRows();
+      var lastFilledInRowIndex;
+      for (var rowIndex = cornersOfSelectedCells[2] + 1; rowIndex < nrOfTableRows; rowIndex++) {
+        for (var columnIndex = cornersOfSelectedCells[1]; columnIndex <= cornersOfSelectedCells[3]; columnIndex++) {
+          var dataInCell = data[rowIndex][columnIndex];
+          if (dataInCell) {
+            return -1;
           }
-        }, 0);
+        }
+        var dataInNextLeftCell = data[rowIndex][cornersOfSelectedCells[1] - 1];
+        var dataInNextRightCell = data[rowIndex][cornersOfSelectedCells[3] + 1];
+        if (!!dataInNextLeftCell || !!dataInNextRightCell) {
+          lastFilledInRowIndex = rowIndex;
+        }
+      }
+      return lastFilledInRowIndex;
+    }
+  }, {
+    key: "addSelectionFromStartAreaToSpecificRowIndex",
+    value: function addSelectionFromStartAreaToSpecificRowIndex(selectStartArea, rowIndex) {
+      this.hot.selection.highlight.getFill().clear().add(this.hot._createCellCoords(selectStartArea[0], selectStartArea[1])).add(this.hot._createCellCoords(rowIndex, selectStartArea[3])).commit();
+    }
+  }, {
+    key: "setSelection",
+    value: function setSelection(cornersOfArea) {
+      var _this$hot;
+      (_this$hot = this.hot).selectCell.apply(_this$hot, _toConsumableArray(arrayMap(cornersOfArea, function(index) {
+        return Math.max(index, 0);
+      })).concat([false, false]));
+    }
+  }, {
+    key: "selectAdjacent",
+    value: function selectAdjacent() {
+      var cornersOfSelectedCells = this.hot.getSelectedLast();
+      var lastFilledInRowIndex = this.getIndexOfLastAdjacentFilledInRow(cornersOfSelectedCells);
+      if (lastFilledInRowIndex === -1 || lastFilledInRowIndex === void 0) {
+        return false;
+      }
+      this.addSelectionFromStartAreaToSpecificRowIndex(cornersOfSelectedCells, lastFilledInRowIndex);
+      return true;
+    }
+  }, {
+    key: "resetSelectionOfDraggedArea",
+    value: function resetSelectionOfDraggedArea() {
+      this.handleDraggedCells = 0;
+      this.hot.selection.highlight.getFill().clear();
+    }
+  }, {
+    key: "redrawBorders",
+    value: function redrawBorders(coords) {
+      this.hot.selection.highlight.getFill().clear().add(this.hot.getSelectedRangeLast().from).add(this.hot.getSelectedRangeLast().to).add(coords).commit();
+      this.hot.view.render();
+    }
+  }, {
+    key: "getIfMouseWasDraggedOutside",
+    value: function getIfMouseWasDraggedOutside(event) {
+      var documentElement = this.hot.rootDocument.documentElement;
+      var tableBottom = offset(this.hot.table).top - (this.hot.rootWindow.pageYOffset || documentElement.scrollTop) + outerHeight(this.hot.table);
+      var tableRight = offset(this.hot.table).left - (this.hot.rootWindow.pageXOffset || documentElement.scrollLeft) + outerWidth(this.hot.table);
+      return event.clientY > tableBottom && event.clientX <= tableRight;
+    }
+  }, {
+    key: "registerEvents",
+    value: function registerEvents() {
+      var _this6 = this;
+      var documentElement = this.hot.rootDocument.documentElement;
+      this.eventManager.addEventListener(documentElement, "mouseup", function() {
+        return _this6.onMouseUp();
+      });
+      this.eventManager.addEventListener(documentElement, "mousemove", function(event) {
+        return _this6.onMouseMove(event);
+      });
+    }
+  }, {
+    key: "onCellCornerDblClick",
+    value: function onCellCornerDblClick() {
+      var selectionApplied = this.selectAdjacent();
+      if (selectionApplied) {
+        this.fillIn();
       }
     }
   }, {
-    key: "onBeforeChange",
-    value: function onBeforeChange(changes) {
-      var range = null;
-      if (changes.length === 1) {
-        range = changes[0][0];
-      } else if (changes.length > 1) {
-        range = {
-          from: changes[0][0],
-          to: changes[changes.length - 1][0]
-        };
+    key: "onAfterCellCornerMouseDown",
+    value: function onAfterCellCornerMouseDown() {
+      this.handleDraggedCells = 1;
+      this.mouseDownOnCellCorner = true;
+    }
+  }, {
+    key: "onBeforeCellMouseOver",
+    value: function onBeforeCellMouseOver(coords) {
+      if (this.mouseDownOnCellCorner && !this.hot.view.isMouseDown() && this.handleDraggedCells) {
+        this.handleDraggedCells += 1;
+        this.showBorder(coords);
+        this.addNewRowIfNeeded();
       }
-      if (range !== null) {
-        this.clearCacheByRange(range);
+    }
+  }, {
+    key: "onMouseUp",
+    value: function onMouseUp() {
+      if (this.handleDraggedCells) {
+        if (this.handleDraggedCells > 1) {
+          this.fillIn();
+        }
+        this.handleDraggedCells = 0;
+        this.mouseDownOnCellCorner = false;
       }
+    }
+  }, {
+    key: "onMouseMove",
+    value: function onMouseMove(event) {
+      var mouseWasDraggedOutside = this.getIfMouseWasDraggedOutside(event);
+      if (this.addingStarted === false && this.handleDraggedCells > 0 && mouseWasDraggedOutside) {
+        this.mouseDragOutside = true;
+        this.addingStarted = true;
+      } else {
+        this.mouseDragOutside = false;
+      }
+      if (this.mouseDragOutside && this.autoInsertRow) {
+        this.addRow();
+      }
+    }
+  }, {
+    key: "clearMappedSettings",
+    value: function clearMappedSettings() {
+      this.directions.length = 0;
+      this.autoInsertRow = false;
+    }
+  }, {
+    key: "mapSettings",
+    value: function mapSettings() {
+      var mappedSettings = getMappedFillHandleSetting(this.hot.getSettings().fillHandle);
+      this.directions = mappedSettings.directions;
+      this.autoInsertRow = mappedSettings.autoInsertRow;
     }
   }, {
     key: "destroy",
     value: function destroy() {
-      this.ghostTable.clean();
-      _get$8(_getPrototypeOf$a(AutoRowSize2.prototype), "destroy", this).call(this);
+      _get$8(_getPrototypeOf$a(Autofill2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
     get: function get() {
-      return PLUGIN_KEY$3;
+      return PLUGIN_KEY$2;
     }
   }, {
     key: "PLUGIN_PRIORITY",
     get: function get() {
-      return PLUGIN_PRIORITY$2;
+      return PLUGIN_PRIORITY$1;
     }
   }, {
-    key: "CALCULATION_STEP",
+    key: "SETTING_KEYS",
     get: function get() {
-      return 50;
-    }
-  }, {
-    key: "SYNC_CALCULATION_LIMIT",
-    get: function get() {
-      return 500;
+      return [PLUGIN_KEY$2].concat(SETTING_KEYS);
     }
   }]);
-  return AutoRowSize2;
+  return Autofill2;
 }(BasePlugin);
 
 function _typeof$b(obj) {
@@ -6523,6 +6193,65 @@ function _typeof$b(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$b(obj);
+}
+function _slicedToArray$4(arr, i) {
+  return _arrayWithHoles$4(arr) || _iterableToArrayLimit$4(arr, i) || _unsupportedIterableToArray$4(arr, i) || _nonIterableRest$4();
+}
+function _nonIterableRest$4() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray$4(o, minLen) {
+  if (!o)
+    return;
+  if (typeof o === "string")
+    return _arrayLikeToArray$4(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor)
+    n = o.constructor.name;
+  if (n === "Map" || n === "Set")
+    return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray$4(o, minLen);
+}
+function _arrayLikeToArray$4(arr, len) {
+  if (len == null || len > arr.length)
+    len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
+function _iterableToArrayLimit$4(arr, i) {
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+  if (_i == null)
+    return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _s, _e;
+  try {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+      if (i && _arr.length === i)
+        break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null)
+        _i["return"]();
+    } finally {
+      if (_d)
+        throw _e;
+    }
+  }
+  return _arr;
+}
+function _arrayWithHoles$4(arr) {
+  if (Array.isArray(arr))
+    return arr;
 }
 function _classCallCheck$e(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -6636,33 +6365,394 @@ function _getPrototypeOf$b(o) {
   };
   return _getPrototypeOf$b(o);
 }
-var _alterUtilsFactory = alterUtilsFactory("physicallyIndexed"), getListWithInsertedItems = _alterUtilsFactory.getListWithInsertedItems, getListWithRemovedItems = _alterUtilsFactory.getListWithRemovedItems;
-var LooseBindsMap = /* @__PURE__ */ function(_IndexMap) {
-  _inherits$b(LooseBindsMap2, _IndexMap);
-  var _super = _createSuper$b(LooseBindsMap2);
-  function LooseBindsMap2() {
-    _classCallCheck$e(this, LooseBindsMap2);
-    return _super.call(this, function(index) {
-      return index;
+var PLUGIN_KEY$3 = "autoRowSize";
+var PLUGIN_PRIORITY$2 = 40;
+var ROW_WIDTHS_MAP_NAME = "autoRowSize";
+var AutoRowSize = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$b(AutoRowSize2, _BasePlugin);
+  var _super = _createSuper$b(AutoRowSize2);
+  function AutoRowSize2(hotInstance) {
+    var _this;
+    _classCallCheck$e(this, AutoRowSize2);
+    _this = _super.call(this, hotInstance);
+    _this.rowHeightsMap = void 0;
+    _this.headerHeight = null;
+    _this.ghostTable = new GhostTable(_this.hot);
+    _this.samplesGenerator = new SamplesGenerator(function(row, col) {
+      var cellValue;
+      if (row >= 0) {
+        cellValue = _this.hot.getDataAtCell(row, col);
+      } else if (row === -1) {
+        cellValue = _this.hot.getColHeader(col);
+      }
+      return {
+        value: cellValue
+      };
     });
+    _this.firstCalculation = true;
+    _this.inProgress = false;
+    _this.measuredRows = 0;
+    _this.rowHeightsMap = new PhysicalIndexToValueMap();
+    _this.hot.rowIndexMapper.registerMap(ROW_WIDTHS_MAP_NAME, _this.rowHeightsMap);
+    _this.addHook("beforeRowResize", function(size, row, isDblClick) {
+      return _this.onBeforeRowResize(size, row, isDblClick);
+    });
+    return _this;
   }
-  _createClass$e(LooseBindsMap2, [{
-    key: "insert",
-    value: function insert(insertionIndex, insertedIndexes) {
-      var listAfterUpdate = getIncreasedIndexes(this.indexedValues, insertedIndexes);
-      this.indexedValues = getListWithInsertedItems(listAfterUpdate, insertionIndex, insertedIndexes, this.initValueOrFn);
-      _get$9(_getPrototypeOf$b(LooseBindsMap2.prototype), "insert", this).call(this, insertionIndex, insertedIndexes);
+  _createClass$e(AutoRowSize2, [{
+    key: "isEnabled",
+    value: function isEnabled() {
+      var settings = this.hot.getSettings()[PLUGIN_KEY$3];
+      return settings === true || isObject(settings);
     }
   }, {
-    key: "remove",
-    value: function remove(removedIndexes) {
-      var listAfterUpdate = getListWithRemovedItems(this.indexedValues, removedIndexes);
-      this.indexedValues = getDecreasedIndexes(listAfterUpdate, removedIndexes);
-      _get$9(_getPrototypeOf$b(LooseBindsMap2.prototype), "remove", this).call(this, removedIndexes);
+    key: "enablePlugin",
+    value: function enablePlugin() {
+      var _this2 = this;
+      if (this.enabled) {
+        return;
+      }
+      this.setSamplingOptions();
+      this.addHook("afterLoadData", function() {
+        return _this2.onAfterLoadData.apply(_this2, arguments);
+      });
+      this.addHook("beforeChangeRender", function(changes) {
+        return _this2.onBeforeChange(changes);
+      });
+      this.addHook("beforeColumnResize", function() {
+        return _this2.recalculateAllRowsHeight();
+      });
+      this.addHook("beforeViewRender", function(force) {
+        return _this2.onBeforeViewRender(force);
+      });
+      this.addHook("modifyRowHeight", function(height, row) {
+        return _this2.getRowHeight(row, height);
+      });
+      this.addHook("modifyColumnHeaderHeight", function() {
+        return _this2.getColumnHeaderHeight();
+      });
+      _get$9(_getPrototypeOf$b(AutoRowSize2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "disablePlugin",
+    value: function disablePlugin() {
+      var _this3 = this;
+      this.headerHeight = null;
+      _get$9(_getPrototypeOf$b(AutoRowSize2.prototype), "disablePlugin", this).call(this);
+      this.addHook("beforeRowResize", function(size, row, isDblClick) {
+        return _this3.onBeforeRowResize(size, row, isDblClick);
+      });
+    }
+  }, {
+    key: "calculateRowsHeight",
+    value: function calculateRowsHeight() {
+      var _this4 = this;
+      var rowRange = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {
+        from: 0,
+        to: this.hot.countRows() - 1
+      };
+      var colRange = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {
+        from: 0,
+        to: this.hot.countCols() - 1
+      };
+      var force = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
+      var rowsRange = typeof rowRange === "number" ? {
+        from: rowRange,
+        to: rowRange
+      } : rowRange;
+      var columnsRange = typeof colRange === "number" ? {
+        from: colRange,
+        to: colRange
+      } : colRange;
+      if (this.hot.getColHeader(0) !== null) {
+        var samples = this.samplesGenerator.generateRowSamples(-1, columnsRange);
+        this.ghostTable.addColumnHeadersRow(samples.get(-1));
+      }
+      rangeEach(rowsRange.from, rowsRange.to, function(row) {
+        if (force || _this4.rowHeightsMap.getValueAtIndex(row) === null) {
+          var _samples = _this4.samplesGenerator.generateRowSamples(row, columnsRange);
+          arrayEach(_samples, function(_ref) {
+            var _ref2 = _slicedToArray$4(_ref, 2), rowIndex = _ref2[0], sample = _ref2[1];
+            return _this4.ghostTable.addRow(rowIndex, sample);
+          });
+        }
+      });
+      if (this.ghostTable.rows.length) {
+        this.hot.batchExecution(function() {
+          _this4.ghostTable.getHeights(function(row, height) {
+            if (row < 0) {
+              _this4.headerHeight = height;
+            } else {
+              _this4.rowHeightsMap.setValueAtIndex(_this4.hot.toPhysicalRow(row), height);
+            }
+          });
+        }, true);
+        this.measuredRows = rowsRange.to + 1;
+        this.ghostTable.clean();
+      }
+    }
+  }, {
+    key: "calculateAllRowsHeight",
+    value: function calculateAllRowsHeight() {
+      var _this5 = this;
+      var colRange = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : {
+        from: 0,
+        to: this.hot.countCols() - 1
+      };
+      var current = 0;
+      var length = this.hot.countRows() - 1;
+      var timer = null;
+      this.inProgress = true;
+      var loop = function loop2() {
+        if (!_this5.hot) {
+          cancelAnimationFrame(timer);
+          _this5.inProgress = false;
+          return;
+        }
+        _this5.calculateRowsHeight({
+          from: current,
+          to: Math.min(current + AutoRowSize2.CALCULATION_STEP, length)
+        }, colRange);
+        current = current + AutoRowSize2.CALCULATION_STEP + 1;
+        if (current < length) {
+          timer = requestAnimationFrame(loop2);
+        } else {
+          cancelAnimationFrame(timer);
+          _this5.inProgress = false;
+          _this5.hot.view.adjustElementsSize(true);
+          if (_this5.hot.view._wt.wtOverlays.inlineStartOverlay.needFullRender) {
+            _this5.hot.view._wt.wtOverlays.inlineStartOverlay.clone.draw();
+          }
+        }
+      };
+      var syncLimit = this.getSyncCalculationLimit();
+      if (this.firstCalculation && syncLimit >= 0) {
+        this.calculateRowsHeight({
+          from: 0,
+          to: syncLimit
+        }, colRange);
+        this.firstCalculation = false;
+        current = syncLimit + 1;
+      }
+      if (current < length) {
+        loop();
+      } else {
+        this.inProgress = false;
+        this.hot.view.adjustElementsSize(false);
+      }
+    }
+  }, {
+    key: "setSamplingOptions",
+    value: function setSamplingOptions() {
+      var setting = this.hot.getSettings()[PLUGIN_KEY$3];
+      var samplingRatio = setting && hasOwnProperty(setting, "samplingRatio") ? setting.samplingRatio : void 0;
+      var allowSampleDuplicates = setting && hasOwnProperty(setting, "allowSampleDuplicates") ? setting.allowSampleDuplicates : void 0;
+      if (samplingRatio && !isNaN(samplingRatio)) {
+        this.samplesGenerator.setSampleCount(parseInt(samplingRatio, 10));
+      }
+      if (allowSampleDuplicates) {
+        this.samplesGenerator.setAllowDuplicates(allowSampleDuplicates);
+      }
+    }
+  }, {
+    key: "recalculateAllRowsHeight",
+    value: function recalculateAllRowsHeight() {
+      if (isVisible(this.hot.view._wt.wtTable.TABLE)) {
+        this.clearCache();
+        this.calculateAllRowsHeight();
+      }
+    }
+  }, {
+    key: "getSyncCalculationLimit",
+    value: function getSyncCalculationLimit() {
+      var settings = this.hot.getSettings()[PLUGIN_KEY$3];
+      var limit = AutoRowSize2.SYNC_CALCULATION_LIMIT;
+      var rowsLimit = this.hot.countRows() - 1;
+      if (isObject(settings)) {
+        limit = settings.syncLimit;
+        if (isPercentValue(limit)) {
+          limit = valueAccordingPercent(rowsLimit, limit);
+        } else {
+          limit >>= 0;
+        }
+      }
+      return Math.min(limit, rowsLimit);
+    }
+  }, {
+    key: "getRowHeight",
+    value: function getRowHeight(row) {
+      var defaultHeight = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : void 0;
+      var cachedHeight = row < 0 ? this.headerHeight : this.rowHeightsMap.getValueAtIndex(this.hot.toPhysicalRow(row));
+      var height = defaultHeight;
+      if (cachedHeight !== null && cachedHeight > (defaultHeight || 0)) {
+        height = cachedHeight;
+      }
+      return height;
+    }
+  }, {
+    key: "getColumnHeaderHeight",
+    value: function getColumnHeaderHeight() {
+      return this.headerHeight;
+    }
+  }, {
+    key: "getFirstVisibleRow",
+    value: function getFirstVisibleRow() {
+      var wot = this.hot.view._wt;
+      if (wot.wtViewport.rowsVisibleCalculator) {
+        return wot.wtTable.getFirstVisibleRow();
+      }
+      if (wot.wtViewport.rowsRenderCalculator) {
+        return wot.wtTable.getFirstRenderedRow();
+      }
+      return -1;
+    }
+  }, {
+    key: "getLastVisibleRow",
+    value: function getLastVisibleRow() {
+      var wot = this.hot.view._wt;
+      if (wot.wtViewport.rowsVisibleCalculator) {
+        return wot.wtTable.getLastVisibleRow();
+      }
+      if (wot.wtViewport.rowsRenderCalculator) {
+        return wot.wtTable.getLastRenderedRow();
+      }
+      return -1;
+    }
+  }, {
+    key: "clearCache",
+    value: function clearCache() {
+      this.headerHeight = null;
+      this.rowHeightsMap.init();
+    }
+  }, {
+    key: "clearCacheByRange",
+    value: function clearCacheByRange(range) {
+      var _this6 = this;
+      var _ref3 = typeof range === "number" ? {
+        from: range,
+        to: range
+      } : range, from = _ref3.from, to = _ref3.to;
+      this.hot.batchExecution(function() {
+        rangeEach(Math.min(from, to), Math.max(from, to), function(row) {
+          _this6.rowHeightsMap.setValueAtIndex(row, null);
+        });
+      }, true);
+    }
+  }, {
+    key: "isNeedRecalculate",
+    value: function isNeedRecalculate() {
+      return !!arrayFilter(this.rowHeightsMap.getValues().slice(0, this.measuredRows), function(item) {
+        return item === null;
+      }).length;
+    }
+  }, {
+    key: "onBeforeViewRender",
+    value: function onBeforeViewRender() {
+      var force = this.hot.renderCall;
+      var fixedRowsBottom = this.hot.getSettings().fixedRowsBottom;
+      var firstVisibleRow = this.getFirstVisibleRow();
+      var lastVisibleRow = this.getLastVisibleRow();
+      if (firstVisibleRow === -1 || lastVisibleRow === -1) {
+        return;
+      }
+      this.calculateRowsHeight({
+        from: firstVisibleRow,
+        to: lastVisibleRow
+      }, void 0, force);
+      if (fixedRowsBottom) {
+        var totalRows = this.hot.countRows() - 1;
+        this.calculateRowsHeight({
+          from: totalRows - fixedRowsBottom,
+          to: totalRows
+        });
+      }
+      if (this.isNeedRecalculate() && !this.inProgress) {
+        this.calculateAllRowsHeight();
+      }
+    }
+  }, {
+    key: "onBeforeRowMove",
+    value: function onBeforeRowMove(from, to) {
+      this.clearCacheByRange({
+        from,
+        to
+      });
+      this.calculateAllRowsHeight();
+    }
+  }, {
+    key: "onBeforeRowResize",
+    value: function onBeforeRowResize(size, row, isDblClick) {
+      var newSize = size;
+      if (isDblClick) {
+        this.calculateRowsHeight(row, void 0, true);
+        newSize = this.getRowHeight(row);
+      }
+      return newSize;
+    }
+  }, {
+    key: "onAfterLoadData",
+    value: function onAfterLoadData() {
+      var _this7 = this;
+      if (this.hot.view) {
+        this.recalculateAllRowsHeight();
+      } else {
+        setTimeout(function() {
+          if (_this7.hot) {
+            _this7.recalculateAllRowsHeight();
+          }
+        }, 0);
+      }
+    }
+  }, {
+    key: "onBeforeChange",
+    value: function onBeforeChange(changes) {
+      var range = null;
+      if (changes.length === 1) {
+        range = changes[0][0];
+      } else if (changes.length > 1) {
+        range = {
+          from: changes[0][0],
+          to: changes[changes.length - 1][0]
+        };
+      }
+      if (range !== null) {
+        this.clearCacheByRange(range);
+      }
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this.ghostTable.clean();
+      _get$9(_getPrototypeOf$b(AutoRowSize2.prototype), "destroy", this).call(this);
+    }
+  }], [{
+    key: "PLUGIN_KEY",
+    get: function get() {
+      return PLUGIN_KEY$3;
+    }
+  }, {
+    key: "PLUGIN_PRIORITY",
+    get: function get() {
+      return PLUGIN_PRIORITY$2;
+    }
+  }, {
+    key: "SETTING_KEYS",
+    get: function get() {
+      return true;
+    }
+  }, {
+    key: "CALCULATION_STEP",
+    get: function get() {
+      return 50;
+    }
+  }, {
+    key: "SYNC_CALCULATION_LIMIT",
+    get: function get() {
+      return 500;
     }
   }]);
-  return LooseBindsMap2;
-}(IndexMap);
+  return AutoRowSize2;
+}(BasePlugin);
 
 function _typeof$c(obj) {
   "@babel/helpers - typeof";
@@ -6671,41 +6761,6 @@ function _typeof$c(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$c(obj);
-}
-function _toConsumableArray$1(arr) {
-  return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$5(arr) || _nonIterableSpread$1();
-}
-function _nonIterableSpread$1() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$5(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$5(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$5(o, minLen);
-}
-function _iterableToArray$1(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-    return Array.from(iter);
-}
-function _arrayWithoutHoles$1(arr) {
-  if (Array.isArray(arr))
-    return _arrayLikeToArray$5(arr);
-}
-function _arrayLikeToArray$5(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
 }
 function _classCallCheck$f(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -6819,38 +6874,32 @@ function _getPrototypeOf$c(o) {
   };
   return _getPrototypeOf$c(o);
 }
-var _alterUtilsFactory$1 = alterUtilsFactory("physicallyIndexed"), getListWithInsertedItems$1 = _alterUtilsFactory$1.getListWithInsertedItems, getListWithRemovedItems$1 = _alterUtilsFactory$1.getListWithRemovedItems;
-var StrictBindsMap = /* @__PURE__ */ function(_IndexMap) {
-  _inherits$c(StrictBindsMap2, _IndexMap);
-  var _super = _createSuper$c(StrictBindsMap2);
-  function StrictBindsMap2() {
-    _classCallCheck$f(this, StrictBindsMap2);
+var _alterUtilsFactory = alterUtilsFactory("physicallyIndexed"), getListWithInsertedItems = _alterUtilsFactory.getListWithInsertedItems, getListWithRemovedItems = _alterUtilsFactory.getListWithRemovedItems;
+var LooseBindsMap = /* @__PURE__ */ function(_IndexMap) {
+  _inherits$c(LooseBindsMap2, _IndexMap);
+  var _super = _createSuper$c(LooseBindsMap2);
+  function LooseBindsMap2() {
+    _classCallCheck$f(this, LooseBindsMap2);
     return _super.call(this, function(index) {
       return index;
     });
   }
-  _createClass$f(StrictBindsMap2, [{
+  _createClass$f(LooseBindsMap2, [{
     key: "insert",
     value: function insert(insertionIndex, insertedIndexes) {
-      var _this = this;
-      this.indexedValues = getListWithInsertedItems$1(this.indexedValues, insertionIndex, insertedIndexes, function(_, ordinalNumber) {
-        return _this.getNextValue(ordinalNumber);
-      });
-      _get$a(_getPrototypeOf$c(StrictBindsMap2.prototype), "insert", this).call(this, insertionIndex, insertedIndexes);
+      var listAfterUpdate = getIncreasedIndexes(this.indexedValues, insertedIndexes);
+      this.indexedValues = getListWithInsertedItems(listAfterUpdate, insertionIndex, insertedIndexes, this.initValueOrFn);
+      _get$a(_getPrototypeOf$c(LooseBindsMap2.prototype), "insert", this).call(this, insertionIndex, insertedIndexes);
     }
   }, {
     key: "remove",
     value: function remove(removedIndexes) {
-      this.indexedValues = getListWithRemovedItems$1(this.indexedValues, removedIndexes);
-      _get$a(_getPrototypeOf$c(StrictBindsMap2.prototype), "remove", this).call(this, removedIndexes);
-    }
-  }, {
-    key: "getNextValue",
-    value: function getNextValue(ordinalNumber) {
-      return Math.max.apply(Math, _toConsumableArray$1(this.getValues())) + 1 + ordinalNumber;
+      var listAfterUpdate = getListWithRemovedItems(this.indexedValues, removedIndexes);
+      this.indexedValues = getDecreasedIndexes(listAfterUpdate, removedIndexes);
+      _get$a(_getPrototypeOf$c(LooseBindsMap2.prototype), "remove", this).call(this, removedIndexes);
     }
   }]);
-  return StrictBindsMap2;
+  return LooseBindsMap2;
 }(IndexMap);
 
 function _typeof$d(obj) {
@@ -6860,6 +6909,41 @@ function _typeof$d(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$d(obj);
+}
+function _toConsumableArray$1(arr) {
+  return _arrayWithoutHoles$1(arr) || _iterableToArray$1(arr) || _unsupportedIterableToArray$5(arr) || _nonIterableSpread$1();
+}
+function _nonIterableSpread$1() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray$5(o, minLen) {
+  if (!o)
+    return;
+  if (typeof o === "string")
+    return _arrayLikeToArray$5(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor)
+    n = o.constructor.name;
+  if (n === "Map" || n === "Set")
+    return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray$5(o, minLen);
+}
+function _iterableToArray$1(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+    return Array.from(iter);
+}
+function _arrayWithoutHoles$1(arr) {
+  if (Array.isArray(arr))
+    return _arrayLikeToArray$5(arr);
+}
+function _arrayLikeToArray$5(arr, len) {
+  if (len == null || len > arr.length)
+    len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
 }
 function _classCallCheck$g(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -6973,72 +7057,39 @@ function _getPrototypeOf$d(o) {
   };
   return _getPrototypeOf$d(o);
 }
-var PLUGIN_KEY$4 = "bindRowsWithHeaders";
-var PLUGIN_PRIORITY$3 = 210;
-var DEFAULT_BIND = "loose";
-var bindTypeToMapStrategy = new Map([["loose", LooseBindsMap], ["strict", StrictBindsMap]]);
-var BindRowsWithHeaders = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$d(BindRowsWithHeaders2, _BasePlugin);
-  var _super = _createSuper$d(BindRowsWithHeaders2);
-  function BindRowsWithHeaders2(hotInstance) {
-    var _this;
-    _classCallCheck$g(this, BindRowsWithHeaders2);
-    _this = _super.call(this, hotInstance);
-    _this.headerIndexes = null;
-    return _this;
+var _alterUtilsFactory$1 = alterUtilsFactory("physicallyIndexed"), getListWithInsertedItems$1 = _alterUtilsFactory$1.getListWithInsertedItems, getListWithRemovedItems$1 = _alterUtilsFactory$1.getListWithRemovedItems;
+var StrictBindsMap = /* @__PURE__ */ function(_IndexMap) {
+  _inherits$d(StrictBindsMap2, _IndexMap);
+  var _super = _createSuper$d(StrictBindsMap2);
+  function StrictBindsMap2() {
+    _classCallCheck$g(this, StrictBindsMap2);
+    return _super.call(this, function(index) {
+      return index;
+    });
   }
-  _createClass$g(BindRowsWithHeaders2, [{
-    key: "isEnabled",
-    value: function isEnabled() {
-      return !!this.hot.getSettings()[PLUGIN_KEY$4];
-    }
-  }, {
-    key: "enablePlugin",
-    value: function enablePlugin() {
-      var _this2 = this;
-      if (this.enabled) {
-        return;
-      }
-      var bindType = this.hot.getSettings()[PLUGIN_KEY$4];
-      if (typeof bindType !== "string") {
-        bindType = DEFAULT_BIND;
-      }
-      var MapStrategy = bindTypeToMapStrategy.get(bindType);
-      this.headerIndexes = this.hot.rowIndexMapper.registerMap("bindRowsWithHeaders", new MapStrategy());
-      this.addHook("modifyRowHeader", function(row) {
-        return _this2.onModifyRowHeader(row);
+  _createClass$g(StrictBindsMap2, [{
+    key: "insert",
+    value: function insert(insertionIndex, insertedIndexes) {
+      var _this = this;
+      this.indexedValues = getListWithInsertedItems$1(this.indexedValues, insertionIndex, insertedIndexes, function(_, ordinalNumber) {
+        return _this.getNextValue(ordinalNumber);
       });
-      _get$b(_getPrototypeOf$d(BindRowsWithHeaders2.prototype), "enablePlugin", this).call(this);
+      _get$b(_getPrototypeOf$d(StrictBindsMap2.prototype), "insert", this).call(this, insertionIndex, insertedIndexes);
     }
   }, {
-    key: "disablePlugin",
-    value: function disablePlugin() {
-      this.hot.rowIndexMapper.unregisterMap("bindRowsWithHeaders");
-      _get$b(_getPrototypeOf$d(BindRowsWithHeaders2.prototype), "disablePlugin", this).call(this);
+    key: "remove",
+    value: function remove(removedIndexes) {
+      this.indexedValues = getListWithRemovedItems$1(this.indexedValues, removedIndexes);
+      _get$b(_getPrototypeOf$d(StrictBindsMap2.prototype), "remove", this).call(this, removedIndexes);
     }
   }, {
-    key: "onModifyRowHeader",
-    value: function onModifyRowHeader(row) {
-      return this.headerIndexes.getValueAtIndex(this.hot.toPhysicalRow(row));
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      _get$b(_getPrototypeOf$d(BindRowsWithHeaders2.prototype), "destroy", this).call(this);
-    }
-  }], [{
-    key: "PLUGIN_KEY",
-    get: function get() {
-      return PLUGIN_KEY$4;
-    }
-  }, {
-    key: "PLUGIN_PRIORITY",
-    get: function get() {
-      return PLUGIN_PRIORITY$3;
+    key: "getNextValue",
+    value: function getNextValue(ordinalNumber) {
+      return Math.max.apply(Math, _toConsumableArray$1(this.getValues())) + 1 + ordinalNumber;
     }
   }]);
-  return BindRowsWithHeaders2;
-}(BasePlugin);
+  return StrictBindsMap2;
+}(IndexMap);
 
 function _typeof$e(obj) {
   "@babel/helpers - typeof";
@@ -7047,41 +7098,6 @@ function _typeof$e(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$e(obj);
-}
-function _toConsumableArray$2(arr) {
-  return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _unsupportedIterableToArray$6(arr) || _nonIterableSpread$2();
-}
-function _nonIterableSpread$2() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$6(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$6(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$6(o, minLen);
-}
-function _iterableToArray$2(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-    return Array.from(iter);
-}
-function _arrayWithoutHoles$2(arr) {
-  if (Array.isArray(arr))
-    return _arrayLikeToArray$6(arr);
-}
-function _arrayLikeToArray$6(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
 }
 function _classCallCheck$h(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -7195,11 +7211,233 @@ function _getPrototypeOf$e(o) {
   };
   return _getPrototypeOf$e(o);
 }
+var PLUGIN_KEY$4 = "bindRowsWithHeaders";
+var PLUGIN_PRIORITY$3 = 210;
+var DEFAULT_BIND = "loose";
+var bindTypeToMapStrategy = new Map([["loose", LooseBindsMap], ["strict", StrictBindsMap]]);
+var BindRowsWithHeaders = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$e(BindRowsWithHeaders2, _BasePlugin);
+  var _super = _createSuper$e(BindRowsWithHeaders2);
+  function BindRowsWithHeaders2(hotInstance) {
+    var _this;
+    _classCallCheck$h(this, BindRowsWithHeaders2);
+    _this = _super.call(this, hotInstance);
+    _this.headerIndexes = null;
+    return _this;
+  }
+  _createClass$h(BindRowsWithHeaders2, [{
+    key: "isEnabled",
+    value: function isEnabled() {
+      return !!this.hot.getSettings()[PLUGIN_KEY$4];
+    }
+  }, {
+    key: "enablePlugin",
+    value: function enablePlugin() {
+      var _this2 = this;
+      if (this.enabled) {
+        return;
+      }
+      var bindType = this.hot.getSettings()[PLUGIN_KEY$4];
+      if (typeof bindType !== "string") {
+        bindType = DEFAULT_BIND;
+      }
+      var MapStrategy = bindTypeToMapStrategy.get(bindType);
+      this.headerIndexes = this.hot.rowIndexMapper.registerMap("bindRowsWithHeaders", new MapStrategy());
+      this.addHook("modifyRowHeader", function(row) {
+        return _this2.onModifyRowHeader(row);
+      });
+      _get$c(_getPrototypeOf$e(BindRowsWithHeaders2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "disablePlugin",
+    value: function disablePlugin() {
+      this.hot.rowIndexMapper.unregisterMap("bindRowsWithHeaders");
+      _get$c(_getPrototypeOf$e(BindRowsWithHeaders2.prototype), "disablePlugin", this).call(this);
+    }
+  }, {
+    key: "onModifyRowHeader",
+    value: function onModifyRowHeader(row) {
+      return this.headerIndexes.getValueAtIndex(this.hot.toPhysicalRow(row));
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      _get$c(_getPrototypeOf$e(BindRowsWithHeaders2.prototype), "destroy", this).call(this);
+    }
+  }], [{
+    key: "PLUGIN_KEY",
+    get: function get() {
+      return PLUGIN_KEY$4;
+    }
+  }, {
+    key: "PLUGIN_PRIORITY",
+    get: function get() {
+      return PLUGIN_PRIORITY$3;
+    }
+  }]);
+  return BindRowsWithHeaders2;
+}(BasePlugin);
+
+function _typeof$f(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$f = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$f(obj);
+}
+function _toConsumableArray$2(arr) {
+  return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _unsupportedIterableToArray$6(arr) || _nonIterableSpread$2();
+}
+function _nonIterableSpread$2() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray$6(o, minLen) {
+  if (!o)
+    return;
+  if (typeof o === "string")
+    return _arrayLikeToArray$6(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor)
+    n = o.constructor.name;
+  if (n === "Map" || n === "Set")
+    return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray$6(o, minLen);
+}
+function _iterableToArray$2(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+    return Array.from(iter);
+}
+function _arrayWithoutHoles$2(arr) {
+  if (Array.isArray(arr))
+    return _arrayLikeToArray$6(arr);
+}
+function _arrayLikeToArray$6(arr, len) {
+  if (len == null || len > arr.length)
+    len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
+function _classCallCheck$i(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$i(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$i(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$i(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$i(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _get$d() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$d = Reflect.get;
+  } else {
+    _get$d = function _get2(target, property, receiver) {
+      var base = _superPropBase$d(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$d.apply(this, arguments);
+}
+function _superPropBase$d(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$f(object);
+    if (object === null)
+      break;
+  }
+  return object;
+}
+function _inherits$f(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$f(subClass, superClass);
+}
+function _setPrototypeOf$f(o, p) {
+  _setPrototypeOf$f = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$f(o, p);
+}
+function _createSuper$f(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$f();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$f(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$f(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$f(this, result);
+  };
+}
+function _possibleConstructorReturn$f(self, call) {
+  if (call && (_typeof$f(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$f(self);
+}
+function _assertThisInitialized$f(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$f() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$f(o) {
+  _getPrototypeOf$f = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$f(o);
+}
 function _classPrivateFieldInitSpec(obj, privateMap, value) {
-  _checkPrivateRedeclaration(obj, privateMap);
+  _checkPrivateRedeclaration$1(obj, privateMap);
   privateMap.set(obj, value);
 }
-function _checkPrivateRedeclaration(obj, privateCollection) {
+function _checkPrivateRedeclaration$1(obj, privateCollection) {
   if (privateCollection.has(obj)) {
     throw new TypeError("Cannot initialize the same private elements twice on an object");
   }
@@ -7245,6 +7483,7 @@ function _classApplyDescriptorSet(receiver, descriptor, value) {
 }
 var PLUGIN_KEY$5 = "collapsibleColumns";
 var PLUGIN_PRIORITY$4 = 290;
+var SETTING_KEYS$1 = ["nestedHeaders"];
 var actionDictionary = new Map([["collapse", {
   hideColumn: true,
   beforeHook: "beforeColumnCollapse",
@@ -7256,25 +7495,25 @@ var actionDictionary = new Map([["collapse", {
 }]]);
 var _collapsedColumnsMap = /* @__PURE__ */ new WeakMap();
 var CollapsibleColumns = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$e(CollapsibleColumns2, _BasePlugin);
-  var _super = _createSuper$e(CollapsibleColumns2);
+  _inherits$f(CollapsibleColumns2, _BasePlugin);
+  var _super = _createSuper$f(CollapsibleColumns2);
   function CollapsibleColumns2() {
     var _this;
-    _classCallCheck$h(this, CollapsibleColumns2);
+    _classCallCheck$i(this, CollapsibleColumns2);
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
     _this = _super.call.apply(_super, [this].concat(args));
-    _defineProperty$2(_assertThisInitialized$e(_this), "nestedHeadersPlugin", null);
-    _defineProperty$2(_assertThisInitialized$e(_this), "eventManager", new EventManager(_assertThisInitialized$e(_this)));
-    _defineProperty$2(_assertThisInitialized$e(_this), "headerStateManager", null);
-    _classPrivateFieldInitSpec(_assertThisInitialized$e(_this), _collapsedColumnsMap, {
+    _defineProperty$2(_assertThisInitialized$f(_this), "nestedHeadersPlugin", null);
+    _defineProperty$2(_assertThisInitialized$f(_this), "eventManager", new EventManager(_assertThisInitialized$f(_this)));
+    _defineProperty$2(_assertThisInitialized$f(_this), "headerStateManager", null);
+    _classPrivateFieldInitSpec(_assertThisInitialized$f(_this), _collapsedColumnsMap, {
       writable: true,
       value: null
     });
     return _this;
   }
-  _createClass$h(CollapsibleColumns2, [{
+  _createClass$i(CollapsibleColumns2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$5];
@@ -7305,7 +7544,7 @@ var CollapsibleColumns = /* @__PURE__ */ function(_BasePlugin) {
       this.addHook("beforeOnCellMouseDown", function(event, coords, TD) {
         return _this2.onBeforeOnCellMouseDown(event, coords, TD);
       });
-      _get$c(_getPrototypeOf$e(CollapsibleColumns2.prototype), "enablePlugin", this).call(this);
+      _get$d(_getPrototypeOf$f(CollapsibleColumns2.prototype), "enablePlugin", this).call(this);
       this.updatePlugin();
     }
   }, {
@@ -7323,10 +7562,15 @@ var CollapsibleColumns = /* @__PURE__ */ function(_BasePlugin) {
             };
           });
         } else if (Array.isArray(collapsibleColumns)) {
+          this.headerStateManager.mapState(function() {
+            return {
+              collapsible: false
+            };
+          });
           this.headerStateManager.mergeStateWith(collapsibleColumns);
         }
       }
-      _get$c(_getPrototypeOf$e(CollapsibleColumns2.prototype), "updatePlugin", this).call(this);
+      _get$d(_getPrototypeOf$f(CollapsibleColumns2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -7335,7 +7579,7 @@ var CollapsibleColumns = /* @__PURE__ */ function(_BasePlugin) {
       _classPrivateFieldSet(this, _collapsedColumnsMap, null);
       this.nestedHeadersPlugin = null;
       this.clearButtons();
-      _get$c(_getPrototypeOf$e(CollapsibleColumns2.prototype), "disablePlugin", this).call(this);
+      _get$d(_getPrototypeOf$f(CollapsibleColumns2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "clearButtons",
@@ -7343,10 +7587,10 @@ var CollapsibleColumns = /* @__PURE__ */ function(_BasePlugin) {
       if (!this.hot.view) {
         return;
       }
-      var headerLevels = this.hot.view.wt.getSetting("columnHeaders").length;
-      var mainHeaders = this.hot.view.wt.wtTable.THEAD;
-      var topHeaders = this.hot.view.wt.wtOverlays.topOverlay.clone.wtTable.THEAD;
-      var topLeftCornerHeaders = this.hot.view.wt.wtOverlays.topLeftCornerOverlay ? this.hot.view.wt.wtOverlays.topLeftCornerOverlay.clone.wtTable.THEAD : null;
+      var headerLevels = this.hot.view._wt.getSetting("columnHeaders").length;
+      var mainHeaders = this.hot.view._wt.wtTable.THEAD;
+      var topHeaders = this.hot.view._wt.wtOverlays.topOverlay.clone.wtTable.THEAD;
+      var topLeftCornerHeaders = this.hot.view._wt.wtOverlays.topInlineStartCornerOverlay ? this.hot.view._wt.wtOverlays.topInlineStartCornerOverlay.clone.wtTable.THEAD : null;
       var removeButton = function removeButton2(button) {
         if (button) {
           button.parentNode.removeChild(button);
@@ -7496,7 +7740,7 @@ var CollapsibleColumns = /* @__PURE__ */ function(_BasePlugin) {
       var THEAD = TR.parentNode;
       var row = -1 * THEAD.childNodes.length + Array.prototype.indexOf.call(THEAD.childNodes, TR);
       var _ref5 = (_this$headerStateMana = this.headerStateManager.getHeaderSettings(row, column)) !== null && _this$headerStateMana !== void 0 ? _this$headerStateMana : {}, collapsible = _ref5.collapsible, origColspan = _ref5.origColspan;
-      if (collapsible && origColspan > 1 && column >= this.hot.getSettings().fixedColumnsLeft) {
+      if (collapsible && origColspan > 1 && column >= this.hot.getSettings().fixedColumnsStart) {
         var button = this.generateIndicator(row, column);
         TH.querySelector("div:first-child").appendChild(button);
       }
@@ -7531,7 +7775,7 @@ var CollapsibleColumns = /* @__PURE__ */ function(_BasePlugin) {
     key: "destroy",
     value: function destroy() {
       _classPrivateFieldSet(this, _collapsedColumnsMap, null);
-      _get$c(_getPrototypeOf$e(CollapsibleColumns2.prototype), "destroy", this).call(this);
+      _get$d(_getPrototypeOf$f(CollapsibleColumns2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -7547,6 +7791,11 @@ var CollapsibleColumns = /* @__PURE__ */ function(_BasePlugin) {
     key: "PLUGIN_DEPS",
     get: function get() {
       return ["plugin:NestedHeaders"];
+    }
+  }, {
+    key: "SETTING_KEYS",
+    get: function get() {
+      return [PLUGIN_KEY$5].concat(SETTING_KEYS$1);
     }
   }]);
   return CollapsibleColumns2;
@@ -7640,12 +7889,12 @@ function _arrayWithHoles$5(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$i(instance, Constructor) {
+function _classCallCheck$j(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$i(target, props) {
+function _defineProperties$j(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -7655,11 +7904,11 @@ function _defineProperties$i(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$i(Constructor, protoProps, staticProps) {
+function _createClass$j(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$i(Constructor.prototype, protoProps);
+    _defineProperties$j(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$i(Constructor, staticProps);
+    _defineProperties$j(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -7669,7 +7918,7 @@ var SHOW_SORT_INDICATOR_DEFAULT = true;
 var HEADER_ACTION_DEFAULT = true;
 var ColumnStatesManager = /* @__PURE__ */ function() {
   function ColumnStatesManager2(hot, mapName) {
-    _classCallCheck$i(this, ColumnStatesManager2);
+    _classCallCheck$j(this, ColumnStatesManager2);
     this.hot = hot;
     this.sortingStates = new LinkedPhysicalIndexToValueMap();
     this.sortEmptyCells = SORT_EMPTY_CELLS_DEFAULT;
@@ -7679,7 +7928,7 @@ var ColumnStatesManager = /* @__PURE__ */ function() {
     this.mapName = mapName;
     this.hot.columnIndexMapper.registerMap(mapName, this.sortingStates);
   }
-  _createClass$i(ColumnStatesManager2, [{
+  _createClass$j(ColumnStatesManager2, [{
     key: "updateAllColumnsProperties",
     value: function updateAllColumnsProperties(allSortSettings) {
       var _this = this;
@@ -7995,8 +8244,8 @@ function compareFunctionFactory$3(sortOrder, columnMeta, columnPluginSettings) {
       return FIRST_BEFORE_SECOND;
     }
     var dateFormat = columnMeta.dateFormat;
-    var firstDate = hooks$1(value, dateFormat);
-    var nextDate = hooks$1(nextValue, dateFormat);
+    var firstDate = hooks(value, dateFormat);
+    var nextDate = hooks(nextValue, dateFormat);
     if (!firstDate.isValid()) {
       return FIRST_AFTER_SECOND;
     }
@@ -8027,7 +8276,7 @@ registerCompareFunctionFactory(COLUMN_DATA_TYPE$2, compareFunctionFactory$2);
 registerCompareFunctionFactory(COLUMN_DATA_TYPE$3, compareFunctionFactory$3);
 registerCompareFunctionFactory(COLUMN_DATA_TYPE, compareFunctionFactory);
 
-function _defineProperties$j(target, props) {
+function _defineProperties$k(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -8037,32 +8286,32 @@ function _defineProperties$j(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$j(Constructor, protoProps, staticProps) {
+function _createClass$k(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$j(Constructor.prototype, protoProps);
+    _defineProperties$k(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$j(Constructor, staticProps);
+    _defineProperties$k(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _classCallCheck$j(instance, Constructor) {
+function _classCallCheck$k(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-var NodeStructure = /* @__PURE__ */ _createClass$j(function NodeStructure2(data) {
-  _classCallCheck$j(this, NodeStructure2);
+var NodeStructure = /* @__PURE__ */ _createClass$k(function NodeStructure2(data) {
+  _classCallCheck$k(this, NodeStructure2);
   this.data = data;
   this.next = null;
   this.prev = null;
 });
 var LinkedList = /* @__PURE__ */ function() {
   function LinkedList2() {
-    _classCallCheck$j(this, LinkedList2);
+    _classCallCheck$k(this, LinkedList2);
     this.first = null;
     this.last = null;
   }
-  _createClass$j(LinkedList2, [{
+  _createClass$k(LinkedList2, [{
     key: "push",
     value: function push(data) {
       var node = new NodeStructure(data);
@@ -8333,13 +8582,13 @@ function rootComparator(sortingOrders, columnMetas) {
   };
 }
 
-function _typeof$f(obj) {
+function _typeof$g(obj) {
   "@babel/helpers - typeof";
-  return _typeof$f = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$g = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$f(obj);
+  }, _typeof$g(obj);
 }
 var _excluded = ["column"], _excluded2 = ["column"];
 function _toConsumableArray$3(arr) {
@@ -8438,12 +8687,12 @@ function _objectWithoutPropertiesLoose(source, excluded) {
   }
   return target;
 }
-function _classCallCheck$k(instance, Constructor) {
+function _classCallCheck$l(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$k(target, props) {
+function _defineProperties$l(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -8453,20 +8702,20 @@ function _defineProperties$k(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$k(Constructor, protoProps, staticProps) {
+function _createClass$l(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$k(Constructor.prototype, protoProps);
+    _defineProperties$l(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$k(Constructor, staticProps);
+    _defineProperties$l(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$d() {
+function _get$e() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$d = Reflect.get;
+    _get$e = Reflect.get;
   } else {
-    _get$d = function _get2(target, property, receiver) {
-      var base = _superPropBase$d(target, property);
+    _get$e = function _get2(target, property, receiver) {
+      var base = _superPropBase$e(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -8476,60 +8725,60 @@ function _get$d() {
       return desc.value;
     };
   }
-  return _get$d.apply(this, arguments);
+  return _get$e.apply(this, arguments);
 }
-function _superPropBase$d(object, property) {
+function _superPropBase$e(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$f(object);
+    object = _getPrototypeOf$g(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$f(subClass, superClass) {
+function _inherits$g(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$f(subClass, superClass);
+    _setPrototypeOf$g(subClass, superClass);
 }
-function _setPrototypeOf$f(o, p) {
-  _setPrototypeOf$f = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$g(o, p) {
+  _setPrototypeOf$g = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$f(o, p);
+  return _setPrototypeOf$g(o, p);
 }
-function _createSuper$f(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$f();
+function _createSuper$g(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$g();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$f(Derived), result;
+    var Super = _getPrototypeOf$g(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$f(this).constructor;
+      var NewTarget = _getPrototypeOf$g(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$f(this, result);
+    return _possibleConstructorReturn$g(this, result);
   };
 }
-function _possibleConstructorReturn$f(self, call) {
-  if (call && (_typeof$f(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$g(self, call) {
+  if (call && (_typeof$g(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$f(self);
+  return _assertThisInitialized$g(self);
 }
-function _assertThisInitialized$f(self) {
+function _assertThisInitialized$g(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$f() {
+function _isNativeReflectConstruct$g() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -8544,11 +8793,11 @@ function _isNativeReflectConstruct$f() {
     return false;
   }
 }
-function _getPrototypeOf$f(o) {
-  _getPrototypeOf$f = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$g(o) {
+  _getPrototypeOf$g = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$f(o);
+  return _getPrototypeOf$g(o);
 }
 var PLUGIN_KEY$6 = "columnSorting";
 var PLUGIN_PRIORITY$5 = 50;
@@ -8558,11 +8807,11 @@ registerRootComparator(PLUGIN_KEY$6, rootComparator);
 Hooks.getSingleton().register("beforeColumnSort");
 Hooks.getSingleton().register("afterColumnSort");
 var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$f(ColumnSorting2, _BasePlugin);
-  var _super = _createSuper$f(ColumnSorting2);
+  _inherits$g(ColumnSorting2, _BasePlugin);
+  var _super = _createSuper$g(ColumnSorting2);
   function ColumnSorting2(hotInstance) {
     var _this;
-    _classCallCheck$k(this, ColumnSorting2);
+    _classCallCheck$l(this, ColumnSorting2);
     _this = _super.call(this, hotInstance);
     _this.columnStatesManager = null;
     _this.columnMetaCache = null;
@@ -8570,7 +8819,7 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
     _this.indexesSequenceCache = null;
     return _this;
   }
-  _createClass$k(ColumnSorting2, [{
+  _createClass$l(ColumnSorting2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[this.pluginKey];
@@ -8609,7 +8858,7 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
       if (this.hot.view) {
         this.loadOrSortBySettings();
       }
-      _get$d(_getPrototypeOf$f(ColumnSorting2.prototype), "enablePlugin", this).call(this);
+      _get$e(_getPrototypeOf$g(ColumnSorting2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -8636,7 +8885,7 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
       this.columnStatesManager.destroy();
       this.columnMetaCache = null;
       this.columnStatesManager = null;
-      _get$d(_getPrototypeOf$f(ColumnSorting2.prototype), "disablePlugin", this).call(this);
+      _get$e(_getPrototypeOf$g(ColumnSorting2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "sort",
@@ -8920,7 +9169,7 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onUpdateSettings",
     value: function onUpdateSettings(newSettings) {
-      _get$d(_getPrototypeOf$f(ColumnSorting2.prototype), "onUpdateSettings", this).call(this);
+      _get$e(_getPrototypeOf$g(ColumnSorting2.prototype), "onUpdateSettings", this).call(this);
       if (this.columnMetaCache !== null) {
         this.columnMetaCache.init(this.hot.columnIndexMapper.getNumberOfIndexes());
       }
@@ -8950,7 +9199,7 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
       if (wasHeaderClickedProperly(coords.row, coords.col, event) === false) {
         return;
       }
-      if (this.wasClickableHeaderClicked(event, coords.col) && isPressedCtrlKey()) {
+      if (this.wasClickableHeaderClicked(event, coords.col) && this.hot.getShortcutManager().isCtrlPressed()) {
         controller.column = true;
       }
     }
@@ -8961,7 +9210,7 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
         return;
       }
       if (this.wasClickableHeaderClicked(event, coords.col)) {
-        if (isPressedCtrlKey()) {
+        if (this.hot.getShortcutManager().isCtrlPressed()) {
           this.hot.deselectCell();
           this.hot.selectColumns(coords.col);
         }
@@ -8973,7 +9222,7 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
     value: function destroy() {
       var _this$columnStatesMan;
       (_this$columnStatesMan = this.columnStatesManager) === null || _this$columnStatesMan === void 0 ? void 0 : _this$columnStatesMan.destroy();
-      _get$d(_getPrototypeOf$f(ColumnSorting2.prototype), "destroy", this).call(this);
+      _get$e(_getPrototypeOf$g(ColumnSorting2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -8989,12 +9238,12 @@ var ColumnSorting = /* @__PURE__ */ function(_BasePlugin) {
   return ColumnSorting2;
 }(BasePlugin);
 
-function _classCallCheck$l(instance, Constructor) {
+function _classCallCheck$m(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$l(target, props) {
+function _defineProperties$m(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -9004,17 +9253,17 @@ function _defineProperties$l(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$l(Constructor, protoProps, staticProps) {
+function _createClass$m(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$l(Constructor.prototype, protoProps);
+    _defineProperties$m(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$l(Constructor, staticProps);
+    _defineProperties$m(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var Endpoints = /* @__PURE__ */ function() {
   function Endpoints2(plugin, settings) {
-    _classCallCheck$l(this, Endpoints2);
+    _classCallCheck$m(this, Endpoints2);
     this.plugin = plugin;
     this.hot = this.plugin.hot;
     this.endpoints = [];
@@ -9023,7 +9272,7 @@ var Endpoints = /* @__PURE__ */ function() {
     this.currentEndpoint = null;
     this.cellsToSetCache = [];
   }
-  _createClass$l(Endpoints2, [{
+  _createClass$m(Endpoints2, [{
     key: "getEndpoint",
     value: function getEndpoint(index) {
       if (this.settingsType === "function") {
@@ -9367,13 +9616,13 @@ var Endpoints = /* @__PURE__ */ function() {
   return Endpoints2;
 }();
 
-function _typeof$g(obj) {
+function _typeof$h(obj) {
   "@babel/helpers - typeof";
-  return _typeof$g = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$h = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$g(obj);
+  }, _typeof$h(obj);
 }
 var _templateObject;
 function _taggedTemplateLiteral(strings, raw) {
@@ -9382,12 +9631,12 @@ function _taggedTemplateLiteral(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$m(instance, Constructor) {
+function _classCallCheck$n(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$m(target, props) {
+function _defineProperties$n(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -9397,20 +9646,20 @@ function _defineProperties$m(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$m(Constructor, protoProps, staticProps) {
+function _createClass$n(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$m(Constructor.prototype, protoProps);
+    _defineProperties$n(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$m(Constructor, staticProps);
+    _defineProperties$n(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$e() {
+function _get$f() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$e = Reflect.get;
+    _get$f = Reflect.get;
   } else {
-    _get$e = function _get2(target, property, receiver) {
-      var base = _superPropBase$e(target, property);
+    _get$f = function _get2(target, property, receiver) {
+      var base = _superPropBase$f(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -9420,60 +9669,60 @@ function _get$e() {
       return desc.value;
     };
   }
-  return _get$e.apply(this, arguments);
+  return _get$f.apply(this, arguments);
 }
-function _superPropBase$e(object, property) {
+function _superPropBase$f(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$g(object);
+    object = _getPrototypeOf$h(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$g(subClass, superClass) {
+function _inherits$h(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$g(subClass, superClass);
+    _setPrototypeOf$h(subClass, superClass);
 }
-function _setPrototypeOf$g(o, p) {
-  _setPrototypeOf$g = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$h(o, p) {
+  _setPrototypeOf$h = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$g(o, p);
+  return _setPrototypeOf$h(o, p);
 }
-function _createSuper$g(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$g();
+function _createSuper$h(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$h();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$g(Derived), result;
+    var Super = _getPrototypeOf$h(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$g(this).constructor;
+      var NewTarget = _getPrototypeOf$h(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$g(this, result);
+    return _possibleConstructorReturn$h(this, result);
   };
 }
-function _possibleConstructorReturn$g(self, call) {
-  if (call && (_typeof$g(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$h(self, call) {
+  if (call && (_typeof$h(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$g(self);
+  return _assertThisInitialized$h(self);
 }
-function _assertThisInitialized$g(self) {
+function _assertThisInitialized$h(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$g() {
+function _isNativeReflectConstruct$h() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -9488,25 +9737,25 @@ function _isNativeReflectConstruct$g() {
     return false;
   }
 }
-function _getPrototypeOf$g(o) {
-  _getPrototypeOf$g = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$h(o) {
+  _getPrototypeOf$h = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$g(o);
+  return _getPrototypeOf$h(o);
 }
 var PLUGIN_KEY$7 = "columnSummary";
 var PLUGIN_PRIORITY$6 = 220;
 var ColumnSummary = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$g(ColumnSummary2, _BasePlugin);
-  var _super = _createSuper$g(ColumnSummary2);
+  _inherits$h(ColumnSummary2, _BasePlugin);
+  var _super = _createSuper$h(ColumnSummary2);
   function ColumnSummary2(hotInstance) {
     var _this;
-    _classCallCheck$m(this, ColumnSummary2);
+    _classCallCheck$n(this, ColumnSummary2);
     _this = _super.call(this, hotInstance);
     _this.endpoints = null;
     return _this;
   }
-  _createClass$m(ColumnSummary2, [{
+  _createClass$n(ColumnSummary2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$7];
@@ -9569,7 +9818,7 @@ var ColumnSummary = /* @__PURE__ */ function(_BasePlugin) {
       this.addHook("afterRowMove", function() {
         return _this2.onAfterRowMove.apply(_this2, arguments);
       });
-      _get$e(_getPrototypeOf$g(ColumnSummary2.prototype), "enablePlugin", this).call(this);
+      _get$f(_getPrototypeOf$h(ColumnSummary2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -9772,12 +10021,12 @@ var ColumnSummary = /* @__PURE__ */ function(_BasePlugin) {
   return ColumnSummary2;
 }(BasePlugin);
 
-function _classCallCheck$n(instance, Constructor) {
+function _classCallCheck$o(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$n(target, props) {
+function _defineProperties$o(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -9787,25 +10036,26 @@ function _defineProperties$n(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$n(Constructor, protoProps, staticProps) {
+function _createClass$o(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$n(Constructor.prototype, protoProps);
+    _defineProperties$o(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$n(Constructor, staticProps);
+    _defineProperties$o(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var CommentEditor = /* @__PURE__ */ function() {
-  function CommentEditor2(rootDocument) {
-    _classCallCheck$n(this, CommentEditor2);
-    this.container = null;
+  function CommentEditor2(rootDocument, isRtl) {
+    _classCallCheck$o(this, CommentEditor2);
     this.rootDocument = rootDocument;
+    this.isRtl = isRtl;
+    this.container = null;
     this.editor = this.createEditor();
     this.editorStyle = this.editor.style;
     this.hidden = true;
     this.hide();
   }
-  _createClass$n(CommentEditor2, [{
+  _createClass$o(CommentEditor2, [{
     key: "setPosition",
     value: function setPosition(x, y) {
       this.editorStyle.left = "".concat(x, "px");
@@ -9819,6 +10069,14 @@ var CommentEditor = /* @__PURE__ */ function() {
         input.style.width = "".concat(width, "px");
         input.style.height = "".concat(height, "px");
       }
+    }
+  }, {
+    key: "getSize",
+    value: function getSize() {
+      return {
+        width: outerWidth(this.editor),
+        height: outerHeight(this.editor)
+      };
     }
   }, {
     key: "resetSize",
@@ -9881,6 +10139,7 @@ var CommentEditor = /* @__PURE__ */ function() {
       var textArea = this.rootDocument.createElement("textarea");
       editor.style.display = "none";
       this.container = this.rootDocument.createElement("div");
+      this.container.setAttribute("dir", this.isRtl ? "rtl" : "ltr");
       addClass(this.container, CommentEditor2.CLASS_EDITOR_CONTAINER);
       this.rootDocument.body.appendChild(this.container);
       addClass(editor, CommentEditor2.CLASS_EDITOR);
@@ -9939,8 +10198,8 @@ function separatorItem() {
 function normalizeSelection(selRanges) {
   return arrayMap(selRanges, function(range) {
     return {
-      start: range.getTopLeftCorner(),
-      end: range.getBottomRightCorner()
+      start: range.getTopStartCorner(),
+      end: range.getBottomEndCorner()
     };
   });
 }
@@ -10076,12 +10335,12 @@ function filterSeparators(items) {
   return result;
 }
 
-function _classCallCheck$o(instance, Constructor) {
+function _classCallCheck$p(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$o(target, props) {
+function _defineProperties$p(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -10091,11 +10350,11 @@ function _defineProperties$o(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$o(Constructor, protoProps, staticProps) {
+function _createClass$p(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$o(Constructor.prototype, protoProps);
+    _defineProperties$p(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$o(Constructor, staticProps);
+    _defineProperties$p(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -10103,13 +10362,13 @@ var DEFAULT_DISPLAY_DELAY = 250;
 var DEFAULT_HIDE_DELAY = 250;
 var DisplaySwitch = /* @__PURE__ */ function() {
   function DisplaySwitch2(displayDelay) {
-    _classCallCheck$o(this, DisplaySwitch2);
+    _classCallCheck$p(this, DisplaySwitch2);
     this.wasLastActionShow = true;
     this.showDebounced = null;
     this.hidingTimer = null;
     this.updateDelay(displayDelay);
   }
-  _createClass$o(DisplaySwitch2, [{
+  _createClass$p(DisplaySwitch2, [{
     key: "hide",
     value: function hide() {
       var _this = this;
@@ -10154,13 +10413,13 @@ var DisplaySwitch = /* @__PURE__ */ function() {
 }();
 mixin(DisplaySwitch, localHooks);
 
-function _typeof$h(obj) {
+function _typeof$i(obj) {
   "@babel/helpers - typeof";
-  return _typeof$h = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$h(obj);
+  }, _typeof$i(obj);
 }
 function _defineProperty$5(obj, key, value) {
   if (key in obj) {
@@ -10170,12 +10429,12 @@ function _defineProperty$5(obj, key, value) {
   }
   return obj;
 }
-function _classCallCheck$p(instance, Constructor) {
+function _classCallCheck$q(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$p(target, props) {
+function _defineProperties$q(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -10185,20 +10444,20 @@ function _defineProperties$p(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$p(Constructor, protoProps, staticProps) {
+function _createClass$q(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$p(Constructor.prototype, protoProps);
+    _defineProperties$q(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$p(Constructor, staticProps);
+    _defineProperties$q(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$f() {
+function _get$g() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$f = Reflect.get;
+    _get$g = Reflect.get;
   } else {
-    _get$f = function _get2(target, property, receiver) {
-      var base = _superPropBase$f(target, property);
+    _get$g = function _get2(target, property, receiver) {
+      var base = _superPropBase$g(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -10208,60 +10467,60 @@ function _get$f() {
       return desc.value;
     };
   }
-  return _get$f.apply(this, arguments);
+  return _get$g.apply(this, arguments);
 }
-function _superPropBase$f(object, property) {
+function _superPropBase$g(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$h(object);
+    object = _getPrototypeOf$i(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$h(subClass, superClass) {
+function _inherits$i(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$h(subClass, superClass);
+    _setPrototypeOf$i(subClass, superClass);
 }
-function _setPrototypeOf$h(o, p) {
-  _setPrototypeOf$h = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$i(o, p) {
+  _setPrototypeOf$i = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$h(o, p);
+  return _setPrototypeOf$i(o, p);
 }
-function _createSuper$h(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$h();
+function _createSuper$i(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$i();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$h(Derived), result;
+    var Super = _getPrototypeOf$i(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$h(this).constructor;
+      var NewTarget = _getPrototypeOf$i(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$h(this, result);
+    return _possibleConstructorReturn$i(this, result);
   };
 }
-function _possibleConstructorReturn$h(self, call) {
-  if (call && (_typeof$h(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$i(self, call) {
+  if (call && (_typeof$i(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$h(self);
+  return _assertThisInitialized$i(self);
 }
-function _assertThisInitialized$h(self) {
+function _assertThisInitialized$i(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$h() {
+function _isNativeReflectConstruct$i() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -10276,11 +10535,11 @@ function _isNativeReflectConstruct$h() {
     return false;
   }
 }
-function _getPrototypeOf$h(o) {
-  _getPrototypeOf$h = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$i(o) {
+  _getPrototypeOf$i = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$h(o);
+  return _getPrototypeOf$i(o);
 }
 var PLUGIN_KEY$8 = "comments";
 var PLUGIN_PRIORITY$7 = 60;
@@ -10290,24 +10549,24 @@ var META_COMMENT_VALUE = "value";
 var META_STYLE = "style";
 var META_READONLY = "readOnly";
 var Comments = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$h(Comments2, _BasePlugin);
-  var _super = _createSuper$h(Comments2);
+  _inherits$i(Comments2, _BasePlugin);
+  var _super = _createSuper$i(Comments2);
   function Comments2(hotInstance) {
     var _this;
-    _classCallCheck$p(this, Comments2);
+    _classCallCheck$q(this, Comments2);
     _this = _super.call(this, hotInstance);
     _this.editor = null;
     _this.displaySwitch = null;
     _this.eventManager = null;
     _this.range = {};
     _this.preventEditorAutoSwitch = false;
-    privatePool$3.set(_assertThisInitialized$h(_this), {
+    privatePool$3.set(_assertThisInitialized$i(_this), {
       tempEditorDimensions: {},
       cellBelowCursor: null
     });
     return _this;
   }
-  _createClass$p(Comments2, [{
+  _createClass$q(Comments2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$8];
@@ -10320,7 +10579,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
         return;
       }
       if (!this.editor) {
-        this.editor = new CommentEditor(this.hot.rootDocument);
+        this.editor = new CommentEditor(this.hot.rootDocument, this.hot.isRtl());
       }
       if (!this.eventManager) {
         this.eventManager = new EventManager(this);
@@ -10350,20 +10609,20 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
         return _this2.showAtCell(row, col);
       });
       this.registerListeners();
-      _get$f(_getPrototypeOf$h(Comments2.prototype), "enablePlugin", this).call(this);
+      _get$g(_getPrototypeOf$i(Comments2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
     value: function updatePlugin() {
       this.disablePlugin();
       this.enablePlugin();
-      _get$f(_getPrototypeOf$h(Comments2.prototype), "updatePlugin", this).call(this);
+      _get$g(_getPrototypeOf$i(Comments2.prototype), "updatePlugin", this).call(this);
       this.displaySwitch.updateDelay(this.getDisplayDelaySetting());
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
-      _get$f(_getPrototypeOf$h(Comments2.prototype), "disablePlugin", this).call(this);
+      _get$g(_getPrototypeOf$i(Comments2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "registerListeners",
@@ -10432,7 +10691,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
     key: "setCommentAtCell",
     value: function setCommentAtCell(row, column, value) {
       this.setRange({
-        from: new CellCoords(row, column)
+        from: this.hot._createCellCoords(row, column)
       });
       this.setComment(value);
     }
@@ -10454,7 +10713,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
     value: function removeCommentAtCell(row, column) {
       var forceRender = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : true;
       this.setRange({
-        from: new CellCoords(row, column)
+        from: this.hot._createCellCoords(row, column)
       });
       this.removeComment(forceRender);
     }
@@ -10481,18 +10740,16 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
         return false;
       }
       var meta = this.hot.getCellMeta(this.range.from.row, this.range.from.col);
-      this.refreshEditor(true);
       this.editor.setValue(meta[META_COMMENT] ? meta[META_COMMENT][META_COMMENT_VALUE] : "");
-      if (this.editor.hidden) {
-        this.editor.show();
-      }
+      this.editor.show();
+      this.refreshEditor(true);
       return true;
     }
   }, {
     key: "showAtCell",
     value: function showAtCell(row, column) {
       this.setRange({
-        from: new CellCoords(row, column)
+        from: this.hot._createCellCoords(row, column)
       });
       return this.show();
     }
@@ -10524,7 +10781,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
       var isBeforeRenderedColumns = renderableColumn === null;
       renderableRow = (_renderableRow = renderableRow) !== null && _renderableRow !== void 0 ? _renderableRow : 0;
       renderableColumn = (_renderableColumn = renderableColumn) !== null && _renderableColumn !== void 0 ? _renderableColumn : 0;
-      var _this$hot2 = this.hot, rootWindow = _this$hot2.rootWindow, wt = _this$hot2.view.wt;
+      var _this$hot2 = this.hot, rootWindow = _this$hot2.rootWindow, wt = _this$hot2.view._wt;
       var wtTable = wt.wtTable, wtOverlays = wt.wtOverlays, wtViewport = wt.wtViewport;
       var scrollableElement = wtOverlays.scrollableElement;
       var TD = wtTable.getCell({
@@ -10540,10 +10797,15 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
         cellTopOffset -= wtOverlays.topOverlay.getScrollPosition();
       }
       if (wtViewport.hasHorizontalScroll() && scrollableElement !== rootWindow) {
-        cellLeftOffset -= wtOverlays.leftOverlay.getScrollPosition();
+        cellLeftOffset -= wtOverlays.inlineStartOverlay.getScrollPosition() * (this.hot.isRtl() ? -1 : 1);
       }
-      var x = cellLeftOffset + lastColWidth;
       var y = cellTopOffset + lastRowHeight;
+      var x = cellLeftOffset;
+      if (this.hot.isRtl()) {
+        x -= this.editor.getSize().width;
+      } else {
+        x += lastColWidth;
+      }
       var commentStyle = this.getCommentMeta(visualRow, visualColumn, META_STYLE);
       var readOnly = this.getCommentMeta(visualRow, visualColumn, META_READONLY);
       if (commentStyle) {
@@ -10562,7 +10824,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
         return false;
       }
       var hasComment = false;
-      var cell = selected.getTopLeftCorner();
+      var cell = selected.getTopStartCorner();
       if (this.getCommentMeta(cell.row, cell.col, META_COMMENT_VALUE)) {
         hasComment = true;
       }
@@ -10593,7 +10855,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onMouseDown",
     value: function onMouseDown(event) {
-      if (!this.hot.view || !this.hot.view.wt) {
+      if (!this.hot.view || !this.hot.view._wt) {
         return;
       }
       if (!this.preventEditorAutoSwitch && !this.targetIsCommentTextArea(event)) {
@@ -10617,7 +10879,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
       }
       priv.cellBelowCursor = rootDocument.elementFromPoint(event.clientX, event.clientY);
       if (this.targetIsCellWithComment(event)) {
-        var range = new CellRange(this.hot.getCoords(event.target));
+        var range = this.hot._createCellRange(this.hot.getCoords(event.target));
         this.displaySwitch.show(range);
       } else if (isChildOf(event.target, rootDocument) && !this.targetIsCommentTextArea(event)) {
         this.displaySwitch.hide();
@@ -10788,7 +11050,7 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
       if (this.displaySwitch) {
         this.displaySwitch.destroy();
       }
-      _get$f(_getPrototypeOf$h(Comments2.prototype), "destroy", this).call(this);
+      _get$g(_getPrototypeOf$i(Comments2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -10804,12 +11066,12 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
   return Comments2;
 }(BasePlugin);
 
-function _classCallCheck$q(instance, Constructor) {
+function _classCallCheck$r(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$q(target, props) {
+function _defineProperties$r(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -10819,22 +11081,22 @@ function _defineProperties$q(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$q(Constructor, protoProps, staticProps) {
+function _createClass$r(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$q(Constructor.prototype, protoProps);
+    _defineProperties$r(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$q(Constructor, staticProps);
+    _defineProperties$r(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var CommandExecutor = /* @__PURE__ */ function() {
   function CommandExecutor2(hotInstance) {
-    _classCallCheck$q(this, CommandExecutor2);
+    _classCallCheck$r(this, CommandExecutor2);
     this.hot = hotInstance;
     this.commands = {};
     this.commonCallback = null;
   }
-  _createClass$q(CommandExecutor2, [{
+  _createClass$r(CommandExecutor2, [{
     key: "registerCommand",
     value: function registerCommand(name, commandDescriptor) {
       this.commands[name] = commandDescriptor;
@@ -11180,12 +11442,15 @@ function columnLeftItem() {
     name: function name() {
       return this.getTranslatedPhrase(CONTEXTMENU_ITEMS_INSERT_LEFT);
     },
-    callback: function callback(key, normalizedSelection) {
+    callback: function callback() {
       var isSelectedByCorner = this.selection.isSelectedByCorner();
-      var columnLeft = 0;
+      var columnLeft = this.isRtl() ? this.countCols() : 0;
       if (!isSelectedByCorner) {
-        var latestSelection = normalizedSelection[Math.max(normalizedSelection.length - 1, 0)];
-        columnLeft = latestSelection.start.col;
+        var selectedRange = this.getSelectedRangeLast();
+        if (isDefined(selectedRange)) {
+          var _selectedRange$getTop = selectedRange.getTopLeftCorner(), col = _selectedRange$getTop.col;
+          columnLeft = this.isRtl() ? col + 1 : col;
+        }
       }
       this.alter("insert_col", columnLeft, 1, "ContextMenu.columnLeft");
       if (isSelectedByCorner) {
@@ -11219,16 +11484,15 @@ function columnRightItem() {
     name: function name() {
       return this.getTranslatedPhrase(CONTEXTMENU_ITEMS_INSERT_RIGHT);
     },
-    callback: function callback(key, normalizedSelection) {
+    callback: function callback() {
       var isSelectedByCorner = this.selection.isSelectedByCorner();
-      var columnRight = 0;
-      if (isSelectedByCorner) {
-        columnRight = this.countCols();
-      } else {
-        var _latestSelection$end;
-        var latestSelection = normalizedSelection[Math.max(normalizedSelection.length - 1, 0)];
-        var selectedColumn = latestSelection === null || latestSelection === void 0 ? void 0 : (_latestSelection$end = latestSelection.end) === null || _latestSelection$end === void 0 ? void 0 : _latestSelection$end.col;
-        columnRight = isDefined(selectedColumn) ? selectedColumn + 1 : 0;
+      var columnRight = this.isRtl() ? 0 : this.countCols();
+      if (!isSelectedByCorner) {
+        var selectedRange = this.getSelectedRangeLast();
+        if (isDefined(selectedRange)) {
+          var _selectedRange$getTop = selectedRange.getTopRightCorner(), col = _selectedRange$getTop.col;
+          columnRight = this.isRtl() ? col : col + 1;
+        }
       }
       this.alter("insert_col", columnRight, 1, "ContextMenu.columnRight");
       if (isSelectedByCorner) {
@@ -11644,12 +11908,12 @@ function predefinedItems() {
   return items;
 }
 
-function _classCallCheck$r(instance, Constructor) {
+function _classCallCheck$s(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$r(target, props) {
+function _defineProperties$s(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -11659,23 +11923,23 @@ function _defineProperties$r(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$r(Constructor, protoProps, staticProps) {
+function _createClass$s(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$r(Constructor.prototype, protoProps);
+    _defineProperties$s(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$r(Constructor, staticProps);
+    _defineProperties$s(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var ItemsFactory = /* @__PURE__ */ function() {
   function ItemsFactory2(hotInstance) {
     var orderPattern = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : null;
-    _classCallCheck$r(this, ItemsFactory2);
+    _classCallCheck$s(this, ItemsFactory2);
     this.hot = hotInstance;
     this.predefinedItems = predefinedItems();
     this.defaultOrderPattern = orderPattern;
   }
-  _createClass$r(ItemsFactory2, [{
+  _createClass$s(ItemsFactory2, [{
     key: "setPredefinedItems",
     value: function setPredefinedItems(predefinedItemsCollection) {
       var _this = this;
@@ -11760,12 +12024,12 @@ function _getItems() {
   return result;
 }
 
-function _classCallCheck$s(instance, Constructor) {
+function _classCallCheck$t(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$s(target, props) {
+function _defineProperties$t(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -11775,17 +12039,17 @@ function _defineProperties$s(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$s(Constructor, protoProps, staticProps) {
+function _createClass$t(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$s(Constructor.prototype, protoProps);
+    _defineProperties$t(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$s(Constructor, staticProps);
+    _defineProperties$t(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var Cursor = /* @__PURE__ */ function() {
   function Cursor2(object, rootWindow) {
-    _classCallCheck$s(this, Cursor2);
+    _classCallCheck$t(this, Cursor2);
     var windowScrollTop = getWindowScrollTop(rootWindow);
     var windowScrollLeft = getWindowScrollLeft(rootWindow);
     var top;
@@ -11822,7 +12086,7 @@ var Cursor = /* @__PURE__ */ function() {
     this.cellHeight = cellHeight;
     this.cellWidth = cellWidth;
   }
-  _createClass$s(Cursor2, [{
+  _createClass$t(Cursor2, [{
     key: "getSourceType",
     value: function getSourceType(object) {
       var type = "literal";
@@ -11857,12 +12121,41 @@ var Cursor = /* @__PURE__ */ function() {
   return Cursor2;
 }();
 
-function _classCallCheck$t(instance, Constructor) {
+function ownKeys$2(object, enumerableOnly) {
+  var keys = Object.keys(object);
+  if (Object.getOwnPropertySymbols) {
+    var symbols = Object.getOwnPropertySymbols(object);
+    enumerableOnly && (symbols = symbols.filter(function(sym) {
+      return Object.getOwnPropertyDescriptor(object, sym).enumerable;
+    })), keys.push.apply(keys, symbols);
+  }
+  return keys;
+}
+function _objectSpread$2(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    i % 2 ? ownKeys$2(Object(source), true).forEach(function(key) {
+      _defineProperty$7(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function(key) {
+      Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
+    });
+  }
+  return target;
+}
+function _defineProperty$7(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
+function _classCallCheck$u(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$t(target, props) {
+function _defineProperties$u(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -11872,18 +12165,20 @@ function _defineProperties$t(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$t(Constructor, protoProps, staticProps) {
+function _createClass$u(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$t(Constructor.prototype, protoProps);
+    _defineProperties$u(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$t(Constructor, staticProps);
+    _defineProperties$u(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var MIN_WIDTH = 215;
+var SHORTCUTS_CONTEXT = "menu";
+var SHORTCUTS_GROUP$3 = SHORTCUTS_CONTEXT;
 var Menu = /* @__PURE__ */ function() {
   function Menu2(hotInstance, options) {
-    _classCallCheck$t(this, Menu2);
+    _classCallCheck$u(this, Menu2);
     this.hot = hotInstance;
     this.options = options || {
       parent: null,
@@ -11911,7 +12206,7 @@ var Menu = /* @__PURE__ */ function() {
     this._afterScrollCallback = null;
     this.registerEvents();
   }
-  _createClass$t(Menu2, [{
+  _createClass$u(Menu2, [{
     key: "registerEvents",
     value: function registerEvents() {
       var _this = this;
@@ -12003,9 +12298,7 @@ var Menu = /* @__PURE__ */ function() {
         fragmentSelection: false,
         outsideClickDeselects: false,
         disableVisualSelection: "area",
-        beforeKeyDown: function beforeKeyDown(event) {
-          return _this2.onBeforeKeyDown(event);
-        },
+        layoutDirection: this.hot.isRtl() ? "rtl" : "ltr",
         afterOnCellMouseOver: function afterOnCellMouseOver(event, coords) {
           if (_this2.isAllSubMenusClosed()) {
             delayedOpenSubMenu(coords.row);
@@ -12056,6 +12349,110 @@ var Menu = /* @__PURE__ */ function() {
       });
       this.hotMenu.init();
       this.hotMenu.listen();
+      var shortcutManager = this.hotMenu.getShortcutManager();
+      var menuContext = shortcutManager.addContext(SHORTCUTS_GROUP$3);
+      var config = {
+        group: SHORTCUTS_CONTEXT
+      };
+      var menuContextConfig = _objectSpread$2(_objectSpread$2({}, config), {}, {
+        runOnlyIf: function runOnlyIf(event) {
+          return isInput(event.target) === false || _this2.container.contains(event.target) === false;
+        }
+      });
+      shortcutManager.setActiveContextName("menu");
+      menuContext.addShortcuts([{
+        keys: [["Escape"]],
+        callback: function callback() {
+          _this2.keyEvent = true;
+          _this2.close();
+          _this2.keyEvent = false;
+        }
+      }, {
+        keys: [["ArrowDown"]],
+        callback: function callback() {
+          var selection = _this2.hotMenu.getSelectedLast();
+          _this2.keyEvent = true;
+          if (selection) {
+            _this2.selectNextCell(selection[0], selection[1]);
+          } else {
+            _this2.selectFirstCell();
+          }
+          _this2.keyEvent = false;
+        }
+      }, {
+        keys: [["ArrowUp"]],
+        callback: function callback() {
+          var selection = _this2.hotMenu.getSelectedLast();
+          _this2.keyEvent = true;
+          if (selection) {
+            _this2.selectPrevCell(selection[0], selection[1]);
+          } else {
+            _this2.selectLastCell();
+          }
+          _this2.keyEvent = false;
+        }
+      }, {
+        keys: [["ArrowRight"]],
+        callback: function callback() {
+          var selection = _this2.hotMenu.getSelectedLast();
+          _this2.keyEvent = true;
+          if (selection) {
+            var menu = _this2.openSubMenu(selection[0]);
+            if (menu) {
+              menu.selectFirstCell();
+            }
+          }
+          _this2.keyEvent = false;
+        }
+      }, {
+        keys: [["ArrowLeft"]],
+        callback: function callback() {
+          var selection = _this2.hotMenu.getSelectedLast();
+          _this2.keyEvent = true;
+          if (selection && _this2.isSubMenu()) {
+            _this2.close();
+            if (_this2.parentMenu) {
+              _this2.parentMenu.hotMenu.listen();
+            }
+          }
+          _this2.keyEvent = false;
+        }
+      }, {
+        keys: [["Enter"]],
+        callback: function callback(event) {
+          var selection = _this2.hotMenu.getSelectedLast();
+          _this2.keyEvent = true;
+          if (!_this2.hotMenu.getSourceDataAtRow(selection[0]).submenu) {
+            _this2.executeCommand(event);
+            _this2.close(true);
+          }
+          _this2.keyEvent = false;
+        }
+      }, {
+        keys: [["PageUp"]],
+        callback: function callback() {
+          var selection = _this2.hotMenu.getSelectedLast();
+          _this2.keyEvent = true;
+          if (selection) {
+            _this2.hotMenu.selection.transformStart(-_this2.hotMenu.countVisibleRows(), 0);
+          } else {
+            _this2.selectFirstCell();
+          }
+          _this2.keyEvent = false;
+        }
+      }, {
+        keys: [["PageDown"]],
+        callback: function callback() {
+          var selection = _this2.hotMenu.getSelectedLast();
+          _this2.keyEvent = true;
+          if (selection) {
+            _this2.hotMenu.selection.transformStart(_this2.hotMenu.countVisibleRows(), 0);
+          } else {
+            _this2.selectLastCell();
+          }
+          _this2.keyEvent = false;
+        }
+      }], menuContextConfig);
       this.blockMainTableCallbacks();
       this.runLocalHooks("afterOpen");
     }
@@ -12183,14 +12580,32 @@ var Menu = /* @__PURE__ */ function() {
         } else {
           this.setPositionBelowCursor(cursor);
         }
-        if (cursor.fitsOnRight(this.container)) {
-          this.setPositionOnRightOfCursor(cursor);
+        if (this.hot.isLtr()) {
+          this.setHorizontalPositionForLtr(cursor);
         } else {
-          this.setPositionOnLeftOfCursor(cursor);
+          this.setHorizontalPositionForRtl(cursor);
         }
       } else {
         this.setPositionBelowCursor(cursor);
         this.setPositionOnRightOfCursor(cursor);
+      }
+    }
+  }, {
+    key: "setHorizontalPositionForRtl",
+    value: function setHorizontalPositionForRtl(cursor) {
+      if (cursor.fitsOnLeft(this.container)) {
+        this.setPositionOnLeftOfCursor(cursor);
+      } else {
+        this.setPositionOnRightOfCursor(cursor);
+      }
+    }
+  }, {
+    key: "setHorizontalPositionForLtr",
+    value: function setHorizontalPositionForLtr(cursor) {
+      if (cursor.fitsOnRight(this.container)) {
+        this.setPositionOnRightOfCursor(cursor);
+      } else {
+        this.setPositionOnLeftOfCursor(cursor);
       }
     }
   }, {
@@ -12214,19 +12629,23 @@ var Menu = /* @__PURE__ */ function() {
   }, {
     key: "setPositionOnRightOfCursor",
     value: function setPositionOnRightOfCursor(cursor) {
-      var left;
+      var left = cursor.left;
       if (this.isSubMenu()) {
-        left = 1 + cursor.left + cursor.cellWidth;
+        var _this$parentMenu$cont = this.parentMenu.container.getBoundingClientRect(), parentMenuRight = _this$parentMenu$cont.right;
+        left += cursor.cellWidth + parentMenuRight - (cursor.left + cursor.cellWidth);
       } else {
-        left = this.offset.right + 1 + cursor.left;
+        left += this.offset.right;
       }
       this.container.style.left = "".concat(left, "px");
     }
   }, {
     key: "setPositionOnLeftOfCursor",
     value: function setPositionOnLeftOfCursor(cursor) {
-      var scrollbarWidth = getScrollbarWidth(this.hot.rootDocument);
-      var left = this.offset.left + cursor.left - this.container.offsetWidth + scrollbarWidth + 4;
+      var left = this.offset.left + cursor.left - this.container.offsetWidth;
+      if (this.isSubMenu()) {
+        var _this$parentMenu$cont2 = this.parentMenu.container.getBoundingClientRect(), parentMenuLeft = _this$parentMenu$cont2.left;
+        left -= cursor.left - parentMenuLeft;
+      }
       this.container.style.left = "".concat(left, "px");
     }
   }, {
@@ -12247,7 +12666,8 @@ var Menu = /* @__PURE__ */ function() {
       if (isSeparator(cell) || isDisabled(cell) || isSelectionDisabled(cell)) {
         this.selectPrevCell(lastRow, 0);
       } else {
-        this.hotMenu.selectCell(lastRow, 0);
+        this.hotMenu.selectCell(lastRow, 0, void 0, void 0, false);
+        this.hotMenu.scrollViewportTo(lastRow, 0, true, false);
       }
     }
   }, {
@@ -12393,75 +12813,9 @@ var Menu = /* @__PURE__ */ function() {
       }
     }
   }, {
-    key: "onBeforeKeyDown",
-    value: function onBeforeKeyDown(event) {
-      if (isInput(event.target) && this.container.contains(event.target)) {
-        stopImmediatePropagation(event);
-        return;
-      }
-      var selection = this.hotMenu.getSelectedLast();
-      var stopEvent = false;
-      this.keyEvent = true;
-      switch (event.keyCode) {
-        case KEY_CODES.ESCAPE:
-          this.close();
-          stopEvent = true;
-          break;
-        case KEY_CODES.ENTER:
-          if (selection) {
-            if (this.hotMenu.getSourceDataAtRow(selection[0]).submenu) {
-              stopEvent = true;
-            } else {
-              this.executeCommand(event);
-              this.close(true);
-            }
-          }
-          break;
-        case KEY_CODES.ARROW_DOWN:
-          if (selection) {
-            this.selectNextCell(selection[0], selection[1]);
-          } else {
-            this.selectFirstCell();
-          }
-          stopEvent = true;
-          break;
-        case KEY_CODES.ARROW_UP:
-          if (selection) {
-            this.selectPrevCell(selection[0], selection[1]);
-          } else {
-            this.selectLastCell();
-          }
-          stopEvent = true;
-          break;
-        case KEY_CODES.ARROW_RIGHT:
-          if (selection) {
-            var menu = this.openSubMenu(selection[0]);
-            if (menu) {
-              menu.selectFirstCell();
-            }
-          }
-          stopEvent = true;
-          break;
-        case KEY_CODES.ARROW_LEFT:
-          if (selection && this.isSubMenu()) {
-            this.close();
-            if (this.parentMenu) {
-              this.parentMenu.hotMenu.listen();
-            }
-            stopEvent = true;
-          }
-          break;
-      }
-      if (stopEvent) {
-        event.preventDefault();
-        stopImmediatePropagation(event);
-      }
-      this.keyEvent = false;
-    }
-  }, {
     key: "onAfterInit",
     value: function onAfterInit() {
-      var wtTable = this.hotMenu.view.wt.wtTable;
+      var wtTable = this.hotMenu.view._wt.wtTable;
       var data = this.hotMenu.getSettings().data;
       var hiderStyle = wtTable.hider.style;
       var holderStyle = wtTable.holder.style;
@@ -12507,20 +12861,20 @@ var Menu = /* @__PURE__ */ function() {
 }();
 mixin(Menu, localHooks);
 
-function _typeof$i(obj) {
+function _typeof$j(obj) {
   "@babel/helpers - typeof";
-  return _typeof$i = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$j = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$i(obj);
+  }, _typeof$j(obj);
 }
-function _classCallCheck$u(instance, Constructor) {
+function _classCallCheck$v(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$u(target, props) {
+function _defineProperties$v(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -12530,20 +12884,20 @@ function _defineProperties$u(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$u(Constructor, protoProps, staticProps) {
+function _createClass$v(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$u(Constructor.prototype, protoProps);
+    _defineProperties$v(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$u(Constructor, staticProps);
+    _defineProperties$v(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$g() {
+function _get$h() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$g = Reflect.get;
+    _get$h = Reflect.get;
   } else {
-    _get$g = function _get2(target, property, receiver) {
-      var base = _superPropBase$g(target, property);
+    _get$h = function _get2(target, property, receiver) {
+      var base = _superPropBase$h(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -12553,60 +12907,60 @@ function _get$g() {
       return desc.value;
     };
   }
-  return _get$g.apply(this, arguments);
+  return _get$h.apply(this, arguments);
 }
-function _superPropBase$g(object, property) {
+function _superPropBase$h(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$i(object);
+    object = _getPrototypeOf$j(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$i(subClass, superClass) {
+function _inherits$j(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$i(subClass, superClass);
+    _setPrototypeOf$j(subClass, superClass);
 }
-function _setPrototypeOf$i(o, p) {
-  _setPrototypeOf$i = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$j(o, p) {
+  _setPrototypeOf$j = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$i(o, p);
+  return _setPrototypeOf$j(o, p);
 }
-function _createSuper$i(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$i();
+function _createSuper$j(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$j();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$i(Derived), result;
+    var Super = _getPrototypeOf$j(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$i(this).constructor;
+      var NewTarget = _getPrototypeOf$j(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$i(this, result);
+    return _possibleConstructorReturn$j(this, result);
   };
 }
-function _possibleConstructorReturn$i(self, call) {
-  if (call && (_typeof$i(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$j(self, call) {
+  if (call && (_typeof$j(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$i(self);
+  return _assertThisInitialized$j(self);
 }
-function _assertThisInitialized$i(self) {
+function _assertThisInitialized$j(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$i() {
+function _isNativeReflectConstruct$j() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -12621,11 +12975,11 @@ function _isNativeReflectConstruct$i() {
     return false;
   }
 }
-function _getPrototypeOf$i(o) {
-  _getPrototypeOf$i = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$j(o) {
+  _getPrototypeOf$j = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$i(o);
+  return _getPrototypeOf$j(o);
 }
 var PLUGIN_KEY$9 = "contextMenu";
 var PLUGIN_PRIORITY$8 = 70;
@@ -12635,19 +12989,19 @@ Hooks.getSingleton().register("afterContextMenuShow");
 Hooks.getSingleton().register("afterContextMenuHide");
 Hooks.getSingleton().register("afterContextMenuExecute");
 var ContextMenu = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$i(ContextMenu2, _BasePlugin);
-  var _super = _createSuper$i(ContextMenu2);
+  _inherits$j(ContextMenu2, _BasePlugin);
+  var _super = _createSuper$j(ContextMenu2);
   function ContextMenu2(hotInstance) {
     var _this;
-    _classCallCheck$u(this, ContextMenu2);
+    _classCallCheck$v(this, ContextMenu2);
     _this = _super.call(this, hotInstance);
-    _this.eventManager = new EventManager(_assertThisInitialized$i(_this));
+    _this.eventManager = new EventManager(_assertThisInitialized$j(_this));
     _this.commandExecutor = new CommandExecutor(_this.hot);
     _this.itemsFactory = null;
     _this.menu = null;
     return _this;
   }
-  _createClass$u(ContextMenu2, [{
+  _createClass$v(ContextMenu2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$9];
@@ -12687,14 +13041,14 @@ var ContextMenu = /* @__PURE__ */ function(_BasePlugin) {
       this.addHook("afterOnCellContextMenu", function(event) {
         return _this2.onAfterOnCellContextMenu(event);
       });
-      _get$g(_getPrototypeOf$i(ContextMenu2.prototype), "enablePlugin", this).call(this);
+      _get$h(_getPrototypeOf$j(ContextMenu2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
     value: function updatePlugin() {
       this.disablePlugin();
       this.enablePlugin();
-      _get$g(_getPrototypeOf$i(ContextMenu2.prototype), "updatePlugin", this).call(this);
+      _get$h(_getPrototypeOf$j(ContextMenu2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -12704,7 +13058,7 @@ var ContextMenu = /* @__PURE__ */ function(_BasePlugin) {
         this.menu.destroy();
         this.menu = null;
       }
-      _get$g(_getPrototypeOf$i(ContextMenu2.prototype), "disablePlugin", this).call(this);
+      _get$h(_getPrototypeOf$j(ContextMenu2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "open",
@@ -12818,7 +13172,7 @@ var ContextMenu = /* @__PURE__ */ function(_BasePlugin) {
       if (this.menu) {
         this.menu.destroy();
       }
-      _get$g(_getPrototypeOf$i(ContextMenu2.prototype), "destroy", this).call(this);
+      _get$h(_getPrototypeOf$j(ContextMenu2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -12893,48 +13247,11 @@ function cutItem(copyPastePlugin) {
   };
 }
 
-function _classCallCheck$v(instance, Constructor) {
+function _classCallCheck$w(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$v(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$v(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$v(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$v(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-var ClipboardData = /* @__PURE__ */ function() {
-  function ClipboardData2() {
-    _classCallCheck$v(this, ClipboardData2);
-    this.data = {};
-  }
-  _createClass$v(ClipboardData2, [{
-    key: "setData",
-    value: function setData(type, value) {
-      this.data[type] = value;
-    }
-  }, {
-    key: "getData",
-    value: function getData(type) {
-      return this.data[type] || void 0;
-    }
-  }]);
-  return ClipboardData2;
-}();
-
 function _defineProperties$w(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -12953,27 +13270,25 @@ function _createClass$w(Constructor, protoProps, staticProps) {
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _classCallCheck$w(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
+var ClipboardData = /* @__PURE__ */ function() {
+  function ClipboardData2() {
+    _classCallCheck$w(this, ClipboardData2);
+    this.data = {};
   }
-}
-var PasteEvent = /* @__PURE__ */ _createClass$w(function PasteEvent2() {
-  _classCallCheck$w(this, PasteEvent2);
-  this.clipboardData = new ClipboardData();
-});
+  _createClass$w(ClipboardData2, [{
+    key: "setData",
+    value: function setData(type, value) {
+      this.data[type] = value;
+    }
+  }, {
+    key: "getData",
+    value: function getData(type) {
+      return this.data[type] || void 0;
+    }
+  }]);
+  return ClipboardData2;
+}();
 
-// `WeakSet` constructor
-// https://tc39.es/ecma262/#sec-weakset-constructor
-collection('WeakSet', function (init) {
-  return function WeakSet() { return init(this, arguments.length ? arguments[0] : undefined); };
-}, collectionWeak);
-
-function _classCallCheck$x(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
 function _defineProperties$x(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -12992,16 +13307,49 @@ function _createClass$x(Constructor, protoProps, staticProps) {
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
+function _classCallCheck$x(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+var PasteEvent = /* @__PURE__ */ _createClass$x(function PasteEvent2() {
+  _classCallCheck$x(this, PasteEvent2);
+  this.clipboardData = new ClipboardData();
+});
+
+function _classCallCheck$y(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$y(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$y(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$y(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$y(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
 var FocusableWrapper = /* @__PURE__ */ function() {
   function FocusableWrapper2(container) {
-    _classCallCheck$x(this, FocusableWrapper2);
+    _classCallCheck$y(this, FocusableWrapper2);
     this.rootDocument = container.defaultView ? container : container.ownerDocument;
     this.mainElement = null;
     this.eventManager = new EventManager(this);
     this.listenersCount = new WeakSet();
     this.container = container;
   }
-  _createClass$x(FocusableWrapper2, [{
+  _createClass$y(FocusableWrapper2, [{
     key: "useSecondaryElement",
     value: function useSecondaryElement() {
       var el = createOrGetSecondaryElement(this.container);
@@ -13160,20 +13508,20 @@ function _arrayWithHoles$9(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _typeof$j(obj) {
+function _typeof$k(obj) {
   "@babel/helpers - typeof";
-  return _typeof$j = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$k = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$j(obj);
+  }, _typeof$k(obj);
 }
-function _classCallCheck$y(instance, Constructor) {
+function _classCallCheck$z(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$y(target, props) {
+function _defineProperties$z(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -13183,20 +13531,20 @@ function _defineProperties$y(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$y(Constructor, protoProps, staticProps) {
+function _createClass$z(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$y(Constructor.prototype, protoProps);
+    _defineProperties$z(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$y(Constructor, staticProps);
+    _defineProperties$z(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$h() {
+function _get$i() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$h = Reflect.get;
+    _get$i = Reflect.get;
   } else {
-    _get$h = function _get2(target, property, receiver) {
-      var base = _superPropBase$h(target, property);
+    _get$i = function _get2(target, property, receiver) {
+      var base = _superPropBase$i(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -13206,60 +13554,60 @@ function _get$h() {
       return desc.value;
     };
   }
-  return _get$h.apply(this, arguments);
+  return _get$i.apply(this, arguments);
 }
-function _superPropBase$h(object, property) {
+function _superPropBase$i(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$j(object);
+    object = _getPrototypeOf$k(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$j(subClass, superClass) {
+function _inherits$k(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$j(subClass, superClass);
+    _setPrototypeOf$k(subClass, superClass);
 }
-function _setPrototypeOf$j(o, p) {
-  _setPrototypeOf$j = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$k(o, p) {
+  _setPrototypeOf$k = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$j(o, p);
+  return _setPrototypeOf$k(o, p);
 }
-function _createSuper$j(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$j();
+function _createSuper$k(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$k();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$j(Derived), result;
+    var Super = _getPrototypeOf$k(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$j(this).constructor;
+      var NewTarget = _getPrototypeOf$k(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$j(this, result);
+    return _possibleConstructorReturn$k(this, result);
   };
 }
-function _possibleConstructorReturn$j(self, call) {
-  if (call && (_typeof$j(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$k(self, call) {
+  if (call && (_typeof$k(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$j(self);
+  return _assertThisInitialized$k(self);
 }
-function _assertThisInitialized$j(self) {
+function _assertThisInitialized$k(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$j() {
+function _isNativeReflectConstruct$k() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -13274,11 +13622,11 @@ function _isNativeReflectConstruct$j() {
     return false;
   }
 }
-function _getPrototypeOf$j(o) {
-  _getPrototypeOf$j = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$k(o) {
+  _getPrototypeOf$k = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$j(o);
+  return _getPrototypeOf$k(o);
 }
 Hooks.getSingleton().register("afterCopyLimit");
 Hooks.getSingleton().register("modifyCopyableRange");
@@ -13290,16 +13638,17 @@ Hooks.getSingleton().register("beforeCopy");
 Hooks.getSingleton().register("afterCopy");
 var PLUGIN_KEY$a = "copyPaste";
 var PLUGIN_PRIORITY$9 = 80;
+var SETTING_KEYS$2 = ["fragmentSelection"];
 var ROWS_LIMIT = Infinity;
 var COLUMNS_LIMIT = Infinity;
 var privatePool$4 = new WeakMap();
 var META_HEAD = ['<meta name="generator" content="Handsontable"/>', '<style type="text/css">td{white-space:normal}br{mso-data-placement:same-cell}</style>'].join("");
 var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$j(CopyPaste2, _BasePlugin);
-  var _super = _createSuper$j(CopyPaste2);
+  _inherits$k(CopyPaste2, _BasePlugin);
+  var _super = _createSuper$k(CopyPaste2);
   function CopyPaste2(hotInstance) {
     var _this;
-    _classCallCheck$y(this, CopyPaste2);
+    _classCallCheck$z(this, CopyPaste2);
     _this = _super.call(this, hotInstance);
     _this.columnsLimit = COLUMNS_LIMIT;
     _this.copyableRanges = [];
@@ -13307,7 +13656,7 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
     _this.pasteMode = "overwrite";
     _this.rowsLimit = ROWS_LIMIT;
     _this.uiContainer = _this.hot.rootDocument.body;
-    privatePool$4.set(_assertThisInitialized$j(_this), {
+    privatePool$4.set(_assertThisInitialized$k(_this), {
       isTriggeredByCopy: false,
       isTriggeredByCut: false,
       isBeginEditing: false,
@@ -13315,7 +13664,7 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$y(CopyPaste2, [{
+  _createClass$z(CopyPaste2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$a];
@@ -13330,7 +13679,7 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
       var _this$hot$getSettings = this.hot.getSettings(), settings = _this$hot$getSettings[PLUGIN_KEY$a], fragmentSelection = _this$hot$getSettings.fragmentSelection;
       var priv = privatePool$4.get(this);
       priv.isFragmentSelectionEnabled = !!fragmentSelection;
-      if (_typeof$j(settings) === "object") {
+      if (_typeof$k(settings) === "object") {
         this.pasteMode = settings.pasteMode || this.pasteMode;
         this.rowsLimit = isNaN(settings.rowsLimit) ? this.rowsLimit : settings.rowsLimit;
         this.columnsLimit = isNaN(settings.columnsLimit) ? this.columnsLimit : settings.columnsLimit;
@@ -13356,7 +13705,7 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
       }).addLocalHook("paste", function(event) {
         return _this2.onPaste(event);
       });
-      _get$h(_getPrototypeOf$j(CopyPaste2.prototype), "enablePlugin", this).call(this);
+      _get$i(_getPrototypeOf$k(CopyPaste2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
@@ -13364,7 +13713,7 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
       this.disablePlugin();
       this.enablePlugin();
       this.getOrCreateFocusableElement();
-      _get$h(_getPrototypeOf$j(CopyPaste2.prototype), "updatePlugin", this).call(this);
+      _get$i(_getPrototypeOf$k(CopyPaste2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -13372,7 +13721,7 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
       if (this.focusableElement) {
         destroyElement(this.focusableElement);
       }
-      _get$h(_getPrototypeOf$j(CopyPaste2.prototype), "disablePlugin", this).call(this);
+      _get$i(_getPrototypeOf$k(CopyPaste2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "copy",
@@ -13473,12 +13822,12 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
       if (!selRange) {
         return;
       }
-      var topLeft = selRange.getTopLeftCorner();
-      var bottomRight = selRange.getBottomRightCorner();
-      var startRow = topLeft.row;
-      var startCol = topLeft.col;
-      var endRow = bottomRight.row;
-      var endCol = bottomRight.col;
+      var topStart = selRange.getTopStartCorner();
+      var bottomEnd = selRange.getBottomEndCorner();
+      var startRow = topStart.row;
+      var startCol = topStart.col;
+      var endRow = bottomEnd.row;
+      var endCol = bottomEnd.col;
       var finalEndRow = Math.min(endRow, startRow + this.rowsLimit - 1);
       var finalEndCol = Math.min(endCol, startCol + this.columnsLimit - 1);
       this.copyableRanges.length = 0;
@@ -13520,8 +13869,8 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
       var populatedRowsLength = inputArray.length;
       var populatedColumnsLength = inputArray[0].length;
       var newRows = [];
-      var _selection$getTopLeft = selection.getTopLeftCorner(), startRow = _selection$getTopLeft.row, startColumn = _selection$getTopLeft.col;
-      var _selection$getBottomR = selection.getBottomRightCorner(), endRowFromSelection = _selection$getBottomR.row, endColumnFromSelection = _selection$getBottomR.col;
+      var _selection$getTopStar = selection.getTopStartCorner(), startRow = _selection$getTopStar.row, startColumn = _selection$getTopStar.col;
+      var _selection$getBottomE = selection.getBottomEndCorner(), endRowFromSelection = _selection$getBottomE.row, endColumnFromSelection = _selection$getBottomE.col;
       var visualRowForPopulatedData = startRow;
       var visualColumnForPopulatedData = startColumn;
       var lastVisualRow = startRow;
@@ -13689,12 +14038,17 @@ var CopyPaste = /* @__PURE__ */ function(_BasePlugin) {
         destroyElement(this.focusableElement);
         this.focusableElement = null;
       }
-      _get$h(_getPrototypeOf$j(CopyPaste2.prototype), "destroy", this).call(this);
+      _get$i(_getPrototypeOf$k(CopyPaste2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
     get: function get() {
       return PLUGIN_KEY$a;
+    }
+  }, {
+    key: "SETTING_KEYS",
+    get: function get() {
+      return [PLUGIN_KEY$a].concat(SETTING_KEYS$2);
     }
   }, {
     key: "PLUGIN_PRIORITY",
@@ -13726,6 +14080,28 @@ function createDefaultHtBorder() {
     cornerVisible: false
   };
 }
+function normalizeBorder(border) {
+  if (isDefined(border.start) || isDefined(border.left)) {
+    var _border$start;
+    border.start = (_border$start = border.start) !== null && _border$start !== void 0 ? _border$start : border.left;
+  }
+  if (isDefined(border.end) || isDefined(border.right)) {
+    var _border$end;
+    border.end = (_border$end = border.end) !== null && _border$end !== void 0 ? _border$end : border.right;
+  }
+  delete border.left;
+  delete border.right;
+  return border;
+}
+function denormalizeBorder(border) {
+  if (isDefined(border.start)) {
+    border.left = border.start;
+  }
+  if (isDefined(border.end)) {
+    border.right = border.end;
+  }
+  return border;
+}
 function createEmptyBorders(row, col) {
   return {
     id: createId(row, col),
@@ -13733,16 +14109,16 @@ function createEmptyBorders(row, col) {
     row,
     col,
     top: createSingleEmptyBorder(),
-    right: createSingleEmptyBorder(),
     bottom: createSingleEmptyBorder(),
-    left: createSingleEmptyBorder()
+    start: createSingleEmptyBorder(),
+    end: createSingleEmptyBorder()
   };
 }
 function extendDefaultBorder(defaultBorder, customBorder) {
-  if (hasOwnProperty(customBorder, "border")) {
+  if (hasOwnProperty(customBorder, "border") && customBorder.border) {
     defaultBorder.border = customBorder.border;
   }
-  if (hasOwnProperty(customBorder, "top")) {
+  if (hasOwnProperty(customBorder, "top") && isDefined(customBorder.top)) {
     if (customBorder.top) {
       if (!isObject(customBorder.top)) {
         customBorder.top = createDefaultCustomBorder();
@@ -13753,18 +14129,7 @@ function extendDefaultBorder(defaultBorder, customBorder) {
       defaultBorder.top = customBorder.top;
     }
   }
-  if (hasOwnProperty(customBorder, "right")) {
-    if (customBorder.right) {
-      if (!isObject(customBorder.right)) {
-        customBorder.right = createDefaultCustomBorder();
-      }
-      defaultBorder.right = customBorder.right;
-    } else {
-      customBorder.right = createSingleEmptyBorder();
-      defaultBorder.right = customBorder.right;
-    }
-  }
-  if (hasOwnProperty(customBorder, "bottom")) {
+  if (hasOwnProperty(customBorder, "bottom") && isDefined(customBorder.bottom)) {
     if (customBorder.bottom) {
       if (!isObject(customBorder.bottom)) {
         customBorder.bottom = createDefaultCustomBorder();
@@ -13775,15 +14140,26 @@ function extendDefaultBorder(defaultBorder, customBorder) {
       defaultBorder.bottom = customBorder.bottom;
     }
   }
-  if (hasOwnProperty(customBorder, "left")) {
-    if (customBorder.left) {
-      if (!isObject(customBorder.left)) {
-        customBorder.left = createDefaultCustomBorder();
+  if (hasOwnProperty(customBorder, "start") && isDefined(customBorder.start)) {
+    if (customBorder.start) {
+      if (!isObject(customBorder.start)) {
+        customBorder.start = createDefaultCustomBorder();
       }
-      defaultBorder.left = customBorder.left;
+      defaultBorder.start = customBorder.start;
     } else {
-      customBorder.left = createSingleEmptyBorder();
-      defaultBorder.left = customBorder.left;
+      customBorder.start = createSingleEmptyBorder();
+      defaultBorder.start = customBorder.start;
+    }
+  }
+  if (hasOwnProperty(customBorder, "end") && isDefined(customBorder.end)) {
+    if (customBorder.end) {
+      if (!isObject(customBorder.end)) {
+        customBorder.end = createDefaultCustomBorder();
+      }
+      defaultBorder.end = customBorder.end;
+    } else {
+      customBorder.end = createSingleEmptyBorder();
+      defaultBorder.end = customBorder.end;
     }
   }
   return defaultBorder;
@@ -13814,6 +14190,21 @@ function checkSelectionBorders(hot, direction) {
 function markSelected(label) {
   return '<span class="selected">'.concat(String.fromCharCode(10003), "</span>").concat(label);
 }
+function hasLeftRightTypeOptions(borders) {
+  return borders.some(function(border) {
+    return isDefined(border.left) || isDefined(border.right);
+  });
+}
+function hasStartEndTypeOptions(borders) {
+  return borders.some(function(border) {
+    return isDefined(border.start) || isDefined(border.end);
+  });
+}
+var physicalToInlinePropNames = new Map([["left", "start"], ["right", "end"]]);
+function toInlinePropName(propName) {
+  var _physicalToInlineProp;
+  return (_physicalToInlineProp = physicalToInlinePropNames.get(propName)) !== null && _physicalToInlineProp !== void 0 ? _physicalToInlineProp : propName;
+}
 
 function bottom(customBordersPlugin) {
   return {
@@ -13834,19 +14225,20 @@ function bottom(customBordersPlugin) {
 }
 
 function left(customBordersPlugin) {
+  var borderDirection = customBordersPlugin.hot.isRtl() ? "end" : "start";
   return {
     key: "borders:left",
     name: function name() {
       var label = this.getTranslatedPhrase(CONTEXTMENU_ITEMS_BORDERS_LEFT);
-      var hasBorder = checkSelectionBorders(this, "left");
+      var hasBorder = checkSelectionBorders(this, borderDirection);
       if (hasBorder) {
         label = markSelected(label);
       }
       return label;
     },
     callback: function callback(key, selected) {
-      var hasBorder = checkSelectionBorders(this, "left");
-      customBordersPlugin.prepareBorder(selected, "left", hasBorder);
+      var hasBorder = checkSelectionBorders(this, borderDirection);
+      customBordersPlugin.prepareBorder(selected, borderDirection, hasBorder);
     }
   };
 }
@@ -13867,19 +14259,20 @@ function noBorders(customBordersPlugin) {
 }
 
 function right(customBordersPlugin) {
+  var borderDirection = customBordersPlugin.hot.isRtl() ? "start" : "end";
   return {
     key: "borders:right",
     name: function name() {
       var label = this.getTranslatedPhrase(CONTEXTMENU_ITEMS_BORDERS_RIGHT);
-      var hasBorder = checkSelectionBorders(this, "right");
+      var hasBorder = checkSelectionBorders(this, borderDirection);
       if (hasBorder) {
         label = markSelected(label);
       }
       return label;
     },
     callback: function callback(key, selected) {
-      var hasBorder = checkSelectionBorders(this, "right");
-      customBordersPlugin.prepareBorder(selected, "right", hasBorder);
+      var hasBorder = checkSelectionBorders(this, borderDirection);
+      customBordersPlugin.prepareBorder(selected, borderDirection, hasBorder);
     }
   };
 }
@@ -13902,13 +14295,13 @@ function top(customBordersPlugin) {
   };
 }
 
-function _typeof$k(obj) {
+function _typeof$l(obj) {
   "@babel/helpers - typeof";
-  return _typeof$k = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$l = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$k(obj);
+  }, _typeof$l(obj);
 }
 function _slicedToArray$9(arr, i) {
   return _arrayWithHoles$a(arr) || _iterableToArrayLimit$9(arr, i) || _unsupportedIterableToArray$d(arr, i) || _nonIterableRest$a();
@@ -13968,592 +14361,6 @@ function _iterableToArrayLimit$9(arr, i) {
 function _arrayWithHoles$a(arr) {
   if (Array.isArray(arr))
     return arr;
-}
-function _classCallCheck$z(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$z(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$z(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$z(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$z(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _get$i() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$i = Reflect.get;
-  } else {
-    _get$i = function _get2(target, property, receiver) {
-      var base = _superPropBase$i(target, property);
-      if (!base)
-        return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    };
-  }
-  return _get$i.apply(this, arguments);
-}
-function _superPropBase$i(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$k(object);
-    if (object === null)
-      break;
-  }
-  return object;
-}
-function _inherits$k(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$k(subClass, superClass);
-}
-function _setPrototypeOf$k(o, p) {
-  _setPrototypeOf$k = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$k(o, p);
-}
-function _createSuper$k(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$k();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$k(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$k(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$k(this, result);
-  };
-}
-function _possibleConstructorReturn$k(self, call) {
-  if (call && (_typeof$k(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$k(self);
-}
-function _assertThisInitialized$k(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$k() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$k(o) {
-  _getPrototypeOf$k = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$k(o);
-}
-var PLUGIN_KEY$b = "customBorders";
-var PLUGIN_PRIORITY$a = 90;
-var CustomBorders = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$k(CustomBorders2, _BasePlugin);
-  var _super = _createSuper$k(CustomBorders2);
-  function CustomBorders2(hotInstance) {
-    var _this;
-    _classCallCheck$z(this, CustomBorders2);
-    _this = _super.call(this, hotInstance);
-    _this.savedBorders = [];
-    return _this;
-  }
-  _createClass$z(CustomBorders2, [{
-    key: "isEnabled",
-    value: function isEnabled() {
-      return !!this.hot.getSettings()[PLUGIN_KEY$b];
-    }
-  }, {
-    key: "enablePlugin",
-    value: function enablePlugin() {
-      var _this2 = this;
-      if (this.enabled) {
-        return;
-      }
-      this.addHook("afterContextMenuDefaultOptions", function(options) {
-        return _this2.onAfterContextMenuDefaultOptions(options);
-      });
-      this.addHook("init", function() {
-        return _this2.onAfterInit();
-      });
-      _get$i(_getPrototypeOf$k(CustomBorders2.prototype), "enablePlugin", this).call(this);
-    }
-  }, {
-    key: "disablePlugin",
-    value: function disablePlugin() {
-      this.hideBorders();
-      _get$i(_getPrototypeOf$k(CustomBorders2.prototype), "disablePlugin", this).call(this);
-    }
-  }, {
-    key: "updatePlugin",
-    value: function updatePlugin() {
-      this.disablePlugin();
-      this.enablePlugin();
-      this.changeBorderSettings();
-      _get$i(_getPrototypeOf$k(CustomBorders2.prototype), "updatePlugin", this).call(this);
-    }
-  }, {
-    key: "setBorders",
-    value: function setBorders(selectionRanges, borderObject) {
-      var _this3 = this;
-      var defaultBorderKeys = ["top", "right", "bottom", "left"];
-      var borderKeys = borderObject ? Object.keys(borderObject) : defaultBorderKeys;
-      var selectionType = detectSelectionType(selectionRanges);
-      var selectionSchemaNormalizer = normalizeSelectionFactory(selectionType);
-      arrayEach(selectionRanges, function(selection) {
-        var _selectionSchemaNorma = selectionSchemaNormalizer(selection), _selectionSchemaNorma2 = _slicedToArray$9(_selectionSchemaNorma, 4), rowStart = _selectionSchemaNorma2[0], columnStart = _selectionSchemaNorma2[1], rowEnd = _selectionSchemaNorma2[2], columnEnd = _selectionSchemaNorma2[3];
-        var _loop = function _loop2(row2) {
-          var _loop22 = function _loop23(col2) {
-            arrayEach(borderKeys, function(borderKey) {
-              _this3.prepareBorderFromCustomAdded(row2, col2, borderObject, borderKey);
-            });
-          };
-          for (var col = columnStart; col <= columnEnd; col += 1) {
-            _loop22(col);
-          }
-        };
-        for (var row = rowStart; row <= rowEnd; row += 1) {
-          _loop(row);
-        }
-      });
-      this.hot.view.render();
-    }
-  }, {
-    key: "getBorders",
-    value: function getBorders(selectionRanges) {
-      var _this4 = this;
-      if (!Array.isArray(selectionRanges)) {
-        return this.savedBorders;
-      }
-      var selectionType = detectSelectionType(selectionRanges);
-      var selectionSchemaNormalizer = normalizeSelectionFactory(selectionType);
-      var selectedBorders = [];
-      arrayEach(selectionRanges, function(selection) {
-        var _selectionSchemaNorma3 = selectionSchemaNormalizer(selection), _selectionSchemaNorma4 = _slicedToArray$9(_selectionSchemaNorma3, 4), rowStart = _selectionSchemaNorma4[0], columnStart = _selectionSchemaNorma4[1], rowEnd = _selectionSchemaNorma4[2], columnEnd = _selectionSchemaNorma4[3];
-        var _loop3 = function _loop32(row2) {
-          var _loop4 = function _loop42(col2) {
-            arrayEach(_this4.savedBorders, function(border) {
-              if (border.row === row2 && border.col === col2) {
-                selectedBorders.push(border);
-              }
-            });
-          };
-          for (var col = columnStart; col <= columnEnd; col += 1) {
-            _loop4(col);
-          }
-        };
-        for (var row = rowStart; row <= rowEnd; row += 1) {
-          _loop3(row);
-        }
-      });
-      return selectedBorders;
-    }
-  }, {
-    key: "clearBorders",
-    value: function clearBorders(selectionRanges) {
-      var _this5 = this;
-      if (selectionRanges) {
-        this.setBorders(selectionRanges);
-      } else {
-        arrayEach(this.savedBorders, function(border) {
-          _this5.clearBordersFromSelectionSettings(border.id);
-          _this5.clearNullCellRange();
-          _this5.hot.removeCellMeta(border.row, border.col, "borders");
-        });
-        this.savedBorders.length = 0;
-      }
-    }
-  }, {
-    key: "insertBorderIntoSettings",
-    value: function insertBorderIntoSettings(border, place) {
-      var hasSavedBorders = this.checkSavedBorders(border);
-      if (!hasSavedBorders) {
-        this.savedBorders.push(border);
-      }
-      var visualCellRange = new CellRange(new CellCoords(border.row, border.col));
-      var hasCustomSelections = this.checkCustomSelections(border, visualCellRange, place);
-      if (!hasCustomSelections) {
-        this.hot.selection.highlight.addCustomSelection({
-          border,
-          visualCellRange
-        });
-      }
-    }
-  }, {
-    key: "prepareBorderFromCustomAdded",
-    value: function prepareBorderFromCustomAdded(row, column, borderDescriptor, place) {
-      var nrOfRows = this.hot.countRows();
-      var nrOfColumns = this.hot.countCols();
-      if (row >= nrOfRows || column >= nrOfColumns) {
-        return;
-      }
-      var border = createEmptyBorders(row, column);
-      if (borderDescriptor) {
-        border = extendDefaultBorder(border, borderDescriptor);
-        arrayEach(this.hot.selection.highlight.customSelections, function(customSelection) {
-          if (border.id === customSelection.settings.id) {
-            Object.assign(customSelection.settings, borderDescriptor);
-            border.id = customSelection.settings.id;
-            border.left = customSelection.settings.left;
-            border.right = customSelection.settings.right;
-            border.top = customSelection.settings.top;
-            border.bottom = customSelection.settings.bottom;
-            return false;
-          }
-        });
-      }
-      this.hot.setCellMeta(row, column, "borders", border);
-      this.insertBorderIntoSettings(border, place);
-    }
-  }, {
-    key: "prepareBorderFromCustomAddedRange",
-    value: function prepareBorderFromCustomAddedRange(rowDecriptor) {
-      var _this6 = this;
-      var range = rowDecriptor.range;
-      var lastRowIndex = Math.min(range.to.row, this.hot.countRows() - 1);
-      var lastColumnIndex = Math.min(range.to.col, this.hot.countCols() - 1);
-      rangeEach(range.from.row, lastRowIndex, function(rowIndex) {
-        rangeEach(range.from.col, lastColumnIndex, function(colIndex) {
-          var border = createEmptyBorders(rowIndex, colIndex);
-          var add = 0;
-          if (rowIndex === range.from.row) {
-            if (hasOwnProperty(rowDecriptor, "top")) {
-              add += 1;
-              border.top = rowDecriptor.top;
-            }
-          }
-          if (rowIndex === range.to.row) {
-            if (hasOwnProperty(rowDecriptor, "bottom")) {
-              add += 1;
-              border.bottom = rowDecriptor.bottom;
-            }
-          }
-          if (colIndex === range.from.col) {
-            if (hasOwnProperty(rowDecriptor, "left")) {
-              add += 1;
-              border.left = rowDecriptor.left;
-            }
-          }
-          if (colIndex === range.to.col) {
-            if (hasOwnProperty(rowDecriptor, "right")) {
-              add += 1;
-              border.right = rowDecriptor.right;
-            }
-          }
-          if (add > 0) {
-            _this6.hot.setCellMeta(rowIndex, colIndex, "borders", border);
-            _this6.insertBorderIntoSettings(border);
-          }
-        });
-      });
-    }
-  }, {
-    key: "removeAllBorders",
-    value: function removeAllBorders(row, column) {
-      var borderId = createId(row, column);
-      this.spliceBorder(borderId);
-      this.clearBordersFromSelectionSettings(borderId);
-      this.clearNullCellRange();
-      this.hot.removeCellMeta(row, column, "borders");
-    }
-  }, {
-    key: "setBorder",
-    value: function setBorder(row, column, place, remove) {
-      var bordersMeta = this.hot.getCellMeta(row, column).borders;
-      if (!bordersMeta || bordersMeta.border === void 0) {
-        bordersMeta = createEmptyBorders(row, column);
-      }
-      if (remove) {
-        bordersMeta[place] = createSingleEmptyBorder();
-        var hideCount = this.countHide(bordersMeta);
-        if (hideCount === 4) {
-          this.removeAllBorders(row, column);
-        } else {
-          var customSelectionsChecker = this.checkCustomSelectionsFromContextMenu(bordersMeta, place, remove);
-          if (!customSelectionsChecker) {
-            this.insertBorderIntoSettings(bordersMeta);
-          }
-          this.hot.setCellMeta(row, column, "borders", bordersMeta);
-        }
-      } else {
-        bordersMeta[place] = createDefaultCustomBorder();
-        var _customSelectionsChecker = this.checkCustomSelectionsFromContextMenu(bordersMeta, place, remove);
-        if (!_customSelectionsChecker) {
-          this.insertBorderIntoSettings(bordersMeta);
-        }
-        this.hot.setCellMeta(row, column, "borders", bordersMeta);
-      }
-    }
-  }, {
-    key: "prepareBorder",
-    value: function prepareBorder(selected, place, remove) {
-      var _this7 = this;
-      arrayEach(selected, function(_ref) {
-        var start = _ref.start, end = _ref.end;
-        if (start.row === end.row && start.col === end.col) {
-          if (place === "noBorders") {
-            _this7.removeAllBorders(start.row, start.col);
-          } else {
-            _this7.setBorder(start.row, start.col, place, remove);
-          }
-        } else {
-          switch (place) {
-            case "noBorders":
-              rangeEach(start.col, end.col, function(colIndex) {
-                rangeEach(start.row, end.row, function(rowIndex) {
-                  _this7.removeAllBorders(rowIndex, colIndex);
-                });
-              });
-              break;
-            case "top":
-              rangeEach(start.col, end.col, function(topCol) {
-                _this7.setBorder(start.row, topCol, place, remove);
-              });
-              break;
-            case "right":
-              rangeEach(start.row, end.row, function(rowRight) {
-                _this7.setBorder(rowRight, end.col, place, remove);
-              });
-              break;
-            case "bottom":
-              rangeEach(start.col, end.col, function(bottomCol) {
-                _this7.setBorder(end.row, bottomCol, place, remove);
-              });
-              break;
-            case "left":
-              rangeEach(start.row, end.row, function(rowLeft) {
-                _this7.setBorder(rowLeft, start.col, place, remove);
-              });
-              break;
-          }
-        }
-      });
-    }
-  }, {
-    key: "createCustomBorders",
-    value: function createCustomBorders(customBorders) {
-      var _this8 = this;
-      arrayEach(customBorders, function(customBorder) {
-        if (customBorder.range) {
-          _this8.prepareBorderFromCustomAddedRange(customBorder);
-        } else {
-          _this8.prepareBorderFromCustomAdded(customBorder.row, customBorder.col, customBorder);
-        }
-      });
-    }
-  }, {
-    key: "countHide",
-    value: function countHide(border) {
-      var values = Object.values(border);
-      return arrayReduce(values, function(accumulator, value) {
-        var result = accumulator;
-        if (value.hide) {
-          result += 1;
-        }
-        return result;
-      }, 0);
-    }
-  }, {
-    key: "clearBordersFromSelectionSettings",
-    value: function clearBordersFromSelectionSettings(borderId) {
-      var index = arrayMap(this.hot.selection.highlight.customSelections, function(customSelection) {
-        return customSelection.settings.id;
-      }).indexOf(borderId);
-      if (index > -1) {
-        this.hot.selection.highlight.customSelections[index].clear();
-      }
-    }
-  }, {
-    key: "clearNullCellRange",
-    value: function clearNullCellRange() {
-      var _this9 = this;
-      arrayEach(this.hot.selection.highlight.customSelections, function(customSelection, index) {
-        if (customSelection.cellRange === null) {
-          _this9.hot.selection.highlight.customSelections[index].destroy();
-          _this9.hot.selection.highlight.customSelections.splice(index, 1);
-          return false;
-        }
-      });
-    }
-  }, {
-    key: "hideBorders",
-    value: function hideBorders() {
-      var _this10 = this;
-      arrayEach(this.savedBorders, function(border) {
-        _this10.clearBordersFromSelectionSettings(border.id);
-        _this10.clearNullCellRange();
-      });
-    }
-  }, {
-    key: "spliceBorder",
-    value: function spliceBorder(borderId) {
-      var index = arrayMap(this.savedBorders, function(border) {
-        return border.id;
-      }).indexOf(borderId);
-      if (index > -1) {
-        this.savedBorders.splice(index, 1);
-      }
-    }
-  }, {
-    key: "checkSavedBorders",
-    value: function checkSavedBorders(border) {
-      var _this11 = this;
-      var check = false;
-      var hideCount = this.countHide(border);
-      if (hideCount === 4) {
-        this.spliceBorder(border.id);
-        check = true;
-      } else {
-        arrayEach(this.savedBorders, function(savedBorder, index) {
-          if (border.id === savedBorder.id) {
-            _this11.savedBorders[index] = border;
-            check = true;
-            return false;
-          }
-        });
-      }
-      return check;
-    }
-  }, {
-    key: "checkCustomSelectionsFromContextMenu",
-    value: function checkCustomSelectionsFromContextMenu(border, place, remove) {
-      var check = false;
-      arrayEach(this.hot.selection.highlight.customSelections, function(customSelection) {
-        if (border.id === customSelection.settings.id) {
-          objectEach(customSelection.instanceBorders, function(borderObject) {
-            borderObject.toggleHiddenClass(place, remove);
-          });
-          check = true;
-          return false;
-        }
-      });
-      return check;
-    }
-  }, {
-    key: "checkCustomSelections",
-    value: function checkCustomSelections(border, cellRange, place) {
-      var hideCount = this.countHide(border);
-      var check = false;
-      if (hideCount === 4) {
-        this.removeAllBorders(border.row, border.col);
-        check = true;
-      } else {
-        arrayEach(this.hot.selection.highlight.customSelections, function(customSelection) {
-          if (border.id === customSelection.settings.id) {
-            customSelection.visualCellRange = cellRange;
-            customSelection.commit();
-            if (place) {
-              objectEach(customSelection.instanceBorders, function(borderObject) {
-                borderObject.changeBorderStyle(place, border);
-              });
-            }
-            check = true;
-            return false;
-          }
-        });
-      }
-      return check;
-    }
-  }, {
-    key: "changeBorderSettings",
-    value: function changeBorderSettings() {
-      var customBorders = this.hot.getSettings()[PLUGIN_KEY$b];
-      if (Array.isArray(customBorders)) {
-        if (!customBorders.length) {
-          this.savedBorders = customBorders;
-        }
-        this.createCustomBorders(customBorders);
-      } else if (customBorders !== void 0) {
-        this.createCustomBorders(this.savedBorders);
-      }
-    }
-  }, {
-    key: "onAfterContextMenuDefaultOptions",
-    value: function onAfterContextMenuDefaultOptions(defaultOptions) {
-      if (!this.hot.getSettings()[PLUGIN_KEY$b]) {
-        return;
-      }
-      defaultOptions.items.push({
-        name: "---------"
-      }, {
-        key: "borders",
-        name: function name() {
-          return this.getTranslatedPhrase(CONTEXTMENU_ITEMS_BORDERS);
-        },
-        disabled: function disabled() {
-          return this.selection.isSelectedByCorner();
-        },
-        submenu: {
-          items: [top(this), right(this), bottom(this), left(this), noBorders(this)]
-        }
-      });
-    }
-  }, {
-    key: "onAfterInit",
-    value: function onAfterInit() {
-      this.changeBorderSettings();
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      _get$i(_getPrototypeOf$k(CustomBorders2.prototype), "destroy", this).call(this);
-    }
-  }], [{
-    key: "PLUGIN_KEY",
-    get: function get() {
-      return PLUGIN_KEY$b;
-    }
-  }, {
-    key: "PLUGIN_PRIORITY",
-    get: function get() {
-      return PLUGIN_PRIORITY$a;
-    }
-  }]);
-  return CustomBorders2;
-}(BasePlugin);
-
-function _typeof$l(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$l = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$l(obj);
 }
 function _classCallCheck$A(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -14667,25 +14474,33 @@ function _getPrototypeOf$l(o) {
   };
   return _getPrototypeOf$l(o);
 }
-var PLUGIN_KEY$c = "dragToScroll";
-var PLUGIN_PRIORITY$b = 100;
-var DragToScroll = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$l(DragToScroll2, _BasePlugin);
-  var _super = _createSuper$l(DragToScroll2);
-  function DragToScroll2(hotInstance) {
+function _defineProperty$8(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
+var PLUGIN_KEY$b = "customBorders";
+var PLUGIN_PRIORITY$a = 90;
+var CustomBorders = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$l(CustomBorders2, _BasePlugin);
+  var _super = _createSuper$l(CustomBorders2);
+  function CustomBorders2() {
     var _this;
-    _classCallCheck$A(this, DragToScroll2);
-    _this = _super.call(this, hotInstance);
-    _this.eventManager = new EventManager(_assertThisInitialized$l(_this));
-    _this.boundaries = null;
-    _this.callback = null;
-    _this.listening = false;
+    _classCallCheck$A(this, CustomBorders2);
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+    _this = _super.call.apply(_super, [this].concat(args));
+    _defineProperty$8(_assertThisInitialized$l(_this), "savedBorders", []);
     return _this;
   }
-  _createClass$A(DragToScroll2, [{
+  _createClass$A(CustomBorders2, [{
     key: "isEnabled",
     value: function isEnabled() {
-      return !!this.hot.getSettings()[PLUGIN_KEY$c];
+      return !!this.hot.getSettings()[PLUGIN_KEY$b];
     }
   }, {
     key: "enablePlugin",
@@ -14694,144 +14509,468 @@ var DragToScroll = /* @__PURE__ */ function(_BasePlugin) {
       if (this.enabled) {
         return;
       }
-      this.addHook("afterOnCellMouseDown", function(event) {
-        return _this2.setupListening(event);
+      this.addHook("afterContextMenuDefaultOptions", function(options) {
+        return _this2.onAfterContextMenuDefaultOptions(options);
       });
-      this.addHook("afterOnCellCornerMouseDown", function(event) {
-        return _this2.setupListening(event);
+      this.addHook("init", function() {
+        return _this2.onAfterInit();
       });
-      this.registerEvents();
-      _get$j(_getPrototypeOf$l(DragToScroll2.prototype), "enablePlugin", this).call(this);
+      _get$j(_getPrototypeOf$l(CustomBorders2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "disablePlugin",
+    value: function disablePlugin() {
+      this.hideBorders();
+      _get$j(_getPrototypeOf$l(CustomBorders2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
     value: function updatePlugin() {
       this.disablePlugin();
       this.enablePlugin();
-      _get$j(_getPrototypeOf$l(DragToScroll2.prototype), "updatePlugin", this).call(this);
+      this.changeBorderSettings();
+      _get$j(_getPrototypeOf$l(CustomBorders2.prototype), "updatePlugin", this).call(this);
     }
   }, {
-    key: "disablePlugin",
-    value: function disablePlugin() {
-      this.unregisterEvents();
-      _get$j(_getPrototypeOf$l(DragToScroll2.prototype), "disablePlugin", this).call(this);
-    }
-  }, {
-    key: "setBoundaries",
-    value: function setBoundaries(boundaries) {
-      this.boundaries = boundaries;
-    }
-  }, {
-    key: "setCallback",
-    value: function setCallback(callback) {
-      this.callback = callback;
-    }
-  }, {
-    key: "check",
-    value: function check(x, y) {
-      var diffX = 0;
-      var diffY = 0;
-      if (y < this.boundaries.top) {
-        diffY = y - this.boundaries.top;
-      } else if (y > this.boundaries.bottom) {
-        diffY = y - this.boundaries.bottom;
-      }
-      if (x < this.boundaries.left) {
-        diffX = x - this.boundaries.left;
-      } else if (x > this.boundaries.right) {
-        diffX = x - this.boundaries.right;
-      }
-      this.callback(diffX, diffY);
-    }
-  }, {
-    key: "listen",
-    value: function listen() {
-      this.listening = true;
-    }
-  }, {
-    key: "unlisten",
-    value: function unlisten() {
-      this.listening = false;
-    }
-  }, {
-    key: "isListening",
-    value: function isListening() {
-      return this.listening;
-    }
-  }, {
-    key: "registerEvents",
-    value: function registerEvents() {
+    key: "setBorders",
+    value: function setBorders(selectionRanges, borderObject) {
       var _this3 = this;
-      var rootWindow = this.hot.rootWindow;
-      var frame = rootWindow;
-      while (frame) {
-        this.eventManager.addEventListener(frame.document, "contextmenu", function() {
-          return _this3.unlisten();
-        });
-        this.eventManager.addEventListener(frame.document, "mouseup", function() {
-          return _this3.unlisten();
-        });
-        this.eventManager.addEventListener(frame.document, "mousemove", function(event) {
-          return _this3.onMouseMove(event);
-        });
-        frame = getParentWindow(frame);
+      var borderKeys = ["top", "bottom", "start", "end"];
+      var normBorder = null;
+      if (borderObject) {
+        this.checkSettingsCohesion([borderObject]);
+        borderKeys = Object.keys(borderObject);
+        normBorder = normalizeBorder(borderObject);
       }
-    }
-  }, {
-    key: "unregisterEvents",
-    value: function unregisterEvents() {
-      this.eventManager.clear();
-    }
-  }, {
-    key: "setupListening",
-    value: function setupListening(event) {
-      if (isRightClick(event)) {
-        return;
-      }
-      var scrollHandler = this.hot.view.wt.wtTable.holder;
-      if (scrollHandler === this.hot.rootWindow) {
-        return;
-      }
-      this.setBoundaries(scrollHandler.getBoundingClientRect());
-      this.setCallback(function(scrollX, scrollY) {
-        if (scrollX < 0) {
-          scrollHandler.scrollLeft -= 50;
-        } else if (scrollX > 0) {
-          scrollHandler.scrollLeft += 50;
-        }
-        if (scrollY < 0) {
-          scrollHandler.scrollTop -= 20;
-        } else if (scrollY > 0) {
-          scrollHandler.scrollTop += 20;
+      var selectionType = detectSelectionType(selectionRanges);
+      var selectionSchemaNormalizer = normalizeSelectionFactory(selectionType);
+      arrayEach(selectionRanges, function(selection) {
+        var _selectionSchemaNorma = selectionSchemaNormalizer(selection), _selectionSchemaNorma2 = _slicedToArray$9(_selectionSchemaNorma, 4), rowStart = _selectionSchemaNorma2[0], columnStart = _selectionSchemaNorma2[1], rowEnd = _selectionSchemaNorma2[2], columnEnd = _selectionSchemaNorma2[3];
+        var _loop = function _loop2(row2) {
+          var _loop22 = function _loop23(col2) {
+            arrayEach(borderKeys, function(borderKey) {
+              _this3.prepareBorderFromCustomAdded(row2, col2, normBorder, toInlinePropName(borderKey));
+            });
+          };
+          for (var col = columnStart; col <= columnEnd; col += 1) {
+            _loop22(col);
+          }
+        };
+        for (var row = rowStart; row <= rowEnd; row += 1) {
+          _loop(row);
         }
       });
-      this.listen();
+      this.hot.view.render();
     }
   }, {
-    key: "onMouseMove",
-    value: function onMouseMove(event) {
-      if (!this.isListening()) {
+    key: "getBorders",
+    value: function getBorders(selectionRanges) {
+      var _this4 = this;
+      if (!Array.isArray(selectionRanges)) {
+        return this.savedBorders;
+      }
+      var selectionType = detectSelectionType(selectionRanges);
+      var selectionSchemaNormalizer = normalizeSelectionFactory(selectionType);
+      var selectedBorders = [];
+      arrayEach(selectionRanges, function(selection) {
+        var _selectionSchemaNorma3 = selectionSchemaNormalizer(selection), _selectionSchemaNorma4 = _slicedToArray$9(_selectionSchemaNorma3, 4), rowStart = _selectionSchemaNorma4[0], columnStart = _selectionSchemaNorma4[1], rowEnd = _selectionSchemaNorma4[2], columnEnd = _selectionSchemaNorma4[3];
+        var _loop3 = function _loop32(row2) {
+          var _loop4 = function _loop42(col2) {
+            arrayEach(_this4.savedBorders, function(border) {
+              if (border.row === row2 && border.col === col2) {
+                selectedBorders.push(denormalizeBorder(border));
+              }
+            });
+          };
+          for (var col = columnStart; col <= columnEnd; col += 1) {
+            _loop4(col);
+          }
+        };
+        for (var row = rowStart; row <= rowEnd; row += 1) {
+          _loop3(row);
+        }
+      });
+      return selectedBorders;
+    }
+  }, {
+    key: "clearBorders",
+    value: function clearBorders(selectionRanges) {
+      var _this5 = this;
+      if (selectionRanges) {
+        this.setBorders(selectionRanges);
+      } else {
+        arrayEach(this.savedBorders, function(border) {
+          _this5.clearBordersFromSelectionSettings(border.id);
+          _this5.clearNullCellRange();
+          _this5.hot.removeCellMeta(border.row, border.col, "borders");
+        });
+        this.savedBorders.length = 0;
+      }
+    }
+  }, {
+    key: "insertBorderIntoSettings",
+    value: function insertBorderIntoSettings(border, place) {
+      var hasSavedBorders = this.checkSavedBorders(border);
+      if (!hasSavedBorders) {
+        this.savedBorders.push(border);
+      }
+      var visualCellRange = this.hot._createCellRange(this.hot._createCellCoords(border.row, border.col));
+      var hasCustomSelections = this.checkCustomSelections(border, visualCellRange, place);
+      if (!hasCustomSelections) {
+        this.hot.selection.highlight.addCustomSelection({
+          border,
+          visualCellRange
+        });
+      }
+    }
+  }, {
+    key: "prepareBorderFromCustomAdded",
+    value: function prepareBorderFromCustomAdded(row, column, borderDescriptor, place) {
+      var nrOfRows = this.hot.countRows();
+      var nrOfColumns = this.hot.countCols();
+      if (row >= nrOfRows || column >= nrOfColumns) {
         return;
       }
-      this.check(event.clientX, event.clientY);
+      var border = createEmptyBorders(row, column);
+      if (borderDescriptor) {
+        border = extendDefaultBorder(border, borderDescriptor);
+        arrayEach(this.hot.selection.highlight.customSelections, function(customSelection) {
+          if (border.id === customSelection.settings.id) {
+            Object.assign(customSelection.settings, borderDescriptor);
+            border.id = customSelection.settings.id;
+            border.top = customSelection.settings.top;
+            border.bottom = customSelection.settings.bottom;
+            border.start = customSelection.settings.start;
+            border.end = customSelection.settings.end;
+            return false;
+          }
+        });
+      }
+      this.hot.setCellMeta(row, column, "borders", denormalizeBorder(border));
+      this.insertBorderIntoSettings(border, place);
+    }
+  }, {
+    key: "prepareBorderFromCustomAddedRange",
+    value: function prepareBorderFromCustomAddedRange(range, customBorder) {
+      var _this6 = this;
+      var lastRowIndex = Math.min(range.to.row, this.hot.countRows() - 1);
+      var lastColumnIndex = Math.min(range.to.col, this.hot.countCols() - 1);
+      rangeEach(range.from.row, lastRowIndex, function(rowIndex) {
+        rangeEach(range.from.col, lastColumnIndex, function(colIndex) {
+          var border = createEmptyBorders(rowIndex, colIndex);
+          var add = 0;
+          if (rowIndex === range.from.row) {
+            if (hasOwnProperty(customBorder, "top")) {
+              add += 1;
+              border.top = customBorder.top;
+            }
+          }
+          if (rowIndex === range.to.row) {
+            if (hasOwnProperty(customBorder, "bottom")) {
+              add += 1;
+              border.bottom = customBorder.bottom;
+            }
+          }
+          if (colIndex === range.from.col) {
+            if (hasOwnProperty(customBorder, "start")) {
+              add += 1;
+              border.start = customBorder.start;
+            }
+          }
+          if (colIndex === range.to.col) {
+            if (hasOwnProperty(customBorder, "end")) {
+              add += 1;
+              border.end = customBorder.end;
+            }
+          }
+          if (add > 0) {
+            _this6.hot.setCellMeta(rowIndex, colIndex, "borders", denormalizeBorder(border));
+            _this6.insertBorderIntoSettings(border);
+          }
+        });
+      });
+    }
+  }, {
+    key: "removeAllBorders",
+    value: function removeAllBorders(row, column) {
+      var borderId = createId(row, column);
+      this.spliceBorder(borderId);
+      this.clearBordersFromSelectionSettings(borderId);
+      this.clearNullCellRange();
+      this.hot.removeCellMeta(row, column, "borders");
+    }
+  }, {
+    key: "setBorder",
+    value: function setBorder(row, column, place, remove) {
+      var bordersMeta = this.hot.getCellMeta(row, column).borders;
+      if (!bordersMeta || bordersMeta.border === void 0) {
+        bordersMeta = createEmptyBorders(row, column);
+      } else {
+        bordersMeta = normalizeBorder(bordersMeta);
+      }
+      if (remove) {
+        bordersMeta[place] = createSingleEmptyBorder();
+        var hideCount = this.countHide(bordersMeta);
+        if (hideCount === 4) {
+          this.removeAllBorders(row, column);
+        } else {
+          var customSelectionsChecker = this.checkCustomSelectionsFromContextMenu(bordersMeta, place, remove);
+          if (!customSelectionsChecker) {
+            this.insertBorderIntoSettings(bordersMeta);
+          }
+          this.hot.setCellMeta(row, column, "borders", denormalizeBorder(bordersMeta));
+        }
+      } else {
+        bordersMeta[place] = createDefaultCustomBorder();
+        var _customSelectionsChecker = this.checkCustomSelectionsFromContextMenu(bordersMeta, place, remove);
+        if (!_customSelectionsChecker) {
+          this.insertBorderIntoSettings(bordersMeta);
+        }
+        this.hot.setCellMeta(row, column, "borders", denormalizeBorder(bordersMeta));
+      }
+    }
+  }, {
+    key: "prepareBorder",
+    value: function prepareBorder(selected, place, remove) {
+      var _this7 = this;
+      arrayEach(selected, function(_ref) {
+        var start = _ref.start, end = _ref.end;
+        if (start.row === end.row && start.col === end.col) {
+          if (place === "noBorders") {
+            _this7.removeAllBorders(start.row, start.col);
+          } else {
+            _this7.setBorder(start.row, start.col, place, remove);
+          }
+        } else {
+          switch (place) {
+            case "noBorders":
+              rangeEach(start.col, end.col, function(colIndex) {
+                rangeEach(start.row, end.row, function(rowIndex) {
+                  _this7.removeAllBorders(rowIndex, colIndex);
+                });
+              });
+              break;
+            case "top":
+              rangeEach(start.col, end.col, function(topCol) {
+                _this7.setBorder(start.row, topCol, place, remove);
+              });
+              break;
+            case "bottom":
+              rangeEach(start.col, end.col, function(bottomCol) {
+                _this7.setBorder(end.row, bottomCol, place, remove);
+              });
+              break;
+            case "start":
+              rangeEach(start.row, end.row, function(rowStart) {
+                _this7.setBorder(rowStart, start.col, place, remove);
+              });
+              break;
+            case "end":
+              rangeEach(start.row, end.row, function(rowEnd) {
+                _this7.setBorder(rowEnd, end.col, place, remove);
+              });
+              break;
+          }
+        }
+      });
+    }
+  }, {
+    key: "createCustomBorders",
+    value: function createCustomBorders(customBorders) {
+      var _this8 = this;
+      arrayEach(customBorders, function(customBorder) {
+        var normCustomBorder = normalizeBorder(customBorder);
+        if (customBorder.range) {
+          _this8.prepareBorderFromCustomAddedRange(customBorder.range, normCustomBorder);
+        } else {
+          _this8.prepareBorderFromCustomAdded(customBorder.row, customBorder.col, normCustomBorder);
+        }
+      });
+    }
+  }, {
+    key: "countHide",
+    value: function countHide(border) {
+      var top = border.top, bottom = border.bottom, start = border.start, end = border.end;
+      var values = [top, bottom, start, end];
+      return arrayReduce(values, function(accumulator, value) {
+        var result = accumulator;
+        if (value && value.hide) {
+          result += 1;
+        }
+        return result;
+      }, 0);
+    }
+  }, {
+    key: "clearBordersFromSelectionSettings",
+    value: function clearBordersFromSelectionSettings(borderId) {
+      var index = arrayMap(this.hot.selection.highlight.customSelections, function(customSelection) {
+        return customSelection.settings.id;
+      }).indexOf(borderId);
+      if (index > -1) {
+        this.hot.selection.highlight.customSelections[index].clear();
+      }
+    }
+  }, {
+    key: "clearNullCellRange",
+    value: function clearNullCellRange() {
+      var _this9 = this;
+      arrayEach(this.hot.selection.highlight.customSelections, function(customSelection, index) {
+        if (customSelection.cellRange === null) {
+          _this9.hot.selection.highlight.customSelections[index].destroy();
+          _this9.hot.selection.highlight.customSelections.splice(index, 1);
+          return false;
+        }
+      });
+    }
+  }, {
+    key: "hideBorders",
+    value: function hideBorders() {
+      var _this10 = this;
+      arrayEach(this.savedBorders, function(border) {
+        _this10.clearBordersFromSelectionSettings(border.id);
+        _this10.clearNullCellRange();
+      });
+    }
+  }, {
+    key: "spliceBorder",
+    value: function spliceBorder(borderId) {
+      var index = arrayMap(this.savedBorders, function(border) {
+        return border.id;
+      }).indexOf(borderId);
+      if (index > -1) {
+        this.savedBorders.splice(index, 1);
+      }
+    }
+  }, {
+    key: "checkSavedBorders",
+    value: function checkSavedBorders(border) {
+      var _this11 = this;
+      var check = false;
+      var hideCount = this.countHide(border);
+      if (hideCount === 4) {
+        this.spliceBorder(border.id);
+        check = true;
+      } else {
+        arrayEach(this.savedBorders, function(savedBorder, index) {
+          if (border.id === savedBorder.id) {
+            _this11.savedBorders[index] = border;
+            check = true;
+            return false;
+          }
+        });
+      }
+      return check;
+    }
+  }, {
+    key: "checkCustomSelectionsFromContextMenu",
+    value: function checkCustomSelectionsFromContextMenu(border, place, remove) {
+      var check = false;
+      arrayEach(this.hot.selection.highlight.customSelections, function(customSelection) {
+        if (border.id === customSelection.settings.id) {
+          objectEach(customSelection.instanceBorders, function(borderObject) {
+            borderObject.toggleHiddenClass(place, remove);
+          });
+          check = true;
+          return false;
+        }
+      });
+      return check;
+    }
+  }, {
+    key: "checkCustomSelections",
+    value: function checkCustomSelections(border, cellRange, place) {
+      var hideCount = this.countHide(border);
+      var check = false;
+      if (hideCount === 4) {
+        this.removeAllBorders(border.row, border.col);
+        check = true;
+      } else {
+        arrayEach(this.hot.selection.highlight.customSelections, function(customSelection) {
+          if (border.id === customSelection.settings.id) {
+            customSelection.visualCellRange = cellRange;
+            customSelection.commit();
+            if (place) {
+              objectEach(customSelection.instanceBorders, function(borderObject) {
+                borderObject.changeBorderStyle(place, border);
+              });
+            }
+            check = true;
+            return false;
+          }
+        });
+      }
+      return check;
+    }
+  }, {
+    key: "changeBorderSettings",
+    value: function changeBorderSettings() {
+      var customBorders = this.hot.getSettings()[PLUGIN_KEY$b];
+      if (Array.isArray(customBorders)) {
+        var bordersClone = deepClone(customBorders);
+        this.checkSettingsCohesion(bordersClone);
+        if (!bordersClone.length) {
+          this.savedBorders = bordersClone;
+        }
+        this.createCustomBorders(bordersClone);
+      } else if (customBorders !== void 0) {
+        this.createCustomBorders(this.savedBorders);
+      }
+    }
+  }, {
+    key: "checkSettingsCohesion",
+    value: function checkSettingsCohesion(customBorders) {
+      var hasLeftOrRight = hasLeftRightTypeOptions(customBorders);
+      var hasStartOrEnd = hasStartEndTypeOptions(customBorders);
+      if (hasLeftOrRight && hasStartOrEnd) {
+        throw new Error('The "left"/"right" and "start"/"end" options should not be used together. Please use only the option "start"/"end".');
+      }
+      if (this.hot.isRtl() && hasLeftOrRight) {
+        throw new Error('The "left"/"right" properties are not supported for RTL. Please use option "start"/"end".');
+      }
+    }
+  }, {
+    key: "onAfterContextMenuDefaultOptions",
+    value: function onAfterContextMenuDefaultOptions(defaultOptions) {
+      if (!this.hot.getSettings()[PLUGIN_KEY$b]) {
+        return;
+      }
+      defaultOptions.items.push({
+        name: "---------"
+      }, {
+        key: "borders",
+        name: function name() {
+          return this.getTranslatedPhrase(CONTEXTMENU_ITEMS_BORDERS);
+        },
+        disabled: function disabled() {
+          return this.selection.isSelectedByCorner();
+        },
+        submenu: {
+          items: [top(this), right(this), bottom(this), left(this), noBorders(this)]
+        }
+      });
+    }
+  }, {
+    key: "onAfterInit",
+    value: function onAfterInit() {
+      this.changeBorderSettings();
     }
   }, {
     key: "destroy",
     value: function destroy() {
-      _get$j(_getPrototypeOf$l(DragToScroll2.prototype), "destroy", this).call(this);
+      _get$j(_getPrototypeOf$l(CustomBorders2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
     get: function get() {
-      return PLUGIN_KEY$c;
+      return PLUGIN_KEY$b;
     }
   }, {
     key: "PLUGIN_PRIORITY",
     get: function get() {
-      return PLUGIN_PRIORITY$b;
+      return PLUGIN_PRIORITY$a;
     }
   }]);
-  return DragToScroll2;
+  return CustomBorders2;
 }(BasePlugin);
 
 function _typeof$m(obj) {
@@ -14954,6 +15093,293 @@ function _getPrototypeOf$m(o) {
   };
   return _getPrototypeOf$m(o);
 }
+var PLUGIN_KEY$c = "dragToScroll";
+var PLUGIN_PRIORITY$b = 100;
+var DragToScroll = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$m(DragToScroll2, _BasePlugin);
+  var _super = _createSuper$m(DragToScroll2);
+  function DragToScroll2(hotInstance) {
+    var _this;
+    _classCallCheck$B(this, DragToScroll2);
+    _this = _super.call(this, hotInstance);
+    _this.eventManager = new EventManager(_assertThisInitialized$m(_this));
+    _this.boundaries = null;
+    _this.callback = null;
+    _this.listening = false;
+    return _this;
+  }
+  _createClass$B(DragToScroll2, [{
+    key: "isEnabled",
+    value: function isEnabled() {
+      return !!this.hot.getSettings()[PLUGIN_KEY$c];
+    }
+  }, {
+    key: "enablePlugin",
+    value: function enablePlugin() {
+      var _this2 = this;
+      if (this.enabled) {
+        return;
+      }
+      this.addHook("afterOnCellMouseDown", function(event) {
+        return _this2.setupListening(event);
+      });
+      this.addHook("afterOnCellCornerMouseDown", function(event) {
+        return _this2.setupListening(event);
+      });
+      this.registerEvents();
+      _get$k(_getPrototypeOf$m(DragToScroll2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "updatePlugin",
+    value: function updatePlugin() {
+      this.disablePlugin();
+      this.enablePlugin();
+      _get$k(_getPrototypeOf$m(DragToScroll2.prototype), "updatePlugin", this).call(this);
+    }
+  }, {
+    key: "disablePlugin",
+    value: function disablePlugin() {
+      this.unregisterEvents();
+      _get$k(_getPrototypeOf$m(DragToScroll2.prototype), "disablePlugin", this).call(this);
+    }
+  }, {
+    key: "setBoundaries",
+    value: function setBoundaries(boundaries) {
+      this.boundaries = boundaries;
+    }
+  }, {
+    key: "setCallback",
+    value: function setCallback(callback) {
+      this.callback = callback;
+    }
+  }, {
+    key: "check",
+    value: function check(x, y) {
+      var diffX = 0;
+      var diffY = 0;
+      if (y < this.boundaries.top) {
+        diffY = y - this.boundaries.top;
+      } else if (y > this.boundaries.bottom) {
+        diffY = y - this.boundaries.bottom;
+      }
+      if (x < this.boundaries.left) {
+        diffX = x - this.boundaries.left;
+      } else if (x > this.boundaries.right) {
+        diffX = x - this.boundaries.right;
+      }
+      this.callback(diffX, diffY);
+    }
+  }, {
+    key: "listen",
+    value: function listen() {
+      this.listening = true;
+    }
+  }, {
+    key: "unlisten",
+    value: function unlisten() {
+      this.listening = false;
+    }
+  }, {
+    key: "isListening",
+    value: function isListening() {
+      return this.listening;
+    }
+  }, {
+    key: "registerEvents",
+    value: function registerEvents() {
+      var _this3 = this;
+      var rootWindow = this.hot.rootWindow;
+      var frame = rootWindow;
+      while (frame) {
+        this.eventManager.addEventListener(frame.document, "contextmenu", function() {
+          return _this3.unlisten();
+        });
+        this.eventManager.addEventListener(frame.document, "mouseup", function() {
+          return _this3.unlisten();
+        });
+        this.eventManager.addEventListener(frame.document, "mousemove", function(event) {
+          return _this3.onMouseMove(event);
+        });
+        frame = getParentWindow(frame);
+      }
+    }
+  }, {
+    key: "unregisterEvents",
+    value: function unregisterEvents() {
+      this.eventManager.clear();
+    }
+  }, {
+    key: "setupListening",
+    value: function setupListening(event) {
+      if (isRightClick(event)) {
+        return;
+      }
+      var scrollHandler = this.hot.view._wt.wtTable.holder;
+      if (scrollHandler === this.hot.rootWindow) {
+        return;
+      }
+      this.setBoundaries(scrollHandler.getBoundingClientRect());
+      this.setCallback(function(scrollX, scrollY) {
+        if (scrollX < 0) {
+          scrollHandler.scrollLeft -= 50;
+        } else if (scrollX > 0) {
+          scrollHandler.scrollLeft += 50;
+        }
+        if (scrollY < 0) {
+          scrollHandler.scrollTop -= 20;
+        } else if (scrollY > 0) {
+          scrollHandler.scrollTop += 20;
+        }
+      });
+      this.listen();
+    }
+  }, {
+    key: "onMouseMove",
+    value: function onMouseMove(event) {
+      if (!this.isListening()) {
+        return;
+      }
+      this.check(event.clientX, event.clientY);
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      _get$k(_getPrototypeOf$m(DragToScroll2.prototype), "destroy", this).call(this);
+    }
+  }], [{
+    key: "PLUGIN_KEY",
+    get: function get() {
+      return PLUGIN_KEY$c;
+    }
+  }, {
+    key: "PLUGIN_PRIORITY",
+    get: function get() {
+      return PLUGIN_PRIORITY$b;
+    }
+  }]);
+  return DragToScroll2;
+}(BasePlugin);
+
+function _typeof$n(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$n = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$n(obj);
+}
+function _classCallCheck$C(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$C(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$C(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$C(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$C(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _get$l() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$l = Reflect.get;
+  } else {
+    _get$l = function _get2(target, property, receiver) {
+      var base = _superPropBase$l(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$l.apply(this, arguments);
+}
+function _superPropBase$l(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$n(object);
+    if (object === null)
+      break;
+  }
+  return object;
+}
+function _inherits$n(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$n(subClass, superClass);
+}
+function _setPrototypeOf$n(o, p) {
+  _setPrototypeOf$n = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$n(o, p);
+}
+function _createSuper$n(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$n();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$n(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$n(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$n(this, result);
+  };
+}
+function _possibleConstructorReturn$n(self, call) {
+  if (call && (_typeof$n(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$n(self);
+}
+function _assertThisInitialized$n(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$n() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$n(o) {
+  _getPrototypeOf$n = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$n(o);
+}
 Hooks.getSingleton().register("afterDropdownMenuDefaultOptions");
 Hooks.getSingleton().register("beforeDropdownMenuShow");
 Hooks.getSingleton().register("afterDropdownMenuShow");
@@ -14963,13 +15389,13 @@ var PLUGIN_KEY$d = "dropdownMenu";
 var PLUGIN_PRIORITY$c = 230;
 var BUTTON_CLASS_NAME = "changeType";
 var DropdownMenu = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$m(DropdownMenu2, _BasePlugin);
-  var _super = _createSuper$m(DropdownMenu2);
+  _inherits$n(DropdownMenu2, _BasePlugin);
+  var _super = _createSuper$n(DropdownMenu2);
   function DropdownMenu2(hotInstance) {
     var _this;
-    _classCallCheck$B(this, DropdownMenu2);
+    _classCallCheck$C(this, DropdownMenu2);
     _this = _super.call(this, hotInstance);
-    _this.eventManager = new EventManager(_assertThisInitialized$m(_this));
+    _this.eventManager = new EventManager(_assertThisInitialized$n(_this));
     _this.commandExecutor = new CommandExecutor(_this.hot);
     _this.itemsFactory = null;
     _this.menu = null;
@@ -14978,7 +15404,7 @@ var DropdownMenu = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$B(DropdownMenu2, [{
+  _createClass$C(DropdownMenu2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return this.hot.getSettings()[PLUGIN_KEY$d];
@@ -14999,7 +15425,7 @@ var DropdownMenu = /* @__PURE__ */ function(_BasePlugin) {
       if (typeof settings.callback === "function") {
         this.commandExecutor.setCommonCallback(settings.callback);
       }
-      _get$k(_getPrototypeOf$m(DropdownMenu2.prototype), "enablePlugin", this).call(this);
+      _get$l(_getPrototypeOf$n(DropdownMenu2.prototype), "enablePlugin", this).call(this);
       this.callOnPluginsReady(function() {
         _this2.hot.runHooks("afterDropdownMenuDefaultOptions", predefinedItems);
         _this2.itemsFactory.setPredefinedItems(predefinedItems.items);
@@ -15040,7 +15466,7 @@ var DropdownMenu = /* @__PURE__ */ function(_BasePlugin) {
     value: function updatePlugin() {
       this.disablePlugin();
       this.enablePlugin();
-      _get$k(_getPrototypeOf$m(DropdownMenu2.prototype), "updatePlugin", this).call(this);
+      _get$l(_getPrototypeOf$n(DropdownMenu2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -15049,7 +15475,7 @@ var DropdownMenu = /* @__PURE__ */ function(_BasePlugin) {
       if (this.menu) {
         this.menu.destroy();
       }
-      _get$k(_getPrototypeOf$m(DropdownMenu2.prototype), "disablePlugin", this).call(this);
+      _get$l(_getPrototypeOf$n(DropdownMenu2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "registerEvents",
@@ -15174,7 +15600,7 @@ var DropdownMenu = /* @__PURE__ */ function(_BasePlugin) {
       if (this.menu) {
         this.menu.destroy();
       }
-      _get$k(_getPrototypeOf$m(DropdownMenu2.prototype), "destroy", this).call(this);
+      _get$l(_getPrototypeOf$n(DropdownMenu2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -15262,12 +15688,12 @@ function _arrayWithHoles$b(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$C(instance, Constructor) {
+function _classCallCheck$D(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$C(target, props) {
+function _defineProperties$D(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -15277,21 +15703,21 @@ function _defineProperties$C(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$C(Constructor, protoProps, staticProps) {
+function _createClass$D(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$C(Constructor.prototype, protoProps);
+    _defineProperties$D(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$C(Constructor, staticProps);
+    _defineProperties$D(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var DataProvider = /* @__PURE__ */ function() {
   function DataProvider2(hotInstance) {
-    _classCallCheck$C(this, DataProvider2);
+    _classCallCheck$D(this, DataProvider2);
     this.hot = hotInstance;
     this.options = {};
   }
-  _createClass$C(DataProvider2, [{
+  _createClass$D(DataProvider2, [{
     key: "setOptions",
     value: function setOptions(options) {
       this.options = options;
@@ -15383,12 +15809,12 @@ var DataProvider = /* @__PURE__ */ function() {
   return DataProvider2;
 }();
 
-function _classCallCheck$D(instance, Constructor) {
+function _classCallCheck$E(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$D(target, props) {
+function _defineProperties$E(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -15398,22 +15824,22 @@ function _defineProperties$D(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$D(Constructor, protoProps, staticProps) {
+function _createClass$E(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$D(Constructor.prototype, protoProps);
+    _defineProperties$E(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$D(Constructor, staticProps);
+    _defineProperties$E(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var BaseType = /* @__PURE__ */ function() {
   function BaseType2(dataProvider, options) {
-    _classCallCheck$D(this, BaseType2);
+    _classCallCheck$E(this, BaseType2);
     this.dataProvider = dataProvider;
     this.options = this._mergeOptions(options);
     this.dataProvider.setOptions(this.options);
   }
-  _createClass$D(BaseType2, [{
+  _createClass$E(BaseType2, [{
     key: "_mergeOptions",
     value: function _mergeOptions(options) {
       var _options = clone(this.constructor.DEFAULT_OPTIONS);
@@ -15446,188 +15872,6 @@ var BaseType = /* @__PURE__ */ function() {
   }]);
   return BaseType2;
 }();
-
-function _typeof$n(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$n = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$n(obj);
-}
-function _classCallCheck$E(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$E(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$E(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$E(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$E(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _inherits$n(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$n(subClass, superClass);
-}
-function _setPrototypeOf$n(o, p) {
-  _setPrototypeOf$n = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$n(o, p);
-}
-function _createSuper$n(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$n();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$n(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$n(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$n(this, result);
-  };
-}
-function _possibleConstructorReturn$n(self, call) {
-  if (call && (_typeof$n(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$n(self);
-}
-function _assertThisInitialized$n(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$n() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$n(o) {
-  _getPrototypeOf$n = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$n(o);
-}
-var CHAR_CARRIAGE_RETURN = String.fromCharCode(13);
-var CHAR_DOUBLE_QUOTES = String.fromCharCode(34);
-var CHAR_LINE_FEED = String.fromCharCode(10);
-var Csv = /* @__PURE__ */ function(_BaseType) {
-  _inherits$n(Csv2, _BaseType);
-  var _super = _createSuper$n(Csv2);
-  function Csv2() {
-    _classCallCheck$E(this, Csv2);
-    return _super.apply(this, arguments);
-  }
-  _createClass$E(Csv2, [{
-    key: "export",
-    value: function _export() {
-      var _this = this;
-      var options = this.options;
-      var data = this.dataProvider.getData();
-      var columnHeaders = this.dataProvider.getColumnHeaders();
-      var hasColumnHeaders = columnHeaders.length > 0;
-      var rowHeaders = this.dataProvider.getRowHeaders();
-      var hasRowHeaders = rowHeaders.length > 0;
-      var result = options.bom ? String.fromCharCode(65279) : "";
-      if (hasColumnHeaders) {
-        columnHeaders = arrayMap(columnHeaders, function(value) {
-          return _this._escapeCell(value, true);
-        });
-        if (hasRowHeaders) {
-          result += options.columnDelimiter;
-        }
-        result += columnHeaders.join(options.columnDelimiter);
-        result += options.rowDelimiter;
-      }
-      arrayEach(data, function(value, index) {
-        if (index > 0) {
-          result += options.rowDelimiter;
-        }
-        if (hasRowHeaders) {
-          result += _this._escapeCell(rowHeaders[index]) + options.columnDelimiter;
-        }
-        result += value.map(function(cellValue) {
-          return _this._escapeCell(cellValue);
-        }).join(options.columnDelimiter);
-      });
-      return result;
-    }
-  }, {
-    key: "_escapeCell",
-    value: function _escapeCell(value) {
-      var force = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
-      var escapedValue = stringify(value);
-      if (escapedValue !== "" && (force || escapedValue.indexOf(CHAR_CARRIAGE_RETURN) >= 0 || escapedValue.indexOf(CHAR_DOUBLE_QUOTES) >= 0 || escapedValue.indexOf(CHAR_LINE_FEED) >= 0 || escapedValue.indexOf(this.options.columnDelimiter) >= 0)) {
-        escapedValue = escapedValue.replace(new RegExp('"', "g"), '""');
-        escapedValue = '"'.concat(escapedValue, '"');
-      }
-      return escapedValue;
-    }
-  }], [{
-    key: "DEFAULT_OPTIONS",
-    get: function get() {
-      return {
-        mimeType: "text/csv",
-        fileExtension: "csv",
-        bom: true,
-        columnDelimiter: ",",
-        rowDelimiter: "\r\n"
-      };
-    }
-  }]);
-  return Csv2;
-}(BaseType);
-
-function _defineProperty$7(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
-  } else {
-    obj[key] = value;
-  }
-  return obj;
-}
-var TYPE_CSV = "csv";
-var EXPORT_TYPES = _defineProperty$7({}, TYPE_CSV, Csv);
-function typeFactory(type, dataProvider, options) {
-  if (typeof EXPORT_TYPES[type] === "function") {
-    return new EXPORT_TYPES[type](dataProvider, options);
-  }
-  return null;
-}
 
 function _typeof$o(obj) {
   "@babel/helpers - typeof";
@@ -15724,16 +15968,198 @@ function _getPrototypeOf$o(o) {
   };
   return _getPrototypeOf$o(o);
 }
+var CHAR_CARRIAGE_RETURN = String.fromCharCode(13);
+var CHAR_DOUBLE_QUOTES = String.fromCharCode(34);
+var CHAR_LINE_FEED = String.fromCharCode(10);
+var Csv = /* @__PURE__ */ function(_BaseType) {
+  _inherits$o(Csv2, _BaseType);
+  var _super = _createSuper$o(Csv2);
+  function Csv2() {
+    _classCallCheck$F(this, Csv2);
+    return _super.apply(this, arguments);
+  }
+  _createClass$F(Csv2, [{
+    key: "export",
+    value: function _export() {
+      var _this = this;
+      var options = this.options;
+      var data = this.dataProvider.getData();
+      var columnHeaders = this.dataProvider.getColumnHeaders();
+      var hasColumnHeaders = columnHeaders.length > 0;
+      var rowHeaders = this.dataProvider.getRowHeaders();
+      var hasRowHeaders = rowHeaders.length > 0;
+      var result = options.bom ? String.fromCharCode(65279) : "";
+      if (hasColumnHeaders) {
+        columnHeaders = arrayMap(columnHeaders, function(value) {
+          return _this._escapeCell(value, true);
+        });
+        if (hasRowHeaders) {
+          result += options.columnDelimiter;
+        }
+        result += columnHeaders.join(options.columnDelimiter);
+        result += options.rowDelimiter;
+      }
+      arrayEach(data, function(value, index) {
+        if (index > 0) {
+          result += options.rowDelimiter;
+        }
+        if (hasRowHeaders) {
+          result += _this._escapeCell(rowHeaders[index]) + options.columnDelimiter;
+        }
+        result += value.map(function(cellValue) {
+          return _this._escapeCell(cellValue);
+        }).join(options.columnDelimiter);
+      });
+      return result;
+    }
+  }, {
+    key: "_escapeCell",
+    value: function _escapeCell(value) {
+      var force = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
+      var escapedValue = stringify(value);
+      if (escapedValue !== "" && (force || escapedValue.indexOf(CHAR_CARRIAGE_RETURN) >= 0 || escapedValue.indexOf(CHAR_DOUBLE_QUOTES) >= 0 || escapedValue.indexOf(CHAR_LINE_FEED) >= 0 || escapedValue.indexOf(this.options.columnDelimiter) >= 0)) {
+        escapedValue = escapedValue.replace(new RegExp('"', "g"), '""');
+        escapedValue = '"'.concat(escapedValue, '"');
+      }
+      return escapedValue;
+    }
+  }], [{
+    key: "DEFAULT_OPTIONS",
+    get: function get() {
+      return {
+        mimeType: "text/csv",
+        fileExtension: "csv",
+        bom: true,
+        columnDelimiter: ",",
+        rowDelimiter: "\r\n"
+      };
+    }
+  }]);
+  return Csv2;
+}(BaseType);
+
+function _defineProperty$9(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
+var TYPE_CSV = "csv";
+var EXPORT_TYPES = _defineProperty$9({}, TYPE_CSV, Csv);
+function typeFactory(type, dataProvider, options) {
+  if (typeof EXPORT_TYPES[type] === "function") {
+    return new EXPORT_TYPES[type](dataProvider, options);
+  }
+  return null;
+}
+
+function _typeof$p(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$p = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$p(obj);
+}
+function _classCallCheck$G(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$G(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$G(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$G(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$G(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _inherits$p(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$p(subClass, superClass);
+}
+function _setPrototypeOf$p(o, p) {
+  _setPrototypeOf$p = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$p(o, p);
+}
+function _createSuper$p(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$p();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$p(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$p(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$p(this, result);
+  };
+}
+function _possibleConstructorReturn$p(self, call) {
+  if (call && (_typeof$p(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$p(self);
+}
+function _assertThisInitialized$p(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$p() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$p(o) {
+  _getPrototypeOf$p = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$p(o);
+}
 var PLUGIN_KEY$e = "exportFile";
 var PLUGIN_PRIORITY$d = 240;
 var ExportFile = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$o(ExportFile2, _BasePlugin);
-  var _super = _createSuper$o(ExportFile2);
+  _inherits$p(ExportFile2, _BasePlugin);
+  var _super = _createSuper$p(ExportFile2);
   function ExportFile2() {
-    _classCallCheck$F(this, ExportFile2);
+    _classCallCheck$G(this, ExportFile2);
     return _super.apply(this, arguments);
   }
-  _createClass$F(ExportFile2, [{
+  _createClass$G(ExportFile2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return true;
@@ -15809,12 +16235,12 @@ var ExportFile = /* @__PURE__ */ function(_BasePlugin) {
   return ExportFile2;
 }(BasePlugin);
 
-function _classCallCheck$G(instance, Constructor) {
+function _classCallCheck$H(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$G(target, props) {
+function _defineProperties$H(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -15824,18 +16250,18 @@ function _defineProperties$G(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$G(Constructor, protoProps, staticProps) {
+function _createClass$H(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$G(Constructor.prototype, protoProps);
+    _defineProperties$H(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$G(Constructor, staticProps);
+    _defineProperties$H(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var BaseComponent = /* @__PURE__ */ function() {
   function BaseComponent2(hotInstance, _ref) {
     var id = _ref.id, _ref$stateless = _ref.stateless, stateless = _ref$stateless === void 0 ? true : _ref$stateless;
-    _classCallCheck$G(this, BaseComponent2);
+    _classCallCheck$H(this, BaseComponent2);
     this.hot = hotInstance;
     this.id = id;
     this.elements = [];
@@ -15843,7 +16269,7 @@ var BaseComponent = /* @__PURE__ */ function() {
     this.stateId = "Filters.component.".concat(this.id);
     this.state = stateless ? null : this.hot.columnIndexMapper.registerMap(this.stateId, new LinkedPhysicalIndexToValueMap());
   }
-  _createClass$G(BaseComponent2, [{
+  _createClass$H(BaseComponent2, [{
     key: "reset",
     value: function reset() {
       arrayEach(this.elements, function(ui) {
@@ -16402,8 +16828,8 @@ function _arrayWithHoles$h(arr) {
 var CONDITION_NAME$9 = "date_after";
 function condition$9(dataRow, _ref) {
   var _ref2 = _slicedToArray$g(_ref, 1), value = _ref2[0];
-  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
-  var inputDate = hooks$1(value, dataRow.meta.dateFormat);
+  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
+  var inputDate = hooks(value, dataRow.meta.dateFormat);
   if (!date.isValid() || !inputDate.isValid()) {
     return false;
   }
@@ -16477,8 +16903,8 @@ function _arrayWithHoles$i(arr) {
 var CONDITION_NAME$a = "date_before";
 function condition$a(dataRow, _ref) {
   var _ref2 = _slicedToArray$h(_ref, 1), value = _ref2[0];
-  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
-  var inputDate = hooks$1(value, dataRow.meta.dateFormat);
+  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
+  var inputDate = hooks(value, dataRow.meta.dateFormat);
   if (!date.isValid() || !inputDate.isValid()) {
     return false;
   }
@@ -16804,11 +17230,11 @@ registerCondition(CONDITION_NAME$g, condition$g, {
 
 var CONDITION_NAME$h = "date_tomorrow";
 function condition$h(dataRow) {
-  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
+  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
   if (!date.isValid()) {
     return false;
   }
-  return date.isSame(hooks$1().subtract(-1, "days").startOf("day"), "d");
+  return date.isSame(hooks().subtract(-1, "days").startOf("day"), "d");
 }
 registerCondition(CONDITION_NAME$h, condition$h, {
   name: FILTERS_CONDITIONS_TOMORROW,
@@ -16817,11 +17243,11 @@ registerCondition(CONDITION_NAME$h, condition$h, {
 
 var CONDITION_NAME$i = "date_today";
 function condition$i(dataRow) {
-  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
+  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
   if (!date.isValid()) {
     return false;
   }
-  return date.isSame(hooks$1().startOf("day"), "d");
+  return date.isSame(hooks().startOf("day"), "d");
 }
 registerCondition(CONDITION_NAME$i, condition$i, {
   name: FILTERS_CONDITIONS_TODAY,
@@ -16830,11 +17256,11 @@ registerCondition(CONDITION_NAME$i, condition$i, {
 
 var CONDITION_NAME$j = "date_yesterday";
 function condition$j(dataRow) {
-  var date = hooks$1(dataRow.value, dataRow.meta.dateFormat);
+  var date = hooks(dataRow.value, dataRow.meta.dateFormat);
   if (!date.isValid()) {
     return false;
   }
-  return date.isSame(hooks$1().subtract(1, "days").startOf("day"), "d");
+  return date.isSame(hooks().subtract(1, "days").startOf("day"), "d");
 }
 registerCondition(CONDITION_NAME$j, condition$j, {
   name: FILTERS_CONDITIONS_YESTERDAY,
@@ -17037,7 +17463,7 @@ function operationResult$2(conditions, value) {
 registerOperation(OPERATION_ID$2, SHORT_NAME_FOR_COMPONENT$2, operationResult$2);
 
 var _TYPES;
-function _defineProperty$8(obj, key, value) {
+function _defineProperty$a(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -17048,7 +17474,7 @@ function _defineProperty$8(obj, key, value) {
 var TYPE_NUMERIC = "numeric";
 var TYPE_TEXT = "text";
 var TYPE_DATE = "date";
-var TYPES = (_TYPES = {}, _defineProperty$8(_TYPES, TYPE_NUMERIC, [CONDITION_NAME, KEY, CONDITION_NAME$1, CONDITION_NAME$2, KEY, CONDITION_NAME$3, CONDITION_NAME$4, KEY, CONDITION_NAME$5, CONDITION_NAME$6, CONDITION_NAME$7, CONDITION_NAME$8, CONDITION_NAME$b, CONDITION_NAME$c]), _defineProperty$8(_TYPES, TYPE_TEXT, [CONDITION_NAME, KEY, CONDITION_NAME$1, CONDITION_NAME$2, KEY, CONDITION_NAME$3, CONDITION_NAME$4, KEY, CONDITION_NAME$d, CONDITION_NAME$e, KEY, CONDITION_NAME$f, CONDITION_NAME$g]), _defineProperty$8(_TYPES, TYPE_DATE, [CONDITION_NAME, KEY, CONDITION_NAME$1, CONDITION_NAME$2, KEY, CONDITION_NAME$3, CONDITION_NAME$4, KEY, CONDITION_NAME$a, CONDITION_NAME$9, CONDITION_NAME$b, KEY, CONDITION_NAME$h, CONDITION_NAME$i, CONDITION_NAME$j]), _TYPES);
+var TYPES = (_TYPES = {}, _defineProperty$a(_TYPES, TYPE_NUMERIC, [CONDITION_NAME, KEY, CONDITION_NAME$1, CONDITION_NAME$2, KEY, CONDITION_NAME$3, CONDITION_NAME$4, KEY, CONDITION_NAME$5, CONDITION_NAME$6, CONDITION_NAME$7, CONDITION_NAME$8, CONDITION_NAME$b, CONDITION_NAME$c]), _defineProperty$a(_TYPES, TYPE_TEXT, [CONDITION_NAME, KEY, CONDITION_NAME$1, CONDITION_NAME$2, KEY, CONDITION_NAME$3, CONDITION_NAME$4, KEY, CONDITION_NAME$d, CONDITION_NAME$e, KEY, CONDITION_NAME$f, CONDITION_NAME$g]), _defineProperty$a(_TYPES, TYPE_DATE, [CONDITION_NAME, KEY, CONDITION_NAME$1, CONDITION_NAME$2, KEY, CONDITION_NAME$3, CONDITION_NAME$4, KEY, CONDITION_NAME$a, CONDITION_NAME$9, CONDITION_NAME$b, KEY, CONDITION_NAME$h, CONDITION_NAME$i, CONDITION_NAME$j]), _TYPES);
 function getOptionsList(type) {
   var items = [];
   var typeName = type;
@@ -17069,12 +17495,12 @@ function getOptionsList(type) {
   return items;
 }
 
-function _classCallCheck$H(instance, Constructor) {
+function _classCallCheck$I(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$H(target, props) {
+function _defineProperties$I(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -17084,11 +17510,11 @@ function _defineProperties$H(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$H(Constructor, protoProps, staticProps) {
+function _createClass$I(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$H(Constructor.prototype, protoProps);
+    _defineProperties$I(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$H(Constructor, staticProps);
+    _defineProperties$I(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -17097,14 +17523,14 @@ var STATE_BUILDING = "building";
 var EVENTS_TO_REGISTER = ["click", "input", "keydown", "keypress", "keyup", "focus", "blur", "change"];
 var BaseUI = /* @__PURE__ */ function() {
   function BaseUI2(hotInstance, options) {
-    _classCallCheck$H(this, BaseUI2);
+    _classCallCheck$I(this, BaseUI2);
     this.hot = hotInstance;
     this.eventManager = new EventManager(this);
     this.options = extend(BaseUI2.DEFAULTS, options);
     this._element = this.hot.rootDocument.createElement(this.options.wrapIt ? "div" : this.options.tagName);
     this.buildState = null;
   }
-  _createClass$H(BaseUI2, [{
+  _createClass$I(BaseUI2, [{
     key: "setValue",
     value: function setValue(value) {
       this.options.value = value;
@@ -17230,201 +17656,6 @@ var BaseUI = /* @__PURE__ */ function() {
 }();
 mixin(BaseUI, localHooks);
 
-function _typeof$p(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$p = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$p(obj);
-}
-function _classCallCheck$I(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$I(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$I(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$I(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$I(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _get$l() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$l = Reflect.get;
-  } else {
-    _get$l = function _get2(target, property, receiver) {
-      var base = _superPropBase$l(target, property);
-      if (!base)
-        return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    };
-  }
-  return _get$l.apply(this, arguments);
-}
-function _superPropBase$l(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$p(object);
-    if (object === null)
-      break;
-  }
-  return object;
-}
-function _inherits$p(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$p(subClass, superClass);
-}
-function _setPrototypeOf$p(o, p) {
-  _setPrototypeOf$p = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$p(o, p);
-}
-function _createSuper$p(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$p();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$p(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$p(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$p(this, result);
-  };
-}
-function _possibleConstructorReturn$p(self, call) {
-  if (call && (_typeof$p(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$p(self);
-}
-function _assertThisInitialized$p(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$p() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$p(o) {
-  _getPrototypeOf$p = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$p(o);
-}
-var privatePool$5 = new WeakMap();
-var InputUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$p(InputUI2, _BaseUI);
-  var _super = _createSuper$p(InputUI2);
-  function InputUI2(hotInstance, options) {
-    var _this;
-    _classCallCheck$I(this, InputUI2);
-    _this = _super.call(this, hotInstance, extend(InputUI2.DEFAULTS, options));
-    privatePool$5.set(_assertThisInitialized$p(_this), {});
-    _this.registerHooks();
-    return _this;
-  }
-  _createClass$I(InputUI2, [{
-    key: "registerHooks",
-    value: function registerHooks() {
-      var _this2 = this;
-      this.addLocalHook("click", function() {
-        return _this2.onClick();
-      });
-      this.addLocalHook("keyup", function(event) {
-        return _this2.onKeyup(event);
-      });
-    }
-  }, {
-    key: "build",
-    value: function build() {
-      _get$l(_getPrototypeOf$p(InputUI2.prototype), "build", this).call(this);
-      var priv = privatePool$5.get(this);
-      var icon = this.hot.rootDocument.createElement("div");
-      priv.input = this._element.firstChild;
-      addClass(this._element, "htUIInput");
-      addClass(icon, "htUIInputIcon");
-      this._element.appendChild(icon);
-      this.update();
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      if (!this.isBuilt()) {
-        return;
-      }
-      var input = privatePool$5.get(this).input;
-      input.type = this.options.type;
-      input.placeholder = this.translateIfPossible(this.options.placeholder);
-      input.value = this.translateIfPossible(this.options.value);
-    }
-  }, {
-    key: "focus",
-    value: function focus() {
-      if (this.isBuilt()) {
-        privatePool$5.get(this).input.focus();
-      }
-    }
-  }, {
-    key: "onClick",
-    value: function onClick() {
-    }
-  }, {
-    key: "onKeyup",
-    value: function onKeyup(event) {
-      this.options.value = event.target.value;
-    }
-  }], [{
-    key: "DEFAULTS",
-    get: function get() {
-      return clone({
-        placeholder: "",
-        type: "text",
-        tagName: "input"
-      });
-    }
-  }]);
-  return InputUI2;
-}(BaseUI);
-
 function _typeof$q(obj) {
   "@babel/helpers - typeof";
   return _typeof$q = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
@@ -17545,76 +17776,39 @@ function _getPrototypeOf$q(o) {
   };
   return _getPrototypeOf$q(o);
 }
-var privatePool$6 = new WeakMap();
-var SelectUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$q(SelectUI2, _BaseUI);
-  var _super = _createSuper$q(SelectUI2);
-  function SelectUI2(hotInstance, options) {
+var privatePool$5 = new WeakMap();
+var InputUI = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$q(InputUI2, _BaseUI);
+  var _super = _createSuper$q(InputUI2);
+  function InputUI2(hotInstance, options) {
     var _this;
-    _classCallCheck$J(this, SelectUI2);
-    _this = _super.call(this, hotInstance, extend(SelectUI2.DEFAULTS, options));
-    privatePool$6.set(_assertThisInitialized$q(_this), {});
-    _this.menu = null;
-    _this.items = [];
+    _classCallCheck$J(this, InputUI2);
+    _this = _super.call(this, hotInstance, extend(InputUI2.DEFAULTS, options));
+    privatePool$5.set(_assertThisInitialized$q(_this), {});
     _this.registerHooks();
     return _this;
   }
-  _createClass$J(SelectUI2, [{
+  _createClass$J(InputUI2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
       this.addLocalHook("click", function() {
         return _this2.onClick();
       });
-    }
-  }, {
-    key: "setItems",
-    value: function setItems(items) {
-      this.items = this.translateNames(items);
-      if (this.menu) {
-        this.menu.setMenuItems(this.items);
-      }
-    }
-  }, {
-    key: "translateNames",
-    value: function translateNames(items) {
-      var _this3 = this;
-      arrayEach(items, function(item) {
-        item.name = _this3.translateIfPossible(item.name);
+      this.addLocalHook("keyup", function(event) {
+        return _this2.onKeyup(event);
       });
-      return items;
     }
   }, {
     key: "build",
     value: function build() {
-      var _this4 = this;
-      _get$m(_getPrototypeOf$q(SelectUI2.prototype), "build", this).call(this);
-      this.menu = new Menu(this.hot, {
-        className: "htSelectUI htFiltersConditionsMenu",
-        keepInViewport: false,
-        standalone: true,
-        container: this.options.menuContainer
-      });
-      this.menu.setMenuItems(this.items);
-      var caption = new BaseUI(this.hot, {
-        className: "htUISelectCaption"
-      });
-      var dropdown = new BaseUI(this.hot, {
-        className: "htUISelectDropdown"
-      });
-      var priv = privatePool$6.get(this);
-      priv.caption = caption;
-      priv.captionElement = caption.element;
-      priv.dropdown = dropdown;
-      arrayEach([caption, dropdown], function(element) {
-        return _this4._element.appendChild(element.element);
-      });
-      this.menu.addLocalHook("select", function(command) {
-        return _this4.onMenuSelect(command);
-      });
-      this.menu.addLocalHook("afterClose", function() {
-        return _this4.onMenuClosed();
-      });
+      _get$m(_getPrototypeOf$q(InputUI2.prototype), "build", this).call(this);
+      var priv = privatePool$5.get(this);
+      var icon = this.hot.rootDocument.createElement("div");
+      priv.input = this._element.firstChild;
+      addClass(this._element, "htUIInput");
+      addClass(icon, "htUIInputIcon");
+      this._element.appendChild(icon);
       this.update();
     }
   }, {
@@ -17623,81 +17817,38 @@ var SelectUI = /* @__PURE__ */ function(_BaseUI) {
       if (!this.isBuilt()) {
         return;
       }
-      var conditionName;
-      if (this.options.value) {
-        conditionName = this.options.value.name;
-      } else {
-        conditionName = this.menu.hot.getTranslatedPhrase(FILTERS_CONDITIONS_NONE);
-      }
-      privatePool$6.get(this).captionElement.textContent = conditionName;
-      _get$m(_getPrototypeOf$q(SelectUI2.prototype), "update", this).call(this);
+      var input = privatePool$5.get(this).input;
+      input.type = this.options.type;
+      input.placeholder = this.translateIfPossible(this.options.placeholder);
+      input.value = this.translateIfPossible(this.options.value);
     }
   }, {
-    key: "openOptions",
-    value: function openOptions() {
-      var rect = this.element.getBoundingClientRect();
-      if (this.menu) {
-        this.menu.open();
-        this.menu.setPosition({
-          left: rect.left - 5,
-          top: rect.top - 1,
-          width: rect.width,
-          height: rect.height
-        });
+    key: "focus",
+    value: function focus() {
+      if (this.isBuilt()) {
+        privatePool$5.get(this).input.focus();
       }
-    }
-  }, {
-    key: "closeOptions",
-    value: function closeOptions() {
-      if (this.menu) {
-        this.menu.close();
-      }
-    }
-  }, {
-    key: "onMenuSelect",
-    value: function onMenuSelect(command) {
-      if (command.name !== KEY) {
-        this.options.value = command;
-        this.update();
-        this.runLocalHooks("select", this.options.value);
-      }
-    }
-  }, {
-    key: "onMenuClosed",
-    value: function onMenuClosed() {
-      this.runLocalHooks("afterClose");
     }
   }, {
     key: "onClick",
     value: function onClick() {
-      this.openOptions();
     }
   }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.menu) {
-        this.menu.destroy();
-        this.menu = null;
-      }
-      var _privatePool$get = privatePool$6.get(this), caption = _privatePool$get.caption, dropdown = _privatePool$get.dropdown;
-      if (caption) {
-        caption.destroy();
-      }
-      if (dropdown) {
-        dropdown.destroy();
-      }
-      _get$m(_getPrototypeOf$q(SelectUI2.prototype), "destroy", this).call(this);
+    key: "onKeyup",
+    value: function onKeyup(event) {
+      this.options.value = event.target.value;
     }
   }], [{
     key: "DEFAULTS",
     get: function get() {
       return clone({
-        className: "htUISelect",
-        wrapIt: false
+        placeholder: "",
+        type: "text",
+        tagName: "input"
       });
     }
   }]);
-  return SelectUI2;
+  return InputUI2;
 }(BaseUI);
 
 function _typeof$r(obj) {
@@ -17707,41 +17858,6 @@ function _typeof$r(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$r(obj);
-}
-function _toConsumableArray$4(arr) {
-  return _arrayWithoutHoles$4(arr) || _iterableToArray$5(arr) || _unsupportedIterableToArray$r(arr) || _nonIterableSpread$4();
-}
-function _nonIterableSpread$4() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$r(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$r(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$r(o, minLen);
-}
-function _iterableToArray$5(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-    return Array.from(iter);
-}
-function _arrayWithoutHoles$4(arr) {
-  if (Array.isArray(arr))
-    return _arrayLikeToArray$r(arr);
-}
-function _arrayLikeToArray$r(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
 }
 function _classCallCheck$K(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -17855,12 +17971,322 @@ function _getPrototypeOf$r(o) {
   };
   return _getPrototypeOf$r(o);
 }
+var privatePool$6 = new WeakMap();
+var SelectUI = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$r(SelectUI2, _BaseUI);
+  var _super = _createSuper$r(SelectUI2);
+  function SelectUI2(hotInstance, options) {
+    var _this;
+    _classCallCheck$K(this, SelectUI2);
+    _this = _super.call(this, hotInstance, extend(SelectUI2.DEFAULTS, options));
+    privatePool$6.set(_assertThisInitialized$r(_this), {});
+    _this.menu = null;
+    _this.items = [];
+    _this.registerHooks();
+    return _this;
+  }
+  _createClass$K(SelectUI2, [{
+    key: "registerHooks",
+    value: function registerHooks() {
+      var _this2 = this;
+      this.addLocalHook("click", function() {
+        return _this2.onClick();
+      });
+    }
+  }, {
+    key: "setItems",
+    value: function setItems(items) {
+      this.items = this.translateNames(items);
+      if (this.menu) {
+        this.menu.setMenuItems(this.items);
+      }
+    }
+  }, {
+    key: "translateNames",
+    value: function translateNames(items) {
+      var _this3 = this;
+      arrayEach(items, function(item) {
+        item.name = _this3.translateIfPossible(item.name);
+      });
+      return items;
+    }
+  }, {
+    key: "build",
+    value: function build() {
+      var _this4 = this;
+      _get$n(_getPrototypeOf$r(SelectUI2.prototype), "build", this).call(this);
+      this.menu = new Menu(this.hot, {
+        className: "htSelectUI htFiltersConditionsMenu",
+        keepInViewport: false,
+        standalone: true,
+        container: this.options.menuContainer
+      });
+      this.menu.setMenuItems(this.items);
+      var caption = new BaseUI(this.hot, {
+        className: "htUISelectCaption"
+      });
+      var dropdown = new BaseUI(this.hot, {
+        className: "htUISelectDropdown"
+      });
+      var priv = privatePool$6.get(this);
+      priv.caption = caption;
+      priv.captionElement = caption.element;
+      priv.dropdown = dropdown;
+      arrayEach([caption, dropdown], function(element) {
+        return _this4._element.appendChild(element.element);
+      });
+      this.menu.addLocalHook("select", function(command) {
+        return _this4.onMenuSelect(command);
+      });
+      this.menu.addLocalHook("afterClose", function() {
+        return _this4.onMenuClosed();
+      });
+      this.update();
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      if (!this.isBuilt()) {
+        return;
+      }
+      var conditionName;
+      if (this.options.value) {
+        conditionName = this.options.value.name;
+      } else {
+        conditionName = this.menu.hot.getTranslatedPhrase(FILTERS_CONDITIONS_NONE);
+      }
+      privatePool$6.get(this).captionElement.textContent = conditionName;
+      _get$n(_getPrototypeOf$r(SelectUI2.prototype), "update", this).call(this);
+    }
+  }, {
+    key: "openOptions",
+    value: function openOptions() {
+      var rect = this.element.getBoundingClientRect();
+      if (this.menu) {
+        this.menu.open();
+        this.menu.setPosition({
+          left: this.hot.isLtr() ? rect.left - 5 : rect.left - 31,
+          top: rect.top - 1,
+          width: rect.width,
+          height: rect.height
+        });
+      }
+    }
+  }, {
+    key: "closeOptions",
+    value: function closeOptions() {
+      if (this.menu) {
+        this.menu.close();
+      }
+    }
+  }, {
+    key: "onMenuSelect",
+    value: function onMenuSelect(command) {
+      if (command.name !== KEY) {
+        this.options.value = command;
+        this.update();
+        this.runLocalHooks("select", this.options.value);
+      }
+    }
+  }, {
+    key: "onMenuClosed",
+    value: function onMenuClosed() {
+      this.runLocalHooks("afterClose");
+    }
+  }, {
+    key: "onClick",
+    value: function onClick() {
+      this.openOptions();
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      if (this.menu) {
+        this.menu.destroy();
+        this.menu = null;
+      }
+      var _privatePool$get = privatePool$6.get(this), caption = _privatePool$get.caption, dropdown = _privatePool$get.dropdown;
+      if (caption) {
+        caption.destroy();
+      }
+      if (dropdown) {
+        dropdown.destroy();
+      }
+      _get$n(_getPrototypeOf$r(SelectUI2.prototype), "destroy", this).call(this);
+    }
+  }], [{
+    key: "DEFAULTS",
+    get: function get() {
+      return clone({
+        className: "htUISelect",
+        wrapIt: false
+      });
+    }
+  }]);
+  return SelectUI2;
+}(BaseUI);
+
+function _typeof$s(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$s = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$s(obj);
+}
+function _toConsumableArray$4(arr) {
+  return _arrayWithoutHoles$4(arr) || _iterableToArray$5(arr) || _unsupportedIterableToArray$r(arr) || _nonIterableSpread$4();
+}
+function _nonIterableSpread$4() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray$r(o, minLen) {
+  if (!o)
+    return;
+  if (typeof o === "string")
+    return _arrayLikeToArray$r(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor)
+    n = o.constructor.name;
+  if (n === "Map" || n === "Set")
+    return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray$r(o, minLen);
+}
+function _iterableToArray$5(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+    return Array.from(iter);
+}
+function _arrayWithoutHoles$4(arr) {
+  if (Array.isArray(arr))
+    return _arrayLikeToArray$r(arr);
+}
+function _arrayLikeToArray$r(arr, len) {
+  if (len == null || len > arr.length)
+    len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
+function _classCallCheck$L(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$L(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$L(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$L(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$L(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _get$o() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$o = Reflect.get;
+  } else {
+    _get$o = function _get2(target, property, receiver) {
+      var base = _superPropBase$o(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$o.apply(this, arguments);
+}
+function _superPropBase$o(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$s(object);
+    if (object === null)
+      break;
+  }
+  return object;
+}
+function _inherits$s(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$s(subClass, superClass);
+}
+function _setPrototypeOf$s(o, p) {
+  _setPrototypeOf$s = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$s(o, p);
+}
+function _createSuper$s(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$s();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$s(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$s(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$s(this, result);
+  };
+}
+function _possibleConstructorReturn$s(self, call) {
+  if (call && (_typeof$s(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$s(self);
+}
+function _assertThisInitialized$s(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$s() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$s(o) {
+  _getPrototypeOf$s = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$s(o);
+}
 var ConditionComponent = /* @__PURE__ */ function(_BaseComponent) {
-  _inherits$r(ConditionComponent2, _BaseComponent);
-  var _super = _createSuper$r(ConditionComponent2);
+  _inherits$s(ConditionComponent2, _BaseComponent);
+  var _super = _createSuper$s(ConditionComponent2);
   function ConditionComponent2(hotInstance, options) {
     var _this;
-    _classCallCheck$K(this, ConditionComponent2);
+    _classCallCheck$L(this, ConditionComponent2);
     _this = _super.call(this, hotInstance, {
       id: options.id,
       stateless: false
@@ -17879,7 +18305,7 @@ var ConditionComponent = /* @__PURE__ */ function(_BaseComponent) {
     _this.registerHooks();
     return _this;
   }
-  _createClass$K(ConditionComponent2, [{
+  _createClass$L(ConditionComponent2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
@@ -18013,7 +18439,7 @@ var ConditionComponent = /* @__PURE__ */ function(_BaseComponent) {
         return element.hide();
       });
       this.getSelectElement().setItems(items);
-      _get$n(_getPrototypeOf$r(ConditionComponent2.prototype), "reset", this).call(this);
+      _get$o(_getPrototypeOf$s(ConditionComponent2.prototype), "reset", this).call(this);
       this.getSelectElement().setValue(items[0]);
     }
   }, {
@@ -18049,193 +18475,6 @@ var ConditionComponent = /* @__PURE__ */ function(_BaseComponent) {
   return ConditionComponent2;
 }(BaseComponent);
 
-function _typeof$s(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$s = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$s(obj);
-}
-function _classCallCheck$L(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$L(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$L(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$L(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$L(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _get$o() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$o = Reflect.get;
-  } else {
-    _get$o = function _get2(target, property, receiver) {
-      var base = _superPropBase$o(target, property);
-      if (!base)
-        return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    };
-  }
-  return _get$o.apply(this, arguments);
-}
-function _superPropBase$o(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$s(object);
-    if (object === null)
-      break;
-  }
-  return object;
-}
-function _inherits$s(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$s(subClass, superClass);
-}
-function _setPrototypeOf$s(o, p) {
-  _setPrototypeOf$s = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$s(o, p);
-}
-function _createSuper$s(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$s();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$s(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$s(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$s(this, result);
-  };
-}
-function _possibleConstructorReturn$s(self, call) {
-  if (call && (_typeof$s(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$s(self);
-}
-function _assertThisInitialized$s(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$s() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$s(o) {
-  _getPrototypeOf$s = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$s(o);
-}
-var privatePool$7 = new WeakMap();
-var RadioInputUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$s(RadioInputUI2, _BaseUI);
-  var _super = _createSuper$s(RadioInputUI2);
-  function RadioInputUI2(hotInstance, options) {
-    var _this;
-    _classCallCheck$L(this, RadioInputUI2);
-    _this = _super.call(this, hotInstance, extend(RadioInputUI2.DEFAULTS, options));
-    privatePool$7.set(_assertThisInitialized$s(_this), {});
-    return _this;
-  }
-  _createClass$L(RadioInputUI2, [{
-    key: "build",
-    value: function build() {
-      _get$o(_getPrototypeOf$s(RadioInputUI2.prototype), "build", this).call(this);
-      var priv = privatePool$7.get(this);
-      priv.input = this._element.firstChild;
-      var label = this.hot.rootDocument.createElement("label");
-      label.textContent = this.translateIfPossible(this.options.label.textContent);
-      label.htmlFor = this.translateIfPossible(this.options.label.htmlFor);
-      priv.label = label;
-      this._element.appendChild(label);
-      this.update();
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      if (!this.isBuilt()) {
-        return;
-      }
-      var priv = privatePool$7.get(this);
-      priv.input.checked = this.options.checked;
-      priv.label.textContent = this.translateIfPossible(this.options.label.textContent);
-    }
-  }, {
-    key: "isChecked",
-    value: function isChecked() {
-      return this.options.checked;
-    }
-  }, {
-    key: "setChecked",
-    value: function setChecked() {
-      var value = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : true;
-      this.options.checked = value;
-      this.update();
-    }
-  }, {
-    key: "focus",
-    value: function focus() {
-      if (this.isBuilt()) {
-        privatePool$7.get(this).input.focus();
-      }
-    }
-  }], [{
-    key: "DEFAULTS",
-    get: function get() {
-      return clone({
-        type: "radio",
-        tagName: "input",
-        className: "htUIRadio",
-        label: {}
-      });
-    }
-  }]);
-  return RadioInputUI2;
-}(BaseUI);
-
 function _typeof$t(obj) {
   "@babel/helpers - typeof";
   return _typeof$t = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
@@ -18243,13 +18482,6 @@ function _typeof$t(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$t(obj);
-}
-var _templateObject$1;
-function _taggedTemplateLiteral$1(strings, raw) {
-  if (!raw) {
-    raw = strings.slice(0);
-  }
-  return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
 function _classCallCheck$M(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -18273,6 +18505,31 @@ function _createClass$M(Constructor, protoProps, staticProps) {
     _defineProperties$M(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
+}
+function _get$p() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$p = Reflect.get;
+  } else {
+    _get$p = function _get2(target, property, receiver) {
+      var base = _superPropBase$p(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$p.apply(this, arguments);
+}
+function _superPropBase$p(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$t(object);
+    if (object === null)
+      break;
+  }
+  return object;
 }
 function _inherits$t(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
@@ -18338,13 +18595,182 @@ function _getPrototypeOf$t(o) {
   };
   return _getPrototypeOf$t(o);
 }
+var privatePool$7 = new WeakMap();
+var RadioInputUI = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$t(RadioInputUI2, _BaseUI);
+  var _super = _createSuper$t(RadioInputUI2);
+  function RadioInputUI2(hotInstance, options) {
+    var _this;
+    _classCallCheck$M(this, RadioInputUI2);
+    _this = _super.call(this, hotInstance, extend(RadioInputUI2.DEFAULTS, options));
+    privatePool$7.set(_assertThisInitialized$t(_this), {});
+    return _this;
+  }
+  _createClass$M(RadioInputUI2, [{
+    key: "build",
+    value: function build() {
+      _get$p(_getPrototypeOf$t(RadioInputUI2.prototype), "build", this).call(this);
+      var priv = privatePool$7.get(this);
+      priv.input = this._element.firstChild;
+      var label = this.hot.rootDocument.createElement("label");
+      label.textContent = this.translateIfPossible(this.options.label.textContent);
+      label.htmlFor = this.translateIfPossible(this.options.label.htmlFor);
+      priv.label = label;
+      this._element.appendChild(label);
+      this.update();
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      if (!this.isBuilt()) {
+        return;
+      }
+      var priv = privatePool$7.get(this);
+      priv.input.checked = this.options.checked;
+      priv.label.textContent = this.translateIfPossible(this.options.label.textContent);
+    }
+  }, {
+    key: "isChecked",
+    value: function isChecked() {
+      return this.options.checked;
+    }
+  }, {
+    key: "setChecked",
+    value: function setChecked() {
+      var value = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : true;
+      this.options.checked = value;
+      this.update();
+    }
+  }, {
+    key: "focus",
+    value: function focus() {
+      if (this.isBuilt()) {
+        privatePool$7.get(this).input.focus();
+      }
+    }
+  }], [{
+    key: "DEFAULTS",
+    get: function get() {
+      return clone({
+        type: "radio",
+        tagName: "input",
+        className: "htUIRadio",
+        label: {}
+      });
+    }
+  }]);
+  return RadioInputUI2;
+}(BaseUI);
+
+function _typeof$u(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$u = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$u(obj);
+}
+var _templateObject$1;
+function _taggedTemplateLiteral$1(strings, raw) {
+  if (!raw) {
+    raw = strings.slice(0);
+  }
+  return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
+}
+function _classCallCheck$N(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$N(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$N(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$N(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$N(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _inherits$u(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$u(subClass, superClass);
+}
+function _setPrototypeOf$u(o, p) {
+  _setPrototypeOf$u = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$u(o, p);
+}
+function _createSuper$u(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$u();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$u(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$u(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$u(this, result);
+  };
+}
+function _possibleConstructorReturn$u(self, call) {
+  if (call && (_typeof$u(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$u(self);
+}
+function _assertThisInitialized$u(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$u() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$u(o) {
+  _getPrototypeOf$u = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$u(o);
+}
 var SELECTED_AT_START_ELEMENT_INDEX = 0;
 var OperatorsComponent = /* @__PURE__ */ function(_BaseComponent) {
-  _inherits$t(OperatorsComponent2, _BaseComponent);
-  var _super = _createSuper$t(OperatorsComponent2);
+  _inherits$u(OperatorsComponent2, _BaseComponent);
+  var _super = _createSuper$u(OperatorsComponent2);
   function OperatorsComponent2(hotInstance, options) {
     var _this;
-    _classCallCheck$M(this, OperatorsComponent2);
+    _classCallCheck$N(this, OperatorsComponent2);
     _this = _super.call(this, hotInstance, {
       id: options.id,
       stateless: false
@@ -18353,7 +18779,7 @@ var OperatorsComponent = /* @__PURE__ */ function(_BaseComponent) {
     _this.buildOperatorsElement();
     return _this;
   }
-  _createClass$M(OperatorsComponent2, [{
+  _createClass$N(OperatorsComponent2, [{
     key: "getMenuItemDescriptor",
     value: function getMenuItemDescriptor() {
       var _this2 = this;
@@ -18488,164 +18914,6 @@ _export({ target: 'String', proto: true, forced: stringHtmlForced('link') }, {
   }
 });
 
-function _typeof$u(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$u = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$u(obj);
-}
-function _classCallCheck$N(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$N(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$N(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$N(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$N(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _get$p() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$p = Reflect.get;
-  } else {
-    _get$p = function _get2(target, property, receiver) {
-      var base = _superPropBase$p(target, property);
-      if (!base)
-        return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    };
-  }
-  return _get$p.apply(this, arguments);
-}
-function _superPropBase$p(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$u(object);
-    if (object === null)
-      break;
-  }
-  return object;
-}
-function _inherits$u(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$u(subClass, superClass);
-}
-function _setPrototypeOf$u(o, p) {
-  _setPrototypeOf$u = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$u(o, p);
-}
-function _createSuper$u(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$u();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$u(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$u(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$u(this, result);
-  };
-}
-function _possibleConstructorReturn$u(self, call) {
-  if (call && (_typeof$u(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$u(self);
-}
-function _assertThisInitialized$u(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$u() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$u(o) {
-  _getPrototypeOf$u = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$u(o);
-}
-var privatePool$8 = new WeakMap();
-var LinkUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$u(LinkUI2, _BaseUI);
-  var _super = _createSuper$u(LinkUI2);
-  function LinkUI2(hotInstance, options) {
-    var _this;
-    _classCallCheck$N(this, LinkUI2);
-    _this = _super.call(this, hotInstance, extend(LinkUI2.DEFAULTS, options));
-    privatePool$8.set(_assertThisInitialized$u(_this), {});
-    return _this;
-  }
-  _createClass$N(LinkUI2, [{
-    key: "build",
-    value: function build() {
-      _get$p(_getPrototypeOf$u(LinkUI2.prototype), "build", this).call(this);
-      var priv = privatePool$8.get(this);
-      priv.link = this._element.firstChild;
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      if (!this.isBuilt()) {
-        return;
-      }
-      privatePool$8.get(this).link.textContent = this.translateIfPossible(this.options.textContent);
-    }
-  }], [{
-    key: "DEFAULTS",
-    get: function get() {
-      return clone({
-        href: "#",
-        tagName: "a"
-      });
-    }
-  }]);
-  return LinkUI2;
-}(BaseUI);
-
 function _typeof$v(obj) {
   "@babel/helpers - typeof";
   return _typeof$v = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
@@ -18653,41 +18921,6 @@ function _typeof$v(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$v(obj);
-}
-function _toConsumableArray$5(arr) {
-  return _arrayWithoutHoles$5(arr) || _iterableToArray$6(arr) || _unsupportedIterableToArray$s(arr) || _nonIterableSpread$5();
-}
-function _nonIterableSpread$5() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$s(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$s(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$s(o, minLen);
-}
-function _iterableToArray$6(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-    return Array.from(iter);
-}
-function _arrayWithoutHoles$5(arr) {
-  if (Array.isArray(arr))
-    return _arrayLikeToArray$s(arr);
-}
-function _arrayLikeToArray$s(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
 }
 function _classCallCheck$O(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -18801,148 +19034,23 @@ function _getPrototypeOf$v(o) {
   };
   return _getPrototypeOf$v(o);
 }
-var privatePool$9 = new WeakMap();
-var MultipleSelectUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$v(MultipleSelectUI2, _BaseUI);
-  var _super = _createSuper$v(MultipleSelectUI2);
-  function MultipleSelectUI2(hotInstance, options) {
+var privatePool$8 = new WeakMap();
+var LinkUI = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$v(LinkUI2, _BaseUI);
+  var _super = _createSuper$v(LinkUI2);
+  function LinkUI2(hotInstance, options) {
     var _this;
-    _classCallCheck$O(this, MultipleSelectUI2);
-    _this = _super.call(this, hotInstance, extend(MultipleSelectUI2.DEFAULTS, options));
-    privatePool$9.set(_assertThisInitialized$v(_this), {});
-    _this.searchInput = new InputUI(_this.hot, {
-      placeholder: FILTERS_BUTTONS_PLACEHOLDER_SEARCH,
-      className: "htUIMultipleSelectSearch"
-    });
-    _this.selectAllUI = new LinkUI(_this.hot, {
-      textContent: FILTERS_BUTTONS_SELECT_ALL,
-      className: "htUISelectAll"
-    });
-    _this.clearAllUI = new LinkUI(_this.hot, {
-      textContent: FILTERS_BUTTONS_CLEAR,
-      className: "htUIClearAll"
-    });
-    _this.items = [];
-    _this.itemsBox = null;
-    _this.registerHooks();
+    _classCallCheck$O(this, LinkUI2);
+    _this = _super.call(this, hotInstance, extend(LinkUI2.DEFAULTS, options));
+    privatePool$8.set(_assertThisInitialized$v(_this), {});
     return _this;
   }
-  _createClass$O(MultipleSelectUI2, [{
-    key: "registerHooks",
-    value: function registerHooks() {
-      var _this2 = this;
-      this.searchInput.addLocalHook("keydown", function(event) {
-        return _this2.onInputKeyDown(event);
-      });
-      this.searchInput.addLocalHook("input", function(event) {
-        return _this2.onInput(event);
-      });
-      this.selectAllUI.addLocalHook("click", function(event) {
-        return _this2.onSelectAllClick(event);
-      });
-      this.clearAllUI.addLocalHook("click", function(event) {
-        return _this2.onClearAllClick(event);
-      });
-    }
-  }, {
-    key: "setItems",
-    value: function setItems(items) {
-      this.items = items;
-      if (this.itemsBox) {
-        this.itemsBox.loadData(this.items);
-      }
-    }
-  }, {
-    key: "setLocale",
-    value: function setLocale(locale) {
-      this.locale = locale;
-    }
-  }, {
-    key: "getLocale",
-    value: function getLocale() {
-      return this.locale;
-    }
-  }, {
-    key: "getItems",
-    value: function getItems() {
-      return _toConsumableArray$5(this.items);
-    }
-  }, {
-    key: "getValue",
-    value: function getValue() {
-      return itemsToValue(this.items);
-    }
-  }, {
-    key: "isSelectedAllValues",
-    value: function isSelectedAllValues() {
-      return this.items.length === this.getValue().length;
-    }
-  }, {
+  _createClass$O(LinkUI2, [{
     key: "build",
     value: function build() {
-      var _this3 = this;
-      _get$q(_getPrototypeOf$v(MultipleSelectUI2.prototype), "build", this).call(this);
-      var rootDocument = this.hot.rootDocument;
-      var itemsBoxWrapper = rootDocument.createElement("div");
-      var selectionControl = new BaseUI(this.hot, {
-        className: "htUISelectionControls",
-        children: [this.selectAllUI, this.clearAllUI]
-      });
-      this._element.appendChild(this.searchInput.element);
-      this._element.appendChild(selectionControl.element);
-      this._element.appendChild(itemsBoxWrapper);
-      var hotInitializer = function hotInitializer2(wrapper) {
-        if (!_this3._element) {
-          return;
-        }
-        if (_this3.itemsBox) {
-          _this3.itemsBox.destroy();
-        }
-        addClass(wrapper, "htUIMultipleSelectHot");
-        _this3.itemsBox = new _this3.hot.constructor(wrapper, {
-          data: _this3.items,
-          columns: [{
-            data: "checked",
-            type: "checkbox",
-            label: {
-              property: "visualValue",
-              position: "after"
-            }
-          }],
-          beforeRenderer: function beforeRenderer(TD, row, col, prop, value, cellProperties) {
-            TD.title = cellProperties.instance.getDataAtRowProp(row, cellProperties.label.property);
-          },
-          maxCols: 1,
-          autoWrapCol: true,
-          height: 110,
-          colWidths: function colWidths() {
-            return _this3.itemsBox.container.scrollWidth - getScrollbarWidth(rootDocument);
-          },
-          copyPaste: false,
-          disableVisualSelection: "area",
-          fillHandle: false,
-          fragmentSelection: "cell",
-          tabMoves: {
-            row: 1,
-            col: 0
-          },
-          beforeKeyDown: function beforeKeyDown(event) {
-            return _this3.onItemsBoxBeforeKeyDown(event);
-          }
-        });
-        _this3.itemsBox.init();
-      };
-      hotInitializer(itemsBoxWrapper);
-      setTimeout(function() {
-        return hotInitializer(itemsBoxWrapper);
-      }, 100);
-    }
-  }, {
-    key: "reset",
-    value: function reset() {
-      this.searchInput.reset();
-      this.selectAllUI.reset();
-      this.clearAllUI.reset();
+      _get$q(_getPrototypeOf$v(LinkUI2.prototype), "build", this).call(this);
+      var priv = privatePool$8.get(this);
+      priv.link = this._element.firstChild;
     }
   }, {
     key: "update",
@@ -18950,114 +19058,19 @@ var MultipleSelectUI = /* @__PURE__ */ function(_BaseUI) {
       if (!this.isBuilt()) {
         return;
       }
-      this.itemsBox.loadData(valueToItems(this.items, this.options.value));
-      _get$q(_getPrototypeOf$v(MultipleSelectUI2.prototype), "update", this).call(this);
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.itemsBox) {
-        this.itemsBox.destroy();
-      }
-      this.searchInput.destroy();
-      this.clearAllUI.destroy();
-      this.selectAllUI.destroy();
-      this.searchInput = null;
-      this.clearAllUI = null;
-      this.selectAllUI = null;
-      this.itemsBox = null;
-      this.items = null;
-      _get$q(_getPrototypeOf$v(MultipleSelectUI2.prototype), "destroy", this).call(this);
-    }
-  }, {
-    key: "onInput",
-    value: function onInput(event) {
-      var _this4 = this;
-      var value = event.target.value.toLocaleLowerCase(this.getLocale());
-      var filteredItems;
-      if (value === "") {
-        filteredItems = _toConsumableArray$5(this.items);
-      } else {
-        filteredItems = arrayFilter(this.items, function(item) {
-          return "".concat(item.value).toLocaleLowerCase(_this4.getLocale()).indexOf(value) >= 0;
-        });
-      }
-      this.itemsBox.loadData(filteredItems);
-    }
-  }, {
-    key: "onInputKeyDown",
-    value: function onInputKeyDown(event) {
-      this.runLocalHooks("keydown", event, this);
-      var isKeyCode = partial(isKey, event.keyCode);
-      if (isKeyCode("ARROW_DOWN|TAB") && !this.itemsBox.isListening()) {
-        stopImmediatePropagation(event);
-        this.itemsBox.listen();
-        this.itemsBox.selectCell(0, 0);
-      }
-    }
-  }, {
-    key: "onItemsBoxBeforeKeyDown",
-    value: function onItemsBoxBeforeKeyDown(event) {
-      var isKeyCode = partial(isKey, event.keyCode);
-      if (isKeyCode("ESCAPE")) {
-        this.runLocalHooks("keydown", event, this);
-      }
-      if (!isKeyCode("ARROW_UP|ARROW_DOWN|ARROW_LEFT|ARROW_RIGHT|TAB|SPACE|ENTER")) {
-        stopImmediatePropagation(event);
-        this.itemsBox.unlisten();
-        this.itemsBox.deselectCell();
-        this.searchInput.focus();
-      }
-    }
-  }, {
-    key: "onSelectAllClick",
-    value: function onSelectAllClick(event) {
-      var changes = [];
-      event.preventDefault();
-      arrayEach(this.itemsBox.getSourceData(), function(row, rowIndex) {
-        row.checked = true;
-        changes.push(dataRowToChangesArray(row, rowIndex)[0]);
-      });
-      this.itemsBox.setSourceDataAtCell(changes);
-    }
-  }, {
-    key: "onClearAllClick",
-    value: function onClearAllClick(event) {
-      var changes = [];
-      event.preventDefault();
-      arrayEach(this.itemsBox.getSourceData(), function(row, rowIndex) {
-        row.checked = false;
-        changes.push(dataRowToChangesArray(row, rowIndex)[0]);
-      });
-      this.itemsBox.setSourceDataAtCell(changes);
+      privatePool$8.get(this).link.textContent = this.translateIfPossible(this.options.textContent);
     }
   }], [{
     key: "DEFAULTS",
     get: function get() {
       return clone({
-        className: "htUIMultipleSelect",
-        value: []
+        href: "#",
+        tagName: "a"
       });
     }
   }]);
-  return MultipleSelectUI2;
+  return LinkUI2;
 }(BaseUI);
-function valueToItems(availableItems, selectedValue) {
-  var arrayAssertion = createArrayAssertion(selectedValue);
-  return arrayMap(availableItems, function(item) {
-    item.checked = arrayAssertion(item.value);
-    return item;
-  });
-}
-function itemsToValue(availableItems) {
-  var items = [];
-  arrayEach(availableItems, function(item) {
-    if (item.checked) {
-      items.push(item.value);
-    }
-  });
-  return items;
-}
 
 function _typeof$w(obj) {
   "@babel/helpers - typeof";
@@ -19067,64 +19080,40 @@ function _typeof$w(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$w(obj);
 }
-function _slicedToArray$n(arr, i) {
-  return _arrayWithHoles$o(arr) || _iterableToArrayLimit$n(arr, i) || _unsupportedIterableToArray$t(arr, i) || _nonIterableRest$o();
+function _toConsumableArray$5(arr) {
+  return _arrayWithoutHoles$5(arr) || _iterableToArray$6(arr) || _unsupportedIterableToArray$s(arr) || _nonIterableSpread$5();
 }
-function _nonIterableRest$o() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+function _nonIterableSpread$5() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$t(o, minLen) {
+function _unsupportedIterableToArray$s(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$t(o, minLen);
+    return _arrayLikeToArray$s(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$t(o, minLen);
+    return _arrayLikeToArray$s(o, minLen);
 }
-function _arrayLikeToArray$t(arr, len) {
+function _iterableToArray$6(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+    return Array.from(iter);
+}
+function _arrayWithoutHoles$5(arr) {
+  if (Array.isArray(arr))
+    return _arrayLikeToArray$s(arr);
+}
+function _arrayLikeToArray$s(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
     arr2[i] = arr[i];
   }
   return arr2;
-}
-function _iterableToArrayLimit$n(arr, i) {
-  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-  if (_i == null)
-    return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _s, _e;
-  try {
-    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-      if (i && _arr.length === i)
-        break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null)
-        _i["return"]();
-    } finally {
-      if (_d)
-        throw _e;
-    }
-  }
-  return _arr;
-}
-function _arrayWithHoles$o(arr) {
-  if (Array.isArray(arr))
-    return arr;
 }
 function _classCallCheck$P(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -19238,12 +19227,443 @@ function _getPrototypeOf$w(o) {
   };
   return _getPrototypeOf$w(o);
 }
+var privatePool$9 = new WeakMap();
+var SHORTCUTS_GROUP$4 = "multipleSelect.itemBox";
+var MultipleSelectUI = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$w(MultipleSelectUI2, _BaseUI);
+  var _super = _createSuper$w(MultipleSelectUI2);
+  function MultipleSelectUI2(hotInstance, options) {
+    var _this;
+    _classCallCheck$P(this, MultipleSelectUI2);
+    _this = _super.call(this, hotInstance, extend(MultipleSelectUI2.DEFAULTS, options));
+    privatePool$9.set(_assertThisInitialized$w(_this), {});
+    _this.searchInput = new InputUI(_this.hot, {
+      placeholder: FILTERS_BUTTONS_PLACEHOLDER_SEARCH,
+      className: "htUIMultipleSelectSearch"
+    });
+    _this.selectAllUI = new LinkUI(_this.hot, {
+      textContent: FILTERS_BUTTONS_SELECT_ALL,
+      className: "htUISelectAll"
+    });
+    _this.clearAllUI = new LinkUI(_this.hot, {
+      textContent: FILTERS_BUTTONS_CLEAR,
+      className: "htUIClearAll"
+    });
+    _this.items = [];
+    _this.itemsBox = null;
+    _this.registerHooks();
+    return _this;
+  }
+  _createClass$P(MultipleSelectUI2, [{
+    key: "registerHooks",
+    value: function registerHooks() {
+      var _this2 = this;
+      this.searchInput.addLocalHook("keydown", function(event) {
+        return _this2.onInputKeyDown(event);
+      });
+      this.searchInput.addLocalHook("input", function(event) {
+        return _this2.onInput(event);
+      });
+      this.selectAllUI.addLocalHook("click", function(event) {
+        return _this2.onSelectAllClick(event);
+      });
+      this.clearAllUI.addLocalHook("click", function(event) {
+        return _this2.onClearAllClick(event);
+      });
+    }
+  }, {
+    key: "setItems",
+    value: function setItems(items) {
+      this.items = items;
+      if (this.itemsBox) {
+        this.itemsBox.loadData(this.items);
+      }
+    }
+  }, {
+    key: "setLocale",
+    value: function setLocale(locale) {
+      this.locale = locale;
+    }
+  }, {
+    key: "getLocale",
+    value: function getLocale() {
+      return this.locale;
+    }
+  }, {
+    key: "getItems",
+    value: function getItems() {
+      return _toConsumableArray$5(this.items);
+    }
+  }, {
+    key: "getValue",
+    value: function getValue() {
+      return itemsToValue(this.items);
+    }
+  }, {
+    key: "isSelectedAllValues",
+    value: function isSelectedAllValues() {
+      return this.items.length === this.getValue().length;
+    }
+  }, {
+    key: "build",
+    value: function build() {
+      var _this3 = this;
+      _get$r(_getPrototypeOf$w(MultipleSelectUI2.prototype), "build", this).call(this);
+      var rootDocument = this.hot.rootDocument;
+      var itemsBoxWrapper = rootDocument.createElement("div");
+      var selectionControl = new BaseUI(this.hot, {
+        className: "htUISelectionControls",
+        children: [this.selectAllUI, this.clearAllUI]
+      });
+      this._element.appendChild(this.searchInput.element);
+      this._element.appendChild(selectionControl.element);
+      this._element.appendChild(itemsBoxWrapper);
+      var hotInitializer = function hotInitializer2(wrapper) {
+        if (!_this3._element) {
+          return;
+        }
+        if (_this3.itemsBox) {
+          _this3.itemsBox.destroy();
+        }
+        addClass(wrapper, "htUIMultipleSelectHot");
+        _this3.itemsBox = new _this3.hot.constructor(wrapper, {
+          data: _this3.items,
+          columns: [{
+            data: "checked",
+            type: "checkbox",
+            label: {
+              property: "visualValue",
+              position: "after"
+            }
+          }],
+          beforeRenderer: function beforeRenderer(TD, row, col, prop, value, cellProperties) {
+            TD.title = cellProperties.instance.getDataAtRowProp(row, cellProperties.label.property);
+          },
+          maxCols: 1,
+          autoWrapCol: true,
+          height: 110,
+          colWidths: function colWidths() {
+            return _this3.itemsBox.container.scrollWidth - getScrollbarWidth(rootDocument);
+          },
+          copyPaste: false,
+          disableVisualSelection: "area",
+          fillHandle: false,
+          fragmentSelection: "cell",
+          tabMoves: {
+            row: 1,
+            col: 0
+          },
+          layoutDirection: _this3.hot.isRtl() ? "rtl" : "ltr"
+        });
+        _this3.itemsBox.init();
+        var shortcutManager = _this3.itemsBox.getShortcutManager();
+        var gridContext = shortcutManager.getContext("grid");
+        gridContext.addShortcut({
+          keys: [["Escape"]],
+          callback: function callback(event) {
+            _this3.runLocalHooks("keydown", event, _this3);
+          },
+          group: SHORTCUTS_GROUP$4
+        });
+      };
+      hotInitializer(itemsBoxWrapper);
+      setTimeout(function() {
+        return hotInitializer(itemsBoxWrapper);
+      }, 100);
+    }
+  }, {
+    key: "reset",
+    value: function reset() {
+      this.searchInput.reset();
+      this.selectAllUI.reset();
+      this.clearAllUI.reset();
+    }
+  }, {
+    key: "update",
+    value: function update() {
+      if (!this.isBuilt()) {
+        return;
+      }
+      this.itemsBox.loadData(valueToItems(this.items, this.options.value));
+      _get$r(_getPrototypeOf$w(MultipleSelectUI2.prototype), "update", this).call(this);
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      if (this.itemsBox) {
+        this.itemsBox.destroy();
+      }
+      this.searchInput.destroy();
+      this.clearAllUI.destroy();
+      this.selectAllUI.destroy();
+      this.searchInput = null;
+      this.clearAllUI = null;
+      this.selectAllUI = null;
+      this.itemsBox = null;
+      this.items = null;
+      _get$r(_getPrototypeOf$w(MultipleSelectUI2.prototype), "destroy", this).call(this);
+    }
+  }, {
+    key: "onInput",
+    value: function onInput(event) {
+      var _this4 = this;
+      var value = event.target.value.toLocaleLowerCase(this.getLocale());
+      var filteredItems;
+      if (value === "") {
+        filteredItems = _toConsumableArray$5(this.items);
+      } else {
+        filteredItems = arrayFilter(this.items, function(item) {
+          return "".concat(item.value).toLocaleLowerCase(_this4.getLocale()).indexOf(value) >= 0;
+        });
+      }
+      this.itemsBox.loadData(filteredItems);
+    }
+  }, {
+    key: "onInputKeyDown",
+    value: function onInputKeyDown(event) {
+      this.runLocalHooks("keydown", event, this);
+      var isKeyCode = partial(isKey, event.keyCode);
+      if (isKeyCode("ARROW_DOWN|TAB") && !this.itemsBox.isListening()) {
+        stopImmediatePropagation(event);
+        this.itemsBox.listen();
+        this.itemsBox.selectCell(0, 0);
+      }
+    }
+  }, {
+    key: "onSelectAllClick",
+    value: function onSelectAllClick(event) {
+      var changes = [];
+      event.preventDefault();
+      arrayEach(this.itemsBox.getSourceData(), function(row, rowIndex) {
+        row.checked = true;
+        changes.push(dataRowToChangesArray(row, rowIndex)[0]);
+      });
+      this.itemsBox.setSourceDataAtCell(changes);
+    }
+  }, {
+    key: "onClearAllClick",
+    value: function onClearAllClick(event) {
+      var changes = [];
+      event.preventDefault();
+      arrayEach(this.itemsBox.getSourceData(), function(row, rowIndex) {
+        row.checked = false;
+        changes.push(dataRowToChangesArray(row, rowIndex)[0]);
+      });
+      this.itemsBox.setSourceDataAtCell(changes);
+    }
+  }], [{
+    key: "DEFAULTS",
+    get: function get() {
+      return clone({
+        className: "htUIMultipleSelect",
+        value: []
+      });
+    }
+  }]);
+  return MultipleSelectUI2;
+}(BaseUI);
+function valueToItems(availableItems, selectedValue) {
+  var arrayAssertion = createArrayAssertion(selectedValue);
+  return arrayMap(availableItems, function(item) {
+    item.checked = arrayAssertion(item.value);
+    return item;
+  });
+}
+function itemsToValue(availableItems) {
+  var items = [];
+  arrayEach(availableItems, function(item) {
+    if (item.checked) {
+      items.push(item.value);
+    }
+  });
+  return items;
+}
+
+function _typeof$x(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$x = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$x(obj);
+}
+function _slicedToArray$n(arr, i) {
+  return _arrayWithHoles$o(arr) || _iterableToArrayLimit$n(arr, i) || _unsupportedIterableToArray$t(arr, i) || _nonIterableRest$o();
+}
+function _nonIterableRest$o() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray$t(o, minLen) {
+  if (!o)
+    return;
+  if (typeof o === "string")
+    return _arrayLikeToArray$t(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor)
+    n = o.constructor.name;
+  if (n === "Map" || n === "Set")
+    return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray$t(o, minLen);
+}
+function _arrayLikeToArray$t(arr, len) {
+  if (len == null || len > arr.length)
+    len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
+function _iterableToArrayLimit$n(arr, i) {
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+  if (_i == null)
+    return;
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _s, _e;
+  try {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
+      _arr.push(_s.value);
+      if (i && _arr.length === i)
+        break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null)
+        _i["return"]();
+    } finally {
+      if (_d)
+        throw _e;
+    }
+  }
+  return _arr;
+}
+function _arrayWithHoles$o(arr) {
+  if (Array.isArray(arr))
+    return arr;
+}
+function _classCallCheck$Q(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$Q(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$Q(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$Q(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$Q(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _get$s() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$s = Reflect.get;
+  } else {
+    _get$s = function _get2(target, property, receiver) {
+      var base = _superPropBase$s(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$s.apply(this, arguments);
+}
+function _superPropBase$s(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$x(object);
+    if (object === null)
+      break;
+  }
+  return object;
+}
+function _inherits$x(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$x(subClass, superClass);
+}
+function _setPrototypeOf$x(o, p) {
+  _setPrototypeOf$x = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$x(o, p);
+}
+function _createSuper$x(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$x();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$x(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$x(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$x(this, result);
+  };
+}
+function _possibleConstructorReturn$x(self, call) {
+  if (call && (_typeof$x(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$x(self);
+}
+function _assertThisInitialized$x(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$x() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$x(o) {
+  _getPrototypeOf$x = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$x(o);
+}
 var ValueComponent = /* @__PURE__ */ function(_BaseComponent) {
-  _inherits$w(ValueComponent2, _BaseComponent);
-  var _super = _createSuper$w(ValueComponent2);
+  _inherits$x(ValueComponent2, _BaseComponent);
+  var _super = _createSuper$x(ValueComponent2);
   function ValueComponent2(hotInstance, options) {
     var _this;
-    _classCallCheck$P(this, ValueComponent2);
+    _classCallCheck$Q(this, ValueComponent2);
     _this = _super.call(this, hotInstance, {
       id: options.id,
       stateless: false
@@ -19253,7 +19673,7 @@ var ValueComponent = /* @__PURE__ */ function(_BaseComponent) {
     _this.registerHooks();
     return _this;
   }
-  _createClass$P(ValueComponent2, [{
+  _createClass$Q(ValueComponent2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
@@ -19365,7 +19785,7 @@ var ValueComponent = /* @__PURE__ */ function(_BaseComponent) {
       var values = unifyColumnValues(this._getColumnVisibleValues());
       var items = intersectValues(values, values, defaultBlankCellValue);
       this.getMultipleSelectElement().setItems(items);
-      _get$r(_getPrototypeOf$w(ValueComponent2.prototype), "reset", this).call(this);
+      _get$s(_getPrototypeOf$x(ValueComponent2.prototype), "reset", this).call(this);
       this.getMultipleSelectElement().setValue(values);
       var lastSelectedColumn = this.hot.getPlugin("filters").getSelectedColumn().visualIndex;
       this.getMultipleSelectElement().setLocale(this.hot.getCellMeta(0, lastSelectedColumn).locale);
@@ -19391,20 +19811,20 @@ var ValueComponent = /* @__PURE__ */ function(_BaseComponent) {
   return ValueComponent2;
 }(BaseComponent);
 
-function _typeof$x(obj) {
+function _typeof$y(obj) {
   "@babel/helpers - typeof";
-  return _typeof$x = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$y = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$x(obj);
+  }, _typeof$y(obj);
 }
-function _classCallCheck$Q(instance, Constructor) {
+function _classCallCheck$R(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$Q(target, props) {
+function _defineProperties$R(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -19414,58 +19834,58 @@ function _defineProperties$Q(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$Q(Constructor, protoProps, staticProps) {
+function _createClass$R(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$Q(Constructor.prototype, protoProps);
+    _defineProperties$R(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$Q(Constructor, staticProps);
+    _defineProperties$R(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _inherits$x(subClass, superClass) {
+function _inherits$y(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$x(subClass, superClass);
+    _setPrototypeOf$y(subClass, superClass);
 }
-function _setPrototypeOf$x(o, p) {
-  _setPrototypeOf$x = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$y(o, p) {
+  _setPrototypeOf$y = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$x(o, p);
+  return _setPrototypeOf$y(o, p);
 }
-function _createSuper$x(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$x();
+function _createSuper$y(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$y();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$x(Derived), result;
+    var Super = _getPrototypeOf$y(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$x(this).constructor;
+      var NewTarget = _getPrototypeOf$y(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$x(this, result);
+    return _possibleConstructorReturn$y(this, result);
   };
 }
-function _possibleConstructorReturn$x(self, call) {
-  if (call && (_typeof$x(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$y(self, call) {
+  if (call && (_typeof$y(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$x(self);
+  return _assertThisInitialized$y(self);
 }
-function _assertThisInitialized$x(self) {
+function _assertThisInitialized$y(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$x() {
+function _isNativeReflectConstruct$y() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -19480,18 +19900,18 @@ function _isNativeReflectConstruct$x() {
     return false;
   }
 }
-function _getPrototypeOf$x(o) {
-  _getPrototypeOf$x = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$y(o) {
+  _getPrototypeOf$y = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$x(o);
+  return _getPrototypeOf$y(o);
 }
 var ActionBarComponent = /* @__PURE__ */ function(_BaseComponent) {
-  _inherits$x(ActionBarComponent2, _BaseComponent);
-  var _super = _createSuper$x(ActionBarComponent2);
+  _inherits$y(ActionBarComponent2, _BaseComponent);
+  var _super = _createSuper$y(ActionBarComponent2);
   function ActionBarComponent2(hotInstance, options) {
     var _this;
-    _classCallCheck$Q(this, ActionBarComponent2);
+    _classCallCheck$R(this, ActionBarComponent2);
     _this = _super.call(this, hotInstance, {
       id: options.id,
       stateless: true
@@ -19512,7 +19932,7 @@ var ActionBarComponent = /* @__PURE__ */ function(_BaseComponent) {
     _this.registerHooks();
     return _this;
   }
-  _createClass$Q(ActionBarComponent2, [{
+  _createClass$R(ActionBarComponent2, [{
     key: "registerHooks",
     value: function registerHooks() {
       var _this2 = this;
@@ -19644,12 +20064,12 @@ function _taggedTemplateLiteral$2(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$R(instance, Constructor) {
+function _classCallCheck$S(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$R(target, props) {
+function _defineProperties$S(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -19659,11 +20079,11 @@ function _defineProperties$R(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$R(Constructor, protoProps, staticProps) {
+function _createClass$S(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$R(Constructor.prototype, protoProps);
+    _defineProperties$S(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$R(Constructor, staticProps);
+    _defineProperties$S(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -19671,7 +20091,7 @@ var MAP_NAME = "ConditionCollection.filteringStates";
 var ConditionCollection = /* @__PURE__ */ function() {
   function ConditionCollection2(hot) {
     var isMapRegistrable = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : true;
-    _classCallCheck$R(this, ConditionCollection2);
+    _classCallCheck$S(this, ConditionCollection2);
     this.hot = hot;
     this.isMapRegistrable = isMapRegistrable;
     this.filteringStates = new LinkedPhysicalIndexToValueMap();
@@ -19681,7 +20101,7 @@ var ConditionCollection = /* @__PURE__ */ function() {
       this.filteringStates.init(this.hot.columnIndexMapper.getNumberOfIndexes());
     }
   }
-  _createClass$R(ConditionCollection2, [{
+  _createClass$S(ConditionCollection2, [{
     key: "isEmpty",
     value: function isEmpty() {
       return this.getFilteredColumns().length === 0;
@@ -19836,12 +20256,12 @@ var ConditionCollection = /* @__PURE__ */ function() {
 }();
 mixin(ConditionCollection, localHooks);
 
-function _classCallCheck$S(instance, Constructor) {
+function _classCallCheck$T(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$S(target, props) {
+function _defineProperties$T(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -19851,11 +20271,11 @@ function _defineProperties$S(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$S(Constructor, protoProps, staticProps) {
+function _createClass$T(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$S(Constructor.prototype, protoProps);
+    _defineProperties$T(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$S(Constructor, staticProps);
+    _defineProperties$T(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -19864,11 +20284,11 @@ var DataFilter = /* @__PURE__ */ function() {
     var columnDataFactory = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : function() {
       return [];
     };
-    _classCallCheck$S(this, DataFilter2);
+    _classCallCheck$T(this, DataFilter2);
     this.conditionCollection = conditionCollection;
     this.columnDataFactory = columnDataFactory;
   }
-  _createClass$S(DataFilter2, [{
+  _createClass$T(DataFilter2, [{
     key: "filter",
     value: function filter() {
       var _this = this;
@@ -19911,12 +20331,12 @@ var DataFilter = /* @__PURE__ */ function() {
   return DataFilter2;
 }();
 
-function _classCallCheck$T(instance, Constructor) {
+function _classCallCheck$U(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$T(target, props) {
+function _defineProperties$U(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -19926,11 +20346,11 @@ function _defineProperties$T(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$T(Constructor, protoProps, staticProps) {
+function _createClass$U(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$T(Constructor.prototype, protoProps);
+    _defineProperties$U(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$T(Constructor, staticProps);
+    _defineProperties$U(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -19940,7 +20360,7 @@ var ConditionUpdateObserver = /* @__PURE__ */ function() {
     var columnDataFactory = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : function() {
       return [];
     };
-    _classCallCheck$T(this, ConditionUpdateObserver2);
+    _classCallCheck$U(this, ConditionUpdateObserver2);
     this.hot = hot;
     this.conditionCollection = conditionCollection;
     this.columnDataFactory = columnDataFactory;
@@ -19964,7 +20384,7 @@ var ConditionUpdateObserver = /* @__PURE__ */ function() {
       return _this._onConditionAfterClean();
     });
   }
-  _createClass$T(ConditionUpdateObserver2, [{
+  _createClass$U(ConditionUpdateObserver2, [{
     key: "groupChanges",
     value: function groupChanges() {
       this.grouping = true;
@@ -20065,13 +20485,13 @@ var ConditionUpdateObserver = /* @__PURE__ */ function() {
 }();
 mixin(ConditionUpdateObserver, localHooks);
 
-function _typeof$y(obj) {
+function _typeof$z(obj) {
   "@babel/helpers - typeof";
-  return _typeof$y = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$z = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$y(obj);
+  }, _typeof$z(obj);
 }
 var _templateObject$3;
 function _taggedTemplateLiteral$3(strings, raw) {
@@ -20139,12 +20559,12 @@ function _arrayWithHoles$q(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$U(instance, Constructor) {
+function _classCallCheck$V(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$U(target, props) {
+function _defineProperties$V(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -20154,20 +20574,20 @@ function _defineProperties$U(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$U(Constructor, protoProps, staticProps) {
+function _createClass$V(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$U(Constructor.prototype, protoProps);
+    _defineProperties$V(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$U(Constructor, staticProps);
+    _defineProperties$V(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$s() {
+function _get$t() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$s = Reflect.get;
+    _get$t = Reflect.get;
   } else {
-    _get$s = function _get2(target, property, receiver) {
-      var base = _superPropBase$s(target, property);
+    _get$t = function _get2(target, property, receiver) {
+      var base = _superPropBase$t(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -20177,60 +20597,60 @@ function _get$s() {
       return desc.value;
     };
   }
-  return _get$s.apply(this, arguments);
+  return _get$t.apply(this, arguments);
 }
-function _superPropBase$s(object, property) {
+function _superPropBase$t(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$y(object);
+    object = _getPrototypeOf$z(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$y(subClass, superClass) {
+function _inherits$z(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$y(subClass, superClass);
+    _setPrototypeOf$z(subClass, superClass);
 }
-function _setPrototypeOf$y(o, p) {
-  _setPrototypeOf$y = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$z(o, p) {
+  _setPrototypeOf$z = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$y(o, p);
+  return _setPrototypeOf$z(o, p);
 }
-function _createSuper$y(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$y();
+function _createSuper$z(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$z();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$y(Derived), result;
+    var Super = _getPrototypeOf$z(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$y(this).constructor;
+      var NewTarget = _getPrototypeOf$z(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$y(this, result);
+    return _possibleConstructorReturn$z(this, result);
   };
 }
-function _possibleConstructorReturn$y(self, call) {
-  if (call && (_typeof$y(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$z(self, call) {
+  if (call && (_typeof$z(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$y(self);
+  return _assertThisInitialized$z(self);
 }
-function _assertThisInitialized$y(self) {
+function _assertThisInitialized$z(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$y() {
+function _isNativeReflectConstruct$z() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -20245,22 +20665,22 @@ function _isNativeReflectConstruct$y() {
     return false;
   }
 }
-function _getPrototypeOf$y(o) {
-  _getPrototypeOf$y = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$z(o) {
+  _getPrototypeOf$z = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$y(o);
+  return _getPrototypeOf$z(o);
 }
 var PLUGIN_KEY$f = "filters";
 var PLUGIN_PRIORITY$e = 250;
 var Filters = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$y(Filters2, _BasePlugin);
-  var _super = _createSuper$y(Filters2);
+  _inherits$z(Filters2, _BasePlugin);
+  var _super = _createSuper$z(Filters2);
   function Filters2(hotInstance) {
     var _this;
-    _classCallCheck$U(this, Filters2);
+    _classCallCheck$V(this, Filters2);
     _this = _super.call(this, hotInstance);
-    _this.eventManager = new EventManager(_assertThisInitialized$y(_this));
+    _this.eventManager = new EventManager(_assertThisInitialized$z(_this));
     _this.dropdownMenuPlugin = null;
     _this.conditionCollection = null;
     _this.conditionUpdateObserver = null;
@@ -20272,7 +20692,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
     });
     return _this;
   }
-  _createClass$U(Filters2, [{
+  _createClass$V(Filters2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return this.hot.getSettings()[PLUGIN_KEY$f] ? true : false;
@@ -20382,7 +20802,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
         this.dropdownMenuPlugin.disablePlugin();
         this.dropdownMenuPlugin.enablePlugin();
       }
-      _get$s(_getPrototypeOf$y(Filters2.prototype), "enablePlugin", this).call(this);
+      _get$t(_getPrototypeOf$z(Filters2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "registerEvents",
@@ -20409,7 +20829,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
         this.conditionCollection = null;
         this.hot.rowIndexMapper.unregisterMap(this.pluginName);
       }
-      _get$s(_getPrototypeOf$y(Filters2.prototype), "disablePlugin", this).call(this);
+      _get$t(_getPrototypeOf$z(Filters2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "addCondition",
@@ -20487,7 +20907,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
     key: "clearColumnSelection",
     value: function clearColumnSelection() {
       var _this$hot$getSelected;
-      var coords = (_this$hot$getSelected = this.hot.getSelectedRangeLast()) === null || _this$hot$getSelected === void 0 ? void 0 : _this$hot$getSelected.getTopLeftCorner();
+      var coords = (_this$hot$getSelected = this.hot.getSelectedRangeLast()) === null || _this$hot$getSelected === void 0 ? void 0 : _this$hot$getSelected.getTopStartCorner();
       if (coords !== void 0) {
         this.hot.selectCell(coords.row, coords.col);
       }
@@ -20496,10 +20916,12 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
     key: "getDataMapAtColumn",
     value: function getDataMapAtColumn(column) {
       var _this6 = this;
-      var visualIndex = this.hot.toVisualColumn(column);
+      var visualColumn = this.hot.toVisualColumn(column);
       var data = [];
-      arrayEach(this.hot.getSourceDataAtCol(visualIndex), function(value, rowIndex) {
-        var _this6$hot$getCellMet = _this6.hot.getCellMeta(rowIndex, visualIndex), row = _this6$hot$getCellMet.row, col = _this6$hot$getCellMet.col, visualCol = _this6$hot$getCellMet.visualCol, visualRow = _this6$hot$getCellMet.visualRow, type = _this6$hot$getCellMet.type, instance = _this6$hot$getCellMet.instance, dateFormat = _this6$hot$getCellMet.dateFormat, locale = _this6$hot$getCellMet.locale;
+      arrayEach(this.hot.getSourceDataAtCol(visualColumn), function(value, rowIndex) {
+        var _this6$hot$getDataAtC;
+        var _this6$hot$getCellMet = _this6.hot.getCellMeta(rowIndex, visualColumn), row = _this6$hot$getCellMet.row, col = _this6$hot$getCellMet.col, visualCol = _this6$hot$getCellMet.visualCol, visualRow = _this6$hot$getCellMet.visualRow, type = _this6$hot$getCellMet.type, instance = _this6$hot$getCellMet.instance, dateFormat = _this6$hot$getCellMet.dateFormat, locale = _this6$hot$getCellMet.locale;
+        var dataValue = (_this6$hot$getDataAtC = _this6.hot.getDataAtCell(_this6.hot.toVisualRow(rowIndex), visualColumn)) !== null && _this6$hot$getDataAtC !== void 0 ? _this6$hot$getDataAtC : value;
         data.push({
           meta: {
             row,
@@ -20511,7 +20933,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
             dateFormat,
             locale
           },
-          value: toEmptyString(value)
+          value: toEmptyString(dataValue)
         });
       });
       return data;
@@ -20792,7 +21214,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
         this.conditionUpdateObserver.destroy();
         this.hot.rowIndexMapper.unregisterMap(this.pluginName);
       }
-      _get$s(_getPrototypeOf$y(Filters2.prototype), "destroy", this).call(this);
+      _get$t(_getPrototypeOf$z(Filters2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -20813,7 +21235,7 @@ var Filters = /* @__PURE__ */ function(_BasePlugin) {
   return Filters2;
 }(BasePlugin);
 
-function ownKeys$2(object, enumerableOnly) {
+function ownKeys$3(object, enumerableOnly) {
   var keys = Object.keys(object);
   if (Object.getOwnPropertySymbols) {
     var symbols = Object.getOwnPropertySymbols(object);
@@ -20823,18 +21245,18 @@ function ownKeys$2(object, enumerableOnly) {
   }
   return keys;
 }
-function _objectSpread$2(target) {
+function _objectSpread$3(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
-    i % 2 ? ownKeys$2(Object(source), true).forEach(function(key) {
-      _defineProperty$9(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function(key) {
+    i % 2 ? ownKeys$3(Object(source), true).forEach(function(key) {
+      _defineProperty$b(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$9(obj, key, value) {
+function _defineProperty$b(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -20890,23 +21312,23 @@ function getEngineSettingsWithDefaultsAndOverrides(hotSettings) {
   var pluginSettings = hotSettings[PLUGIN_KEY$g];
   var userSettings = cleanEngineSettings(pluginSettings !== null && pluginSettings !== void 0 && (_pluginSettings$engin = pluginSettings.engine) !== null && _pluginSettings$engin !== void 0 && _pluginSettings$engin.hyperformula ? pluginSettings.engine : {});
   var overrides = getEngineSettingsOverrides(hotSettings);
-  return _objectSpread$2(_objectSpread$2(_objectSpread$2({}, DEFAULT_SETTINGS), userSettings), overrides);
+  return _objectSpread$3(_objectSpread$3(_objectSpread$3({}, DEFAULT_SETTINGS), userSettings), overrides);
 }
 function getEngineSettingsWithOverrides(hotSettings) {
   var _pluginSettings$engin2;
   var pluginSettings = hotSettings[PLUGIN_KEY$g];
   var userSettings = cleanEngineSettings(pluginSettings !== null && pluginSettings !== void 0 && (_pluginSettings$engin2 = pluginSettings.engine) !== null && _pluginSettings$engin2 !== void 0 && _pluginSettings$engin2.hyperformula ? pluginSettings.engine : {});
   var overrides = getEngineSettingsOverrides(hotSettings);
-  return _objectSpread$2(_objectSpread$2({}, userSettings), overrides);
+  return _objectSpread$3(_objectSpread$3({}, userSettings), overrides);
 }
 
-function _typeof$z(obj) {
+function _typeof$A(obj) {
   "@babel/helpers - typeof";
-  return _typeof$z = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$A = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$z(obj);
+  }, _typeof$A(obj);
 }
 function getEngineRelationshipRegistry() {
   var registryKey = "engine_relationship";
@@ -20937,7 +21359,7 @@ function setupEngine(hotInstance) {
   if (typeof engineConfigItem.hyperformula === "function" || typeof engineConfigItem === "function") {
     var _engineConfigItem$hyp;
     return registerEngine((_engineConfigItem$hyp = engineConfigItem.hyperformula) !== null && _engineConfigItem$hyp !== void 0 ? _engineConfigItem$hyp : engineConfigItem, hotSettings, hotInstance);
-  } else if (_typeof$z(engineConfigItem) === "object" && isUndefined(engineConfigItem.hyperformula)) {
+  } else if (_typeof$A(engineConfigItem) === "object" && isUndefined(engineConfigItem.hyperformula)) {
     var engineRelationship = getEngineRelationshipRegistry();
     var sharedEngineUsage = getSharedEngineUsageRegistry().get(engineConfigItem);
     if (!engineRelationship.has(engineConfigItem)) {
@@ -21068,7 +21490,7 @@ function _arrayWithoutHoles$6(arr) {
   if (Array.isArray(arr))
     return _arrayLikeToArray$w(arr);
 }
-function ownKeys$3(object, enumerableOnly) {
+function ownKeys$4(object, enumerableOnly) {
   var keys = Object.keys(object);
   if (Object.getOwnPropertySymbols) {
     var symbols = Object.getOwnPropertySymbols(object);
@@ -21078,24 +21500,24 @@ function ownKeys$3(object, enumerableOnly) {
   }
   return keys;
 }
-function _objectSpread$3(target) {
+function _objectSpread$4(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
-    i % 2 ? ownKeys$3(Object(source), true).forEach(function(key) {
-      _defineProperty$a(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function(key) {
+    i % 2 ? ownKeys$4(Object(source), true).forEach(function(key) {
+      _defineProperty$c(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _typeof$A(obj) {
+function _typeof$B(obj) {
   "@babel/helpers - typeof";
-  return _typeof$A = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$B = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$A(obj);
+  }, _typeof$B(obj);
 }
 function _slicedToArray$q(arr, i) {
   return _arrayWithHoles$r(arr) || _iterableToArrayLimit$q(arr, i) || _unsupportedIterableToArray$w(arr, i) || _nonIterableRest$r();
@@ -21156,12 +21578,12 @@ function _arrayWithHoles$r(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$V(instance, Constructor) {
+function _classCallCheck$W(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$V(target, props) {
+function _defineProperties$W(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -21171,20 +21593,20 @@ function _defineProperties$V(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$V(Constructor, protoProps, staticProps) {
+function _createClass$W(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$V(Constructor.prototype, protoProps);
+    _defineProperties$W(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$V(Constructor, staticProps);
+    _defineProperties$W(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$t() {
+function _get$u() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$t = Reflect.get;
+    _get$u = Reflect.get;
   } else {
-    _get$t = function _get2(target, property, receiver) {
-      var base = _superPropBase$t(target, property);
+    _get$u = function _get2(target, property, receiver) {
+      var base = _superPropBase$u(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -21194,60 +21616,60 @@ function _get$t() {
       return desc.value;
     };
   }
-  return _get$t.apply(this, arguments);
+  return _get$u.apply(this, arguments);
 }
-function _superPropBase$t(object, property) {
+function _superPropBase$u(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$z(object);
+    object = _getPrototypeOf$A(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$z(subClass, superClass) {
+function _inherits$A(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$z(subClass, superClass);
+    _setPrototypeOf$A(subClass, superClass);
 }
-function _setPrototypeOf$z(o, p) {
-  _setPrototypeOf$z = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$A(o, p) {
+  _setPrototypeOf$A = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$z(o, p);
+  return _setPrototypeOf$A(o, p);
 }
-function _createSuper$z(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$z();
+function _createSuper$A(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$A();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$z(Derived), result;
+    var Super = _getPrototypeOf$A(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$z(this).constructor;
+      var NewTarget = _getPrototypeOf$A(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$z(this, result);
+    return _possibleConstructorReturn$A(this, result);
   };
 }
-function _possibleConstructorReturn$z(self, call) {
-  if (call && (_typeof$A(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$A(self, call) {
+  if (call && (_typeof$B(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$z(self);
+  return _assertThisInitialized$A(self);
 }
-function _assertThisInitialized$z(self) {
+function _assertThisInitialized$A(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$z() {
+function _isNativeReflectConstruct$A() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -21262,13 +21684,13 @@ function _isNativeReflectConstruct$z() {
     return false;
   }
 }
-function _getPrototypeOf$z(o) {
-  _getPrototypeOf$z = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$A(o) {
+  _getPrototypeOf$A = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$z(o);
+  return _getPrototypeOf$A(o);
 }
-function _defineProperty$a(obj, key, value) {
+function _defineProperty$c(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -21277,10 +21699,10 @@ function _defineProperty$a(obj, key, value) {
   return obj;
 }
 function _classPrivateFieldInitSpec$1(obj, privateMap, value) {
-  _checkPrivateRedeclaration$1(obj, privateMap);
+  _checkPrivateRedeclaration$2(obj, privateMap);
   privateMap.set(obj, value);
 }
-function _checkPrivateRedeclaration$1(obj, privateCollection) {
+function _checkPrivateRedeclaration$2(obj, privateCollection) {
   if (privateCollection.has(obj)) {
     throw new TypeError("Cannot initialize the same private elements twice on an object");
   }
@@ -21332,24 +21754,24 @@ var _internalOperationPending = /* @__PURE__ */ new WeakMap();
 var _hotWasInitializedWithEmptyData = /* @__PURE__ */ new WeakMap();
 var _engineListeners = /* @__PURE__ */ new WeakMap();
 var Formulas = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$z(Formulas2, _BasePlugin);
-  var _super = _createSuper$z(Formulas2);
+  _inherits$A(Formulas2, _BasePlugin);
+  var _super = _createSuper$A(Formulas2);
   function Formulas2() {
     var _this;
-    _classCallCheck$V(this, Formulas2);
+    _classCallCheck$W(this, Formulas2);
     for (var _len = arguments.length, _args = new Array(_len), _key = 0; _key < _len; _key++) {
       _args[_key] = arguments[_key];
     }
     _this = _super.call.apply(_super, [this].concat(_args));
-    _classPrivateFieldInitSpec$1(_assertThisInitialized$z(_this), _internalOperationPending, {
+    _classPrivateFieldInitSpec$1(_assertThisInitialized$A(_this), _internalOperationPending, {
       writable: true,
       value: false
     });
-    _classPrivateFieldInitSpec$1(_assertThisInitialized$z(_this), _hotWasInitializedWithEmptyData, {
+    _classPrivateFieldInitSpec$1(_assertThisInitialized$A(_this), _hotWasInitializedWithEmptyData, {
       writable: true,
       value: false
     });
-    _classPrivateFieldInitSpec$1(_assertThisInitialized$z(_this), _engineListeners, {
+    _classPrivateFieldInitSpec$1(_assertThisInitialized$A(_this), _engineListeners, {
       writable: true,
       value: [["valuesUpdated", function() {
         var _this2;
@@ -21371,12 +21793,12 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
         return (_this7 = _this).onEngineSheetRemoved.apply(_this7, arguments);
       }]]
     });
-    _defineProperty$a(_assertThisInitialized$z(_this), "staticRegister", staticRegister("formulas"));
-    _defineProperty$a(_assertThisInitialized$z(_this), "engine", null);
-    _defineProperty$a(_assertThisInitialized$z(_this), "sheetName", null);
+    _defineProperty$c(_assertThisInitialized$A(_this), "staticRegister", staticRegister("formulas"));
+    _defineProperty$c(_assertThisInitialized$A(_this), "engine", null);
+    _defineProperty$c(_assertThisInitialized$A(_this), "sheetName", null);
     return _this;
   }
-  _createClass$V(Formulas2, [{
+  _createClass$W(Formulas2, [{
     key: "sheetId",
     get: function get() {
       return this.sheetName === null ? null : this.engine.getSheetId(this.sheetName);
@@ -21474,7 +21896,7 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
         var _ref2 = _slicedToArray$q(_ref, 2), eventName = _ref2[0], listener = _ref2[1];
         return _this8.engine.on(eventName, listener);
       });
-      _get$t(_getPrototypeOf$z(Formulas2.prototype), "enablePlugin", this).call(this);
+      _get$u(_getPrototypeOf$A(Formulas2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -21486,7 +21908,7 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
       });
       unregisterEngine(this.engine, this.hot);
       this.engine = null;
-      _get$t(_getPrototypeOf$z(Formulas2.prototype), "disablePlugin", this).call(this);
+      _get$u(_getPrototypeOf$A(Formulas2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
@@ -21504,7 +21926,7 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
           this.sheetName = this.addSheet(sheetName !== null && sheetName !== void 0 ? sheetName : void 0, this.hot.getSourceDataArray());
         }
       }
-      _get$t(_getPrototypeOf$z(Formulas2.prototype), "updatePlugin", this).call(this, newSettings);
+      _get$u(_getPrototypeOf$A(Formulas2.prototype), "updatePlugin", this).call(this, newSettings);
     }
   }, {
     key: "destroy",
@@ -21518,7 +21940,7 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
       _classPrivateFieldSet$1(this, _engineListeners, null);
       unregisterEngine(this.engine, this.hot);
       this.engine = null;
-      _get$t(_getPrototypeOf$z(Formulas2.prototype), "destroy", this).call(this);
+      _get$u(_getPrototypeOf$A(Formulas2.prototype), "destroy", this).call(this);
     }
   }, {
     key: "getPhysicalIndexPosition",
@@ -21655,8 +22077,11 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
         var sheetId = change === null || change === void 0 ? void 0 : (_change$address4 = change.address) === null || _change$address4 === void 0 ? void 0 : _change$address4.sheet;
         var addressId = stringifyAddress(change);
         if (sheetId !== void 0 && !changedCellsSet.has(addressId)) {
-          var hot = getRegisteredHotInstances(_this12.engine).get(sheetId);
-          hot.validateCell(hot.getDataAtCell(visualRow, visualColumn), hot.getCellMeta(visualRow, visualColumn), function() {
+          var boundHot = getRegisteredHotInstances(_this12.engine).get(sheetId);
+          if (!boundHot) {
+            return;
+          }
+          boundHot.validateCell(boundHot.getDataAtCell(visualRow, visualColumn), boundHot.getCellMeta(visualRow, visualColumn), function() {
           });
         }
       });
@@ -21686,7 +22111,7 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
           sheet: this.sheetId
         };
         var cellValue = this.engine.getCellValue(address);
-        return _typeof$A(cellValue) === "object" && cellValue !== null ? cellValue.value : cellValue;
+        return _typeof$B(cellValue) === "object" && cellValue !== null ? cellValue.value : cellValue;
       }
       return value;
     }
@@ -21695,17 +22120,17 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
     value: function onBeforeAutofill(fillData, sourceRange, targetRange) {
       var _this13 = this;
       var withSheetId = function withSheetId2(range) {
-        return _objectSpread$3(_objectSpread$3({}, range), {}, {
+        return _objectSpread$4(_objectSpread$4({}, range), {}, {
           sheet: _this13.sheetId
         });
       };
       var engineSourceRange = {
-        start: withSheetId(sourceRange.getTopLeftCorner()),
-        end: withSheetId(sourceRange.getBottomRightCorner())
+        start: withSheetId(sourceRange.getTopStartCorner()),
+        end: withSheetId(sourceRange.getBottomEndCorner())
       };
       var engineTargetRange = {
-        start: withSheetId(targetRange.getTopLeftCorner()),
-        end: withSheetId(targetRange.getBottomRightCorner())
+        start: withSheetId(targetRange.getTopStartCorner()),
+        end: withSheetId(targetRange.getBottomEndCorner())
       };
       if (this.engine.isItPossibleToSetCellContents(engineTargetRange) === false) {
         return false;
@@ -21764,7 +22189,7 @@ var Formulas = /* @__PURE__ */ function(_BasePlugin) {
         sheet: this.sheetId
       };
       var cellValue = this.engine.getCellValue(address);
-      var value = _typeof$A(cellValue) === "object" && cellValue !== null ? cellValue.value : cellValue;
+      var value = _typeof$B(cellValue) === "object" && cellValue !== null ? cellValue.value : cellValue;
       valueHolder.value = value;
     }
   }, {
@@ -22181,8 +22606,8 @@ function showColumnItem(hiddenColumnsPlugin) {
       }
       columns.length = 0;
       var selectedRangeLast = this.getSelectedRangeLast();
-      var visualStartColumn = selectedRangeLast.getTopLeftCorner().col;
-      var visualEndColumn = selectedRangeLast.getBottomRightCorner().col;
+      var visualStartColumn = selectedRangeLast.getTopStartCorner().col;
+      var visualEndColumn = selectedRangeLast.getBottomEndCorner().col;
       var columnIndexMapper = this.columnIndexMapper;
       var renderableStartColumn = columnIndexMapper.getRenderableFromVisualIndex(visualStartColumn);
       var renderableEndColumn = columnIndexMapper.getRenderableFromVisualIndex(visualEndColumn);
@@ -22216,20 +22641,20 @@ function showColumnItem(hiddenColumnsPlugin) {
   };
 }
 
-function _typeof$B(obj) {
+function _typeof$C(obj) {
   "@babel/helpers - typeof";
-  return _typeof$B = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$C = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$B(obj);
+  }, _typeof$C(obj);
 }
-function _classCallCheck$W(instance, Constructor) {
+function _classCallCheck$X(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$W(target, props) {
+function _defineProperties$X(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -22239,20 +22664,20 @@ function _defineProperties$W(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$W(Constructor, protoProps, staticProps) {
+function _createClass$X(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$W(Constructor.prototype, protoProps);
+    _defineProperties$X(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$W(Constructor, staticProps);
+    _defineProperties$X(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$u() {
+function _get$v() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$u = Reflect.get;
+    _get$v = Reflect.get;
   } else {
-    _get$u = function _get2(target, property, receiver) {
-      var base = _superPropBase$u(target, property);
+    _get$v = function _get2(target, property, receiver) {
+      var base = _superPropBase$v(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -22262,60 +22687,60 @@ function _get$u() {
       return desc.value;
     };
   }
-  return _get$u.apply(this, arguments);
+  return _get$v.apply(this, arguments);
 }
-function _superPropBase$u(object, property) {
+function _superPropBase$v(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$A(object);
+    object = _getPrototypeOf$B(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$A(subClass, superClass) {
+function _inherits$B(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$A(subClass, superClass);
+    _setPrototypeOf$B(subClass, superClass);
 }
-function _setPrototypeOf$A(o, p) {
-  _setPrototypeOf$A = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$B(o, p) {
+  _setPrototypeOf$B = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$A(o, p);
+  return _setPrototypeOf$B(o, p);
 }
-function _createSuper$A(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$A();
+function _createSuper$B(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$B();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$A(Derived), result;
+    var Super = _getPrototypeOf$B(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$A(this).constructor;
+      var NewTarget = _getPrototypeOf$B(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$A(this, result);
+    return _possibleConstructorReturn$B(this, result);
   };
 }
-function _possibleConstructorReturn$A(self, call) {
-  if (call && (_typeof$B(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$B(self, call) {
+  if (call && (_typeof$C(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$A(self);
+  return _assertThisInitialized$B(self);
 }
-function _assertThisInitialized$A(self) {
+function _assertThisInitialized$B(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$A() {
+function _isNativeReflectConstruct$B() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -22330,17 +22755,17 @@ function _isNativeReflectConstruct$A() {
     return false;
   }
 }
-function _getPrototypeOf$A(o) {
-  _getPrototypeOf$A = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$B(o) {
+  _getPrototypeOf$B = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$A(o);
+  return _getPrototypeOf$B(o);
 }
 function _classPrivateFieldInitSpec$2(obj, privateMap, value) {
-  _checkPrivateRedeclaration$2(obj, privateMap);
+  _checkPrivateRedeclaration$3(obj, privateMap);
   privateMap.set(obj, value);
 }
-function _checkPrivateRedeclaration$2(obj, privateCollection) {
+function _checkPrivateRedeclaration$3(obj, privateCollection) {
   if (privateCollection.has(obj)) {
     throw new TypeError("Cannot initialize the same private elements twice on an object");
   }
@@ -22385,26 +22810,26 @@ var PLUGIN_PRIORITY$g = 310;
 var _settings = /* @__PURE__ */ new WeakMap();
 var _hiddenColumnsMap = /* @__PURE__ */ new WeakMap();
 var HiddenColumns = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$A(HiddenColumns2, _BasePlugin);
-  var _super = _createSuper$A(HiddenColumns2);
+  _inherits$B(HiddenColumns2, _BasePlugin);
+  var _super = _createSuper$B(HiddenColumns2);
   function HiddenColumns2() {
     var _this;
-    _classCallCheck$W(this, HiddenColumns2);
+    _classCallCheck$X(this, HiddenColumns2);
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
     _this = _super.call.apply(_super, [this].concat(args));
-    _classPrivateFieldInitSpec$2(_assertThisInitialized$A(_this), _settings, {
+    _classPrivateFieldInitSpec$2(_assertThisInitialized$B(_this), _settings, {
       writable: true,
       value: {}
     });
-    _classPrivateFieldInitSpec$2(_assertThisInitialized$A(_this), _hiddenColumnsMap, {
+    _classPrivateFieldInitSpec$2(_assertThisInitialized$B(_this), _hiddenColumnsMap, {
       writable: true,
       value: null
     });
     return _this;
   }
-  _createClass$W(HiddenColumns2, [{
+  _createClass$X(HiddenColumns2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$h];
@@ -22443,21 +22868,21 @@ var HiddenColumns = /* @__PURE__ */ function(_BasePlugin) {
       this.addHook("modifyCopyableRange", function(ranges) {
         return _this2.onModifyCopyableRange(ranges);
       });
-      _get$u(_getPrototypeOf$A(HiddenColumns2.prototype), "enablePlugin", this).call(this);
+      _get$v(_getPrototypeOf$B(HiddenColumns2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
     value: function updatePlugin() {
       this.disablePlugin();
       this.enablePlugin();
-      _get$u(_getPrototypeOf$A(HiddenColumns2.prototype), "updatePlugin", this).call(this);
+      _get$v(_getPrototypeOf$B(HiddenColumns2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
       this.hot.columnIndexMapper.unregisterMap(this.pluginName);
       _classPrivateFieldSet$2(this, _settings, {});
-      _get$u(_getPrototypeOf$A(HiddenColumns2.prototype), "disablePlugin", this).call(this);
+      _get$v(_getPrototypeOf$B(HiddenColumns2.prototype), "disablePlugin", this).call(this);
       this.resetCellsMeta();
     }
   }, {
@@ -22671,7 +23096,7 @@ var HiddenColumns = /* @__PURE__ */ function(_BasePlugin) {
     value: function destroy() {
       _classPrivateFieldSet$2(this, _settings, null);
       _classPrivateFieldSet$2(this, _hiddenColumnsMap, null);
-      _get$u(_getPrototypeOf$A(HiddenColumns2.prototype), "destroy", this).call(this);
+      _get$v(_getPrototypeOf$B(HiddenColumns2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -22858,8 +23283,8 @@ function showRowItem(hiddenRowsPlugin) {
       }
       rows.length = 0;
       var selectedRangeLast = this.getSelectedRangeLast();
-      var visualStartRow = selectedRangeLast.getTopLeftCorner().row;
-      var visualEndRow = selectedRangeLast.getBottomRightCorner().row;
+      var visualStartRow = selectedRangeLast.getTopStartCorner().row;
+      var visualEndRow = selectedRangeLast.getBottomEndCorner().row;
       var rowIndexMapper = this.rowIndexMapper;
       var renderableStartRow = rowIndexMapper.getRenderableFromVisualIndex(visualStartRow);
       var renderableEndRow = rowIndexMapper.getRenderableFromVisualIndex(visualEndRow);
@@ -22893,20 +23318,20 @@ function showRowItem(hiddenRowsPlugin) {
   };
 }
 
-function _typeof$C(obj) {
+function _typeof$D(obj) {
   "@babel/helpers - typeof";
-  return _typeof$C = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$D = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$C(obj);
+  }, _typeof$D(obj);
 }
-function _classCallCheck$X(instance, Constructor) {
+function _classCallCheck$Y(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$X(target, props) {
+function _defineProperties$Y(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -22916,20 +23341,20 @@ function _defineProperties$X(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$X(Constructor, protoProps, staticProps) {
+function _createClass$Y(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$X(Constructor.prototype, protoProps);
+    _defineProperties$Y(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$X(Constructor, staticProps);
+    _defineProperties$Y(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$v() {
+function _get$w() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$v = Reflect.get;
+    _get$w = Reflect.get;
   } else {
-    _get$v = function _get2(target, property, receiver) {
-      var base = _superPropBase$v(target, property);
+    _get$w = function _get2(target, property, receiver) {
+      var base = _superPropBase$w(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -22939,60 +23364,60 @@ function _get$v() {
       return desc.value;
     };
   }
-  return _get$v.apply(this, arguments);
+  return _get$w.apply(this, arguments);
 }
-function _superPropBase$v(object, property) {
+function _superPropBase$w(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$B(object);
+    object = _getPrototypeOf$C(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$B(subClass, superClass) {
+function _inherits$C(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$B(subClass, superClass);
+    _setPrototypeOf$C(subClass, superClass);
 }
-function _setPrototypeOf$B(o, p) {
-  _setPrototypeOf$B = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$C(o, p) {
+  _setPrototypeOf$C = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$B(o, p);
+  return _setPrototypeOf$C(o, p);
 }
-function _createSuper$B(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$B();
+function _createSuper$C(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$C();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$B(Derived), result;
+    var Super = _getPrototypeOf$C(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$B(this).constructor;
+      var NewTarget = _getPrototypeOf$C(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$B(this, result);
+    return _possibleConstructorReturn$C(this, result);
   };
 }
-function _possibleConstructorReturn$B(self, call) {
-  if (call && (_typeof$C(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$C(self, call) {
+  if (call && (_typeof$D(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$B(self);
+  return _assertThisInitialized$C(self);
 }
-function _assertThisInitialized$B(self) {
+function _assertThisInitialized$C(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$B() {
+function _isNativeReflectConstruct$C() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -23007,17 +23432,17 @@ function _isNativeReflectConstruct$B() {
     return false;
   }
 }
-function _getPrototypeOf$B(o) {
-  _getPrototypeOf$B = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$C(o) {
+  _getPrototypeOf$C = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$B(o);
+  return _getPrototypeOf$C(o);
 }
 function _classPrivateFieldInitSpec$3(obj, privateMap, value) {
-  _checkPrivateRedeclaration$3(obj, privateMap);
+  _checkPrivateRedeclaration$4(obj, privateMap);
   privateMap.set(obj, value);
 }
-function _checkPrivateRedeclaration$3(obj, privateCollection) {
+function _checkPrivateRedeclaration$4(obj, privateCollection) {
   if (privateCollection.has(obj)) {
     throw new TypeError("Cannot initialize the same private elements twice on an object");
   }
@@ -23062,26 +23487,26 @@ var PLUGIN_PRIORITY$h = 320;
 var _settings$1 = /* @__PURE__ */ new WeakMap();
 var _hiddenRowsMap = /* @__PURE__ */ new WeakMap();
 var HiddenRows = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$B(HiddenRows2, _BasePlugin);
-  var _super = _createSuper$B(HiddenRows2);
+  _inherits$C(HiddenRows2, _BasePlugin);
+  var _super = _createSuper$C(HiddenRows2);
   function HiddenRows2() {
     var _this;
-    _classCallCheck$X(this, HiddenRows2);
+    _classCallCheck$Y(this, HiddenRows2);
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
     _this = _super.call.apply(_super, [this].concat(args));
-    _classPrivateFieldInitSpec$3(_assertThisInitialized$B(_this), _settings$1, {
+    _classPrivateFieldInitSpec$3(_assertThisInitialized$C(_this), _settings$1, {
       writable: true,
       value: {}
     });
-    _classPrivateFieldInitSpec$3(_assertThisInitialized$B(_this), _hiddenRowsMap, {
+    _classPrivateFieldInitSpec$3(_assertThisInitialized$C(_this), _hiddenRowsMap, {
       writable: true,
       value: null
     });
     return _this;
   }
-  _createClass$X(HiddenRows2, [{
+  _createClass$Y(HiddenRows2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$i];
@@ -23120,21 +23545,21 @@ var HiddenRows = /* @__PURE__ */ function(_BasePlugin) {
       this.addHook("modifyCopyableRange", function(ranges) {
         return _this2.onModifyCopyableRange(ranges);
       });
-      _get$v(_getPrototypeOf$B(HiddenRows2.prototype), "enablePlugin", this).call(this);
+      _get$w(_getPrototypeOf$C(HiddenRows2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
     value: function updatePlugin() {
       this.disablePlugin();
       this.enablePlugin();
-      _get$v(_getPrototypeOf$B(HiddenRows2.prototype), "updatePlugin", this).call(this);
+      _get$w(_getPrototypeOf$C(HiddenRows2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
       this.hot.rowIndexMapper.unregisterMap(this.pluginName);
       _classPrivateFieldSet$3(this, _settings$1, {});
-      _get$v(_getPrototypeOf$B(HiddenRows2.prototype), "disablePlugin", this).call(this);
+      _get$w(_getPrototypeOf$C(HiddenRows2.prototype), "disablePlugin", this).call(this);
       this.resetCellsMeta();
     }
   }, {
@@ -23343,7 +23768,7 @@ var HiddenRows = /* @__PURE__ */ function(_BasePlugin) {
     value: function destroy() {
       _classPrivateFieldSet$3(this, _settings$1, null);
       _classPrivateFieldSet$3(this, _hiddenRowsMap, null);
-      _get$v(_getPrototypeOf$B(HiddenRows2.prototype), "destroy", this).call(this);
+      _get$w(_getPrototypeOf$C(HiddenRows2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -23437,7 +23862,7 @@ function freezeColumnItem(manualColumnFreezePlugin) {
         hide = true;
       } else if (selection.length > 1) {
         hide = true;
-      } else if (selection[0].from.col !== selection[0].to.col || selection[0].from.col <= this.getSettings().fixedColumnsLeft - 1) {
+      } else if (selection[0].from.col !== selection[0].to.col || selection[0].from.col <= this.getSettings().fixedColumnsStart - 1) {
         hide = true;
       }
       return hide;
@@ -23523,7 +23948,7 @@ function unfreezeColumnItem(manualColumnFreezePlugin) {
         hide = true;
       } else if (selection.length > 1) {
         hide = true;
-      } else if (selection[0].from.col !== selection[0].to.col || selection[0].from.col >= this.getSettings().fixedColumnsLeft) {
+      } else if (selection[0].from.col !== selection[0].to.col || selection[0].from.col >= this.getSettings().fixedColumnsStart) {
         hide = true;
       }
       return hide;
@@ -23531,240 +23956,14 @@ function unfreezeColumnItem(manualColumnFreezePlugin) {
   };
 }
 
-function _typeof$D(obj) {
+function _typeof$E(obj) {
   "@babel/helpers - typeof";
-  return _typeof$D = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$E = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$D(obj);
+  }, _typeof$E(obj);
 }
-function _classCallCheck$Y(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$Y(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$Y(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$Y(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$Y(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _get$w() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$w = Reflect.get;
-  } else {
-    _get$w = function _get2(target, property, receiver) {
-      var base = _superPropBase$w(target, property);
-      if (!base)
-        return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    };
-  }
-  return _get$w.apply(this, arguments);
-}
-function _superPropBase$w(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$C(object);
-    if (object === null)
-      break;
-  }
-  return object;
-}
-function _inherits$C(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$C(subClass, superClass);
-}
-function _setPrototypeOf$C(o, p) {
-  _setPrototypeOf$C = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$C(o, p);
-}
-function _createSuper$C(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$C();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$C(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$C(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$C(this, result);
-  };
-}
-function _possibleConstructorReturn$C(self, call) {
-  if (call && (_typeof$D(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$C(self);
-}
-function _assertThisInitialized$C(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$C() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$C(o) {
-  _getPrototypeOf$C = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$C(o);
-}
-var PLUGIN_KEY$j = "manualColumnFreeze";
-var PLUGIN_PRIORITY$i = 110;
-var privatePool$a = new WeakMap();
-var ManualColumnFreeze = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$C(ManualColumnFreeze2, _BasePlugin);
-  var _super = _createSuper$C(ManualColumnFreeze2);
-  function ManualColumnFreeze2(hotInstance) {
-    var _this;
-    _classCallCheck$Y(this, ManualColumnFreeze2);
-    _this = _super.call(this, hotInstance);
-    privatePool$a.set(_assertThisInitialized$C(_this), {
-      afterFirstUse: false
-    });
-    return _this;
-  }
-  _createClass$Y(ManualColumnFreeze2, [{
-    key: "isEnabled",
-    value: function isEnabled() {
-      return !!this.hot.getSettings()[PLUGIN_KEY$j];
-    }
-  }, {
-    key: "enablePlugin",
-    value: function enablePlugin() {
-      var _this2 = this;
-      if (this.enabled) {
-        return;
-      }
-      this.addHook("afterContextMenuDefaultOptions", function(options) {
-        return _this2.addContextMenuEntry(options);
-      });
-      this.addHook("beforeColumnMove", function(columns, finalIndex) {
-        return _this2.onBeforeColumnMove(columns, finalIndex);
-      });
-      _get$w(_getPrototypeOf$C(ManualColumnFreeze2.prototype), "enablePlugin", this).call(this);
-    }
-  }, {
-    key: "disablePlugin",
-    value: function disablePlugin() {
-      var priv = privatePool$a.get(this);
-      priv.afterFirstUse = false;
-      _get$w(_getPrototypeOf$C(ManualColumnFreeze2.prototype), "disablePlugin", this).call(this);
-    }
-  }, {
-    key: "updatePlugin",
-    value: function updatePlugin() {
-      this.disablePlugin();
-      this.enablePlugin();
-      _get$w(_getPrototypeOf$C(ManualColumnFreeze2.prototype), "updatePlugin", this).call(this);
-    }
-  }, {
-    key: "freezeColumn",
-    value: function freezeColumn(column) {
-      var priv = privatePool$a.get(this);
-      var settings = this.hot.getSettings();
-      if (!priv.afterFirstUse) {
-        priv.afterFirstUse = true;
-      }
-      if (settings.fixedColumnsLeft === this.hot.countCols() || column <= settings.fixedColumnsLeft - 1) {
-        return;
-      }
-      this.hot.columnIndexMapper.moveIndexes(column, settings.fixedColumnsLeft);
-      settings.fixedColumnsLeft += 1;
-    }
-  }, {
-    key: "unfreezeColumn",
-    value: function unfreezeColumn(column) {
-      var priv = privatePool$a.get(this);
-      var settings = this.hot.getSettings();
-      if (!priv.afterFirstUse) {
-        priv.afterFirstUse = true;
-      }
-      if (settings.fixedColumnsLeft <= 0 || column > settings.fixedColumnsLeft - 1) {
-        return;
-      }
-      settings.fixedColumnsLeft -= 1;
-      this.hot.columnIndexMapper.moveIndexes(column, settings.fixedColumnsLeft);
-    }
-  }, {
-    key: "addContextMenuEntry",
-    value: function addContextMenuEntry(options) {
-      options.items.push({
-        name: "---------"
-      }, freezeColumnItem(this), unfreezeColumnItem(this));
-    }
-  }, {
-    key: "onBeforeColumnMove",
-    value: function onBeforeColumnMove(columns, finalIndex) {
-      var priv = privatePool$a.get(this);
-      if (priv.afterFirstUse) {
-        var freezeLine = this.hot.getSettings().fixedColumnsLeft;
-        if (finalIndex < freezeLine) {
-          return false;
-        }
-        if (columns.some(function(column) {
-          return column < freezeLine;
-        })) {
-          return false;
-        }
-      }
-    }
-  }], [{
-    key: "PLUGIN_KEY",
-    get: function get() {
-      return PLUGIN_KEY$j;
-    }
-  }, {
-    key: "PLUGIN_PRIORITY",
-    get: function get() {
-      return PLUGIN_PRIORITY$i;
-    }
-  }]);
-  return ManualColumnFreeze2;
-}(BasePlugin);
-
 function _classCallCheck$Z(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -23785,140 +23984,6 @@ function _createClass$Z(Constructor, protoProps, staticProps) {
     _defineProperties$Z(Constructor.prototype, protoProps);
   if (staticProps)
     _defineProperties$Z(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-var STATE_INITIALIZED = 0;
-var STATE_BUILT$1 = 1;
-var STATE_APPENDED = 2;
-var UNIT = "px";
-var BaseUI$1 = /* @__PURE__ */ function() {
-  function BaseUI2(hotInstance) {
-    _classCallCheck$Z(this, BaseUI2);
-    this.hot = hotInstance;
-    this._element = null;
-    this.state = STATE_INITIALIZED;
-  }
-  _createClass$Z(BaseUI2, [{
-    key: "appendTo",
-    value: function appendTo(wrapper) {
-      wrapper.appendChild(this._element);
-      this.state = STATE_APPENDED;
-    }
-  }, {
-    key: "build",
-    value: function build() {
-      if (this.state !== STATE_INITIALIZED) {
-        return;
-      }
-      this._element = this.hot.rootDocument.createElement("div");
-      this.state = STATE_BUILT$1;
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      if (this.isAppended()) {
-        this._element.parentElement.removeChild(this._element);
-      }
-      this._element = null;
-      this.state = STATE_INITIALIZED;
-    }
-  }, {
-    key: "isAppended",
-    value: function isAppended() {
-      return this.state === STATE_APPENDED;
-    }
-  }, {
-    key: "isBuilt",
-    value: function isBuilt() {
-      return this.state >= STATE_BUILT$1;
-    }
-  }, {
-    key: "setPosition",
-    value: function setPosition(top, left) {
-      if (isNumeric(top)) {
-        this._element.style.top = top + UNIT;
-      }
-      if (isNumeric(left)) {
-        this._element.style.left = left + UNIT;
-      }
-    }
-  }, {
-    key: "getPosition",
-    value: function getPosition() {
-      return {
-        top: this._element.style.top ? parseInt(this._element.style.top, 10) : 0,
-        left: this._element.style.left ? parseInt(this._element.style.left, 10) : 0
-      };
-    }
-  }, {
-    key: "setSize",
-    value: function setSize(width, height) {
-      if (isNumeric(width)) {
-        this._element.style.width = width + UNIT;
-      }
-      if (isNumeric(height)) {
-        this._element.style.height = height + UNIT;
-      }
-    }
-  }, {
-    key: "getSize",
-    value: function getSize() {
-      return {
-        width: this._element.style.width ? parseInt(this._element.style.width, 10) : 0,
-        height: this._element.style.height ? parseInt(this._element.style.height, 10) : 0
-      };
-    }
-  }, {
-    key: "setOffset",
-    value: function setOffset(top, left) {
-      if (isNumeric(top)) {
-        this._element.style.marginTop = top + UNIT;
-      }
-      if (isNumeric(left)) {
-        this._element.style.marginLeft = left + UNIT;
-      }
-    }
-  }, {
-    key: "getOffset",
-    value: function getOffset() {
-      return {
-        top: this._element.style.marginTop ? parseInt(this._element.style.marginTop, 10) : 0,
-        left: this._element.style.marginLeft ? parseInt(this._element.style.marginLeft, 10) : 0
-      };
-    }
-  }]);
-  return BaseUI2;
-}();
-
-function _typeof$E(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$E = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$E(obj);
-}
-function _classCallCheck$_(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$_(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$_(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$_(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$_(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -24011,23 +24076,249 @@ function _getPrototypeOf$D(o) {
   };
   return _getPrototypeOf$D(o);
 }
-var CSS_CLASSNAME = "ht__manualColumnMove--backlight";
-var BacklightUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$D(BacklightUI2, _BaseUI);
-  var _super = _createSuper$D(BacklightUI2);
-  function BacklightUI2() {
-    _classCallCheck$_(this, BacklightUI2);
-    return _super.apply(this, arguments);
+var PLUGIN_KEY$j = "manualColumnFreeze";
+var PLUGIN_PRIORITY$i = 110;
+var privatePool$a = new WeakMap();
+var ManualColumnFreeze = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$D(ManualColumnFreeze2, _BasePlugin);
+  var _super = _createSuper$D(ManualColumnFreeze2);
+  function ManualColumnFreeze2(hotInstance) {
+    var _this;
+    _classCallCheck$Z(this, ManualColumnFreeze2);
+    _this = _super.call(this, hotInstance);
+    privatePool$a.set(_assertThisInitialized$D(_this), {
+      afterFirstUse: false
+    });
+    return _this;
   }
-  _createClass$_(BacklightUI2, [{
-    key: "build",
-    value: function build() {
-      _get$x(_getPrototypeOf$D(BacklightUI2.prototype), "build", this).call(this);
-      addClass(this._element, CSS_CLASSNAME);
+  _createClass$Z(ManualColumnFreeze2, [{
+    key: "isEnabled",
+    value: function isEnabled() {
+      return !!this.hot.getSettings()[PLUGIN_KEY$j];
+    }
+  }, {
+    key: "enablePlugin",
+    value: function enablePlugin() {
+      var _this2 = this;
+      if (this.enabled) {
+        return;
+      }
+      this.addHook("afterContextMenuDefaultOptions", function(options) {
+        return _this2.addContextMenuEntry(options);
+      });
+      this.addHook("beforeColumnMove", function(columns, finalIndex) {
+        return _this2.onBeforeColumnMove(columns, finalIndex);
+      });
+      _get$x(_getPrototypeOf$D(ManualColumnFreeze2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "disablePlugin",
+    value: function disablePlugin() {
+      var priv = privatePool$a.get(this);
+      priv.afterFirstUse = false;
+      _get$x(_getPrototypeOf$D(ManualColumnFreeze2.prototype), "disablePlugin", this).call(this);
+    }
+  }, {
+    key: "updatePlugin",
+    value: function updatePlugin() {
+      this.disablePlugin();
+      this.enablePlugin();
+      _get$x(_getPrototypeOf$D(ManualColumnFreeze2.prototype), "updatePlugin", this).call(this);
+    }
+  }, {
+    key: "freezeColumn",
+    value: function freezeColumn(column) {
+      var priv = privatePool$a.get(this);
+      var settings = this.hot.getSettings();
+      if (!priv.afterFirstUse) {
+        priv.afterFirstUse = true;
+      }
+      if (settings.fixedColumnsStart === this.hot.countCols() || column <= settings.fixedColumnsStart - 1) {
+        return;
+      }
+      this.hot.columnIndexMapper.moveIndexes(column, settings.fixedColumnsStart);
+      settings._fixedColumnsStart += 1;
+    }
+  }, {
+    key: "unfreezeColumn",
+    value: function unfreezeColumn(column) {
+      var priv = privatePool$a.get(this);
+      var settings = this.hot.getSettings();
+      if (!priv.afterFirstUse) {
+        priv.afterFirstUse = true;
+      }
+      if (settings.fixedColumnsStart <= 0 || column > settings.fixedColumnsStart - 1) {
+        return;
+      }
+      settings._fixedColumnsStart -= 1;
+      this.hot.columnIndexMapper.moveIndexes(column, settings.fixedColumnsStart);
+    }
+  }, {
+    key: "addContextMenuEntry",
+    value: function addContextMenuEntry(options) {
+      options.items.push({
+        name: "---------"
+      }, freezeColumnItem(this), unfreezeColumnItem(this));
+    }
+  }, {
+    key: "onBeforeColumnMove",
+    value: function onBeforeColumnMove(columns, finalIndex) {
+      var priv = privatePool$a.get(this);
+      if (priv.afterFirstUse) {
+        var freezeLine = this.hot.getSettings().fixedColumnsStart;
+        if (finalIndex < freezeLine) {
+          return false;
+        }
+        if (columns.some(function(column) {
+          return column < freezeLine;
+        })) {
+          return false;
+        }
+      }
+    }
+  }], [{
+    key: "PLUGIN_KEY",
+    get: function get() {
+      return PLUGIN_KEY$j;
+    }
+  }, {
+    key: "PLUGIN_PRIORITY",
+    get: function get() {
+      return PLUGIN_PRIORITY$i;
     }
   }]);
-  return BacklightUI2;
-}(BaseUI$1);
+  return ManualColumnFreeze2;
+}(BasePlugin);
+
+function _classCallCheck$_(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$_(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$_(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$_(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$_(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+var STATE_INITIALIZED = 0;
+var STATE_BUILT$1 = 1;
+var STATE_APPENDED = 2;
+var UNIT = "px";
+var BaseUI$1 = /* @__PURE__ */ function() {
+  function BaseUI2(hotInstance) {
+    _classCallCheck$_(this, BaseUI2);
+    this.hot = hotInstance;
+    this._element = null;
+    this.state = STATE_INITIALIZED;
+    this.inlineProperty = hotInstance.isRtl() ? "right" : "left";
+  }
+  _createClass$_(BaseUI2, [{
+    key: "appendTo",
+    value: function appendTo(wrapper) {
+      wrapper.appendChild(this._element);
+      this.state = STATE_APPENDED;
+    }
+  }, {
+    key: "build",
+    value: function build() {
+      if (this.state !== STATE_INITIALIZED) {
+        return;
+      }
+      this._element = this.hot.rootDocument.createElement("div");
+      this.state = STATE_BUILT$1;
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      if (this.isAppended()) {
+        this._element.parentElement.removeChild(this._element);
+      }
+      this._element = null;
+      this.state = STATE_INITIALIZED;
+    }
+  }, {
+    key: "isAppended",
+    value: function isAppended() {
+      return this.state === STATE_APPENDED;
+    }
+  }, {
+    key: "isBuilt",
+    value: function isBuilt() {
+      return this.state >= STATE_BUILT$1;
+    }
+  }, {
+    key: "setPosition",
+    value: function setPosition(top, inlinePosition) {
+      if (isNumeric(top)) {
+        this._element.style.top = top + UNIT;
+      }
+      if (isNumeric(inlinePosition)) {
+        this._element.style[this.inlineProperty] = inlinePosition + UNIT;
+      }
+    }
+  }, {
+    key: "getPosition",
+    value: function getPosition() {
+      var style = this._element.style;
+      return {
+        top: style.top ? parseInt(style.top, 10) : 0,
+        start: style[this.inlineProperty] ? parseInt(style[this.inlineProperty], 10) : 0
+      };
+    }
+  }, {
+    key: "setSize",
+    value: function setSize(width, height) {
+      if (isNumeric(width)) {
+        this._element.style.width = width + UNIT;
+      }
+      if (isNumeric(height)) {
+        this._element.style.height = height + UNIT;
+      }
+    }
+  }, {
+    key: "getSize",
+    value: function getSize() {
+      return {
+        width: this._element.style.width ? parseInt(this._element.style.width, 10) : 0,
+        height: this._element.style.height ? parseInt(this._element.style.height, 10) : 0
+      };
+    }
+  }, {
+    key: "setOffset",
+    value: function setOffset(top, inlineOffset) {
+      if (isNumeric(top)) {
+        this._element.style.marginTop = top + UNIT;
+      }
+      if (isNumeric(inlineOffset)) {
+        this._element.style["margin".concat(toUpperCaseFirst(this.inlineProperty))] = inlineOffset + UNIT;
+      }
+    }
+  }, {
+    key: "getOffset",
+    value: function getOffset() {
+      var style = this._element.style;
+      var inlineProp = "margin".concat(toUpperCaseFirst(this.inlineProperty));
+      return {
+        top: style.marginTop ? parseInt(style.marginTop, 10) : 0,
+        start: style[inlineProp] ? parseInt(style[inlineProp], 10) : 0
+      };
+    }
+  }]);
+  return BaseUI2;
+}();
 
 function _typeof$F(obj) {
   "@babel/helpers - typeof";
@@ -24149,22 +24440,22 @@ function _getPrototypeOf$E(o) {
   };
   return _getPrototypeOf$E(o);
 }
-var CSS_CLASSNAME$1 = "ht__manualColumnMove--guideline";
-var GuidelineUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$E(GuidelineUI2, _BaseUI);
-  var _super = _createSuper$E(GuidelineUI2);
-  function GuidelineUI2() {
-    _classCallCheck$$(this, GuidelineUI2);
+var CSS_CLASSNAME = "ht__manualColumnMove--backlight";
+var BacklightUI = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$E(BacklightUI2, _BaseUI);
+  var _super = _createSuper$E(BacklightUI2);
+  function BacklightUI2() {
+    _classCallCheck$$(this, BacklightUI2);
     return _super.apply(this, arguments);
   }
-  _createClass$$(GuidelineUI2, [{
+  _createClass$$(BacklightUI2, [{
     key: "build",
     value: function build() {
-      _get$y(_getPrototypeOf$E(GuidelineUI2.prototype), "build", this).call(this);
-      addClass(this._element, CSS_CLASSNAME$1);
+      _get$y(_getPrototypeOf$E(BacklightUI2.prototype), "build", this).call(this);
+      addClass(this._element, CSS_CLASSNAME);
     }
   }]);
-  return GuidelineUI2;
+  return BacklightUI2;
 }(BaseUI$1);
 
 function _typeof$G(obj) {
@@ -24287,453 +24578,23 @@ function _getPrototypeOf$F(o) {
   };
   return _getPrototypeOf$F(o);
 }
-Hooks.getSingleton().register("beforeColumnMove");
-Hooks.getSingleton().register("afterColumnMove");
-var PLUGIN_KEY$k = "manualColumnMove";
-var PLUGIN_PRIORITY$j = 120;
-var privatePool$b = new WeakMap();
-var CSS_PLUGIN = "ht__manualColumnMove";
-var CSS_SHOW_UI = "show-ui";
-var CSS_ON_MOVING = "on-moving--columns";
-var CSS_AFTER_SELECTION = "after-selection--columns";
-var ManualColumnMove = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$F(ManualColumnMove2, _BasePlugin);
-  var _super = _createSuper$F(ManualColumnMove2);
-  function ManualColumnMove2(hotInstance) {
-    var _this;
-    _classCallCheck$10(this, ManualColumnMove2);
-    _this = _super.call(this, hotInstance);
-    privatePool$b.set(_assertThisInitialized$F(_this), {
-      columnsToMove: [],
-      countCols: 0,
-      fixedColumns: 0,
-      pressed: void 0,
-      target: {
-        eventPageX: void 0,
-        coords: void 0,
-        TD: void 0,
-        col: void 0
-      },
-      cachedDropIndex: void 0
-    });
-    _this.eventManager = new EventManager(_assertThisInitialized$F(_this));
-    _this.backlight = new BacklightUI(hotInstance);
-    _this.guideline = new GuidelineUI(hotInstance);
-    return _this;
+var CSS_CLASSNAME$1 = "ht__manualColumnMove--guideline";
+var GuidelineUI = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$F(GuidelineUI2, _BaseUI);
+  var _super = _createSuper$F(GuidelineUI2);
+  function GuidelineUI2() {
+    _classCallCheck$10(this, GuidelineUI2);
+    return _super.apply(this, arguments);
   }
-  _createClass$10(ManualColumnMove2, [{
-    key: "isEnabled",
-    value: function isEnabled() {
-      return !!this.hot.getSettings()[PLUGIN_KEY$k];
-    }
-  }, {
-    key: "enablePlugin",
-    value: function enablePlugin() {
-      var _this2 = this;
-      if (this.enabled) {
-        return;
-      }
-      this.addHook("beforeOnCellMouseDown", function() {
-        return _this2.onBeforeOnCellMouseDown.apply(_this2, arguments);
-      });
-      this.addHook("beforeOnCellMouseOver", function() {
-        return _this2.onBeforeOnCellMouseOver.apply(_this2, arguments);
-      });
-      this.addHook("afterScrollVertically", function() {
-        return _this2.onAfterScrollVertically();
-      });
-      this.addHook("afterLoadData", function() {
-        return _this2.onAfterLoadData.apply(_this2, arguments);
-      });
-      this.buildPluginUI();
-      this.registerEvents();
-      addClass(this.hot.rootElement, CSS_PLUGIN);
-      _get$z(_getPrototypeOf$F(ManualColumnMove2.prototype), "enablePlugin", this).call(this);
-    }
-  }, {
-    key: "updatePlugin",
-    value: function updatePlugin() {
-      this.disablePlugin();
-      this.enablePlugin();
-      this.moveBySettingsOrLoad();
-      _get$z(_getPrototypeOf$F(ManualColumnMove2.prototype), "updatePlugin", this).call(this);
-    }
-  }, {
-    key: "disablePlugin",
-    value: function disablePlugin() {
-      removeClass(this.hot.rootElement, CSS_PLUGIN);
-      this.unregisterEvents();
-      this.backlight.destroy();
-      this.guideline.destroy();
-      _get$z(_getPrototypeOf$F(ManualColumnMove2.prototype), "disablePlugin", this).call(this);
-    }
-  }, {
-    key: "moveColumn",
-    value: function moveColumn(column, finalIndex) {
-      return this.moveColumns([column], finalIndex);
-    }
-  }, {
-    key: "moveColumns",
-    value: function moveColumns(columns, finalIndex) {
-      var priv = privatePool$b.get(this);
-      var dropIndex = priv.cachedDropIndex;
-      var movePossible = this.isMovePossible(columns, finalIndex);
-      var beforeMoveHook = this.hot.runHooks("beforeColumnMove", columns, finalIndex, dropIndex, movePossible);
-      priv.cachedDropIndex = void 0;
-      if (beforeMoveHook === false) {
-        return;
-      }
-      if (movePossible) {
-        this.hot.columnIndexMapper.moveIndexes(columns, finalIndex);
-      }
-      var movePerformed = movePossible && this.isColumnOrderChanged(columns, finalIndex);
-      this.hot.runHooks("afterColumnMove", columns, finalIndex, dropIndex, movePossible, movePerformed);
-      return movePerformed;
-    }
-  }, {
-    key: "dragColumn",
-    value: function dragColumn(column, dropIndex) {
-      return this.dragColumns([column], dropIndex);
-    }
-  }, {
-    key: "dragColumns",
-    value: function dragColumns(columns, dropIndex) {
-      var finalIndex = this.countFinalIndex(columns, dropIndex);
-      var priv = privatePool$b.get(this);
-      priv.cachedDropIndex = dropIndex;
-      return this.moveColumns(columns, finalIndex);
-    }
-  }, {
-    key: "isMovePossible",
-    value: function isMovePossible(movedColumns, finalIndex) {
-      var length = this.hot.columnIndexMapper.getNotTrimmedIndexesLength();
-      var tooHighDestinationIndex = movedColumns.length + finalIndex > length;
-      var tooLowDestinationIndex = finalIndex < 0;
-      var tooLowMovedColumnIndex = movedColumns.some(function(movedColumn) {
-        return movedColumn < 0;
-      });
-      var tooHighMovedColumnIndex = movedColumns.some(function(movedColumn) {
-        return movedColumn >= length;
-      });
-      if (tooHighDestinationIndex || tooLowDestinationIndex || tooLowMovedColumnIndex || tooHighMovedColumnIndex) {
-        return false;
-      }
-      return true;
-    }
-  }, {
-    key: "isColumnOrderChanged",
-    value: function isColumnOrderChanged(movedColumns, finalIndex) {
-      return movedColumns.some(function(column, nrOfMovedElement) {
-        return column - nrOfMovedElement !== finalIndex;
-      });
-    }
-  }, {
-    key: "countFinalIndex",
-    value: function countFinalIndex(movedColumns, dropIndex) {
-      var numberOfColumnsLowerThanDropIndex = arrayReduce(movedColumns, function(numberOfColumns, currentColumnIndex) {
-        if (currentColumnIndex < dropIndex) {
-          numberOfColumns += 1;
-        }
-        return numberOfColumns;
-      }, 0);
-      return dropIndex - numberOfColumnsLowerThanDropIndex;
-    }
-  }, {
-    key: "getColumnsWidth",
-    value: function getColumnsWidth(fromColumn, toColumn) {
-      var columnMapper = this.hot.columnIndexMapper;
-      var columnsWidth = 0;
-      for (var visualColumnIndex = fromColumn; visualColumnIndex <= toColumn; visualColumnIndex += 1) {
-        var renderableIndex = columnMapper.getRenderableFromVisualIndex(visualColumnIndex);
-        if (visualColumnIndex < 0) {
-          columnsWidth += this.hot.view.wt.wtViewport.getRowHeaderWidth() || 0;
-        } else if (renderableIndex !== null) {
-          columnsWidth += this.hot.view.wt.wtTable.getStretchedColumnWidth(renderableIndex) || 0;
-        }
-      }
-      return columnsWidth;
-    }
-  }, {
-    key: "moveBySettingsOrLoad",
-    value: function moveBySettingsOrLoad() {
-      var pluginSettings = this.hot.getSettings()[PLUGIN_KEY$k];
-      if (Array.isArray(pluginSettings)) {
-        this.moveColumns(pluginSettings, 0);
-      } else if (pluginSettings !== void 0) {
-        var persistentState = this.persistentStateLoad();
-        if (persistentState.length) {
-          this.moveColumns(persistentState, 0);
-        }
-      }
-    }
-  }, {
-    key: "isFixedColumnsLeft",
-    value: function isFixedColumnsLeft(column) {
-      return column < this.hot.getSettings().fixedColumnsLeft;
-    }
-  }, {
-    key: "persistentStateSave",
-    value: function persistentStateSave() {
-      this.hot.runHooks("persistentStateSave", "manualColumnMove", this.hot.columnIndexMapper.getIndexesSequence());
-    }
-  }, {
-    key: "persistentStateLoad",
-    value: function persistentStateLoad() {
-      var storedState = {};
-      this.hot.runHooks("persistentStateLoad", "manualColumnMove", storedState);
-      return storedState.value ? storedState.value : [];
-    }
-  }, {
-    key: "prepareColumnsToMoving",
-    value: function prepareColumnsToMoving(start, end) {
-      var selectedColumns = [];
-      rangeEach(start, end, function(i) {
-        selectedColumns.push(i);
-      });
-      return selectedColumns;
-    }
-  }, {
-    key: "refreshPositions",
-    value: function refreshPositions() {
-      var priv = privatePool$b.get(this);
-      var firstVisible = this.hot.view.wt.wtTable.getFirstVisibleColumn();
-      var lastVisible = this.hot.view.wt.wtTable.getLastVisibleColumn();
-      var wtTable = this.hot.view.wt.wtTable;
-      var scrollableElement = this.hot.view.wt.wtOverlays.scrollableElement;
-      var scrollLeft = typeof scrollableElement.scrollX === "number" ? scrollableElement.scrollX : scrollableElement.scrollLeft;
-      var tdOffsetLeft = this.hot.view.THEAD.offsetLeft + this.getColumnsWidth(0, priv.coords - 1);
-      var mouseOffsetLeft = priv.target.eventPageX - (priv.rootElementOffset - (scrollableElement.scrollX === void 0 ? scrollLeft : 0));
-      var hiderWidth = wtTable.hider.offsetWidth;
-      var tbodyOffsetLeft = wtTable.TBODY.offsetLeft;
-      var backlightElemMarginLeft = this.backlight.getOffset().left;
-      var backlightElemWidth = this.backlight.getSize().width;
-      var rowHeaderWidth = 0;
-      if (priv.rootElementOffset + wtTable.holder.offsetWidth + scrollLeft < priv.target.eventPageX) {
-        if (priv.coords < priv.countCols) {
-          priv.coords += 1;
-        }
-      }
-      if (priv.hasRowHeaders) {
-        rowHeaderWidth = this.hot.view.wt.wtOverlays.leftOverlay.clone.wtTable.getColumnHeader(-1).offsetWidth;
-      }
-      if (this.isFixedColumnsLeft(priv.coords)) {
-        tdOffsetLeft += scrollLeft;
-      }
-      tdOffsetLeft += rowHeaderWidth;
-      if (priv.coords < 0) {
-        if (priv.fixedColumns > 0) {
-          priv.target.col = 0;
-        } else {
-          priv.target.col = firstVisible > 0 ? firstVisible - 1 : firstVisible;
-        }
-      } else if (priv.target.TD.offsetWidth / 2 + tdOffsetLeft <= mouseOffsetLeft) {
-        var newCoordsCol = priv.coords >= priv.countCols ? priv.countCols - 1 : priv.coords;
-        priv.target.col = newCoordsCol + 1;
-        tdOffsetLeft += priv.target.TD.offsetWidth;
-        if (priv.target.col > lastVisible && lastVisible < priv.countCols) {
-          this.hot.scrollViewportTo(void 0, lastVisible + 1, void 0, true);
-        }
-      } else {
-        priv.target.col = priv.coords;
-        if (priv.target.col <= firstVisible && priv.target.col >= priv.fixedColumns && firstVisible > 0) {
-          this.hot.scrollViewportTo(void 0, firstVisible - 1);
-        }
-      }
-      if (priv.target.col <= firstVisible && priv.target.col >= priv.fixedColumns && firstVisible > 0) {
-        this.hot.scrollViewportTo(void 0, firstVisible - 1);
-      }
-      var backlightLeft = mouseOffsetLeft;
-      var guidelineLeft = tdOffsetLeft;
-      if (mouseOffsetLeft + backlightElemWidth + backlightElemMarginLeft >= hiderWidth) {
-        backlightLeft = hiderWidth - backlightElemWidth - backlightElemMarginLeft;
-      } else if (mouseOffsetLeft + backlightElemMarginLeft < tbodyOffsetLeft + rowHeaderWidth) {
-        backlightLeft = tbodyOffsetLeft + rowHeaderWidth + Math.abs(backlightElemMarginLeft);
-      }
-      if (tdOffsetLeft >= hiderWidth - 1) {
-        guidelineLeft = hiderWidth - 1;
-      } else if (guidelineLeft === 0) {
-        guidelineLeft = 1;
-      } else if (scrollableElement.scrollX !== void 0 && priv.coords < priv.fixedColumns) {
-        guidelineLeft -= priv.rootElementOffset <= scrollableElement.scrollX ? priv.rootElementOffset : 0;
-      }
-      this.backlight.setPosition(null, backlightLeft);
-      this.guideline.setPosition(null, guidelineLeft);
-    }
-  }, {
-    key: "registerEvents",
-    value: function registerEvents() {
-      var _this3 = this;
-      var documentElement = this.hot.rootDocument.documentElement;
-      this.eventManager.addEventListener(documentElement, "mousemove", function(event) {
-        return _this3.onMouseMove(event);
-      });
-      this.eventManager.addEventListener(documentElement, "mouseup", function() {
-        return _this3.onMouseUp();
-      });
-    }
-  }, {
-    key: "unregisterEvents",
-    value: function unregisterEvents() {
-      this.eventManager.clear();
-    }
-  }, {
-    key: "onBeforeOnCellMouseDown",
-    value: function onBeforeOnCellMouseDown(event, coords, TD, controller) {
-      var wtTable = this.hot.view.wt.wtTable;
-      var isHeaderSelection = this.hot.selection.isSelectedByColumnHeader();
-      var selection = this.hot.getSelectedRangeLast();
-      var priv = privatePool$b.get(this);
-      var isSortingElement = hasClass(event.target, "sortAction");
-      if (!selection || !isHeaderSelection || priv.pressed || event.button !== 0 || isSortingElement) {
-        priv.pressed = false;
-        priv.columnsToMove.length = 0;
-        removeClass(this.hot.rootElement, [CSS_ON_MOVING, CSS_SHOW_UI]);
-        return;
-      }
-      var guidelineIsNotReady = this.guideline.isBuilt() && !this.guideline.isAppended();
-      var backlightIsNotReady = this.backlight.isBuilt() && !this.backlight.isAppended();
-      if (guidelineIsNotReady && backlightIsNotReady) {
-        this.guideline.appendTo(wtTable.hider);
-        this.backlight.appendTo(wtTable.hider);
-      }
-      var from = selection.from, to = selection.to;
-      var start = Math.min(from.col, to.col);
-      var end = Math.max(from.col, to.col);
-      if (coords.row < 0 && coords.col >= start && coords.col <= end) {
-        controller.column = true;
-        priv.pressed = true;
-        priv.target.eventPageX = event.pageX;
-        priv.coords = coords.col;
-        priv.target.TD = TD;
-        priv.target.col = coords.col;
-        priv.columnsToMove = this.prepareColumnsToMoving(start, end);
-        priv.hasRowHeaders = !!this.hot.getSettings().rowHeaders;
-        priv.countCols = this.hot.countCols();
-        priv.fixedColumns = this.hot.getSettings().fixedColumnsLeft;
-        priv.rootElementOffset = offset(this.hot.rootElement).left;
-        var countColumnsFrom = priv.hasRowHeaders ? -1 : 0;
-        var topPos = wtTable.holder.scrollTop + wtTable.getColumnHeaderHeight(0) + 1;
-        var fixedColumns = coords.col < priv.fixedColumns;
-        var scrollableElement = this.hot.view.wt.wtOverlays.scrollableElement;
-        var wrapperIsWindow = scrollableElement.scrollX ? scrollableElement.scrollX - priv.rootElementOffset : 0;
-        var mouseOffset = event.offsetX - (fixedColumns ? wrapperIsWindow : 0);
-        var leftOffset = Math.abs(this.getColumnsWidth(start, coords.col - 1) + mouseOffset);
-        this.backlight.setPosition(topPos, this.getColumnsWidth(countColumnsFrom, start - 1) + leftOffset);
-        this.backlight.setSize(this.getColumnsWidth(start, end), wtTable.hider.offsetHeight - topPos);
-        this.backlight.setOffset(null, leftOffset * -1);
-        addClass(this.hot.rootElement, CSS_ON_MOVING);
-      } else {
-        removeClass(this.hot.rootElement, CSS_AFTER_SELECTION);
-        priv.pressed = false;
-        priv.columnsToMove.length = 0;
-      }
-    }
-  }, {
-    key: "onMouseMove",
-    value: function onMouseMove(event) {
-      var priv = privatePool$b.get(this);
-      if (!priv.pressed) {
-        return;
-      }
-      if (event.target === this.backlight.element) {
-        var width = this.backlight.getSize().width;
-        this.backlight.setSize(0);
-        setTimeout(function() {
-          this.backlight.setPosition(width);
-        });
-      }
-      priv.target.eventPageX = event.pageX;
-      this.refreshPositions();
-    }
-  }, {
-    key: "onBeforeOnCellMouseOver",
-    value: function onBeforeOnCellMouseOver(event, coords, TD, controller) {
-      var selectedRange = this.hot.getSelectedRangeLast();
-      var priv = privatePool$b.get(this);
-      if (!selectedRange || !priv.pressed) {
-        return;
-      }
-      if (priv.columnsToMove.indexOf(coords.col) > -1) {
-        removeClass(this.hot.rootElement, CSS_SHOW_UI);
-      } else {
-        addClass(this.hot.rootElement, CSS_SHOW_UI);
-      }
-      controller.row = true;
-      controller.column = true;
-      controller.cell = true;
-      priv.coords = coords.col;
-      priv.target.TD = TD;
-    }
-  }, {
-    key: "onMouseUp",
-    value: function onMouseUp() {
-      var priv = privatePool$b.get(this);
-      var target = priv.target.col;
-      var columnsLen = priv.columnsToMove.length;
-      priv.coords = void 0;
-      priv.pressed = false;
-      priv.backlightWidth = 0;
-      removeClass(this.hot.rootElement, [CSS_ON_MOVING, CSS_SHOW_UI, CSS_AFTER_SELECTION]);
-      if (this.hot.selection.isSelectedByColumnHeader()) {
-        addClass(this.hot.rootElement, CSS_AFTER_SELECTION);
-      }
-      if (columnsLen < 1 || target === void 0) {
-        return;
-      }
-      var firstMovedVisualColumn = priv.columnsToMove[0];
-      var firstMovedPhysicalColumn = this.hot.toPhysicalColumn(firstMovedVisualColumn);
-      var movePerformed = this.dragColumns(priv.columnsToMove, target);
-      priv.columnsToMove.length = 0;
-      if (movePerformed === true) {
-        this.persistentStateSave();
-        this.hot.render();
-        this.hot.view.adjustElementsSize(true);
-        var selectionStart = this.hot.toVisualColumn(firstMovedPhysicalColumn);
-        var selectionEnd = selectionStart + columnsLen - 1;
-        this.hot.selectColumns(selectionStart, selectionEnd);
-      }
-    }
-  }, {
-    key: "onAfterScrollVertically",
-    value: function onAfterScrollVertically() {
-      var wtTable = this.hot.view.wt.wtTable;
-      var headerHeight = wtTable.getColumnHeaderHeight(0) + 1;
-      var scrollTop = wtTable.holder.scrollTop;
-      var posTop = headerHeight + scrollTop;
-      this.backlight.setPosition(posTop);
-      this.backlight.setSize(null, wtTable.hider.offsetHeight - posTop);
-    }
-  }, {
-    key: "buildPluginUI",
-    value: function buildPluginUI() {
-      this.backlight.build();
-      this.guideline.build();
-    }
-  }, {
-    key: "onAfterLoadData",
-    value: function onAfterLoadData() {
-      this.moveBySettingsOrLoad();
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.backlight.destroy();
-      this.guideline.destroy();
-      _get$z(_getPrototypeOf$F(ManualColumnMove2.prototype), "destroy", this).call(this);
-    }
-  }], [{
-    key: "PLUGIN_KEY",
-    get: function get() {
-      return PLUGIN_KEY$k;
-    }
-  }, {
-    key: "PLUGIN_PRIORITY",
-    get: function get() {
-      return PLUGIN_PRIORITY$j;
+  _createClass$10(GuidelineUI2, [{
+    key: "build",
+    value: function build() {
+      _get$z(_getPrototypeOf$F(GuidelineUI2.prototype), "build", this).call(this);
+      addClass(this._element, CSS_CLASSNAME$1);
     }
   }]);
-  return ManualColumnMove2;
-}(BasePlugin);
+  return GuidelineUI2;
+}(BaseUI$1);
 
 function _typeof$H(obj) {
   "@babel/helpers - typeof";
@@ -24855,16 +24716,588 @@ function _getPrototypeOf$G(o) {
   };
   return _getPrototypeOf$G(o);
 }
+Hooks.getSingleton().register("beforeColumnMove");
+Hooks.getSingleton().register("afterColumnMove");
+var PLUGIN_KEY$k = "manualColumnMove";
+var PLUGIN_PRIORITY$j = 120;
+var privatePool$b = new WeakMap();
+var CSS_PLUGIN = "ht__manualColumnMove";
+var CSS_SHOW_UI = "show-ui";
+var CSS_ON_MOVING = "on-moving--columns";
+var CSS_AFTER_SELECTION = "after-selection--columns";
+var ManualColumnMove = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$G(ManualColumnMove2, _BasePlugin);
+  var _super = _createSuper$G(ManualColumnMove2);
+  function ManualColumnMove2(hotInstance) {
+    var _this;
+    _classCallCheck$11(this, ManualColumnMove2);
+    _this = _super.call(this, hotInstance);
+    privatePool$b.set(_assertThisInitialized$G(_this), {
+      columnsToMove: [],
+      countCols: 0,
+      fixedColumns: 0,
+      pressed: void 0,
+      target: {
+        eventPageX: void 0,
+        coords: void 0,
+        TD: void 0,
+        col: void 0
+      },
+      cachedDropIndex: void 0
+    });
+    _this.eventManager = new EventManager(_assertThisInitialized$G(_this));
+    _this.backlight = new BacklightUI(hotInstance);
+    _this.guideline = new GuidelineUI(hotInstance);
+    return _this;
+  }
+  _createClass$11(ManualColumnMove2, [{
+    key: "isEnabled",
+    value: function isEnabled() {
+      return !!this.hot.getSettings()[PLUGIN_KEY$k];
+    }
+  }, {
+    key: "enablePlugin",
+    value: function enablePlugin() {
+      var _this2 = this;
+      if (this.enabled) {
+        return;
+      }
+      this.addHook("beforeOnCellMouseDown", function() {
+        return _this2.onBeforeOnCellMouseDown.apply(_this2, arguments);
+      });
+      this.addHook("beforeOnCellMouseOver", function() {
+        return _this2.onBeforeOnCellMouseOver.apply(_this2, arguments);
+      });
+      this.addHook("afterScrollVertically", function() {
+        return _this2.onAfterScrollVertically();
+      });
+      this.addHook("afterLoadData", function() {
+        return _this2.onAfterLoadData.apply(_this2, arguments);
+      });
+      this.buildPluginUI();
+      this.registerEvents();
+      addClass(this.hot.rootElement, CSS_PLUGIN);
+      _get$A(_getPrototypeOf$G(ManualColumnMove2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "updatePlugin",
+    value: function updatePlugin() {
+      this.disablePlugin();
+      this.enablePlugin();
+      this.moveBySettingsOrLoad();
+      _get$A(_getPrototypeOf$G(ManualColumnMove2.prototype), "updatePlugin", this).call(this);
+    }
+  }, {
+    key: "disablePlugin",
+    value: function disablePlugin() {
+      removeClass(this.hot.rootElement, CSS_PLUGIN);
+      this.unregisterEvents();
+      this.backlight.destroy();
+      this.guideline.destroy();
+      _get$A(_getPrototypeOf$G(ManualColumnMove2.prototype), "disablePlugin", this).call(this);
+    }
+  }, {
+    key: "moveColumn",
+    value: function moveColumn(column, finalIndex) {
+      return this.moveColumns([column], finalIndex);
+    }
+  }, {
+    key: "moveColumns",
+    value: function moveColumns(columns, finalIndex) {
+      var priv = privatePool$b.get(this);
+      var dropIndex = priv.cachedDropIndex;
+      var movePossible = this.isMovePossible(columns, finalIndex);
+      var beforeMoveHook = this.hot.runHooks("beforeColumnMove", columns, finalIndex, dropIndex, movePossible);
+      priv.cachedDropIndex = void 0;
+      if (beforeMoveHook === false) {
+        return;
+      }
+      if (movePossible) {
+        this.hot.columnIndexMapper.moveIndexes(columns, finalIndex);
+      }
+      var movePerformed = movePossible && this.isColumnOrderChanged(columns, finalIndex);
+      this.hot.runHooks("afterColumnMove", columns, finalIndex, dropIndex, movePossible, movePerformed);
+      return movePerformed;
+    }
+  }, {
+    key: "dragColumn",
+    value: function dragColumn(column, dropIndex) {
+      return this.dragColumns([column], dropIndex);
+    }
+  }, {
+    key: "dragColumns",
+    value: function dragColumns(columns, dropIndex) {
+      var finalIndex = this.countFinalIndex(columns, dropIndex);
+      var priv = privatePool$b.get(this);
+      priv.cachedDropIndex = dropIndex;
+      return this.moveColumns(columns, finalIndex);
+    }
+  }, {
+    key: "isMovePossible",
+    value: function isMovePossible(movedColumns, finalIndex) {
+      var length = this.hot.columnIndexMapper.getNotTrimmedIndexesLength();
+      var tooHighDestinationIndex = movedColumns.length + finalIndex > length;
+      var tooLowDestinationIndex = finalIndex < 0;
+      var tooLowMovedColumnIndex = movedColumns.some(function(movedColumn) {
+        return movedColumn < 0;
+      });
+      var tooHighMovedColumnIndex = movedColumns.some(function(movedColumn) {
+        return movedColumn >= length;
+      });
+      if (tooHighDestinationIndex || tooLowDestinationIndex || tooLowMovedColumnIndex || tooHighMovedColumnIndex) {
+        return false;
+      }
+      return true;
+    }
+  }, {
+    key: "isColumnOrderChanged",
+    value: function isColumnOrderChanged(movedColumns, finalIndex) {
+      return movedColumns.some(function(column, nrOfMovedElement) {
+        return column - nrOfMovedElement !== finalIndex;
+      });
+    }
+  }, {
+    key: "countFinalIndex",
+    value: function countFinalIndex(movedColumns, dropIndex) {
+      var numberOfColumnsLowerThanDropIndex = arrayReduce(movedColumns, function(numberOfColumns, currentColumnIndex) {
+        if (currentColumnIndex < dropIndex) {
+          numberOfColumns += 1;
+        }
+        return numberOfColumns;
+      }, 0);
+      return dropIndex - numberOfColumnsLowerThanDropIndex;
+    }
+  }, {
+    key: "getColumnsWidth",
+    value: function getColumnsWidth(fromColumn, toColumn) {
+      var columnMapper = this.hot.columnIndexMapper;
+      var columnsWidth = 0;
+      for (var visualColumnIndex = fromColumn; visualColumnIndex <= toColumn; visualColumnIndex += 1) {
+        var renderableIndex = columnMapper.getRenderableFromVisualIndex(visualColumnIndex);
+        if (visualColumnIndex < 0) {
+          columnsWidth += this.hot.view._wt.wtViewport.getRowHeaderWidth() || 0;
+        } else if (renderableIndex !== null) {
+          columnsWidth += this.hot.view._wt.wtTable.getStretchedColumnWidth(renderableIndex) || 0;
+        }
+      }
+      return columnsWidth;
+    }
+  }, {
+    key: "moveBySettingsOrLoad",
+    value: function moveBySettingsOrLoad() {
+      var pluginSettings = this.hot.getSettings()[PLUGIN_KEY$k];
+      if (Array.isArray(pluginSettings)) {
+        this.moveColumns(pluginSettings, 0);
+      } else if (pluginSettings !== void 0) {
+        var persistentState = this.persistentStateLoad();
+        if (persistentState.length) {
+          this.moveColumns(persistentState, 0);
+        }
+      }
+    }
+  }, {
+    key: "isFixedColumnsStart",
+    value: function isFixedColumnsStart(column) {
+      return column < this.hot.getSettings().fixedColumnsStart;
+    }
+  }, {
+    key: "persistentStateSave",
+    value: function persistentStateSave() {
+      this.hot.runHooks("persistentStateSave", "manualColumnMove", this.hot.columnIndexMapper.getIndexesSequence());
+    }
+  }, {
+    key: "persistentStateLoad",
+    value: function persistentStateLoad() {
+      var storedState = {};
+      this.hot.runHooks("persistentStateLoad", "manualColumnMove", storedState);
+      return storedState.value ? storedState.value : [];
+    }
+  }, {
+    key: "prepareColumnsToMoving",
+    value: function prepareColumnsToMoving(start, end) {
+      var selectedColumns = [];
+      rangeEach(start, end, function(i) {
+        selectedColumns.push(i);
+      });
+      return selectedColumns;
+    }
+  }, {
+    key: "refreshPositions",
+    value: function refreshPositions() {
+      var priv = privatePool$b.get(this);
+      var firstVisible = this.hot.view._wt.wtTable.getFirstVisibleColumn();
+      var lastVisible = this.hot.view._wt.wtTable.getLastVisibleColumn();
+      var wtTable = this.hot.view._wt.wtTable;
+      var scrollableElement = this.hot.view._wt.wtOverlays.scrollableElement;
+      var scrollStart = typeof scrollableElement.scrollX === "number" ? scrollableElement.scrollX : scrollableElement.scrollLeft;
+      var tdOffsetStart = this.hot.view.THEAD.offsetLeft + this.getColumnsWidth(0, priv.hoveredColumn - 1);
+      var hiderWidth = wtTable.hider.offsetWidth;
+      var tbodyOffsetLeft = wtTable.TBODY.offsetLeft;
+      var backlightElemMarginStart = this.backlight.getOffset().start;
+      var backlightElemWidth = this.backlight.getSize().width;
+      var rowHeaderWidth = 0;
+      var mouseOffsetStart = 0;
+      if (this.hot.isRtl()) {
+        var rootWindow = this.hot.rootWindow;
+        var containerWidth = outerWidth(this.hot.rootElement);
+        var gridMostRightPos = rootWindow.innerWidth - priv.rootElementOffset - containerWidth;
+        mouseOffsetStart = rootWindow.innerWidth - priv.target.eventPageX - gridMostRightPos - (scrollableElement.scrollX === void 0 ? scrollStart : 0);
+      } else {
+        mouseOffsetStart = priv.target.eventPageX - (priv.rootElementOffset - (scrollableElement.scrollX === void 0 ? scrollStart : 0));
+      }
+      if (priv.hasRowHeaders) {
+        rowHeaderWidth = this.hot.view._wt.wtOverlays.inlineStartOverlay.clone.wtTable.getColumnHeader(-1).offsetWidth;
+      }
+      if (this.isFixedColumnsStart(priv.hoveredColumn)) {
+        tdOffsetStart += scrollStart;
+      }
+      tdOffsetStart += rowHeaderWidth;
+      if (priv.hoveredColumn < 0) {
+        if (priv.fixedColumnsStart > 0) {
+          priv.target.col = 0;
+        } else {
+          priv.target.col = firstVisible > 0 ? firstVisible - 1 : firstVisible;
+        }
+      } else if (priv.target.TD.offsetWidth / 2 + tdOffsetStart <= mouseOffsetStart) {
+        var newCoordsCol = priv.hoveredColumn >= priv.countCols ? priv.countCols - 1 : priv.hoveredColumn;
+        priv.target.col = newCoordsCol + 1;
+        tdOffsetStart += priv.target.TD.offsetWidth;
+        if (priv.target.col > lastVisible && lastVisible < priv.countCols) {
+          this.hot.scrollViewportTo(void 0, lastVisible + 1, void 0, true);
+        }
+      } else {
+        priv.target.col = priv.hoveredColumn;
+        if (priv.target.col <= firstVisible && priv.target.col >= priv.fixedColumnsStart && firstVisible > 0) {
+          this.hot.scrollViewportTo(void 0, firstVisible - 1);
+        }
+      }
+      if (priv.target.col <= firstVisible && priv.target.col >= priv.fixedColumnsStart && firstVisible > 0) {
+        this.hot.scrollViewportTo(void 0, firstVisible - 1);
+      }
+      var backlightStart = mouseOffsetStart;
+      var guidelineStart = tdOffsetStart;
+      if (mouseOffsetStart + backlightElemWidth + backlightElemMarginStart >= hiderWidth) {
+        backlightStart = hiderWidth - backlightElemWidth - backlightElemMarginStart;
+      } else if (mouseOffsetStart + backlightElemMarginStart < tbodyOffsetLeft + rowHeaderWidth) {
+        backlightStart = tbodyOffsetLeft + rowHeaderWidth + Math.abs(backlightElemMarginStart);
+      }
+      if (tdOffsetStart >= hiderWidth - 1) {
+        guidelineStart = hiderWidth - 1;
+      } else if (guidelineStart === 0) {
+        guidelineStart = 1;
+      } else if (scrollableElement.scrollX !== void 0 && priv.hoveredColumn < priv.fixedColumnsStart) {
+        guidelineStart -= priv.rootElementOffset <= scrollableElement.scrollX ? priv.rootElementOffset : 0;
+      }
+      this.backlight.setPosition(null, backlightStart);
+      this.guideline.setPosition(null, guidelineStart);
+    }
+  }, {
+    key: "registerEvents",
+    value: function registerEvents() {
+      var _this3 = this;
+      var documentElement = this.hot.rootDocument.documentElement;
+      this.eventManager.addEventListener(documentElement, "mousemove", function(event) {
+        return _this3.onMouseMove(event);
+      });
+      this.eventManager.addEventListener(documentElement, "mouseup", function() {
+        return _this3.onMouseUp();
+      });
+    }
+  }, {
+    key: "unregisterEvents",
+    value: function unregisterEvents() {
+      this.eventManager.clear();
+    }
+  }, {
+    key: "onBeforeOnCellMouseDown",
+    value: function onBeforeOnCellMouseDown(event, coords, TD, controller) {
+      var wtTable = this.hot.view._wt.wtTable;
+      var isHeaderSelection = this.hot.selection.isSelectedByColumnHeader();
+      var selection = this.hot.getSelectedRangeLast();
+      var priv = privatePool$b.get(this);
+      var isSortingElement = hasClass(event.target, "sortAction");
+      if (!selection || !isHeaderSelection || priv.pressed || event.button !== 0 || isSortingElement) {
+        priv.pressed = false;
+        priv.columnsToMove.length = 0;
+        removeClass(this.hot.rootElement, [CSS_ON_MOVING, CSS_SHOW_UI]);
+        return;
+      }
+      var guidelineIsNotReady = this.guideline.isBuilt() && !this.guideline.isAppended();
+      var backlightIsNotReady = this.backlight.isBuilt() && !this.backlight.isAppended();
+      if (guidelineIsNotReady && backlightIsNotReady) {
+        this.guideline.appendTo(wtTable.hider);
+        this.backlight.appendTo(wtTable.hider);
+      }
+      var from = selection.from, to = selection.to;
+      var start = Math.min(from.col, to.col);
+      var end = Math.max(from.col, to.col);
+      if (coords.row < 0 && coords.col >= start && coords.col <= end) {
+        controller.column = true;
+        priv.pressed = true;
+        priv.target.eventPageX = event.pageX;
+        priv.target.eventOffsetX = event.offsetX;
+        priv.hoveredColumn = coords.col;
+        priv.target.TD = TD;
+        priv.target.col = coords.col;
+        priv.columnsToMove = this.prepareColumnsToMoving(start, end);
+        priv.hasRowHeaders = !!this.hot.getSettings().rowHeaders;
+        priv.countCols = this.hot.countCols();
+        priv.fixedColumnsStart = this.hot.getSettings().fixedColumnsStart;
+        priv.rootElementOffset = offset(this.hot.rootElement).left;
+        var countColumnsFrom = priv.hasRowHeaders ? -1 : 0;
+        var topPos = wtTable.holder.scrollTop + wtTable.getColumnHeaderHeight(0) + 1;
+        var fixedColumnsStart = coords.col < priv.fixedColumnsStart;
+        var horizontalScrollPosition = Math.abs(this.hot.view._wt.wtOverlays.inlineStartOverlay.getScrollPosition());
+        var offsetX = Math.abs(event.offsetX - (this.hot.isRtl() ? event.target.offsetWidth : 0));
+        var inlineOffset = this.getColumnsWidth(start, coords.col - 1) + offsetX;
+        var inlinePos = this.getColumnsWidth(countColumnsFrom, start - 1) + (fixedColumnsStart ? horizontalScrollPosition : 0) + inlineOffset;
+        this.backlight.setPosition(topPos, inlinePos);
+        this.backlight.setSize(this.getColumnsWidth(start, end), wtTable.hider.offsetHeight - topPos);
+        this.backlight.setOffset(null, -inlineOffset);
+        addClass(this.hot.rootElement, CSS_ON_MOVING);
+      } else {
+        removeClass(this.hot.rootElement, CSS_AFTER_SELECTION);
+        priv.pressed = false;
+        priv.columnsToMove.length = 0;
+      }
+    }
+  }, {
+    key: "onMouseMove",
+    value: function onMouseMove(event) {
+      var priv = privatePool$b.get(this);
+      if (!priv.pressed) {
+        return;
+      }
+      if (event.target === this.backlight.element) {
+        var width = this.backlight.getSize().width;
+        this.backlight.setSize(0);
+        setTimeout(function() {
+          this.backlight.setPosition(width);
+        });
+      }
+      priv.target.eventPageX = event.pageX;
+      this.refreshPositions();
+    }
+  }, {
+    key: "onBeforeOnCellMouseOver",
+    value: function onBeforeOnCellMouseOver(event, coords, TD, controller) {
+      var selectedRange = this.hot.getSelectedRangeLast();
+      var priv = privatePool$b.get(this);
+      if (!selectedRange || !priv.pressed) {
+        return;
+      }
+      if (priv.columnsToMove.indexOf(coords.col) > -1) {
+        removeClass(this.hot.rootElement, CSS_SHOW_UI);
+      } else {
+        addClass(this.hot.rootElement, CSS_SHOW_UI);
+      }
+      controller.row = true;
+      controller.column = true;
+      controller.cell = true;
+      priv.hoveredColumn = coords.col;
+      priv.target.TD = TD;
+    }
+  }, {
+    key: "onMouseUp",
+    value: function onMouseUp() {
+      var priv = privatePool$b.get(this);
+      var target = priv.target.col;
+      var columnsLen = priv.columnsToMove.length;
+      priv.hoveredColumn = void 0;
+      priv.pressed = false;
+      priv.backlightWidth = 0;
+      removeClass(this.hot.rootElement, [CSS_ON_MOVING, CSS_SHOW_UI, CSS_AFTER_SELECTION]);
+      if (this.hot.selection.isSelectedByColumnHeader()) {
+        addClass(this.hot.rootElement, CSS_AFTER_SELECTION);
+      }
+      if (columnsLen < 1 || target === void 0) {
+        return;
+      }
+      var firstMovedVisualColumn = priv.columnsToMove[0];
+      var firstMovedPhysicalColumn = this.hot.toPhysicalColumn(firstMovedVisualColumn);
+      var movePerformed = this.dragColumns(priv.columnsToMove, target);
+      priv.columnsToMove.length = 0;
+      if (movePerformed === true) {
+        this.persistentStateSave();
+        this.hot.render();
+        this.hot.view.adjustElementsSize(true);
+        var selectionStart = this.hot.toVisualColumn(firstMovedPhysicalColumn);
+        var selectionEnd = selectionStart + columnsLen - 1;
+        this.hot.selectColumns(selectionStart, selectionEnd);
+      }
+    }
+  }, {
+    key: "onAfterScrollVertically",
+    value: function onAfterScrollVertically() {
+      var wtTable = this.hot.view._wt.wtTable;
+      var headerHeight = wtTable.getColumnHeaderHeight(0) + 1;
+      var scrollTop = wtTable.holder.scrollTop;
+      var posTop = headerHeight + scrollTop;
+      this.backlight.setPosition(posTop);
+      this.backlight.setSize(null, wtTable.hider.offsetHeight - posTop);
+    }
+  }, {
+    key: "buildPluginUI",
+    value: function buildPluginUI() {
+      this.backlight.build();
+      this.guideline.build();
+    }
+  }, {
+    key: "onAfterLoadData",
+    value: function onAfterLoadData() {
+      this.moveBySettingsOrLoad();
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this.backlight.destroy();
+      this.guideline.destroy();
+      _get$A(_getPrototypeOf$G(ManualColumnMove2.prototype), "destroy", this).call(this);
+    }
+  }], [{
+    key: "PLUGIN_KEY",
+    get: function get() {
+      return PLUGIN_KEY$k;
+    }
+  }, {
+    key: "PLUGIN_PRIORITY",
+    get: function get() {
+      return PLUGIN_PRIORITY$j;
+    }
+  }]);
+  return ManualColumnMove2;
+}(BasePlugin);
+
+function _typeof$I(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$I = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$I(obj);
+}
+function _classCallCheck$12(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$12(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$12(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$12(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$12(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _get$B() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$B = Reflect.get;
+  } else {
+    _get$B = function _get2(target, property, receiver) {
+      var base = _superPropBase$B(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$B.apply(this, arguments);
+}
+function _superPropBase$B(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$H(object);
+    if (object === null)
+      break;
+  }
+  return object;
+}
+function _inherits$H(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$H(subClass, superClass);
+}
+function _setPrototypeOf$H(o, p) {
+  _setPrototypeOf$H = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$H(o, p);
+}
+function _createSuper$H(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$H();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$H(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$H(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$H(this, result);
+  };
+}
+function _possibleConstructorReturn$H(self, call) {
+  if (call && (_typeof$I(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$H(self);
+}
+function _assertThisInitialized$H(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$H() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$H(o) {
+  _getPrototypeOf$H = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$H(o);
+}
 var PLUGIN_KEY$l = "manualColumnResize";
 var PLUGIN_PRIORITY$k = 130;
 var PERSISTENT_STATE_KEY = "manualColumnWidths";
 var privatePool$c = new WeakMap();
 var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$G(ManualColumnResize2, _BasePlugin);
-  var _super = _createSuper$G(ManualColumnResize2);
+  _inherits$H(ManualColumnResize2, _BasePlugin);
+  var _super = _createSuper$H(ManualColumnResize2);
   function ManualColumnResize2(hotInstance) {
     var _this;
-    _classCallCheck$11(this, ManualColumnResize2);
+    _classCallCheck$12(this, ManualColumnResize2);
     _this = _super.call(this, hotInstance);
     var rootDocument = _this.hot.rootDocument;
     _this.currentTH = null;
@@ -24877,19 +25310,24 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
     _this.startOffset = null;
     _this.handle = rootDocument.createElement("DIV");
     _this.guide = rootDocument.createElement("DIV");
-    _this.eventManager = new EventManager(_assertThisInitialized$G(_this));
+    _this.eventManager = new EventManager(_assertThisInitialized$H(_this));
     _this.pressed = null;
     _this.dblclick = 0;
     _this.autoresizeTimeout = null;
     _this.columnWidthsMap = void 0;
-    privatePool$c.set(_assertThisInitialized$G(_this), {
+    privatePool$c.set(_assertThisInitialized$H(_this), {
       config: void 0
     });
     addClass(_this.handle, "manualColumnResizer");
     addClass(_this.guide, "manualColumnResizerGuide");
     return _this;
   }
-  _createClass$11(ManualColumnResize2, [{
+  _createClass$12(ManualColumnResize2, [{
+    key: "inlineDir",
+    get: function get() {
+      return this.hot.isRtl() ? "right" : "left";
+    }
+  }, {
     key: "isEnabled",
     value: function isEnabled() {
       return this.hot.getSettings()[PLUGIN_KEY$l];
@@ -24916,14 +25354,14 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
         return _this2.onBeforeColumnResize(newSize, column, isDoubleClick);
       });
       this.bindEvents();
-      _get$A(_getPrototypeOf$G(ManualColumnResize2.prototype), "enablePlugin", this).call(this);
+      _get$B(_getPrototypeOf$H(ManualColumnResize2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
     value: function updatePlugin() {
       this.disablePlugin();
       this.enablePlugin();
-      _get$A(_getPrototypeOf$G(ManualColumnResize2.prototype), "updatePlugin", this).call(this);
+      _get$B(_getPrototypeOf$H(ManualColumnResize2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -24931,7 +25369,7 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
       var priv = privatePool$c.get(this);
       priv.config = this.columnWidthsMap.getValues();
       this.hot.columnIndexMapper.unregisterMap(this.pluginName);
-      _get$A(_getPrototypeOf$G(ManualColumnResize2.prototype), "disablePlugin", this).call(this);
+      _get$B(_getPrototypeOf$H(ManualColumnResize2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "saveManualColumnWidths",
@@ -24995,7 +25433,7 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
         return;
       }
       this.currentTH = TH;
-      var wt = this.hot.view.wt;
+      var wt = this.hot.view._wt;
       var cellCoords = wt.wtTable.getCoords(this.currentTH);
       var col = cellCoords.col;
       if (col < 0) {
@@ -25003,10 +25441,10 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
       }
       var headerHeight = outerHeight(this.currentTH);
       var box = this.currentTH.getBoundingClientRect();
-      var fixedColumn = col < wt.getSetting("fixedColumnsLeft");
+      var fixedColumn = col < wt.getSetting("fixedColumnsStart");
       var relativeHeaderPosition;
       if (fixedColumn) {
-        relativeHeaderPosition = wt.wtOverlays.topLeftCornerOverlay.getRelativeCellPosition(this.currentTH, cellCoords.row, cellCoords.col);
+        relativeHeaderPosition = wt.wtOverlays.topInlineStartCornerOverlay.getRelativeCellPosition(this.currentTH, cellCoords.row, cellCoords.col);
       }
       if (!relativeHeaderPosition) {
         relativeHeaderPosition = wt.wtOverlays.topOverlay.getRelativeCellPosition(this.currentTH, cellCoords.row, cellCoords.col);
@@ -25017,8 +25455,8 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
       if (this.hot.selection.isSelected() && isFullColumnSelected) {
         var selectionRanges = this.hot.getSelectedRange();
         arrayEach(selectionRanges, function(selectionRange) {
-          var fromColumn = selectionRange.getTopLeftCorner().col;
-          var toColumn = selectionRange.getBottomRightCorner().col;
+          var fromColumn = selectionRange.getTopStartCorner().col;
+          var toColumn = selectionRange.getBottomEndCorner().col;
           rangeEach(fromColumn, toColumn, function(columnIndex) {
             if (!_this4.selectedCols.includes(columnIndex)) {
               _this4.selectedCols.push(columnIndex);
@@ -25029,17 +25467,17 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
       if (!this.selectedCols.includes(this.currentCol)) {
         this.selectedCols = [this.currentCol];
       }
-      this.startOffset = relativeHeaderPosition.left - 6;
+      this.startOffset = relativeHeaderPosition.start - 6;
       this.startWidth = parseInt(box.width, 10);
       this.handle.style.top = "".concat(relativeHeaderPosition.top, "px");
-      this.handle.style.left = "".concat(this.startOffset + this.startWidth, "px");
+      this.handle.style[this.inlineDir] = "".concat(this.startOffset + this.startWidth, "px");
       this.handle.style.height = "".concat(headerHeight, "px");
       this.hot.rootElement.appendChild(this.handle);
     }
   }, {
     key: "refreshHandlePosition",
     value: function refreshHandlePosition() {
-      this.handle.style.left = "".concat(this.startOffset + this.currentWidth, "px");
+      this.handle.style[this.inlineDir] = "".concat(this.startOffset + this.currentWidth, "px");
     }
   }, {
     key: "setupGuidePosition",
@@ -25050,14 +25488,14 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
       addClass(this.handle, "active");
       addClass(this.guide, "active");
       this.guide.style.top = "".concat(handleBottomPosition, "px");
-      this.guide.style.left = this.handle.style.left;
+      this.refreshGuidePosition();
       this.guide.style.height = "".concat(maximumVisibleElementHeight - handleHeight, "px");
       this.hot.rootElement.appendChild(this.guide);
     }
   }, {
     key: "refreshGuidePosition",
     value: function refreshGuidePosition() {
-      this.guide.style.left = this.handle.style.left;
+      this.guide.style[this.inlineDir] = this.handle.style[this.inlineDir];
     }
   }, {
     key: "hideHandleAndGuide",
@@ -25165,7 +25603,8 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
     value: function onMouseMove(event) {
       var _this7 = this;
       if (this.pressed) {
-        this.currentWidth = this.startWidth + (event.pageX - this.startX);
+        var change = (event.pageX - this.startX) * this.hot.getDirectionFactor();
+        this.currentWidth = this.startWidth + change;
         arrayEach(this.selectedCols, function(selectedCol) {
           _this7.newSize = _this7.setManualSize(selectedCol, _this7.currentWidth);
         });
@@ -25252,12 +25691,12 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onBeforeColumnResize",
     value: function onBeforeColumnResize() {
-      this.hot.view.wt.wtViewport.resetHasOversizedColumnHeadersMarked();
+      this.hot.view._wt.wtViewport.resetHasOversizedColumnHeadersMarked();
     }
   }, {
     key: "destroy",
     value: function destroy() {
-      _get$A(_getPrototypeOf$G(ManualColumnResize2.prototype), "destroy", this).call(this);
+      _get$B(_getPrototypeOf$H(ManualColumnResize2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -25273,12 +25712,12 @@ var ManualColumnResize = /* @__PURE__ */ function(_BasePlugin) {
   return ManualColumnResize2;
 }(BasePlugin);
 
-function _classCallCheck$12(instance, Constructor) {
+function _classCallCheck$13(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$12(target, props) {
+function _defineProperties$13(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -25288,11 +25727,11 @@ function _defineProperties$12(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$12(Constructor, protoProps, staticProps) {
+function _createClass$13(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$12(Constructor.prototype, protoProps);
+    _defineProperties$13(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$12(Constructor, staticProps);
+    _defineProperties$13(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
@@ -25302,12 +25741,12 @@ var STATE_APPENDED$1 = 2;
 var UNIT$1 = "px";
 var BaseUI$2 = /* @__PURE__ */ function() {
   function BaseUI2(hotInstance) {
-    _classCallCheck$12(this, BaseUI2);
+    _classCallCheck$13(this, BaseUI2);
     this.hot = hotInstance;
     this._element = null;
     this.state = STATE_INITIALIZED$1;
   }
-  _createClass$12(BaseUI2, [{
+  _createClass$13(BaseUI2, [{
     key: "appendTo",
     value: function appendTo(wrapper) {
       wrapper.appendChild(this._element);
@@ -25398,144 +25837,6 @@ var BaseUI$2 = /* @__PURE__ */ function() {
   }]);
   return BaseUI2;
 }();
-
-function _typeof$I(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$I = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$I(obj);
-}
-function _classCallCheck$13(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$13(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$13(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$13(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$13(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _get$B() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$B = Reflect.get;
-  } else {
-    _get$B = function _get2(target, property, receiver) {
-      var base = _superPropBase$B(target, property);
-      if (!base)
-        return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    };
-  }
-  return _get$B.apply(this, arguments);
-}
-function _superPropBase$B(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$H(object);
-    if (object === null)
-      break;
-  }
-  return object;
-}
-function _inherits$H(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$H(subClass, superClass);
-}
-function _setPrototypeOf$H(o, p) {
-  _setPrototypeOf$H = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$H(o, p);
-}
-function _createSuper$H(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$H();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$H(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$H(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$H(this, result);
-  };
-}
-function _possibleConstructorReturn$H(self, call) {
-  if (call && (_typeof$I(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$H(self);
-}
-function _assertThisInitialized$H(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$H() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$H(o) {
-  _getPrototypeOf$H = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$H(o);
-}
-var CSS_CLASSNAME$2 = "ht__manualRowMove--backlight";
-var BacklightUI$1 = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$H(BacklightUI2, _BaseUI);
-  var _super = _createSuper$H(BacklightUI2);
-  function BacklightUI2() {
-    _classCallCheck$13(this, BacklightUI2);
-    return _super.apply(this, arguments);
-  }
-  _createClass$13(BacklightUI2, [{
-    key: "build",
-    value: function build() {
-      _get$B(_getPrototypeOf$H(BacklightUI2.prototype), "build", this).call(this);
-      addClass(this._element, CSS_CLASSNAME$2);
-    }
-  }]);
-  return BacklightUI2;
-}(BaseUI$2);
 
 function _typeof$J(obj) {
   "@babel/helpers - typeof";
@@ -25657,22 +25958,22 @@ function _getPrototypeOf$I(o) {
   };
   return _getPrototypeOf$I(o);
 }
-var CSS_CLASSNAME$3 = "ht__manualRowMove--guideline";
-var GuidelineUI$1 = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$I(GuidelineUI2, _BaseUI);
-  var _super = _createSuper$I(GuidelineUI2);
-  function GuidelineUI2() {
-    _classCallCheck$14(this, GuidelineUI2);
+var CSS_CLASSNAME$2 = "ht__manualRowMove--backlight";
+var BacklightUI$1 = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$I(BacklightUI2, _BaseUI);
+  var _super = _createSuper$I(BacklightUI2);
+  function BacklightUI2() {
+    _classCallCheck$14(this, BacklightUI2);
     return _super.apply(this, arguments);
   }
-  _createClass$14(GuidelineUI2, [{
+  _createClass$14(BacklightUI2, [{
     key: "build",
     value: function build() {
-      _get$C(_getPrototypeOf$I(GuidelineUI2.prototype), "build", this).call(this);
-      addClass(this._element, CSS_CLASSNAME$3);
+      _get$C(_getPrototypeOf$I(BacklightUI2.prototype), "build", this).call(this);
+      addClass(this._element, CSS_CLASSNAME$2);
     }
   }]);
-  return GuidelineUI2;
+  return BacklightUI2;
 }(BaseUI$2);
 
 function _typeof$K(obj) {
@@ -25795,437 +26096,23 @@ function _getPrototypeOf$J(o) {
   };
   return _getPrototypeOf$J(o);
 }
-Hooks.getSingleton().register("beforeRowMove");
-Hooks.getSingleton().register("afterRowMove");
-var PLUGIN_KEY$m = "manualRowMove";
-var PLUGIN_PRIORITY$l = 140;
-var privatePool$d = new WeakMap();
-var CSS_PLUGIN$1 = "ht__manualRowMove";
-var CSS_SHOW_UI$1 = "show-ui";
-var CSS_ON_MOVING$1 = "on-moving--rows";
-var CSS_AFTER_SELECTION$1 = "after-selection--rows";
-var ManualRowMove = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$J(ManualRowMove2, _BasePlugin);
-  var _super = _createSuper$J(ManualRowMove2);
-  function ManualRowMove2(hotInstance) {
-    var _this;
-    _classCallCheck$15(this, ManualRowMove2);
-    _this = _super.call(this, hotInstance);
-    privatePool$d.set(_assertThisInitialized$J(_this), {
-      rowsToMove: [],
-      pressed: void 0,
-      target: {
-        eventPageY: void 0,
-        coords: void 0,
-        TD: void 0,
-        row: void 0
-      },
-      cachedDropIndex: void 0
-    });
-    _this.eventManager = new EventManager(_assertThisInitialized$J(_this));
-    _this.backlight = new BacklightUI$1(hotInstance);
-    _this.guideline = new GuidelineUI$1(hotInstance);
-    return _this;
+var CSS_CLASSNAME$3 = "ht__manualRowMove--guideline";
+var GuidelineUI$1 = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$J(GuidelineUI2, _BaseUI);
+  var _super = _createSuper$J(GuidelineUI2);
+  function GuidelineUI2() {
+    _classCallCheck$15(this, GuidelineUI2);
+    return _super.apply(this, arguments);
   }
-  _createClass$15(ManualRowMove2, [{
-    key: "isEnabled",
-    value: function isEnabled() {
-      return !!this.hot.getSettings()[PLUGIN_KEY$m];
-    }
-  }, {
-    key: "enablePlugin",
-    value: function enablePlugin() {
-      var _this2 = this;
-      if (this.enabled) {
-        return;
-      }
-      this.addHook("beforeOnCellMouseDown", function() {
-        return _this2.onBeforeOnCellMouseDown.apply(_this2, arguments);
-      });
-      this.addHook("beforeOnCellMouseOver", function() {
-        return _this2.onBeforeOnCellMouseOver.apply(_this2, arguments);
-      });
-      this.addHook("afterScrollHorizontally", function() {
-        return _this2.onAfterScrollHorizontally();
-      });
-      this.addHook("afterLoadData", function() {
-        return _this2.onAfterLoadData.apply(_this2, arguments);
-      });
-      this.buildPluginUI();
-      this.registerEvents();
-      addClass(this.hot.rootElement, CSS_PLUGIN$1);
-      _get$D(_getPrototypeOf$J(ManualRowMove2.prototype), "enablePlugin", this).call(this);
-    }
-  }, {
-    key: "updatePlugin",
-    value: function updatePlugin() {
-      this.disablePlugin();
-      this.enablePlugin();
-      this.moveBySettingsOrLoad();
-      _get$D(_getPrototypeOf$J(ManualRowMove2.prototype), "updatePlugin", this).call(this);
-    }
-  }, {
-    key: "disablePlugin",
-    value: function disablePlugin() {
-      removeClass(this.hot.rootElement, CSS_PLUGIN$1);
-      this.unregisterEvents();
-      this.backlight.destroy();
-      this.guideline.destroy();
-      _get$D(_getPrototypeOf$J(ManualRowMove2.prototype), "disablePlugin", this).call(this);
-    }
-  }, {
-    key: "moveRow",
-    value: function moveRow(row, finalIndex) {
-      return this.moveRows([row], finalIndex);
-    }
-  }, {
-    key: "moveRows",
-    value: function moveRows(rows, finalIndex) {
-      var priv = privatePool$d.get(this);
-      var dropIndex = priv.cachedDropIndex;
-      var movePossible = this.isMovePossible(rows, finalIndex);
-      var beforeMoveHook = this.hot.runHooks("beforeRowMove", rows, finalIndex, dropIndex, movePossible);
-      priv.cachedDropIndex = void 0;
-      if (beforeMoveHook === false) {
-        return;
-      }
-      if (movePossible) {
-        this.hot.rowIndexMapper.moveIndexes(rows, finalIndex);
-      }
-      var movePerformed = movePossible && this.isRowOrderChanged(rows, finalIndex);
-      this.hot.runHooks("afterRowMove", rows, finalIndex, dropIndex, movePossible, movePerformed);
-      return movePerformed;
-    }
-  }, {
-    key: "dragRow",
-    value: function dragRow(row, dropIndex) {
-      return this.dragRows([row], dropIndex);
-    }
-  }, {
-    key: "dragRows",
-    value: function dragRows(rows, dropIndex) {
-      var finalIndex = this.countFinalIndex(rows, dropIndex);
-      var priv = privatePool$d.get(this);
-      priv.cachedDropIndex = dropIndex;
-      return this.moveRows(rows, finalIndex);
-    }
-  }, {
-    key: "isMovePossible",
-    value: function isMovePossible(movedRows, finalIndex) {
-      var length = this.hot.rowIndexMapper.getNotTrimmedIndexesLength();
-      var tooHighDestinationIndex = movedRows.length + finalIndex > length;
-      var tooLowDestinationIndex = finalIndex < 0;
-      var tooLowMovedRowIndex = movedRows.some(function(movedRow) {
-        return movedRow < 0;
-      });
-      var tooHighMovedRowIndex = movedRows.some(function(movedRow) {
-        return movedRow >= length;
-      });
-      if (tooHighDestinationIndex || tooLowDestinationIndex || tooLowMovedRowIndex || tooHighMovedRowIndex) {
-        return false;
-      }
-      return true;
-    }
-  }, {
-    key: "isRowOrderChanged",
-    value: function isRowOrderChanged(movedRows, finalIndex) {
-      return movedRows.some(function(row, nrOfMovedElement) {
-        return row - nrOfMovedElement !== finalIndex;
-      });
-    }
-  }, {
-    key: "countFinalIndex",
-    value: function countFinalIndex(movedRows, dropIndex) {
-      var numberOfRowsLowerThanDropIndex = arrayReduce(movedRows, function(numberOfRows, currentRowIndex) {
-        if (currentRowIndex < dropIndex) {
-          numberOfRows += 1;
-        }
-        return numberOfRows;
-      }, 0);
-      return dropIndex - numberOfRowsLowerThanDropIndex;
-    }
-  }, {
-    key: "getRowsHeight",
-    value: function getRowsHeight(fromRow, toRow) {
-      var rowMapper = this.hot.rowIndexMapper;
-      var rowsHeight = 0;
-      for (var visualRowIndex = fromRow; visualRowIndex <= toRow; visualRowIndex++) {
-        var renderableIndex = rowMapper.getRenderableFromVisualIndex(visualRowIndex);
-        if (renderableIndex !== null) {
-          rowsHeight += this.hot.view.wt.wtTable.getRowHeight(renderableIndex) || 23;
-        }
-      }
-      return rowsHeight;
-    }
-  }, {
-    key: "moveBySettingsOrLoad",
-    value: function moveBySettingsOrLoad() {
-      var pluginSettings = this.hot.getSettings()[PLUGIN_KEY$m];
-      if (Array.isArray(pluginSettings)) {
-        this.moveRows(pluginSettings, 0);
-      } else if (pluginSettings !== void 0) {
-        var persistentState = this.persistentStateLoad();
-        if (persistentState.length) {
-          this.moveRows(persistentState, 0);
-        }
-      }
-    }
-  }, {
-    key: "isFixedRowTop",
-    value: function isFixedRowTop(row) {
-      return row < this.hot.getSettings().fixedRowsTop;
-    }
-  }, {
-    key: "isFixedRowBottom",
-    value: function isFixedRowBottom(row) {
-      return row > this.hot.getSettings().fixedRowsBottom;
-    }
-  }, {
-    key: "persistentStateSave",
-    value: function persistentStateSave() {
-      this.hot.runHooks("persistentStateSave", "manualRowMove", this.hot.rowIndexMapper.getIndexesSequence());
-    }
-  }, {
-    key: "persistentStateLoad",
-    value: function persistentStateLoad() {
-      var storedState = {};
-      this.hot.runHooks("persistentStateLoad", "manualRowMove", storedState);
-      return storedState.value ? storedState.value : [];
-    }
-  }, {
-    key: "prepareRowsToMoving",
-    value: function prepareRowsToMoving() {
-      var selection = this.hot.getSelectedRangeLast();
-      var selectedRows = [];
-      if (!selection) {
-        return selectedRows;
-      }
-      var from = selection.from, to = selection.to;
-      var start = Math.min(from.row, to.row);
-      var end = Math.max(from.row, to.row);
-      rangeEach(start, end, function(i) {
-        selectedRows.push(i);
-      });
-      return selectedRows;
-    }
-  }, {
-    key: "refreshPositions",
-    value: function refreshPositions() {
-      var priv = privatePool$d.get(this);
-      var coords = priv.target.coords;
-      var firstVisible = this.hot.view.wt.wtTable.getFirstVisibleRow();
-      var lastVisible = this.hot.view.wt.wtTable.getLastVisibleRow();
-      var fixedRows = this.hot.getSettings().fixedRowsTop;
-      var countRows = this.hot.countRows();
-      if (coords.row < fixedRows && firstVisible > 0) {
-        this.hot.scrollViewportTo(firstVisible - 1);
-      }
-      if (coords.row >= lastVisible && lastVisible < countRows) {
-        this.hot.scrollViewportTo(lastVisible + 1, void 0, true);
-      }
-      var wtTable = this.hot.view.wt.wtTable;
-      var TD = priv.target.TD;
-      var rootElementOffset = offset(this.hot.rootElement);
-      var tdOffsetTop = this.hot.view.THEAD.offsetHeight + this.getRowsHeight(0, coords.row - 1);
-      var mouseOffsetTop = priv.target.eventPageY - rootElementOffset.top + wtTable.holder.scrollTop;
-      var hiderHeight = wtTable.hider.offsetHeight;
-      var tbodyOffsetTop = wtTable.TBODY.offsetTop;
-      var backlightElemMarginTop = this.backlight.getOffset().top;
-      var backlightElemHeight = this.backlight.getSize().height;
-      if (this.isFixedRowTop(coords.row)) {
-        tdOffsetTop += wtTable.holder.scrollTop;
-      }
-      if (coords.row < 0) {
-        priv.target.row = firstVisible > 0 ? firstVisible - 1 : firstVisible;
-      } else if (TD.offsetHeight / 2 + tdOffsetTop <= mouseOffsetTop) {
-        priv.target.row = coords.row + 1;
-        tdOffsetTop += coords.row === 0 ? TD.offsetHeight - 1 : TD.offsetHeight;
-      } else {
-        priv.target.row = coords.row;
-      }
-      var backlightTop = mouseOffsetTop;
-      var guidelineTop = tdOffsetTop;
-      if (mouseOffsetTop + backlightElemHeight + backlightElemMarginTop >= hiderHeight) {
-        backlightTop = hiderHeight - backlightElemHeight - backlightElemMarginTop;
-      } else if (mouseOffsetTop + backlightElemMarginTop < tbodyOffsetTop) {
-        backlightTop = tbodyOffsetTop + Math.abs(backlightElemMarginTop);
-      }
-      if (tdOffsetTop >= hiderHeight - 1) {
-        guidelineTop = hiderHeight - 1;
-      }
-      var topOverlayHeight = 0;
-      if (this.hot.view.wt.wtOverlays.topOverlay) {
-        topOverlayHeight = this.hot.view.wt.wtOverlays.topOverlay.clone.wtTable.TABLE.offsetHeight;
-      }
-      if (coords.row >= fixedRows && guidelineTop - wtTable.holder.scrollTop < topOverlayHeight) {
-        this.hot.scrollViewportTo(coords.row);
-      }
-      this.backlight.setPosition(backlightTop);
-      this.guideline.setPosition(guidelineTop);
-    }
-  }, {
-    key: "registerEvents",
-    value: function registerEvents() {
-      var _this3 = this;
-      var documentElement = this.hot.rootDocument.documentElement;
-      this.eventManager.addEventListener(documentElement, "mousemove", function(event) {
-        return _this3.onMouseMove(event);
-      });
-      this.eventManager.addEventListener(documentElement, "mouseup", function() {
-        return _this3.onMouseUp();
-      });
-    }
-  }, {
-    key: "unregisterEvents",
-    value: function unregisterEvents() {
-      this.eventManager.clear();
-    }
-  }, {
-    key: "onBeforeOnCellMouseDown",
-    value: function onBeforeOnCellMouseDown(event, coords, TD, controller) {
-      var _this$hot$view$wt = this.hot.view.wt, wtTable = _this$hot$view$wt.wtTable, wtViewport = _this$hot$view$wt.wtViewport;
-      var isHeaderSelection = this.hot.selection.isSelectedByRowHeader();
-      var selection = this.hot.getSelectedRangeLast();
-      var priv = privatePool$d.get(this);
-      if (!selection || !isHeaderSelection || priv.pressed || event.button !== 0) {
-        priv.pressed = false;
-        priv.rowsToMove.length = 0;
-        removeClass(this.hot.rootElement, [CSS_ON_MOVING$1, CSS_SHOW_UI$1]);
-        return;
-      }
-      var guidelineIsNotReady = this.guideline.isBuilt() && !this.guideline.isAppended();
-      var backlightIsNotReady = this.backlight.isBuilt() && !this.backlight.isAppended();
-      if (guidelineIsNotReady && backlightIsNotReady) {
-        this.guideline.appendTo(wtTable.hider);
-        this.backlight.appendTo(wtTable.hider);
-      }
-      var from = selection.from, to = selection.to;
-      var start = Math.min(from.row, to.row);
-      var end = Math.max(from.row, to.row);
-      if (coords.col < 0 && coords.row >= start && coords.row <= end) {
-        controller.row = true;
-        priv.pressed = true;
-        priv.target.eventPageY = event.pageY;
-        priv.target.coords = coords;
-        priv.target.TD = TD;
-        priv.rowsToMove = this.prepareRowsToMoving();
-        var leftPos = wtTable.holder.scrollLeft + wtViewport.getRowHeaderWidth();
-        this.backlight.setPosition(null, leftPos);
-        this.backlight.setSize(wtTable.hider.offsetWidth - leftPos, this.getRowsHeight(start, end));
-        this.backlight.setOffset((this.getRowsHeight(start, coords.row - 1) + event.offsetY) * -1, null);
-        addClass(this.hot.rootElement, CSS_ON_MOVING$1);
-        this.refreshPositions();
-      } else {
-        removeClass(this.hot.rootElement, CSS_AFTER_SELECTION$1);
-        priv.pressed = false;
-        priv.rowsToMove.length = 0;
-      }
-    }
-  }, {
-    key: "onMouseMove",
-    value: function onMouseMove(event) {
-      var priv = privatePool$d.get(this);
-      if (!priv.pressed) {
-        return;
-      }
-      if (event.target === this.backlight.element) {
-        var height = this.backlight.getSize().height;
-        this.backlight.setSize(null, 0);
-        setTimeout(function() {
-          this.backlight.setPosition(null, height);
-        });
-      }
-      priv.target.eventPageY = event.pageY;
-      this.refreshPositions();
-    }
-  }, {
-    key: "onBeforeOnCellMouseOver",
-    value: function onBeforeOnCellMouseOver(event, coords, TD, controller) {
-      var selectedRange = this.hot.getSelectedRangeLast();
-      var priv = privatePool$d.get(this);
-      if (!selectedRange || !priv.pressed) {
-        return;
-      }
-      if (priv.rowsToMove.indexOf(coords.row) > -1) {
-        removeClass(this.hot.rootElement, CSS_SHOW_UI$1);
-      } else {
-        addClass(this.hot.rootElement, CSS_SHOW_UI$1);
-      }
-      controller.row = true;
-      controller.column = true;
-      controller.cell = true;
-      priv.target.coords = coords;
-      priv.target.TD = TD;
-    }
-  }, {
-    key: "onMouseUp",
-    value: function onMouseUp() {
-      var priv = privatePool$d.get(this);
-      var target = priv.target.row;
-      var rowsLen = priv.rowsToMove.length;
-      priv.pressed = false;
-      priv.backlightHeight = 0;
-      removeClass(this.hot.rootElement, [CSS_ON_MOVING$1, CSS_SHOW_UI$1, CSS_AFTER_SELECTION$1]);
-      if (this.hot.selection.isSelectedByRowHeader()) {
-        addClass(this.hot.rootElement, CSS_AFTER_SELECTION$1);
-      }
-      if (rowsLen < 1 || target === void 0) {
-        return;
-      }
-      var firstMovedVisualRow = priv.rowsToMove[0];
-      var firstMovedPhysicalRow = this.hot.toPhysicalRow(firstMovedVisualRow);
-      var movePerformed = this.dragRows(priv.rowsToMove, target);
-      priv.rowsToMove.length = 0;
-      if (movePerformed === true) {
-        this.persistentStateSave();
-        this.hot.render();
-        this.hot.view.adjustElementsSize(true);
-        var selectionStart = this.hot.toVisualRow(firstMovedPhysicalRow);
-        var selectionEnd = selectionStart + rowsLen - 1;
-        this.hot.selectRows(selectionStart, selectionEnd);
-      }
-    }
-  }, {
-    key: "onAfterScrollHorizontally",
-    value: function onAfterScrollHorizontally() {
-      var wtTable = this.hot.view.wt.wtTable;
-      var headerWidth = this.hot.view.wt.wtViewport.getRowHeaderWidth();
-      var scrollLeft = wtTable.holder.scrollLeft;
-      var posLeft = headerWidth + scrollLeft;
-      this.backlight.setPosition(null, posLeft);
-      this.backlight.setSize(wtTable.hider.offsetWidth - posLeft);
-    }
-  }, {
-    key: "buildPluginUI",
-    value: function buildPluginUI() {
-      this.backlight.build();
-      this.guideline.build();
-    }
-  }, {
-    key: "onAfterLoadData",
-    value: function onAfterLoadData() {
-      this.moveBySettingsOrLoad();
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      this.backlight.destroy();
-      this.guideline.destroy();
-      _get$D(_getPrototypeOf$J(ManualRowMove2.prototype), "destroy", this).call(this);
-    }
-  }], [{
-    key: "PLUGIN_KEY",
-    get: function get() {
-      return PLUGIN_KEY$m;
-    }
-  }, {
-    key: "PLUGIN_PRIORITY",
-    get: function get() {
-      return PLUGIN_PRIORITY$l;
+  _createClass$15(GuidelineUI2, [{
+    key: "build",
+    value: function build() {
+      _get$D(_getPrototypeOf$J(GuidelineUI2.prototype), "build", this).call(this);
+      addClass(this._element, CSS_CLASSNAME$3);
     }
   }]);
-  return ManualRowMove2;
-}(BasePlugin);
+  return GuidelineUI2;
+}(BaseUI$2);
 
 function _typeof$L(obj) {
   "@babel/helpers - typeof";
@@ -26347,16 +26234,568 @@ function _getPrototypeOf$K(o) {
   };
   return _getPrototypeOf$K(o);
 }
+Hooks.getSingleton().register("beforeRowMove");
+Hooks.getSingleton().register("afterRowMove");
+var PLUGIN_KEY$m = "manualRowMove";
+var PLUGIN_PRIORITY$l = 140;
+var privatePool$d = new WeakMap();
+var CSS_PLUGIN$1 = "ht__manualRowMove";
+var CSS_SHOW_UI$1 = "show-ui";
+var CSS_ON_MOVING$1 = "on-moving--rows";
+var CSS_AFTER_SELECTION$1 = "after-selection--rows";
+var ManualRowMove = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$K(ManualRowMove2, _BasePlugin);
+  var _super = _createSuper$K(ManualRowMove2);
+  function ManualRowMove2(hotInstance) {
+    var _this;
+    _classCallCheck$16(this, ManualRowMove2);
+    _this = _super.call(this, hotInstance);
+    privatePool$d.set(_assertThisInitialized$K(_this), {
+      rowsToMove: [],
+      pressed: void 0,
+      target: {
+        eventPageY: void 0,
+        coords: void 0,
+        TD: void 0,
+        row: void 0
+      },
+      cachedDropIndex: void 0
+    });
+    _this.eventManager = new EventManager(_assertThisInitialized$K(_this));
+    _this.backlight = new BacklightUI$1(hotInstance);
+    _this.guideline = new GuidelineUI$1(hotInstance);
+    return _this;
+  }
+  _createClass$16(ManualRowMove2, [{
+    key: "isEnabled",
+    value: function isEnabled() {
+      return !!this.hot.getSettings()[PLUGIN_KEY$m];
+    }
+  }, {
+    key: "enablePlugin",
+    value: function enablePlugin() {
+      var _this2 = this;
+      if (this.enabled) {
+        return;
+      }
+      this.addHook("beforeOnCellMouseDown", function() {
+        return _this2.onBeforeOnCellMouseDown.apply(_this2, arguments);
+      });
+      this.addHook("beforeOnCellMouseOver", function() {
+        return _this2.onBeforeOnCellMouseOver.apply(_this2, arguments);
+      });
+      this.addHook("afterScrollHorizontally", function() {
+        return _this2.onAfterScrollHorizontally();
+      });
+      this.addHook("afterLoadData", function() {
+        return _this2.onAfterLoadData.apply(_this2, arguments);
+      });
+      this.buildPluginUI();
+      this.registerEvents();
+      addClass(this.hot.rootElement, CSS_PLUGIN$1);
+      _get$E(_getPrototypeOf$K(ManualRowMove2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "updatePlugin",
+    value: function updatePlugin() {
+      this.disablePlugin();
+      this.enablePlugin();
+      this.moveBySettingsOrLoad();
+      _get$E(_getPrototypeOf$K(ManualRowMove2.prototype), "updatePlugin", this).call(this);
+    }
+  }, {
+    key: "disablePlugin",
+    value: function disablePlugin() {
+      removeClass(this.hot.rootElement, CSS_PLUGIN$1);
+      this.unregisterEvents();
+      this.backlight.destroy();
+      this.guideline.destroy();
+      _get$E(_getPrototypeOf$K(ManualRowMove2.prototype), "disablePlugin", this).call(this);
+    }
+  }, {
+    key: "moveRow",
+    value: function moveRow(row, finalIndex) {
+      return this.moveRows([row], finalIndex);
+    }
+  }, {
+    key: "moveRows",
+    value: function moveRows(rows, finalIndex) {
+      var priv = privatePool$d.get(this);
+      var dropIndex = priv.cachedDropIndex;
+      var movePossible = this.isMovePossible(rows, finalIndex);
+      var beforeMoveHook = this.hot.runHooks("beforeRowMove", rows, finalIndex, dropIndex, movePossible);
+      priv.cachedDropIndex = void 0;
+      if (beforeMoveHook === false) {
+        return;
+      }
+      if (movePossible) {
+        this.hot.rowIndexMapper.moveIndexes(rows, finalIndex);
+      }
+      var movePerformed = movePossible && this.isRowOrderChanged(rows, finalIndex);
+      this.hot.runHooks("afterRowMove", rows, finalIndex, dropIndex, movePossible, movePerformed);
+      return movePerformed;
+    }
+  }, {
+    key: "dragRow",
+    value: function dragRow(row, dropIndex) {
+      return this.dragRows([row], dropIndex);
+    }
+  }, {
+    key: "dragRows",
+    value: function dragRows(rows, dropIndex) {
+      var finalIndex = this.countFinalIndex(rows, dropIndex);
+      var priv = privatePool$d.get(this);
+      priv.cachedDropIndex = dropIndex;
+      return this.moveRows(rows, finalIndex);
+    }
+  }, {
+    key: "isMovePossible",
+    value: function isMovePossible(movedRows, finalIndex) {
+      var length = this.hot.rowIndexMapper.getNotTrimmedIndexesLength();
+      var tooHighDestinationIndex = movedRows.length + finalIndex > length;
+      var tooLowDestinationIndex = finalIndex < 0;
+      var tooLowMovedRowIndex = movedRows.some(function(movedRow) {
+        return movedRow < 0;
+      });
+      var tooHighMovedRowIndex = movedRows.some(function(movedRow) {
+        return movedRow >= length;
+      });
+      if (tooHighDestinationIndex || tooLowDestinationIndex || tooLowMovedRowIndex || tooHighMovedRowIndex) {
+        return false;
+      }
+      return true;
+    }
+  }, {
+    key: "isRowOrderChanged",
+    value: function isRowOrderChanged(movedRows, finalIndex) {
+      return movedRows.some(function(row, nrOfMovedElement) {
+        return row - nrOfMovedElement !== finalIndex;
+      });
+    }
+  }, {
+    key: "countFinalIndex",
+    value: function countFinalIndex(movedRows, dropIndex) {
+      var numberOfRowsLowerThanDropIndex = arrayReduce(movedRows, function(numberOfRows, currentRowIndex) {
+        if (currentRowIndex < dropIndex) {
+          numberOfRows += 1;
+        }
+        return numberOfRows;
+      }, 0);
+      return dropIndex - numberOfRowsLowerThanDropIndex;
+    }
+  }, {
+    key: "getRowsHeight",
+    value: function getRowsHeight(fromRow, toRow) {
+      var rowMapper = this.hot.rowIndexMapper;
+      var rowsHeight = 0;
+      for (var visualRowIndex = fromRow; visualRowIndex <= toRow; visualRowIndex++) {
+        var renderableIndex = rowMapper.getRenderableFromVisualIndex(visualRowIndex);
+        if (renderableIndex !== null) {
+          rowsHeight += this.hot.view._wt.wtTable.getRowHeight(renderableIndex) || 23;
+        }
+      }
+      return rowsHeight;
+    }
+  }, {
+    key: "moveBySettingsOrLoad",
+    value: function moveBySettingsOrLoad() {
+      var pluginSettings = this.hot.getSettings()[PLUGIN_KEY$m];
+      if (Array.isArray(pluginSettings)) {
+        this.moveRows(pluginSettings, 0);
+      } else if (pluginSettings !== void 0) {
+        var persistentState = this.persistentStateLoad();
+        if (persistentState.length) {
+          this.moveRows(persistentState, 0);
+        }
+      }
+    }
+  }, {
+    key: "isFixedRowTop",
+    value: function isFixedRowTop(row) {
+      return row < this.hot.getSettings().fixedRowsTop;
+    }
+  }, {
+    key: "isFixedRowBottom",
+    value: function isFixedRowBottom(row) {
+      return row > this.hot.getSettings().fixedRowsBottom;
+    }
+  }, {
+    key: "persistentStateSave",
+    value: function persistentStateSave() {
+      this.hot.runHooks("persistentStateSave", "manualRowMove", this.hot.rowIndexMapper.getIndexesSequence());
+    }
+  }, {
+    key: "persistentStateLoad",
+    value: function persistentStateLoad() {
+      var storedState = {};
+      this.hot.runHooks("persistentStateLoad", "manualRowMove", storedState);
+      return storedState.value ? storedState.value : [];
+    }
+  }, {
+    key: "prepareRowsToMoving",
+    value: function prepareRowsToMoving() {
+      var selection = this.hot.getSelectedRangeLast();
+      var selectedRows = [];
+      if (!selection) {
+        return selectedRows;
+      }
+      var from = selection.from, to = selection.to;
+      var start = Math.min(from.row, to.row);
+      var end = Math.max(from.row, to.row);
+      rangeEach(start, end, function(i) {
+        selectedRows.push(i);
+      });
+      return selectedRows;
+    }
+  }, {
+    key: "refreshPositions",
+    value: function refreshPositions() {
+      var priv = privatePool$d.get(this);
+      var coords = priv.target.coords;
+      var firstVisible = this.hot.view._wt.wtTable.getFirstVisibleRow();
+      var lastVisible = this.hot.view._wt.wtTable.getLastVisibleRow();
+      var fixedRows = this.hot.getSettings().fixedRowsTop;
+      var countRows = this.hot.countRows();
+      if (coords.row < fixedRows && firstVisible > 0) {
+        this.hot.scrollViewportTo(firstVisible - 1);
+      }
+      if (coords.row >= lastVisible && lastVisible < countRows) {
+        this.hot.scrollViewportTo(lastVisible + 1, void 0, true);
+      }
+      var wtTable = this.hot.view._wt.wtTable;
+      var TD = priv.target.TD;
+      var rootElementOffset = offset(this.hot.rootElement);
+      var tdOffsetTop = this.hot.view.THEAD.offsetHeight + this.getRowsHeight(0, coords.row - 1);
+      var mouseOffsetTop = priv.target.eventPageY - rootElementOffset.top + wtTable.holder.scrollTop;
+      var hiderHeight = wtTable.hider.offsetHeight;
+      var tbodyOffsetTop = wtTable.TBODY.offsetTop;
+      var backlightElemMarginTop = this.backlight.getOffset().top;
+      var backlightElemHeight = this.backlight.getSize().height;
+      if (this.isFixedRowTop(coords.row)) {
+        tdOffsetTop += wtTable.holder.scrollTop;
+      }
+      if (coords.row < 0) {
+        priv.target.row = firstVisible > 0 ? firstVisible - 1 : firstVisible;
+      } else if (TD.offsetHeight / 2 + tdOffsetTop <= mouseOffsetTop) {
+        priv.target.row = coords.row + 1;
+        tdOffsetTop += coords.row === 0 ? TD.offsetHeight - 1 : TD.offsetHeight;
+      } else {
+        priv.target.row = coords.row;
+      }
+      var backlightTop = mouseOffsetTop;
+      var guidelineTop = tdOffsetTop;
+      if (mouseOffsetTop + backlightElemHeight + backlightElemMarginTop >= hiderHeight) {
+        backlightTop = hiderHeight - backlightElemHeight - backlightElemMarginTop;
+      } else if (mouseOffsetTop + backlightElemMarginTop < tbodyOffsetTop) {
+        backlightTop = tbodyOffsetTop + Math.abs(backlightElemMarginTop);
+      }
+      if (tdOffsetTop >= hiderHeight - 1) {
+        guidelineTop = hiderHeight - 1;
+      }
+      var topOverlayHeight = 0;
+      if (this.hot.view._wt.wtOverlays.topOverlay) {
+        topOverlayHeight = this.hot.view._wt.wtOverlays.topOverlay.clone.wtTable.TABLE.offsetHeight;
+      }
+      if (coords.row >= fixedRows && guidelineTop - wtTable.holder.scrollTop < topOverlayHeight) {
+        this.hot.scrollViewportTo(coords.row);
+      }
+      this.backlight.setPosition(backlightTop);
+      this.guideline.setPosition(guidelineTop);
+    }
+  }, {
+    key: "registerEvents",
+    value: function registerEvents() {
+      var _this3 = this;
+      var documentElement = this.hot.rootDocument.documentElement;
+      this.eventManager.addEventListener(documentElement, "mousemove", function(event) {
+        return _this3.onMouseMove(event);
+      });
+      this.eventManager.addEventListener(documentElement, "mouseup", function() {
+        return _this3.onMouseUp();
+      });
+    }
+  }, {
+    key: "unregisterEvents",
+    value: function unregisterEvents() {
+      this.eventManager.clear();
+    }
+  }, {
+    key: "onBeforeOnCellMouseDown",
+    value: function onBeforeOnCellMouseDown(event, coords, TD, controller) {
+      var _this$hot$view$_wt = this.hot.view._wt, wtTable = _this$hot$view$_wt.wtTable, wtViewport = _this$hot$view$_wt.wtViewport;
+      var isHeaderSelection = this.hot.selection.isSelectedByRowHeader();
+      var selection = this.hot.getSelectedRangeLast();
+      var priv = privatePool$d.get(this);
+      if (!selection || !isHeaderSelection || priv.pressed || event.button !== 0) {
+        priv.pressed = false;
+        priv.rowsToMove.length = 0;
+        removeClass(this.hot.rootElement, [CSS_ON_MOVING$1, CSS_SHOW_UI$1]);
+        return;
+      }
+      var guidelineIsNotReady = this.guideline.isBuilt() && !this.guideline.isAppended();
+      var backlightIsNotReady = this.backlight.isBuilt() && !this.backlight.isAppended();
+      if (guidelineIsNotReady && backlightIsNotReady) {
+        this.guideline.appendTo(wtTable.hider);
+        this.backlight.appendTo(wtTable.hider);
+      }
+      var from = selection.from, to = selection.to;
+      var start = Math.min(from.row, to.row);
+      var end = Math.max(from.row, to.row);
+      if (coords.col < 0 && coords.row >= start && coords.row <= end) {
+        controller.row = true;
+        priv.pressed = true;
+        priv.target.eventPageY = event.pageY;
+        priv.target.coords = coords;
+        priv.target.TD = TD;
+        priv.rowsToMove = this.prepareRowsToMoving();
+        var leftPos = wtTable.holder.scrollLeft + wtViewport.getRowHeaderWidth();
+        this.backlight.setPosition(null, leftPos);
+        this.backlight.setSize(wtTable.hider.offsetWidth - leftPos, this.getRowsHeight(start, end));
+        this.backlight.setOffset((this.getRowsHeight(start, coords.row - 1) + event.offsetY) * -1, null);
+        addClass(this.hot.rootElement, CSS_ON_MOVING$1);
+        this.refreshPositions();
+      } else {
+        removeClass(this.hot.rootElement, CSS_AFTER_SELECTION$1);
+        priv.pressed = false;
+        priv.rowsToMove.length = 0;
+      }
+    }
+  }, {
+    key: "onMouseMove",
+    value: function onMouseMove(event) {
+      var priv = privatePool$d.get(this);
+      if (!priv.pressed) {
+        return;
+      }
+      if (event.target === this.backlight.element) {
+        var height = this.backlight.getSize().height;
+        this.backlight.setSize(null, 0);
+        setTimeout(function() {
+          this.backlight.setPosition(null, height);
+        });
+      }
+      priv.target.eventPageY = event.pageY;
+      this.refreshPositions();
+    }
+  }, {
+    key: "onBeforeOnCellMouseOver",
+    value: function onBeforeOnCellMouseOver(event, coords, TD, controller) {
+      var selectedRange = this.hot.getSelectedRangeLast();
+      var priv = privatePool$d.get(this);
+      if (!selectedRange || !priv.pressed) {
+        return;
+      }
+      if (priv.rowsToMove.indexOf(coords.row) > -1) {
+        removeClass(this.hot.rootElement, CSS_SHOW_UI$1);
+      } else {
+        addClass(this.hot.rootElement, CSS_SHOW_UI$1);
+      }
+      controller.row = true;
+      controller.column = true;
+      controller.cell = true;
+      priv.target.coords = coords;
+      priv.target.TD = TD;
+    }
+  }, {
+    key: "onMouseUp",
+    value: function onMouseUp() {
+      var priv = privatePool$d.get(this);
+      var target = priv.target.row;
+      var rowsLen = priv.rowsToMove.length;
+      priv.pressed = false;
+      priv.backlightHeight = 0;
+      removeClass(this.hot.rootElement, [CSS_ON_MOVING$1, CSS_SHOW_UI$1, CSS_AFTER_SELECTION$1]);
+      if (this.hot.selection.isSelectedByRowHeader()) {
+        addClass(this.hot.rootElement, CSS_AFTER_SELECTION$1);
+      }
+      if (rowsLen < 1 || target === void 0) {
+        return;
+      }
+      var firstMovedVisualRow = priv.rowsToMove[0];
+      var firstMovedPhysicalRow = this.hot.toPhysicalRow(firstMovedVisualRow);
+      var movePerformed = this.dragRows(priv.rowsToMove, target);
+      priv.rowsToMove.length = 0;
+      if (movePerformed === true) {
+        this.persistentStateSave();
+        this.hot.render();
+        this.hot.view.adjustElementsSize(true);
+        var selectionStart = this.hot.toVisualRow(firstMovedPhysicalRow);
+        var selectionEnd = selectionStart + rowsLen - 1;
+        this.hot.selectRows(selectionStart, selectionEnd);
+      }
+    }
+  }, {
+    key: "onAfterScrollHorizontally",
+    value: function onAfterScrollHorizontally() {
+      var wtTable = this.hot.view._wt.wtTable;
+      var headerWidth = this.hot.view._wt.wtViewport.getRowHeaderWidth();
+      var scrollLeft = wtTable.holder.scrollLeft;
+      var posLeft = headerWidth + scrollLeft;
+      this.backlight.setPosition(null, posLeft);
+      this.backlight.setSize(wtTable.hider.offsetWidth - posLeft);
+    }
+  }, {
+    key: "buildPluginUI",
+    value: function buildPluginUI() {
+      this.backlight.build();
+      this.guideline.build();
+    }
+  }, {
+    key: "onAfterLoadData",
+    value: function onAfterLoadData() {
+      this.moveBySettingsOrLoad();
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this.backlight.destroy();
+      this.guideline.destroy();
+      _get$E(_getPrototypeOf$K(ManualRowMove2.prototype), "destroy", this).call(this);
+    }
+  }], [{
+    key: "PLUGIN_KEY",
+    get: function get() {
+      return PLUGIN_KEY$m;
+    }
+  }, {
+    key: "PLUGIN_PRIORITY",
+    get: function get() {
+      return PLUGIN_PRIORITY$l;
+    }
+  }]);
+  return ManualRowMove2;
+}(BasePlugin);
+
+function _typeof$M(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$M = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$M(obj);
+}
+function _classCallCheck$17(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$17(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$17(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$17(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$17(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _get$F() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$F = Reflect.get;
+  } else {
+    _get$F = function _get2(target, property, receiver) {
+      var base = _superPropBase$F(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$F.apply(this, arguments);
+}
+function _superPropBase$F(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$L(object);
+    if (object === null)
+      break;
+  }
+  return object;
+}
+function _inherits$L(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$L(subClass, superClass);
+}
+function _setPrototypeOf$L(o, p) {
+  _setPrototypeOf$L = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$L(o, p);
+}
+function _createSuper$L(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$L();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$L(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$L(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$L(this, result);
+  };
+}
+function _possibleConstructorReturn$L(self, call) {
+  if (call && (_typeof$M(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$L(self);
+}
+function _assertThisInitialized$L(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$L() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$L(o) {
+  _getPrototypeOf$L = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$L(o);
+}
 var PLUGIN_KEY$n = "manualRowResize";
 var PLUGIN_PRIORITY$m = 30;
 var PERSISTENT_STATE_KEY$1 = "manualRowHeights";
 var privatePool$e = new WeakMap();
 var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$K(ManualRowResize2, _BasePlugin);
-  var _super = _createSuper$K(ManualRowResize2);
+  _inherits$L(ManualRowResize2, _BasePlugin);
+  var _super = _createSuper$L(ManualRowResize2);
   function ManualRowResize2(hotInstance) {
     var _this;
-    _classCallCheck$16(this, ManualRowResize2);
+    _classCallCheck$17(this, ManualRowResize2);
     _this = _super.call(this, hotInstance);
     var rootDocument = _this.hot.rootDocument;
     _this.currentTH = null;
@@ -26369,19 +26808,24 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
     _this.startOffset = null;
     _this.handle = rootDocument.createElement("DIV");
     _this.guide = rootDocument.createElement("DIV");
-    _this.eventManager = new EventManager(_assertThisInitialized$K(_this));
+    _this.eventManager = new EventManager(_assertThisInitialized$L(_this));
     _this.pressed = null;
     _this.dblclick = 0;
     _this.autoresizeTimeout = null;
     _this.rowHeightsMap = void 0;
-    privatePool$e.set(_assertThisInitialized$K(_this), {
+    privatePool$e.set(_assertThisInitialized$L(_this), {
       config: void 0
     });
     addClass(_this.handle, "manualRowResizer");
     addClass(_this.guide, "manualRowResizerGuide");
     return _this;
   }
-  _createClass$16(ManualRowResize2, [{
+  _createClass$17(ManualRowResize2, [{
+    key: "inlineDir",
+    get: function get() {
+      return this.hot.isRtl() ? "right" : "left";
+    }
+  }, {
     key: "isEnabled",
     value: function isEnabled() {
       return this.hot.getSettings()[PLUGIN_KEY$n];
@@ -26402,14 +26846,14 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
         return _this2.onModifyRowHeight(height, row);
       });
       this.bindEvents();
-      _get$E(_getPrototypeOf$K(ManualRowResize2.prototype), "enablePlugin", this).call(this);
+      _get$F(_getPrototypeOf$L(ManualRowResize2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
     value: function updatePlugin() {
       this.disablePlugin();
       this.enablePlugin();
-      _get$E(_getPrototypeOf$K(ManualRowResize2.prototype), "updatePlugin", this).call(this);
+      _get$F(_getPrototypeOf$L(ManualRowResize2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -26417,7 +26861,7 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
       var priv = privatePool$e.get(this);
       priv.config = this.rowHeightsMap.getValues();
       this.hot.rowIndexMapper.unregisterMap(this.pluginName);
-      _get$E(_getPrototypeOf$K(ManualRowResize2.prototype), "disablePlugin", this).call(this);
+      _get$F(_getPrototypeOf$L(ManualRowResize2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "saveManualRowHeights",
@@ -26445,8 +26889,8 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
       var _this3 = this;
       this.currentTH = TH;
       var view = this.hot.view;
-      var wt = view.wt;
-      var cellCoords = view.wt.wtTable.getCoords(this.currentTH);
+      var wt = view._wt;
+      var cellCoords = wt.wtTable.getCoords(this.currentTH);
       var row = cellCoords.row;
       if (row < 0) {
         return;
@@ -26457,12 +26901,12 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
       var fixedRowBottom = row >= view.countNotHiddenRowIndexes(0, 1) - wt.getSetting("fixedRowsBottom");
       var relativeHeaderPosition;
       if (fixedRowTop) {
-        relativeHeaderPosition = wt.wtOverlays.topLeftCornerOverlay.getRelativeCellPosition(this.currentTH, cellCoords.row, cellCoords.col);
+        relativeHeaderPosition = wt.wtOverlays.topInlineStartCornerOverlay.getRelativeCellPosition(this.currentTH, cellCoords.row, cellCoords.col);
       } else if (fixedRowBottom) {
-        relativeHeaderPosition = wt.wtOverlays.bottomLeftCornerOverlay.getRelativeCellPosition(this.currentTH, cellCoords.row, cellCoords.col);
+        relativeHeaderPosition = wt.wtOverlays.bottomInlineStartCornerOverlay.getRelativeCellPosition(this.currentTH, cellCoords.row, cellCoords.col);
       }
       if (!relativeHeaderPosition) {
-        relativeHeaderPosition = wt.wtOverlays.leftOverlay.getRelativeCellPosition(this.currentTH, cellCoords.row, cellCoords.col);
+        relativeHeaderPosition = wt.wtOverlays.inlineStartOverlay.getRelativeCellPosition(this.currentTH, cellCoords.row, cellCoords.col);
       }
       this.currentRow = this.hot.rowIndexMapper.getVisualFromRenderableIndex(row);
       this.selectedRows = [];
@@ -26470,8 +26914,8 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
       if (this.hot.selection.isSelected() && isFullRowSelected) {
         var selectionRanges = this.hot.getSelectedRange();
         arrayEach(selectionRanges, function(selectionRange) {
-          var fromRow = selectionRange.getTopLeftCorner().row;
-          var toRow = selectionRange.getBottomLeftCorner().row;
+          var fromRow = selectionRange.getTopStartCorner().row;
+          var toRow = selectionRange.getBottomStartCorner().row;
           rangeEach(fromRow, toRow, function(rowIndex) {
             if (!_this3.selectedRows.includes(rowIndex)) {
               _this3.selectedRows.push(rowIndex);
@@ -26485,7 +26929,7 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
       this.startOffset = relativeHeaderPosition.top - 6;
       this.startHeight = parseInt(box.height, 10);
       this.handle.style.top = "".concat(this.startOffset + this.startHeight, "px");
-      this.handle.style.left = "".concat(relativeHeaderPosition.left, "px");
+      this.handle.style[this.inlineDir] = "".concat(relativeHeaderPosition.start, "px");
       this.handle.style.width = "".concat(headerWidth, "px");
       this.hot.rootElement.appendChild(this.handle);
     }
@@ -26498,12 +26942,12 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
     key: "setupGuidePosition",
     value: function setupGuidePosition() {
       var handleWidth = parseInt(outerWidth(this.handle), 10);
-      var handleRightPosition = parseInt(this.handle.style.left, 10) + handleWidth;
+      var handleEndPosition = parseInt(this.handle.style[this.inlineDir], 10) + handleWidth;
       var maximumVisibleElementWidth = parseInt(this.hot.view.maximumVisibleElementWidth(0), 10);
       addClass(this.handle, "active");
       addClass(this.guide, "active");
       this.guide.style.top = this.handle.style.top;
-      this.guide.style.left = "".concat(handleRightPosition, "px");
+      this.guide.style[this.inlineDir] = "".concat(handleEndPosition, "px");
       this.guide.style.width = "".concat(maximumVisibleElementWidth - handleWidth, "px");
       this.hot.rootElement.appendChild(this.guide);
     }
@@ -26539,7 +26983,7 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "getActualRowHeight",
     value: function getActualRowHeight(row) {
-      var walkontableHeight = this.hot.view.wt.wtTable.getRowHeight(row);
+      var walkontableHeight = this.hot.view._wt.wtTable.getRowHeight(row);
       if (walkontableHeight !== void 0 && this.newSize < walkontableHeight) {
         return walkontableHeight;
       }
@@ -26722,7 +27166,7 @@ var ManualRowResize = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "destroy",
     value: function destroy() {
-      _get$E(_getPrototypeOf$K(ManualRowResize2.prototype), "destroy", this).call(this);
+      _get$F(_getPrototypeOf$L(ManualRowResize2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -26745,12 +27189,12 @@ function _taggedTemplateLiteral$4(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$17(instance, Constructor) {
+function _classCallCheck$18(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$17(target, props) {
+function _defineProperties$18(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -26760,24 +27204,26 @@ function _defineProperties$17(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$17(Constructor, protoProps, staticProps) {
+function _createClass$18(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$17(Constructor.prototype, protoProps);
+    _defineProperties$18(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$17(Constructor, staticProps);
+    _defineProperties$18(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var MergedCellCoords = /* @__PURE__ */ function() {
-  function MergedCellCoords2(row, column, rowspan, colspan) {
-    _classCallCheck$17(this, MergedCellCoords2);
+  function MergedCellCoords2(row, column, rowspan, colspan, cellCoordsFactory, cellRangeFactory) {
+    _classCallCheck$18(this, MergedCellCoords2);
     this.row = row;
     this.col = column;
     this.rowspan = rowspan;
     this.colspan = colspan;
     this.removed = false;
+    this.cellCoordsFactory = cellCoordsFactory;
+    this.cellRangeFactory = cellRangeFactory;
   }
-  _createClass$17(MergedCellCoords2, [{
+  _createClass$18(MergedCellCoords2, [{
     key: "normalize",
     value: function normalize(hotInstance) {
       var totalRows = hotInstance.countRows();
@@ -26880,7 +27326,7 @@ var MergedCellCoords = /* @__PURE__ */ function() {
   }, {
     key: "getRange",
     value: function getRange() {
-      return new CellRange(new CellCoords(this.row, this.col), new CellCoords(this.row, this.col), new CellCoords(this.getLastRow(), this.getLastColumn()));
+      return this.cellRangeFactory(this.cellCoordsFactory(this.row, this.col), this.cellCoordsFactory(this.row, this.col), this.cellCoordsFactory(this.getLastRow(), this.getLastColumn()));
     }
   }], [{
     key: "NEGATIVE_VALUES_WARNING",
@@ -26985,12 +27431,12 @@ function _arrayLikeToArray$D(arr, len) {
   }
   return arr2;
 }
-function _classCallCheck$18(instance, Constructor) {
+function _classCallCheck$19(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$18(target, props) {
+function _defineProperties$19(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -27000,22 +27446,22 @@ function _defineProperties$18(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$18(Constructor, protoProps, staticProps) {
+function _createClass$19(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$18(Constructor.prototype, protoProps);
+    _defineProperties$19(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$18(Constructor, staticProps);
+    _defineProperties$19(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var MergedCellsCollection = /* @__PURE__ */ function() {
   function MergedCellsCollection2(plugin) {
-    _classCallCheck$18(this, MergedCellsCollection2);
+    _classCallCheck$19(this, MergedCellsCollection2);
     this.plugin = plugin;
     this.mergedCells = [];
     this.hot = plugin.hot;
   }
-  _createClass$18(MergedCellsCollection2, [{
+  _createClass$19(MergedCellsCollection2, [{
     key: "get",
     value: function get(row, column) {
       var mergedCells = this.mergedCells;
@@ -27046,19 +27492,20 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
   }, {
     key: "getWithinRange",
     value: function getWithinRange(range) {
+      var _this = this;
       var countPartials = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
       var mergedCells = this.mergedCells;
       var foundMergedCells = [];
       var testedRange = range;
       if (!testedRange.includesRange) {
-        var from = new CellCoords(testedRange.from.row, testedRange.from.col);
-        var to = new CellCoords(testedRange.to.row, testedRange.to.col);
-        testedRange = new CellRange(from, from, to);
+        var from = this.hot._createCellCoords(testedRange.from.row, testedRange.from.col);
+        var to = this.hot._createCellCoords(testedRange.to.row, testedRange.to.col);
+        testedRange = this.hot._createCellRange(from, from, to);
       }
       arrayEach(mergedCells, function(mergedCell) {
-        var mergedCellTopLeft = new CellCoords(mergedCell.row, mergedCell.col);
-        var mergedCellBottomRight = new CellCoords(mergedCell.row + mergedCell.rowspan - 1, mergedCell.col + mergedCell.colspan - 1);
-        var mergedCellRange = new CellRange(mergedCellTopLeft, mergedCellTopLeft, mergedCellBottomRight);
+        var mergedCellTopLeft = _this.hot._createCellCoords(mergedCell.row, mergedCell.col);
+        var mergedCellBottomRight = _this.hot._createCellCoords(mergedCell.row + mergedCell.rowspan - 1, mergedCell.col + mergedCell.colspan - 1);
+        var mergedCellRange = _this.hot._createCellRange(mergedCellTopLeft, mergedCellTopLeft, mergedCellBottomRight);
         if (countPartials) {
           if (testedRange.overlaps(mergedCellRange)) {
             foundMergedCells.push(mergedCell);
@@ -27077,7 +27524,7 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
       var column = mergedCellInfo.col;
       var rowspan = mergedCellInfo.rowspan;
       var colspan = mergedCellInfo.colspan;
-      var newMergedCell = new MergedCellCoords(row, column, rowspan, colspan);
+      var newMergedCell = new MergedCellCoords(row, column, rowspan, colspan, this.hot._createCellCoords, this.hot._createCellRange);
       var alreadyExists = this.get(row, column);
       var isOverlapping = this.isOverlapping(newMergedCell);
       if (!alreadyExists && !isOverlapping) {
@@ -27105,14 +27552,14 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
   }, {
     key: "clear",
     value: function clear() {
-      var _this = this;
+      var _this2 = this;
       var mergedCells = this.mergedCells;
       var mergedCellParentsToClear = [];
       var hiddenCollectionElements = [];
       arrayEach(mergedCells, function(mergedCell) {
-        var TD = _this.hot.getCell(mergedCell.row, mergedCell.col);
+        var TD = _this2.hot.getCell(mergedCell.row, mergedCell.col);
         if (TD) {
-          mergedCellParentsToClear.push([TD, _this.get(mergedCell.row, mergedCell.col), mergedCell.row, mergedCell.col]);
+          mergedCellParentsToClear.push([TD, _this2.get(mergedCell.row, mergedCell.col), mergedCell.row, mergedCell.col]);
         }
       });
       this.mergedCells.length = 0;
@@ -27120,7 +27567,7 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
         rangeEach(0, mergedCell.rowspan - 1, function(j) {
           rangeEach(0, mergedCell.colspan - 1, function(k) {
             if (k !== 0 || j !== 0) {
-              var TD = _this.hot.getCell(mergedCell.row + j, mergedCell.col + k);
+              var TD = _this2.hot.getCell(mergedCell.row + j, mergedCell.col + k);
               if (TD) {
                 hiddenCollectionElements.push([TD, null, null, null]);
               }
@@ -27139,10 +27586,11 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
   }, {
     key: "isOverlapping",
     value: function isOverlapping(mergedCell) {
-      var mergedCellRange = new CellRange(new CellCoords(0, 0), new CellCoords(mergedCell.row, mergedCell.col), new CellCoords(mergedCell.row + mergedCell.rowspan - 1, mergedCell.col + mergedCell.colspan - 1));
+      var _this3 = this;
+      var mergedCellRange = this.hot._createCellRange(this.hot._createCellCoords(0, 0), this.hot._createCellCoords(mergedCell.row, mergedCell.col), this.hot._createCellCoords(mergedCell.row + mergedCell.rowspan - 1, mergedCell.col + mergedCell.colspan - 1));
       var result = false;
       arrayEach(this.mergedCells, function(col) {
-        var currentRange = new CellRange(new CellCoords(0, 0), new CellCoords(col.row, col.col), new CellCoords(col.row + col.rowspan - 1, col.col + col.colspan - 1));
+        var currentRange = _this3.hot._createCellRange(_this3.hot._createCellCoords(0, 0), _this3.hot._createCellCoords(col.row, col.col), _this3.hot._createCellCoords(col.row + col.rowspan - 1, col.col + col.colspan - 1));
         if (currentRange.overlaps(mergedCellRange)) {
           result = true;
           return false;
@@ -27162,16 +27610,16 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
     value: function getFirstRenderableCoords(row, column) {
       var mergeParent = this.get(row, column);
       if (!mergeParent || this.isFirstRenderableMergedCell(row, column)) {
-        return new CellCoords(row, column);
+        return this.hot._createCellCoords(row, column);
       }
       var firstRenderableRow = this.hot.rowIndexMapper.getFirstNotHiddenIndex(mergeParent.row, 1);
       var firstRenderableColumn = this.hot.columnIndexMapper.getFirstNotHiddenIndex(mergeParent.col, 1);
-      return new CellCoords(firstRenderableRow, firstRenderableColumn);
+      return this.hot._createCellCoords(firstRenderableRow, firstRenderableColumn);
     }
   }, {
     key: "shiftCollections",
     value: function shiftCollections(direction, index, count) {
-      var _this2 = this;
+      var _this4 = this;
       var shiftVector = [0, 0];
       switch (direction) {
         case "right":
@@ -27191,9 +27639,9 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
         currentMerge.shift(shiftVector, index);
       });
       rangeEachReverse(this.mergedCells.length - 1, 0, function(i) {
-        var currentMerge = _this2.mergedCells[i];
+        var currentMerge = _this4.mergedCells[i];
         if (currentMerge && currentMerge.removed) {
-          _this2.mergedCells.splice(_this2.mergedCells.indexOf(currentMerge), 1);
+          _this4.mergedCells.splice(_this4.mergedCells.indexOf(currentMerge), 1);
         }
       });
     }
@@ -27265,12 +27713,12 @@ function _arrayWithHoles$w(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$19(instance, Constructor) {
+function _classCallCheck$1a(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$19(target, props) {
+function _defineProperties$1a(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -27280,22 +27728,22 @@ function _defineProperties$19(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$19(Constructor, protoProps, staticProps) {
+function _createClass$1a(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$19(Constructor.prototype, protoProps);
+    _defineProperties$1a(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$19(Constructor, staticProps);
+    _defineProperties$1a(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var AutofillCalculations = /* @__PURE__ */ function() {
   function AutofillCalculations2(plugin) {
-    _classCallCheck$19(this, AutofillCalculations2);
+    _classCallCheck$1a(this, AutofillCalculations2);
     this.plugin = plugin;
     this.mergedCellsCollection = this.plugin.mergedCellsCollection;
     this.currentFillData = null;
   }
-  _createClass$19(AutofillCalculations2, [{
+  _createClass$1a(AutofillCalculations2, [{
     key: "correctSelectionAreaSize",
     value: function correctSelectionAreaSize(selectionArea) {
       if (selectionArea[0] === selectionArea[2] && selectionArea[1] === selectionArea[3]) {
@@ -27578,21 +28026,21 @@ var AutofillCalculations = /* @__PURE__ */ function() {
     value: function dragAreaOverlapsCollections(baseArea, fullArea, direction) {
       var dragArea = this.getDragArea(baseArea, fullArea, direction);
       var _dragArea3 = _slicedToArray$v(dragArea, 4), dragAreaStartRow = _dragArea3[0], dragAreaStartColumn = _dragArea3[1], dragAreaEndRow = _dragArea3[2], dragAreaEndColumn = _dragArea3[3];
-      var topLeft = new CellCoords(dragAreaStartRow, dragAreaStartColumn);
-      var bottomRight = new CellCoords(dragAreaEndRow, dragAreaEndColumn);
-      var dragRange = new CellRange(topLeft, topLeft, bottomRight);
+      var topLeft = this.plugin.hot._createCellCoords(dragAreaStartRow, dragAreaStartColumn);
+      var bottomRight = this.plugin.hot._createCellCoords(dragAreaEndRow, dragAreaEndColumn);
+      var dragRange = this.plugin.hot._createCellRange(topLeft, topLeft, bottomRight);
       return !!this.mergedCellsCollection.getWithinRange(dragRange, true);
     }
   }]);
   return AutofillCalculations2;
 }();
 
-function _classCallCheck$1a(instance, Constructor) {
+function _classCallCheck$1b(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1a(target, props) {
+function _defineProperties$1b(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -27602,21 +28050,22 @@ function _defineProperties$1a(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1a(Constructor, protoProps, staticProps) {
+function _createClass$1b(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1a(Constructor.prototype, protoProps);
+    _defineProperties$1b(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1a(Constructor, staticProps);
+    _defineProperties$1b(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var SelectionCalculations = /* @__PURE__ */ function() {
   function SelectionCalculations2(plugin) {
-    _classCallCheck$1a(this, SelectionCalculations2);
+    _classCallCheck$1b(this, SelectionCalculations2);
     this.plugin = plugin;
+    this.hot = plugin.hot;
     this.fullySelectedMergedCellClassName = "fullySelectedMergedCell";
   }
-  _createClass$1a(SelectionCalculations2, [{
+  _createClass$1b(SelectionCalculations2, [{
     key: "snapDelta",
     value: function snapDelta(delta, selectionRange, mergedCell) {
       var cellCoords = selectionRange.to;
@@ -27662,7 +28111,7 @@ var SelectionCalculations = /* @__PURE__ */ function() {
   }, {
     key: "getUpdatedSelectionRange",
     value: function getUpdatedSelectionRange(oldSelectionRange, delta) {
-      return new CellRange(oldSelectionRange.highlight, oldSelectionRange.from, new CellCoords(oldSelectionRange.to.row + delta.row, oldSelectionRange.to.col + delta.col));
+      return this.hot._createCellRange(oldSelectionRange.highlight, oldSelectionRange.from, this.hot._createCellCoords(oldSelectionRange.to.row + delta.row, oldSelectionRange.to.col + delta.col));
     }
   }, {
     key: "getSelectedMergedCellClassName",
@@ -27700,7 +28149,7 @@ var SelectionCalculations = /* @__PURE__ */ function() {
       }
       for (var r = 0; r < mergedCell.rowspan; r += 1) {
         for (var c = 0; c < mergedCell.colspan; c += 1) {
-          mergedCellIndividualCoords.push(new CellCoords(mergedCell.row + r, mergedCell.col + c));
+          mergedCellIndividualCoords.push(this.hot._createCellCoords(mergedCell.row + r, mergedCell.col + c));
         }
       }
       for (var i = 0; i < mergedCellIndividualCoords.length; i += 1) {
@@ -27761,13 +28210,13 @@ function toggleMergeItem(plugin) {
   };
 }
 
-function _typeof$M(obj) {
+function _typeof$N(obj) {
   "@babel/helpers - typeof";
-  return _typeof$M = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$N = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$M(obj);
+  }, _typeof$N(obj);
 }
 function _slicedToArray$w(arr, i) {
   return _arrayWithHoles$x(arr) || _iterableToArrayLimit$w(arr, i) || _unsupportedIterableToArray$F(arr, i) || _nonIterableRest$x();
@@ -27842,12 +28291,12 @@ function _arrayLikeToArray$F(arr, len) {
   }
   return arr2;
 }
-function _classCallCheck$1b(instance, Constructor) {
+function _classCallCheck$1c(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1b(target, props) {
+function _defineProperties$1c(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -27857,20 +28306,20 @@ function _defineProperties$1b(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1b(Constructor, protoProps, staticProps) {
+function _createClass$1c(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1b(Constructor.prototype, protoProps);
+    _defineProperties$1c(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1b(Constructor, staticProps);
+    _defineProperties$1c(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$F() {
+function _get$G() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$F = Reflect.get;
+    _get$G = Reflect.get;
   } else {
-    _get$F = function _get2(target, property, receiver) {
-      var base = _superPropBase$F(target, property);
+    _get$G = function _get2(target, property, receiver) {
+      var base = _superPropBase$G(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -27880,60 +28329,60 @@ function _get$F() {
       return desc.value;
     };
   }
-  return _get$F.apply(this, arguments);
+  return _get$G.apply(this, arguments);
 }
-function _superPropBase$F(object, property) {
+function _superPropBase$G(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$L(object);
+    object = _getPrototypeOf$M(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$L(subClass, superClass) {
+function _inherits$M(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$L(subClass, superClass);
+    _setPrototypeOf$M(subClass, superClass);
 }
-function _setPrototypeOf$L(o, p) {
-  _setPrototypeOf$L = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$M(o, p) {
+  _setPrototypeOf$M = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$L(o, p);
+  return _setPrototypeOf$M(o, p);
 }
-function _createSuper$L(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$L();
+function _createSuper$M(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$M();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$L(Derived), result;
+    var Super = _getPrototypeOf$M(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$L(this).constructor;
+      var NewTarget = _getPrototypeOf$M(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$L(this, result);
+    return _possibleConstructorReturn$M(this, result);
   };
 }
-function _possibleConstructorReturn$L(self, call) {
-  if (call && (_typeof$M(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$M(self, call) {
+  if (call && (_typeof$N(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$L(self);
+  return _assertThisInitialized$M(self);
 }
-function _assertThisInitialized$L(self) {
+function _assertThisInitialized$M(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$L() {
+function _isNativeReflectConstruct$M() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -27948,11 +28397,11 @@ function _isNativeReflectConstruct$L() {
     return false;
   }
 }
-function _getPrototypeOf$L(o) {
-  _getPrototypeOf$L = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$M(o) {
+  _getPrototypeOf$M = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$L(o);
+  return _getPrototypeOf$M(o);
 }
 Hooks.getSingleton().register("beforeMergeCells");
 Hooks.getSingleton().register("afterMergeCells");
@@ -27961,14 +28410,15 @@ Hooks.getSingleton().register("afterUnmergeCells");
 var PLUGIN_KEY$o = "mergeCells";
 var PLUGIN_PRIORITY$n = 150;
 var privatePool$f = new WeakMap();
+var SHORTCUTS_GROUP$5 = PLUGIN_KEY$o;
 var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$L(MergeCells2, _BasePlugin);
-  var _super = _createSuper$L(MergeCells2);
+  _inherits$M(MergeCells2, _BasePlugin);
+  var _super = _createSuper$M(MergeCells2);
   function MergeCells2(hotInstance) {
     var _this;
-    _classCallCheck$1b(this, MergeCells2);
+    _classCallCheck$1c(this, MergeCells2);
     _this = _super.call(this, hotInstance);
-    privatePool$f.set(_assertThisInitialized$L(_this), {
+    privatePool$f.set(_assertThisInitialized$M(_this), {
       lastDesiredCoords: null
     });
     _this.mergedCellsCollection = null;
@@ -27976,7 +28426,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
     _this.selectionCalculations = null;
     return _this;
   }
-  _createClass$1b(MergeCells2, [{
+  _createClass$1c(MergeCells2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$o];
@@ -27993,9 +28443,6 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
       this.selectionCalculations = new SelectionCalculations(this);
       this.addHook("afterInit", function() {
         return _this2.onAfterInit.apply(_this2, arguments);
-      });
-      this.addHook("beforeKeyDown", function() {
-        return _this2.onBeforeKeyDown.apply(_this2, arguments);
       });
       this.addHook("modifyTransformStart", function() {
         return _this2.onModifyTransformStart.apply(_this2, arguments);
@@ -28068,14 +28515,16 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
           return false;
         }
       });
-      _get$F(_getPrototypeOf$L(MergeCells2.prototype), "enablePlugin", this).call(this);
+      this.registerShortcuts();
+      _get$G(_getPrototypeOf$M(MergeCells2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
       this.clearCollections();
+      this.unregisterShortcuts();
       this.hot.render();
-      _get$F(_getPrototypeOf$L(MergeCells2.prototype), "disablePlugin", this).call(this);
+      _get$G(_getPrototypeOf$M(MergeCells2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
@@ -28084,7 +28533,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
       this.disablePlugin();
       this.enablePlugin();
       this.generateFromSettings(settings);
-      _get$F(_getPrototypeOf$L(MergeCells2.prototype), "updatePlugin", this).call(this);
+      _get$G(_getPrototypeOf$M(MergeCells2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "validateSetting",
@@ -28119,9 +28568,9 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
           if (!_this3.validateSetting(setting)) {
             return;
           }
-          var highlight = new CellCoords(setting.row, setting.col);
-          var rangeEnd = new CellCoords(setting.row + setting.rowspan - 1, setting.col + setting.colspan - 1);
-          var mergeRange = new CellRange(highlight, highlight, rangeEnd);
+          var highlight = _this3.hot._createCellCoords(setting.row, setting.col);
+          var rangeEnd = _this3.hot._createCellCoords(setting.row + setting.rowspan - 1, setting.col + setting.colspan - 1);
+          var mergeRange = _this3.hot._createCellRange(highlight, highlight, rangeEnd);
           populationArgumentsList.push(_this3.mergeRange(mergeRange, true, true));
         });
         populationArgumentsList = populationArgumentsList.filter(function(value) {
@@ -28220,13 +28669,13 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
       var _this4 = this;
       var auto = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : false;
       var preventPopulation = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
-      var topLeft = cellRange.getTopLeftCorner();
-      var bottomRight = cellRange.getBottomRightCorner();
+      var topStart = cellRange.getTopStartCorner();
+      var bottomEnd = cellRange.getBottomEndCorner();
       var mergeParent = {
-        row: topLeft.row,
-        col: topLeft.col,
-        rowspan: bottomRight.row - topLeft.row + 1,
-        colspan: bottomRight.col - topLeft.col + 1
+        row: topStart.row,
+        col: topStart.col,
+        rowspan: bottomEnd.row - topStart.row + 1,
+        colspan: bottomEnd.col - topStart.col + 1
       };
       var clearedData = [];
       var populationInfo = null;
@@ -28297,16 +28746,16 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "merge",
     value: function merge(startRow, startColumn, endRow, endColumn) {
-      var start = new CellCoords(startRow, startColumn);
-      var end = new CellCoords(endRow, endColumn);
-      this.mergeRange(new CellRange(start, start, end));
+      var start = this.hot._createCellCoords(startRow, startColumn);
+      var end = this.hot._createCellCoords(endRow, endColumn);
+      this.mergeRange(this.hot._createCellRange(start, start, end));
     }
   }, {
     key: "unmerge",
     value: function unmerge(startRow, startColumn, endRow, endColumn) {
-      var start = new CellCoords(startRow, startColumn);
-      var end = new CellCoords(endRow, endColumn);
-      this.unmergeRange(new CellRange(start, start, end));
+      var start = this.hot._createCellCoords(startRow, startColumn);
+      var end = this.hot._createCellCoords(endRow, endColumn);
+      this.unmergeRange(this.hot._createCellRange(start, start, end));
     }
   }, {
     key: "onAfterInit",
@@ -28315,14 +28764,29 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
       this.hot.render();
     }
   }, {
-    key: "onBeforeKeyDown",
-    value: function onBeforeKeyDown(event) {
-      var ctrlDown = (event.ctrlKey || event.metaKey) && !event.altKey;
-      if (ctrlDown && event.keyCode === 77) {
-        this.toggleMerge(this.hot.getSelectedRangeLast());
-        this.hot.render();
-        stopImmediatePropagation(event);
-      }
+    key: "registerShortcuts",
+    value: function registerShortcuts() {
+      var _this6 = this;
+      var shortcutManager = this.hot.getShortcutManager();
+      var gridContext = shortcutManager.getContext("grid");
+      gridContext.addShortcut({
+        keys: [["Control", "m"]],
+        callback: function callback() {
+          _this6.toggleMerge(_this6.hot.getSelectedRangeLast());
+          _this6.hot.render();
+        },
+        runOnlyIf: function runOnlyIf(event) {
+          return !event.altKey;
+        },
+        group: SHORTCUTS_GROUP$5
+      });
+    }
+  }, {
+    key: "unregisterShortcuts",
+    value: function unregisterShortcuts() {
+      var shortcutManager = this.hot.getShortcutManager();
+      var gridContext = shortcutManager.getContext("grid");
+      gridContext.removeShortcutsByGroup(SHORTCUTS_GROUP$5);
     }
   }, {
     key: "onAfterIsMultipleSelection",
@@ -28348,17 +28812,17 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
         col: delta.col
       };
       var nextPosition = null;
-      var currentPosition = new CellCoords(currentlySelectedRange.highlight.row, currentlySelectedRange.highlight.col);
+      var currentPosition = this.hot._createCellCoords(currentlySelectedRange.highlight.row, currentlySelectedRange.highlight.col);
       var mergedParent = this.mergedCellsCollection.get(currentPosition.row, currentPosition.col);
       if (!priv.lastDesiredCoords) {
-        priv.lastDesiredCoords = new CellCoords(null, null);
+        priv.lastDesiredCoords = this.hot._createCellCoords(null, null);
       }
       if (mergedParent) {
-        var mergeTopLeft = new CellCoords(mergedParent.row, mergedParent.col);
-        var mergeBottomRight = new CellCoords(mergedParent.row + mergedParent.rowspan - 1, mergedParent.col + mergedParent.colspan - 1);
-        var mergeRange = new CellRange(mergeTopLeft, mergeTopLeft, mergeBottomRight);
+        var mergeTopLeft = this.hot._createCellCoords(mergedParent.row, mergedParent.col);
+        var mergeBottomRight = this.hot._createCellCoords(mergedParent.row + mergedParent.rowspan - 1, mergedParent.col + mergedParent.colspan - 1);
+        var mergeRange = this.hot._createCellRange(mergeTopLeft, mergeTopLeft, mergeBottomRight);
         if (!mergeRange.includes(priv.lastDesiredCoords)) {
-          priv.lastDesiredCoords = new CellCoords(null, null);
+          priv.lastDesiredCoords = this.hot._createCellCoords(null, null);
         }
         newDelta.row = priv.lastDesiredCoords.row ? priv.lastDesiredCoords.row - currentPosition.row : newDelta.row;
         newDelta.col = priv.lastDesiredCoords.col ? priv.lastDesiredCoords.col - currentPosition.col : newDelta.col;
@@ -28373,7 +28837,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
           newDelta.col = currentPosition.col - mergedParent.col + delta.col;
         }
       }
-      nextPosition = new CellCoords(currentlySelectedRange.highlight.row + newDelta.row, currentlySelectedRange.highlight.col + newDelta.col);
+      nextPosition = this.hot._createCellCoords(currentlySelectedRange.highlight.row + newDelta.row, currentlySelectedRange.highlight.col + newDelta.col);
       var nextPositionMergedCell = this.mergedCellsCollection.get(nextPosition.row, nextPosition.col);
       if (nextPositionMergedCell) {
         var firstRenderableCoords = this.mergedCellsCollection.getFirstRenderableCoords(nextPositionMergedCell.row, nextPositionMergedCell.col);
@@ -28393,7 +28857,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onModifyTransformEnd",
     value: function onModifyTransformEnd(delta) {
-      var _this6 = this;
+      var _this7 = this;
       var currentSelectionRange = this.hot.getSelectedRangeLast();
       var newDelta = clone(delta);
       var newSelectionRange = this.selectionCalculations.getUpdatedSelectionRange(currentSelectionRange, delta);
@@ -28403,7 +28867,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
         tempDelta = clone(newDelta);
         this.selectionCalculations.getUpdatedSelectionRange(currentSelectionRange, newDelta);
         arrayEach(mergedCellsWithinRange, function(mergedCell) {
-          _this6.selectionCalculations.snapDelta(newDelta, currentSelectionRange, mergedCell);
+          _this7.selectionCalculations.snapDelta(newDelta, currentSelectionRange, mergedCell);
         });
       } while (newDelta.row !== tempDelta.row || newDelta.col !== tempDelta.col);
       delta.row = newDelta.row;
@@ -28468,7 +28932,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
     key: "onBeforeSetRangeEnd",
     value: function onBeforeSetRangeEnd(coords) {
       var selRange = this.hot.getSelectedRangeLast();
-      selRange.highlight = new CellCoords(selRange.highlight.row, selRange.highlight.col);
+      selRange.highlight = this.hot._createCellCoords(selRange.highlight.row, selRange.highlight.col);
       selRange.to = coords;
       var rangeExpanded = false;
       if (this.hot.selection.isSelectedByColumnHeader() || this.hot.selection.isSelectedByRowHeader()) {
@@ -28668,7 +29132,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
         var selectedRange = this.hot.getSelectedRangeLast();
         var mergedCellsWithinRange = this.mergedCellsCollection.getWithinRange(selectedRange);
         arrayEach(mergedCellsWithinRange, function(mergedCell) {
-          if (selectedRange.getBottomRightCorner().row === mergedCell.getLastRow() && selectedRange.getBottomRightCorner().col === mergedCell.getLastColumn()) {
+          if (selectedRange.getBottomEndCorner().row === mergedCell.getLastRow() && selectedRange.getBottomEndCorner().col === mergedCell.getLastColumn()) {
             corners[2] = mergedCell.row;
             corners[3] = mergedCell.col;
           }
@@ -28813,244 +29277,6 @@ function getClassesToRemove$1(htmlElement) {
   });
 }
 
-function _typeof$N(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$N = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$N(obj);
-}
-function _classCallCheck$1c(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$1c(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$1c(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$1c(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$1c(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _get$G() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$G = Reflect.get;
-  } else {
-    _get$G = function _get2(target, property, receiver) {
-      var base = _superPropBase$G(target, property);
-      if (!base)
-        return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    };
-  }
-  return _get$G.apply(this, arguments);
-}
-function _superPropBase$G(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$M(object);
-    if (object === null)
-      break;
-  }
-  return object;
-}
-function _inherits$M(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$M(subClass, superClass);
-}
-function _setPrototypeOf$M(o, p) {
-  _setPrototypeOf$M = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$M(o, p);
-}
-function _createSuper$M(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$M();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$M(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$M(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$M(this, result);
-  };
-}
-function _possibleConstructorReturn$M(self, call) {
-  if (call && (_typeof$N(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$M(self);
-}
-function _assertThisInitialized$M(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$M() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$M(o) {
-  _getPrototypeOf$M = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$M(o);
-}
-var PLUGIN_KEY$p = "multiColumnSorting";
-var PLUGIN_PRIORITY$o = 170;
-var APPEND_COLUMN_CONFIG_STRATEGY$1 = "append";
-var CONFLICTED_PLUGIN_KEY = "columnSorting";
-registerRootComparator(PLUGIN_KEY$p, rootComparator$1);
-var MultiColumnSorting = /* @__PURE__ */ function(_ColumnSorting) {
-  _inherits$M(MultiColumnSorting2, _ColumnSorting);
-  var _super = _createSuper$M(MultiColumnSorting2);
-  function MultiColumnSorting2(hotInstance) {
-    var _this;
-    _classCallCheck$1c(this, MultiColumnSorting2);
-    _this = _super.call(this, hotInstance);
-    _this.pluginKey = PLUGIN_KEY$p;
-    return _this;
-  }
-  _createClass$1c(MultiColumnSorting2, [{
-    key: "isEnabled",
-    value: function isEnabled() {
-      return _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "isEnabled", this).call(this);
-    }
-  }, {
-    key: "enablePlugin",
-    value: function enablePlugin() {
-      if (!this.enabled && this.hot.getSettings()[this.pluginKey] && this.hot.getSettings()[CONFLICTED_PLUGIN_KEY]) {
-        warnAboutPluginsConflict();
-      }
-      _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "enablePlugin", this).call(this);
-    }
-  }, {
-    key: "disablePlugin",
-    value: function disablePlugin() {
-      _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "disablePlugin", this).call(this);
-    }
-  }, {
-    key: "sort",
-    value: function sort(sortConfig) {
-      _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "sort", this).call(this, sortConfig);
-    }
-  }, {
-    key: "clearSort",
-    value: function clearSort() {
-      _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "clearSort", this).call(this);
-    }
-  }, {
-    key: "isSorted",
-    value: function isSorted() {
-      return _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "isSorted", this).call(this);
-    }
-  }, {
-    key: "getSortConfig",
-    value: function getSortConfig(column) {
-      return _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "getSortConfig", this).call(this, column);
-    }
-  }, {
-    key: "setSortConfig",
-    value: function setSortConfig(sortConfig) {
-      _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "setSortConfig", this).call(this, sortConfig);
-    }
-  }, {
-    key: "getNormalizedSortConfigs",
-    value: function getNormalizedSortConfigs() {
-      var sortConfig = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : [];
-      if (Array.isArray(sortConfig)) {
-        return sortConfig;
-      }
-      return [sortConfig];
-    }
-  }, {
-    key: "updateHeaderClasses",
-    value: function updateHeaderClasses(headerSpanElement) {
-      var _get2;
-      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-      (_get2 = _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "updateHeaderClasses", this)).call.apply(_get2, [this, headerSpanElement].concat(args));
-      removeClass(headerSpanElement, getClassesToRemove$1(headerSpanElement));
-      if (this.enabled !== false) {
-        addClass(headerSpanElement, getClassesToAdd$1.apply(void 0, args));
-      }
-    }
-  }, {
-    key: "onUpdateSettings",
-    value: function onUpdateSettings(newSettings) {
-      if (this.hot.getSettings()[this.pluginKey] && this.hot.getSettings()[CONFLICTED_PLUGIN_KEY]) {
-        warnAboutPluginsConflict();
-      }
-      _get$G(_getPrototypeOf$M(MultiColumnSorting2.prototype), "onUpdateSettings", this).call(this, newSettings);
-    }
-  }, {
-    key: "onAfterOnCellMouseDown",
-    value: function onAfterOnCellMouseDown(event, coords) {
-      if (wasHeaderClickedProperly(coords.row, coords.col, event) === false) {
-        return;
-      }
-      if (this.wasClickableHeaderClicked(event, coords.col)) {
-        if (isPressedCtrlKey()) {
-          this.hot.deselectCell();
-          this.hot.selectColumns(coords.col);
-          this.sort(this.getNextSortConfig(coords.col, APPEND_COLUMN_CONFIG_STRATEGY$1));
-        } else {
-          this.sort(this.getColumnNextConfig(coords.col));
-        }
-      }
-    }
-  }], [{
-    key: "PLUGIN_KEY",
-    get: function get() {
-      return PLUGIN_KEY$p;
-    }
-  }, {
-    key: "PLUGIN_PRIORITY",
-    get: function get() {
-      return PLUGIN_PRIORITY$o;
-    }
-  }]);
-  return MultiColumnSorting2;
-}(ColumnSorting);
-
 function _typeof$O(obj) {
   "@babel/helpers - typeof";
   return _typeof$O = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
@@ -29171,21 +29397,259 @@ function _getPrototypeOf$N(o) {
   };
   return _getPrototypeOf$N(o);
 }
+var PLUGIN_KEY$p = "multiColumnSorting";
+var PLUGIN_PRIORITY$o = 170;
+var APPEND_COLUMN_CONFIG_STRATEGY$1 = "append";
+var CONFLICTED_PLUGIN_KEY = "columnSorting";
+registerRootComparator(PLUGIN_KEY$p, rootComparator$1);
+var MultiColumnSorting = /* @__PURE__ */ function(_ColumnSorting) {
+  _inherits$N(MultiColumnSorting2, _ColumnSorting);
+  var _super = _createSuper$N(MultiColumnSorting2);
+  function MultiColumnSorting2(hotInstance) {
+    var _this;
+    _classCallCheck$1d(this, MultiColumnSorting2);
+    _this = _super.call(this, hotInstance);
+    _this.pluginKey = PLUGIN_KEY$p;
+    return _this;
+  }
+  _createClass$1d(MultiColumnSorting2, [{
+    key: "isEnabled",
+    value: function isEnabled() {
+      return _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "isEnabled", this).call(this);
+    }
+  }, {
+    key: "enablePlugin",
+    value: function enablePlugin() {
+      if (!this.enabled && this.hot.getSettings()[this.pluginKey] && this.hot.getSettings()[CONFLICTED_PLUGIN_KEY]) {
+        warnAboutPluginsConflict();
+      }
+      _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "disablePlugin",
+    value: function disablePlugin() {
+      _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "disablePlugin", this).call(this);
+    }
+  }, {
+    key: "sort",
+    value: function sort(sortConfig) {
+      _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "sort", this).call(this, sortConfig);
+    }
+  }, {
+    key: "clearSort",
+    value: function clearSort() {
+      _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "clearSort", this).call(this);
+    }
+  }, {
+    key: "isSorted",
+    value: function isSorted() {
+      return _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "isSorted", this).call(this);
+    }
+  }, {
+    key: "getSortConfig",
+    value: function getSortConfig(column) {
+      return _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "getSortConfig", this).call(this, column);
+    }
+  }, {
+    key: "setSortConfig",
+    value: function setSortConfig(sortConfig) {
+      _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "setSortConfig", this).call(this, sortConfig);
+    }
+  }, {
+    key: "getNormalizedSortConfigs",
+    value: function getNormalizedSortConfigs() {
+      var sortConfig = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : [];
+      if (Array.isArray(sortConfig)) {
+        return sortConfig;
+      }
+      return [sortConfig];
+    }
+  }, {
+    key: "updateHeaderClasses",
+    value: function updateHeaderClasses(headerSpanElement) {
+      var _get2;
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+      (_get2 = _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "updateHeaderClasses", this)).call.apply(_get2, [this, headerSpanElement].concat(args));
+      removeClass(headerSpanElement, getClassesToRemove$1(headerSpanElement));
+      if (this.enabled !== false) {
+        addClass(headerSpanElement, getClassesToAdd$1.apply(void 0, args));
+      }
+    }
+  }, {
+    key: "onUpdateSettings",
+    value: function onUpdateSettings(newSettings) {
+      if (this.hot.getSettings()[this.pluginKey] && this.hot.getSettings()[CONFLICTED_PLUGIN_KEY]) {
+        warnAboutPluginsConflict();
+      }
+      _get$H(_getPrototypeOf$N(MultiColumnSorting2.prototype), "onUpdateSettings", this).call(this, newSettings);
+    }
+  }, {
+    key: "onAfterOnCellMouseDown",
+    value: function onAfterOnCellMouseDown(event, coords) {
+      if (wasHeaderClickedProperly(coords.row, coords.col, event) === false) {
+        return;
+      }
+      if (this.wasClickableHeaderClicked(event, coords.col)) {
+        if (this.hot.getShortcutManager().isCtrlPressed()) {
+          this.hot.deselectCell();
+          this.hot.selectColumns(coords.col);
+          this.sort(this.getNextSortConfig(coords.col, APPEND_COLUMN_CONFIG_STRATEGY$1));
+        } else {
+          this.sort(this.getColumnNextConfig(coords.col));
+        }
+      }
+    }
+  }], [{
+    key: "PLUGIN_KEY",
+    get: function get() {
+      return PLUGIN_KEY$p;
+    }
+  }, {
+    key: "PLUGIN_PRIORITY",
+    get: function get() {
+      return PLUGIN_PRIORITY$o;
+    }
+  }]);
+  return MultiColumnSorting2;
+}(ColumnSorting);
+
+function _typeof$P(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$P = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$P(obj);
+}
+function _classCallCheck$1e(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$1e(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$1e(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$1e(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$1e(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _get$I() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$I = Reflect.get;
+  } else {
+    _get$I = function _get2(target, property, receiver) {
+      var base = _superPropBase$I(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$I.apply(this, arguments);
+}
+function _superPropBase$I(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$O(object);
+    if (object === null)
+      break;
+  }
+  return object;
+}
+function _inherits$O(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$O(subClass, superClass);
+}
+function _setPrototypeOf$O(o, p) {
+  _setPrototypeOf$O = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$O(o, p);
+}
+function _createSuper$O(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$O();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$O(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$O(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$O(this, result);
+  };
+}
+function _possibleConstructorReturn$O(self, call) {
+  if (call && (_typeof$P(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$O(self);
+}
+function _assertThisInitialized$O(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$O() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$O(o) {
+  _getPrototypeOf$O = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$O(o);
+}
 var PLUGIN_KEY$q = "multipleSelectionHandles";
 var PLUGIN_PRIORITY$p = 160;
 var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$N(MultipleSelectionHandles2, _BasePlugin);
-  var _super = _createSuper$N(MultipleSelectionHandles2);
+  _inherits$O(MultipleSelectionHandles2, _BasePlugin);
+  var _super = _createSuper$O(MultipleSelectionHandles2);
   function MultipleSelectionHandles2(hotInstance) {
     var _this2;
-    _classCallCheck$1d(this, MultipleSelectionHandles2);
+    _classCallCheck$1e(this, MultipleSelectionHandles2);
     _this2 = _super.call(this, hotInstance);
     _this2.dragged = [];
     _this2.eventManager = null;
     _this2.lastSetCell = null;
     return _this2;
   }
-  _createClass$1d(MultipleSelectionHandles2, [{
+  _createClass$1e(MultipleSelectionHandles2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return isMobileBrowser();
@@ -29200,7 +29664,7 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
         this.eventManager = new EventManager(this);
       }
       this.registerListeners();
-      _get$H(_getPrototypeOf$N(MultipleSelectionHandles2.prototype), "enablePlugin", this).call(this);
+      _get$I(_getPrototypeOf$O(MultipleSelectionHandles2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "registerListeners",
@@ -29224,9 +29688,9 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
       }
       this.eventManager.addEventListener(rootElement, "touchstart", function(event) {
         var selectedRange;
-        if (hasClass(event.target, "topLeftSelectionHandle-HitArea")) {
+        if (hasClass(event.target, "topSelectionHandle-HitArea")) {
           selectedRange = _this.hot.getSelectedRangeLast();
-          _this.dragged.push("topLeft");
+          _this.dragged.push("top");
           _this.touchStartRange = {
             width: selectedRange.getWidth(),
             height: selectedRange.getHeight(),
@@ -29234,9 +29698,9 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
           };
           event.preventDefault();
           return false;
-        } else if (hasClass(event.target, "bottomRightSelectionHandle-HitArea")) {
+        } else if (hasClass(event.target, "bottomSelectionHandle-HitArea")) {
           selectedRange = _this.hot.getSelectedRangeLast();
-          _this.dragged.push("bottomRight");
+          _this.dragged.push("bottom");
           _this.touchStartRange = {
             width: selectedRange.getWidth(),
             height: selectedRange.getHeight(),
@@ -29247,22 +29711,20 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
         }
       });
       this.eventManager.addEventListener(rootElement, "touchend", function(event) {
-        if (hasClass(event.target, "topLeftSelectionHandle-HitArea")) {
-          removeFromDragged.call(_this, "topLeft");
+        if (hasClass(event.target, "topSelectionHandle-HitArea")) {
+          removeFromDragged.call(_this, "top");
           _this.touchStartRange = void 0;
           event.preventDefault();
           return false;
-        } else if (hasClass(event.target, "bottomRightSelectionHandle-HitArea")) {
-          removeFromDragged.call(_this, "bottomRight");
+        } else if (hasClass(event.target, "bottomSelectionHandle-HitArea")) {
+          removeFromDragged.call(_this, "bottom");
           _this.touchStartRange = void 0;
           event.preventDefault();
           return false;
         }
       });
       this.eventManager.addEventListener(rootElement, "touchmove", function(event) {
-        var _this3$hot = _this3.hot, rootWindow = _this3$hot.rootWindow, rootDocument = _this3$hot.rootDocument;
-        var scrollTop = getWindowScrollTop(rootWindow);
-        var scrollLeft = getWindowScrollLeft(rootWindow);
+        var rootDocument = _this3.hot.rootDocument;
         var targetCoords;
         var selectedRange;
         var rangeWidth;
@@ -29272,7 +29734,7 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
         if (_this.dragged.length === 0) {
           return;
         }
-        var endTarget = rootDocument.elementFromPoint(event.touches[0].screenX - scrollLeft, event.touches[0].screenY - scrollTop);
+        var endTarget = rootDocument.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY);
         if (!endTarget || endTarget === _this.lastSetCell) {
           return;
         }
@@ -29301,10 +29763,10 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "getCurrentRangeCoords",
     value: function getCurrentRangeCoords(selectedRange, currentTouch, touchStartDirection, currentDirection, draggedHandle) {
-      var topLeftCorner = selectedRange.getTopLeftCorner();
-      var bottomRightCorner = selectedRange.getBottomRightCorner();
-      var bottomLeftCorner = selectedRange.getBottomLeftCorner();
-      var topRightCorner = selectedRange.getTopRightCorner();
+      var topStartCorner = selectedRange.getTopStartCorner();
+      var bottomEndCorner = selectedRange.getBottomEndCorner();
+      var bottomStartCorner = selectedRange.getBottomStartCorner();
+      var topEndCorner = selectedRange.getTopEndCorner();
       var newCoords = {
         start: null,
         end: null
@@ -29314,23 +29776,23 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
           switch (currentDirection) {
             case "NE-SW":
             case "NW-SE":
-              if (draggedHandle === "topLeft") {
+              if (draggedHandle === "top") {
                 newCoords = {
-                  start: new CellCoords(currentTouch.row, selectedRange.highlight.col),
-                  end: new CellCoords(bottomLeftCorner.row, currentTouch.col)
+                  start: this.hot._createCellCoords(currentTouch.row, selectedRange.highlight.col),
+                  end: this.hot._createCellCoords(bottomStartCorner.row, currentTouch.col)
                 };
               } else {
                 newCoords = {
-                  start: new CellCoords(selectedRange.highlight.row, currentTouch.col),
-                  end: new CellCoords(currentTouch.row, topLeftCorner.col)
+                  start: this.hot._createCellCoords(selectedRange.highlight.row, currentTouch.col),
+                  end: this.hot._createCellCoords(currentTouch.row, topStartCorner.col)
                 };
               }
               break;
             case "SE-NW":
-              if (draggedHandle === "bottomRight") {
+              if (draggedHandle === "bottom") {
                 newCoords = {
-                  start: new CellCoords(bottomRightCorner.row, currentTouch.col),
-                  end: new CellCoords(currentTouch.row, topLeftCorner.col)
+                  start: this.hot._createCellCoords(bottomEndCorner.row, currentTouch.col),
+                  end: this.hot._createCellCoords(currentTouch.row, topStartCorner.col)
                 };
               }
               break;
@@ -29339,40 +29801,40 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
         case "NW-SE":
           switch (currentDirection) {
             case "NE-SW":
-              if (draggedHandle === "topLeft") {
+              if (draggedHandle === "top") {
                 newCoords = {
                   start: currentTouch,
-                  end: bottomLeftCorner
+                  end: bottomStartCorner
                 };
               } else {
                 newCoords.end = currentTouch;
               }
               break;
             case "NW-SE":
-              if (draggedHandle === "topLeft") {
+              if (draggedHandle === "top") {
                 newCoords = {
                   start: currentTouch,
-                  end: bottomRightCorner
+                  end: bottomEndCorner
                 };
               } else {
                 newCoords.end = currentTouch;
               }
               break;
             case "SE-NW":
-              if (draggedHandle === "topLeft") {
+              if (draggedHandle === "top") {
                 newCoords = {
                   start: currentTouch,
-                  end: topLeftCorner
+                  end: topStartCorner
                 };
               } else {
                 newCoords.end = currentTouch;
               }
               break;
             case "SW-NE":
-              if (draggedHandle === "topLeft") {
+              if (draggedHandle === "top") {
                 newCoords = {
                   start: currentTouch,
-                  end: topRightCorner
+                  end: topEndCorner
                 };
               } else {
                 newCoords.end = currentTouch;
@@ -29383,40 +29845,40 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
         case "SW-NE":
           switch (currentDirection) {
             case "NW-SE":
-              if (draggedHandle === "bottomRight") {
+              if (draggedHandle === "bottom") {
                 newCoords = {
-                  start: new CellCoords(currentTouch.row, topLeftCorner.col),
-                  end: new CellCoords(bottomLeftCorner.row, currentTouch.col)
+                  start: this.hot._createCellCoords(currentTouch.row, topStartCorner.col),
+                  end: this.hot._createCellCoords(bottomStartCorner.row, currentTouch.col)
                 };
               } else {
                 newCoords = {
-                  start: new CellCoords(topLeftCorner.row, currentTouch.col),
-                  end: new CellCoords(currentTouch.row, bottomRightCorner.col)
+                  start: this.hot._createCellCoords(topStartCorner.row, currentTouch.col),
+                  end: this.hot._createCellCoords(currentTouch.row, bottomEndCorner.col)
                 };
               }
               break;
             case "SW-NE":
-              if (draggedHandle === "topLeft") {
+              if (draggedHandle === "top") {
                 newCoords = {
-                  start: new CellCoords(selectedRange.highlight.row, currentTouch.col),
-                  end: new CellCoords(currentTouch.row, bottomRightCorner.col)
+                  start: this.hot._createCellCoords(selectedRange.highlight.row, currentTouch.col),
+                  end: this.hot._createCellCoords(currentTouch.row, bottomEndCorner.col)
                 };
               } else {
                 newCoords = {
-                  start: new CellCoords(currentTouch.row, topLeftCorner.col),
-                  end: new CellCoords(topLeftCorner.row, currentTouch.col)
+                  start: this.hot._createCellCoords(currentTouch.row, topStartCorner.col),
+                  end: this.hot._createCellCoords(topStartCorner.row, currentTouch.col)
                 };
               }
               break;
             case "SE-NW":
-              if (draggedHandle === "bottomRight") {
+              if (draggedHandle === "bottom") {
                 newCoords = {
-                  start: new CellCoords(currentTouch.row, topRightCorner.col),
-                  end: new CellCoords(topLeftCorner.row, currentTouch.col)
+                  start: this.hot._createCellCoords(currentTouch.row, topEndCorner.col),
+                  end: this.hot._createCellCoords(topStartCorner.row, currentTouch.col)
                 };
-              } else if (draggedHandle === "topLeft") {
+              } else if (draggedHandle === "top") {
                 newCoords = {
-                  start: bottomLeftCorner,
+                  start: bottomStartCorner,
                   end: currentTouch
                 };
               }
@@ -29428,17 +29890,17 @@ var MultipleSelectionHandles = /* @__PURE__ */ function(_BasePlugin) {
             case "NW-SE":
             case "NE-SW":
             case "SW-NE":
-              if (draggedHandle === "topLeft") {
+              if (draggedHandle === "top") {
                 newCoords.end = currentTouch;
               }
               break;
             case "SE-NW":
-              if (draggedHandle === "topLeft") {
+              if (draggedHandle === "top") {
                 newCoords.end = currentTouch;
               } else {
                 newCoords = {
                   start: currentTouch,
-                  end: topLeftCorner
+                  end: topStartCorner
                 };
               }
               break;
@@ -29575,7 +30037,7 @@ function normalizeSettings(sourceSettings) {
 }
 
 var _excluded$1 = ["row", "col"];
-function ownKeys$4(object, enumerableOnly) {
+function ownKeys$5(object, enumerableOnly) {
   var keys = Object.keys(object);
   if (Object.getOwnPropertySymbols) {
     var symbols = Object.getOwnPropertySymbols(object);
@@ -29585,18 +30047,18 @@ function ownKeys$4(object, enumerableOnly) {
   }
   return keys;
 }
-function _objectSpread$4(target) {
+function _objectSpread$5(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
-    i % 2 ? ownKeys$4(Object(source), true).forEach(function(key) {
-      _defineProperty$b(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function(key) {
+    i % 2 ? ownKeys$5(Object(source), true).forEach(function(key) {
+      _defineProperty$d(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$b(obj, key, value) {
+function _defineProperty$d(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -29636,12 +30098,12 @@ function _objectWithoutPropertiesLoose$1(source, excluded) {
   }
   return target;
 }
-function _classCallCheck$1e(instance, Constructor) {
+function _classCallCheck$1f(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1e(target, props) {
+function _defineProperties$1f(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -29651,19 +30113,19 @@ function _defineProperties$1e(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1e(Constructor, protoProps, staticProps) {
+function _createClass$1f(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1e(Constructor.prototype, protoProps);
+    _defineProperties$1f(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1e(Constructor, staticProps);
+    _defineProperties$1f(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 function _classPrivateFieldInitSpec$4(obj, privateMap, value) {
-  _checkPrivateRedeclaration$4(obj, privateMap);
+  _checkPrivateRedeclaration$5(obj, privateMap);
   privateMap.set(obj, value);
 }
-function _checkPrivateRedeclaration$4(obj, privateCollection) {
+function _checkPrivateRedeclaration$5(obj, privateCollection) {
   if (privateCollection.has(obj)) {
     throw new TypeError("Cannot initialize the same private elements twice on an object");
   }
@@ -29705,7 +30167,7 @@ var _dataLength = /* @__PURE__ */ new WeakMap();
 var _columnsLimit = /* @__PURE__ */ new WeakMap();
 var SourceSettings = /* @__PURE__ */ function() {
   function SourceSettings2() {
-    _classCallCheck$1e(this, SourceSettings2);
+    _classCallCheck$1f(this, SourceSettings2);
     _classPrivateFieldInitSpec$4(this, _data, {
       writable: true,
       value: []
@@ -29719,7 +30181,7 @@ var SourceSettings = /* @__PURE__ */ function() {
       value: Infinity
     });
   }
-  _createClass$1e(SourceSettings2, [{
+  _createClass$1f(SourceSettings2, [{
     key: "setColumnsLimit",
     value: function setColumnsLimit(columnsCount) {
       _classPrivateFieldSet$4(this, _columnsLimit, columnsCount);
@@ -29753,7 +30215,7 @@ var SourceSettings = /* @__PURE__ */ function() {
     value: function map(callback) {
       arrayEach(_classPrivateFieldGet$4(this, _data), function(header) {
         arrayEach(header, function(headerSettings) {
-          var propsToExtend = callback(_objectSpread$4({}, headerSettings));
+          var propsToExtend = callback(_objectSpread$5({}, headerSettings));
           if (isObject(propsToExtend)) {
             extend(headerSettings, propsToExtend, HEADER_CONFIGURABLE_PROPS);
           }
@@ -29822,7 +30284,7 @@ var SourceSettings = /* @__PURE__ */ function() {
   return SourceSettings2;
 }();
 
-function ownKeys$5(object, enumerableOnly) {
+function ownKeys$6(object, enumerableOnly) {
   var keys = Object.keys(object);
   if (Object.getOwnPropertySymbols) {
     var symbols = Object.getOwnPropertySymbols(object);
@@ -29832,23 +30294,23 @@ function ownKeys$5(object, enumerableOnly) {
   }
   return keys;
 }
-function _objectSpread$5(target) {
+function _objectSpread$6(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
-    i % 2 ? ownKeys$5(Object(source), true).forEach(function(key) {
-      _defineProperty$c(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function(key) {
+    i % 2 ? ownKeys$6(Object(source), true).forEach(function(key) {
+      _defineProperty$e(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _classCallCheck$1f(instance, Constructor) {
+function _classCallCheck$1g(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1f(target, props) {
+function _defineProperties$1g(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -29858,15 +30320,15 @@ function _defineProperties$1f(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1f(Constructor, protoProps, staticProps) {
+function _createClass$1g(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1f(Constructor.prototype, protoProps);
+    _defineProperties$1g(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1f(Constructor, staticProps);
+    _defineProperties$1g(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _defineProperty$c(obj, key, value) {
+function _defineProperty$e(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -29949,13 +30411,13 @@ var DEFAULT_TRAVERSAL_STRATEGY = TRAVERSAL_BF;
 var TRAVERSAL_STRATEGIES = new Map([[TRAVERSAL_DF_PRE, depthFirstPreOrder], [TRAVERSAL_DF_POST, depthFirstPostOrder], [TRAVERSAL_BF, breadthFirst]]);
 var TreeNode = /* @__PURE__ */ function() {
   function TreeNode2(data) {
-    _classCallCheck$1f(this, TreeNode2);
-    _defineProperty$c(this, "data", {});
-    _defineProperty$c(this, "parent", null);
-    _defineProperty$c(this, "childs", []);
+    _classCallCheck$1g(this, TreeNode2);
+    _defineProperty$e(this, "data", {});
+    _defineProperty$e(this, "parent", null);
+    _defineProperty$e(this, "childs", []);
     this.data = data;
   }
-  _createClass$1f(TreeNode2, [{
+  _createClass$1g(TreeNode2, [{
     key: "addChild",
     value: function addChild(node) {
       node.parent = this;
@@ -29965,7 +30427,7 @@ var TreeNode = /* @__PURE__ */ function() {
     key: "cloneTree",
     value: function cloneTree() {
       var nodeTree = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : this;
-      var clonedNode = new TreeNode2(_objectSpread$5({}, nodeTree.data));
+      var clonedNode = new TreeNode2(_objectSpread$6({}, nodeTree.data));
       for (var i = 0; i < nodeTree.childs.length; i++) {
         clonedNode.addChild(this.cloneTree(nodeTree.childs[i]));
       }
@@ -29974,7 +30436,7 @@ var TreeNode = /* @__PURE__ */ function() {
   }, {
     key: "replaceTreeWith",
     value: function replaceTreeWith(nodeTree) {
-      this.data = _objectSpread$5({}, nodeTree.data);
+      this.data = _objectSpread$6({}, nodeTree.data);
       this.childs = [];
       for (var i = 0; i < nodeTree.childs.length; i++) {
         this.addChild(nodeTree.childs[i]);
@@ -30005,7 +30467,7 @@ var TreeNode = /* @__PURE__ */ function() {
   return TreeNode2;
 }();
 
-function ownKeys$6(object, enumerableOnly) {
+function ownKeys$7(object, enumerableOnly) {
   var keys = Object.keys(object);
   if (Object.getOwnPropertySymbols) {
     var symbols = Object.getOwnPropertySymbols(object);
@@ -30015,18 +30477,18 @@ function ownKeys$6(object, enumerableOnly) {
   }
   return keys;
 }
-function _objectSpread$6(target) {
+function _objectSpread$7(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
-    i % 2 ? ownKeys$6(Object(source), true).forEach(function(key) {
-      _defineProperty$d(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function(key) {
+    i % 2 ? ownKeys$7(Object(source), true).forEach(function(key) {
+      _defineProperty$f(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$d(obj, key, value) {
+function _defineProperty$f(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -30093,12 +30555,12 @@ function _arrayWithHoles$z(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _classCallCheck$1g(instance, Constructor) {
+function _classCallCheck$1h(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1g(target, props) {
+function _defineProperties$1h(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -30108,19 +30570,19 @@ function _defineProperties$1g(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1g(Constructor, protoProps, staticProps) {
+function _createClass$1h(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1g(Constructor.prototype, protoProps);
+    _defineProperties$1h(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1g(Constructor, staticProps);
+    _defineProperties$1h(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 function _classPrivateFieldInitSpec$5(obj, privateMap, value) {
-  _checkPrivateRedeclaration$5(obj, privateMap);
+  _checkPrivateRedeclaration$6(obj, privateMap);
   privateMap.set(obj, value);
 }
-function _checkPrivateRedeclaration$5(obj, privateCollection) {
+function _checkPrivateRedeclaration$6(obj, privateCollection) {
   if (privateCollection.has(obj)) {
     throw new TypeError("Cannot initialize the same private elements twice on an object");
   }
@@ -30161,7 +30623,7 @@ var _rootsIndex = /* @__PURE__ */ new WeakMap();
 var _sourceSettings = /* @__PURE__ */ new WeakMap();
 var HeadersTree = /* @__PURE__ */ function() {
   function HeadersTree2(sourceSettings) {
-    _classCallCheck$1g(this, HeadersTree2);
+    _classCallCheck$1h(this, HeadersTree2);
     _classPrivateFieldInitSpec$5(this, _rootNodes, {
       writable: true,
       value: new Map()
@@ -30176,7 +30638,7 @@ var HeadersTree = /* @__PURE__ */ function() {
     });
     _classPrivateFieldSet$5(this, _sourceSettings, sourceSettings);
   }
-  _createClass$1g(HeadersTree2, [{
+  _createClass$1h(HeadersTree2, [{
     key: "getRoots",
     value: function getRoots() {
       return Array.from(_classPrivateFieldGet$5(this, _rootNodes).values());
@@ -30249,7 +30711,7 @@ var HeadersTree = /* @__PURE__ */ function() {
       var columnsSettings = _classPrivateFieldGet$5(this, _sourceSettings).getHeadersSettings(headerLevel, columnIndex, extractionLength);
       headerLevel += 1;
       arrayEach(columnsSettings, function(columnSettings) {
-        var nodeData = _objectSpread$6(_objectSpread$6({}, columnSettings), {}, {
+        var nodeData = _objectSpread$7(_objectSpread$7({}, columnSettings), {}, {
           headerLevel: headerLevel - 1,
           columnIndex
         });
@@ -30570,7 +31032,7 @@ function createNestedArrayIfNecessary(array, index) {
 }
 
 var _excluded$3 = ["row"];
-function ownKeys$7(object, enumerableOnly) {
+function ownKeys$8(object, enumerableOnly) {
   var keys = Object.keys(object);
   if (Object.getOwnPropertySymbols) {
     var symbols = Object.getOwnPropertySymbols(object);
@@ -30580,18 +31042,18 @@ function ownKeys$7(object, enumerableOnly) {
   }
   return keys;
 }
-function _objectSpread$7(target) {
+function _objectSpread$8(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
-    i % 2 ? ownKeys$7(Object(source), true).forEach(function(key) {
-      _defineProperty$e(target, key, source[key]);
-    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function(key) {
+    i % 2 ? ownKeys$8(Object(source), true).forEach(function(key) {
+      _defineProperty$g(target, key, source[key]);
+    }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$8(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$e(obj, key, value) {
+function _defineProperty$g(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -30631,12 +31093,12 @@ function _objectWithoutPropertiesLoose$3(source, excluded) {
   }
   return target;
 }
-function _classCallCheck$1h(instance, Constructor) {
+function _classCallCheck$1i(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1h(target, props) {
+function _defineProperties$1i(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -30646,19 +31108,19 @@ function _defineProperties$1h(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1h(Constructor, protoProps, staticProps) {
+function _createClass$1i(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1h(Constructor.prototype, protoProps);
+    _defineProperties$1i(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1h(Constructor, staticProps);
+    _defineProperties$1i(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 function _classPrivateFieldInitSpec$6(obj, privateMap, value) {
-  _checkPrivateRedeclaration$6(obj, privateMap);
+  _checkPrivateRedeclaration$7(obj, privateMap);
   privateMap.set(obj, value);
 }
-function _checkPrivateRedeclaration$6(obj, privateCollection) {
+function _checkPrivateRedeclaration$7(obj, privateCollection) {
   if (privateCollection.has(obj)) {
     throw new TypeError("Cannot initialize the same private elements twice on an object");
   }
@@ -30699,7 +31161,7 @@ var _headersTree = /* @__PURE__ */ new WeakMap();
 var _stateMatrix = /* @__PURE__ */ new WeakMap();
 var StateManager = /* @__PURE__ */ function() {
   function StateManager2() {
-    _classCallCheck$1h(this, StateManager2);
+    _classCallCheck$1i(this, StateManager2);
     _classPrivateFieldInitSpec$6(this, _sourceSettings$1, {
       writable: true,
       value: new SourceSettings()
@@ -30713,7 +31175,7 @@ var StateManager = /* @__PURE__ */ function() {
       value: [[]]
     });
   }
-  _createClass$1h(StateManager2, [{
+  _createClass$1i(StateManager2, [{
     key: "setState",
     value: function setState(nestedHeadersSettings) {
       _classPrivateFieldGet$6(this, _sourceSettings$1).setData(nestedHeadersSettings);
@@ -30739,7 +31201,7 @@ var StateManager = /* @__PURE__ */ function() {
       var _this = this;
       var transformedSettings = arrayMap(settings, function(_ref) {
         var row = _ref.row, rest = _objectWithoutProperties$3(_ref, _excluded$3);
-        return _objectSpread$7({
+        return _objectSpread$8({
           row: row < 0 ? _this.rowCoordsToLevel(row) : row
         }, rest);
       });
@@ -30824,7 +31286,7 @@ var StateManager = /* @__PURE__ */ function() {
       if (!node) {
         return null;
       }
-      return _objectSpread$7({}, node.data);
+      return _objectSpread$8({}, node.data);
     }
   }, {
     key: "findLeftMostColumnIndex",
@@ -30870,12 +31332,12 @@ var StateManager = /* @__PURE__ */ function() {
   return StateManager2;
 }();
 
-function _classCallCheck$1i(instance, Constructor) {
+function _classCallCheck$1j(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1i(target, props) {
+function _defineProperties$1j(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -30885,22 +31347,31 @@ function _defineProperties$1i(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1i(Constructor, protoProps, staticProps) {
+function _createClass$1j(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1i(Constructor.prototype, protoProps);
+    _defineProperties$1j(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1i(Constructor, staticProps);
+    _defineProperties$1j(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
+function _defineProperty$h(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
+  } else {
+    obj[key] = value;
+  }
+  return obj;
+}
 var GhostTable$1 = /* @__PURE__ */ function() {
   function GhostTable2(plugin) {
-    _classCallCheck$1i(this, GhostTable2);
+    _classCallCheck$1j(this, GhostTable2);
+    _defineProperty$h(this, "nestedHeaders", void 0);
+    _defineProperty$h(this, "container", void 0);
+    _defineProperty$h(this, "widthsCache", []);
     this.nestedHeaders = plugin;
-    this.container = void 0;
-    this.widthsCache = [];
   }
-  _createClass$1i(GhostTable2, [{
+  _createClass$1j(GhostTable2, [{
     key: "buildWidthsMapper",
     value: function buildWidthsMapper() {
       this.container = this.nestedHeaders.hot.rootDocument.createElement("div");
@@ -30931,22 +31402,21 @@ var GhostTable$1 = /* @__PURE__ */ function() {
         var tr = rootDocument.createElement("tr");
         lastRowColspan = false;
         for (var col = 0; col < maxCols; col++) {
-          var td = rootDocument.createElement("th");
-          var headerObj = clone(this.nestedHeaders.getHeaderSettings(row, col));
-          if (headerObj && !headerObj.isHidden) {
+          var th = rootDocument.createElement("th");
+          var headerSettings = this.nestedHeaders.getHeaderSettings(row, col);
+          if (headerSettings && !headerSettings.isPlaceholder) {
+            var label = headerSettings.label;
             if (row === lastRowIndex) {
-              if (headerObj.colspan > 1) {
+              if (headerSettings.colspan > 1) {
                 lastRowColspan = true;
               }
               if (isDropdownEnabled) {
-                headerObj.label += '<button class="changeType"></button>';
+                label += '<button class="changeType"></button>';
               }
             }
-            fastInnerHTML(td, headerObj.label);
-            if (headerObj.colspan !== void 0) {
-              td.colSpan = headerObj.colspan;
-            }
-            tr.appendChild(td);
+            fastInnerHTML(th, label);
+            th.colSpan = headerSettings.colspan;
+            tr.appendChild(th);
           }
         }
         table.appendChild(tr);
@@ -30955,8 +31425,8 @@ var GhostTable$1 = /* @__PURE__ */ function() {
         {
           var _tr = rootDocument.createElement("tr");
           for (var _col = 0; _col < maxCols; _col++) {
-            var _td = rootDocument.createElement("th");
-            _tr.appendChild(_td);
+            var td = rootDocument.createElement("th");
+            _tr.appendChild(td);
           }
           table.appendChild(_tr);
         }
@@ -30974,13 +31444,13 @@ var GhostTable$1 = /* @__PURE__ */ function() {
   return GhostTable2;
 }();
 
-function _typeof$P(obj) {
+function _typeof$Q(obj) {
   "@babel/helpers - typeof";
-  return _typeof$P = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$Q = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$P(obj);
+  }, _typeof$Q(obj);
 }
 var _templateObject$9, _templateObject2$2;
 function _taggedTemplateLiteral$9(strings, raw) {
@@ -30989,12 +31459,12 @@ function _taggedTemplateLiteral$9(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$1j(instance, Constructor) {
+function _classCallCheck$1k(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1j(target, props) {
+function _defineProperties$1k(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -31004,20 +31474,20 @@ function _defineProperties$1j(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1j(Constructor, protoProps, staticProps) {
+function _createClass$1k(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1j(Constructor.prototype, protoProps);
+    _defineProperties$1k(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1j(Constructor, staticProps);
+    _defineProperties$1k(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$I() {
+function _get$J() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$I = Reflect.get;
+    _get$J = Reflect.get;
   } else {
-    _get$I = function _get2(target, property, receiver) {
-      var base = _superPropBase$I(target, property);
+    _get$J = function _get2(target, property, receiver) {
+      var base = _superPropBase$J(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -31027,60 +31497,60 @@ function _get$I() {
       return desc.value;
     };
   }
-  return _get$I.apply(this, arguments);
+  return _get$J.apply(this, arguments);
 }
-function _superPropBase$I(object, property) {
+function _superPropBase$J(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$O(object);
+    object = _getPrototypeOf$P(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$O(subClass, superClass) {
+function _inherits$P(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$O(subClass, superClass);
+    _setPrototypeOf$P(subClass, superClass);
 }
-function _setPrototypeOf$O(o, p) {
-  _setPrototypeOf$O = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$P(o, p) {
+  _setPrototypeOf$P = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$O(o, p);
+  return _setPrototypeOf$P(o, p);
 }
-function _createSuper$O(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$O();
+function _createSuper$P(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$P();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$O(Derived), result;
+    var Super = _getPrototypeOf$P(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$O(this).constructor;
+      var NewTarget = _getPrototypeOf$P(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$O(this, result);
+    return _possibleConstructorReturn$P(this, result);
   };
 }
-function _possibleConstructorReturn$O(self, call) {
-  if (call && (_typeof$P(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$P(self, call) {
+  if (call && (_typeof$Q(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$O(self);
+  return _assertThisInitialized$P(self);
 }
-function _assertThisInitialized$O(self) {
+function _assertThisInitialized$P(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$O() {
+function _isNativeReflectConstruct$P() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -31095,13 +31565,13 @@ function _isNativeReflectConstruct$O() {
     return false;
   }
 }
-function _getPrototypeOf$O(o) {
-  _getPrototypeOf$O = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$P(o) {
+  _getPrototypeOf$P = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$O(o);
+  return _getPrototypeOf$P(o);
 }
-function _defineProperty$f(obj, key, value) {
+function _defineProperty$i(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -31110,10 +31580,10 @@ function _defineProperty$f(obj, key, value) {
   return obj;
 }
 function _classPrivateFieldInitSpec$7(obj, privateMap, value) {
-  _checkPrivateRedeclaration$7(obj, privateMap);
+  _checkPrivateRedeclaration$8(obj, privateMap);
   privateMap.set(obj, value);
 }
-function _checkPrivateRedeclaration$7(obj, privateCollection) {
+function _checkPrivateRedeclaration$8(obj, privateCollection) {
   if (privateCollection.has(obj)) {
     throw new TypeError("Cannot initialize the same private elements twice on an object");
   }
@@ -31154,28 +31624,28 @@ var PLUGIN_PRIORITY$q = 280;
 var _stateManager = /* @__PURE__ */ new WeakMap();
 var _hidingIndexMapObserver = /* @__PURE__ */ new WeakMap();
 var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$O(NestedHeaders2, _BasePlugin);
-  var _super = _createSuper$O(NestedHeaders2);
+  _inherits$P(NestedHeaders2, _BasePlugin);
+  var _super = _createSuper$P(NestedHeaders2);
   function NestedHeaders2() {
     var _this;
-    _classCallCheck$1j(this, NestedHeaders2);
+    _classCallCheck$1k(this, NestedHeaders2);
     for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
       args[_key] = arguments[_key];
     }
     _this = _super.call.apply(_super, [this].concat(args));
-    _classPrivateFieldInitSpec$7(_assertThisInitialized$O(_this), _stateManager, {
+    _classPrivateFieldInitSpec$7(_assertThisInitialized$P(_this), _stateManager, {
       writable: true,
       value: new StateManager()
     });
-    _classPrivateFieldInitSpec$7(_assertThisInitialized$O(_this), _hidingIndexMapObserver, {
+    _classPrivateFieldInitSpec$7(_assertThisInitialized$P(_this), _hidingIndexMapObserver, {
       writable: true,
       value: null
     });
-    _defineProperty$f(_assertThisInitialized$O(_this), "ghostTable", new GhostTable$1(_assertThisInitialized$O(_this)));
-    _defineProperty$f(_assertThisInitialized$O(_this), "detectedOverlappedHeaders", false);
+    _defineProperty$i(_assertThisInitialized$P(_this), "ghostTable", new GhostTable$1(_assertThisInitialized$P(_this)));
+    _defineProperty$i(_assertThisInitialized$P(_this), "detectedOverlappedHeaders", false);
     return _this;
   }
-  _createClass$1j(NestedHeaders2, [{
+  _createClass$1k(NestedHeaders2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$r];
@@ -31218,7 +31688,7 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
       this.addHook("afterViewportColumnCalculatorOverride", function() {
         return _this2.onAfterViewportColumnCalculatorOverride.apply(_this2, arguments);
       });
-      _get$I(_getPrototypeOf$O(NestedHeaders2.prototype), "enablePlugin", this).call(this);
+      _get$J(_getPrototypeOf$P(NestedHeaders2.prototype), "enablePlugin", this).call(this);
       this.updatePlugin();
     }
   }, {
@@ -31254,7 +31724,7 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
         }));
       }
       this.ghostTable.buildWidthsMapper();
-      _get$I(_getPrototypeOf$O(NestedHeaders2.prototype), "updatePlugin", this).call(this);
+      _get$J(_getPrototypeOf$P(NestedHeaders2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
@@ -31264,7 +31734,7 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
       _classPrivateFieldGet$7(this, _hidingIndexMapObserver).unsubscribe();
       _classPrivateFieldSet$7(this, _hidingIndexMapObserver, null);
       this.ghostTable.clear();
-      _get$I(_getPrototypeOf$O(NestedHeaders2.prototype), "disablePlugin", this).call(this);
+      _get$J(_getPrototypeOf$P(NestedHeaders2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "getStateManager",
@@ -31287,11 +31757,11 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
       if (!this.hot.view) {
         return;
       }
-      var wt = this.hot.view.wt;
+      var wt = this.hot.view._wt;
       var headerLevels = wt.getSetting("columnHeaders").length;
       var mainHeaders = wt.wtTable.THEAD;
       var topHeaders = wt.wtOverlays.topOverlay.clone.wtTable.THEAD;
-      var topLeftCornerHeaders = wt.wtOverlays.topLeftCornerOverlay ? wt.wtOverlays.topLeftCornerOverlay.clone.wtTable.THEAD : null;
+      var topLeftCornerHeaders = wt.wtOverlays.topInlineStartCornerOverlay ? wt.wtOverlays.topInlineStartCornerOverlay.clone.wtTable.THEAD : null;
       for (var i = 0; i < headerLevels; i++) {
         var masterLevel = mainHeaders.childNodes[i];
         if (!masterLevel) {
@@ -31317,7 +31787,7 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
     key: "headerRendererFactory",
     value: function headerRendererFactory(headerLevel) {
       var _this4 = this;
-      var fixedColumnsLeft = this.hot.view.wt.getSetting("fixedColumnsLeft");
+      var fixedColumnsStart = this.hot.view._wt.getSetting("fixedColumnsStart");
       return function(renderedColumnIndex, TH) {
         var _classPrivateFieldGet2;
         var _this4$hot = _this4.hot, rootDocument = _this4$hot.rootDocument, columnIndexMapper = _this4$hot.columnIndexMapper, view = _this4$hot.view;
@@ -31333,10 +31803,11 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
         if (isPlaceholder || isHidden) {
           addClass(TH, "hiddenHeader");
         } else if (colspan > 1) {
-          var _view$wt$wtOverlays$t, _view$wt$wtOverlays$l;
-          var isTopLeftOverlay = (_view$wt$wtOverlays$t = view.wt.wtOverlays.topLeftCornerOverlay) === null || _view$wt$wtOverlays$t === void 0 ? void 0 : _view$wt$wtOverlays$t.clone.wtTable.THEAD.contains(TH);
-          var isLeftOverlay = (_view$wt$wtOverlays$l = view.wt.wtOverlays.leftOverlay) === null || _view$wt$wtOverlays$l === void 0 ? void 0 : _view$wt$wtOverlays$l.clone.wtTable.THEAD.contains(TH);
-          var correctedColspan = isTopLeftOverlay || isLeftOverlay ? Math.min(colspan, fixedColumnsLeft - renderedColumnIndex) : colspan;
+          var _wtOverlays$topInline, _wtOverlays$inlineSta;
+          var wtOverlays = view._wt.wtOverlays;
+          var isTopInlineStartOverlay = (_wtOverlays$topInline = wtOverlays.topInlineStartCornerOverlay) === null || _wtOverlays$topInline === void 0 ? void 0 : _wtOverlays$topInline.clone.wtTable.THEAD.contains(TH);
+          var isInlineStartOverlay = (_wtOverlays$inlineSta = wtOverlays.inlineStartOverlay) === null || _wtOverlays$inlineSta === void 0 ? void 0 : _wtOverlays$inlineSta.clone.wtTable.THEAD.contains(TH);
+          var correctedColspan = isTopInlineStartOverlay || isInlineStartOverlay ? Math.min(colspan, fixedColumnsStart - renderedColumnIndex) : colspan;
           if (correctedColspan > 1) {
             TH.setAttribute("colspan", correctedColspan);
           }
@@ -31394,9 +31865,9 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
       var allowRightClickSelection = !selection.inInSelection(coords);
       if (event.shiftKey && currentSelection) {
         if (coords.col < currentSelection.from.col) {
-          columnsToSelect.push(currentSelection.getTopRightCorner().col, columnIndex, coords.row);
+          columnsToSelect.push(currentSelection.getTopEndCorner().col, columnIndex, coords.row);
         } else if (coords.col > currentSelection.from.col) {
-          columnsToSelect.push(currentSelection.getTopLeftCorner().col, columnIndex + origColspan - 1, coords.row);
+          columnsToSelect.push(currentSelection.getTopStartCorner().col, columnIndex + origColspan - 1, coords.row);
         } else {
           columnsToSelect.push(columnIndex, columnIndex + origColspan - 1, coords.row);
         }
@@ -31418,16 +31889,16 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
       }
       var columnIndex = headerNodeData.columnIndex, origColspan = headerNodeData.origColspan;
       var selectedRange = this.hot.getSelectedRangeLast();
-      var topLeftCoords = selectedRange.getTopLeftCorner();
-      var bottomRightCoords = selectedRange.getBottomRightCorner();
+      var topStartCoords = selectedRange.getTopStartCorner();
+      var bottomEndCoords = selectedRange.getBottomEndCorner();
       var from = selectedRange.from;
       controller.column = true;
       controller.cell = true;
       var columnsToSelect = [];
       if (coords.col < from.col) {
-        columnsToSelect.push(bottomRightCoords.col, columnIndex);
+        columnsToSelect.push(bottomEndCoords.col, columnIndex);
       } else if (coords.col > from.col) {
-        columnsToSelect.push(topLeftCoords.col, columnIndex + origColspan - 1);
+        columnsToSelect.push(topStartCoords.col, columnIndex + origColspan - 1);
       } else {
         columnsToSelect.push(columnIndex, columnIndex + origColspan - 1);
       }
@@ -31488,7 +31959,7 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
         _classPrivateFieldGet$7(this, _hidingIndexMapObserver).unsubscribe();
         _classPrivateFieldSet$7(this, _hidingIndexMapObserver, null);
       }
-      _get$I(_getPrototypeOf$O(NestedHeaders2.prototype), "destroy", this).call(this);
+      _get$J(_getPrototypeOf$P(NestedHeaders2.prototype), "destroy", this).call(this);
     }
   }, {
     key: "_getHeaderTreeNodeDataByCoords",
@@ -31547,20 +32018,20 @@ function _arrayLikeToArray$K(arr, len) {
   }
   return arr2;
 }
-function _typeof$Q(obj) {
+function _typeof$R(obj) {
   "@babel/helpers - typeof";
-  return _typeof$Q = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$R = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$Q(obj);
+  }, _typeof$R(obj);
 }
-function _classCallCheck$1k(instance, Constructor) {
+function _classCallCheck$1l(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1k(target, props) {
+function _defineProperties$1l(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -31570,17 +32041,17 @@ function _defineProperties$1k(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1k(Constructor, protoProps, staticProps) {
+function _createClass$1l(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1k(Constructor.prototype, protoProps);
+    _defineProperties$1l(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1k(Constructor, staticProps);
+    _defineProperties$1l(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var DataManager = /* @__PURE__ */ function() {
   function DataManager2(nestedRowsPlugin, hotInstance) {
-    _classCallCheck$1k(this, DataManager2);
+    _classCallCheck$1l(this, DataManager2);
     this.hot = hotInstance;
     this.data = null;
     this.plugin = nestedRowsPlugin;
@@ -31592,7 +32063,7 @@ var DataManager = /* @__PURE__ */ function() {
       nodeInfo: new WeakMap()
     };
   }
-  _createClass$1k(DataManager2, [{
+  _createClass$1l(DataManager2, [{
     key: "setData",
     value: function setData(data) {
       this.data = data;
@@ -31776,7 +32247,7 @@ var DataManager = /* @__PURE__ */ function() {
   }, {
     key: "getRowObjectParent",
     value: function getRowObjectParent(rowObject) {
-      if (!rowObject || _typeof$Q(rowObject) !== "object") {
+      if (!rowObject || _typeof$R(rowObject) !== "object") {
         return null;
       }
       return this.cache.nodeInfo.get(rowObject).parent;
@@ -32069,48 +32540,6 @@ var DataManager = /* @__PURE__ */ function() {
   return DataManager2;
 }();
 
-function _defineProperties$1l(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$1l(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$1l(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$1l(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _classCallCheck$1l(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-var BaseUI$3 = /* @__PURE__ */ _createClass$1l(function BaseUI2(pluginInstance, hotInstance) {
-  _classCallCheck$1l(this, BaseUI2);
-  this.hot = hotInstance;
-  this.plugin = pluginInstance;
-});
-
-function _typeof$R(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$R = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$R(obj);
-}
-function _classCallCheck$1m(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
 function _defineProperties$1m(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
@@ -32129,145 +32558,16 @@ function _createClass$1m(Constructor, protoProps, staticProps) {
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _inherits$P(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$P(subClass, superClass);
-}
-function _setPrototypeOf$P(o, p) {
-  _setPrototypeOf$P = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$P(o, p);
-}
-function _createSuper$P(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$P();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$P(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$P(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$P(this, result);
-  };
-}
-function _possibleConstructorReturn$P(self, call) {
-  if (call && (_typeof$R(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$P(self);
-}
-function _assertThisInitialized$P(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$P() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
+function _classCallCheck$1m(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
   }
 }
-function _getPrototypeOf$P(o) {
-  _getPrototypeOf$P = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$P(o);
-}
-var HeadersUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$P(HeadersUI2, _BaseUI);
-  var _super = _createSuper$P(HeadersUI2);
-  function HeadersUI2(nestedRowsPlugin, hotInstance) {
-    var _this;
-    _classCallCheck$1m(this, HeadersUI2);
-    _this = _super.call(this, nestedRowsPlugin, hotInstance);
-    _this.dataManager = _this.plugin.dataManager;
-    _this.collapsingUI = _this.plugin.collapsingUI;
-    _this.rowHeaderWidthCache = null;
-    return _this;
-  }
-  _createClass$1m(HeadersUI2, [{
-    key: "appendLevelIndicators",
-    value: function appendLevelIndicators(row, TH) {
-      var rowIndex = this.hot.toPhysicalRow(row);
-      var rowLevel = this.dataManager.getRowLevel(rowIndex);
-      var rowObject = this.dataManager.getDataObject(rowIndex);
-      var innerDiv = TH.getElementsByTagName("DIV")[0];
-      var innerSpan = innerDiv.querySelector("span.rowHeader");
-      var previousIndicators = innerDiv.querySelectorAll('[class^="ht_nesting"]');
-      arrayEach(previousIndicators, function(elem) {
-        if (elem) {
-          innerDiv.removeChild(elem);
-        }
-      });
-      addClass(TH, HeadersUI2.CSS_CLASSES.indicatorContainer);
-      if (rowLevel) {
-        var rootDocument = this.hot.rootDocument;
-        var initialContent = innerSpan.cloneNode(true);
-        innerDiv.innerHTML = "";
-        rangeEach(0, rowLevel - 1, function() {
-          var levelIndicator = rootDocument.createElement("SPAN");
-          addClass(levelIndicator, HeadersUI2.CSS_CLASSES.emptyIndicator);
-          innerDiv.appendChild(levelIndicator);
-        });
-        innerDiv.appendChild(initialContent);
-      }
-      if (this.dataManager.hasChildren(rowObject)) {
-        var buttonsContainer = this.hot.rootDocument.createElement("DIV");
-        addClass(TH, HeadersUI2.CSS_CLASSES.parent);
-        if (this.collapsingUI.areChildrenCollapsed(rowIndex)) {
-          addClass(buttonsContainer, "".concat(HeadersUI2.CSS_CLASSES.button, " ").concat(HeadersUI2.CSS_CLASSES.expandButton));
-        } else {
-          addClass(buttonsContainer, "".concat(HeadersUI2.CSS_CLASSES.button, " ").concat(HeadersUI2.CSS_CLASSES.collapseButton));
-        }
-        innerDiv.appendChild(buttonsContainer);
-      }
-    }
-  }, {
-    key: "updateRowHeaderWidth",
-    value: function updateRowHeaderWidth(deepestLevel) {
-      var deepestLevelIndex = deepestLevel;
-      if (!deepestLevelIndex) {
-        deepestLevelIndex = this.dataManager.cache.levelCount;
-      }
-      this.rowHeaderWidthCache = Math.max(50, 11 + 10 * deepestLevelIndex + 25);
-      this.hot.render();
-    }
-  }], [{
-    key: "CSS_CLASSES",
-    get: function get() {
-      return {
-        indicatorContainer: "ht_nestingLevels",
-        parent: "ht_nestingParent",
-        indicator: "ht_nestingLevel",
-        emptyIndicator: "ht_nestingLevel_empty",
-        button: "ht_nestingButton",
-        expandButton: "ht_nestingExpand",
-        collapseButton: "ht_nestingCollapse"
-      };
-    }
-  }]);
-  return HeadersUI2;
-}(BaseUI$3);
+var BaseUI$3 = /* @__PURE__ */ _createClass$1m(function BaseUI2(pluginInstance, hotInstance) {
+  _classCallCheck$1m(this, BaseUI2);
+  this.hot = hotInstance;
+  this.plugin = pluginInstance;
+});
 
 function _typeof$S(obj) {
   "@babel/helpers - typeof";
@@ -32276,41 +32576,6 @@ function _typeof$S(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$S(obj);
-}
-function _toConsumableArray$e(arr) {
-  return _arrayWithoutHoles$e(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$L(arr) || _nonIterableSpread$e();
-}
-function _nonIterableSpread$e() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$L(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$L(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$L(o, minLen);
-}
-function _iterableToArray$g(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-    return Array.from(iter);
-}
-function _arrayWithoutHoles$e(arr) {
-  if (Array.isArray(arr))
-    return _arrayLikeToArray$L(arr);
-}
-function _arrayLikeToArray$L(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
 }
 function _classCallCheck$1n(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -32399,12 +32664,218 @@ function _getPrototypeOf$Q(o) {
   };
   return _getPrototypeOf$Q(o);
 }
+var HeadersUI = /* @__PURE__ */ function(_BaseUI) {
+  _inherits$Q(HeadersUI2, _BaseUI);
+  var _super = _createSuper$Q(HeadersUI2);
+  function HeadersUI2(nestedRowsPlugin, hotInstance) {
+    var _this;
+    _classCallCheck$1n(this, HeadersUI2);
+    _this = _super.call(this, nestedRowsPlugin, hotInstance);
+    _this.dataManager = _this.plugin.dataManager;
+    _this.collapsingUI = _this.plugin.collapsingUI;
+    _this.rowHeaderWidthCache = null;
+    return _this;
+  }
+  _createClass$1n(HeadersUI2, [{
+    key: "appendLevelIndicators",
+    value: function appendLevelIndicators(row, TH) {
+      var rowIndex = this.hot.toPhysicalRow(row);
+      var rowLevel = this.dataManager.getRowLevel(rowIndex);
+      var rowObject = this.dataManager.getDataObject(rowIndex);
+      var innerDiv = TH.getElementsByTagName("DIV")[0];
+      var innerSpan = innerDiv.querySelector("span.rowHeader");
+      var previousIndicators = innerDiv.querySelectorAll('[class^="ht_nesting"]');
+      arrayEach(previousIndicators, function(elem) {
+        if (elem) {
+          innerDiv.removeChild(elem);
+        }
+      });
+      addClass(TH, HeadersUI2.CSS_CLASSES.indicatorContainer);
+      if (rowLevel) {
+        var rootDocument = this.hot.rootDocument;
+        var initialContent = innerSpan.cloneNode(true);
+        innerDiv.innerHTML = "";
+        rangeEach(0, rowLevel - 1, function() {
+          var levelIndicator = rootDocument.createElement("SPAN");
+          addClass(levelIndicator, HeadersUI2.CSS_CLASSES.emptyIndicator);
+          innerDiv.appendChild(levelIndicator);
+        });
+        innerDiv.appendChild(initialContent);
+      }
+      if (this.dataManager.hasChildren(rowObject)) {
+        var buttonsContainer = this.hot.rootDocument.createElement("DIV");
+        addClass(TH, HeadersUI2.CSS_CLASSES.parent);
+        if (this.collapsingUI.areChildrenCollapsed(rowIndex)) {
+          addClass(buttonsContainer, "".concat(HeadersUI2.CSS_CLASSES.button, " ").concat(HeadersUI2.CSS_CLASSES.expandButton));
+        } else {
+          addClass(buttonsContainer, "".concat(HeadersUI2.CSS_CLASSES.button, " ").concat(HeadersUI2.CSS_CLASSES.collapseButton));
+        }
+        innerDiv.appendChild(buttonsContainer);
+      }
+    }
+  }, {
+    key: "updateRowHeaderWidth",
+    value: function updateRowHeaderWidth(deepestLevel) {
+      var deepestLevelIndex = deepestLevel;
+      if (!deepestLevelIndex) {
+        deepestLevelIndex = this.dataManager.cache.levelCount;
+      }
+      this.rowHeaderWidthCache = Math.max(50, 11 + 10 * deepestLevelIndex + 25);
+      this.hot.render();
+    }
+  }], [{
+    key: "CSS_CLASSES",
+    get: function get() {
+      return {
+        indicatorContainer: "ht_nestingLevels",
+        parent: "ht_nestingParent",
+        indicator: "ht_nestingLevel",
+        emptyIndicator: "ht_nestingLevel_empty",
+        button: "ht_nestingButton",
+        expandButton: "ht_nestingExpand",
+        collapseButton: "ht_nestingCollapse"
+      };
+    }
+  }]);
+  return HeadersUI2;
+}(BaseUI$3);
+
+function _typeof$T(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$T = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$T(obj);
+}
+function _toConsumableArray$e(arr) {
+  return _arrayWithoutHoles$e(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$L(arr) || _nonIterableSpread$e();
+}
+function _nonIterableSpread$e() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray$L(o, minLen) {
+  if (!o)
+    return;
+  if (typeof o === "string")
+    return _arrayLikeToArray$L(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor)
+    n = o.constructor.name;
+  if (n === "Map" || n === "Set")
+    return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray$L(o, minLen);
+}
+function _iterableToArray$g(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+    return Array.from(iter);
+}
+function _arrayWithoutHoles$e(arr) {
+  if (Array.isArray(arr))
+    return _arrayLikeToArray$L(arr);
+}
+function _arrayLikeToArray$L(arr, len) {
+  if (len == null || len > arr.length)
+    len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
+}
+function _classCallCheck$1o(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$1o(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$1o(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$1o(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$1o(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _inherits$R(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$R(subClass, superClass);
+}
+function _setPrototypeOf$R(o, p) {
+  _setPrototypeOf$R = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$R(o, p);
+}
+function _createSuper$R(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$R();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$R(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$R(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$R(this, result);
+  };
+}
+function _possibleConstructorReturn$R(self, call) {
+  if (call && (_typeof$T(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$R(self);
+}
+function _assertThisInitialized$R(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$R() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$R(o) {
+  _getPrototypeOf$R = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$R(o);
+}
 var CollapsingUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$Q(CollapsingUI2, _BaseUI);
-  var _super = _createSuper$Q(CollapsingUI2);
+  _inherits$R(CollapsingUI2, _BaseUI);
+  var _super = _createSuper$R(CollapsingUI2);
   function CollapsingUI2(nestedRowsPlugin, hotInstance) {
     var _this;
-    _classCallCheck$1n(this, CollapsingUI2);
+    _classCallCheck$1o(this, CollapsingUI2);
     _this = _super.call(this, nestedRowsPlugin, hotInstance);
     _this.dataManager = _this.plugin.dataManager;
     _this.collapsedRows = [];
@@ -32441,7 +32912,7 @@ var CollapsingUI = /* @__PURE__ */ function(_BaseUI) {
     };
     return _this;
   }
-  _createClass$1n(CollapsingUI2, [{
+  _createClass$1o(CollapsingUI2, [{
     key: "collapseChildren",
     value: function collapseChildren(row) {
       var _this2 = this;
@@ -32747,20 +33218,20 @@ var CollapsingUI = /* @__PURE__ */ function(_BaseUI) {
   return CollapsingUI2;
 }(BaseUI$3);
 
-function _typeof$T(obj) {
+function _typeof$U(obj) {
   "@babel/helpers - typeof";
-  return _typeof$T = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$U = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$T(obj);
+  }, _typeof$U(obj);
 }
-function _classCallCheck$1o(instance, Constructor) {
+function _classCallCheck$1p(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1o(target, props) {
+function _defineProperties$1p(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -32770,58 +33241,58 @@ function _defineProperties$1o(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1o(Constructor, protoProps, staticProps) {
+function _createClass$1p(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1o(Constructor.prototype, protoProps);
+    _defineProperties$1p(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1o(Constructor, staticProps);
+    _defineProperties$1p(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _inherits$R(subClass, superClass) {
+function _inherits$S(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$R(subClass, superClass);
+    _setPrototypeOf$S(subClass, superClass);
 }
-function _setPrototypeOf$R(o, p) {
-  _setPrototypeOf$R = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$S(o, p) {
+  _setPrototypeOf$S = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$R(o, p);
+  return _setPrototypeOf$S(o, p);
 }
-function _createSuper$R(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$R();
+function _createSuper$S(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$S();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$R(Derived), result;
+    var Super = _getPrototypeOf$S(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$R(this).constructor;
+      var NewTarget = _getPrototypeOf$S(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$R(this, result);
+    return _possibleConstructorReturn$S(this, result);
   };
 }
-function _possibleConstructorReturn$R(self, call) {
-  if (call && (_typeof$T(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$S(self, call) {
+  if (call && (_typeof$U(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$R(self);
+  return _assertThisInitialized$S(self);
 }
-function _assertThisInitialized$R(self) {
+function _assertThisInitialized$S(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$R() {
+function _isNativeReflectConstruct$S() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -32836,21 +33307,21 @@ function _isNativeReflectConstruct$R() {
     return false;
   }
 }
-function _getPrototypeOf$R(o) {
-  _getPrototypeOf$R = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$S(o) {
+  _getPrototypeOf$S = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$R(o);
+  return _getPrototypeOf$S(o);
 }
 var privatePool$g = new WeakMap();
 var ContextMenuUI = /* @__PURE__ */ function(_BaseUI) {
-  _inherits$R(ContextMenuUI2, _BaseUI);
-  var _super = _createSuper$R(ContextMenuUI2);
+  _inherits$S(ContextMenuUI2, _BaseUI);
+  var _super = _createSuper$S(ContextMenuUI2);
   function ContextMenuUI2(nestedRowsPlugin, hotInstance) {
     var _this;
-    _classCallCheck$1o(this, ContextMenuUI2);
+    _classCallCheck$1p(this, ContextMenuUI2);
     _this = _super.call(this, nestedRowsPlugin, hotInstance);
-    privatePool$g.set(_assertThisInitialized$R(_this), {
+    privatePool$g.set(_assertThisInitialized$S(_this), {
       row_above: function row_above(key, selection) {
         var lastSelection = selection[selection.length - 1];
         _this.dataManager.addSibling(lastSelection.start.row, "above");
@@ -32863,7 +33334,7 @@ var ContextMenuUI = /* @__PURE__ */ function(_BaseUI) {
     _this.dataManager = _this.plugin.dataManager;
     return _this;
   }
-  _createClass$1o(ContextMenuUI2, [{
+  _createClass$1p(ContextMenuUI2, [{
     key: "appendOptions",
     value: function appendOptions(defaultOptions) {
       var _this2 = this;
@@ -32966,12 +33437,12 @@ function _taggedTemplateLiteral$a(strings, raw) {
   }
   return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
 }
-function _classCallCheck$1p(instance, Constructor) {
+function _classCallCheck$1q(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1p(target, props) {
+function _defineProperties$1q(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -32981,23 +33452,23 @@ function _defineProperties$1p(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1p(Constructor, protoProps, staticProps) {
+function _createClass$1q(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1p(Constructor.prototype, protoProps);
+    _defineProperties$1q(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1p(Constructor, staticProps);
+    _defineProperties$1q(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var RowMoveController = /* @__PURE__ */ function() {
   function RowMoveController2(plugin) {
-    _classCallCheck$1p(this, RowMoveController2);
+    _classCallCheck$1q(this, RowMoveController2);
     this.plugin = plugin;
     this.hot = plugin.hot;
     this.dataManager = plugin.dataManager;
     this.collapsingUI = plugin.collapsingUI;
   }
-  _createClass$1p(RowMoveController2, [{
+  _createClass$1q(RowMoveController2, [{
     key: "onBeforeRowMove",
     value: function onBeforeRowMove(rows, finalIndex, dropIndex, movePossible) {
       var _this = this;
@@ -33134,8 +33605,8 @@ var RowMoveController = /* @__PURE__ */ function() {
       }
       selection = this.hot.selection;
       lastColIndex = this.hot.countCols() - 1;
-      selection.setRangeStart(new CellCoords(startRow, 0));
-      selection.setRangeEnd(new CellCoords(endRow, lastColIndex), true);
+      selection.setRangeStart(this.hot._createCellCoords(startRow, 0));
+      selection.setRangeEnd(this.hot._createCellCoords(endRow, lastColIndex), true);
     }
   }, {
     key: "isRowOrderChanged",
@@ -33148,13 +33619,13 @@ var RowMoveController = /* @__PURE__ */ function() {
   return RowMoveController2;
 }();
 
-function _typeof$U(obj) {
+function _typeof$V(obj) {
   "@babel/helpers - typeof";
-  return _typeof$U = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$V = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$U(obj);
+  }, _typeof$V(obj);
 }
 function _toConsumableArray$g(arr) {
   return _arrayWithoutHoles$g(arr) || _iterableToArray$i(arr) || _unsupportedIterableToArray$N(arr) || _nonIterableSpread$g();
@@ -33191,12 +33662,12 @@ function _arrayLikeToArray$N(arr, len) {
   }
   return arr2;
 }
-function _classCallCheck$1q(instance, Constructor) {
+function _classCallCheck$1r(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1q(target, props) {
+function _defineProperties$1r(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -33206,20 +33677,20 @@ function _defineProperties$1q(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1q(Constructor, protoProps, staticProps) {
+function _createClass$1r(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1q(Constructor.prototype, protoProps);
+    _defineProperties$1r(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1q(Constructor, staticProps);
+    _defineProperties$1r(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _get$J() {
+function _get$K() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$J = Reflect.get;
+    _get$K = Reflect.get;
   } else {
-    _get$J = function _get2(target, property, receiver) {
-      var base = _superPropBase$J(target, property);
+    _get$K = function _get2(target, property, receiver) {
+      var base = _superPropBase$K(target, property);
       if (!base)
         return;
       var desc = Object.getOwnPropertyDescriptor(base, property);
@@ -33229,60 +33700,60 @@ function _get$J() {
       return desc.value;
     };
   }
-  return _get$J.apply(this, arguments);
+  return _get$K.apply(this, arguments);
 }
-function _superPropBase$J(object, property) {
+function _superPropBase$K(object, property) {
   while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$S(object);
+    object = _getPrototypeOf$T(object);
     if (object === null)
       break;
   }
   return object;
 }
-function _inherits$S(subClass, superClass) {
+function _inherits$T(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$S(subClass, superClass);
+    _setPrototypeOf$T(subClass, superClass);
 }
-function _setPrototypeOf$S(o, p) {
-  _setPrototypeOf$S = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$T(o, p) {
+  _setPrototypeOf$T = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$S(o, p);
+  return _setPrototypeOf$T(o, p);
 }
-function _createSuper$S(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$S();
+function _createSuper$T(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$T();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$S(Derived), result;
+    var Super = _getPrototypeOf$T(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$S(this).constructor;
+      var NewTarget = _getPrototypeOf$T(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$S(this, result);
+    return _possibleConstructorReturn$T(this, result);
   };
 }
-function _possibleConstructorReturn$S(self, call) {
-  if (call && (_typeof$U(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$T(self, call) {
+  if (call && (_typeof$V(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$S(self);
+  return _assertThisInitialized$T(self);
 }
-function _assertThisInitialized$S(self) {
+function _assertThisInitialized$T(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$S() {
+function _isNativeReflectConstruct$T() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -33297,34 +33768,34 @@ function _isNativeReflectConstruct$S() {
     return false;
   }
 }
-function _getPrototypeOf$S(o) {
-  _getPrototypeOf$S = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$T(o) {
+  _getPrototypeOf$T = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$S(o);
+  return _getPrototypeOf$T(o);
 }
 var PLUGIN_KEY$s = "nestedRows";
 var PLUGIN_PRIORITY$r = 300;
 var privatePool$h = new WeakMap();
 var WRONG_DATA_TYPE_ERROR = "The Nested Rows plugin requires an Array of Objects as a dataset to be provided. The plugin has been disabled.";
 var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$S(NestedRows2, _BasePlugin);
-  var _super = _createSuper$S(NestedRows2);
+  _inherits$T(NestedRows2, _BasePlugin);
+  var _super = _createSuper$T(NestedRows2);
   function NestedRows2(hotInstance) {
     var _this;
-    _classCallCheck$1q(this, NestedRows2);
+    _classCallCheck$1r(this, NestedRows2);
     _this = _super.call(this, hotInstance);
     _this.dataManager = null;
     _this.headersUI = null;
     _this.collapsedRowsMap = null;
-    privatePool$h.set(_assertThisInitialized$S(_this), {
+    privatePool$h.set(_assertThisInitialized$T(_this), {
       movedToCollapsed: false,
       skipRender: null,
       skipCoreAPIModifiers: false
     });
     return _this;
   }
-  _createClass$1q(NestedRows2, [{
+  _createClass$1r(NestedRows2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$s];
@@ -33399,13 +33870,13 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
       this.addHook("beforeLoadData", function(data) {
         return _this2.onBeforeLoadData(data);
       });
-      _get$J(_getPrototypeOf$S(NestedRows2.prototype), "enablePlugin", this).call(this);
+      _get$K(_getPrototypeOf$T(NestedRows2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
       this.hot.rowIndexMapper.unregisterMap("nestedRows");
-      _get$J(_getPrototypeOf$S(NestedRows2.prototype), "disablePlugin", this).call(this);
+      _get$K(_getPrototypeOf$T(NestedRows2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
@@ -33414,7 +33885,7 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
       var currentSourceData = this.dataManager.getData();
       this.enablePlugin();
       this.dataManager.updateWithData(currentSourceData);
-      _get$J(_getPrototypeOf$S(NestedRows2.prototype), "updatePlugin", this).call(this);
+      _get$K(_getPrototypeOf$T(NestedRows2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "onBeforeRowMove",
@@ -33574,7 +34045,7 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "destroy",
     value: function destroy() {
-      _get$J(_getPrototypeOf$S(NestedRows2.prototype), "destroy", this).call(this);
+      _get$K(_getPrototypeOf$T(NestedRows2.prototype), "destroy", this).call(this);
     }
   }, {
     key: "onBeforeLoadData",
@@ -33602,12 +34073,12 @@ var NestedRows = /* @__PURE__ */ function(_BasePlugin) {
   return NestedRows2;
 }(BasePlugin);
 
-function _classCallCheck$1r(instance, Constructor) {
+function _classCallCheck$1s(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1r(target, props) {
+function _defineProperties$1s(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -33617,24 +34088,24 @@ function _defineProperties$1r(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1r(Constructor, protoProps, staticProps) {
+function _createClass$1s(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1r(Constructor.prototype, protoProps);
+    _defineProperties$1s(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1r(Constructor, staticProps);
+    _defineProperties$1s(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
 var Storage = /* @__PURE__ */ function() {
   function Storage2(prefix) {
     var rootWindow = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : window;
-    _classCallCheck$1r(this, Storage2);
+    _classCallCheck$1s(this, Storage2);
     this.rootWindow = rootWindow;
     this.prefix = prefix;
     this.savedKeys = [];
     this.loadSavedKeys();
   }
-  _createClass$1r(Storage2, [{
+  _createClass$1s(Storage2, [{
     key: "saveValue",
     value: function saveValue(key, value) {
       this.rootWindow.localStorage.setItem("".concat(this.prefix, "_").concat(key), JSON.stringify(value));
@@ -33686,218 +34157,6 @@ var Storage = /* @__PURE__ */ function() {
   return Storage2;
 }();
 
-function _typeof$V(obj) {
-  "@babel/helpers - typeof";
-  return _typeof$V = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
-    return typeof obj2;
-  } : function(obj2) {
-    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$V(obj);
-}
-function _classCallCheck$1s(instance, Constructor) {
-  if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
-  }
-}
-function _defineProperties$1s(target, props) {
-  for (var i = 0; i < props.length; i++) {
-    var descriptor = props[i];
-    descriptor.enumerable = descriptor.enumerable || false;
-    descriptor.configurable = true;
-    if ("value" in descriptor)
-      descriptor.writable = true;
-    Object.defineProperty(target, descriptor.key, descriptor);
-  }
-}
-function _createClass$1s(Constructor, protoProps, staticProps) {
-  if (protoProps)
-    _defineProperties$1s(Constructor.prototype, protoProps);
-  if (staticProps)
-    _defineProperties$1s(Constructor, staticProps);
-  Object.defineProperty(Constructor, "prototype", {writable: false});
-  return Constructor;
-}
-function _get$K() {
-  if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$K = Reflect.get;
-  } else {
-    _get$K = function _get2(target, property, receiver) {
-      var base = _superPropBase$K(target, property);
-      if (!base)
-        return;
-      var desc = Object.getOwnPropertyDescriptor(base, property);
-      if (desc.get) {
-        return desc.get.call(arguments.length < 3 ? target : receiver);
-      }
-      return desc.value;
-    };
-  }
-  return _get$K.apply(this, arguments);
-}
-function _superPropBase$K(object, property) {
-  while (!Object.prototype.hasOwnProperty.call(object, property)) {
-    object = _getPrototypeOf$T(object);
-    if (object === null)
-      break;
-  }
-  return object;
-}
-function _inherits$T(subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
-  Object.defineProperty(subClass, "prototype", {writable: false});
-  if (superClass)
-    _setPrototypeOf$T(subClass, superClass);
-}
-function _setPrototypeOf$T(o, p) {
-  _setPrototypeOf$T = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
-    o2.__proto__ = p2;
-    return o2;
-  };
-  return _setPrototypeOf$T(o, p);
-}
-function _createSuper$T(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$T();
-  return function _createSuperInternal() {
-    var Super = _getPrototypeOf$T(Derived), result;
-    if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$T(this).constructor;
-      result = Reflect.construct(Super, arguments, NewTarget);
-    } else {
-      result = Super.apply(this, arguments);
-    }
-    return _possibleConstructorReturn$T(this, result);
-  };
-}
-function _possibleConstructorReturn$T(self, call) {
-  if (call && (_typeof$V(call) === "object" || typeof call === "function")) {
-    return call;
-  } else if (call !== void 0) {
-    throw new TypeError("Derived constructors may only return object or undefined");
-  }
-  return _assertThisInitialized$T(self);
-}
-function _assertThisInitialized$T(self) {
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-  }
-  return self;
-}
-function _isNativeReflectConstruct$T() {
-  if (typeof Reflect === "undefined" || !Reflect.construct)
-    return false;
-  if (Reflect.construct.sham)
-    return false;
-  if (typeof Proxy === "function")
-    return true;
-  try {
-    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
-    }));
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-function _getPrototypeOf$T(o) {
-  _getPrototypeOf$T = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
-    return o2.__proto__ || Object.getPrototypeOf(o2);
-  };
-  return _getPrototypeOf$T(o);
-}
-Hooks.getSingleton().register("persistentStateSave");
-Hooks.getSingleton().register("persistentStateLoad");
-Hooks.getSingleton().register("persistentStateReset");
-var PLUGIN_KEY$t = "persistentState";
-var PLUGIN_PRIORITY$s = 0;
-var PersistentState = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$T(PersistentState2, _BasePlugin);
-  var _super = _createSuper$T(PersistentState2);
-  function PersistentState2(hotInstance) {
-    var _this;
-    _classCallCheck$1s(this, PersistentState2);
-    _this = _super.call(this, hotInstance);
-    _this.storage = void 0;
-    return _this;
-  }
-  _createClass$1s(PersistentState2, [{
-    key: "isEnabled",
-    value: function isEnabled() {
-      return !!this.hot.getSettings()[PLUGIN_KEY$t];
-    }
-  }, {
-    key: "enablePlugin",
-    value: function enablePlugin() {
-      var _this2 = this;
-      if (this.enabled) {
-        return;
-      }
-      if (!this.storage) {
-        this.storage = new Storage(this.hot.rootElement.id, this.hot.rootWindow);
-      }
-      this.addHook("persistentStateSave", function(key, value) {
-        return _this2.saveValue(key, value);
-      });
-      this.addHook("persistentStateLoad", function(key, saveTo) {
-        return _this2.loadValue(key, saveTo);
-      });
-      this.addHook("persistentStateReset", function() {
-        return _this2.resetValue();
-      });
-      _get$K(_getPrototypeOf$T(PersistentState2.prototype), "enablePlugin", this).call(this);
-    }
-  }, {
-    key: "disablePlugin",
-    value: function disablePlugin() {
-      this.storage = void 0;
-      _get$K(_getPrototypeOf$T(PersistentState2.prototype), "disablePlugin", this).call(this);
-    }
-  }, {
-    key: "updatePlugin",
-    value: function updatePlugin() {
-      this.disablePlugin();
-      this.enablePlugin();
-      _get$K(_getPrototypeOf$T(PersistentState2.prototype), "updatePlugin", this).call(this);
-    }
-  }, {
-    key: "loadValue",
-    value: function loadValue(key, saveTo) {
-      saveTo.value = this.storage.loadValue(key);
-    }
-  }, {
-    key: "saveValue",
-    value: function saveValue(key, value) {
-      this.storage.saveValue(key, value);
-    }
-  }, {
-    key: "resetValue",
-    value: function resetValue(key) {
-      if (typeof key === "undefined") {
-        this.storage.resetAll();
-      } else {
-        this.storage.reset(key);
-      }
-    }
-  }, {
-    key: "destroy",
-    value: function destroy() {
-      _get$K(_getPrototypeOf$T(PersistentState2.prototype), "destroy", this).call(this);
-    }
-  }], [{
-    key: "PLUGIN_KEY",
-    get: function get() {
-      return PLUGIN_KEY$t;
-    }
-  }, {
-    key: "PLUGIN_PRIORITY",
-    get: function get() {
-      return PLUGIN_PRIORITY$s;
-    }
-  }]);
-  return PersistentState2;
-}(BasePlugin);
-
 function _typeof$W(obj) {
   "@babel/helpers - typeof";
   return _typeof$W = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
@@ -33905,41 +34164,6 @@ function _typeof$W(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$W(obj);
-}
-function _toConsumableArray$h(arr) {
-  return _arrayWithoutHoles$h(arr) || _iterableToArray$j(arr) || _unsupportedIterableToArray$O(arr) || _nonIterableSpread$h();
-}
-function _nonIterableSpread$h() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$O(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$O(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$O(o, minLen);
-}
-function _iterableToArray$j(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-    return Array.from(iter);
-}
-function _arrayWithoutHoles$h(arr) {
-  if (Array.isArray(arr))
-    return _arrayLikeToArray$O(arr);
-}
-function _arrayLikeToArray$O(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
 }
 function _classCallCheck$1t(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -34053,37 +34277,25 @@ function _getPrototypeOf$U(o) {
   };
   return _getPrototypeOf$U(o);
 }
-var PLUGIN_KEY$u = "search";
-var PLUGIN_PRIORITY$t = 190;
-var DEFAULT_SEARCH_RESULT_CLASS = "htSearchResult";
-var DEFAULT_CALLBACK = function DEFAULT_CALLBACK2(instance, row, col, data, testResult) {
-  instance.getCellMeta(row, col).isSearchResult = testResult;
-};
-var DEFAULT_QUERY_METHOD = function DEFAULT_QUERY_METHOD2(query, value, cellProperties) {
-  if (isUndefined(query) || query === null || !query.toLocaleLowerCase || query.length === 0) {
-    return false;
-  }
-  if (isUndefined(value) || value === null) {
-    return false;
-  }
-  return value.toString().toLocaleLowerCase(cellProperties.locale).indexOf(query.toLocaleLowerCase(cellProperties.locale)) !== -1;
-};
-var Search = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$U(Search2, _BasePlugin);
-  var _super = _createSuper$U(Search2);
-  function Search2(hotInstance) {
+Hooks.getSingleton().register("persistentStateSave");
+Hooks.getSingleton().register("persistentStateLoad");
+Hooks.getSingleton().register("persistentStateReset");
+var PLUGIN_KEY$t = "persistentState";
+var PLUGIN_PRIORITY$s = 0;
+var PersistentState = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$U(PersistentState2, _BasePlugin);
+  var _super = _createSuper$U(PersistentState2);
+  function PersistentState2(hotInstance) {
     var _this;
-    _classCallCheck$1t(this, Search2);
+    _classCallCheck$1t(this, PersistentState2);
     _this = _super.call(this, hotInstance);
-    _this.callback = DEFAULT_CALLBACK;
-    _this.queryMethod = DEFAULT_QUERY_METHOD;
-    _this.searchResultClass = DEFAULT_SEARCH_RESULT_CLASS;
+    _this.storage = void 0;
     return _this;
   }
-  _createClass$1t(Search2, [{
+  _createClass$1t(PersistentState2, [{
     key: "isEnabled",
     value: function isEnabled() {
-      return this.hot.getSettings()[PLUGIN_KEY$u];
+      return !!this.hot.getSettings()[PLUGIN_KEY$t];
     }
   }, {
     key: "enablePlugin",
@@ -34092,147 +34304,69 @@ var Search = /* @__PURE__ */ function(_BasePlugin) {
       if (this.enabled) {
         return;
       }
-      var searchSettings = this.hot.getSettings()[PLUGIN_KEY$u];
-      this.updatePluginSettings(searchSettings);
-      this.addHook("beforeRenderer", function() {
-        return _this2.onBeforeRenderer.apply(_this2, arguments);
+      if (!this.storage) {
+        this.storage = new Storage(this.hot.rootElement.id, this.hot.rootWindow);
+      }
+      this.addHook("persistentStateSave", function(key, value) {
+        return _this2.saveValue(key, value);
       });
-      _get$L(_getPrototypeOf$U(Search2.prototype), "enablePlugin", this).call(this);
+      this.addHook("persistentStateLoad", function(key, saveTo) {
+        return _this2.loadValue(key, saveTo);
+      });
+      this.addHook("persistentStateReset", function() {
+        return _this2.resetValue();
+      });
+      _get$L(_getPrototypeOf$U(PersistentState2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
-      var _this3 = this;
-      var beforeRendererCallback = function beforeRendererCallback2() {
-        return _this3.onBeforeRenderer.apply(_this3, arguments);
-      };
-      this.hot.addHook("beforeRenderer", beforeRendererCallback);
-      this.hot.addHookOnce("afterViewRender", function() {
-        _this3.hot.removeHook("beforeRenderer", beforeRendererCallback);
-      });
-      _get$L(_getPrototypeOf$U(Search2.prototype), "disablePlugin", this).call(this);
+      this.storage = void 0;
+      _get$L(_getPrototypeOf$U(PersistentState2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
     value: function updatePlugin() {
       this.disablePlugin();
       this.enablePlugin();
-      _get$L(_getPrototypeOf$U(Search2.prototype), "updatePlugin", this).call(this);
+      _get$L(_getPrototypeOf$U(PersistentState2.prototype), "updatePlugin", this).call(this);
     }
   }, {
-    key: "query",
-    value: function query(queryStr) {
-      var _this4 = this;
-      var callback = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.getCallback();
-      var queryMethod = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.getQueryMethod();
-      var rowCount = this.hot.countRows();
-      var colCount = this.hot.countCols();
-      var queryResult = [];
-      var instance = this.hot;
-      rangeEach(0, rowCount - 1, function(rowIndex) {
-        rangeEach(0, colCount - 1, function(colIndex) {
-          var cellData = _this4.hot.getDataAtCell(rowIndex, colIndex);
-          var cellProperties = _this4.hot.getCellMeta(rowIndex, colIndex);
-          var cellCallback = cellProperties.search.callback || callback;
-          var cellQueryMethod = cellProperties.search.queryMethod || queryMethod;
-          var testResult = cellQueryMethod(queryStr, cellData, cellProperties);
-          if (testResult) {
-            var singleResult = {
-              row: rowIndex,
-              col: colIndex,
-              data: cellData
-            };
-            queryResult.push(singleResult);
-          }
-          if (cellCallback) {
-            cellCallback(instance, rowIndex, colIndex, cellData, testResult);
-          }
-        });
-      });
-      return queryResult;
+    key: "loadValue",
+    value: function loadValue(key, saveTo) {
+      saveTo.value = this.storage.loadValue(key);
     }
   }, {
-    key: "getCallback",
-    value: function getCallback() {
-      return this.callback;
+    key: "saveValue",
+    value: function saveValue(key, value) {
+      this.storage.saveValue(key, value);
     }
   }, {
-    key: "setCallback",
-    value: function setCallback(newCallback) {
-      this.callback = newCallback;
-    }
-  }, {
-    key: "getQueryMethod",
-    value: function getQueryMethod() {
-      return this.queryMethod;
-    }
-  }, {
-    key: "setQueryMethod",
-    value: function setQueryMethod(newQueryMethod) {
-      this.queryMethod = newQueryMethod;
-    }
-  }, {
-    key: "getSearchResultClass",
-    value: function getSearchResultClass() {
-      return this.searchResultClass;
-    }
-  }, {
-    key: "setSearchResultClass",
-    value: function setSearchResultClass(newElementClass) {
-      this.searchResultClass = newElementClass;
-    }
-  }, {
-    key: "updatePluginSettings",
-    value: function updatePluginSettings(searchSettings) {
-      if (isObject(searchSettings)) {
-        if (searchSettings.searchResultClass) {
-          this.setSearchResultClass(searchSettings.searchResultClass);
-        }
-        if (searchSettings.queryMethod) {
-          this.setQueryMethod(searchSettings.queryMethod);
-        }
-        if (searchSettings.callback) {
-          this.setCallback(searchSettings.callback);
-        }
-      }
-    }
-  }, {
-    key: "onBeforeRenderer",
-    value: function onBeforeRenderer(TD, row, col, prop, value, cellProperties) {
-      var className = cellProperties.className || [];
-      var classArray = [];
-      if (typeof className === "string") {
-        classArray = className.split(" ");
+    key: "resetValue",
+    value: function resetValue(key) {
+      if (typeof key === "undefined") {
+        this.storage.resetAll();
       } else {
-        var _classArray;
-        (_classArray = classArray).push.apply(_classArray, _toConsumableArray$h(className));
+        this.storage.reset(key);
       }
-      if (this.isEnabled() && cellProperties.isSearchResult) {
-        if (!classArray.includes(this.searchResultClass)) {
-          classArray.push("".concat(this.searchResultClass));
-        }
-      } else if (classArray.includes(this.searchResultClass)) {
-        classArray.splice(classArray.indexOf(this.searchResultClass), 1);
-      }
-      cellProperties.className = classArray.join(" ");
     }
   }, {
     key: "destroy",
     value: function destroy() {
-      _get$L(_getPrototypeOf$U(Search2.prototype), "destroy", this).call(this);
+      _get$L(_getPrototypeOf$U(PersistentState2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
     get: function get() {
-      return PLUGIN_KEY$u;
+      return PLUGIN_KEY$t;
     }
   }, {
     key: "PLUGIN_PRIORITY",
     get: function get() {
-      return PLUGIN_PRIORITY$t;
+      return PLUGIN_PRIORITY$s;
     }
   }]);
-  return Search2;
+  return PersistentState2;
 }(BasePlugin);
 
 function _typeof$X(obj) {
@@ -34242,6 +34376,41 @@ function _typeof$X(obj) {
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$X(obj);
+}
+function _toConsumableArray$h(arr) {
+  return _arrayWithoutHoles$h(arr) || _iterableToArray$j(arr) || _unsupportedIterableToArray$O(arr) || _nonIterableSpread$h();
+}
+function _nonIterableSpread$h() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+function _unsupportedIterableToArray$O(o, minLen) {
+  if (!o)
+    return;
+  if (typeof o === "string")
+    return _arrayLikeToArray$O(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor)
+    n = o.constructor.name;
+  if (n === "Map" || n === "Set")
+    return Array.from(o);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
+    return _arrayLikeToArray$O(o, minLen);
+}
+function _iterableToArray$j(iter) {
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
+    return Array.from(iter);
+}
+function _arrayWithoutHoles$h(arr) {
+  if (Array.isArray(arr))
+    return _arrayLikeToArray$O(arr);
+}
+function _arrayLikeToArray$O(arr, len) {
+  if (len == null || len > arr.length)
+    len = arr.length;
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+  return arr2;
 }
 function _classCallCheck$1u(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -34355,25 +34524,37 @@ function _getPrototypeOf$V(o) {
   };
   return _getPrototypeOf$V(o);
 }
-var PLUGIN_KEY$v = "touchScroll";
-var PLUGIN_PRIORITY$u = 200;
-var TouchScroll = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$V(TouchScroll2, _BasePlugin);
-  var _super = _createSuper$V(TouchScroll2);
-  function TouchScroll2(hotInstance) {
+var PLUGIN_KEY$u = "search";
+var PLUGIN_PRIORITY$t = 190;
+var DEFAULT_SEARCH_RESULT_CLASS = "htSearchResult";
+var DEFAULT_CALLBACK = function DEFAULT_CALLBACK2(instance, row, col, data, testResult) {
+  instance.getCellMeta(row, col).isSearchResult = testResult;
+};
+var DEFAULT_QUERY_METHOD = function DEFAULT_QUERY_METHOD2(query, value, cellProperties) {
+  if (isUndefined(query) || query === null || !query.toLocaleLowerCase || query.length === 0) {
+    return false;
+  }
+  if (isUndefined(value) || value === null) {
+    return false;
+  }
+  return value.toString().toLocaleLowerCase(cellProperties.locale).indexOf(query.toLocaleLowerCase(cellProperties.locale)) !== -1;
+};
+var Search = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$V(Search2, _BasePlugin);
+  var _super = _createSuper$V(Search2);
+  function Search2(hotInstance) {
     var _this;
-    _classCallCheck$1u(this, TouchScroll2);
+    _classCallCheck$1u(this, Search2);
     _this = _super.call(this, hotInstance);
-    _this.scrollbars = [];
-    _this.clones = [];
-    _this.lockedCollection = false;
-    _this.freezeOverlays = false;
+    _this.callback = DEFAULT_CALLBACK;
+    _this.queryMethod = DEFAULT_QUERY_METHOD;
+    _this.searchResultClass = DEFAULT_SEARCH_RESULT_CLASS;
     return _this;
   }
-  _createClass$1u(TouchScroll2, [{
+  _createClass$1u(Search2, [{
     key: "isEnabled",
     value: function isEnabled() {
-      return isTouchSupported();
+      return this.hot.getSettings()[PLUGIN_KEY$u];
     }
   }, {
     key: "enablePlugin",
@@ -34382,111 +34563,147 @@ var TouchScroll = /* @__PURE__ */ function(_BasePlugin) {
       if (this.enabled) {
         return;
       }
-      this.addHook("afterViewRender", function() {
-        return _this2.onAfterViewRender();
+      var searchSettings = this.hot.getSettings()[PLUGIN_KEY$u];
+      this.updatePluginSettings(searchSettings);
+      this.addHook("beforeRenderer", function() {
+        return _this2.onBeforeRenderer.apply(_this2, arguments);
       });
-      this.registerEvents();
-      _get$M(_getPrototypeOf$V(TouchScroll2.prototype), "enablePlugin", this).call(this);
-    }
-  }, {
-    key: "updatePlugin",
-    value: function updatePlugin() {
-      this.lockedCollection = false;
-      _get$M(_getPrototypeOf$V(TouchScroll2.prototype), "updatePlugin", this).call(this);
+      _get$M(_getPrototypeOf$V(Search2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
-      _get$M(_getPrototypeOf$V(TouchScroll2.prototype), "disablePlugin", this).call(this);
-    }
-  }, {
-    key: "registerEvents",
-    value: function registerEvents() {
       var _this3 = this;
-      this.addHook("beforeTouchScroll", function() {
-        return _this3.onBeforeTouchScroll();
+      var beforeRendererCallback = function beforeRendererCallback2() {
+        return _this3.onBeforeRenderer.apply(_this3, arguments);
+      };
+      this.hot.addHook("beforeRenderer", beforeRendererCallback);
+      this.hot.addHookOnce("afterViewRender", function() {
+        _this3.hot.removeHook("beforeRenderer", beforeRendererCallback);
       });
-      this.addHook("afterMomentumScroll", function() {
-        return _this3.onAfterMomentumScroll();
-      });
+      _get$M(_getPrototypeOf$V(Search2.prototype), "disablePlugin", this).call(this);
     }
   }, {
-    key: "onAfterViewRender",
-    value: function onAfterViewRender() {
-      if (this.lockedCollection) {
-        return;
-      }
-      var _this$hot$view$wt$wtO = this.hot.view.wt.wtOverlays, topOverlay = _this$hot$view$wt$wtO.topOverlay, bottomOverlay = _this$hot$view$wt$wtO.bottomOverlay, leftOverlay = _this$hot$view$wt$wtO.leftOverlay, topLeftCornerOverlay = _this$hot$view$wt$wtO.topLeftCornerOverlay, bottomLeftCornerOverlay = _this$hot$view$wt$wtO.bottomLeftCornerOverlay;
-      this.lockedCollection = true;
-      this.scrollbars.length = 0;
-      this.scrollbars.push(topOverlay);
-      if (bottomOverlay.clone) {
-        this.scrollbars.push(bottomOverlay);
-      }
-      this.scrollbars.push(leftOverlay);
-      if (topLeftCornerOverlay) {
-        this.scrollbars.push(topLeftCornerOverlay);
-      }
-      if (bottomLeftCornerOverlay && bottomLeftCornerOverlay.clone) {
-        this.scrollbars.push(bottomLeftCornerOverlay);
-      }
-      this.clones = [];
-      if (topOverlay.needFullRender) {
-        this.clones.push(topOverlay.clone.wtTable.holder.parentNode);
-      }
-      if (bottomOverlay.needFullRender) {
-        this.clones.push(bottomOverlay.clone.wtTable.holder.parentNode);
-      }
-      if (leftOverlay.needFullRender) {
-        this.clones.push(leftOverlay.clone.wtTable.holder.parentNode);
-      }
-      if (topLeftCornerOverlay) {
-        this.clones.push(topLeftCornerOverlay.clone.wtTable.holder.parentNode);
-      }
-      if (bottomLeftCornerOverlay && bottomLeftCornerOverlay.clone) {
-        this.clones.push(bottomLeftCornerOverlay.clone.wtTable.holder.parentNode);
-      }
+    key: "updatePlugin",
+    value: function updatePlugin() {
+      this.disablePlugin();
+      this.enablePlugin();
+      _get$M(_getPrototypeOf$V(Search2.prototype), "updatePlugin", this).call(this);
     }
   }, {
-    key: "onBeforeTouchScroll",
-    value: function onBeforeTouchScroll() {
-      this.freezeOverlays = true;
-      arrayEach(this.clones, function(clone) {
-        addClass(clone, "hide-tween");
-      });
-    }
-  }, {
-    key: "onAfterMomentumScroll",
-    value: function onAfterMomentumScroll() {
+    key: "query",
+    value: function query(queryStr) {
       var _this4 = this;
-      this.freezeOverlays = false;
-      arrayEach(this.clones, function(clone) {
-        removeClass(clone, "hide-tween");
-        addClass(clone, "show-tween");
-      });
-      this.hot._registerTimeout(function() {
-        arrayEach(_this4.clones, function(clone) {
-          removeClass(clone, "show-tween");
+      var callback = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : this.getCallback();
+      var queryMethod = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : this.getQueryMethod();
+      var rowCount = this.hot.countRows();
+      var colCount = this.hot.countCols();
+      var queryResult = [];
+      var instance = this.hot;
+      rangeEach(0, rowCount - 1, function(rowIndex) {
+        rangeEach(0, colCount - 1, function(colIndex) {
+          var cellData = _this4.hot.getDataAtCell(rowIndex, colIndex);
+          var cellProperties = _this4.hot.getCellMeta(rowIndex, colIndex);
+          var cellCallback = cellProperties.search.callback || callback;
+          var cellQueryMethod = cellProperties.search.queryMethod || queryMethod;
+          var testResult = cellQueryMethod(queryStr, cellData, cellProperties);
+          if (testResult) {
+            var singleResult = {
+              row: rowIndex,
+              col: colIndex,
+              data: cellData
+            };
+            queryResult.push(singleResult);
+          }
+          if (cellCallback) {
+            cellCallback(instance, rowIndex, colIndex, cellData, testResult);
+          }
         });
-      }, 400);
-      arrayEach(this.scrollbars, function(scrollbar) {
-        scrollbar.refresh();
-        scrollbar.resetFixedPosition();
       });
-      this.hot.view.wt.wtOverlays.syncScrollWithMaster();
+      return queryResult;
+    }
+  }, {
+    key: "getCallback",
+    value: function getCallback() {
+      return this.callback;
+    }
+  }, {
+    key: "setCallback",
+    value: function setCallback(newCallback) {
+      this.callback = newCallback;
+    }
+  }, {
+    key: "getQueryMethod",
+    value: function getQueryMethod() {
+      return this.queryMethod;
+    }
+  }, {
+    key: "setQueryMethod",
+    value: function setQueryMethod(newQueryMethod) {
+      this.queryMethod = newQueryMethod;
+    }
+  }, {
+    key: "getSearchResultClass",
+    value: function getSearchResultClass() {
+      return this.searchResultClass;
+    }
+  }, {
+    key: "setSearchResultClass",
+    value: function setSearchResultClass(newElementClass) {
+      this.searchResultClass = newElementClass;
+    }
+  }, {
+    key: "updatePluginSettings",
+    value: function updatePluginSettings(searchSettings) {
+      if (isObject(searchSettings)) {
+        if (searchSettings.searchResultClass) {
+          this.setSearchResultClass(searchSettings.searchResultClass);
+        }
+        if (searchSettings.queryMethod) {
+          this.setQueryMethod(searchSettings.queryMethod);
+        }
+        if (searchSettings.callback) {
+          this.setCallback(searchSettings.callback);
+        }
+      }
+    }
+  }, {
+    key: "onBeforeRenderer",
+    value: function onBeforeRenderer(TD, row, col, prop, value, cellProperties) {
+      var className = cellProperties.className || [];
+      var classArray = [];
+      if (typeof className === "string") {
+        classArray = className.split(" ");
+      } else {
+        var _classArray;
+        (_classArray = classArray).push.apply(_classArray, _toConsumableArray$h(className));
+      }
+      if (this.isEnabled() && cellProperties.isSearchResult) {
+        if (!classArray.includes(this.searchResultClass)) {
+          classArray.push("".concat(this.searchResultClass));
+        }
+      } else if (classArray.includes(this.searchResultClass)) {
+        classArray.splice(classArray.indexOf(this.searchResultClass), 1);
+      }
+      cellProperties.className = classArray.join(" ");
+    }
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      _get$M(_getPrototypeOf$V(Search2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
     get: function get() {
-      return PLUGIN_KEY$v;
+      return PLUGIN_KEY$u;
     }
   }, {
     key: "PLUGIN_PRIORITY",
     get: function get() {
-      return PLUGIN_PRIORITY$u;
+      return PLUGIN_PRIORITY$t;
     }
   }]);
-  return TouchScroll2;
+  return Search2;
 }(BasePlugin);
 
 function _typeof$Y(obj) {
@@ -34609,19 +34826,278 @@ function _getPrototypeOf$W(o) {
   };
   return _getPrototypeOf$W(o);
 }
+var PLUGIN_KEY$v = "touchScroll";
+var PLUGIN_PRIORITY$u = 200;
+var TouchScroll = /* @__PURE__ */ function(_BasePlugin) {
+  _inherits$W(TouchScroll2, _BasePlugin);
+  var _super = _createSuper$W(TouchScroll2);
+  function TouchScroll2(hotInstance) {
+    var _this;
+    _classCallCheck$1v(this, TouchScroll2);
+    _this = _super.call(this, hotInstance);
+    _this.scrollbars = [];
+    _this.clones = [];
+    _this.lockedCollection = false;
+    _this.freezeOverlays = false;
+    return _this;
+  }
+  _createClass$1v(TouchScroll2, [{
+    key: "isEnabled",
+    value: function isEnabled() {
+      return isTouchSupported();
+    }
+  }, {
+    key: "enablePlugin",
+    value: function enablePlugin() {
+      var _this2 = this;
+      if (this.enabled) {
+        return;
+      }
+      this.addHook("afterViewRender", function() {
+        return _this2.onAfterViewRender();
+      });
+      this.registerEvents();
+      _get$N(_getPrototypeOf$W(TouchScroll2.prototype), "enablePlugin", this).call(this);
+    }
+  }, {
+    key: "updatePlugin",
+    value: function updatePlugin() {
+      this.lockedCollection = false;
+      _get$N(_getPrototypeOf$W(TouchScroll2.prototype), "updatePlugin", this).call(this);
+    }
+  }, {
+    key: "disablePlugin",
+    value: function disablePlugin() {
+      _get$N(_getPrototypeOf$W(TouchScroll2.prototype), "disablePlugin", this).call(this);
+    }
+  }, {
+    key: "registerEvents",
+    value: function registerEvents() {
+      var _this3 = this;
+      this.addHook("beforeTouchScroll", function() {
+        return _this3.onBeforeTouchScroll();
+      });
+      this.addHook("afterMomentumScroll", function() {
+        return _this3.onAfterMomentumScroll();
+      });
+    }
+  }, {
+    key: "onAfterViewRender",
+    value: function onAfterViewRender() {
+      if (this.lockedCollection) {
+        return;
+      }
+      var _this$hot$view$_wt$wt = this.hot.view._wt.wtOverlays, topOverlay = _this$hot$view$_wt$wt.topOverlay, bottomOverlay = _this$hot$view$_wt$wt.bottomOverlay, inlineStartOverlay = _this$hot$view$_wt$wt.inlineStartOverlay, topInlineStartCornerOverlay = _this$hot$view$_wt$wt.topInlineStartCornerOverlay, bottomInlineStartCornerOverlay = _this$hot$view$_wt$wt.bottomInlineStartCornerOverlay;
+      this.lockedCollection = true;
+      this.scrollbars.length = 0;
+      this.scrollbars.push(topOverlay);
+      if (bottomOverlay.clone) {
+        this.scrollbars.push(bottomOverlay);
+      }
+      this.scrollbars.push(inlineStartOverlay);
+      if (topInlineStartCornerOverlay) {
+        this.scrollbars.push(topInlineStartCornerOverlay);
+      }
+      if (bottomInlineStartCornerOverlay && bottomInlineStartCornerOverlay.clone) {
+        this.scrollbars.push(bottomInlineStartCornerOverlay);
+      }
+      this.clones = [];
+      if (topOverlay.needFullRender) {
+        this.clones.push(topOverlay.clone.wtTable.holder.parentNode);
+      }
+      if (bottomOverlay.needFullRender) {
+        this.clones.push(bottomOverlay.clone.wtTable.holder.parentNode);
+      }
+      if (inlineStartOverlay.needFullRender) {
+        this.clones.push(inlineStartOverlay.clone.wtTable.holder.parentNode);
+      }
+      if (topInlineStartCornerOverlay) {
+        this.clones.push(topInlineStartCornerOverlay.clone.wtTable.holder.parentNode);
+      }
+      if (bottomInlineStartCornerOverlay && bottomInlineStartCornerOverlay.clone) {
+        this.clones.push(bottomInlineStartCornerOverlay.clone.wtTable.holder.parentNode);
+      }
+    }
+  }, {
+    key: "onBeforeTouchScroll",
+    value: function onBeforeTouchScroll() {
+      this.freezeOverlays = true;
+      arrayEach(this.clones, function(clone) {
+        addClass(clone, "hide-tween");
+      });
+    }
+  }, {
+    key: "onAfterMomentumScroll",
+    value: function onAfterMomentumScroll() {
+      var _this4 = this;
+      this.freezeOverlays = false;
+      arrayEach(this.clones, function(clone) {
+        removeClass(clone, "hide-tween");
+        addClass(clone, "show-tween");
+      });
+      this.hot._registerTimeout(function() {
+        arrayEach(_this4.clones, function(clone) {
+          removeClass(clone, "show-tween");
+        });
+      }, 400);
+      arrayEach(this.scrollbars, function(scrollbar) {
+        scrollbar.refresh();
+        scrollbar.resetFixedPosition();
+      });
+      this.hot.view._wt.wtOverlays.syncScrollWithMaster();
+    }
+  }], [{
+    key: "PLUGIN_KEY",
+    get: function get() {
+      return PLUGIN_KEY$v;
+    }
+  }, {
+    key: "PLUGIN_PRIORITY",
+    get: function get() {
+      return PLUGIN_PRIORITY$u;
+    }
+  }, {
+    key: "SETTING_KEYS",
+    get: function get() {
+      return true;
+    }
+  }]);
+  return TouchScroll2;
+}(BasePlugin);
+
+function _typeof$Z(obj) {
+  "@babel/helpers - typeof";
+  return _typeof$Z = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+    return typeof obj2;
+  } : function(obj2) {
+    return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
+  }, _typeof$Z(obj);
+}
+function _classCallCheck$1w(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
+}
+function _defineProperties$1w(target, props) {
+  for (var i = 0; i < props.length; i++) {
+    var descriptor = props[i];
+    descriptor.enumerable = descriptor.enumerable || false;
+    descriptor.configurable = true;
+    if ("value" in descriptor)
+      descriptor.writable = true;
+    Object.defineProperty(target, descriptor.key, descriptor);
+  }
+}
+function _createClass$1w(Constructor, protoProps, staticProps) {
+  if (protoProps)
+    _defineProperties$1w(Constructor.prototype, protoProps);
+  if (staticProps)
+    _defineProperties$1w(Constructor, staticProps);
+  Object.defineProperty(Constructor, "prototype", {writable: false});
+  return Constructor;
+}
+function _get$O() {
+  if (typeof Reflect !== "undefined" && Reflect.get) {
+    _get$O = Reflect.get;
+  } else {
+    _get$O = function _get2(target, property, receiver) {
+      var base = _superPropBase$O(target, property);
+      if (!base)
+        return;
+      var desc = Object.getOwnPropertyDescriptor(base, property);
+      if (desc.get) {
+        return desc.get.call(arguments.length < 3 ? target : receiver);
+      }
+      return desc.value;
+    };
+  }
+  return _get$O.apply(this, arguments);
+}
+function _superPropBase$O(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = _getPrototypeOf$X(object);
+    if (object === null)
+      break;
+  }
+  return object;
+}
+function _inherits$X(subClass, superClass) {
+  if (typeof superClass !== "function" && superClass !== null) {
+    throw new TypeError("Super expression must either be null or a function");
+  }
+  subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
+  Object.defineProperty(subClass, "prototype", {writable: false});
+  if (superClass)
+    _setPrototypeOf$X(subClass, superClass);
+}
+function _setPrototypeOf$X(o, p) {
+  _setPrototypeOf$X = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+    o2.__proto__ = p2;
+    return o2;
+  };
+  return _setPrototypeOf$X(o, p);
+}
+function _createSuper$X(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$X();
+  return function _createSuperInternal() {
+    var Super = _getPrototypeOf$X(Derived), result;
+    if (hasNativeReflectConstruct) {
+      var NewTarget = _getPrototypeOf$X(this).constructor;
+      result = Reflect.construct(Super, arguments, NewTarget);
+    } else {
+      result = Super.apply(this, arguments);
+    }
+    return _possibleConstructorReturn$X(this, result);
+  };
+}
+function _possibleConstructorReturn$X(self, call) {
+  if (call && (_typeof$Z(call) === "object" || typeof call === "function")) {
+    return call;
+  } else if (call !== void 0) {
+    throw new TypeError("Derived constructors may only return object or undefined");
+  }
+  return _assertThisInitialized$X(self);
+}
+function _assertThisInitialized$X(self) {
+  if (self === void 0) {
+    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  }
+  return self;
+}
+function _isNativeReflectConstruct$X() {
+  if (typeof Reflect === "undefined" || !Reflect.construct)
+    return false;
+  if (Reflect.construct.sham)
+    return false;
+  if (typeof Proxy === "function")
+    return true;
+  try {
+    Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
+    }));
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+function _getPrototypeOf$X(o) {
+  _getPrototypeOf$X = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+    return o2.__proto__ || Object.getPrototypeOf(o2);
+  };
+  return _getPrototypeOf$X(o);
+}
 var PLUGIN_KEY$w = "trimRows";
 var PLUGIN_PRIORITY$v = 330;
 var TrimRows = /* @__PURE__ */ function(_BasePlugin) {
-  _inherits$W(TrimRows2, _BasePlugin);
-  var _super = _createSuper$W(TrimRows2);
+  _inherits$X(TrimRows2, _BasePlugin);
+  var _super = _createSuper$X(TrimRows2);
   function TrimRows2(hotInstance) {
     var _this;
-    _classCallCheck$1v(this, TrimRows2);
+    _classCallCheck$1w(this, TrimRows2);
     _this = _super.call(this, hotInstance);
     _this.trimmedRowsMap = null;
     return _this;
   }
-  _createClass$1v(TrimRows2, [{
+  _createClass$1w(TrimRows2, [{
     key: "isEnabled",
     value: function isEnabled() {
       return !!this.hot.getSettings()[PLUGIN_KEY$w];
@@ -34637,7 +35113,7 @@ var TrimRows = /* @__PURE__ */ function(_BasePlugin) {
       this.trimmedRowsMap.addLocalHook("init", function() {
         return _this2.onMapInit();
       });
-      _get$N(_getPrototypeOf$W(TrimRows2.prototype), "enablePlugin", this).call(this);
+      _get$O(_getPrototypeOf$X(TrimRows2.prototype), "enablePlugin", this).call(this);
     }
   }, {
     key: "updatePlugin",
@@ -34652,13 +35128,13 @@ var TrimRows = /* @__PURE__ */ function(_BasePlugin) {
           });
         }, true);
       }
-      _get$N(_getPrototypeOf$W(TrimRows2.prototype), "updatePlugin", this).call(this);
+      _get$O(_getPrototypeOf$X(TrimRows2.prototype), "updatePlugin", this).call(this);
     }
   }, {
     key: "disablePlugin",
     value: function disablePlugin() {
       this.hot.rowIndexMapper.unregisterMap("trimRows");
-      _get$N(_getPrototypeOf$W(TrimRows2.prototype), "disablePlugin", this).call(this);
+      _get$O(_getPrototypeOf$X(TrimRows2.prototype), "disablePlugin", this).call(this);
     }
   }, {
     key: "getTrimmedRows",
@@ -34766,7 +35242,7 @@ var TrimRows = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "destroy",
     value: function destroy() {
-      _get$N(_getPrototypeOf$W(TrimRows2.prototype), "destroy", this).call(this);
+      _get$O(_getPrototypeOf$X(TrimRows2.prototype), "destroy", this).call(this);
     }
   }], [{
     key: "PLUGIN_KEY",
@@ -34782,20 +35258,20 @@ var TrimRows = /* @__PURE__ */ function(_BasePlugin) {
   return TrimRows2;
 }(BasePlugin);
 
-function _typeof$Z(obj) {
+function _typeof$_(obj) {
   "@babel/helpers - typeof";
-  return _typeof$Z = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
+  return _typeof$_ = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function(obj2) {
     return typeof obj2;
   } : function(obj2) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
-  }, _typeof$Z(obj);
+  }, _typeof$_(obj);
 }
-function _classCallCheck$1w(instance, Constructor) {
+function _classCallCheck$1x(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
   }
 }
-function _defineProperties$1w(target, props) {
+function _defineProperties$1x(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
@@ -34805,58 +35281,58 @@ function _defineProperties$1w(target, props) {
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
-function _createClass$1w(Constructor, protoProps, staticProps) {
+function _createClass$1x(Constructor, protoProps, staticProps) {
   if (protoProps)
-    _defineProperties$1w(Constructor.prototype, protoProps);
+    _defineProperties$1x(Constructor.prototype, protoProps);
   if (staticProps)
-    _defineProperties$1w(Constructor, staticProps);
+    _defineProperties$1x(Constructor, staticProps);
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
-function _inherits$X(subClass, superClass) {
+function _inherits$Y(subClass, superClass) {
   if (typeof superClass !== "function" && superClass !== null) {
     throw new TypeError("Super expression must either be null or a function");
   }
   subClass.prototype = Object.create(superClass && superClass.prototype, {constructor: {value: subClass, writable: true, configurable: true}});
   Object.defineProperty(subClass, "prototype", {writable: false});
   if (superClass)
-    _setPrototypeOf$X(subClass, superClass);
+    _setPrototypeOf$Y(subClass, superClass);
 }
-function _setPrototypeOf$X(o, p) {
-  _setPrototypeOf$X = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+function _setPrototypeOf$Y(o, p) {
+  _setPrototypeOf$Y = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
-  return _setPrototypeOf$X(o, p);
+  return _setPrototypeOf$Y(o, p);
 }
-function _createSuper$X(Derived) {
-  var hasNativeReflectConstruct = _isNativeReflectConstruct$X();
+function _createSuper$Y(Derived) {
+  var hasNativeReflectConstruct = _isNativeReflectConstruct$Y();
   return function _createSuperInternal() {
-    var Super = _getPrototypeOf$X(Derived), result;
+    var Super = _getPrototypeOf$Y(Derived), result;
     if (hasNativeReflectConstruct) {
-      var NewTarget = _getPrototypeOf$X(this).constructor;
+      var NewTarget = _getPrototypeOf$Y(this).constructor;
       result = Reflect.construct(Super, arguments, NewTarget);
     } else {
       result = Super.apply(this, arguments);
     }
-    return _possibleConstructorReturn$X(this, result);
+    return _possibleConstructorReturn$Y(this, result);
   };
 }
-function _possibleConstructorReturn$X(self, call) {
-  if (call && (_typeof$Z(call) === "object" || typeof call === "function")) {
+function _possibleConstructorReturn$Y(self, call) {
+  if (call && (_typeof$_(call) === "object" || typeof call === "function")) {
     return call;
   } else if (call !== void 0) {
     throw new TypeError("Derived constructors may only return object or undefined");
   }
-  return _assertThisInitialized$X(self);
+  return _assertThisInitialized$Y(self);
 }
-function _assertThisInitialized$X(self) {
+function _assertThisInitialized$Y(self) {
   if (self === void 0) {
     throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   }
   return self;
 }
-function _isNativeReflectConstruct$X() {
+function _isNativeReflectConstruct$Y() {
   if (typeof Reflect === "undefined" || !Reflect.construct)
     return false;
   if (Reflect.construct.sham)
@@ -34871,11 +35347,11 @@ function _isNativeReflectConstruct$X() {
     return false;
   }
 }
-function _getPrototypeOf$X(o) {
-  _getPrototypeOf$X = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+function _getPrototypeOf$Y(o) {
+  _getPrototypeOf$Y = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
-  return _getPrototypeOf$X(o);
+  return _getPrototypeOf$Y(o);
 }
 function _toConsumableArray$i(arr) {
   return _arrayWithoutHoles$i(arr) || _iterableToArray$k(arr) || _unsupportedIterableToArray$P(arr) || _nonIterableSpread$i();
@@ -34950,6 +35426,7 @@ function _arrayWithHoles$A(arr) {
   if (Array.isArray(arr))
     return arr;
 }
+var SHORTCUTS_GROUP$6 = "undoRedo";
 var PLUGIN_KEY$x = "undoRedo";
 function UndoRedo(instance) {
   var plugin = this;
@@ -35029,7 +35506,7 @@ function UndoRedo(instance) {
       }
       var columnsMap = instance.columnIndexMapper.getIndexesSequence();
       var rowsMap = instance.rowIndexMapper.getIndexesSequence();
-      return new UndoRedo.RemoveColumnAction(columnIndex, indexes, removedData, headers, columnsMap, rowsMap, instance.getSettings().fixedColumnsLeft);
+      return new UndoRedo.RemoveColumnAction(columnIndex, indexes, removedData, headers, columnsMap, rowsMap, instance.getSettings().fixedColumnsStart);
     };
     plugin.done(wrappedAction, source);
   });
@@ -35158,7 +35635,7 @@ UndoRedo.prototype.enable = function() {
   var hot = this.instance;
   this.enabled = true;
   exposeUndoRedoMethods(hot);
-  hot.addHook("beforeKeyDown", onBeforeKeyDown);
+  this.registerShortcuts();
   hot.addHook("afterChange", onAfterChange);
 };
 UndoRedo.prototype.disable = function() {
@@ -35168,7 +35645,7 @@ UndoRedo.prototype.disable = function() {
   var hot = this.instance;
   this.enabled = false;
   removeExposedUndoRedoMethods(hot);
-  hot.removeHook("beforeKeyDown", onBeforeKeyDown);
+  this.unregisterShortcuts();
   hot.removeHook("afterChange", onAfterChange);
 };
 UndoRedo.prototype.destroy = function() {
@@ -35275,7 +35752,7 @@ UndoRedo.CreateColumnAction.prototype.redo = function(instance, redoneCallback) 
   instance.addHookOnce("afterCreateCol", redoneCallback);
   instance.alter("insert_col", this.index, this.amount, "UndoRedo.redo");
 };
-UndoRedo.RemoveColumnAction = function(index, indexes, data, headers, columnPositions, rowPositions, fixedColumnsLeft) {
+UndoRedo.RemoveColumnAction = function(index, indexes, data, headers, columnPositions, rowPositions, fixedColumnsStart) {
   this.index = index;
   this.indexes = indexes;
   this.data = data;
@@ -35284,13 +35761,13 @@ UndoRedo.RemoveColumnAction = function(index, indexes, data, headers, columnPosi
   this.columnPositions = columnPositions.slice(0);
   this.rowPositions = rowPositions.slice(0);
   this.actionType = "remove_col";
-  this.fixedColumnsLeft = fixedColumnsLeft;
+  this.fixedColumnsStart = fixedColumnsStart;
 };
 inherit(UndoRedo.RemoveColumnAction, UndoRedo.Action);
 UndoRedo.RemoveColumnAction.prototype.undo = function(instance, undoneCallback) {
   var _this2 = this;
   var settings = instance.getSettings();
-  settings.fixedColumnsLeft = this.fixedColumnsLeft;
+  settings.fixedColumnsStart = this.fixedColumnsStart;
   var ascendingIndexes = this.indexes.slice(0).sort();
   var sortByIndexes = function sortByIndexes2(elem, j, arr) {
     return arr[_this2.indexes.indexOf(ascendingIndexes[j])];
@@ -35372,26 +35849,26 @@ UndoRedo.FiltersAction.prototype.redo = function(instance, redoneCallback) {
   filters.filter();
 };
 var MergeCellsAction = /* @__PURE__ */ function(_UndoRedo$Action) {
-  _inherits$X(MergeCellsAction2, _UndoRedo$Action);
-  var _super = _createSuper$X(MergeCellsAction2);
+  _inherits$Y(MergeCellsAction2, _UndoRedo$Action);
+  var _super = _createSuper$Y(MergeCellsAction2);
   function MergeCellsAction2(instance, cellRange) {
     var _this4;
-    _classCallCheck$1w(this, MergeCellsAction2);
+    _classCallCheck$1x(this, MergeCellsAction2);
     _this4 = _super.call(this);
     _this4.cellRange = cellRange;
-    var topLeftCorner = _this4.cellRange.getTopLeftCorner();
-    var bottomRightCorner = _this4.cellRange.getBottomRightCorner();
-    _this4.rangeData = instance.getData(topLeftCorner.row, topLeftCorner.col, bottomRightCorner.row, bottomRightCorner.col);
+    var topStartCorner = _this4.cellRange.getTopStartCorner();
+    var bottomEndCorner = _this4.cellRange.getBottomEndCorner();
+    _this4.rangeData = instance.getData(topStartCorner.row, topStartCorner.col, bottomEndCorner.row, bottomEndCorner.col);
     return _this4;
   }
-  _createClass$1w(MergeCellsAction2, [{
+  _createClass$1x(MergeCellsAction2, [{
     key: "undo",
     value: function undo(instance, undoneCallback) {
       var mergeCellsPlugin = instance.getPlugin("mergeCells");
       instance.addHookOnce("afterViewRender", undoneCallback);
       mergeCellsPlugin.unmergeRange(this.cellRange, true);
-      var topLeftCorner = this.cellRange.getTopLeftCorner();
-      instance.populateFromArray(topLeftCorner.row, topLeftCorner.col, this.rangeData, void 0, void 0, "MergeCells");
+      var topStartCorner = this.cellRange.getTopStartCorner();
+      instance.populateFromArray(topStartCorner.row, topStartCorner.col, this.rangeData, void 0, void 0, "MergeCells");
     }
   }, {
     key: "redo",
@@ -35405,16 +35882,16 @@ var MergeCellsAction = /* @__PURE__ */ function(_UndoRedo$Action) {
 }(UndoRedo.Action);
 UndoRedo.MergeCellsAction = MergeCellsAction;
 var UnmergeCellsAction = /* @__PURE__ */ function(_UndoRedo$Action2) {
-  _inherits$X(UnmergeCellsAction2, _UndoRedo$Action2);
-  var _super2 = _createSuper$X(UnmergeCellsAction2);
+  _inherits$Y(UnmergeCellsAction2, _UndoRedo$Action2);
+  var _super2 = _createSuper$Y(UnmergeCellsAction2);
   function UnmergeCellsAction2(instance, cellRange) {
     var _this5;
-    _classCallCheck$1w(this, UnmergeCellsAction2);
+    _classCallCheck$1x(this, UnmergeCellsAction2);
     _this5 = _super2.call(this);
     _this5.cellRange = cellRange;
     return _this5;
   }
-  _createClass$1w(UnmergeCellsAction2, [{
+  _createClass$1x(UnmergeCellsAction2, [{
     key: "undo",
     value: function undo(instance, undoneCallback) {
       var mergeCellsPlugin = instance.getPlugin("mergeCells");
@@ -35483,29 +35960,34 @@ UndoRedo.prototype.init = function() {
     this.instance.undoRedo.disable();
   }
 };
-function onBeforeKeyDown(event) {
-  if (isImmediatePropagationStopped(event)) {
-    return;
-  }
-  var instance = this;
-  var editor = instance.getActiveEditor();
-  if (editor && editor.isOpened()) {
-    return;
-  }
-  var altKey = event.altKey, ctrlKey = event.ctrlKey, keyCode = event.keyCode, metaKey = event.metaKey, shiftKey = event.shiftKey;
-  var isCtrlDown = (ctrlKey || metaKey) && !altKey;
-  if (!isCtrlDown) {
-    return;
-  }
-  var isRedoHotkey = keyCode === 89 || shiftKey && keyCode === 90;
-  if (isRedoHotkey) {
-    instance.undoRedo.redo();
-    stopImmediatePropagation(event);
-  } else if (keyCode === 90) {
-    instance.undoRedo.undo();
-    stopImmediatePropagation(event);
-  }
-}
+UndoRedo.prototype.registerShortcuts = function() {
+  var _this7 = this;
+  var shortcutManager = this.instance.getShortcutManager();
+  var gridContext = shortcutManager.getContext("grid");
+  var runOnlyIf = function runOnlyIf2(event) {
+    return !event.altKey;
+  };
+  var config = {
+    runOnlyIf,
+    group: SHORTCUTS_GROUP$6
+  };
+  gridContext.addShortcuts([{
+    keys: [["Control/Meta", "z"]],
+    callback: function callback() {
+      _this7.undo();
+    }
+  }, {
+    keys: [["Control/Meta", "y"], ["Control/Meta", "Shift", "z"]],
+    callback: function callback() {
+      _this7.redo();
+    }
+  }], config);
+};
+UndoRedo.prototype.unregisterShortcuts = function() {
+  var shortcutManager = this.instance.getShortcutManager();
+  var gridContext = shortcutManager.getContext("grid");
+  gridContext.removeShortcutsByGroup(SHORTCUTS_GROUP$6);
+};
 function onAfterChange(changes, source) {
   var instance = this;
   if (source === "loadData") {
@@ -35546,6 +36028,7 @@ hook.register("afterUndo");
 hook.register("beforeRedo");
 hook.register("afterRedo");
 UndoRedo.PLUGIN_KEY = PLUGIN_KEY$x;
+UndoRedo.SETTING_KEYS = true;
 
 function registerAllPlugins() {
   registerPlugin(AutoColumnSize);
