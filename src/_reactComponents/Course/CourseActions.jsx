@@ -113,17 +113,16 @@ export const enrollmentByCourseId = selectorFamily({
 
 })
 
-function buildDoenetIdToParentDoenetIdObj(contentArray,orderDoenetId=null){
+function buildDoenetIdToParentDoenetIdObj(contentArray,parentDoenetId=null){
   let returnObj = {}
-  contentArray.map((item)=>{
+  for (let item of contentArray){
     if (item?.type == "order"){
       let childObj = buildDoenetIdToParentDoenetIdObj(item.content,item.doenetId);
       returnObj = {...childObj,...returnObj}
-    }else if (orderDoenetId !== null){
-      returnObj[orderDoenetId] = item;
+    }else if (parentDoenetId !== null){
+      returnObj[item] = parentDoenetId;
     }
-    returnObj
-  })
+  }
   return returnObj;
 }
 
@@ -259,17 +258,16 @@ export function useInitCourseItems(courseId) {
               }
               if (item.type === 'activity'){
                 //TODO: needs testing with orders
-                let newPageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.content);
+                let newPageDoenetIdToParentDoenetId = buildDoenetIdToParentDoenetIdObj(item.content,item.doenetId);
                 pageDoenetIdToParentDoenetId = {...pageDoenetIdToParentDoenetId,...newPageDoenetIdToParentDoenetId}
-                console.log("newPageDoenetIdToParentDoenetId",newPageDoenetIdToParentDoenetId)
-                //HERE!
-                let ordersAndPages = findOrderAndPageDoenetIdsAndSetOrderObjs({
+               
+                let ordersAndPagesIds = findOrderAndPageDoenetIdsAndSetOrderObjs({
                   set,
                   contentArray:item.content,
                   assignmentDoenetId:item.doenetId
                 });
-                if (item.isMultipage){
-                  items = [...items,...ordersAndPages];
+                if (!item.isSinglePage){
+                  items = [...items,...ordersAndPagesIds];
                 }
               }else if (item.type === 'bank'){
                 item.pages.map((childDoenetId)=>{
@@ -627,44 +625,19 @@ export const useCourse = (courseId) => {
   }
 
      //Recursive Function 
-  function findOrderAndPageDoenetIds(orderObj,assignmentDoenetId,parentDoenetId){
-    let orderAndPagesDoenetIds = [];
-    //Guard for when there is no order
-    if (orderObj){
+  function findActivityChildIds(content){
+    let orderAndPageIds = [];
 
-      let numberToSelect = orderObj.numberToSelect;
-        if (numberToSelect == undefined){
-          numberToSelect = 1;
-        }
-        let withReplacement = orderObj.withReplacement;
-        if (withReplacement == undefined){
-          withReplacement = false;
-        }
-      //Store order objects for UI
-      set(itemByDoenetId(orderObj.doenetId), {
-        type: "order",
-        doenetId: orderObj.doenetId, 
-        behavior:orderObj.behavior,
-        numberToSelect,
-        withReplacement,
-        containingDoenetId:assignmentDoenetId,
-        isOpen:false,
-        isSelected:false,
-        parentDoenetId
-      });
-      orderAndPagesDoenetIds.push(orderObj.doenetId);
-      for (let orderItem of orderObj.content){
-        if (orderItem?.type == 'order'){
-          let moreOrderDoenetIds = findOrderAndPageDoenetIds(orderItem,assignmentDoenetId,orderObj.doenetId);
-          orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
-        }else{
-          //Page 
-          pageDoenetIdToParentDoenetId[orderItem] = orderObj.doenetId;
-          orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,orderItem];
-        }
+    for (let item of content){
+      if (item?.type == 'order'){
+      let newIds = findActivityChildIds(item.content)
+      orderAndPageIds = [...orderAndPageIds,...newIds]
+      }else{
+        orderAndPageIds.push(item);
       }
     }
-    return orderAndPagesDoenetIds;
+      
+    return orderAndPageIds;
   }
 
   function insertPageOrOrderIntoOrderUsingPage({
@@ -742,18 +715,7 @@ export const useCourse = (courseId) => {
     return {order:null,previousDoenetId:null};
   }
 
-  function getIdsOfActivitiesChildren(content=[]){
-    let childDoenetIds = []
-    for (let item of content){
-      if (item?.type == 'order'){
-        let childrenOfOrder = getIdsOfActivitiesChildren(item.content);
-        childDoenetIds = [...childDoenetIds,...childrenOfOrder];
-      }else{
-        childDoenetIds.push(item);
-      }
-    }
-    return childDoenetIds;
-  }
+ 
 
   const create = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -995,17 +957,17 @@ export const useCourse = (courseId) => {
             content:[],
             doenetId: orderDoenetIdThatWasCreated,
           }
-
+          console.log(">>>>selectedItemObj",selectedItemObj)
 
           //Update the Global Item Order Activity or Collection
           if (selectedItemObj.type == 'activity'){
             let newJSON = {...selectedItemObj.content};
+            
             let insertedAfterDoenetId = selectedItemObj.content[selectedItemObj.content.length - 1];
             if (itemType == 'page'){
               pageThatWasCreated.parentDoenetId = selectedItemObj.doenetId;
               newJSON = [...selectedItemObj.content,pageThatWasCreated.doenetId]
             }else if (itemType == 'order'){
-              
               newJSON = [...selectedItemObj.content,orderObj]
             }
             let newActivityObj = {...selectedItemObj}
@@ -1037,7 +999,8 @@ export const useCourse = (courseId) => {
             }
 
             //TODO: can we use this after the bank, order and page below?????
-
+            let previousChildIds = findActivityChildIds(selectedItemObj.content)
+            let nextChildIds = findActivityChildIds(newJSON)
             //Update author order
             set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
               let next = [...prev];
@@ -1045,10 +1008,10 @@ export const useCourse = (courseId) => {
             //If was single page then there wouldn't be any
             if (!makeMultiPage){
               //remove previous activity children from next
+              next.splice(next.indexOf(selectedItemObj.doenetId)+1,previousChildIds.length)
             }
             //Add all the children of the new contents under the activity
-            let newChildrenDoenetIds = getIdsOfActivitiesChildren(newJSON);
-              next.splice(next.indexOf(selectedItemObj.doenetId)+1,0,...newChildrenDoenetIds);
+              next.splice(next.indexOf(selectedItemObj.doenetId)+1,0,...nextChildIds);
               return next;
             });
            

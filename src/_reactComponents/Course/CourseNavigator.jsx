@@ -263,12 +263,16 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
      </>
   }
   if (itemInfo.isOpen){
-    let childRows = []
-
-
+    let childRowsJSX = itemInfo.content.map((pageOrOrder,i)=>{
+      if (pageOrOrder?.type == 'order'){
+        return <Order key={`Order${i}${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+      }else{
+        return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={itemInfo.doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+      }
+    })
     return <>
     <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} columnsJSX={columnsJSX} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
-    {childRows}
+    {childRowsJSX}
      </>
   }else{
     return <>
