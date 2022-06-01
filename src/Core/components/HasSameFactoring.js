@@ -28,6 +28,12 @@ export default class HasSameFactoring extends BooleanComponent {
       defaultValue: false
     }
 
+    // Note: allowOnlySignDifferences implies monomialFactorMustMatch and restrictDivision
+    attributes.allowOnlySignDifferences = {
+      createComponentOfType: "boolean",
+      createStateVariable: "allowOnlySignDifferences",
+      defaultValue: false
+    }
 
 
     return attributes;
@@ -88,6 +94,10 @@ export default class HasSameFactoring extends BooleanComponent {
         monomialFactorMustMatch: {
           dependencyType: "stateVariable",
           variableName: "monomialFactorMustMatch"
+        },
+        allowOnlySignDifferences: {
+          dependencyType: "stateVariable",
+          variableName: "allowOnlySignDifferences"
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -120,7 +130,9 @@ export default class HasSameFactoring extends BooleanComponent {
           expr2 = me.fromAst(expr2.tree[1]);
         }
 
-        if (!dependencyValues.restrictDivision && !dependencyValues.monomialFactorMustMatch) {
+        if (!dependencyValues.restrictDivision && !dependencyValues.monomialFactorMustMatch
+          && !dependencyValues.allowOnlySignDifferences
+        ) {
           // if have a ratio where denominator is a constant
           // ignore denominator
           if (Array.isArray(expr1.tree) && expr1.tree[0] === "/"
@@ -157,7 +169,8 @@ export default class HasSameFactoring extends BooleanComponent {
 
         // both expressions are products and are mathematically equivalent
 
-        if (dependencyValues.monomialFactorMustMatch) {
+
+        if (dependencyValues.monomialFactorMustMatch || dependencyValues.allowOnlySignDifferences) {
           let monomial1 = findMonomialFromFactors(expr1.tree.slice(1));
           let monomial2 = findMonomialFromFactors(expr2.tree.slice(1));
           if (!monomial1.equals(monomial2)) {
@@ -168,6 +181,21 @@ export default class HasSameFactoring extends BooleanComponent {
             }
           }
         }
+
+        if (dependencyValues.allowOnlySignDifferences) {
+          let expr1Normalized = normalizeFactorSigns(expr1);
+          let expr2Normalized = normalizeFactorSigns(expr2);
+          return {
+            setValue: {
+              value: expr1Normalized.equalsViaSyntax(expr2Normalized, {
+                allowed_error_in_numbers: dependencyValues.allowedErrorInNumbers,
+                include_error_in_number_exponents: dependencyValues.includeErrorInNumberExponents,
+                allowed_error_is_absolute: dependencyValues.allowedErrorIsAbsolute,
+              })
+            }
+          }
+        }
+
 
         let nonConstantFactors1 = expr1.tree.slice(1).filter(x => me.fromAst(x).variables().length > 0);
         let nonConstantFactors2 = expr2.tree.slice(1).filter(x => me.fromAst(x).variables().length > 0);
@@ -267,8 +295,8 @@ function findMonomialFromFactors(factors) {
 
   for (let factor of factors) {
     if (typeof factor === "string" || me.fromAst(factor).variables().length === 0) {
-      if(!inMonomial) {
-        if(monomialFactors.length > 0) {
+      if (!inMonomial) {
+        if (monomialFactors.length > 0) {
           // found a second monomial
           return me.fromAst('\uff3f')
         } else {
@@ -292,5 +320,67 @@ function findMonomialFromFactors(factors) {
   }
 
   return me.fromAst(monomialTree);
+
+}
+
+function normalizeFactorSigns(expr) {
+
+  let exprTree = expr.simplify().tree;
+
+  if (exprTree[0] === "-") {
+    exprTree = exprTree[1];
+  }
+
+  if (exprTree[0] !== "*") {
+    return me.fromAst(exprTree).simplify();
+  }
+
+
+  let newTree = ['*'];
+
+  for (let factor of exprTree.slice(1)) {
+    if (typeof factor === "number") {
+      if (factor < 0) {
+        newTree.push(-factor);
+      } else {
+        newTree.push(factor);
+      }
+    } else if (!Array.isArray(factor)) {
+      newTree.push(factor);
+    } else if (factor[0] === "-") {
+      newTree.push(factor[1])
+    } else if (factor[0] === "+") {
+      let firstTermHasNeg = false;
+      let term = factor[1];
+      if (typeof term === "number") {
+        if (term < 0) {
+          firstTermHasNeg = true;
+        }
+      } else if (Array.isArray(term)) {
+        if (term[0] === "-") {
+          firstTermHasNeg = true;
+        } else if (term[0] === "*") {
+          let firstFactorInTerm = term[1];
+          if (typeof firstFactorInTerm === "number") {
+            if (firstFactorInTerm < 0) {
+              firstTermHasNeg = true;
+            }
+          } else if (Array.isArray(firstFactorInTerm) && firstFactorInTerm[0] === "-") {
+            firstTermHasNeg = true;
+          }
+        }
+      }
+
+      if (firstTermHasNeg) {
+        newTree.push(me.fromAst(["-", factor]).simplify().tree)
+      } else {
+        newTree.push(factor);
+      }
+    } else {
+      newTree.push(factor);
+    }
+  }
+
+  return me.fromAst(newTree).simplify();
 
 }
