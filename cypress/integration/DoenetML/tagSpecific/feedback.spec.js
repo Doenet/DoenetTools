@@ -59,7 +59,6 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
@@ -78,7 +77,6 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/_section1 p').eq(2).should('not.exist')
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
@@ -93,7 +91,6 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/_section1 p').should('have.text', "That's a bad answer.")
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
@@ -147,7 +144,6 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/_section1 p').should('not.exist')
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
@@ -162,7 +158,6 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/_section1 p').should('have.text', `You got award 1.`)
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
@@ -177,7 +172,6 @@ describe('Feedback Tag Tests', function () {
       cy.get('#\\/_section1 p').should('have.text', `You got award 2.`)
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
 
       cy.log('Test value displayed in browser')
@@ -251,7 +245,6 @@ describe('Feedback Tag Tests', function () {
     cy.get('#\\/_section1 p').should('not.exist')
 
     cy.log("Submit answer")
-    cy.wait(0);
     cy.get('#\\/_mathinput1_submit').click();
 
     cy.log('Test value displayed in browser')
@@ -584,7 +577,6 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('contain.text', 'FeedbackGood job!')
@@ -625,7 +617,6 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Submit answer")
-      cy.wait(0);
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputPartialAnchor).should('have.text', '70 %');
       cy.get('#\\/feedback1').invoke('text').then(text => {
@@ -786,7 +777,6 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Submit answer")
-      cy.wait(0);
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('contain.text', 'FeedbackGood job!')
@@ -827,7 +817,6 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputPartialAnchor).should('have.text', '70 %');
       cy.get('#\\/feedback1').invoke('text').then(text => {
@@ -943,7 +932,6 @@ describe('Feedback Tag Tests', function () {
       cy.get(mathinputSubmitAnchor).should('be.visible');
 
       cy.log('submit blank answer');
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
 
       cy.get(mathinputIncorrectAnchor).should('be.visible');
@@ -997,7 +985,6 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('contain.text', 'FeedbackGood job!')
@@ -1038,7 +1025,6 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputPartialAnchor).should('have.text', '70 %');
       cy.get('#\\/feedback1').invoke('text').then(text => {
@@ -1200,7 +1186,6 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputCorrectAnchor).should('be.visible');
       cy.get('#\\/feedback1').should('contain.text', 'FeedbackGood job!')
@@ -1241,7 +1226,6 @@ describe('Feedback Tag Tests', function () {
 
 
       cy.log("Submit answer")
-      cy.wait(0)
       cy.get(mathinputSubmitAnchor).click();
       cy.get(mathinputPartialAnchor).should('have.text', '70 %');
       cy.get('#\\/feedback1').invoke('text').then(text => {

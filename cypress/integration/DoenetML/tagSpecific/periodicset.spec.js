@@ -674,7 +674,6 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/mi3 textarea').type('210', { force: true }).blur();
     cy.get('#\\/mi4 textarea').type('211', { force: true }).blur();
 
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '75')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -691,7 +690,6 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.get('#\\/mi4 textarea').type('{ctrl+home}{shift+end}{backspace}-30', { force: true }).blur();
 
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_correct').should('be.visible');
 
@@ -705,7 +703,6 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/number_offsets_input textarea').type('{enter}', { force: true });
     cy.get('#\\/number_offsets_input_correct').should('be.visible');
 
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '40')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -719,7 +716,6 @@ describe('PeriodicSet Tag Tests', function () {
 
     cy.log('add in a duplicate')
     cy.get('#\\/mi5 textarea').type('330', { force: true }).blur();
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '50')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -738,7 +734,6 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/mi8 textarea').type('330', { force: true }).blur();
     cy.get('#\\/mi9 textarea').type('330', { force: true }).blur();
     cy.get('#\\/mi10 textarea').type('330', { force: true }).blur();
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_correct').should("be.visible");
     cy.get('#\\/_answer4_submit').click();
@@ -751,7 +746,6 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/number_offsets_input textarea').type('{end}{backspace}{backspace}3', { force: true });
     cy.get('#\\/number_offsets_input_submit').click();
     cy.get('#\\/number_offsets_input_incorrect').should('be.visible');
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '75')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -764,7 +758,6 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}100', { force: true }).blur();
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '50')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -780,7 +773,6 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/number_offsets_input textarea').type('{end}{backspace}2', { force: true });
     cy.get('#\\/number_offsets_input_submit').click();
     cy.get('#\\/number_offsets_input_incorrect').should('be.visible');
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '50')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -798,7 +790,6 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/period_input_correct').should('be.visible');
     cy.get('#\\/number_offsets_input_submit').click();
     cy.get('#\\/number_offsets_input_correct').should('be.visible');
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_correct').should("be.visible");
     cy.get('#\\/_answer4_submit').click();
@@ -808,7 +799,6 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/number_offsets_input textarea').type('{end}{backspace}3', { force: true });
     cy.get('#\\/number_offsets_input_submit').click();
     cy.get('#\\/number_offsets_input_correct').should('be.visible');
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '67')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -821,7 +811,6 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}330', { force: true }).blur();
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_correct').should("be.visible");
     cy.get('#\\/_answer4_submit').click();
@@ -836,7 +825,6 @@ describe('PeriodicSet Tag Tests', function () {
     cy.get('#\\/period_input_incorrect').should('be.visible');
     cy.get('#\\/number_offsets_input_submit').click();
     cy.get('#\\/number_offsets_input_correct').should('be.visible');
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '50')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -849,7 +837,6 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}100', { force: true }).blur();
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '33')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
@@ -862,7 +849,6 @@ describe('PeriodicSet Tag Tests', function () {
     })
 
     cy.get('#\\/mi3 textarea').type('{ctrl+home}{shift+end}{backspace}150', { force: true }).blur();
-    cy.wait(0)
     cy.get('#\\/_answer3_submit').click();
     cy.get('#\\/_answer3_partial').should('contain.text', '50')
     cy.get('#\\/_answer3_partial').invoke('text').then((text) => {
