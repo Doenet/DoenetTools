@@ -32,7 +32,7 @@ background: white;
 display: flex;
 justify-content: space-between;
 align-items: center;
-position: ${(props) => props.fix ? 'static' : 'sticky'};
+position: static;
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 top: 0;
