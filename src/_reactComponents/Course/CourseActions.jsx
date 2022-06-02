@@ -252,7 +252,7 @@ export function useInitCourseItems(courseId) {
 
           if(data.success) {
             //DoenetIds depth first search and going into json structures
-            console.log("data",data)
+            // console.log("data",data)
             //TODO: make more efficent for student only view
             let pageDoenetIdToParentDoenetId = {};
             let doenetIds = data.items.reduce((items,item)=>{
@@ -269,7 +269,7 @@ export function useInitCourseItems(courseId) {
                   contentArray:item.content,
                   assignmentDoenetId:item.doenetId
                 });
-
+                // console.log(">>>>ordersAndPagesIds",ordersAndPagesIds)
                 if (!item.isSinglePage){
                   items = [...items,...ordersAndPagesIds];
                 }
@@ -560,87 +560,86 @@ export const cutCourseItems = atom({
 
 // // type ItemType = 'Activity' | 'Section' | 'Page';
 
+
+function findContentsChildIds(content){
+  let orderAndPageIds = [];
+
+  for (let item of content){
+    if (item?.type == 'order'){
+    let newIds = findContentsChildIds(item.content)
+    orderAndPageIds = [...orderAndPageIds,item.doenetId,...newIds]
+    }else{
+      orderAndPageIds.push(item);
+    }
+  }
+  return orderAndPageIds;
+}
+
 export const useCourse = (courseId) => {
   const { label, color, image } = useRecoilValue(
     coursePermissionsAndSettingsByCourseId(courseId),
   );
   const addToast = useToast();
 
-  function insertPageOrOrderToOrder({
-    parentOrderObj,
+  function insertPageOrOrderToActivityInSpecificOrder({
+    content,
     needleOrderDoenetId,
-    itemType,
-    newPageDonenetId,
-    orderObj
+    createdItemType,
+    createdPageDonenetId=null,
+    createdOrderObj=null
   }){
-    let newOrderObj = {...parentOrderObj};
-    let insertedAfterDoenetId = parentOrderObj.doenetId;
-    //Only if the top order matches
-    if (parentOrderObj.doenetId == needleOrderDoenetId){
-      insertedAfterDoenetId = newOrderObj.content[newOrderObj.content.length - 1];
-      if (insertedAfterDoenetId?.type == 'order'){
-        insertedAfterDoenetId = insertedAfterDoenetId.doenetId;
-      }
-      //Add to the newOrderObj
-      if (itemType == 'page'){
-        newOrderObj.content = [...parentOrderObj.content,newPageDonenetId]
-      }else if (itemType == 'order'){
-        newOrderObj.content = [...parentOrderObj.content,{...orderObj}]
-      }
-      return {newOrderObj,insertedAfterDoenetId};
-    }
-    //Recurse to find the matching order
-    for (let [i,item] of Object.entries(parentOrderObj.content)){
+    let newContent = [...content];
+    let insertedAfterDoenetId;
+
+    for (let [i,item] of Object.entries(content)){
       if (item?.doenetId == needleOrderDoenetId){
         let newItem = {...item};
         insertedAfterDoenetId = newItem.doenetId;
         if (newItem.content.length > 0){
           insertedAfterDoenetId = newItem.content[newItem.content.length -1];
         }
-        if (itemType == 'page'){
-          newItem.content = [...newItem.content,newPageDonenetId]
-        }else if (itemType == 'order'){
-          newItem.content = [...newItem.content,{...orderObj}]
+        //Last item is an order
+        if (insertedAfterDoenetId?.type == 'order'){
+          let childIds = findContentsChildIds(item.content);
+          insertedAfterDoenetId = insertedAfterDoenetId.doenetId
+          if (childIds.length > 0){
+            insertedAfterDoenetId = childIds[childIds.length -1];
+          }
         }
-        newOrderObj.content = [...newOrderObj.content];
-        newOrderObj.content.splice(i,1,newItem)
+
+
+        if (createdItemType == 'page'){
+          newItem.content = [...newItem.content,createdPageDonenetId]
+        }else if (createdItemType == 'order'){
+          newItem.content = [...newItem.content,{...createdOrderObj}]
+        }
+        newContent.splice(i,1,newItem)
         
-        return {newOrderObj,insertedAfterDoenetId};
+        return {newContent,insertedAfterDoenetId};
       }
       if (item?.type == 'order'){
-        let {newOrderObj:subOrder,insertedAfterDoenetId} = insertPageOrOrderToOrder({
-          parentOrderObj:item,
+        let {newContent:subContent,insertedAfterDoenetId} = insertPageOrOrderToActivityInSpecificOrder({
+          content:item.content,
           needleOrderDoenetId,
-          itemType,
-          newPageDonenetId,
-          orderObj
+          createdItemType,
+          createdPageDonenetId,
+          createdOrderObj
         });
-        if (subOrder != null){
-          //Attach subOrder to newOrderObj 
-          newOrderObj.content = [...newOrderObj.content]
-          newOrderObj.content.splice(i,1,subOrder)
-          return {newOrderObj,insertedAfterDoenetId};
+        if (subContent != null){
+          //Attach subContent to order in newContent 
+          let newOrder = {...item};
+          newOrder.content = subContent;
+          newContent.splice(i,1,newOrder)
+          return {newContent,insertedAfterDoenetId};
         }
+        // else{
+        //   return {newContent:null,insertedAfterDoenetId}; 
+        // }
       }
 
     }
     //Only ever get here when we didn't find the order
-      return {newOrderObj:null,insertedAfterDoenetId:null};
-  }
-
-     //Recursive Function 
-  function findActivityChildIds(content){
-    let orderAndPageIds = [];
-
-    for (let item of content){
-      if (item?.type == 'order'){
-      let newIds = findActivityChildIds(item.content)
-      orderAndPageIds = [...orderAndPageIds,item.doenetId,...newIds]
-      }else{
-        orderAndPageIds.push(item);
-      }
-    }
-    return orderAndPageIds;
+      return {newContent:null,insertedAfterDoenetId:null};
   }
 
   function insertPageOrOrderIntoOrderUsingPage({
@@ -1000,8 +999,8 @@ export const useCourse = (courseId) => {
             }
 
             //TODO: can we use this after order and page below?????
-            let previousChildIds = findActivityChildIds(selectedItemObj.content)
-            let nextChildIds = findActivityChildIds(newJSON)
+            let previousChildIds = findContentsChildIds(selectedItemObj.content)
+            let nextChildIds = findContentsChildIds(newJSON)
 
             //Update author order
             set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
@@ -1048,20 +1047,28 @@ export const useCourse = (courseId) => {
             }
             const containingItemObj = await snapshot.getPromise(itemByDoenetId(selectedItemObj.containingDoenetId));
 
-            let { newOrderObj, insertedAfterDoenetId } = insertPageOrOrderToOrder({
-              parentOrderObj:containingItemObj.order,
+            console.log("params",{
+              content:containingItemObj.content,
               needleOrderDoenetId:orderDoenetId,
-              itemType,
-              newPageDonenetId:pageThatWasCreated?.doenetId,
-              orderObj})
+              createdItemType:itemType,
+              createdPageDonenetId:pageThatWasCreated?.doenetId,
+              createdOrderObj:orderObj})
+            let { newContent, insertedAfterDoenetId } = insertPageOrOrderToActivityInSpecificOrder({
+              content:containingItemObj.content,
+              needleOrderDoenetId:orderDoenetId,
+              createdItemType:itemType,
+              createdPageDonenetId:pageThatWasCreated?.doenetId,
+              createdOrderObj:orderObj})
+            console.log(">>>>progress:",{ newContent, insertedAfterDoenetId })
+
 
             let newActivityObj = {...containingItemObj}
-            newActivityObj.order = newOrderObj;
+            newActivityObj.content = newContent;
 
             let { data } = await axios.post('/api/updateActivityStructure.php', {
                 courseId,
                 doenetId:newActivityObj.doenetId,
-                newJSON:newOrderObj,
+                newJSON:newContent,
               });
               // console.log("data",data)
               orderObj['isOpen'] = false;
