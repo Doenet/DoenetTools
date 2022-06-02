@@ -1047,20 +1047,12 @@ export const useCourse = (courseId) => {
             }
             const containingItemObj = await snapshot.getPromise(itemByDoenetId(selectedItemObj.containingDoenetId));
 
-            console.log("params",{
-              content:containingItemObj.content,
-              needleOrderDoenetId:orderDoenetId,
-              createdItemType:itemType,
-              createdPageDonenetId:pageThatWasCreated?.doenetId,
-              createdOrderObj:orderObj})
             let { newContent, insertedAfterDoenetId } = insertPageOrOrderToActivityInSpecificOrder({
               content:containingItemObj.content,
               needleOrderDoenetId:orderDoenetId,
               createdItemType:itemType,
               createdPageDonenetId:pageThatWasCreated?.doenetId,
               createdOrderObj:orderObj})
-            console.log(">>>>progress:",{ newContent, insertedAfterDoenetId })
-
 
             let newActivityObj = {...containingItemObj}
             newActivityObj.content = newContent;
@@ -1437,6 +1429,7 @@ export const useCourse = (courseId) => {
   });
 
   function updateOrder({content,needleDoenetId,changesObj}){
+    console.log(">>needleDoenetId",needleDoenetId)
     let nextContent = [...content];
 
     for (let [i,item] of Object.entries(content)){
@@ -1450,10 +1443,14 @@ export const useCourse = (courseId) => {
         }
         //if not match then recurse into content
         let childContent = updateOrder({content:item.content,needleDoenetId,changesObj});
+        console.log(">>childContent",childContent)
+        console.log(">>nextContent",nextContent)
         if (childContent != null){
           console.log("childContent",childContent)
-          console.log("nextContent",nextContent)
-          // nextContent.splice(i,1,childContent);
+          let nextOrderObj = {...item}
+          nextOrderObj.content = childContent;
+          console.log(">>nextOrderObj",nextOrderObj)
+          nextContent.splice(i,1,nextOrderObj);
           return nextContent;
         }
       }
@@ -1552,12 +1549,6 @@ export const useCourse = (courseId) => {
         let activityObj = await snapshot.getPromise(itemByDoenetId(orderObj.containingDoenetId))
         let changesObj = {behavior,numberToSelect,withReplacement};
         let newJSON = updateOrder({content:activityObj.content,needleDoenetId:doenetId,changesObj});
-
-        console.log("update order behavior",{
-          courseId,
-          doenetId:orderObj.containingDoenetId,
-          newJSON
-        })
         
         let { data } = await axios.post('/api/updateActivityStructure.php', {
           courseId,
