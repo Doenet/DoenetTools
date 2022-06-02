@@ -156,30 +156,33 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray,assignmentDo
    
     for (let item of contentArray){
       if (item?.type == 'order'){
-        //TODO handle order
          //Store order objects for UI
-    // let numberToSelect = orderObj.numberToSelect;
-    // if (numberToSelect == undefined){
-    //   numberToSelect = 1;
-    // }
-    // let withReplacement = orderObj.withReplacement;
-    // if (withReplacement == undefined){
-    //   withReplacement = false;
-    // }
-    // set(itemByDoenetId(orderObj.doenetId), {
-    //   type: "order",
-    //   doenetId: orderObj.doenetId, 
-    //   behavior:orderObj.behavior,
-    //   numberToSelect,
-    //   withReplacement,
-    //   containingDoenetId:assignmentDoenetId,
-    //   isOpen:false,
-    //   isSelected:false,
-    //   parentDoenetId
-    // });
-    // orderAndPagesDoenetIds.push(orderObj.doenetId);
-        // let moreOrderDoenetIds = findOrderAndPageDoenetIdsAndSetOrderObjs(set,orderItem,assignmentDoenetId,orderObj.doenetId);
-        // orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
+    let numberToSelect = item.numberToSelect;
+    if (numberToSelect == undefined){
+      numberToSelect = 1;
+    }
+    let withReplacement = item.withReplacement;
+    if (withReplacement == undefined){
+      withReplacement = false;
+    }
+    let parentDoenetId = orderDoenetId;
+    if (orderDoenetId == null){
+      parentDoenetId = assignmentDoenetId;
+    }
+    set(itemByDoenetId(item.doenetId), {
+      type: "order",
+      doenetId: item.doenetId, 
+      behavior:item.behavior,
+      numberToSelect,
+      withReplacement,
+      containingDoenetId:assignmentDoenetId,
+      isOpen:false,
+      isSelected:false,
+      parentDoenetId
+    });
+    orderAndPagesDoenetIds.push(item.doenetId);
+        let moreOrderDoenetIds = findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray:item.content,assignmentDoenetId,orderDoenetId:item.doenetId});
+        orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
       }else{
         //Page 
         orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,item];
@@ -266,6 +269,8 @@ export function useInitCourseItems(courseId) {
                   contentArray:item.content,
                   assignmentDoenetId:item.doenetId
                 });
+                console.log("ordersAndPagesIds", ordersAndPagesIds)
+
                 if (!item.isSinglePage){
                   items = [...items,...ordersAndPagesIds];
                 }
@@ -811,11 +816,11 @@ export const useCourse = (courseId) => {
           }
         }
 
-        // console.log("WHERE IS IT GOING?")
-        // console.log("itemType",itemType)
-        // console.log("parentDoenetId",parentDoenetId)
-        // console.log("previousDoenetId",previousDoenetId)
-        // console.log("previousContainingDoenetId",previousContainingDoenetId)
+        console.log("WHERE IS IT GOING?")
+        console.log("itemType",itemType)
+        console.log("parentDoenetId",parentDoenetId)
+        console.log("previousDoenetId",previousDoenetId)
+        console.log("previousContainingDoenetId",previousContainingDoenetId)
 
   
         let newDoenetId;
@@ -957,7 +962,6 @@ export const useCourse = (courseId) => {
             content:[],
             doenetId: orderDoenetIdThatWasCreated,
           }
-          console.log(">>>>selectedItemObj",selectedItemObj)
 
           //Update the Global Item Order Activity or Collection
           if (selectedItemObj.type == 'activity'){
