@@ -5559,8 +5559,6 @@ describe('Answer Tag Tests', function () {
       cy.get('#\\/_mathinput1 textarea').type("{end}{backspace}" + answer[1], { delay: 5, force: true }).blur();
       cy.get('#\\/_mathinput2 textarea').type("{ctrl+home}{shift+end}{backspace}" + answer[2], { delay: 5, force: true }).blur();
       cy.get('#\\/_mathinput3 textarea').type("{end}{backspace}" + answer[3], { delay: 5, force: true }).blur();
-      // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-      cy.wait(0)
       cy.get('#\\/_answer1_submit').click();
 
       cy.get('#\\/sr1 .mjx-mrow').should('have.text', answer[1])
@@ -6409,8 +6407,6 @@ describe('Answer Tag Tests', function () {
 
     cy.log("Submit answer")
     cy.get('#\\/_mathinput2 textarea').blur();
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
@@ -6508,8 +6504,6 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').invoke('text').then((text) => {
@@ -6526,8 +6520,6 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
@@ -6659,8 +6651,6 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'rain');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
@@ -6763,8 +6753,6 @@ describe('Answer Tag Tests', function () {
 
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'rain');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
@@ -6788,8 +6776,6 @@ describe('Answer Tag Tests', function () {
     cy.get('#\\/_answer1_partial').should('not.exist');
 
     cy.log("Submit answer")
-    // TODO: why do we get error of button removed from DOM if don't wait 0 ms?
-    cy.wait(0)
     cy.get('#\\/_answer1_submit').click();
     cy.get('#\\/_textinput1_input').should('have.value', 'x');
     cy.get('#\\/_textinput2_input').should('have.value', 'snow');
@@ -8507,6 +8493,261 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p>The animal is a <answer>
   <choiceinput selectMultiple matchPartial>
+    <choice credit="1">cat</choice>
+    <choice credit="1">dog</choice>
+    <choice>monkey</choice>
+  </choiceinput>
+  </answer>.</p>
+  <p name="cr">Current response: <aslist><copy prop="currentResponses" target="_answer1" /></aslist></p>
+  <p name="sr">Submitted response: <aslist><copy prop="submittedResponses" target="_answer1" /></aslist></p>
+  <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="credit" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: ')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
+    cy.get("#\\/credit").should('have.text', '0')
+
+    let indexByName = { cat: 1, dog: 2, monkey: 3 };
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      for (let [ind, val] of stateVariables['/_choiceinput1'].stateValues.choiceTexts.entries()) {
+        expect(indexByName[val]).eq(ind + 1);
+      }
+
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls([]);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([]);
+
+    });
+
+    cy.log("Select half of correct answer")
+    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: dog')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: ')
+    cy.get("#\\/credit").should('have.text', '0')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
+    });
+
+    cy.log("Click submit button")
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('have.text', '50% Correct');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: dog')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
+    cy.get("#\\/credit").should('have.text', '0.5')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"]]);
+    });
+
+
+    cy.log('Select both correct answers')
+    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: dog')
+    cy.get("#\\/credit").should('have.text', '0.5')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0.5);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog']);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"]]);
+    });
+
+
+    cy.log("Click submit button")
+    cy.get('#\\/_choiceinput1_submit').click();
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('be.visible');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
+    cy.get("#\\/credit").should('have.text', '1')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"]]);
+    });
+
+
+    cy.log("Select incorrect answer")
+    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
+    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
+    cy.get('#\\/_choiceinput1').contains(`monkey`).click({ force: true });
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog')
+    cy.get("#\\/credit").should('have.text', '1')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog']);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
+    });
+
+    cy.log("Press enter on submit button")
+    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('be.visible');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: monkey')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
+    cy.get("#\\/credit").should('have.text', '0')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['monkey']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["monkey"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["monkey"]]);
+    });
+
+    cy.log("Select all answers")
+    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
+    cy.get('#\\/_choiceinput1').contains(`dog`).click({ force: true });
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: monkey')
+    cy.get("#\\/credit").should('have.text', '0')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['monkey']);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog", "monkey"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"], indexByName["monkey"]]);
+    });
+
+    cy.log("Press enter on submit button")
+    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('have.text', '67% Correct');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: cat, dog, monkey')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get("#\\/credit").should('have.text', '0.6666666667')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['cat', 'dog', 'monkey']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["cat", "dog", "monkey"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["cat"], indexByName["dog"], indexByName["monkey"]]);
+    });
+
+
+    cy.log("Select partially correct and incorrect answers")
+    cy.get('#\\/_choiceinput1').contains(`cat`).click({ force: true });
+    cy.get('#\\/_choiceinput1_submit').should('be.visible');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('not.exist');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: cat, dog, monkey')
+    cy.get("#\\/credit").should('have.text', '0.6666666667')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(2 / 3);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['cat', 'dog', 'monkey']);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog", "monkey"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"], indexByName["monkey"]]);
+    });
+
+    cy.log("Press enter on submit button")
+    cy.get('#\\/_choiceinput1_submit').type(`{enter}`, { force: true });
+    cy.get('#\\/_choiceinput1_submit').should('not.exist');
+    cy.get('#\\/_choiceinput1_correct').should('not.exist');
+    cy.get('#\\/_choiceinput1_incorrect').should('not.exist');
+    cy.get('#\\/_choiceinput1_partial').should('have.text', '33% Correct');
+
+    cy.get("#\\/cr").should('have.text', 'Current response: dog, monkey')
+    cy.get("#\\/sr").should('have.text', 'Submitted response: dog, monkey')
+    cy.get("#\\/credit").should('have.text', '0.3333333333')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(1 / 3);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['dog', 'monkey']);
+      expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls(['dog', 'monkey']);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls(["dog", "monkey"]);
+      expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([indexByName["dog"], indexByName["monkey"]]);
+    });
+
+
+  });
+
+  it('answer with select-multiple block choiceinput, fixedorder, match partial in answer', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>The animal is a <answer matchPartial>
+  <choiceinput selectMultiple>
     <choice credit="1">cat</choice>
     <choice credit="1">dog</choice>
     <choice>monkey</choice>

@@ -154,6 +154,9 @@ import RenderDoenetML from './components/RenderDoenetML.js';
 import HasSameFactoring from './components/HasSameFactoring.js';
 import OrbitalDiagramInput from './components/OrbitalDiagramInput.js';
 import OrbitalDiagram from './components/OrbitalDiagram.js';
+import DataFrame from './components/DataFrame.js';
+import SummaryStatistics from './components/SummaryStatistics.js';
+import Chart from './components/Chart.js';
 
 
 //Extended
@@ -306,7 +309,9 @@ const componentTypeArray = [
   HasSameFactoring,
   OrbitalDiagramInput,
   OrbitalDiagram,
-
+  DataFrame,
+  SummaryStatistics,
+  Chart,
 
   BaseComponent,
   InlineComponent,
