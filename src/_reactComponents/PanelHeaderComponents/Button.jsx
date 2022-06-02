@@ -17,7 +17,7 @@ const ButtonStyling = styled.button`
 
   &:hover {
     background-color: ${props => props.alert ? 'var(--lightRed)' : 'var(--lightBlue)'};
-    color: #121212;
+    color: black;
   };
 `;
 

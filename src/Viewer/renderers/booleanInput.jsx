@@ -77,7 +77,7 @@ export default React.memo(function BooleanInput(props) {
     height: "24px",
     fontSize: "20px",
     fontWeight: "bold",
-    color: "ffffff",
+    color: "#ffffff",
     display: "inline-block",
     textAlign: "center",
     top: "3px",

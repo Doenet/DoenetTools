@@ -10,7 +10,7 @@ const SearchBar = styled.input `
     border-radius: var(--mainBorderRadius);
     position: relative;
     padding: 0px 70px 0px 30px;
-    color: var();
+    color: var(--canvastext);
     overflow: hidden;
     width: ${props => props.width === 'menu' ? '130px' : '220px'};
     font-size: 14px;

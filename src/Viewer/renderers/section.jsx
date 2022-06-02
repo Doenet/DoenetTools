@@ -91,7 +91,7 @@ export default React.memo(function Section(props) {
   
   if (SVs.createSubmitAllButton) {
   
-    updateValidationState();21
+    updateValidationState();
 
   
     let checkWorkStyle = {

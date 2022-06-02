@@ -30,7 +30,7 @@ const BreadcrumbItem = styled.li`
   &:last-of-type span {
     border-radius: 0px 15px 15px 0px;
     padding: 0px 25px 0px 45px;
-    background: var(--lightblue);
+    background: var(--lightBlue);
     color: black;
   }
   &:first-of-type span {
