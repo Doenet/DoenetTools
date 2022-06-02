@@ -1429,28 +1429,25 @@ export const useCourse = (courseId) => {
         }
   });
 
-  function updateOrder({orderObj,needleDoenetId,changesObj}){
-    let nextOrderObj = {...orderObj};
-    if (needleDoenetId == orderObj.doenetId){
-      Object.assign(nextOrderObj,changesObj);
-      return nextOrderObj;
-    }
-    for (let [i,item] of Object.entries(orderObj.content)){
+  function updateOrder({content,needleDoenetId,changesObj}){
+    let nextContent = [...content];
+
+    for (let [i,item] of Object.entries(content)){
       if (item?.type == 'order'){
         //Check for match
         if (needleDoenetId == item.doenetId){
           let nextItemObj = {...item}
           Object.assign(nextItemObj,changesObj);
-          nextOrderObj.content = [...nextOrderObj.content]
-          nextOrderObj.content.splice(i,1,nextItemObj);
-          return nextOrderObj;
+          nextContent.splice(i,1,nextItemObj);
+          return nextContent;
         }
         //if not match then recurse into content
-        let childOrderObj = updateOrder({orderObj:item,needleDoenetId,changesObj});
-        if (childOrderObj != null){
-          nextOrderObj.content = [...nextOrderObj.content]
-          nextOrderObj.content.splice(i,1,childOrderObj);
-          return nextOrderObj;
+        let childContent = updateOrder({content:item.content,needleDoenetId,changesObj});
+        if (childContent != null){
+          console.log("childContent",childContent)
+          console.log("nextContent",nextContent)
+          // nextContent.splice(i,1,childContent);
+          return nextContent;
         }
       }
     }
@@ -1547,16 +1544,22 @@ export const useCourse = (courseId) => {
         let orderObj = await snapshot.getPromise(itemByDoenetId(doenetId));
         let activityObj = await snapshot.getPromise(itemByDoenetId(orderObj.containingDoenetId))
         let changesObj = {behavior,numberToSelect,withReplacement};
-        let nextOrder = updateOrder({orderObj:activityObj.order,needleDoenetId:doenetId,changesObj});
+        let newJSON = updateOrder({content:activityObj.content,needleDoenetId:doenetId,changesObj});
+
+        console.log("update order behavior",{
+          courseId,
+          doenetId:orderObj.containingDoenetId,
+          newJSON
+        })
         
         let { data } = await axios.post('/api/updateActivityStructure.php', {
           courseId,
           doenetId:orderObj.containingDoenetId,
-          newJSON:nextOrder
+          newJSON
         });
       // console.log("data",data)
         let nextActivityObj = {...activityObj};
-        nextActivityObj.order = nextOrder;
+        nextActivityObj.content = newJSON;
         set(itemByDoenetId(orderObj.containingDoenetId),nextActivityObj)
    
         set(itemByDoenetId(doenetId),(prev)=>{
