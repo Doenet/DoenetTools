@@ -203,7 +203,7 @@ describe('Document Tag Tests', function () {
   `}, "*");
     });
 
-    cy.get('#\\/_document1').should('have.text', 'a');  // to wait for page to load
+    cy.get('#\\/_document1').should('contain.text', 'a');  // to wait for page to load
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function AsList(props) {
+export default React.memo(function AsList(props) {
   let {name, SVs, children} = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -15,4 +15,4 @@ export default function AsList(props) {
   let withCommas = children.slice(1).reduce((a, b) => [...a, ', ', b], [children[0]])
 
   return <React.Fragment key={name}><a name={name} />{withCommas}</React.Fragment>;
-}
+})

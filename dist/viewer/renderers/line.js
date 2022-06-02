@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
-export default function Line(props) {
+export default React.memo(function Line(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   Line.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -39,6 +39,12 @@ export default function Line(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed)
     };
+    jsxLineAttributes.label = {};
+    if (SVs.applyStyleToLabel) {
+      jsxLineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxLineAttributes.label.strokeColor = "#000000";
+    }
     let through = [
       [...SVs.numericalPoints[0]],
       [...SVs.numericalPoints[1]]
@@ -155,6 +161,11 @@ export default function Line(props) {
       lineJXG.current.needsUpdate = true;
       lineJXG.current.update();
       if (lineJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          lineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        } else {
+          lineJXG.current.label.visProp.strokecolor = "#000000";
+        }
         lineJXG.current.label.needsUpdate = true;
         lineJXG.current.label.update();
       }
@@ -177,7 +188,7 @@ export default function Line(props) {
     inline: true,
     dynamic: true
   }, mathJaxify)));
-}
+});
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {
     return 2;

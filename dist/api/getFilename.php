@@ -5,6 +5,8 @@ function getFileName($cid,$fileType){
     return "$cid.jpg";
   }else if ($fileType == 'image/png'){
     return "$cid.png";
+  }else if ($fileType == 'text/csv'){
+    return "$cid.csv";
   }else if ($fileType == 'text/doenetML'){
     //consider munged XML as the mimetype
     return "$cid.doenet";

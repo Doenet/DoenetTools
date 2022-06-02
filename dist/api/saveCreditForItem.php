@@ -89,13 +89,13 @@ if ($success) {
     // if there is a time limit,
     // multiply by factor for user
     if ($timeLimit > 0) {
-        // have to use drive_content
-        // to get driveID from doenetID
+        // have to use course_content
+        // to get courseId from doenetID
         $sql = "SELECT timeLimitMultiplier 
             FROM enrollment e
-            INNER JOIN drive_content dc
-                ON dc.driveId = e.driveId
-            WHERE dc.doenetId = '$doenetId'
+            INNER JOIN course_content cc
+                ON cc.courseId = e.courseId
+            WHERE cc.doenetId = '$doenetId'
             AND e.userId = '$userId'
             ";
 
@@ -113,7 +113,7 @@ if ($success) {
 
     // Get time began and creditOverride from user_assignment_attempt
     $sql = "SELECT 
-        NOW() AS now,
+        CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') AS now,
         began, 
         creditOverride, 
         credit
@@ -152,7 +152,7 @@ if ($success) {
     // look for a overrides in due date, credit, or number of attempts allowed for asssignment,
     // which includes check for user_assignment having an entry
     $sql = "SELECT 
-        NOW() AS now,
+        CONVERT_TZ(NOW(), @@session.time_zone, '+00:00') AS now,
         dueDateOverride, 
         creditOverride, 
         numberOfAttemptsAllowedAdjustment,

@@ -20,6 +20,13 @@ export default class GraphicalComponent extends BaseComponent {
       public: true,
       forRenderer: true
     };
+    attributes.applyStyleToLabel = {
+      createComponentOfType: "boolean",
+      createStateVariable: "applyStyleToLabel",
+      defaultValue: false,
+      public: true,
+      forRenderer: true
+    };
     attributes.layer = {
       createComponentOfType: "number",
       createStateVariable: "layer",

@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import {createFunctionFromDefinition} from "../../core/utils/function.js";
-export default function CobwebPolyline(props) {
+export default React.memo(function CobwebPolyline(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   CobwebPolyline.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -24,7 +24,6 @@ export default function CobwebPolyline(props) {
     };
   }, []);
   function createCobwebPolylineJXG() {
-    console.log("create cobweb polyline");
     let functionAttributes = {
       visible: !SVs.hidden,
       withLabel: false,
@@ -266,7 +265,7 @@ export default function CobwebPolyline(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }));
-}
+});
 function styleToDash(style) {
   if (style === "solid") {
     return 0;

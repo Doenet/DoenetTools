@@ -165,7 +165,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       let maxAbs = Math.max(Math.abs(SVs.firstItem), Math.abs(SVs.lastItem));
       let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
       let roundDecimalsForTickSpacing = 1 - magnitudeOfMaxAbs;
-      let dTick = round_to_decimals(desiredDTick, roundDecimalsForTickSpacing)
+      let dTick = Math.max(round_to_decimals(desiredDTick, roundDecimalsForTickSpacing), 10 ** -roundDecimalsForTickSpacing);
       let numberOfTicks = Math.floor(tickSpan / dTick) + 1;
 
       let roundDecimals = 5 - magnitudeOfMaxAbs;
@@ -177,7 +177,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
 
     } else {
 
-      let desiredNumberOfTicks = Math.floor(SVs.width.size / maxValueWidth);
+      let desiredNumberOfTicks = Math.max(2, Math.floor(SVs.width.size / maxValueWidth));
       let dIndex = Math.ceil((SVs.nItems - 1) / (desiredNumberOfTicks - 1) - 1E-10);
       let numberOfTicks = Math.floor((SVs.nItems - 1) / dIndex + 1E-10) + 1;
 
@@ -310,7 +310,7 @@ function nearestValue(refval, points, SVs) {
 
 }
 
-export default function Slider(props) {
+export default React.memo(function Slider(props) {
   let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
   // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index, "ignoreUpdate", ignoreUpdate);
   // console.log(SVs)
@@ -321,7 +321,7 @@ export default function Slider(props) {
   // console.log("SVs",SVs);
   // let sorted_points = [...SVs.items].sort((p1, p2) => p1 - p2);
 
-  const setRendererState =  useSetRecoilState(rendererState(rendererName));
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
 
   const [thumbXPos, setThumbXPos] = useState(0);
   const [thumbValue, setThumbValue] = useState(SVs.firstItem);
@@ -423,7 +423,7 @@ export default function Slider(props) {
 
 
       setRendererState((was) => {
-        let newObj = {...was};
+        let newObj = { ...was };
         newObj.ignoreUpdate = true;
         return newObj;
       })
@@ -438,7 +438,7 @@ export default function Slider(props) {
       setThumbValue(SVs.items[i]);
 
       setRendererState((was) => {
-        let newObj = {...was};
+        let newObj = { ...was };
         newObj.ignoreUpdate = true;
         return newObj;
       })
@@ -477,7 +477,7 @@ export default function Slider(props) {
       setThumbXPos(valindexpair[1] * divisionWidth);
 
       setRendererState((was) => {
-        let newObj = {...was};
+        let newObj = { ...was };
         newObj.ignoreUpdate = true;
         return newObj;
       })
@@ -497,7 +497,7 @@ export default function Slider(props) {
       setThumbXPos(i * divisionWidth);
 
       setRendererState((was) => {
-        let newObj = {...was};
+        let newObj = { ...was };
         newObj.ignoreUpdate = true;
         return newObj;
       })
@@ -523,7 +523,7 @@ export default function Slider(props) {
         setIndex(valindexpair[1]);
 
         setRendererState((was) => {
-          let newObj = {...was};
+          let newObj = { ...was };
           newObj.ignoreUpdate = true;
           return newObj;
         })
@@ -539,7 +539,7 @@ export default function Slider(props) {
         setThumbValue(SVs.items[i]);
 
         setRendererState((was) => {
-          let newObj = {...was};
+          let newObj = { ...was };
           newObj.ignoreUpdate = true;
           return newObj;
         })
@@ -567,7 +567,7 @@ export default function Slider(props) {
     }
 
     setRendererState((was) => {
-      let newObj = {...was};
+      let newObj = { ...was };
       newObj.ignoreUpdate = true;
       return newObj;
     })
@@ -596,7 +596,7 @@ export default function Slider(props) {
     }
 
     setRendererState((was) => {
-      let newObj = {...was};
+      let newObj = { ...was };
       newObj.ignoreUpdate = true;
       return newObj;
     })
@@ -675,4 +675,4 @@ export default function Slider(props) {
     </SliderContainer>
   );
 
-}
+})

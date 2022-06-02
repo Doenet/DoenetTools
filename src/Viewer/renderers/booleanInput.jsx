@@ -4,9 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
 import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
-import { removeBlankStringChildren } from '../../Core/utils/serializedStateProcessing';
+import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
 
-export default function BooleanInput(props) {
+export default React.memo(function BooleanInput(props) {
   let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   BooleanInput.baseStateVariable = "value";
@@ -41,7 +41,7 @@ export default function BooleanInput(props) {
 
   function onChangeHandler(e) {
 
-    let newValue = e.target.checked;
+    let newValue = !rendererValue;
 
     setRendererValue(newValue);
     valueWhenSetState.current = SVs.value;
@@ -173,23 +173,38 @@ export default function BooleanInput(props) {
     }
   }
 
+
+  let input;
+  if (SVs.asToggleButton) {
+    input =
+      <ToggleButton
+        id={inputKey}
+        key={inputKey}
+        isSelected={rendererValue}
+        onClick={onChangeHandler}
+        value={SVs.label}
+        disabled={disabled}
+      />;
+  } else {
+    input = <label>
+      <input
+        type="checkbox"
+        key={inputKey}
+        id={inputKey}
+        checked={rendererValue}
+        onChange={onChangeHandler}
+        disabled={disabled}
+      />
+      {SVs.label}
+    </label>;
+  }
+
   return <React.Fragment>
     <span id={name}>
       <a name={name} />
-      <label>
-        <input
-          type="checkbox"
-          key={inputKey}
-          id={inputKey}
-          checked={rendererValue}
-          onChange={onChangeHandler}
-          disabled={disabled}
-          
-        />
-        {SVs.label}
-      </label>
+      {input}
       {checkWorkButton}
     </span>
   </React.Fragment>
 
-}
+})

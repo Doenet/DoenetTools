@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Tag(props) {
+export default React.memo(function Tag(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -17,4 +17,4 @@ export default function Tag(props) {
 
   return <code id={name} style={{color:'var(--mainGreen)'}}><a name={name} />{open}{children}{close}</code>
 
-}
+})

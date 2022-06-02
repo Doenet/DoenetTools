@@ -1,9 +1,0 @@
-<setup>
-  <selectFromSequence from="2" to="5" name="a" />
-  <selectFromSequence from="3" to="5" name="b" />
-  <math name="c" simplify>$a+2</math>
-  <function name="f" symbolic formula="x^($b)+$a*x-$c" />
-</setup>
-
-<copy initValue="1" f="$f"
-uri="doenet:contentId=6a4755f74be302b96d4229d5de916c8e124be6e2d50d1c5865df1efd6a711c82" />

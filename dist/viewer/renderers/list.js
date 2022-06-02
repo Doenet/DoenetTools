@@ -1,6 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function List(props) {
+export default React.memo(function List(props) {
   let {name, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -24,4 +24,4 @@ export default function List(props) {
       name
     }), children);
   }
-}
+});

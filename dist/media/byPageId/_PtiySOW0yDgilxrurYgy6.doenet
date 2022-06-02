@@ -1,2 +1,0 @@
-<selectFromSequence assignNames='a' from='-0.5' to='0.5' step=' 0.5' exclude='0'/>
-  <m>$a</m>

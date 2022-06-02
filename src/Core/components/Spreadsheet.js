@@ -99,7 +99,11 @@ export default class Spreadsheet extends BlockComponent {
     }, {
       group: "cellBlocks",
       componentTypes: ["cellBlock"]
-    }]
+    }, {
+      group: "dataFrames",
+      componentTypes: ["dataFrame"]
+    }
+    ]
 
   }
 
@@ -150,11 +154,16 @@ export default class Spreadsheet extends BlockComponent {
         cellNamesByRowCol: {
           dependencyType: "stateVariable",
           variableName: "cellNamesByRowCol"
-        }
+        },
         // rowChildren: {
         //   dependencyType: "child",
         //   childLogicName: "zeroOrMoreRows"
         // }
+        dataFrameChild: {
+          dependencyType: "child",
+          childGroups: ["dataFrames"],
+          variableNames: ["numRows"]
+        }
       }),
       definition({ dependencyValues }) {
         let numRows = dependencyValues.minNumRows;
@@ -162,6 +171,9 @@ export default class Spreadsheet extends BlockComponent {
           numRows = 4;
         }
         numRows = Math.max(numRows, dependencyValues.cellNamesByRowCol.length);
+        if (dependencyValues.dataFrameChild.length > 0) {
+          numRows = Math.max(numRows, dependencyValues.dataFrameChild[0].stateValues.numRows)
+        }
         // numRows = Math.max(numRows, dependencyValues.rowChildren.length)
         return { setValue: { numRows } }
       }
@@ -178,11 +190,16 @@ export default class Spreadsheet extends BlockComponent {
         cellNamesByRowCol: {
           dependencyType: "stateVariable",
           variableName: "cellNamesByRowCol"
-        }
+        },
         // rowChildren: {
         //   dependencyType: "child",
         //   childLogicName: "zeroOrMoreRows"
         // }
+        dataFrameChild: {
+          dependencyType: "child",
+          childGroups: ["dataFrames"],
+          variableNames: ["numColumns"]
+        }
       }),
       definition({ dependencyValues }) {
         let numColumns = dependencyValues.minNumColumns;
@@ -193,6 +210,10 @@ export default class Spreadsheet extends BlockComponent {
           if (row) {
             numColumns = Math.max(numColumns, row.length);
           }
+        }
+
+        if (dependencyValues.dataFrameChild.length > 0) {
+          numColumns = Math.max(numColumns, dependencyValues.dataFrameChild[0].stateValues.numColumns)
         }
         return { setValue: { numColumns } }
       }
@@ -458,17 +479,38 @@ export default class Spreadsheet extends BlockComponent {
             }
           }
         }
-        return { dependenciesByKey }
+
+        let globalDependencies = {
+          dataFrameChild: {
+            dependencyType: "child",
+            childGroups: ["dataFrames"],
+            variableNames: ["dataFrame", "numRows", "numColumns"]
+          }
+        }
+
+        return { dependenciesByKey, globalDependencies }
       },
-      arrayDefinitionByKey({ dependencyValuesByKey, arrayKeys }) {
+      arrayDefinitionByKey({ dependencyValuesByKey, globalDependencyValues, arrayKeys }) {
 
         let cells = {};
         let essentialCells = {};
 
+        let dataFrame = null;
+        let dataFrameNumRows, dataFrameNumColumns
+
+        if (globalDependencyValues.dataFrameChild.length > 0) {
+          dataFrame = globalDependencyValues.dataFrameChild[0];
+          dataFrameNumRows = dataFrame.stateValues.numRows;
+          dataFrameNumColumns = dataFrame.stateValues.numColumns;
+        }
+
         for (let arrayKey of arrayKeys) {
+          let [rowInd, colInd] = arrayKey.split(',');
 
           if (dependencyValuesByKey[arrayKey].cellText !== undefined) {
             cells[arrayKey] = dependencyValuesByKey[arrayKey].cellText
+          } else if (rowInd < dataFrameNumRows && colInd < dataFrameNumColumns) {
+            cells[arrayKey] = dataFrame.stateValues.dataFrame.data[rowInd][colInd]
           } else {
             essentialCells[arrayKey] = true;
           }
@@ -1028,7 +1070,7 @@ export default class Spreadsheet extends BlockComponent {
 
   async onChange({ changes, source, actionId }) {
 
-    if (source !== "loadData") {
+    if (source === "edit") {
       let cellChanges = {};
       for (let change of changes) {
         let [row, col, prev, value] = change;

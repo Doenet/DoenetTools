@@ -885,22 +885,22 @@ export default function PageViewer(props) {
   }
 
   let noCoreWarning = null;
-  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
+  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px", paddingBottom: "50vh" };
   if (!coreCreated.current) {
     noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
-    <p>Waiting for core to be created....</p>
+      <p>Waiting for core to be created....</p>
     </div>
     pageStyle.backgroundColor = "#F0F0F0";
   }
 
   //Spacing around the whole doenetML document
-  return <>
+  return <ErrorBoundary setIsInErrorState={props.setIsInErrorState}>
     {noCoreWarning}
     {/* <p>{saveStatesButton}</p> */}
     <div style={pageStyle}>
       {documentRenderer}
     </div>
-  </>;
+  </ErrorBoundary>;
 
 }
 
@@ -923,3 +923,23 @@ export async function renderersloadComponent(promises, rendererClassNames) {
 
 }
 
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  componentDidCatch(error, errorInfo) {
+    this.props.setIsInErrorState?.(true)
+  }
+  render() {
+    if (this.state.hasError) {
+      return <h1>Something went wrong.</h1>;
+    }
+    return this.props.children;
+  }
+}

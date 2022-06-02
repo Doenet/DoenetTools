@@ -92,6 +92,8 @@ export default function DataPanel() {
           }})
         }else{
             console.log("Open Link to data for Pages",doenetId)
+            window.open(`https://doenet.shinyapps.io/analyzer/?data=${doenetId}`, '_blank');
+
         }
 
         // if (clickedItem.type == 'page'){

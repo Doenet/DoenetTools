@@ -2,7 +2,7 @@ import { MathJax } from 'better-react-mathjax';
 import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function MathList(props) {
+export default React.memo(function MathList(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
 

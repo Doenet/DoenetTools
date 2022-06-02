@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function C(props) {
+export default React.memo(function C(props) {
   let {name, SVs, children} = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -15,6 +15,6 @@ export default function C(props) {
     </code>
 
   )
-}
+})
 
 

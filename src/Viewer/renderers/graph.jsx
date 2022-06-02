@@ -5,9 +5,9 @@ import useDoenetRender from './useDoenetRenderer';
 
 export const BoardContext = createContext();
 
-export default function Graph(props) {
+export default React.memo(function Graph(props) {
   let { name, SVs, children, actions, callAction } = useDoenetRender(props);
-  // console.log({name, SVs, children, actions})
+  // console.log({ name, SVs, children, actions })
 
   const [board, setBoard] = useState(null);
 
@@ -51,10 +51,10 @@ export default function Graph(props) {
         let [xmin, ymax, xmax, ymin] = newBoundingbox;
 
         // look for a change in bounding box that isn't due to roundoff error
-        let xscale = Math.abs(xmax-xmin);
-        let yscale = Math.abs(ymax-ymin);
-        let diffs = newBoundingbox.map((v,i)=> Math.abs(v - previousBoundingbox.current[i]));
-        if(Math.max(diffs[0]/xscale, diffs[1]/yscale, diffs[2]/xscale, diffs[3]/yscale) > 1E-12) {
+        let xscale = Math.abs(xmax - xmin);
+        let yscale = Math.abs(ymax - ymin);
+        let diffs = newBoundingbox.map((v, i) => Math.abs(v - previousBoundingbox.current[i]));
+        if (Math.max(diffs[0] / xscale, diffs[1] / yscale, diffs[2] / xscale, diffs[3] / yscale) > 1E-12) {
 
           previousBoundingbox.current = newBoundingbox;
           callAction({
@@ -100,6 +100,7 @@ export default function Graph(props) {
         minorTicks: 4,
         precision: 4,
         strokeColor: 'var(--canvastext)',
+        drawLabels: SVs.displayXAxisTickLabels
       }
       xaxisOptions.strokeColor="var(--canvastext)"
 
@@ -153,7 +154,8 @@ export default function Graph(props) {
         },
         minorTicks: 4,
         precision: 4,
-        strokeColor: "var(--canvastext)"
+        strokeColor: "var(--canvastext)",
+        drawLabels: SVs.displayYAxisTickLabels
       }
 
       if (SVs.grid === "dense") {
@@ -243,6 +245,7 @@ export default function Graph(props) {
 
     if (SVs.displayXAxis) {
       xaxis.current.name = SVs.xlabel;
+      xaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayXAxisTickLabels });
       if (xaxis.current.hasLabel) {
         let position = 'rt';
         let offset = [5, 10];
@@ -262,6 +265,7 @@ export default function Graph(props) {
 
     if (SVs.displayYAxis) {
       yaxis.current.name = SVs.ylabel;
+      yaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayYAxisTickLabels });
       if (yaxis.current.hasLabel) {
         let position = 'rt';
         let offset = [-10, -5];
@@ -327,4 +331,4 @@ export default function Graph(props) {
       {children}
     </BoardContext.Provider>
   </>;
-}
+})

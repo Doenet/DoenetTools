@@ -129,7 +129,7 @@ for($i = 0; $i < count($mergeEmail); $i++){
 		INSERT INTO enrollment
 		(courseId,userId,firstName,lastName,email,empId,dateEnrolled,section)
 		VALUES
-		('$courseId','$new_userId','$firstName','$lastName','$email','$id',NOW(),'$section')
+		('$courseId','$new_userId','$firstName','$lastName','$email','$id',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'$section')
 		";
 		$result = $conn->query($sql);
 
@@ -218,7 +218,7 @@ ORDER BY firstName
 $result = $conn->query($sql);
 
 $enrollmentArray = array();
-if ($result->num_rows > 1) {
+if ($result->num_rows >= 1) {
 
 		while ($row = $result->fetch_assoc()){
 			$learner = array(

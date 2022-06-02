@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 
-export default function Math(props) {
+export default React.memo(function Math(props) {
   let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
 
@@ -73,4 +73,4 @@ export default function Math(props) {
   } else {
     return <>{anchors}<span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
   }
-}
+})

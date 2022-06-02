@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {retrieveMediaForCid} from "../../core/utils/retrieveMedia.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
-export default function Image(props) {
+export default React.memo(function Image(props) {
   let {name, SVs} = useDoenetRender(props, false);
   let [url, setUrl] = useState(null);
   useEffect(() => {
@@ -43,4 +43,4 @@ export default function Image(props) {
       border: "var(--mainBorder)"
     }
   }, SVs.description));
-}
+});

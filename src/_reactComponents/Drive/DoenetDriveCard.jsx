@@ -19,6 +19,7 @@ const DriveCardContainer = styled.figure`
   justify-content: space-between;
   
   border: 2px solid var(--canvastext);
+  cursor: pointer;
 `;
 
 const Image = styled.img`

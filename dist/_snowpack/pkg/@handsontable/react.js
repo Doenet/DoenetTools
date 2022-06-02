@@ -1,8 +1,9 @@
 import { r as react } from '../common/index-61623f21.js';
 import { r as reactDom } from '../common/index-eaf9e997.js';
-import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-e768bffe.js';
+import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-ccf2a8c4.js';
 import '../common/_commonjsHelpers-f5d70792.js';
-import '../common/es.string.starts-with-aa41bca0.js';
+import '../common/es.string.starts-with-a75d39b5.js';
+import '../common/moment-640234e6.js';
 
 _register(TextCellType);
 Handsontable.editors = {
@@ -20,8 +21,8 @@ Handsontable.Core = function(rootElement) {
 Handsontable.DefaultSettings = metaSchemaFactory();
 Handsontable.hooks = Hooks.getSingleton();
 Handsontable.packageName = "handsontable";
-Handsontable.buildDate = "13/01/2022 12:30:03";
-Handsontable.version = "11.1.0";
+Handsontable.buildDate = "13/05/2022 13:50:15";
+Handsontable.version = "12.0.1";
 Handsontable.languages = {
   dictionaryKeys,
   getLanguageDictionary,
@@ -698,7 +699,7 @@ var PortalManager = /*#__PURE__*/function (_React$Component) {
   return PortalManager;
 }(react.Component);
 
-var version="11.1.0";
+var version="12.0.1";
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -2012,15 +2013,26 @@ var BaseEditorComponent = /*#__PURE__*/function (_React$Component) {
       return (_Handsontable$editors22 = Handsontable.editors.BaseEditor.prototype.getEditedCell).call.apply(_Handsontable$editors22, [this.hotCustomEditorInstance].concat(args));
     }
   }, {
-    key: "getEditedCellsZIndex",
-    value: function getEditedCellsZIndex() {
+    key: "getEditedCellRect",
+    value: function getEditedCellRect() {
       var _Handsontable$editors23;
 
       for (var _len23 = arguments.length, args = new Array(_len23), _key23 = 0; _key23 < _len23; _key23++) {
         args[_key23] = arguments[_key23];
       }
 
-      return (_Handsontable$editors23 = Handsontable.editors.BaseEditor.prototype.getEditedCellsZIndex).call.apply(_Handsontable$editors23, [this.hotCustomEditorInstance].concat(args));
+      return (_Handsontable$editors23 = Handsontable.editors.BaseEditor.prototype.getEditedCellRect).call.apply(_Handsontable$editors23, [this.hotCustomEditorInstance].concat(args));
+    }
+  }, {
+    key: "getEditedCellsZIndex",
+    value: function getEditedCellsZIndex() {
+      var _Handsontable$editors24;
+
+      for (var _len24 = arguments.length, args = new Array(_len24), _key24 = 0; _key24 < _len24; _key24++) {
+        args[_key24] = arguments[_key24];
+      }
+
+      return (_Handsontable$editors24 = Handsontable.editors.BaseEditor.prototype.getEditedCellsZIndex).call.apply(_Handsontable$editors24, [this.hotCustomEditorInstance].concat(args));
     }
   }]);
 

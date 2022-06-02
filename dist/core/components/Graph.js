@@ -62,6 +62,20 @@ export default class Graph extends BlockComponent {
       public: true,
       forRenderer: true
     };
+    attributes.displayXAxisTickLabels = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displayXAxisTickLabels",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
+    attributes.displayYAxisTickLabels = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displayYAxisTickLabels",
+      defaultValue: true,
+      public: true,
+      forRenderer: true
+    };
     attributes.xlabel = {
       createComponentOfType: "text",
       createStateVariable: "xlabel",

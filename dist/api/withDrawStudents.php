@@ -28,7 +28,7 @@ $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseI
 if ($success) {
 
 	$sql = "
-	UPDATE enrollment SET dateEnrolled = NOW() , withDrew = 1 WHERE courseId = '$courseId' AND email='$email';
+	UPDATE enrollment SET dateWithdrew = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'), withDrew = 1 WHERE courseId = '$courseId' AND email='$email';
 	";
   $result = $conn->query($sql);
 

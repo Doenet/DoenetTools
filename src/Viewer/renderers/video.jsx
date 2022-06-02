@@ -9,7 +9,7 @@ import { sizeToCSS } from './utils/css';
 import cssesc from 'cssesc';
 
 
-export default function Video(props) {
+export default React.memo(function Video(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
   let player = useRef(null);
   let skippedCurrentTime = useRef(null);
@@ -377,6 +377,6 @@ export default function Video(props) {
 
 
   // return <><a name={name} /><span id={name}>{SVs.text}</span></>
-}
+})
 
 

@@ -1,7 +1,7 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
-export default function Tabular(props) {
+export default React.memo(function Tabular(props) {
   let {name, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -31,4 +31,4 @@ export default function Tabular(props) {
     id: name,
     style: tableStyle
   }, /* @__PURE__ */ React.createElement("tbody", null, children)));
-}
+});

@@ -22,7 +22,7 @@ describe('ChoiceInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <choiceinput randomizeOrder>
+    <choiceinput shuffleOrder>
       <choice>cat</choice>
       <choice>dog</choice>
       <choice>monkey</choice>
@@ -60,7 +60,7 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(false);
-      expect(stateVariables['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
@@ -100,7 +100,7 @@ describe('ChoiceInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <choiceinput inline randomizeOrder>
+    <choiceinput inline shuffleOrder>
       <choice>cat</choice>
       <choice>dog</choice>
       <choice>monkey</choice>
@@ -140,7 +140,7 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(true);
-      expect(stateVariables['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
@@ -208,7 +208,7 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(false);
-      expect(stateVariables['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(false);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
@@ -249,7 +249,7 @@ describe('ChoiceInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
       <text>a</text>
-      <choiceinput inline randomizeOrder name="ci1">
+      <choiceinput inline shuffleOrder name="ci1">
         <choice>a</choice>
         <choice>b</choice>
         <choice>c</choice>
@@ -324,13 +324,13 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/ci4'].stateValues.selectedIndices).eqls([])
 
       expect(stateVariables['/ci1'].stateValues.inline).eq(true);
-      expect(stateVariables['/ci1'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/ci1'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/ci2'].stateValues.inline).eq(true);
-      expect(stateVariables['/ci2'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/ci2'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/ci3'].stateValues.inline).eq(false);
-      expect(stateVariables['/ci3'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/ci3'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/ci4'].stateValues.inline).eq(false);
-      expect(stateVariables['/ci4'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/ci4'].stateValues.shuffleOrder).eq(true);
     });
 
 
@@ -444,7 +444,7 @@ describe('ChoiceInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <choiceinput randomizeOrder name="ci1">
+    <choiceinput shuffleOrder name="ci1">
       <choice>The function is <m>f(\\xi)=\\sin(\\xi)</m>.</choice>
       <choice>The sum of <math name="lambda2">lambda^2</math> and <math name="twice">2 lambda^2</math> is <math simplify><copy target="lambda2" />+<copy target="twice" /></math>.</choice>
       <choice>The sequence is <aslist><sequence from="1" to="5" /></aslist>.</choice>
@@ -501,9 +501,9 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/ci2'].stateValues.selectedIndices).eqls([])
 
       expect(stateVariables['/ci1'].stateValues.inline).eq(false);
-      expect(stateVariables['/ci1'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/ci1'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/ci2'].stateValues.inline).eq(true);
-      expect(stateVariables['/ci2'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/ci2'].stateValues.shuffleOrder).eq(true);
     });
 
 
@@ -557,7 +557,7 @@ describe('ChoiceInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <choiceinput bindValueTo="$_textinput1" randomizeOrder name="ci1">
+    <choiceinput bindValueTo="$_textinput1" shuffleOrder name="ci1">
       <choice>caT</choice>
       <choice>  dog </choice>
       <choice><text>Monkey</text></choice>
@@ -704,7 +704,7 @@ describe('ChoiceInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <choiceinput bindValueTo="$_textinput1" randomizeOrder selectMultiple name="ci1">
+    <choiceinput bindValueTo="$_textinput1" shuffleOrder selectMultiple name="ci1">
       <choice><text>caT</text></choice>
       <choice>  dog </choice>
       <choice>Monkey</choice>
@@ -1075,7 +1075,7 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>aardvark</choice>
     </choiceinput>
 
-    <choiceinput name="c2" inline randomizeOrder preselectChoice="2">
+    <choiceinput name="c2" inline shuffleOrder preselectChoice="2">
       <choice>cat</choice>
       <choice>dog</choice>
       <choice>monkey</choice>
@@ -1098,7 +1098,7 @@ describe('ChoiceInput Tag Tests', function () {
     </choiceinput>
 
 
-    <choiceinput name="c4" randomizeOrder>
+    <choiceinput name="c4" shuffleOrder>
       <choice>cat</choice>
       <choice>dog</choice>
       <choice>monkey</choice>
@@ -1121,7 +1121,7 @@ describe('ChoiceInput Tag Tests', function () {
     </choiceinput>
 
 
-    <choiceinput name="c6" randomizeOrder>
+    <choiceinput name="c6" shuffleOrder>
       <choice>cat</choice>
       <choice preselect>dog</choice>
       <choice>monkey</choice>
@@ -1145,7 +1145,7 @@ describe('ChoiceInput Tag Tests', function () {
     </choiceinput>
 
 
-    <choiceinput name="c8" randomizeOrder inline preselectChoice="2">
+    <choiceinput name="c8" shuffleOrder inline preselectChoice="2">
       <choice>cat</choice>
       <choice>dog</choice>
       <choice>monkey</choice>
@@ -1239,7 +1239,7 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       // expect(stateVariables['/_choiceinput1'].stateValues.selectedoriginalindices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(true);
-      expect(stateVariables['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(false);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
@@ -1325,7 +1325,7 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(true);
-      expect(stateVariables['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(false);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
@@ -1398,7 +1398,7 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(false);
-      expect(stateVariables['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(false);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
@@ -1469,7 +1469,7 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(false);
-      expect(stateVariables['/_choiceinput1'].stateValues.randomizeOrder).eq(false);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(false);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice3'].stateValues.selected).eq(false);
@@ -1513,7 +1513,7 @@ describe('ChoiceInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <choiceinput randomizeOrder selectMultiple>
+    <choiceinput shuffleOrder selectMultiple>
       <choice>cat</choice>
       <choice>dog</choice>
       <choice>monkey</choice>
@@ -1550,7 +1550,7 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(false);
-      expect(stateVariables['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/_choiceinput1'].stateValues.selectMultiple).eq(true);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice2'].stateValues.selected).eq(false);
@@ -1634,7 +1634,7 @@ describe('ChoiceInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <choiceinput inline randomizeOrder selectMultiple>
+    <choiceinput inline shuffleOrder selectMultiple>
       <choice>cat</choice>
       <choice>dog</choice>
       <choice>monkey</choice>
@@ -1673,7 +1673,7 @@ describe('ChoiceInput Tag Tests', function () {
       expect(stateVariables['/_choiceinput1'].stateValues.selectedValues).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.selectedIndices).eqls([])
       expect(stateVariables['/_choiceinput1'].stateValues.inline).eq(true);
-      expect(stateVariables['/_choiceinput1'].stateValues.randomizeOrder).eq(true);
+      expect(stateVariables['/_choiceinput1'].stateValues.shuffleOrder).eq(true);
       expect(stateVariables['/_choiceinput1'].stateValues.selectMultiple).eq(true);
       expect(stateVariables['/_choice1'].stateValues.selected).eq(false);
       expect(stateVariables['/_choice2'].stateValues.selected).eq(false);

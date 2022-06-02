@@ -3,7 +3,7 @@ import { retrieveMediaForCid } from '../../Core/utils/retrieveMedia';
 import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 
-export default function Image(props) {
+export default React.memo(function Image(props) {
   let { name, SVs } = useDoenetRender(props,false);
   let [url, setUrl] = useState(null)
 
@@ -103,4 +103,4 @@ export default function Image(props) {
 
   // return null;
 
-}
+})

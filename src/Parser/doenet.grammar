@@ -82,7 +82,7 @@ doubleQuoteAttributeValue { "\"" attributeContentDoubleQuote* "\"" }
 
   Is { "=" }
 
-  Text { ("< " | "<=" | ![<])+  }
+  Text { ("< " | "<=" | "<\n" | ![<])+  }
 
   ws { std.whitespace+ }
 

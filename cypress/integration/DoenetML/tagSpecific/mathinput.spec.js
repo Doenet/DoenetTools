@@ -4113,6 +4113,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');
+    cy.get('#\\/a2 .mjx-mrow').should('contain.text', '＿')
 
     cy.get('#\\/a textarea').type('3^2{rightArrow}5{enter}', { force: true });
 

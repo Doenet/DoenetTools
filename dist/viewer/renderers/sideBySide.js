@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function sideBySide(props) {
+export default React.memo(function sideBySide(props) {
   let {name, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -34,4 +34,4 @@ export default function sideBySide(props) {
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), styledChildren);
-}
+});

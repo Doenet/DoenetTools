@@ -6,16 +6,24 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const FONT_SIZES = [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96];
 
 const Container = styled.div`
+  display: ${(props) => props.label && !props.vertical && 'flex' };
+  align-items: ${(props) => props.label && !props.vertical && 'center' };
+`
+
+const IncrementBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 20px;
-  max-width: 210px;
   margin: 0;
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-  background-color: var(--canvas);
+  background-color: var(--canvas);`
 
+
+const IncrementContainer = styled.div`
+  position: relative;
+  max-width: 210px;
 `;
 
 const IncreaseButton = styled.button`
@@ -59,7 +67,7 @@ const TextField = styled.input`
   border: none;
 `;
 
-const Label = styled.div`
+const Label = styled.span`
   font-size: 14px;
   margin-right: 5px;
 `;
@@ -70,16 +78,18 @@ const Menu = styled.div`
   border: 'var(--mainBorder)';
   border-top: none;
   border-radius: 'var(--mainBorderRadius)';
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
   overflow: scroll;
   max-height: ${(props) => props.maxHeight};
-  width: fit-content;
+  z-index: 100;
 `;
 
 const MenuOption = styled.button`
   background-color: 'var(--mainGray)';
   display: block;
-  width: 146px;
+  width: 100%;
   height: 24px;
   border: none;
   border-bottom: 1px var(--canvastext) solid;
@@ -90,6 +100,7 @@ const MenuOption = styled.button`
     cursor: pointer;
   }
 `;
+
 
 const findClosestIndex = (arr, value) => {
   if (arr === null) {
@@ -340,72 +351,83 @@ export default function Increment(props) {
         {size}
       </MenuOption>
     ));
-  };
-
-  if (values) {
+  } else if (values) {
     menuOptions = values.map((value, index) => (
       <MenuOption key={index} value={value} onClick={onMenuClick}>
         {value}
       </MenuOption>
     ));
-  };
+  } else {
+    let generalChoices = []
+    let min = props.min !== undefined ? props.min : 1;
+    let max = props.max !== undefined ? props.max : 100;
+    let count = min;
+    for (let i=0; i <= max-min; i++) {
+      generalChoices[i] = count;
+      count++;
+    }
+    menuOptions =  generalChoices.map((choice, index) => (
+      <MenuOption key={index} value={choice} onClick={onMenuClick}>
+        {choice}
+      </MenuOption>
+    ));
+  }
 
-  // console.log('props.disabled', props.disabled);
+  // console.log(props.menuOptions);
 
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
-      {props.vertical && props.label && <Label>{props.label}</Label> }
-      <Container
-        ref={containerRef}
-        onBlur={containerOnBlur}
-        alert={props.alert}
-      >
-        <DecreaseButton
-          ref={decrementRef}
-          disabled={props.disabled}
-          onClick={decrementOnClick}
+    <Container label={props.label} vertical={props.vertical}>
+      {props.label && <Label>{props.label}</Label> }
+      {props.label && props.vertical && <br /> }
+      <IncrementContainer>
+        <IncrementBox
+          ref={containerRef}
+          onBlur={containerOnBlur}
+          alert={props.alert}
         >
-          {decreaseIcon}
-        </DecreaseButton>
-        <TextField
-          placeholder={props.placeholder}
-          value={value}
-          ref={textFieldRef}
-          disabled={props.disabled ? props.disabled : false}
-          onChange={onTextFieldChange}
-          onClick={(e) => {
-            setMenuToggle(true);
-          }}
-          onKeyDown={(e) => {
-            if (props.onKeyDown) {
-              props.onKeyDown(e);
-            };
-            if (e.key === 'Enter') {
-              onTextFieldEnter(e);
-            };
-          }}
-        />
-        <IncreaseButton
-          ref={incrementRef}
-          disabled={props.disabled}
-          onClick={incrementOnClick}
-        >
-          {increaseIcon}
-        </IncreaseButton>
-      </Container>
-      {menuOptions && menuToggle && (
-        <div style={{ display: 'flex' }}>
-          {!props.vertical && props.label ? (
-            <Label style={{ opacity: 0 }}>{props.label}</Label>
-          ) : null}
+          <DecreaseButton
+            ref={decrementRef}
+            disabled={props.disabled}
+            onClick={decrementOnClick}
+          >
+            {decreaseIcon}
+          </DecreaseButton>
+          <TextField
+            placeholder={props.placeholder}
+            value={value}
+            ref={textFieldRef}
+            disabled={props.disabled ? props.disabled : false}
+            onChange={onTextFieldChange}
+            onClick={(e) => {
+              setMenuToggle(true);
+            }}
+            onKeyDown={(e) => {
+              if (props.onKeyDown) {
+                props.onKeyDown(e);
+              };
+              if (e.key === 'Enter') {
+                onTextFieldEnter(e);
+              };
+            }}
+          />
+          <IncreaseButton
+            ref={incrementRef}
+            disabled={props.disabled}
+            onClick={incrementOnClick}
+          >
+            {increaseIcon}
+          </IncreaseButton>
+        </IncrementBox>
+        {!props.deactivateDropdown && menuOptions && menuToggle && (
           <Menu
             ref={menuRef}
             maxHeight={props.maxHeight ? props.maxHeight : '150px'}
           >
             {menuOptions}
           </Menu>
-        </div>
-      )}
-    </div>
+        )}
+      </IncrementContainer>
+      
+    </Container>
   );
 };

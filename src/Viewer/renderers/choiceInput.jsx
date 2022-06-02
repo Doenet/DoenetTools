@@ -5,7 +5,7 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-sol
 import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 
-export default function ChoiceInput(props) {
+export default React.memo(function ChoiceInput(props) {
   let { name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   ChoiceInput.baseStateVariable = "selectedIndices";
@@ -388,4 +388,4 @@ export default function ChoiceInput(props) {
 
   }
 
-}
+})

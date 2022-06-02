@@ -284,6 +284,7 @@ export default function ActivityViewer(props) {
     };
     let resp;
     try {
+      console.log("first one saveActivityState activityStateToBeSavedToDatabase", activityStateToBeSavedToDatabase2);
       resp = await axios.post("/api/saveActivityState.php", activityStateToBeSavedToDatabase2);
     } catch (e) {
       return {localInfo, cid, attemptNumber};
@@ -462,6 +463,7 @@ export default function ActivityViewer(props) {
     }, 1e4);
     let resp;
     try {
+      console.log("activity state params", activityStateToBeSavedToDatabase.current);
       resp = await axios.post("/api/saveActivityState.php", activityStateToBeSavedToDatabase.current);
     } catch (e) {
       console.log(`sending toast: Error synchronizing data.  Changes not saved to the server.`);
