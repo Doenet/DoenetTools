@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import me from 'math-expressions';
-
 import styled from "styled-components";
 // import { Spring } from '@react-spring/web';
 import useDoenetRender from './useDoenetRenderer';
@@ -8,7 +7,6 @@ import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionBut
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 import { useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
-
 
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
 
@@ -176,7 +174,6 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       tickValues = tickValues.map(x => round_to_decimals(x, roundDecimals));
 
     } else {
-
       let desiredNumberOfTicks = Math.max(2, Math.floor(SVs.width.size / maxValueWidth));
       let dIndex = Math.ceil((SVs.nItems - 1) / (desiredNumberOfTicks - 1) - 1E-10);
       let numberOfTicks = Math.floor((SVs.nItems - 1) / dIndex + 1E-10) + 1;
@@ -187,7 +184,6 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
       let roundDecimals = 2 - magnitudeOfMaxAbs;
       tickValues = tickIndices.map(x => round_to_decimals(points[x], roundDecimals))
-
     }
 
     return (
