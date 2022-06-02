@@ -15,7 +15,7 @@ const TextNoSelect = styled.text`
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 `;
 
-// Used before ActionButton and ToggleButton were implemented
+// Used before ActionButton and ToggleButton were implemented:
 // const ModeButton = styled.button`
 //   &:focus {
 //     outline: 0;
