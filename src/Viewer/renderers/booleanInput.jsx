@@ -5,6 +5,30 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortaw
 import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+import styled from 'styled-components';
+import './booleanInput.css';
+
+// Moved most of checkWorkStyle styling into Button
+const Button = styled.button `
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  color: #ffffff;
+  background-color: var(--mainBlue);
+  display: inline-block;
+  text-align: center;
+  padding: 2px;
+  z-index: 0;
+  /* border: var(--mainBorder); */
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 10px 12px 10px;
+
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
 
 export default React.memo(function BooleanInput(props) {
   let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
@@ -17,7 +41,6 @@ export default React.memo(function BooleanInput(props) {
 
   let valueWhenSetState = useRef(null);
 
-
   if (!ignoreUpdate && valueWhenSetState.current !== SVs.value) {
     // console.log(`setting value to ${SVs.value}`)
     setRendererValue(SVs.value);
@@ -25,7 +48,6 @@ export default React.memo(function BooleanInput(props) {
   } else {
     valueWhenSetState.current = null;
   }
-
 
   let validationState = 'unvalidated';
   if (SVs.valueHasBeenValidated) {
@@ -37,7 +59,6 @@ export default React.memo(function BooleanInput(props) {
       validationState = 'partialcorrect';
     }
   }
-
 
   function onChangeHandler(e) {
 
@@ -59,9 +80,7 @@ export default React.memo(function BooleanInput(props) {
       },
       baseVariableValue: newValue,
     })
-
   }
-
 
   if (SVs.hidden) {
     return null;
@@ -72,39 +91,8 @@ export default React.memo(function BooleanInput(props) {
   const inputKey = name + '_input';
 
   let checkWorkStyle = {
-    position: "relative",
-    width: "30px",
-    height: "24px",
-    fontSize: "20px",
-    fontWeight: "bold",
-    color: "#ffffff",
-    display: "inline-block",
-    textAlign: "center",
-    top: "3px",
-    padding: "2px",
-    backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--mainBlue")
+    cursor: 'pointer',
   }
-
-  // const Button = styled.input `
-  //   position: relative;
-  //   width: 30px;
-  //   height: 24px;
-  //   font-size: 20px;
-  //   font-weight: bold;
-  //   color: #ffffff;
-  //   display: inline-block;
-  //   text-align: center;
-  //   top: 3px;
-  //   padding: 2px;
-  //   /* background-color: var(--mainBlue); */
-  //   border: var(--mainBorder);
-  //   border-radius: var(--mainBorderRadius);
-    
-
-  //   &:checked {
-  //     background-color: var(--mainBlue);
-  //   }
-  // `
 
   //Assume we don't have a check work button
   let checkWorkButton = null;
@@ -115,40 +103,43 @@ export default React.memo(function BooleanInput(props) {
     if (validationState === "unvalidated") {
       if (disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        checkWorkStyle.cursor = 'not-allowed';
       } else {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainBlue");
       }
-      checkWorkButton = <span
-        className="checkmark"
-        id={name + '_submit'}
-        tabIndex="0"
-        disabled={disabled}
-        // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
-        // style={checkWorkStyle} 
-        onClick={() => callAction({
-          action: actions.submitAnswer,
-        })}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter') {
-            callAction({
-              action: actions.submitAnswer,
-            });
-          }
-        }}
-      >
-        <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-      </span>
+      checkWorkButton = 
+        <Button
+          className="checkmark"
+          id={name + '_submit'}
+          tabIndex="0"
+          disabled={disabled}
+          // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
+          style={checkWorkStyle} 
+          onClick={() => callAction({
+            action: actions.submitAnswer,
+          })}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              callAction({
+                action: actions.submitAnswer,
+              });
+            }
+          }}
+        >
+          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        </Button>
     } else {
       if (SVs.showCorrectness) {
         if (validationState === "correct") {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
-          checkWorkButton = <span
-            className="checkmark"
-            id={name + '_correct'}
-            // style={checkWorkStyle}
-          >
-            <FontAwesomeIcon icon={faCheck} />
-          </span>
+          checkWorkButton = 
+            <Button
+              className="checkmark"
+              id={name + '_correct'}
+              style={checkWorkStyle}
+            >
+              <FontAwesomeIcon icon={faCheck} />
+            </Button>
         } else if (validationState === "partialcorrect") {
           //partial credit
 
@@ -157,30 +148,37 @@ export default React.memo(function BooleanInput(props) {
           checkWorkStyle.width = "50px";
 
           checkWorkStyle.backgroundColor = "#efab34";
-          checkWorkButton = <span
-            className="checkmark"
-            id={name + '_partial'}
-            // style={checkWorkStyle}
-          >{partialCreditContents}</span>
+          checkWorkButton = 
+            <Button
+              className="checkmark"
+              id={name + '_partial'}
+              style={checkWorkStyle}
+            >
+              {partialCreditContents}
+            </Button>
         } else {
           //incorrect
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
-          checkWorkButton = <span
-            className="checkmark"
-            id={name + '_incorrect'}
-            // style={checkWorkStyle}
-          ><FontAwesomeIcon icon={faTimes} /></span>
-
+          checkWorkButton = 
+            <Button
+              className="checkmark"
+              id={name + '_incorrect'}
+              style={checkWorkStyle}
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </Button>
         }
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-        checkWorkButton = <span
-          className="checkmark"
-          id={name + '_saved'}
-          // style={checkWorkStyle}
-        ><FontAwesomeIcon icon={faCloud} /></span>
-
+        checkWorkButton = 
+          <Button
+            className="checkmark"
+            id={name + '_saved'}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faCloud} />
+          </Button>
       }
     }
 
@@ -191,18 +189,23 @@ export default React.memo(function BooleanInput(props) {
           (no attempts remaining)
         </span>
       </>
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkWorkButton = <>
+        {checkWorkButton}
+        <span>
+          (1 attempt remaining)
+        </span>
+        </>
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
 
       checkWorkButton = <>
         {checkWorkButton}
         <span>
-          (attempts remaining: {SVs.numberOfAttemptsLeft})
+          ({SVs.numberOfAttemptsLeft} attempts remaining)
         </span>
       </>
     }
   }
-  console.log(checkWorkButton);
-
 
   let input;
   if (SVs.asToggleButton) {
@@ -216,7 +219,7 @@ export default React.memo(function BooleanInput(props) {
         disabled={disabled}
       />;
   } else {
-    input = <label>
+    input = <label class="container">
       <input
         type="checkbox"
         key={inputKey}
@@ -225,16 +228,16 @@ export default React.memo(function BooleanInput(props) {
         onChange={onChangeHandler}
         disabled={disabled}
       />
+      <span class="checkmark"></span>
       {SVs.label}
-    </label>;
+    </label>
   }
 
   return <React.Fragment>
-    <span id={name}>
+    <span id={name} class="button-container">
       <a name={name} />
       {input}
       {checkWorkButton}
     </span>
   </React.Fragment>
-
 })

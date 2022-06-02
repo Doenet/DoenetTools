@@ -200,7 +200,7 @@ export default function MathInput(props) {
     if (validationState.current === 'unvalidated') {
       if (SVs.disabled) {
         checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
-        checkWorkStyle.cursor = 'not-allowed'
+        checkWorkStyle.cursor = 'not-allowed';
         ;
       }
       checkWorkButton = (
