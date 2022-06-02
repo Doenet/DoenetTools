@@ -25,7 +25,7 @@ export default React.memo(function Solution(props) {
       display: 'block',
       margin: '0px 4px 12px 4px',
       padding: '6px',
-      border: '2px solid black',
+      border: '2px solid var(--canvastext)',
       borderTop: '0px',
       borderBottomLeftRadius: '5px',
       borderBottomRightRadius: '5px',
