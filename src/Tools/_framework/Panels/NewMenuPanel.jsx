@@ -32,7 +32,7 @@ background: white;
 display: flex;
 justify-content: space-between;
 align-items: center;
-position: static;
+position: ${props => props.disabled ? 'static' : 'sticky'};
 border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 top: 0;
@@ -79,7 +79,7 @@ border-bottom: 2px solid #e2e2e2;
 margin-bottom: -2px;
 position: sticky;
 top: 35;
-z-index: 2;
+z-index: 1;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -102,7 +102,7 @@ width: 20px;
 color: white;
 border: none;
 // display: inline-block;
-position: static;
+position:  static
 left: 220px;
 cursor: pointer;
 z-index: 2;
