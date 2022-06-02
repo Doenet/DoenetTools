@@ -29,7 +29,7 @@ export default React.memo(function Solution(props) {
       borderTop: '0px',
       borderBottomLeftRadius: '5px',
       borderBottomRightRadius: '5px',
-      backgroundColor: 'white',
+      backgroundColor: 'var(--canvas)',
     };
 
     if (SVs.canBeClosed) {
@@ -61,7 +61,7 @@ export default React.memo(function Solution(props) {
           display: 'block',
           margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
           padding: '6px',
-          border: '2px solid black',
+          border: '2px solid var(--canvastext)',
           borderTopLeftRadius: '5px',
           borderTopRightRadius: '5px',
           borderBottomLeftRadius: SVs.open ? '0px' : '5px',
