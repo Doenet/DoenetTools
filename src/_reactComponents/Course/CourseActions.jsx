@@ -269,7 +269,6 @@ export function useInitCourseItems(courseId) {
                   contentArray:item.content,
                   assignmentDoenetId:item.doenetId
                 });
-                console.log("ordersAndPagesIds", ordersAndPagesIds)
 
                 if (!item.isSinglePage){
                   items = [...items,...ordersAndPagesIds];
@@ -636,12 +635,11 @@ export const useCourse = (courseId) => {
     for (let item of content){
       if (item?.type == 'order'){
       let newIds = findActivityChildIds(item.content)
-      orderAndPageIds = [...orderAndPageIds,...newIds]
+      orderAndPageIds = [...orderAndPageIds,item.doenetId,...newIds]
       }else{
         orderAndPageIds.push(item);
       }
     }
-      
     return orderAndPageIds;
   }
 
@@ -719,8 +717,6 @@ export const useCourse = (courseId) => {
     //Didn't find needle
     return {order:null,previousDoenetId:null};
   }
-
- 
 
   const create = useRecoilCallback(
     ({ set, snapshot }) =>
@@ -942,7 +938,7 @@ export const useCourse = (courseId) => {
                     selectedItemObj.type == 'page'){
             containingDoenetId = selectedItemObj.containingDoenetId;
           } 
-          console.log("HERE!!! containingDoenetId",containingDoenetId)
+         
           //Create a page.  Get the new page object.
           let { data } = await axios.get('/api/createPageOrOrder.php', {
               params: {
@@ -967,11 +963,12 @@ export const useCourse = (courseId) => {
           if (selectedItemObj.type == 'activity'){
             let newJSON = {...selectedItemObj.content};
             
-            let insertedAfterDoenetId = selectedItemObj.content[selectedItemObj.content.length - 1];
+            // let insertedAfterDoenetId = selectedItemObj.content[selectedItemObj.content.length - 1];
             if (itemType == 'page'){
               pageThatWasCreated.parentDoenetId = selectedItemObj.doenetId;
               newJSON = [...selectedItemObj.content,pageThatWasCreated.doenetId]
             }else if (itemType == 'order'){
+              console.log("orderObj",orderObj)
               newJSON = [...selectedItemObj.content,orderObj]
             }
             let newActivityObj = {...selectedItemObj}
@@ -997,14 +994,15 @@ export const useCourse = (courseId) => {
                 isOpen:false,
                 isSelected:false,
                 containingDoenetId: selectedItemObj.doenetId,
-                parentDoenetId:selectedItemObj.order.doenetId
+                parentDoenetId:selectedItemObj.doenetId
               }
               set(itemByDoenetId(orderObj.doenetId),orderObj)
             }
 
-            //TODO: can we use this after the bank, order and page below?????
+            //TODO: can we use this after order and page below?????
             let previousChildIds = findActivityChildIds(selectedItemObj.content)
             let nextChildIds = findActivityChildIds(newJSON)
+
             //Update author order
             set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
               let next = [...prev];
