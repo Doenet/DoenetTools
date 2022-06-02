@@ -7,8 +7,6 @@ import { BoardContext } from './graph';
 export default React.memo(function Curve(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  console.log({name,SVs});
-  
   Curve.ignoreActionsWithoutCore = true;
 
   const board = useContext(BoardContext);

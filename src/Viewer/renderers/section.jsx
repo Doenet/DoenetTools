@@ -187,6 +187,14 @@ export default React.memo(function Section(props) {
   if (SVs.collapsible) {
     // if (SVs.open) {
       // if (SVs.boxed){
+
+    let innerContent = null;
+    if(SVs.open) {
+      innerContent = <div style={{ display: "block", padding: SVs.boxed && "6px" }}>
+      {children}
+      {checkworkComponent}
+    </div>
+    }
     content = 
     <div style={{ border: "var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }} >
       <div 
@@ -196,10 +204,7 @@ export default React.memo(function Section(props) {
         <a name={name} />
         {heading}
       </div>
-      <div style={{ display: SVs.open ? "block" : "none",  padding: SVs.boxed && "6px" }}>
-        {children}
-        {checkworkComponent}
-      </div>
+      {innerContent}
     </div>
       // }else{
       //   content = <>
