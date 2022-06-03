@@ -10,19 +10,19 @@ import './booleanInput.css';
 
 // Moved most of checkWorkStyle styling into Button
 const Button = styled.button `
-  position: absolute;
+  position: relative;
   width: 24px;
   height: 24px;
   color: #ffffff;
   background-color: var(--mainBlue);
   display: inline-block;
-  text-align: center;
-  padding: 2px;
-  z-index: 0;
+  /* text-align: center; */
+  /* padding: 2px; */
+  /* z-index: 0; */
   /* border: var(--mainBorder); */
   border: none;
   border-radius: var(--mainBorderRadius);
-  margin: 0px 10px 12px 10px;
+  margin: 0px 10px 12px 0px;
 
   &:hover {
     background-color: var(--lightBlue);
@@ -109,7 +109,6 @@ export default React.memo(function BooleanInput(props) {
       }
       checkWorkButton = 
         <Button
-          className="checkmark"
           id={name + '_submit'}
           tabIndex="0"
           disabled={disabled}
@@ -134,7 +133,6 @@ export default React.memo(function BooleanInput(props) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
           checkWorkButton = 
             <Button
-              className="checkmark"
               id={name + '_correct'}
               style={checkWorkStyle}
             >
@@ -150,7 +148,6 @@ export default React.memo(function BooleanInput(props) {
           checkWorkStyle.backgroundColor = "#efab34";
           checkWorkButton = 
             <Button
-              className="checkmark"
               id={name + '_partial'}
               style={checkWorkStyle}
             >
@@ -161,7 +158,6 @@ export default React.memo(function BooleanInput(props) {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
           checkWorkButton = 
             <Button
-              className="checkmark"
               id={name + '_incorrect'}
               style={checkWorkStyle}
             >
@@ -173,7 +169,6 @@ export default React.memo(function BooleanInput(props) {
         checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
         checkWorkButton = 
           <Button
-            className="checkmark"
             id={name + '_saved'}
             style={checkWorkStyle}
           >
@@ -219,7 +214,8 @@ export default React.memo(function BooleanInput(props) {
         disabled={disabled}
       />;
   } else {
-    input = <label class="container">
+    input = 
+    <label class="container">
       <input
         type="checkbox"
         key={inputKey}
@@ -231,13 +227,14 @@ export default React.memo(function BooleanInput(props) {
       <span class="checkmark"></span>
       {SVs.label}
     </label>
+    // {checkWorkButton}
   }
 
   return <React.Fragment>
     <span id={name} class="button-container">
       <a name={name} />
       {input}
-      {checkWorkButton}
     </span>
+    {checkWorkButton}
   </React.Fragment>
 })

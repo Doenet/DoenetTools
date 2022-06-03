@@ -3,7 +3,6 @@
     /* display: block; */
     position: relative;
     padding-left: 30px;
-    margin-right: 10px;
     margin-bottom: 12px;
     cursor: pointer;
     -webkit-user-select: none;
@@ -26,9 +25,9 @@
 }
 
 .button-container {
-    /* display: block; */
-    position: relative;
-    padding-left: 30px;
+    display: inline-block;
+    /* position: relative; */
+    /* padding-left: 30px; */
     margin-right: 10px;
     margin-bottom: 12px;
     cursor: pointer;

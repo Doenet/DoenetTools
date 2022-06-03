@@ -189,7 +189,7 @@ export default function MathInput(props) {
     /* border: var(--mainBorder); */
     border: none;
     border-radius: var(--mainBorderRadius);
-    margin: 0px 10px 12px 10px;
+    margin: 0px 10px 12px 0px;
 
     &:hover {
       background-color: var(--lightBlue);
@@ -295,10 +295,10 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={name} />
 
-      <span className="textInputSurroundingBox" id={name} style={{marginBottom: "12px"}}>
+      <span className="textInputSurroundingBox" id={name}>
         <span>
           <EditableMathField
-            style={{border: "var(--mainBorder)"}}
+            style={{border: "var(--mainBorder)", marginRight: "10px", marginBottom: "12px"}}
             latex={rendererValue.current}
             config={{
               autoCommands:

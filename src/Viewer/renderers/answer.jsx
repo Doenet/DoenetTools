@@ -64,7 +64,7 @@ export default React.memo(function Answer(props) {
       /* border: var(--mainBorder); */
       border: none;
       border-radius: var(--mainBorderRadius);
-      margin: 0px 10px 12px 10px;
+      margin: 0px 10px 12px 0px;
 
       &:hover {
         background-color: var(--lightBlue);
