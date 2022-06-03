@@ -1364,8 +1364,8 @@ export default class Line extends GraphicalComponent {
 
               let denom = a * a + b * b;
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
 
               if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
