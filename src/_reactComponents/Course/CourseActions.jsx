@@ -191,20 +191,16 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray,assignmentDo
   return orderAndPagesDoenetIds;
 }
 
-export function findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
+export function findPageDoenetIdsInAnOrder({content,needleOrderDoenetId,foundNeedle=false}){
   let pageDoenetIds = [];
 
-    if (!foundNeedle && orderObj.doenetId == needleOrderDoenetId){
-      return findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
-    }
-    for (let item of orderObj.content){
-      // console.log("find item",item)
+    for (let item of content){
       if (item?.type == 'order'){
         let morePageDoenetIds;
         if (foundNeedle || item.doenetId == needleOrderDoenetId){
-          morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle:true})
+          morePageDoenetIds = findPageDoenetIdsInAnOrder({content:item.content,needleOrderDoenetId,foundNeedle:true})
         }else{
-          morePageDoenetIds = findPageDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle})
+          morePageDoenetIds = findPageDoenetIdsInAnOrder({content:item.content,needleOrderDoenetId,foundNeedle})
         }
         pageDoenetIds = [...pageDoenetIds,...morePageDoenetIds];
       }else{
@@ -1512,12 +1508,12 @@ export const useCourse = (courseId) => {
     return null;
   }
 
-  function deleteOrderFromOrder({orderObj,needleDoenetId}){
-    let nextOrderObj = {...orderObj};
+  function deleteOrderFromContent({content,needleDoenetId}){
+    let nextContent = [...content];
 
     let index = null;
 
-    for (let [i,item] of Object.entries(orderObj.content)){
+    for (let [i,item] of Object.entries(content)){
       if (item?.type == 'order'){
         //Check for match
         if (needleDoenetId == item.doenetId){
@@ -1526,20 +1522,19 @@ export const useCourse = (courseId) => {
         }
         
         //if not a match then recurse into content
-        let childOrderObj = deleteOrderFromOrder({orderObj:item,needleDoenetId});
-        if (childOrderObj != null){
-          nextOrderObj.content = [...nextOrderObj.content]
-          nextOrderObj.content.splice(i,1,childOrderObj);
-          return nextOrderObj;
+        let childContent = deleteOrderFromContent({content:item.content,needleDoenetId});
+        if (childContent != null){
+          let nextOrder = {...item}
+          nextOrder.content = [...childContent]
+          nextContent.splice(i,1,nextOrder);
+          return nextContent;
         }
       }
     }
     //Need to return order object without the doenetId of the page to delete
     if (index != null){
-      let nextContent = [...orderObj.content];
       nextContent.splice(index,1);
-      nextOrderObj.content = nextContent
-      return nextOrderObj
+      return nextContent
     }
     //Didn't find needle
     return null;
@@ -1624,11 +1619,10 @@ export const useCourse = (courseId) => {
         }else if (itemToDeleteObj.type == 'order'){
           let containingObj = await snapshot.getPromise(itemByDoenetId(itemToDeleteObj.containingDoenetId))
           //Find doenentIds of pages contained by the order
-          pagesDoenetIds = findPageDoenetIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:doenetId})
+          pagesDoenetIds = findPageDoenetIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:itemToDeleteObj.doenetId})
           orderDoenetIds = findOrderIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:doenetId})
           //Find updated activities' default order
-          //TODO:update deleteorderfromorder
-          let nextOrder = deleteOrderFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
+          let nextOrder = deleteOrderFromContent({content:containingObj.content,needleDoenetId:doenetId})
           activitiesJson.push(nextOrder);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
         }else if (itemToDeleteObj.type == 'bank'){
