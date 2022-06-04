@@ -218,6 +218,29 @@ export function findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNe
   return pageDoenetIds;
 }
 
+export function findPageIdsInContentArray({content,needleOrderDoenetId,foundNeedle=false}){
+  let pageDoenetIds = [];
+
+    for (let item of content){
+      if (item?.type == 'order'){
+        let morePageDoenetIds;
+        if (foundNeedle || item.doenetId == needleOrderDoenetId){
+          morePageDoenetIds = findPageIdsInContentArray({content:item.content,needleOrderDoenetId,foundNeedle:true})
+        }else{
+          morePageDoenetIds = findPageIdsInContentArray({content:item.content,needleOrderDoenetId,foundNeedle})
+        }
+        pageDoenetIds = [...pageDoenetIds,...morePageDoenetIds];
+      }else{
+        //Page 
+        if (foundNeedle){
+          pageDoenetIds.push(item);
+        }
+      }
+    }
+
+  return pageDoenetIds;
+}
+
 function localizeDates(obj, keys) {
   for(let key of keys) {
     if (obj[key]) {
@@ -1523,19 +1546,18 @@ export const useCourse = (courseId) => {
     return null;
   }
   
-  function findOrderDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle=false}){
+  function findOrderIdsInAnOrder({content,needleOrderDoenetId,foundNeedle=false}){
     let orderDoenetIds = [];
-  
-      for (let item of orderObj.content){
+      for (let item of content){
         if (item?.type == 'order'){
-          let morePageDoenetIds;
+          let moreOrderIds;
           if (foundNeedle || item.doenetId == needleOrderDoenetId){
             orderDoenetIds.push(item.doenetId);
-            morePageDoenetIds = findOrderDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle:true})
+            moreOrderIds = findOrderIdsInAnOrder({content:item.content,needleOrderDoenetId,foundNeedle:true})
           }else{
-            morePageDoenetIds = findOrderDoenetIdsInAnOrder({orderObj:item,needleOrderDoenetId,foundNeedle})
+            moreOrderIds = findOrderIdsInAnOrder({content:item.content,needleOrderDoenetId,foundNeedle})
           }
-          orderDoenetIds = [...orderDoenetIds,...morePageDoenetIds];
+          orderDoenetIds = [...orderDoenetIds,...moreOrderIds];
         }
       }
 
@@ -1573,7 +1595,7 @@ export const useCourse = (courseId) => {
     ({ set,snapshot }) =>
       async ({doenetId, successCallback, failureCallback = defaultFailure}) => {
         let itemToDeleteObj = await snapshot.getPromise(itemByDoenetId(doenetId));
-        // console.log("deleteItem itemToDeleteObj",itemToDeleteObj)
+        console.log(">>deleteItem itemToDeleteObj",itemToDeleteObj)
         let pagesDoenetIds = [];
         let courseContentDoenetIds = [];
         let activitiesJson = [];
@@ -1603,9 +1625,10 @@ export const useCourse = (courseId) => {
         }else if (itemToDeleteObj.type == 'order'){
           let containingObj = await snapshot.getPromise(itemByDoenetId(itemToDeleteObj.containingDoenetId))
           //Find doenentIds of pages contained by the order
-          pagesDoenetIds = findPageDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:doenetId})
-          orderDoenetIds = findOrderDoenetIdsInAnOrder({orderObj:containingObj.order,needleOrderDoenetId:doenetId})
+          pagesDoenetIds = findPageDoenetIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:doenetId})
+          orderDoenetIds = findOrderIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:doenetId})
           //Find updated activities' default order
+          //TODO:update deleteorderfromorder
           let nextOrder = deleteOrderFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
           activitiesJson.push(nextOrder);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
@@ -1613,11 +1636,9 @@ export const useCourse = (courseId) => {
           baseCollectionsDoenetIds.push(doenetId);
           pagesDoenetIds = itemToDeleteObj.pages;
         }else if (itemToDeleteObj.type == 'activity'){
-          let orderObj = itemToDeleteObj.order;
-          let needleOrderDoenetId = itemToDeleteObj.order.doenetId;
-          pagesDoenetIds = findPageDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
-          orderDoenetIds = findOrderDoenetIdsInAnOrder({orderObj,needleOrderDoenetId,foundNeedle:true})
-          orderDoenetIds = [needleOrderDoenetId,...orderDoenetIds];
+          let content = itemToDeleteObj.content;
+          pagesDoenetIds = findPageIdsInContentArray({content,needleOrderDoenetId:null,foundNeedle:true})
+          orderDoenetIds = findOrderIdsInAnOrder({content,needleOrderDoenetId:null,foundNeedle:true})
           baseActivitiesDoenetIds = [doenetId]
         }else if (itemToDeleteObj.type == 'section'){
           baseSectionsDoenetIds.push(itemToDeleteObj.doenetId);
@@ -1638,6 +1659,21 @@ export const useCourse = (courseId) => {
             }
           }
         }
+
+        console.log(">>DELETE!",{
+          courseId,
+          pagesDoenetIds,
+          courseContentDoenetIds,
+          activitiesJson,
+          activitiesJsonDoenetIds,
+          collectionsJson,
+          collectionsJsonDoenetIds,
+          baseCollectionsDoenetIds,
+          baseActivitiesDoenetIds,
+          baseSectionsDoenetIds
+        })
+
+
         //Delete off of server first
     try {
 
@@ -1654,7 +1690,7 @@ export const useCourse = (courseId) => {
           baseSectionsDoenetIds
         });
       if (resp.status < 300) {
-        // console.log("data",resp.data)
+        console.log("data",resp.data)
         let { success, message } = resp.data;
 
      //update recoil for deleted items from collections
@@ -1681,20 +1717,36 @@ export const useCourse = (courseId) => {
       //remove all items from author order
      set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
        let next = [...prev];
+
        for (let pagesDoenetId of pagesDoenetIds){
-        next.splice(next.indexOf(pagesDoenetId),1);
+         let index = next.indexOf(pagesDoenetId);
+         if (index != -1){
+           next.splice(index,1);
+         }
        }
        for (let orderDoenetId of orderDoenetIds){
-        next.splice(next.indexOf(orderDoenetId),1);
+        let index = next.indexOf(orderDoenetId);
+        if (index != -1){
+          next.splice(index,1);
+        }
        }
        for (let baseCollectionsDoenetId of baseCollectionsDoenetIds){
-        next.splice(next.indexOf(baseCollectionsDoenetId),1);
+        let index = next.indexOf(baseCollectionsDoenetId);
+        if (index != -1){
+          next.splice(index,1);
+        }
        }
        for (let baseActivitiesDoenetId of baseActivitiesDoenetIds){
-        next.splice(next.indexOf(baseActivitiesDoenetId),1);
+        let index = next.indexOf(baseActivitiesDoenetId);
+        if (index != -1){
+          next.splice(index,1);
+        }
        }
        for (let baseSectionsDoenetId of baseSectionsDoenetIds){
-        next.splice(next.indexOf(baseSectionsDoenetId),1);
+        let index = next.indexOf(baseSectionsDoenetId);
+        if (index != -1){
+          next.splice(index,1);
+        }
        }
        return next;
      });
