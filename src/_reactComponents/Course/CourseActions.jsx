@@ -1482,18 +1482,19 @@ export const useCourse = (courseId) => {
     return null;
   }
 
-  function deletePageFromOrder({orderObj,needleDoenetId}){
-    let nextOrderObj = {...orderObj};
+  function deletePageFromActivity({content,needleDoenetId}){
+    let nextContent = [...content];
 
     let index = null;
 
-    for (let [i,item] of Object.entries(orderObj.content)){
+    for (let [i,item] of Object.entries(content)){
       if (item?.type == 'order'){
-        let childOrderObj = deletePageFromOrder({orderObj:item,needleDoenetId});
-        if (childOrderObj != null){
-          nextOrderObj.content = [...nextOrderObj.content]
-          nextOrderObj.content.splice(i,1,childOrderObj);
-          return nextOrderObj;
+        let childContent = deletePageFromActivity({content:item.content,needleDoenetId});
+        if (childContent != null){
+          let childOrderObj = {...item}
+          childOrderObj.content = childContent;
+          nextContent.splice(i,1,childOrderObj);
+          return nextContent;
         }
 
       }else if (needleDoenetId == item){
@@ -1502,12 +1503,10 @@ export const useCourse = (courseId) => {
         }
     }
 
-    //Need to return order object without the doenetId of the page to delete
+    //Need to return the content array without the doenetId of the page to delete
     if (index != null){
-      let nextContent = [...orderObj.content];
       nextContent.splice(index,1);
-      nextOrderObj.content = nextContent
-      return nextOrderObj
+      return nextContent
     }
     //Didn't find needle
     return null;
@@ -1616,8 +1615,8 @@ export const useCourse = (courseId) => {
             collectionsJson.push(nextPages);
             pagesDoenetIds.push(doenetId);
           }else if (containingObj.type == 'activity'){
-            let nextOrder = deletePageFromOrder({orderObj:containingObj.order,needleDoenetId:doenetId})
-            activitiesJson.push(nextOrder);
+            let nextContent = deletePageFromActivity({content:containingObj.content,needleDoenetId:doenetId})
+            activitiesJson.push(nextContent);
             activitiesJsonDoenetIds.push(containingObj.doenetId);
             pagesDoenetIds.push(doenetId);
           }
@@ -1707,7 +1706,7 @@ export const useCourse = (courseId) => {
       let activityJson = activitiesJson[i];
       set(itemByDoenetId(activitiesJsonDoenetId),(prev)=>{
         let next = {...prev}
-        next.order = activityJson;
+        next.content = activityJson;
         return next;
       })
       
@@ -2128,10 +2127,10 @@ export const useCourse = (courseId) => {
               let updatedSourceItemJSON =  {}
               if (containingObj.type == 'activity'){
                 //Remove from Activity
-                updatedSourceItemJSON = deletePageFromOrder({orderObj:containingObj.order,needleDoenetId:cutObj.doenetId})
+                updatedSourceItemJSON = deletePageFromActivity({orderObj:containingObj.order,needleDoenetId:cutObj.doenetId})
                 //if source is destination delete page from destination
                 if (destinationContainingObj.doenetId == containingObj.doenetId){
-                  destinationJSON = deletePageFromOrder({orderObj:destinationJSON,needleDoenetId:cutObj.doenetId})
+                  destinationJSON = deletePageFromActivity({orderObj:destinationJSON,needleDoenetId:cutObj.doenetId})
                 }
               }else if (containingObj.type == 'bank'){
                 //Remove from Collection
@@ -2155,10 +2154,10 @@ export const useCourse = (courseId) => {
               let updatedSourceItemJSON =  {}
               if (containingObjtype == 'activity'){
                 //Remove from Activity
-                updatedSourceItemJSON = deletePageFromOrder({orderObj:previousObj,needleDoenetId:cutObj.doenetId})
+                updatedSourceItemJSON = deletePageFromActivity({orderObj:previousObj,needleDoenetId:cutObj.doenetId})
                 //if source is destination delete page from destination
                 if (destinationContainingObj.doenetId == cutObj.containingDoenetId){
-                  destinationJSON = deletePageFromOrder({orderObj:destinationJSON,needleDoenetId:cutObj.doenetId})
+                  destinationJSON = deletePageFromActivity({orderObj:destinationJSON,needleDoenetId:cutObj.doenetId})
                 }
               }else if (containingObjtype == 'bank'){
                 //Remove from Collection
