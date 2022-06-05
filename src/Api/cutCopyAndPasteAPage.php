@@ -65,6 +65,7 @@ if ($success){
         // return mysqli_real_escape_string($conn, $item);
         return json_encode($item);
     }, $_POST['sourceJSONs']);
+    $destinationWasASinglePageActivity = mysqli_real_escape_string($conn, $_POST['destinationWasASinglePageActivity']);
 
     $destinationType = mysqli_real_escape_string($conn, $_POST['destinationType']);
     $destinationDoenetId = mysqli_real_escape_string($conn, $_POST['destinationDoenetId']);
@@ -146,6 +147,15 @@ if ($success) {
             AND courseId='$courseId'
             ";
             $result = $conn->query($sql);
+            if ($destinationWasASinglePageActivity){
+                $sql = "
+                UPDATE course_content
+                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.isSinglePage',false)
+                WHERE doenetId='$destinationDoenetId'
+                AND courseId='$courseId'
+                ";
+                $result = $conn->query($sql);
+            }
         }
     // }
     

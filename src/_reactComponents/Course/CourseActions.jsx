@@ -1974,8 +1974,7 @@ export const useCourse = (courseId) => {
 
           //Test if cut orders and pages can go in destination
           for (let cutObj of cutObjs){
-            if ((destType == 'section' ||
-            destType == 'activity' ) && 
+            if (destType == 'section'  && 
             (cutObj.type == 'page' ||
             cutObj.type == 'order'
             )
@@ -2104,10 +2103,14 @@ export const useCourse = (courseId) => {
           let destinationType = destinationContainingObj.type;
           let destinationDoenetId = destinationContainingObj.doenetId;
           let destinationJSON;
+          let destinationWasASinglePageActivity = false;
           if (destinationType == 'bank'){
             destinationJSON = [...destinationContainingObj.pages];
           }else if (destinationType == 'activity'){
             destinationJSON = [...destinationContainingObj.content];
+          }
+          if (destinationContainingObj.isSinglePage){
+            destinationWasASinglePageActivity = true;
           }
           let sourceTypes = []
           let sourceDoenetIds = []
@@ -2236,6 +2239,8 @@ export const useCourse = (courseId) => {
         // console.log("destinationJSON",destinationJSON)
         // console.log("previousDoenetId",previousDoenetId)
         // console.log("previousDoenetIdForPages",previousDoenetIdForPages)
+        // console.log("previousDoenetIdForPages",previousDoenetIdForPages)
+        // console.log("destinationWasASinglePageActivity",destinationWasASinglePageActivity)
         
         // console.log("-----------------------\n")
 
@@ -2251,6 +2256,7 @@ export const useCourse = (courseId) => {
             destinationType,
             destinationDoenetId,
             destinationJSON,
+            destinationWasASinglePageActivity,
           });
           // console.log("!!!!!!!!cutCopyAndPasteAPage resp.data",resp.data)
           if (resp.status < 300) {
@@ -2308,6 +2314,9 @@ export const useCourse = (courseId) => {
                 set(itemByDoenetId(destinationDoenetId),(prev)=>{
                   let next = {...prev}
                   next.content = destinationJSON;
+                  if (destinationWasASinglePageActivity){
+                    next.isSinglePage = false
+                  }
                   return next;
                 })
             }
@@ -2334,8 +2343,8 @@ export const useCourse = (courseId) => {
 
 
             successCallback?.();
-            //Update recoil
-            // set(itemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
+           // Update recoil
+           // set(itemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
             
             
           } else {
