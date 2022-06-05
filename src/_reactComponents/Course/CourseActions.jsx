@@ -2104,6 +2104,7 @@ export const useCourse = (courseId) => {
           let destinationDoenetId = destinationContainingObj.doenetId;
           let destinationJSON;
           let destinationWasASinglePageActivity = false;
+          let destinationWasSinglePagesPageId;
           if (destinationType == 'bank'){
             destinationJSON = [...destinationContainingObj.pages];
           }else if (destinationType == 'activity'){
@@ -2111,6 +2112,7 @@ export const useCourse = (courseId) => {
           }
           if (destinationContainingObj.isSinglePage){
             destinationWasASinglePageActivity = true;
+            destinationWasSinglePagesPageId = destinationContainingObj.content[0];
           }
           let sourceTypes = []
           let sourceDoenetIds = []
@@ -2195,6 +2197,9 @@ export const useCourse = (courseId) => {
               if (previousPreviousDoenetId){
                 previousDoenetId = previousPreviousDoenetId;
               }
+              if (destinationWasASinglePageActivity){
+                previousDoenetId = destinationDoenetId
+              }
             }
           }
 
@@ -2239,8 +2244,8 @@ export const useCourse = (courseId) => {
         // console.log("destinationJSON",destinationJSON)
         // console.log("previousDoenetId",previousDoenetId)
         // console.log("previousDoenetIdForPages",previousDoenetIdForPages)
-        // console.log("previousDoenetIdForPages",previousDoenetIdForPages)
         // console.log("destinationWasASinglePageActivity",destinationWasASinglePageActivity)
+        // console.log("destinationWasSinglePagesPageId",destinationWasSinglePagesPageId)
         
         // console.log("-----------------------\n")
 
@@ -2320,6 +2325,7 @@ export const useCourse = (courseId) => {
                   return next;
                 })
             }
+            
             set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
               let next = [...prev];
               for (let doenetId of setOfOriginalPageDoenetIds){
@@ -2336,7 +2342,12 @@ export const useCourse = (courseId) => {
                 }
                 insertIndex = indexPreviousToPrevious + 1;
               }
-              next.splice(insertIndex,0,...setOfOriginalPageDoenetIds);  //insert
+              //Need original page in item order
+              if (destinationWasASinglePageActivity){
+                next.splice(insertIndex,0,destinationWasSinglePagesPageId,...setOfOriginalPageDoenetIds);  //insert
+              }else{
+                next.splice(insertIndex,0,...setOfOriginalPageDoenetIds);  //insert
+              }
               return next
             })
 
