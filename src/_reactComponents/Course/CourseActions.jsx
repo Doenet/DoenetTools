@@ -1825,15 +1825,13 @@ export const useCourse = (courseId) => {
       async ({successCallback, failureCallback = defaultFailure}) => {
 
         //Given a containing DoenetId get all the associated doenetIds
+        //If activity is single page only returns the doenetId of contentainingObj
         async function getIds(doenetId,itemObj=null){
           let allIds = [doenetId];
           if (!itemObj){
             itemObj = await snapshot.getPromise(itemByDoenetId(doenetId));
           }
-          if (itemObj.type == 'activity'){
-            let activityIds = await getIds(itemObj.order.doenetId,itemObj.order)
-            allIds = [...allIds,...activityIds]
-          }else if (itemObj.type == 'order'){
+          if (itemObj.type == 'order' || (itemObj.type == 'activity' && !itemObj.isSinglePage)){
             let orderIds = []
             for (let id of itemObj.content){
               if (id?.type == 'order'){
@@ -2033,14 +2031,14 @@ export const useCourse = (courseId) => {
       
 
         if (doenetIdsToMove.length > 0){
-          console.log("move",{
-            courseId,
-            doenetIdsToMove,
-            destParentDoenetId,
-            destPreviousContainingItemDoenetId,
-            noParentUpdateDoenetIds,
-          })
-          //update the database for containing objects
+          // console.log("move",{
+          //   courseId,
+          //   doenetIdsToMove,
+          //   destParentDoenetId,
+          //   destPreviousContainingItemDoenetId,
+          //   noParentUpdateDoenetIds,
+          // })
+          // update the database for containing objects
           try {
             let resp = await axios.post('/api/moveContent.php',{
               courseId,
