@@ -2181,12 +2181,17 @@ export const useCourse = (courseId) => {
               if (singleSelectedObj.type == 'page'){
                 orderIdOrActivityIdToAddTo = singleSelectedObj.parentDoenetId;
               }
+              let previousPreviousDoenetId = previousDoenetId;
                 ({content:destinationJSON,previousDoenetId} = addPageToActivity({
                 activityOrOrderObj:destinationContainingObj,
                 needleOrderOrActivityId:orderIdOrActivityIdToAddTo,
                 itemToAdd:cutObj.doenetId})
               )
               destinationContainingObj.content = destinationJSON;
+              //Protect against overwriting previousDoenetId on pasting multiple pages
+              if (previousPreviousDoenetId){
+                previousDoenetId = previousPreviousDoenetId;
+              }
             }
           }
 
