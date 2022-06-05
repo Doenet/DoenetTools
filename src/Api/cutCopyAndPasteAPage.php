@@ -103,7 +103,7 @@ if ($success) {
             }else if ($sourceType == 'activity'){
                 $sql = "
                 UPDATE course_content
-                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$sourceJSON'))
+                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.content',JSON_MERGE('[]','$sourceJSON'))
                 WHERE doenetId='$sourceDoenetId'
                 AND courseId='$courseId'
                 ";
@@ -141,7 +141,7 @@ if ($success) {
         }else if ($destinationType == 'activity'){
             $sql = "
             UPDATE course_content
-            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$destinationJSON'))
+            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.content',JSON_MERGE('[]','$destinationJSON'))
             WHERE doenetId='$destinationDoenetId'
             AND courseId='$courseId'
             ";

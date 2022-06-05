@@ -2132,7 +2132,6 @@ export const useCourse = (courseId) => {
                 updatedSourceItemJSON = deletePageFromActivity({content:containingObj.content,needleDoenetId:cutObj.doenetId})
                 //if source is destination delete page from destination
                 if (destinationContainingObj.doenetId == containingObj.doenetId){
-                  console.log("destinationJSON SAME")
                   destinationJSON = deletePageFromActivity({content:destinationJSON,needleDoenetId:cutObj.doenetId})
                 }
               }else if (containingObj.type == 'bank'){
@@ -2218,130 +2217,130 @@ export const useCourse = (courseId) => {
 
 
           
-        console.log("\n-----------------------")
-        console.log("Cut and Paste pages and orders")
-        console.log("-----------------------")
-        console.log("originalPageDoenetIds",originalPageDoenetIds)
-        console.log("sourceTypes",sourceTypes)
-        console.log("sourceDoenetIds",sourceDoenetIds)
-        console.log("sourceJSONs",sourceJSONs)
-        console.log("destParentDoenetId",destParentDoenetId)
-        console.log("destPreviousContainingItemDoenetId",destPreviousContainingItemDoenetId)
-        console.log("destPreviousItemDoenetId",destPreviousItemDoenetId)
+        // console.log("\n-----------------------")
+        // console.log("Cut and Paste pages and orders")
+        // console.log("-----------------------")
+        // console.log("originalPageDoenetIds",originalPageDoenetIds)
+        // console.log("sourceTypes",sourceTypes)
+        // console.log("sourceDoenetIds",sourceDoenetIds)
+        // console.log("sourceJSONs",sourceJSONs)
+        // console.log("destParentDoenetId",destParentDoenetId)
+        // console.log("destPreviousContainingItemDoenetId",destPreviousContainingItemDoenetId)
+        // console.log("destPreviousItemDoenetId",destPreviousItemDoenetId)
 
-        console.log("destinationType",destinationType)
-        console.log("destinationDoenetId",destinationDoenetId)
-        console.log("destinationJSON",destinationJSON)
-        console.log("previousDoenetId",previousDoenetId)
-        console.log("previousDoenetIdForPages",previousDoenetIdForPages)
+        // console.log("destinationType",destinationType)
+        // console.log("destinationDoenetId",destinationDoenetId)
+        // console.log("destinationJSON",destinationJSON)
+        // console.log("previousDoenetId",previousDoenetId)
+        // console.log("previousDoenetIdForPages",previousDoenetIdForPages)
         
-        console.log("-----------------------\n")
+        // console.log("-----------------------\n")
 
         //update database
-        // try {
-        //   let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
-        //     isCopy:false,
-        //     courseId,
-        //     originalPageDoenetIds,
-        //     sourceTypes,
-        //     sourceDoenetIds,
-        //     sourceJSONs,
-        //     destinationType,
-        //     destinationDoenetId,
-        //     destinationJSON,
-        //   });
-        //   // console.log("!!!!!!!!cutCopyAndPasteAPage resp.data",resp.data)
-        //   if (resp.status < 300) {
+        try {
+          let resp = await axios.post('/api/cutCopyAndPasteAPage.php', {
+            isCopy:false,
+            courseId,
+            originalPageDoenetIds,
+            sourceTypes,
+            sourceDoenetIds,
+            sourceJSONs,
+            destinationType,
+            destinationDoenetId,
+            destinationJSON,
+          });
+          // console.log("!!!!!!!!cutCopyAndPasteAPage resp.data",resp.data)
+          if (resp.status < 300) {
           
 
 
 
-        //   let nextPagesParentDoenetId;
-        //   if (singleSelectedObj.type == 'order' || singleSelectedObj.type == 'bank'){
-        //     nextPagesParentDoenetId = singleSelectedObj.doenetId;
-        //   }else if (singleSelectedObj.type == 'page'){
-        //     nextPagesParentDoenetId = singleSelectedObj.parentDoenetId;
-        //   }
-        //   let setOfOriginalPageDoenetIds = []
-        //   for (let [i,sourceType] of Object.entries(sourceTypes)){
-        //     let sourceDoenetId = sourceDoenetIds[i]
-        //     let sourceJSON = sourceJSONs[i];
+          let nextPagesParentDoenetId;
+          if (singleSelectedObj.type == 'order' || singleSelectedObj.type == 'bank'){
+            nextPagesParentDoenetId = singleSelectedObj.doenetId;
+          }else if (singleSelectedObj.type == 'page'){
+            nextPagesParentDoenetId = singleSelectedObj.parentDoenetId;
+          }
+          let setOfOriginalPageDoenetIds = []
+          for (let [i,sourceType] of Object.entries(sourceTypes)){
+            let sourceDoenetId = sourceDoenetIds[i]
+            let sourceJSON = sourceJSONs[i];
 
-        //     //Update source
-        //     if (sourceType == 'bank'){
-        //       set(itemByDoenetId(sourceDoenetId),(prev)=>{
-        //         let next = {...prev}
-        //         next.pages = sourceJSON;
-        //         return next;
-        //       })
-        //     } else if (sourceType == 'activity'){
-        //       set(itemByDoenetId(sourceDoenetId),(prev)=>{
-        //         let next = {...prev}
-        //         next.order = sourceJSON;
-        //         return next;
-        //       })
-        //     }
-        //     for(let originalPageDoenetId of originalPageDoenetIds[i]){
-        //       setOfOriginalPageDoenetIds.push(originalPageDoenetId);
-        //       //Update pages
-        //       set(itemByDoenetId(originalPageDoenetId),(prev)=>{
-        //         let next = {...prev}
-        //         next.containingDoenetId = destinationDoenetId;
-        //         next.parentDoenetId = nextPagesParentDoenetId;
-        //         next.isBeingCut = false
-        //         return next;
-        //       })
-        //     }
+            //Update source
+            if (sourceType == 'bank'){
+              set(itemByDoenetId(sourceDoenetId),(prev)=>{
+                let next = {...prev}
+                next.pages = sourceJSON;
+                return next;
+              })
+            } else if (sourceType == 'activity'){
+              set(itemByDoenetId(sourceDoenetId),(prev)=>{
+                let next = {...prev}
+                next.content = sourceJSON;
+                return next;
+              })
+            }
+            for(let originalPageDoenetId of originalPageDoenetIds[i]){
+              setOfOriginalPageDoenetIds.push(originalPageDoenetId);
+              //Update pages
+              set(itemByDoenetId(originalPageDoenetId),(prev)=>{
+                let next = {...prev}
+                next.containingDoenetId = destinationDoenetId;
+                next.parentDoenetId = nextPagesParentDoenetId;
+                next.isBeingCut = false
+                return next;
+              })
+            }
 
-        //   }
+          }
 
-        //     //Update destination
-        //       if (destinationType == 'bank'){
-        //         set(itemByDoenetId(destinationDoenetId),(prev)=>{
-        //           let next = {...prev}
-        //           next.pages = destinationJSON;
-        //           return next;
-        //         })
-        //       }else if (destinationType == 'activity'){
-        //         set(itemByDoenetId(destinationDoenetId),(prev)=>{
-        //           let next = {...prev}
-        //           next.order = destinationJSON;
-        //           return next;
-        //         })
-        //     }
-        //     set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
-        //       let next = [...prev];
-        //       for (let doenetId of setOfOriginalPageDoenetIds){
-        //           next.splice(next.indexOf(doenetId),1);  //remove 
-        //       }
-        //       let insertIndex = next.indexOf(previousDoenetIdForPages)+1;
-        //       if (insertIndex == 0){
-        //         //Not found so backtrack to find the closest
-        //         let indexPreviousToPrevious = prev.indexOf(previousDoenetIdForPages) -1
-        //         let needle = prev[indexPreviousToPrevious];
-        //         while (indexPreviousToPrevious > 0 && !next.includes(needle)){
-        //           indexPreviousToPrevious--
-        //           needle = prev[indexPreviousToPrevious];
-        //         }
-        //         insertIndex = indexPreviousToPrevious + 1;
-        //       }
-        //       next.splice(insertIndex,0,...setOfOriginalPageDoenetIds);  //insert
-        //       return next
-        //     })
+            //Update destination
+              if (destinationType == 'bank'){
+                set(itemByDoenetId(destinationDoenetId),(prev)=>{
+                  let next = {...prev}
+                  next.pages = destinationJSON;
+                  return next;
+                })
+              }else if (destinationType == 'activity'){
+                set(itemByDoenetId(destinationDoenetId),(prev)=>{
+                  let next = {...prev}
+                  next.content = destinationJSON;
+                  return next;
+                })
+            }
+            set(authorCourseItemOrderByCourseId(courseId),(prev)=>{
+              let next = [...prev];
+              for (let doenetId of setOfOriginalPageDoenetIds){
+                  next.splice(next.indexOf(doenetId),1);  //remove 
+              }
+              let insertIndex = next.indexOf(previousDoenetIdForPages)+1;
+              if (insertIndex == 0){
+                //Not found so backtrack to find the closest
+                let indexPreviousToPrevious = prev.indexOf(previousDoenetIdForPages) -1
+                let needle = prev[indexPreviousToPrevious];
+                while (indexPreviousToPrevious > 0 && !next.includes(needle)){
+                  indexPreviousToPrevious--
+                  needle = prev[indexPreviousToPrevious];
+                }
+                insertIndex = indexPreviousToPrevious + 1;
+              }
+              next.splice(insertIndex,0,...setOfOriginalPageDoenetIds);  //insert
+              return next
+            })
 
 
 
-        //     successCallback?.();
-        //     //Update recoil
-        //     // set(itemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
+            successCallback?.();
+            //Update recoil
+            // set(itemByDoenetId(cutObj.doenetId),nextObj); //TODO: set using function and transfer nextObj key by key
             
             
-        //   } else {
-        //     throw new Error(`response code: ${resp.status}`);
-        //   }
-        // } catch (err) {
-        //   failureCallback(err);
-        // }
+          } else {
+            throw new Error(`response code: ${resp.status}`);
+          }
+        } catch (err) {
+          failureCallback(err);
+        }
         }
 
           
