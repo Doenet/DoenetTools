@@ -196,9 +196,9 @@ export default React.memo(function Section(props) {
     </div>
     }
     content = 
-    <div style={{ border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }} >
+    <div style={{ border: "var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }} >
       <div 
-        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: "var(--mainBorder)", borderTopLeftRadius:"var(--mainBorderRadius)", borderTopRightRadius:"var(--mainBorderRadius)" }} 
+        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: SVs.open ? "var(--mainBorder)" : "none", borderTopLeftRadius:"var(--mainBorderRadius)", borderTopRightRadius:"var(--mainBorderRadius)" }} 
         onClick={() => callAction({action: SVs.open ? actions.closeSection : actions.revealSection})}
       >
         <a name={name} />
@@ -250,7 +250,7 @@ export default React.memo(function Section(props) {
   } 
  
   switch (SVs.containerTag) {
-    case "aside": return <aside id={name} style={{ margin: "12px 0" }}> {content} </aside>; 
+    case "aside": return <aside id={name} style={{ margin: "12px 0"}}> {content} </aside>; 
     case "div": return <div id={name} style={{ margin: "12px 0" }}> {content} </div>; 
     case "none": return <>{content}</> ;
     default: return <section id={name} style={{ margin: "12px 0" }}> {content} </section>; 
