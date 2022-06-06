@@ -89,7 +89,8 @@ const Branding = styled.div`
 
 const MenuPanelsCapComponent = styled.div`
 width: 240px;
-background: white;
+background-color: var(--canvas);
+color: var(--canvastext);
 border-top: 1px solid #e2e2e2;
 border-top: 1px solid #e2e2e2;
 border-bottom: 2px solid #e2e2e2;
