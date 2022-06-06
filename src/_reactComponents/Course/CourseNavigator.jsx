@@ -490,7 +490,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
 
 },[doenetId, courseId, setSelectionMenu])
 
-   bgcolor = 'var(--canvas)';
+  let bgcolor = 'var(--canvas)';
   let color = 'var(--canvastext)';
   if (isSelected){
     color= 'black';
@@ -505,13 +505,6 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     e.stopPropagation();
     courseNavigatorProps?.doubleClickItem({doenetId,courseId});
   },[doenetId,courseId,courseNavigatorProps]);
-
-  let bgcolor = '#ffffff';
-  if (isSelected){
-    bgcolor = 'hsl(209,54%,82%)';
-  }else if (isBeingCut){
-    bgcolor = '#e2e2e2'; //grey
-  }
 
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
   const indentPx = 25;
