@@ -1,21 +1,19 @@
 import React, { useRef, useState, useEffect } from 'react';
 import me from 'math-expressions';
-
 import styled from "styled-components";
 // import { Spring } from '@react-spring/web';
 import useDoenetRender from './useDoenetRenderer';
-import Button from "../../_reactComponents/PanelHeaderComponents/Button";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup";
-import { doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray } from "../../_reactComponents/PanelHeaderComponents/theme"
+import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 import { useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
-
 
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
 
 const SliderContainer = styled.div`
     width: fit-content;
     height: ${props => (props.labeled && props.noTicked) ? "60px" : props.labeled ? "80px" : props.noTicked ? "40px" : "60px"};
+    margin-bottom: 12px;
     &:focus {outline: 0;};
 `;
 
@@ -27,8 +25,8 @@ const SubContainer2 = styled.div`
 const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
-  background: #888888 ;
-  height: 1px;
+  background: black; // black?
+  height: 2px;
   width: ${props => props.width};
   user-select: none;
 `;
@@ -45,16 +43,16 @@ const StyledThumb = styled.div`
   position: relative;
   top: -4px;
   opacity: 1;
-  background: ${props => props.disabled ? "#404040" : `${doenetComponentForegroundActive}`};
+  background: ${props => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"}; // var(--mainBlue)?
   cursor: pointer;
 `;
 
 const Tick = styled.div`
     position: absolute;
-    border-left: 2px solid  ${doenetLightGray};
+    border-left: 2px solid var(--mainGray);
     height: 10px;
-    top:1px;
-    z-Index:-2;
+    top: 1px;
+    z-Index: -2;
     left: ${props => props.x};
     user-select: none;
 `;
@@ -62,9 +60,9 @@ const Tick = styled.div`
 const Label = styled.p`
     position: absolute;
     left: ${props => props.x};
-    color: ${doenetComponentForegroundInactive};
+    color: black;
     font-size: 12px;
-    top:1px;
+    top: 1px;
     user-select: none;
 `;
 
@@ -176,7 +174,6 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       tickValues = tickValues.map(x => round_to_decimals(x, roundDecimals));
 
     } else {
-
       let desiredNumberOfTicks = Math.max(2, Math.floor(SVs.width.size / maxValueWidth));
       let dIndex = Math.ceil((SVs.nItems - 1) / (desiredNumberOfTicks - 1) - 1E-10);
       let numberOfTicks = Math.floor((SVs.nItems - 1) / dIndex + 1E-10) + 1;
@@ -187,7 +184,6 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
       let roundDecimals = 2 - magnitudeOfMaxAbs;
       tickValues = tickIndices.map(x => round_to_decimals(points[x], roundDecimals))
-
     }
 
     return (
@@ -361,16 +357,16 @@ export default React.memo(function Slider(props) {
 
   if (SVs.disabled) {
     let controls = '';
+
+    // Imported ActionButton and ActionButtonGroup from PanelHeaderComponents
     if (SVs.showControls) {
-      controls = <ButtonGroup
+      controls = <ActionButtonGroup style={{marginBottom: "12px"}}
       >
-        <Button
-          style={{ marginTop: '-20px' }}
+        <ActionButton
           value="Prev" onClick={(e) => handlePrevious(e)} disabled />
-        <Button
-          style={{ marginTop: '-20px' }}
+        <ActionButton
           value="Next" onClick={(e) => handleNext(e)} disabled />
-      </ButtonGroup>
+      </ActionButtonGroup>
     } else {
       controls = null;
     }
@@ -386,14 +382,33 @@ export default React.memo(function Slider(props) {
     } else {
       ticksAndLabels = labels;
     }
+
+    // Conditional label and showValue attributes
+    let myLabel = null;
+    if (SVs.label) {
+      if (SVs.showValue) {
+        myLabel = <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel>
+        console.log("both");
+      } else {
+        myLabel = <StyledValueLabel>{SVs.label}</StyledValueLabel>
+        console.log("just label");
+      }
+    } else if (!SVs.label && SVs.showValue) {
+      myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
+      console.log("just value");
+    } else {
+      myLabel = null;
+      console.log("neither");
+    }
+
     return (
       <SliderContainer
         labeled={SVs.showControls || SVs.label}
         noTicked={SVs.showTicks === false}
         ref={containerRef}
       >
-        <div style={{ height: SVs.label ? '20px' : '0px' }}>
-          {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
+        <div style={{ height: SVs.label || SVs.showValue ? '20px' : '0px' }}>
+          {myLabel}
         </div>
         <SubContainer2>
           <StyledSlider width={`${SVs.width.size}px`}>
@@ -630,35 +645,53 @@ export default React.memo(function Slider(props) {
   } else {
     ticksAndLabels = labels;
   }
+
+  // Imported ActionButton and ActionButtonGroup from PanelHeaderComponents
   let controls = '';
   if (SVs.showControls) {
-    controls = <ButtonGroup >
-      <Button
-        style={{ marginTop: '-20px' }}
+    controls = <ActionButtonGroup style={{marginBottom: "12px"}}>
+      <ActionButton
         value="Prev"
         onClick={(e) => handlePrevious(e)}
         data-cy={`${name}-prevbutton`}
-      ></Button>
-      <Button
-        style={{ marginTop: '-20px' }}
+      ></ActionButton>
+      <ActionButton
         value="Next"
         onClick={(e) => handleNext(e)}
         data-cy={`${name}-nextbutton`}
-      ></Button>
-    </ButtonGroup>
+      ></ActionButton>
+    </ActionButtonGroup>
   } else {
     null
   }
 
-  // let valueDisplay = null;
-  // if (SVs.showValue) {
-  //   valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, position: "relative", userSelect: "none" }}>{SVs.valueForDisplay} </span>
-  // }
+  let valueDisplay = null;
+  if (SVs.showValue) {
+    valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, userSelect: "none" }}>{SVs.valueForDisplay} </span>
+  }
+
+  // Conditional label and showValue attributes
+  let myLabel = null;
+  if (SVs.label) {
+    if (SVs.showValue) {
+      myLabel = <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel>
+      console.log("both");
+    } else {
+      myLabel = <StyledValueLabel>{SVs.label}</StyledValueLabel>
+      console.log("just label");
+    }
+  } else if (!SVs.label && SVs.showValue) {
+      myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
+      console.log("just value");
+  } else {
+      myLabel = null;
+      console.log("neither");
+  }
 
   return (
     <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
-      <div style={{ height: (SVs.label) ? "20px" : "0px" }}>
-        {SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : null}
+      <div style={{ height: (SVs.label)  || (SVs.showValue) ? "20px" : "0px" }}>
+        {myLabel}
       </div>
       <SubContainer2 onMouseDown={handleDragEnter} onMouseUp={handleDragExit} onMouseMove={handleDragThrough} onMouseLeave={handleDragExit}>
         <StyledSlider width={(`${SVs.width.size}px`)} data-cy={`${name}`}>
