@@ -1409,7 +1409,7 @@ export const useCourse = (courseId) => {
 
         let childrenString ="";
         try {
-          childrenString = (await Promise.all(activity.order.content
+          childrenString = (await Promise.all(activity.content
             .map(x => contentToDoenetML({ content: x, indentLevel: 1 }))))
             .join("");
         } catch (err) {
