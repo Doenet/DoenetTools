@@ -7,7 +7,7 @@ import {
   useRecoilState,
   useSetRecoilState,
 } from 'recoil';
-import { searchParamAtomFamily } from '../NewToolRoot';
+import { searchParamAtomFamily, suppressMenusAtom } from '../NewToolRoot';
 import {
   fileByPageId,
   pageVariantInfoAtom,
@@ -62,6 +62,8 @@ export default function EditorViewer() {
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
   const pageObj = useRecoilValue(itemByDoenetId(paramPageId))
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+
 
   useSetCourseIdFromDoenetId(doenetId);
   useInitCourseItems(courseId);
@@ -74,6 +76,8 @@ export default function EditorViewer() {
 
   let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageId) => {
     let response = await snapshot.getPromise(fileByPageId(pageId));
+    let pageObj = await snapshot.getPromise(itemByDoenetId(pageId))
+    let containingObj = await snapshot.getPromise(itemByDoenetId(pageObj.containingDoenetId))
     // if (typeof response === "object"){
     //   response = response.data;
     // }
@@ -83,7 +87,13 @@ export default function EditorViewer() {
     set(textEditorDoenetMLAtom, doenetML)
     set(viewerDoenetMLAtom, doenetML)
     set(editorPageIdInitAtom, pageId);
-  }, [])
+    let suppress = [];
+    if (containingObj.type == 'bank'){
+      suppress.push('AssignmentSettingsMenu');
+    }
+
+    setSuppressMenus(suppress);
+  }, [setSuppressMenus])
 
 
   useEffect(() => {

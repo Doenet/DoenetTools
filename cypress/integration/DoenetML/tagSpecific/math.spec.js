@@ -2125,6 +2125,64 @@ describe('Math Tag Tests', function () {
     })
   });
 
+  it('parse <', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1">x < y</math></p>
+  <p><math name="m2">x <= y</math></p>
+  <p><math name="m3">x <
+      y</math></p>
+  <p><math name="m4">x <=
+      y</math></p>
+  <p><math name="m5">x &lt; y</math></p>
+  <p><math name="m6">x &lt;= y</math></p>
+
+  <p><math name="m7" format="latex">x < y</math></p>
+  <p><math name="m8" format="latex">x <
+      y</math></p>
+  <p><math name="m9" format="latex">x \\lt y</math></p>
+  <p><math name="m10" format="latex">x &lt; y</math></p>
+  <p><math name="m11" format="latex">x \\le y</math></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', 'x<y');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', 'x≤y');
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', 'x<y');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', 'x≤y');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', 'x<y');
+    cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', 'x≤y');
+    cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', 'x<y');
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', 'x<y');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', 'x<y');
+    cy.get('#\\/m10 .mjx-mrow').eq(0).should('have.text', 'x<y');
+    cy.get('#\\/m11 .mjx-mrow').eq(0).should('have.text', 'x≤y');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/m1"].stateValues.value).eqls(["<", "x", "y"])
+      expect(stateVariables["/m2"].stateValues.value).eqls(["le", "x", "y"])
+      expect(stateVariables["/m3"].stateValues.value).eqls(["<", "x", "y"])
+      expect(stateVariables["/m4"].stateValues.value).eqls(["le", "x", "y"])
+      expect(stateVariables["/m5"].stateValues.value).eqls(["<", "x", "y"])
+      expect(stateVariables["/m6"].stateValues.value).eqls(["le", "x", "y"])
+      expect(stateVariables["/m7"].stateValues.value).eqls(["<", "x", "y"])
+      expect(stateVariables["/m8"].stateValues.value).eqls(["<", "x", "y"])
+      expect(stateVariables["/m9"].stateValues.value).eqls(["<", "x", "y"])
+      expect(stateVariables["/m10"].stateValues.value).eqls(["<", "x", "y"])
+      expect(stateVariables["/m11"].stateValues.value).eqls(["le", "x", "y"])
+
+    })
+  });
+
 
 
 })

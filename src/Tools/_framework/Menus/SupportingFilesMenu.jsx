@@ -110,8 +110,7 @@ export default function SupportingFilesMenu(props){
   // console.log("supportingFiles",{ canUpload, userQuotaBytesAvailable, supportingFiles})
   // let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
   // let userQuotaBytesAvailable = supportingFiles.userQuotaBytesAvailable
-  let typesAllowed = ["image/jpeg","image/png"]
-  // let typesAllowed = ["text/csv","image/jpeg","image/png"]
+  let typesAllowed = ["text/csv","image/jpeg","image/png"]
   let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
   let numberOfFilesUploading = useRef(0);
 
@@ -316,7 +315,7 @@ export default function SupportingFilesMenu(props){
     )}
     </div>
     <CollapseSection title="Accepted File Types" collapsed={true} >
-      <div><b>Image</b>.jpg .png</div>
+      <div><b>Image</b>.jpg .png .csv</div>
       {/* <div><b>Data</b>.csv</div> */}
       {/* <div><b>Audio</b></div> */}
     </CollapseSection>
@@ -339,11 +338,7 @@ export default function SupportingFilesMenu(props){
     let source = `doenet:cid=${cid}`;
     if (fileType === 'image/jpeg' || fileType === 'image/png'){
       doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}' width='${width}' height='${height}' mimeType='${fileType}' />`
-    }else if (fileType === 'text/csv'){
-      doenetMLCode = `<dataset source='${source}' />`
-    }
-
-    let description_required_css = {};
+      let description_required_css = {};
     // if (description === ''){
     //   description_required_css = {border:"solid 2px #C1292E"}
     // }
@@ -374,6 +369,41 @@ export default function SupportingFilesMenu(props){
       </div>
       <hr />
     </div>)
+    }else if (fileType === 'text/csv'){
+      doenetMLCode = `<dataFrame source='${source}' hasHeader="true" />`
+      let description_required_css = {};
+    // if (description === ''){
+    //   description_required_css = {border:"solid 2px #C1292E"}
+    // }
+
+    //TODO:
+    //Checkbox for hasHeader attr hasHeader={T/F} default is true Also in DB
+    
+    supportFilesJSX.push(
+    <div>
+      <div>
+        <span style={{width:'116px'}}>fileName: <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,cid)}}/></span>
+        
+      </div>
+      <div>
+        <ActionButtonGroup width="menu">
+          {canUpload ? 
+          <ActionButton alert value="Delete" onClick={()=>{
+            deleteFile(cid);
+          }}/>
+          : null}
+          
+        <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
+          <ActionButton icon={<FontAwesomeIcon icon={faClipboard}/>} value="Copy Code"/>
+        </CopyToClipboard>
+        </ActionButtonGroup>
+       
+      </div>
+      <hr />
+    </div>)
+    }
+
+    
    
   })
   

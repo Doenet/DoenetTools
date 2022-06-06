@@ -693,6 +693,16 @@ export default class Answer extends InlineComponent {
             ct = component.componentType;
           }
 
+          if (ct === "mathList") {
+            ct = "math";
+          } else if (ct === "numberList") {
+            ct = "number";
+          } else if (ct === "textList") {
+            ct = "text";
+          } else if (ct === "booleanList") {
+            ct = "booelan;"
+          }
+
           if (Array.isArray(component.stateValues.values)) {
             currentResponses.push(...component.stateValues.values)
             componentType.push(...Array(component.stateValues.values.length)

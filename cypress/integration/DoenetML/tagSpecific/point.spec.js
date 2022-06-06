@@ -10218,4 +10218,76 @@ describe('Point Tag Tests', function () {
 
   });
 
+  it('1D point with 2D constraint does not crash', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph>
+      <point x="1">
+        <constraints>
+          <constrainTo><function>x^2</function></constrainTo>
+        </constraints>
+      </point>
+      <point x="2">
+        <constraints>
+          <constrainTo>
+            <curve><function>x^2</function><function>x^3</function></curve>
+          </constrainTo>
+        </constraints>
+      </point>
+      <point x="3">
+        <constraints>
+          <constrainTo><circle/></constrainTo>
+        </constraints>
+      </point>
+      <point x="4">
+        <constraints>
+          <constrainTo><line>y=2x</line></constrainTo>
+        </constraints>
+      </point>
+      <point x="5">
+        <constraints>
+          <constrainTo><polygon vertices="(1,2) (3,4) (5,-6)" /></constrainTo>
+        </constraints>
+      </point>
+      <point x="6">
+        <constraints>
+          <constrainTo><polyline vertices="(1,2) (3,4) (5,-6)" /></constrainTo>
+        </constraints>
+      </point>
+      <point x="7">
+        <constraints>
+          <constrainTo><parabola/></constrainTo>
+        </constraints>
+      </point>
+    </graph>
+
+    <copy prop="x" target="_point1" assignNames="xa" />
+    <copy prop="x" target="_point2" assignNames="xb" />
+    <copy prop="x" target="_point3" assignNames="xc" />
+    <copy prop="x" target="_point4" assignNames="xd" />
+    <copy prop="x" target="_point5" assignNames="xe" />
+    <copy prop="x" target="_point6" assignNames="xf" />
+    <copy prop="x" target="_point7" assignNames="xg" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/xa .mjx-mrow').should('have.text', '1')
+    cy.get('#\\/xb .mjx-mrow').should('have.text', '2')
+    cy.get('#\\/xc .mjx-mrow').should('have.text', '3')
+    cy.get('#\\/xd .mjx-mrow').should('have.text', '4')
+    cy.get('#\\/xe .mjx-mrow').should('have.text', '5')
+    cy.get('#\\/xf .mjx-mrow').should('have.text', '6')
+    cy.get('#\\/xg .mjx-mrow').should('have.text', '7')
+
+
+  });
+
+
+
 })

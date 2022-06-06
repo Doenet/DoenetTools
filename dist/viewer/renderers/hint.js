@@ -5,7 +5,7 @@ import {faLightbulb as lightOff} from "../../_snowpack/pkg/@fortawesome/free-sol
 import {faLightbulb as lightOn} from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
 import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-export default function Hint(props) {
+export default React.memo(function Hint(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
   if (!SVs.showHints) {
     return null;
@@ -77,4 +77,4 @@ export default function Hint(props) {
   }, twirlIcon, " ", icon, " ", title, " (click to ", openCloseText, ")"), /* @__PURE__ */ React.createElement("span", {
     style: infoBlockStyle
   }, info));
-}
+});

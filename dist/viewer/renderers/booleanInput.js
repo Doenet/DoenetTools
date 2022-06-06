@@ -5,7 +5,7 @@ import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_sn
 import {rendererState} from "./useDoenetRenderer.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.js";
-export default function BooleanInput(props) {
+export default React.memo(function BooleanInput(props) {
   let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   BooleanInput.baseStateVariable = "value";
   const [rendererValue, setRendererValue] = useState(SVs.value);
@@ -157,4 +157,4 @@ export default function BooleanInput(props) {
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), input, checkWorkButton));
-}
+});

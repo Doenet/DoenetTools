@@ -6,7 +6,7 @@ border: '2px solid red';
 margin: 2px;
 outline: none;
 `;
-export default function orbitalDiagram(props) {
+export default React.memo(function orbitalDiagram(props) {
   let {name, SVs} = useDoenetRenderer(props);
   let fixed = createRef(SVs.fixed);
   fixed.current = SVs.fixed;
@@ -26,8 +26,8 @@ export default function orbitalDiagram(props) {
     }));
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, rowsJSX);
-}
-function OrbitalRow({rowNumber, orbitalText, boxes, name}) {
+});
+const OrbitalRow = React.memo(function OrbitalRow2({rowNumber, orbitalText, boxes, name}) {
   let rowStyle = {
     width: "800px",
     height: "44px",
@@ -58,16 +58,16 @@ function OrbitalRow({rowNumber, orbitalText, boxes, name}) {
     rowNumber,
     name
   }), boxesJSX);
-}
-function OrbitalText({rowNumber, orbitalText, name}) {
+});
+const OrbitalText = React.memo(function OrbitalText2({rowNumber, orbitalText, name}) {
   return /* @__PURE__ */ React.createElement("div", {
     id: `OrbitalText${rowNumber}${name}`,
     style: {marginRight: "4px", height: "14px", width: "40px", backgroundColor: "white"},
     type: "text",
     size: "4"
   }, orbitalText);
-}
-function OrbitalBox({boxNum, arrows = "", rowNumber, name}) {
+});
+const OrbitalBox = React.memo(function OrbitalBox2({boxNum, arrows = "", rowNumber, name}) {
   const firstUp = /* @__PURE__ */ React.createElement("polyline", {
     key: `orbitalboxfirstUp${boxNum}`,
     id: `firstUp${boxNum}`,
@@ -145,4 +145,4 @@ function OrbitalBox({boxNum, arrows = "", rowNumber, name}) {
     height: "40",
     style: {fill: "white", stroke: boxColor, strokeWidth, fillOpacity: "1", strokeOpacity: "1"}
   }), arrowsJSX);
-}
+});

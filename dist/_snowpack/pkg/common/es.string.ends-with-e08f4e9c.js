@@ -1,4 +1,4 @@
-import { g as global_1, f as functionUncurryThis, K as stringRepeat, k as fails, _ as _export, L as thisNumberValue, D as toIntegerOrInfinity, M as correctIsRegexpLogic, H as objectGetOwnPropertyDescriptor, w as toString_1, t as requireObjectCoercible, N as notARegexp, A as toLength } from './es.string.starts-with-6dcf56ee.js';
+import { g as global_1, f as functionUncurryThis, K as stringRepeat, k as fails, _ as _export, L as thisNumberValue, C as toIntegerOrInfinity, M as correctIsRegexpLogic, H as objectGetOwnPropertyDescriptor, v as toString_1, s as requireObjectCoercible, N as notARegexp, z as toLength } from './es.string.starts-with-a75d39b5.js';
 
 var RangeError = global_1.RangeError;
 var String$1 = global_1.String;

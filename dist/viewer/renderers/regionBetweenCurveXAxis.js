@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState, useRef} from "../../_snowpack/pk
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import {createFunctionFromDefinition} from "../../core/utils/function.js";
-export default function RegionBetweenCurveXAxis(props) {
+export default React.memo(function RegionBetweenCurveXAxis(props) {
   let {name, SVs} = useDoenetRender(props);
   RegionBetweenCurveXAxis.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -79,4 +79,4 @@ export default function RegionBetweenCurveXAxis(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }));
-}
+});

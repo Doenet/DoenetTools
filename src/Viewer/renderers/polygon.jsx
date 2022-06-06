@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 
-export default function Polygon(props) {
+export default React.memo(function Polygon(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Polygon.ignoreActionsWithoutCore = true;
@@ -358,7 +358,7 @@ export default function Polygon(props) {
 
   // don't think we want to return anything if not in board
   return <><a name={name} /></>
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

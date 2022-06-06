@@ -1,6 +1,6 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Footnote(props) {
+export default React.memo(function Footnote(props) {
   let {name, SVs} = useDoenetRender(props, false);
   let [isVisible, setIsVisible] = useState(false);
   if (SVs.hidden) {
@@ -38,4 +38,4 @@ export default function Footnote(props) {
     title: SVs.text,
     style: footnoteStyle
   }, "[", SVs.footnoteTag, "]")))), footnoteMessage);
-}
+});

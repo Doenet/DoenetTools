@@ -195,8 +195,9 @@ export default function Enrollment() {
             mergeEmail,
             mergeSection
           };
-          recoilMergeData(payload);
-          setProcess("Display Enrollment");
+          recoilMergeData(payload).then(() => {
+            setProcess("Display Enrollment");
+          });
         }
       }));
       return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {

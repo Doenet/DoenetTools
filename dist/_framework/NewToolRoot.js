@@ -408,7 +408,8 @@ let navigationObj = {
       supportPanelTitles: ["DoenetML Editor"],
       supportPanelIndex: 0,
       headerControls: ["EditorBreadCrumb", "ViewerUpdateButton"],
-      footer: {height: 250, open: false, component: "MathInputKeyboard"}
+      footer: {height: 250, open: false, component: "MathInputKeyboard"},
+      waitForMenuSuppression: true
     },
     enrollment: {
       pageName: "Enrollment",

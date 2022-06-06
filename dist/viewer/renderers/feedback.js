@@ -2,7 +2,7 @@ import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faComment as thoughtBubble} from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
-export default function Feedback(props) {
+export default React.memo(function Feedback(props) {
   let {name, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -34,4 +34,4 @@ export default function Feedback(props) {
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), SVs.feedbackText, children));
-}
+});

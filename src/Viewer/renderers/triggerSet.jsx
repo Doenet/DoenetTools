@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 
 
-export default function TriggerSet(props) {
+export default React.memo(function TriggerSet(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props,false);
 
   if (SVs.hidden) {
@@ -11,7 +11,7 @@ export default function TriggerSet(props) {
   }
 
   return (
-    <div id={name} style={{ margin:"12px 0" }}>
+    <div id={name} style={{ margin:"12px 0" ,display: "inline-block" }}>
       <a name={name} />
       <Button
         id={name + "_button"} 
@@ -27,7 +27,7 @@ export default function TriggerSet(props) {
       </button> */}
     </div>
   )
-}
+})
 
 
 

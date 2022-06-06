@@ -4,7 +4,7 @@ import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_sn
 import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Section(props) {
+export default React.memo(function Section(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -162,6 +162,12 @@ export default function Section(props) {
     name
   }), heading, " ", /* @__PURE__ */ React.createElement("br", null), children, checkworkComponent);
   if (SVs.collapsible) {
+    let innerContent = null;
+    if (SVs.open) {
+      innerContent = /* @__PURE__ */ React.createElement("div", {
+        style: {display: "block", padding: SVs.boxed && "6px"}
+      }, children, checkworkComponent);
+    }
     content = /* @__PURE__ */ React.createElement("div", {
       style: {border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)"}
     }, /* @__PURE__ */ React.createElement("div", {
@@ -169,9 +175,7 @@ export default function Section(props) {
       onClick: () => callAction({action: SVs.open ? actions.closeSection : actions.revealSection})
     }, /* @__PURE__ */ React.createElement("a", {
       name
-    }), heading), /* @__PURE__ */ React.createElement("div", {
-      style: {display: SVs.open ? "block" : "none", padding: SVs.boxed && "6px"}
-    }, children, checkworkComponent));
+    }), heading), innerContent);
   } else if (SVs.boxed) {
     content = /* @__PURE__ */ React.createElement("div", {
       style: {border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)"}
@@ -202,4 +206,4 @@ export default function Section(props) {
         style: {margin: "12px 0"}
       }, " ", content, " ");
   }
-}
+});

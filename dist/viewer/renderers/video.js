@@ -2,7 +2,7 @@ import React, {useRef, useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import cssesc from "../../_snowpack/pkg/cssesc.js";
-export default function Video(props) {
+export default React.memo(function Video(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   let player = useRef(null);
   let skippedCurrentTime = useRef(null);
@@ -190,4 +190,4 @@ export default function Video(props) {
   }), "Your browser does not support the <video> tag.") : /* @__PURE__ */ React.createElement("span", {
     id: name
   }, SVs.text));
-}
+});

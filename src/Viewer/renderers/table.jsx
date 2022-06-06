@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Table(props) {
+export default React.memo(function Table(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -49,4 +49,4 @@ export default function Table(props) {
         {childrenToRender}
       </div>
     )
-}
+})

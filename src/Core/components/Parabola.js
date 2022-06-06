@@ -1258,8 +1258,8 @@ export default class Parabola extends Curve {
               let xscale = scales[0];
               let yscale = scales[1];
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
               if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
                 return {};

@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
-export default function Point(props) {
+export default React.memo(function Point(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Point.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -84,6 +84,11 @@ export default function Point(props) {
         anchorx,
         anchory
       };
+      if (SVs.applyStyleToLabel) {
+        jsxPointAttributes.label.strokeColor = SVs.selectedStyle.markerColor;
+      } else {
+        jsxPointAttributes.label.strokeColor = "#000000";
+      }
     }
     if (SVs.draggable && !SVs.fixed) {
       jsxPointAttributes.highlightFillColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
@@ -189,23 +194,30 @@ export default function Point(props) {
       }
       if (pointJXG.current.visProp.strokecolor !== SVs.selectedStyle.markerColor) {
         pointJXG.current.visProp.strokecolor = SVs.selectedStyle.markerColor;
+        shadowPointJXG.current.visProp.strokecolor = SVs.selectedStyle.markerColor;
       }
       let newFace = normalizeStyle(SVs.selectedStyle.markerStyle);
       if (pointJXG.current.visProp.face !== newFace) {
         pointJXG.current.setAttribute({face: newFace});
+        shadowPointJXG.current.setAttribute({face: newFace});
       }
       if (pointJXG.current.visProp.size !== SVs.selectedStyle.markerSize) {
         pointJXG.current.visProp.size = SVs.selectedStyle.markerSize;
+        shadowPointJXG.current.visProp.size = SVs.selectedStyle.markerSize;
       }
       if (SVs.draggable && !SVs.fixed) {
         pointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
         pointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue");
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
+        shadowPointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        shadowPointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue");
         shadowPointJXG.current.visProp.fixed = false;
       } else {
         pointJXG.current.visProp.highlightfillcolor = newFillColor;
         pointJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.markerColor;
         pointJXG.current.visProp.showinfobox = false;
+        shadowPointJXG.current.visProp.highlightfillcolor = newFillColor;
+        shadowPointJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.markerColor;
         shadowPointJXG.current.visProp.fixed = true;
       }
       if (sourceOfUpdate.sourceInformation && name in sourceOfUpdate.sourceInformation) {
@@ -219,6 +231,11 @@ export default function Point(props) {
       }
       if (pointJXG.current.hasLabel) {
         pointJXG.current.label.needsUpdate = true;
+        if (SVs.applyStyleToLabel) {
+          pointJXG.current.label.visProp.strokecolor = SVs.selectedStyle.markerColor;
+        } else {
+          pointJXG.current.label.visProp.strokecolor = "#000000";
+        }
         if (SVs.labelPosition !== previousLabelPosition.current) {
           let anchorx, anchory, offset;
           if (SVs.labelPosition === "upperright") {
@@ -286,7 +303,7 @@ export default function Point(props) {
     inline: true,
     dynamic: true
   }, mathJaxify)));
-}
+});
 function normalizeStyle(style) {
   if (style === "triangle") {
     return "triangleup";
