@@ -91,7 +91,7 @@ export default function DoenetProfile(props) {
               <div
                 style={{
                   ...props.style,
-                  border: '1px solid grey',
+                  border: '1px solid var(--mainGray)',
                   borderRadius: '20px',
                   margin: 'auto',
                   marginTop: '10%',
@@ -108,10 +108,10 @@ export default function DoenetProfile(props) {
                 >
                   <h2>You are not signed in</h2>
                   <h2>Account Settings currently requires sign in for use</h2>
-                  <button style={{ background: '#1a5a99', borderRadius: '5px' }}>
+                  <button style={{ background: 'var(--mainBlue)', borderRadius: '5px' }}>
                     <a
                       href="/#/signin"
-                      style={{ color: 'white', textDecoration: 'none' }}
+                      style={{ color: 'var(--canvas)', textDecoration: 'none' }}
                     >
                       Sign in with this link
                     </a>

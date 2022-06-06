@@ -9,7 +9,7 @@ import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 const SupportWrapper = styled.div`
   overflow: auto;
   grid-area: supportPanel;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   height: 100%;
   display: ${({$hide})=> $hide ? 'none' : 'block' }
   // border-radius: 0 0 4px 4px;
@@ -20,10 +20,10 @@ const ControlsWrapper = styled.div`
   grid-area: supportControls;
   display: flex;
   gap: 4px;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   display: ${({$hide})=> $hide ? 'none' : 'block' }
   // border-radius: 4px 4px 0 0;
-  // border-bottom: 2px solid #e3e3e3;
+  // border-bottom: 2px solid var(--mainGray);
 
 `;
 

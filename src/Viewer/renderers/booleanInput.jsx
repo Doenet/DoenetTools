@@ -137,7 +137,7 @@ export default React.memo(function BooleanInput(props) {
           >{partialCreditContents}</span>
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkStyle.backgroundColor = "var(--mainRed)";
           checkWorkButton = <span
             id={name + '_incorrect'}
             style={checkWorkStyle}

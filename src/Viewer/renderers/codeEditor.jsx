@@ -79,6 +79,7 @@ let editor = <div
   onBeforeChange={(value) => {
     currentValue.current = value;
     callAction({action:actions.updateImmediateValue, args:{text:value}})
+  
    
   //TODO: when you try to leave the page before it saved you will lose work
   //so prompt the user on page leave

@@ -15,6 +15,6 @@ export default React.memo(function Tag(props) {
     close = "/>";
   }
 
-  return <code id={name}><a name={name} />{open}{children}{close}</code>
+  return <code id={name} style={{color:'var(--mainGreen)'}}><a name={name} />{open}{children}{close}</code>
 
 })
