@@ -455,4 +455,72 @@ describe('Number Tag Tests', function () {
 
   });
 
+  it('display rounding preserved when only one number or math child', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><number name="m1"><math displayDigits="3">8.5203845251</math></number>
+    <number name="m1a"><number displayDigits="3">8.5203845251</number></number>
+    <number name="m1b"><math displayDigits="3">8.5203845251</math>2</number>
+    <number name="m1c"><number displayDigits="3">8.5203845251</number>2</number>
+    <number name="m1d"><math displayDigits="3">8.5203845251</math><math displayDigits="3">2</math></number>
+    <number name="m1e"><number displayDigits="3">8.5203845251</number><math displayDigits="3">2</math></number>
+    <number name="m1f" displayDigits="6"><math displayDigits="3">8.5203845251</math></number>
+    <number name="m1g" displayDecimals="8"><math displayDigits="3">8.5203845251</math></number>
+  </p>
+
+  <p><number name="m2"><math displayDecimals="4">8.5203845251</math></number>
+    <number name="m2a"><number displayDecimals="4">8.5203845251</number></number>
+    <number name="m2b"><math displayDecimals="4">8.5203845251</math>2</number>
+    <number name="m2c"><number displayDecimals="4">8.5203845251</number>2</number>
+    <number name="m2d"><math displayDecimals="4">8.5203845251</math><math displayDecimals="4">2</math></number>
+    <number name="m2e"><number displayDecimals="4">8.5203845251</number><math displayDecimals="4">2</math></number>
+    <number name="m2f" displayDecimals="6"><math displayDecimals="4">8.5203845251</math></number>
+    <number name="m2g" displayDigits="8"><math displayDecimals="4">8.5203845251</math></number>
+  </p>
+
+  <p><number name="m3"><math displaySmallAsZero>0.000000000000000015382487</math></number>
+    <number name="m3a"><number displaySmallAsZero>0.000000000000000015382487</number></number>
+    <number name="m3b"><math displaySmallAsZero>0.000000000000000015382487</math>2</number>
+    <number name="m3c"><number displaySmallAsZero>0.000000000000000015382487</number>2</number>
+    <number name="m3d"><math displaySmallAsZero>0.000000000000000015382487</math><math displaySmallAsZero>2</math></number>
+    <number name="m3e"><number displaySmallAsZero>0.000000000000000015382487</number><math displaySmallAsZero>2</math></number>
+    <number name="m3f" displaySmallAsZero="false"><math displaySmallAsZero>0.000000000000000015382487</math></number>
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1').should('have.text', '8.52');
+    cy.get('#\\/m1a').should('have.text', '8.52');
+    cy.get('#\\/m1b').should('have.text', '17');
+    cy.get('#\\/m1c').should('have.text', '17');
+    cy.get('#\\/m1d').should('have.text', '17.04076905');
+    cy.get('#\\/m1e').should('have.text', '17.04076905');
+    cy.get('#\\/m1f').should('have.text', '8.52038');
+    cy.get('#\\/m1g').should('have.text', '8.52038453');
+
+    cy.get('#\\/m2').should('have.text', '8.5204');
+    cy.get('#\\/m2a').should('have.text', '8.5204');
+    cy.get('#\\/m2b').should('have.text', '17.0408');
+    cy.get('#\\/m2c').should('have.text', '17.0408');
+    cy.get('#\\/m2d').should('have.text', '17.04076905');
+    cy.get('#\\/m2e').should('have.text', '17.04076905');
+    cy.get('#\\/m2f').should('have.text', '8.520385');
+    cy.get('#\\/m2g').should('have.text', '8.5203845');
+
+    cy.get('#\\/m3').should('have.text', '0');
+    cy.get('#\\/m3a').should('have.text', '0');
+    cy.get('#\\/m3b').should('have.text', '0');
+    cy.get('#\\/m3c').should('have.text', '0');
+    cy.get('#\\/m3d').should('have.text', '3.0764974e-17');
+    cy.get('#\\/m3e').should('have.text', '3.0764974e-17');
+    cy.get('#\\/m3f').should('have.text', '1.5382487e-17');
+
+  });
+
+
 });

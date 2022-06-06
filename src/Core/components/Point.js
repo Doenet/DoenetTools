@@ -1037,7 +1037,10 @@ export default class Point extends GraphicalComponent {
   }
 
 
-  static adapters = ["coords"];
+  static adapters = [{
+    stateVariable: "coords",
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+  }];
 
   async movePoint({ x, y, z, transient, actionId }) {
     let components = {};

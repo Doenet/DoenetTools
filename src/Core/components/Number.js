@@ -12,23 +12,14 @@ export default class NumberComponent extends InlineComponent {
     let attributes = super.createAttributesObject();
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
-    }
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
-      valueForTrue: 1E-14,
-      valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
-    }
+    };
     attributes.displayDecimals = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
+    };
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
     };
     attributes.renderAsMath = {
       createComponentOfType: "boolean",
@@ -36,12 +27,12 @@ export default class NumberComponent extends InlineComponent {
       defaultValue: false,
       public: true,
       forRenderer: true,
-    }
+    };
     attributes.convertBoolean = {
       createPrimitiveOfType: "boolean",
       createStateVariable: "convertBoolean",
       defaultValue: false,
-    }
+    };
     return attributes;
   }
 
@@ -89,6 +80,130 @@ export default class NumberComponent extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      componentType: "integer",
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        numberMathChildren: {
+          dependencyType: "child",
+          childGroups: ["numbers", "maths"],
+          variableNames: ["displayDigits"]
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.displayDigitsAttr !== null) {
+          return {
+            setValue: {
+              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.displayDecimalsAttr === null
+          && dependencyValues.numberMathChildren.length === 1
+          && !(usedDefault.numberMathChildren[0] && usedDefault.numberMathChildren[0].displayDigits)
+        ) {
+          // have to check to exclude case where have displayDecimals attribute
+          // because otherwise a non-default displayDigits will win over displayDecimals
+          return {
+            setValue: {
+              displayDigits: dependencyValues.numberMathChildren[0].stateValues.displayDigits
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { displayDigits: true } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.displayDecimals = {
+      public: true,
+      componentType: "integer",
+      hasEssential: true,
+      defaultValue: null,
+      returnDependencies: () => ({
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        numberMathChildren: {
+          dependencyType: "child",
+          childGroups: ["numbers", "maths"],
+          variableNames: ["displayDecimals"]
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.displayDecimalsAttr !== null) {
+          return {
+            setValue: {
+              displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.numberMathChildren.length === 1
+          && !(usedDefault.numberMathChildren[0] && usedDefault.numberMathChildren[0].displayDecimals)
+        ) {
+          return {
+            setValue: {
+              displayDecimals: dependencyValues.numberMathChildren[0].stateValues.displayDecimals
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { displayDecimals: true } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.displaySmallAsZero = {
+      public: true,
+      componentType: "number",
+      hasEssential: true,
+      defaultValue: 0,
+      returnDependencies: () => ({
+        displaySmallAsZeroAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displaySmallAsZero",
+          variableNames: ["value"]
+        },
+        numberMathChildren: {
+          dependencyType: "child",
+          childGroups: ["numbers", "maths"],
+          variableNames: ["displaySmallAsZero"]
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.displaySmallAsZeroAttr !== null) {
+          return {
+            setValue: {
+              displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.numberMathChildren.length === 1
+          && !(usedDefault.numberMathChildren[0] && usedDefault.numberMathChildren[0].displaySmallAsZero)
+        ) {
+          return {
+            setValue: {
+              displaySmallAsZero: dependencyValues.numberMathChildren[0].stateValues.displaySmallAsZero
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { displaySmallAsZero: true } }
+        }
+
+      }
+    }
 
     stateVariableDefinitions.singleNumberOrStringChild = {
       additionalStateVariablesDefined: ["singleMathChild"],
@@ -221,11 +336,9 @@ export default class NumberComponent extends InlineComponent {
       public: true,
       componentType: "number",
       hasEssential: true,
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
       stateVariablesPrescribingAdditionalAttributes: {
         fixed: "fixed",
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
       },
       stateVariablesDeterminingDependencies: ["singleNumberOrStringChild"],
       returnDependencies({ stateValues }) {
@@ -693,6 +806,12 @@ export default class NumberComponent extends InlineComponent {
   // }
 
 
-  static adapters = ["math", "text"];
+  static adapters = [
+    {
+      stateVariable: "math",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+    },
+    "text"
+  ];
 
 }

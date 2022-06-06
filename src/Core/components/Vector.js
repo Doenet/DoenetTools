@@ -1,7 +1,7 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
-import { convertValueToMathExpression } from '../utils/math';
+import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
 
 export default class Vector extends GraphicalComponent {
   static componentType = "vector";
@@ -57,6 +57,29 @@ export default class Vector extends GraphicalComponent {
     };
     attributes.tail = {
       createComponentOfType: "point",
+    };
+
+    attributes.displayDigits = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigits",
+      defaultValue: 10,
+      public: true,
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
     };
 
     return attributes;
@@ -1563,7 +1586,6 @@ export default class Vector extends GraphicalComponent {
     }
 
     stateVariableDefinitions.displacementCoords = {
-      forRenderer: true,
       returnDependencies: () => ({
         displacement: {
           dependencyType: "stateVariable",
@@ -1611,6 +1633,40 @@ export default class Vector extends GraphicalComponent {
 
       }
     }
+
+    stateVariableDefinitions.displacementCoordsForDisplay = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        displacementCoords: {
+          dependencyType: "stateVariable",
+          variableName: "displacementCoords"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        // for display via latex and text, round any decimal numbers to the significant digits
+        // determined by displaydigits, displaydecimals, and/or displaySmallAsZero
+        let displacementCoordsForDisplay = roundForDisplay({
+          value: dependencyValues.displacementCoords,
+          dependencyValues, usedDefault
+        });
+
+        return { setValue: { displacementCoordsForDisplay } }
+
+      }
+    }
+
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
@@ -1693,6 +1749,7 @@ export default class Vector extends GraphicalComponent {
   static adapters = [{
     stateVariable: "displacementCoords",
     componentType: "coords",
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
   }];
 
   async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation, actionId }) {

@@ -2183,6 +2183,73 @@ describe('Math Tag Tests', function () {
     })
   });
 
+  it('display rounding preserved when only one math child', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1"><math displayDigits="3">8.5203845251</math></math>
+    <math name="m1a"><number displayDigits="3">8.5203845251</number></math>
+    <math name="m1b"><math displayDigits="3">8.5203845251</math>x</math>
+    <math name="m1c"><number displayDigits="3">8.5203845251</number>x</math>
+    <math name="m1d"><math displayDigits="3">8.5203845251</math><math displayDigits="3">x</math></math>
+    <math name="m1e"><number displayDigits="3">8.5203845251</number><math displayDigits="3">x</math></math>
+    <math name="m1f" displayDigits="6"><math displayDigits="3">8.5203845251</math></math>
+    <math name="m1g" displayDecimals="8"><math displayDigits="3">8.5203845251</math></math>
+  </p>
+
+  <p><math name="m2"><math displayDecimals="4">8.5203845251</math></math>
+    <math name="m2a"><number displayDecimals="4">8.5203845251</number></math>
+    <math name="m2b"><math displayDecimals="4">8.5203845251</math>x</math>
+    <math name="m2c"><number displayDecimals="4">8.5203845251</number>x</math>
+    <math name="m2d"><math displayDecimals="4">8.5203845251</math><math displayDecimals="4">x</math></math>
+    <math name="m2e"><number displayDecimals="4">8.5203845251</number><math displayDecimals="4">x</math></math>
+    <math name="m2f" displayDecimals="6"><math displayDecimals="4">8.5203845251</math></math>
+    <math name="m2g" displayDigits="8"><math displayDecimals="4">8.5203845251</math></math>
+  </p>
+
+  <p><math name="m3"><math displaySmallAsZero>0.000000000000000015382487</math></math>
+    <math name="m3a"><number displaySmallAsZero>0.000000000000000015382487</number></math>
+    <math name="m3b"><math displaySmallAsZero>0.000000000000000015382487</math>x</math>
+    <math name="m3c"><number displaySmallAsZero>0.000000000000000015382487</number>x</math>
+    <math name="m3d"><math displaySmallAsZero>0.000000000000000015382487</math><math displaySmallAsZero>x</math></math>
+    <math name="m3e"><number displaySmallAsZero>0.000000000000000015382487</number><math displaySmallAsZero>x</math></math>
+    <math name="m3f" displaySmallAsZero="false"><math displaySmallAsZero>0.000000000000000015382487</math></math>
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '8.52');
+    cy.get('#\\/m1a .mjx-mrow').eq(0).should('have.text', '8.52');
+    cy.get('#\\/m1b .mjx-mrow').eq(0).should('have.text', '8.52x');
+    cy.get('#\\/m1c .mjx-mrow').eq(0).should('have.text', '8.52x');
+    cy.get('#\\/m1d .mjx-mrow').eq(0).should('have.text', '8.520384525x');
+    cy.get('#\\/m1e .mjx-mrow').eq(0).should('have.text', '8.520384525x');
+    cy.get('#\\/m1f .mjx-mrow').eq(0).should('have.text', '8.52038');
+    cy.get('#\\/m1g .mjx-mrow').eq(0).should('have.text', '8.52038453');
+
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m2a .mjx-mrow').eq(0).should('have.text', '8.5204');
+    cy.get('#\\/m2b .mjx-mrow').eq(0).should('have.text', '8.5204x');
+    cy.get('#\\/m2c .mjx-mrow').eq(0).should('have.text', '8.5204x');
+    cy.get('#\\/m2d .mjx-mrow').eq(0).should('have.text', '8.520384525x');
+    cy.get('#\\/m2e .mjx-mrow').eq(0).should('have.text', '8.520384525x');
+    cy.get('#\\/m2f .mjx-mrow').eq(0).should('have.text', '8.520385');
+    cy.get('#\\/m2g .mjx-mrow').eq(0).should('have.text', '8.5203845');
+
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3a .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3b .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3c .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3d .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17x');
+    cy.get('#\\/m3e .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17x');
+    cy.get('#\\/m3f .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17');
+
+
+  });
 
 
 })

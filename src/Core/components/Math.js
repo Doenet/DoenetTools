@@ -44,24 +44,15 @@ export default class MathComponent extends InlineComponent {
 
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     };
 
     attributes.displayDecimals = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDecimals",
-      defaultValue: null,
-      public: true,
     };
     attributes.displaySmallAsZero = {
       createComponentOfType: "number",
-      createStateVariable: "displaySmallAsZero",
       valueForTrue: 1E-14,
       valueForFalse: 0,
-      defaultValue: 0,
-      public: true,
     };
     attributes.renderMode = {
       createComponentOfType: "text",
@@ -131,6 +122,130 @@ export default class MathComponent extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      componentType: "integer",
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["displayDigits"]
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.displayDigitsAttr !== null) {
+          return {
+            setValue: {
+              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.displayDecimalsAttr === null
+          && dependencyValues.mathChildren.length === 1
+          && !(usedDefault.mathChildren[0] && usedDefault.mathChildren[0].displayDigits)
+        ) {
+          // have to check to exclude case where have displayDecimals attribute
+          // because otherwise a non-default displayDigits will win over displayDecimals
+          return {
+            setValue: {
+              displayDigits: dependencyValues.mathChildren[0].stateValues.displayDigits
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { displayDigits: true } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.displayDecimals = {
+      public: true,
+      componentType: "integer",
+      hasEssential: true,
+      defaultValue: null,
+      returnDependencies: () => ({
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["displayDecimals"]
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.displayDecimalsAttr !== null) {
+          return {
+            setValue: {
+              displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.mathChildren.length === 1
+          && !(usedDefault.mathChildren[0] && usedDefault.mathChildren[0].displayDecimals)
+        ) {
+          return {
+            setValue: {
+              displayDecimals: dependencyValues.mathChildren[0].stateValues.displayDecimals
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { displayDecimals: true } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.displaySmallAsZero = {
+      public: true,
+      componentType: "number",
+      hasEssential: true,
+      defaultValue: 0,
+      returnDependencies: () => ({
+        displaySmallAsZeroAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displaySmallAsZero",
+          variableNames: ["value"]
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["displaySmallAsZero"]
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.displaySmallAsZeroAttr !== null) {
+          return {
+            setValue: {
+              displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.mathChildren.length === 1
+          && !(usedDefault.mathChildren[0] && usedDefault.mathChildren[0].displaySmallAsZero)
+        ) {
+          return {
+            setValue: {
+              displaySmallAsZero: dependencyValues.mathChildren[0].stateValues.displaySmallAsZero
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { displaySmallAsZero: true } }
+        }
+
+      }
+    }
 
     // valueShadow will be long underscore unless math was created
     // from serialized state with value
@@ -442,12 +557,9 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
-      additionalAttributeComponentsToShadow: ["unordered"],
+      additionalAttributeComponentsToShadow: ["unordered", "displayDigits", "displayDecimals", "displaySmallAsZero"],
       stateVariablesPrescribingAdditionalAttributes: {
         fixed: "fixed",
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
         simplify: "simplify",
         expand: "expand",
       },
@@ -932,7 +1044,10 @@ export default class MathComponent extends InlineComponent {
 
 
   static adapters = [
-    "number",
+    {
+      stateVariable: "number",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+    },
     "text",
     { componentType: "subsetOfReals", stateVariable: "value", substituteForPrimaryStateVariable: "subsetValue" }
   ];
