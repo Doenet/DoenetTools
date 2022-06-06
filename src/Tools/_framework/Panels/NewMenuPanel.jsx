@@ -88,16 +88,15 @@ const Branding = styled.div`
 // `;
 
 const MenuPanelsCapComponent = styled.div`
-  width: 240px;
-  color: var(--canvastext);
-  background: var(--canvas);
-  border-top: 1px solid var(--mainGray);
-  border-top: 1px solid var(--mainGray);
-  border-bottom: 2px solid var(--mainGray);
-  margin-bottom: -2px;
-  position: sticky;
-  top: 35;
-  z-index: 2;
+width: 240px;
+background: white;
+border-top: 1px solid #e2e2e2;
+border-top: 1px solid #e2e2e2;
+border-bottom: 2px solid #e2e2e2;
+margin-bottom: -2px;
+position: sticky;
+top: 35;
+z-index: 1;
 `;
 
 const MenuHeaderButton = styled.button`
@@ -113,16 +112,16 @@ const MenuHeaderButton = styled.button`
 `;
 
 const CloseButton = styled.button`
-  background-color: var(--mainBlue);
-  height: 35px;
-  width: 20px;
-  color: white;
-  border: none;
-  // display: inline-block;
-  position: static;
-  left: 200px;
-  cursor: pointer;
-  z-index: 2;
+background-color: #1A5A99;
+height: 35px;
+width: 20px;
+color: white;
+border: none;
+// display: inline-block;
+position:  static;
+left: 220px;
+cursor: pointer;
+z-index: 2;
 `;
 
 const EditMenuPanels = styled.button`
