@@ -9,7 +9,7 @@ const Display = styled.div`
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    background-color: ${props => props.color || "#ffffff"};
+    background-color: ${props => props.color || "var(--canvas)"};
     background-image: ${props => props.image || "none"};
     cursor: pointer;
 `;
@@ -17,7 +17,7 @@ const Display = styled.div`
 const Menu = styled.div`
     border: var(--mainBorder);
     border-radius: var(--mainBorderRadius);
-    background-color: #f6f8ff;
+    background-color: var(--mainGray);
     height: 246px;
     width: 220px;
     display: none;
@@ -53,7 +53,7 @@ const Color = styled.div`
     height: 20px;
     width: 20px;
     margin: 4px;
-    background-color: ${props => props.color || "#ffffff"};
+    background-color: ${props => props.color || "var(--canvas)"};
 `;
 
 const Label = styled.p`
@@ -82,7 +82,7 @@ const Image = styled.div`
 
 export default function ColorImagePicker(props){
     const [menuOpen, setMenuOpen] = useState("False");
-    const [displayColor, setDisplayColor] = useState(props.initialColor ? props.initialColor : "#ffffff");
+    const [displayColor, setDisplayColor] = useState(props.initialColor ? props.initialColor : "var(--canvas)");
     const [displayImage, setDisplayImage] = useState(props.initialImage ? props.initialImage : "none");
     
     // if (props.initialValue){

@@ -17,14 +17,15 @@ const DriveCardContainer = styled.figure`
   display: flex; // added
   flex-direction: column; // added
   justify-content: space-between;
+  
+  border: 2px solid var(--canvastext);
   cursor: pointer;
-  border: 2px solid #040f1a;
 `;
 
 const Image = styled.img`
   height: 100%;
   //width: 100%;
-  color: red;
+  color: var(--mainRed);
   // display: none;
   background-image: ${(props) => props.url == 'url(/media/drive_pictures/none)' ? 'none' : props.url};
   background-color: ${(props) => props.color == 'none' ? 'none' : "#" + props.color};
@@ -34,10 +35,11 @@ const Image = styled.img`
 const Info = styled.figcaption`
   border-radius: 0px 0px 5px 5px;
   // position: absolute;
-  border-top: 2px solid #040f1a;
+  border-top: 2px solid var(--canvastext);
   height: 65px;
   width: inherit;
-  background: #fff;
+  background: var(--canvas);
+  
 `;
 
 const LabelContainer = styled.p`
@@ -45,8 +47,8 @@ const LabelContainer = styled.p`
   text-align: ${props => props.textAlign ? props.textAlign : "left"};
   line-height: ${props => props.lineHeight ? props.lineHeight : "normal"};
   margin: 7px;
-  //width: 100%;
-  color: #040f1a;
+  width: 100%;
+  color: var(--canvastext);
   font-family: helvetica;
   font-size: 12px;
   overflow: hidden;
@@ -67,14 +69,18 @@ const DriveCard = (props) => {
       <Image url={imageURL} color={props.color} />
       <Info
         style={{
-          backgroundColor: props.isSelected ? 'rgb(184, 210, 234)' : '',
+          //color: props.isSelected ? 'black' : '',
+          backgroundColor: props.isSelected ? 'var(--lightBlue)' : '',
         }}
       >
-        <LabelContainer textAlign={props.textAlign} lineHeight={props.lineHeight} whiteSpace={props.whiteSpace}>
+        <LabelContainer textAlign={props.textAlign} lineHeight={props.lineHeight} whiteSpace={props.whiteSpace} 
+        style={{
+          color: props.isSelected ? 'black' : 'var(--canvastext)',
+        }}>
           <b data-cy="driveCardLabel">{props.label}</b>
         </LabelContainer>
         {props?.role?.map((item) => {
-          return <LabelContainer key={item}>{item}</LabelContainer>;
+          return <LabelContainer key={item} style={{color:props.isSelected ? 'black' : 'var(--canvastext)'}}>{item}</LabelContainer>;
         })}
       </Info>
     </DriveCardContainer>

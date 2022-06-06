@@ -430,8 +430,8 @@ export default class Polyline extends GraphicalComponent {
               let closestDistance2 = Infinity;
               let closestResult = {};
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
               let prevPtx, prevPty;
               let nextPtx = numericalVertices[0][0];

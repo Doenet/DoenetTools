@@ -32,7 +32,7 @@ export default function SurveyListViewer() {
 
   let surveyJSX = [];
   for (let survey of surveyList){
-    surveyJSX.push(<tr style={{borderBottom:'1pt solid black'}}>
+    surveyJSX.push(<tr style={{borderBottom:'1pt solid var(--canvastext)'}}>
       <td style={{textAlign:'left'}}>{survey.label}</td>
       <td><Button value='View' onClick={()=>{
         setPageToolView({
@@ -49,7 +49,7 @@ export default function SurveyListViewer() {
   return <div style={{margin:'5px'}}>
   <table style={{borderCollapse: "collapse"}}>
     <thead>
-      <tr style={{borderBottom:'2pt solid black'}}>
+      <tr style={{borderBottom:'2pt solid var(--canvastext)'}}>
         <th style={{width:'300px'}}>Survey Name</th>
         <th style={{width:'100px'}}>Download</th>
       </tr>

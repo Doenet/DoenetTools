@@ -50,8 +50,8 @@ const NavBar = styled.div`
   width: 240px;
   height: 100vh;
   position: fixed;
-  background-color: #8fb8de;
-  color: #000;
+  background-color: var(--solidLightBlue);
+  color: var(--canvastext);
   top: 0;
   left: 0;
   overflow-x: hidden;
@@ -62,7 +62,7 @@ const Content = styled.div`
 `;
 
 const List = styled.ul`
-  color: black;
+  color: var(--canvastext);
 `;
 
 export default function attempt() {

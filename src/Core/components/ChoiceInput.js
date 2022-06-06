@@ -55,6 +55,7 @@ export default class Choiceinput extends Input {
       createStateVariable: "matchPartial",
       defaultValue: false,
       public: true,
+      fallBackToParentStateVariable: "matchPartial",
     };
     attributes.inline = {
       createComponentOfType: "boolean",

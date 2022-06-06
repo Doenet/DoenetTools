@@ -29,10 +29,10 @@ const DragHandle = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: hsl(0, 0%, 99%);
+  color: white;
   padding: 0;
   cursor: ew-resize;
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
   width: 8px;
   box-sizing: border-box;
 `;

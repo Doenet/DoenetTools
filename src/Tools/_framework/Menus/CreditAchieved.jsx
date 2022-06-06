@@ -7,7 +7,7 @@ import { creditAchievedAtom, currentAttemptNumber } from '../ToolPanels/Assignme
 import styled from "styled-components";
 
 const Line = styled.div`
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid var(--canvastext);
   height: 2px;
   width: 230px;
 `

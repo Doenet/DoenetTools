@@ -15,6 +15,27 @@ export default class HasSameFactoring extends BooleanComponent {
       defaultValue: me.fromAst("x")
     }
 
+    attributes.restrictDivision = {
+      createComponentOfType: "boolean",
+      createStateVariable: "restrictDivision",
+      defaultValue: false
+    }
+
+    // Note: monomialFactorMustMatch implies restrictDivision
+    attributes.monomialFactorMustMatch = {
+      createComponentOfType: "boolean",
+      createStateVariable: "monomialFactorMustMatch",
+      defaultValue: false
+    }
+
+    // Note: allowOnlySignDifferences implies monomialFactorMustMatch and restrictDivision
+    attributes.allowOnlySignDifferences = {
+      createComponentOfType: "boolean",
+      createStateVariable: "allowOnlySignDifferences",
+      defaultValue: false
+    }
+
+
     return attributes;
   }
 
@@ -65,6 +86,18 @@ export default class HasSameFactoring extends BooleanComponent {
         variable: {
           dependencyType: "stateVariable",
           variableName: "variable"
+        },
+        restrictDivision: {
+          dependencyType: "stateVariable",
+          variableName: "restrictDivision"
+        },
+        monomialFactorMustMatch: {
+          dependencyType: "stateVariable",
+          variableName: "monomialFactorMustMatch"
+        },
+        allowOnlySignDifferences: {
+          dependencyType: "stateVariable",
+          variableName: "allowOnlySignDifferences"
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -90,11 +123,34 @@ export default class HasSameFactoring extends BooleanComponent {
           return { setValue: { value: false } }
         }
 
-        if(Array.isArray(expr1.tree) && expr1.tree[0] === "-") {
+        if (Array.isArray(expr1.tree) && expr1.tree[0] === "-") {
           expr1 = me.fromAst(expr1.tree[1]);
         }
-        if(Array.isArray(expr2.tree) && expr2.tree[0] === "-") {
+        if (Array.isArray(expr2.tree) && expr2.tree[0] === "-") {
           expr2 = me.fromAst(expr2.tree[1]);
+        }
+
+        if (!dependencyValues.restrictDivision && !dependencyValues.monomialFactorMustMatch
+          && !dependencyValues.allowOnlySignDifferences
+        ) {
+          // if have a ratio where denominator is a constant
+          // ignore denominator
+          if (Array.isArray(expr1.tree) && expr1.tree[0] === "/"
+            && me.fromAst(expr1.tree[2]).variables().length === 0
+          ) {
+            expr1 = me.fromAst(expr1.tree[1]);
+            if (Array.isArray(expr1.tree) && expr1.tree[0] === "-") {
+              expr1 = me.fromAst(expr1.tree[1]);
+            }
+          }
+          if (Array.isArray(expr2.tree) && expr2.tree[0] === "/"
+            && me.fromAst(expr2.tree[2]).variables().length === 0
+          ) {
+            expr2 = me.fromAst(expr2.tree[1]);
+            if (Array.isArray(expr2.tree) && expr2.tree[0] === "-") {
+              expr2 = me.fromAst(expr2.tree[1]);
+            }
+          }
         }
 
         expr1 = me.fromAst(expandPositiveIntegerPowers(expr1.tree));
@@ -102,7 +158,7 @@ export default class HasSameFactoring extends BooleanComponent {
 
         if (!(Array.isArray(expr1.tree) && expr1.tree[0] === "*")) {
           if (!(Array.isArray(expr2.tree) && expr2.tree[0] === "*")) {
-            // neither expression is a product, some they have the same factoring
+            // neither expression is a product, so they have the same factoring
             return { setValue: { value: true } }
           } else {
             return { setValue: { value: false } }
@@ -113,20 +169,39 @@ export default class HasSameFactoring extends BooleanComponent {
 
         // both expressions are products and are mathematically equivalent
 
-        let factors1 = expr1.tree.slice(1);
 
-        let factors2 = expr2.tree.slice(1);
+        if (dependencyValues.monomialFactorMustMatch || dependencyValues.allowOnlySignDifferences) {
+          let monomial1 = findMonomialFromFactors(expr1.tree.slice(1));
+          let monomial2 = findMonomialFromFactors(expr2.tree.slice(1));
+          if (!monomial1.equals(monomial2)) {
+            // also OK if monomials are opposites
+            let monomial2Opposite = me.fromAst(['-', monomial2.tree]);
+            if (!monomial1.equals(monomial2Opposite)) {
+              return { setValue: { value: false } }
+            }
+          }
+        }
+
+        if (dependencyValues.allowOnlySignDifferences) {
+          let expr1Normalized = normalizeFactorSigns(expr1);
+          let expr2Normalized = normalizeFactorSigns(expr2);
+          return {
+            setValue: {
+              value: expr1Normalized.equalsViaSyntax(expr2Normalized, {
+                allowed_error_in_numbers: dependencyValues.allowedErrorInNumbers,
+                include_error_in_number_exponents: dependencyValues.includeErrorInNumberExponents,
+                allowed_error_is_absolute: dependencyValues.allowedErrorIsAbsolute,
+              })
+            }
+          }
+        }
 
 
-        let numFactors1 = factors1
-          .filter(x => typeof x !== "number" && x[0] !== "/")
-          .length;
+        let nonConstantFactors1 = expr1.tree.slice(1).filter(x => me.fromAst(x).variables().length > 0);
+        let nonConstantFactors2 = expr2.tree.slice(1).filter(x => me.fromAst(x).variables().length > 0);
 
-        let numFactors2 = factors2
-          .filter(x => typeof x !== "number" && x[0] !== "/")
-          .length;
 
-        if (numFactors1 !== numFactors2) {
+        if (nonConstantFactors1.length !== nonConstantFactors2.length) {
           return { setValue: { value: false } }
         }
 
@@ -136,37 +211,25 @@ export default class HasSameFactoring extends BooleanComponent {
         let v = dependencyValues.variable.subscripts_to_strings().tree;
 
 
-        for (let factor of factors1) {
-          let deriv1 = me.fromAst(factor).subscripts_to_strings().derivative(v);
-          if (!deriv1.equals(me.fromAst(0))) {
-            let deriv2 = me.fromAst(deriv1).derivative(v).simplify();
-            if (deriv2.tree === 0) {
-              numLinearFactors1++;
-            } else {
-              let deriv2AsConst = deriv2.evaluate_to_constant();
-              if (Number.isFinite(deriv2AsConst)) {
-                numQuadraticFactors1++;
-              } else {
-                return { setValue: { value: false } }
-              }
-            }
+        for (let factor of nonConstantFactors1) {
+          let deriv2 = me.fromAst(factor).subscripts_to_strings().derivative(v).derivative(v).simplify();
+          if (deriv2.tree === 0) {
+            numLinearFactors1++;
+          } else if (deriv2.variables().length === 0) {
+            numQuadraticFactors1++;
+          } else {
+            return { setValue: { value: false } }
           }
         }
 
-        for (let factor of factors2) {
-          let deriv1 = me.fromAst(factor).subscripts_to_strings().derivative(v);
-          if (!deriv1.equals(me.fromAst(0))) {
-            let deriv2 = me.fromAst(deriv1).derivative(v).simplify();
-            if (deriv2.tree === 0) {
-              numLinearFactors2++;
-            } else {
-              let deriv2AsConst = deriv2.evaluate_to_constant();
-              if (Number.isFinite(deriv2AsConst)) {
-                numQuadraticFactors2++;
-              } else {
-                return { setValue: { value: false } }
-              }
-            }
+        for (let factor of nonConstantFactors2) {
+          let deriv2 = me.fromAst(factor).subscripts_to_strings().derivative(v).derivative(v).simplify();
+          if (deriv2.tree === 0) {
+            numLinearFactors2++;
+          } else if (deriv2.variables().length === 0) {
+            numQuadraticFactors2++;
+          } else {
+            return { setValue: { value: false } }
           }
         }
 
@@ -189,22 +252,22 @@ export default class HasSameFactoring extends BooleanComponent {
 
 
 function expandPositiveIntegerPowers(tree) {
-  if(!Array.isArray(tree)) {
+  if (!Array.isArray(tree)) {
     return tree;
   }
 
-  if(tree[0] === "^") {
+  if (tree[0] === "^") {
     let base = tree[1];
     let exponent = tree[2];
-    if(Number.isInteger(exponent) && exponent > 0) {
+    if (Number.isInteger(exponent) && exponent > 0) {
       tree = ["*", ...Array(exponent).fill(base)]
     }
   }
 
-  if(tree[0] === "*") {
+  if (tree[0] === "*") {
     let oldTree = tree;
     tree = ["*"];
-    for(let factor of oldTree.slice(1)) {
+    for (let factor of oldTree.slice(1)) {
       if (Array.isArray(factor) && factor[0] === "^") {
         let base = factor[1];
         let exponent = factor[2];
@@ -217,9 +280,107 @@ function expandPositiveIntegerPowers(tree) {
         tree.push(factor);
       }
     }
-    
+
   }
 
   return tree;
+
+}
+
+function findMonomialFromFactors(factors) {
+
+  let monomialFactors = [];
+
+  let inMonomial = false;
+
+  for (let factor of factors) {
+    if (typeof factor === "string" || me.fromAst(factor).variables().length === 0) {
+      if (!inMonomial) {
+        if (monomialFactors.length > 0) {
+          // found a second monomial
+          return me.fromAst('\uff3f')
+        } else {
+          inMonomial = true;
+        }
+      }
+      monomialFactors.push(factor);
+    } else {
+      inMonomial = false;
+    }
+  }
+
+  let monomialTree;
+
+  if (monomialFactors.length === 0) {
+    monomialTree = 1;
+  } else if (monomialFactors.length === 1) {
+    monomialTree = monomialFactors[0];
+  } else {
+    monomialTree = ['*', ...monomialFactors];
+  }
+
+  return me.fromAst(monomialTree);
+
+}
+
+function normalizeFactorSigns(expr) {
+
+  let exprTree = expr.simplify().tree;
+
+  if (exprTree[0] === "-") {
+    exprTree = exprTree[1];
+  }
+
+  if (exprTree[0] !== "*") {
+    return me.fromAst(exprTree).simplify();
+  }
+
+
+  let newTree = ['*'];
+
+  for (let factor of exprTree.slice(1)) {
+    if (typeof factor === "number") {
+      if (factor < 0) {
+        newTree.push(-factor);
+      } else {
+        newTree.push(factor);
+      }
+    } else if (!Array.isArray(factor)) {
+      newTree.push(factor);
+    } else if (factor[0] === "-") {
+      newTree.push(factor[1])
+    } else if (factor[0] === "+") {
+      let firstTermHasNeg = false;
+      let term = factor[1];
+      if (typeof term === "number") {
+        if (term < 0) {
+          firstTermHasNeg = true;
+        }
+      } else if (Array.isArray(term)) {
+        if (term[0] === "-") {
+          firstTermHasNeg = true;
+        } else if (term[0] === "*") {
+          let firstFactorInTerm = term[1];
+          if (typeof firstFactorInTerm === "number") {
+            if (firstFactorInTerm < 0) {
+              firstTermHasNeg = true;
+            }
+          } else if (Array.isArray(firstFactorInTerm) && firstFactorInTerm[0] === "-") {
+            firstTermHasNeg = true;
+          }
+        }
+      }
+
+      if (firstTermHasNeg) {
+        newTree.push(me.fromAst(["-", factor]).simplify().tree)
+      } else {
+        newTree.push(factor);
+      }
+    } else {
+      newTree.push(factor);
+    }
+  }
+
+  return me.fromAst(newTree).simplify();
 
 }

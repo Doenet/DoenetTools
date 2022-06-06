@@ -1,10 +1,10 @@
-export const doenetComponentBackgroundInactive = "#E2E2E2";
-export const doenetComponentForegroundInactive = "#3d3d3d";
-export const doenetComponentBackgroundActive = "#288ae9";
-export const doenetComponentForegroundActive = "#1a5a99"
+export const doenetComponentBackgroundInactive = "var(--mainGray)";
+export const doenetComponentForegroundInactive = "var(--canvastext)";
+export const doenetComponentBackgroundActive = "var(--mainBlue)";
+export const doenetComponentForegroundActive = "var(--mainBlue)"
 
-export const doenetMainBlue = "#1A5A99";
-export const doenetLightBlue = "#8FB8DE";
-export const doenetLightGray = "#E2E2E2";
-export const doenetBasicDonutBody = "#EEA177";
-export const doenetBasicDonutTopping = "#6D4445"
+export const doenetMainBlue = "var(--mainBlue)";
+export const doenetLightBlue = "var(--solidLightBlue)";
+export const doenetLightGray = "var(--mainGray)";
+export const doenetBasicDonutBody = "var(--donutBody)";
+export const doenetBasicDonutTopping = "var(--donutTopping)";

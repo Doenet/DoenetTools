@@ -13,7 +13,7 @@ export default function TextArea(props) {
     fontFamily: 'Arial',
     fontSize: '14px',
     borderRadius: 'var(--mainBorderRadius)',
-    color: '#000',
+    color: 'var(--canvastext)',
     value: `${text}`
   };
 

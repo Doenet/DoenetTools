@@ -13,13 +13,13 @@ const Button = styled.button`
   border: 2px solid;
   border-color: ${(props) => props.color};
   border-radius: 5px;
-  color: #fff;
+  color: var(--canvas);
   background-color: ${(props) => props.color};
 `;
 
 export default function CalendarButton(props) {
   const icon = props.checked ? faCalendarPlus : faCalendarTimes;
-  const color = props.checked ? doenetMainBlue : '#e2e2e2';
+  const color = props.checked ? doenetMainBlue : 'var(--mainGray)';
   const buttonRef = useRef(null);
 
   return (

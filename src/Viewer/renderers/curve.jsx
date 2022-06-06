@@ -7,8 +7,6 @@ import { BoardContext } from './graph';
 export default React.memo(function Curve(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-  console.log({name,SVs});
-  
   Curve.ignoreActionsWithoutCore = true;
 
   const board = useContext(BoardContext);
@@ -193,8 +191,8 @@ export default React.memo(function Curve(props) {
         visible: false,
         withLabel: false,
         fixed: true,
-        strokeColor: 'lightgray',
-        highlightStrokeColor: 'lightgray',
+        strokeColor: 'var(--mainGray)',
+        highlightStrokeColor: 'var(--mainGray)',
         layer: 10 * SVs.layer + 7,
         strokeWidth: 1,
         highlightStrokeWidth: 1,
@@ -205,16 +203,16 @@ export default React.memo(function Curve(props) {
         fixed: false,
         fillColor: 'none',
         strokeColor: 'none',
-        highlightFillColor: 'lightgray',
-        highlightStrokeColor: 'lightgray',
+        highlightFillColor: 'var(--mainGray)',
+        highlightStrokeColor: 'var(--mainGray)',
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + 7,
         size: 3,
       };
       throughPointAlwaysVisible.current = {
-        fillcolor: 'lightgray',
-        strokecolor: 'lightgray',
+        fillcolor: 'var(--mainGray)',
+        strokecolor: 'var(--mainGray)',
       };
       throughPointHoverVisible.current = {
         fillcolor: 'none',
@@ -225,10 +223,10 @@ export default React.memo(function Curve(props) {
         visible: false,
         withLabel: false,
         fixed: false,
-        fillColor: 'gray',
-        strokeColor: 'gray',
-        highlightFillColor: 'gray',
-        highlightStrokeColor: 'gray',
+        fillColor: 'var(--mainGray)',
+        strokeColor: 'var(--mainGray)',
+        highlightFillColor: 'var(--mainGray)',
+        highlightStrokeColor: 'var(--mainGray)',
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + 8,

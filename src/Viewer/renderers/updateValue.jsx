@@ -11,7 +11,7 @@ export default React.memo(function UpdateValue(props) {
   }
 
   return (
-    <div id={name} margin="12px 0">
+    <div id={name} margin="12px 0" style={{display:"inline-block"}}>
       <a name={name} />
       <Button
         id={name + "_button"} 

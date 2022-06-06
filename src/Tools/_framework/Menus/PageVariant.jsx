@@ -59,8 +59,8 @@ export default function PageVariant(props) {
         })
     }} /></label></div>
 
-    <div><label>Select variant name
-      <select value={variantPanel.index} onChange={(e) => {
+    <div><label>Select variant name 
+      <select style= {{backgroundColor:'var(--canvas)', color: 'var(--canvastext)' ,border:'var(--mainBorder)',borderRadius: 'var(--mainBorderRadius)'}} value={variantPanel.index} onChange={(e) => {
         setVariantInfo((was) => {
           let newObj = { ...was };
           newObj.index = e.target.value;
