@@ -798,6 +798,449 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('pad zeros with display digits and decimals', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math>62.1</math></p>
+  <p><math>162.1*10^-3</math></p>
+  <p><math>1.3 x + 4pi</math></p>
+  <p><copy target="_math1" assignNames="dig5a" displayDigits="5" /></p>
+  <p><copy target="_math1" assignNames="dig5apad" displayDigits="5" padZeros /></p>
+  <p><copy target="_math2" assignNames="dig5b" displayDigits="5" /></p>
+  <p><copy target="_math2" assignNames="dig5bpad" displayDigits="5" padZeros /></p>
+  <p><copy target="_math3" assignNames="dig5c" displayDigits="5" /></p>
+  <p><copy target="_math3" assignNames="dig5cpad" displayDigits="5" padZeros /></p>
+  <p><copy target="_math1" assignNames="dec5a" displayDecimals="5" /></p>
+  <p><copy target="_math1" assignNames="dec5apad" displayDecimals="5" padZeros /></p>
+  <p><copy target="_math2" assignNames="dec5b" displayDecimals="5" /></p>
+  <p><copy target="_math2" assignNames="dec5bpad" displayDecimals="5" padZeros /></p>
+  <p><copy target="_math3" assignNames="dec5c" displayDecimals="5" /></p>
+  <p><copy target="_math3" assignNames="dec5cpad" displayDecimals="5" padZeros /></p>
+  <p><copy target="_math1" assignNames="dig5dec1a" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy target="_math1" assignNames="dig5dec1apad" displayDigits="5" displayDecimals="1" padZeros /></p>
+  <p><copy target="_math2" assignNames="dig5dec1b" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy target="_math2" assignNames="dig5dec1bpad" displayDigits="5" displayDecimals="1" padZeros /></p>
+  <p><copy target="_math3" assignNames="dig5dec1c" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy target="_math3" assignNames="dig5dec1cpad" displayDigits="5" displayDecimals="1" padZeros /></p>
+
+  <p><copy prop="text" target="dig5a" assignNames="dig5aText" /></p>
+  <p><copy prop="text" target="dig5apad" assignNames="dig5apadText" /></p>
+  <p><copy prop="text" target="dig5b" assignNames="dig5bText" /></p>
+  <p><copy prop="text" target="dig5bpad" assignNames="dig5bpadText" /></p>
+  <p><copy prop="text" target="dig5c" assignNames="dig5cText" /></p>
+  <p><copy prop="text" target="dig5cpad" assignNames="dig5cpadText" /></p>
+  <p><copy prop="text" target="dec5a" assignNames="dec5aText" /></p>
+  <p><copy prop="text" target="dec5apad" assignNames="dec5apadText" /></p>
+  <p><copy prop="text" target="dec5b" assignNames="dec5bText" /></p>
+  <p><copy prop="text" target="dec5bpad" assignNames="dec5bpadText" /></p>
+  <p><copy prop="text" target="dec5c" assignNames="dec5cText" /></p>
+  <p><copy prop="text" target="dec5cpad" assignNames="dec5cpadText" /></p>
+  <p><copy prop="text" target="dig5dec1a" assignNames="dig5dec1aText" /></p>
+  <p><copy prop="text" target="dig5dec1apad" assignNames="dig5dec1apadText" /></p>
+  <p><copy prop="text" target="dig5dec1b" assignNames="dig5dec1bText" /></p>
+  <p><copy prop="text" target="dig5dec1bpad" assignNames="dig5dec1bpadText" /></p>
+  <p><copy prop="text" target="dig5dec1c" assignNames="dig5dec1cText" /></p>
+  <p><copy prop="text" target="dig5dec1cpad" assignNames="dig5dec1cpadText" /></p>
+
+  <p><copy prop="value" target="dig5a" assignNames="dig5aValue" /></p>
+  <p><copy prop="value" target="dig5apad" assignNames="dig5apadValue" /></p>
+  <p><copy prop="value" target="dig5b" assignNames="dig5bValue" /></p>
+  <p><copy prop="value" target="dig5bpad" assignNames="dig5bpadValue" /></p>
+  <p><copy prop="value" target="dig5c" assignNames="dig5cValue" /></p>
+  <p><copy prop="value" target="dig5cpad" assignNames="dig5cpadValue" /></p>
+  <p><copy prop="value" target="dec5a" assignNames="dec5aValue" /></p>
+  <p><copy prop="value" target="dec5apad" assignNames="dec5apadValue" /></p>
+  <p><copy prop="value" target="dec5b" assignNames="dec5bValue" /></p>
+  <p><copy prop="value" target="dec5bpad" assignNames="dec5bpadValue" /></p>
+  <p><copy prop="value" target="dec5c" assignNames="dec5cValue" /></p>
+  <p><copy prop="value" target="dec5cpad" assignNames="dec5cpadValue" /></p>
+  <p><copy prop="value" target="dig5dec1a" assignNames="dig5dec1aValue" /></p>
+  <p><copy prop="value" target="dig5dec1apad" assignNames="dig5dec1apadValue" /></p>
+  <p><copy prop="value" target="dig5dec1b" assignNames="dig5dec1bValue" /></p>
+  <p><copy prop="value" target="dig5dec1bpad" assignNames="dig5dec1bpadValue" /></p>
+  <p><copy prop="value" target="dig5dec1c" assignNames="dig5dec1cValue" /></p>
+  <p><copy prop="value" target="dig5dec1cpad" assignNames="dig5dec1cpadValue" /></p>
+
+  <p><copy prop="number" target="dig5a" assignNames="dig5aNumber" /></p>
+  <p><copy prop="number" target="dig5apad" assignNames="dig5apadNumber" /></p>
+  <p><copy prop="number" target="dig5b" assignNames="dig5bNumber" /></p>
+  <p><copy prop="number" target="dig5bpad" assignNames="dig5bpadNumber" /></p>
+  <p><copy prop="number" target="dig5c" assignNames="dig5cNumber" /></p>
+  <p><copy prop="number" target="dig5cpad" assignNames="dig5cpadNumber" /></p>
+  <p><copy prop="number" target="dec5a" assignNames="dec5aNumber" /></p>
+  <p><copy prop="number" target="dec5apad" assignNames="dec5apadNumber" /></p>
+  <p><copy prop="number" target="dec5b" assignNames="dec5bNumber" /></p>
+  <p><copy prop="number" target="dec5bpad" assignNames="dec5bpadNumber" /></p>
+  <p><copy prop="number" target="dec5c" assignNames="dec5cNumber" /></p>
+  <p><copy prop="number" target="dec5cpad" assignNames="dec5cpadNumber" /></p>
+  <p><copy prop="number" target="dig5dec1a" assignNames="dig5dec1aNumber" /></p>
+  <p><copy prop="number" target="dig5dec1apad" assignNames="dig5dec1apadNumber" /></p>
+  <p><copy prop="number" target="dig5dec1b" assignNames="dig5dec1bNumber" /></p>
+  <p><copy prop="number" target="dig5dec1bpad" assignNames="dig5dec1bpadNumber" /></p>
+  <p><copy prop="number" target="dig5dec1c" assignNames="dig5dec1cNumber" /></p>
+  <p><copy prop="number" target="dig5dec1cpad" assignNames="dig5dec1cpadNumber" /></p>
+  
+  <p><math name="dig5aMath">$dig5a</math></p>
+  <p><math name="dig5apadMath">$dig5apad</math></p>
+  <p><math name="dig5bMath">$dig5b</math></p>
+  <p><math name="dig5bpadMath">$dig5bpad</math></p>
+  <p><math name="dig5cMath">$dig5c</math></p>
+  <p><math name="dig5cpadMath">$dig5cpad</math></p>
+  <p><math name="dec5aMath">$dec5a</math></p>
+  <p><math name="dec5apadMath">$dec5apad</math></p>
+  <p><math name="dec5bMath">$dec5b</math></p>
+  <p><math name="dec5bpadMath">$dec5bpad</math></p>
+  <p><math name="dec5cMath">$dec5c</math></p>
+  <p><math name="dec5cpadMath">$dec5cpad</math></p>
+  <p><math name="dig5dec1aMath">$dig5dec1a</math></p>
+  <p><math name="dig5dec1apadMath">$dig5dec1apad</math></p>
+  <p><math name="dig5dec1bMath">$dig5dec1b</math></p>
+  <p><math name="dig5dec1bpadMath">$dig5dec1bpad</math></p>
+  <p><math name="dig5dec1cMath">$dig5dec1c</math></p>
+  <p><math name="dig5dec1cpadMath">$dig5dec1cpad</math></p>
+  
+  <p><number name="dig5aNumber2">$dig5a</number></p>
+  <p><number name="dig5apadNumber2">$dig5apad</number></p>
+  <p><number name="dig5bNumber2">$dig5b</number></p>
+  <p><number name="dig5bpadNumber2">$dig5bpad</number></p>
+  <p><number name="dig5cNumber2">$dig5c</number></p>
+  <p><number name="dig5cpadNumber2">$dig5cpad</number></p>
+  <p><number name="dec5aNumber2">$dec5a</number></p>
+  <p><number name="dec5apadNumber2">$dec5apad</number></p>
+  <p><number name="dec5bNumber2">$dec5b</number></p>
+  <p><number name="dec5bpadNumber2">$dec5bpad</number></p>
+  <p><number name="dec5cNumber2">$dec5c</number></p>
+  <p><number name="dec5cpadNumber2">$dec5cpad</number></p>
+  <p><number name="dig5dec1aNumber2">$dig5dec1a</number></p>
+  <p><number name="dig5dec1apadNumber2">$dig5dec1apad</number></p>
+  <p><number name="dig5dec1bNumber2">$dig5dec1b</number></p>
+  <p><number name="dig5dec1bpadNumber2">$dig5dec1bpad</number></p>
+  <p><number name="dig5dec1cNumber2">$dig5dec1c</number></p>
+  <p><number name="dig5dec1cpadNumber2">$dig5dec1cpad</number></p>
+  
+  <p><copy prop="x1" target="dig5a" assignNames="dig5aX1" /></p>
+  <p><copy prop="x1" target="dig5apad" assignNames="dig5apadX1" /></p>
+  <p><copy prop="x1" target="dig5b" assignNames="dig5bX1" /></p>
+  <p><copy prop="x1" target="dig5bpad" assignNames="dig5bpadX1" /></p>
+  <p><copy prop="x1" target="dig5c" assignNames="dig5cX1" /></p>
+  <p><copy prop="x1" target="dig5cpad" assignNames="dig5cpadX1" /></p>
+  <p><copy prop="x1" target="dec5a" assignNames="dec5aX1" /></p>
+  <p><copy prop="x1" target="dec5apad" assignNames="dec5apadX1" /></p>
+  <p><copy prop="x1" target="dec5b" assignNames="dec5bX1" /></p>
+  <p><copy prop="x1" target="dec5bpad" assignNames="dec5bpadX1" /></p>
+  <p><copy prop="x1" target="dec5c" assignNames="dec5cX1" /></p>
+  <p><copy prop="x1" target="dec5cpad" assignNames="dec5cpadX1" /></p>
+  <p><copy prop="x1" target="dig5dec1a" assignNames="dig5dec1aX1" /></p>
+  <p><copy prop="x1" target="dig5dec1apad" assignNames="dig5dec1apadX1" /></p>
+  <p><copy prop="x1" target="dig5dec1b" assignNames="dig5dec1bX1" /></p>
+  <p><copy prop="x1" target="dig5dec1bpad" assignNames="dig5dec1bpadX1" /></p>
+  <p><copy prop="x1" target="dig5dec1c" assignNames="dig5dec1cX1" /></p>
+  <p><copy prop="x1" target="dig5dec1cpad" assignNames="dig5dec1cpadX1" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+
+    cy.get('#\\/dig5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dig5apad').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.100')
+    })
+    cy.get('#\\/dig5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dig5bpad').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10⋅10−3')
+    })
+    cy.get('#\\/dig5c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dig5cpad').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3000x+4.0000π')
+    })
+    cy.get('#\\/dec5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dec5apad').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.10000')
+    })
+    cy.get('#\\/dec5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dec5bpad').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10000⋅10−3')
+    })
+    cy.get('#\\/dec5c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dec5cpad').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.30000x+4.00000π')
+    })
+    cy.get('#\\/dig5dec1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dig5dec1apad').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.100')
+    })
+    cy.get('#\\/dig5dec1b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dig5dec1bpad').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10⋅10−3')
+    })
+    cy.get('#\\/dig5dec1c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dig5dec1cpad').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3000x+4.0000π')
+    })
+
+    cy.get('#\\/dig5aText').should('have.text','62.1')
+    cy.get('#\\/dig5apadText').should('have.text','62.100')
+    cy.get('#\\/dig5bText').should('have.text','162.1 * 10^(-3)')
+    cy.get('#\\/dig5bpadText').should('have.text','162.10 * 10^(-3)')
+    cy.get('#\\/dig5cText').should('have.text','1.3 x + 4 π')
+    cy.get('#\\/dig5cpadText').should('have.text','1.3000 x + 4.0000 π')
+    cy.get('#\\/dec5aText').should('have.text','62.1')
+    cy.get('#\\/dec5apadText').should('have.text','62.10000')
+    cy.get('#\\/dec5bText').should('have.text','162.1 * 10^(-3)')
+    cy.get('#\\/dec5bpadText').should('have.text','162.10000 * 10^(-3)')
+    cy.get('#\\/dec5cText').should('have.text','1.3 x + 4 π')
+    cy.get('#\\/dec5cpadText').should('have.text','1.30000 x + 4.00000 π')
+    cy.get('#\\/dig5dec1aText').should('have.text','62.1')
+    cy.get('#\\/dig5dec1apadText').should('have.text','62.100')
+    cy.get('#\\/dig5dec1bText').should('have.text','162.1 * 10^(-3)')
+    cy.get('#\\/dig5dec1bpadText').should('have.text','162.10 * 10^(-3)')
+    cy.get('#\\/dig5dec1cText').should('have.text','1.3 x + 4 π')
+    cy.get('#\\/dig5dec1cpadText').should('have.text','1.3000 x + 4.0000 π')
+
+
+    cy.get('#\\/dig5aValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dig5apadValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.100')
+    })
+    cy.get('#\\/dig5bValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dig5bpadValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10⋅10−3')
+    })
+    cy.get('#\\/dig5cValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dig5cpadValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3000x+4.0000π')
+    })
+    cy.get('#\\/dec5aValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dec5apadValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.10000')
+    })
+    cy.get('#\\/dec5bValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dec5bpadValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10000⋅10−3')
+    })
+    cy.get('#\\/dec5cValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dec5cpadValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.30000x+4.00000π')
+    })
+    cy.get('#\\/dig5dec1aValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dig5dec1apadValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.100')
+    })
+    cy.get('#\\/dig5dec1bValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dig5dec1bpadValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10⋅10−3')
+    })
+    cy.get('#\\/dig5dec1cValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dig5dec1cpadValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3000x+4.0000π')
+    })
+
+
+    cy.get('#\\/dig5aNumber').should('have.text','62.1')
+    cy.get('#\\/dig5apadNumber').should('have.text','62.100')
+    cy.get('#\\/dig5bNumber').should('have.text','0.1621')
+    cy.get('#\\/dig5bpadNumber').should('have.text','0.16210')
+    cy.get('#\\/dig5cNumber').should('have.text','NaN')
+    cy.get('#\\/dig5cpadNumber').should('have.text','NaN')
+    cy.get('#\\/dec5aNumber').should('have.text','62.1')
+    cy.get('#\\/dec5apadNumber').should('have.text','62.10000')
+    cy.get('#\\/dec5bNumber').should('have.text','0.1621')
+    cy.get('#\\/dec5bpadNumber').should('have.text','0.16210')
+    cy.get('#\\/dec5cNumber').should('have.text','NaN')
+    cy.get('#\\/dec5cpadNumber').should('have.text','NaN')
+    cy.get('#\\/dig5dec1aNumber').should('have.text','62.1')
+    cy.get('#\\/dig5dec1apadNumber').should('have.text','62.100')
+    cy.get('#\\/dig5dec1bNumber').should('have.text','0.1621')
+    cy.get('#\\/dig5dec1bpadNumber').should('have.text','0.16210')
+    cy.get('#\\/dig5dec1cNumber').should('have.text','NaN')
+    cy.get('#\\/dig5dec1cpadNumber').should('have.text','NaN')
+
+
+    cy.get('#\\/dig5aMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dig5apadMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.100')
+    })
+    cy.get('#\\/dig5bMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dig5bpadMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10⋅10−3')
+    })
+    cy.get('#\\/dig5cMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dig5cpadMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3000x+4.0000π')
+    })
+    cy.get('#\\/dec5aMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dec5apadMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.10000')
+    })
+    cy.get('#\\/dec5bMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dec5bpadMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10000⋅10−3')
+    })
+    cy.get('#\\/dec5cMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dec5cpadMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.30000x+4.00000π')
+    })
+    cy.get('#\\/dig5dec1aMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dig5dec1apadMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.100')
+    })
+    cy.get('#\\/dig5dec1bMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dig5dec1bpadMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10⋅10−3')
+    })
+    cy.get('#\\/dig5dec1cMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dig5dec1cpadMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3000x+4.0000π')
+    })
+
+
+    cy.get('#\\/dig5aNumber2').should('have.text','62.1')
+    cy.get('#\\/dig5apadNumber2').should('have.text','62.100')
+    cy.get('#\\/dig5bNumber2').should('have.text','0.1621')
+    cy.get('#\\/dig5bpadNumber2').should('have.text','0.16210')
+    cy.get('#\\/dig5cNumber2').should('have.text','NaN')
+    cy.get('#\\/dig5cpadNumber2').should('have.text','NaN')
+    cy.get('#\\/dec5aNumber2').should('have.text','62.1')
+    cy.get('#\\/dec5apadNumber2').should('have.text','62.10000')
+    cy.get('#\\/dec5bNumber2').should('have.text','0.1621')
+    cy.get('#\\/dec5bpadNumber2').should('have.text','0.16210')
+    cy.get('#\\/dec5cNumber2').should('have.text','NaN')
+    cy.get('#\\/dec5cpadNumber2').should('have.text','NaN')
+    cy.get('#\\/dig5dec1aNumber2').should('have.text','62.1')
+    cy.get('#\\/dig5dec1apadNumber2').should('have.text','62.100')
+    cy.get('#\\/dig5dec1bNumber2').should('have.text','0.1621')
+    cy.get('#\\/dig5dec1bpadNumber2').should('have.text','0.16210')
+    cy.get('#\\/dig5dec1cNumber2').should('have.text','NaN')
+    cy.get('#\\/dig5dec1cpadNumber2').should('have.text','NaN')
+
+
+
+    cy.get('#\\/dig5aX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dig5apadX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.100')
+    })
+    cy.get('#\\/dig5bX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dig5bpadX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10⋅10−3')
+    })
+    cy.get('#\\/dig5cX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dig5cpadX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3000x+4.0000π')
+    })
+    cy.get('#\\/dec5aX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dec5apadX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.10000')
+    })
+    cy.get('#\\/dec5bX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dec5bpadX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10000⋅10−3')
+    })
+    cy.get('#\\/dec5cX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dec5cpadX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.30000x+4.00000π')
+    })
+    cy.get('#\\/dig5dec1aX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.1')
+    })
+    cy.get('#\\/dig5dec1apadX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('62.100')
+    })
+    cy.get('#\\/dig5dec1bX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.1⋅10−3')
+    })
+    cy.get('#\\/dig5dec1bpadX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('162.10⋅10−3')
+    })
+    cy.get('#\\/dig5dec1cX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3x+4π')
+    })
+    cy.get('#\\/dig5dec1cpadX1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1.3000x+4.0000π')
+    })
+
+
+  });
+
   it('dynamic rounding', () => {
     cy.window().then(async (win) => {
       win.postMessage({

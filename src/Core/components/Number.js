@@ -731,7 +731,6 @@ export default class NumberComponent extends InlineComponent {
     }
 
     stateVariableDefinitions.valueForDisplay = {
-      forRenderer: true,
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -773,6 +772,7 @@ export default class NumberComponent extends InlineComponent {
     stateVariableDefinitions.text = {
       public: true,
       componentType: "text",
+      forRenderer: true,
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",
@@ -796,7 +796,7 @@ export default class NumberComponent extends InlineComponent {
           variableName: "value"
         },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         let params = {};
         if (dependencyValues.padZeros) {
           if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
@@ -807,7 +807,7 @@ export default class NumberComponent extends InlineComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
-        return { setValue: { text: dependencyValues.valueForDisplay.toString(params) } };
+        return { setValue: { text: me.fromAst(dependencyValues.valueForDisplay).toString(params) } };
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let desiredNumber = Number(desiredStateVariableValues.text);
@@ -856,6 +856,8 @@ export default class NumberComponent extends InlineComponent {
       isPublic: true
     });
 
+    stateVariableDefinitions.math.additionalAttributeComponentsToShadow = ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"];
+
     stateVariableDefinitions.latex = {
       public: true,
       componentType: "text",
@@ -863,10 +865,32 @@ export default class NumberComponent extends InlineComponent {
         valueForDisplay: {
           dependencyType: "stateVariable",
           variableName: "valueForDisplay"
+        },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
         }
       }),
-      definition({ dependencyValues }) {
-        return { setValue: { latex: me.fromAst(dependencyValues.valueForDisplay).toLatex() } }
+      definition({ dependencyValues, usedDefault }) {
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        return { setValue: { latex: me.fromAst(dependencyValues.valueForDisplay).toLatex(params) } };
       }
     }
 

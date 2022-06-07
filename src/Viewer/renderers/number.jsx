@@ -10,7 +10,7 @@ export default React.memo(function Number(props) {
     return null;
   }
 
-  let number = SVs.valueForDisplay;
+  let number = SVs.text;
   if (SVs.renderAsMath) {
     number = "\\(" + number + "\\)"
   }

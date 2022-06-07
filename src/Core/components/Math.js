@@ -713,6 +713,7 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.number = {
       public: true,
       componentType: "number",
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -1090,6 +1091,7 @@ export default class MathComponent extends InlineComponent {
       componentType: "math",
       isArray: true,
       entryPrefixes: ["x"],
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
