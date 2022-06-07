@@ -84,7 +84,7 @@ if ($success){
 					"variantIndex"=>$row['variantIndex'],
 					"object"=>$row['object'],
 					"context"=>$row['context'],
-					"result"=>$row['verb'],
+					"result"=>$row['result'],
 					"timestamp"=>$row['timestamp'],
 					"version"=>$row['version'],
 					"deviceName"=>$row['deviceName'],

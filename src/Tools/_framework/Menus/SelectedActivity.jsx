@@ -27,7 +27,7 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
     label: recoilLabel,
-    order
+    content
   } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const {
@@ -44,8 +44,7 @@ export default function SelectedActivity() {
     setItemTextFieldLabel(recoilLabel);
   }, [recoilLabel]);
 
-  let firstPageDoenetId = findFirstPageOfActivity(order);
-
+  
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
     if (itemTextFieldLabel === '') {
@@ -53,7 +52,7 @@ export default function SelectedActivity() {
       if (recoilLabel === '') {
         effectiveItemLabel = 'Untitled';
       }
-
+      
       setItemTextFieldLabel(effectiveItemLabel);
       addToast('Every item must have a label.');
     }
@@ -62,13 +61,15 @@ export default function SelectedActivity() {
       renameItem(doenetId, effectiveItemLabel);
     }
   };
-
+  
   // useDebounce(handelLabelModfication, 500, [itemTextFieldLabel]);
-
+  
   if (doenetId == undefined) {
     return null;
   }
-
+  
+  let firstPageDoenetId = findFirstPageOfActivity(content);
+  
   let heading = (
     <h2 data-cy="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
       <FontAwesomeIcon icon={faFileCode} /> {recoilLabel}
