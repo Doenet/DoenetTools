@@ -33,9 +33,9 @@ $courseId = "_" . $courseId;
 
 $sql = "
 INSERT INTO course
-(courseId,image)
+(courseId,label,image)
 VALUES
-('$courseId','$course_pic')
+('$courseId','Untitled Course','$course_pic')
 ";
 
 $result = $conn->query($sql); 

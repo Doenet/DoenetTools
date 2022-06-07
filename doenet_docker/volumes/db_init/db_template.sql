@@ -191,7 +191,7 @@ DROP TABLE IF EXISTS `course`;
 CREATE TABLE `course` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'Untitled',
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'Untitled Course',
   `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
   `isDeleted` tinyint(1) DEFAULT '0',
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
