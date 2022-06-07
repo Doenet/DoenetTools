@@ -28,18 +28,6 @@ export default class Evaluate extends MathComponent {
       createComponentOfType: "mathList",
     }
 
-    attributes.displayDigits = {
-      createComponentOfType: "integer",
-    };
-    attributes.displayDecimals = {
-      createComponentOfType: "integer",
-    };
-    attributes.displaySmallAsZero = {
-      createComponentOfType: "number",
-      valueForTrue: 1E-14,
-      valueForFalse: 0,
-    };
-
     attributes.unordered = {
       createComponentOfType: "boolean",
       createStateVariable: "unordered",
@@ -156,7 +144,7 @@ export default class Evaluate extends MathComponent {
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({
-        displayDecimalsAttr: {
+        displaySmallAsZeroAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displaySmallAsZero",
           variableNames: ["value"]
@@ -168,10 +156,10 @@ export default class Evaluate extends MathComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
+        if (dependencyValues.displaySmallAsZeroAttr !== null) {
           return {
             setValue: {
-              displaySmallAsZero: dependencyValues.displayDecimalsAttr.stateValues.value
+              displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
             }
           }
         } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
@@ -183,6 +171,44 @@ export default class Evaluate extends MathComponent {
         } else {
           return {
             useEssentialOrDefaultValue: { displaySmallAsZero: true }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.padZeros = {
+      public: true,
+      componentType: "boolean",
+      defaultValue: false,
+      hasEssential: true,
+      returnDependencies: () => ({
+        padZerosAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "padZeros",
+          variableNames: ["value"]
+        },
+        functionAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "function",
+          variableNames: ["padZeros"],
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.padZerosAttr !== null) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.padZerosAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.functionAttr.stateValues.padZeros
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { padZeros: true }
           }
         }
       }

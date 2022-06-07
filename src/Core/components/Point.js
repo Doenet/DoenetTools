@@ -65,6 +65,13 @@ export default class Point extends GraphicalComponent {
       public: true,
     };
 
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
+    };
+
     attributes.labelPosition = {
       createComponentOfType: "text",
       createStateVariable: "labelPosition",
@@ -665,6 +672,7 @@ export default class Point extends GraphicalComponent {
       componentType: "math",
       isArray: true,
       entryPrefixes: ["x"],
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",
@@ -784,6 +792,7 @@ export default class Point extends GraphicalComponent {
     stateVariableDefinitions.coords = {
       public: true,
       componentType: "coords",
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       returnDependencies: () => ({
         xs: {
           dependencyType: "stateVariable",
@@ -853,7 +862,7 @@ export default class Point extends GraphicalComponent {
 
     }
 
-    stateVariableDefinitions.coordsForDisplay = {
+    stateVariableDefinitions.coordsLatex = {
       forRenderer: true,
       returnDependencies: () => ({
         coords: {
@@ -872,16 +881,28 @@ export default class Point extends GraphicalComponent {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
         },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
-        // for display via latex and text, round any decimal numbers to the significant digits
-        // determined by displaydigits, displaydecimals, and/or displaySmallAsZero
-        let coordsForDisplay = roundForDisplay({
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        let coordsLatex = roundForDisplay({
           value: dependencyValues.coords,
           dependencyValues, usedDefault
-        });
+        }).toLatex(params);
 
-        return { setValue: { coordsForDisplay } }
+        return { setValue: { coordsLatex } }
 
       }
     }
@@ -919,8 +940,6 @@ export default class Point extends GraphicalComponent {
 
 
     stateVariableDefinitions.numericalXs = {
-      public: true,
-      componentType: "number",
       isArray: true,
       entryPrefixes: ["numericalX"],
       forRenderer: true,
@@ -1037,7 +1056,10 @@ export default class Point extends GraphicalComponent {
   }
 
 
-  static adapters = ["coords"];
+  static adapters = [{
+    stateVariable: "coords",
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+  }];
 
   async movePoint({ x, y, z, transient, actionId }) {
     let components = {};

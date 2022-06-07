@@ -2441,6 +2441,7 @@ export default class Core {
               adapterTargetIdentity: dep.adapterTargetIdentity,
               adapterVariable: dep.adapterVariable,
               substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
+              stateVariablesToShadow: dep.stateVariablesToShadow,
             }
           }
         }
@@ -2505,6 +2506,9 @@ export default class Core {
         if (stateVarDef.componentType === undefined) {
           if (attributeFromPrimitive) {
             stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
+            if (stateVarDef.componentType === "string") {
+              stateVarDef.componentType = "text";
+            }
           } else {
             stateVarDef.componentType = attributeSpecification.createComponentOfType;
           }
@@ -2802,6 +2806,14 @@ export default class Core {
       };
     };
 
+    if (redefineDependencies.stateVariablesToShadow) {
+      this.modifyStateDefsToBeShadows({
+        stateVariablesToShadow: redefineDependencies.stateVariablesToShadow,
+        stateVariableDefinitions,
+        targetComponent: adapterTargetComponent
+      });
+    }
+
   }
 
   async createReferenceShadowStateVariableDefinitions({ redefineDependencies, stateVariableDefinitions, componentClass }) {
@@ -2922,11 +2934,11 @@ export default class Core {
         }
       }
 
-      if ("targetAttributesToAlwaysIgnore" in compositeComponent.state) {
-        thisDependencies.targetAttributesToAlwaysIgnore = {
+      if ("targetAttributesToIgnoreRecursively" in compositeComponent.state) {
+        thisDependencies.targetAttributesToIgnoreRecursively = {
           dependencyType: "stateVariable",
           componentName: compositeComponent.componentName,
-          variableName: "targetAttributesToAlwaysIgnore",
+          variableName: "targetAttributesToIgnoreRecursively",
         };
       }
 
@@ -2965,8 +2977,8 @@ export default class Core {
           if (dependencyValues.targetAttributesToIgnore) {
             targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
           }
-          if (dependencyValues.targetAttributesToAlwaysIgnore) {
-            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+          if (dependencyValues.targetAttributesToIgnoreRecursively) {
+            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnoreRecursively);
           }
 
           if (dependencyValues.targetVariable !== undefined
@@ -3017,8 +3029,8 @@ export default class Core {
             if (dependencyValues.targetAttributesToIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
             }
-            if (dependencyValues.targetAttributesToAlwaysIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            if (dependencyValues.targetAttributesToIgnoreRecursively) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnoreRecursively);
             }
 
             if (dependencyValues.targetVariable !== undefined
@@ -3645,6 +3657,7 @@ export default class Core {
     stateVarObj.getPreviousDependencyValuesForMarkStale = arrayStateVarObj.getPreviousDependencyValuesForMarkStale;
     stateVarObj.provideEssentialValuesInDefinition = arrayStateVarObj.provideEssentialValuesInDefinition;
     stateVarObj.providePreviousValuesInDefinition = arrayStateVarObj.providePreviousValuesInDefinition;
+    stateVarObj.additionalAttributeComponentsToShadow = arrayStateVarObj.additionalAttributeComponentsToShadow;
 
     stateVarObj.nDimensions = arrayStateVarObj.returnEntryDimensions(arrayEntryPrefix);
     stateVarObj.wrappingComponents = arrayStateVarObj.returnWrappingComponents(arrayEntryPrefix);

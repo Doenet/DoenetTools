@@ -59,9 +59,9 @@ export default class Collect extends CompositeComponent {
       public: true,
     };
 
-    attributes.targetAttributesToAlwaysIgnore = {
+    attributes.targetAttributesToIgnoreRecursively = {
       createComponentOfType: "textList",
-      createStateVariable: "targetAttributesToAlwaysIgnore",
+      createStateVariable: "targetAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
     };

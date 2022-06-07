@@ -1,7 +1,7 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings';
-import { convertValueToMathExpression } from '../utils/math';
+import { convertValueToMathExpression, roundForDisplay } from '../utils/math';
 
 export default class Vector extends GraphicalComponent {
   static componentType = "vector";
@@ -57,6 +57,36 @@ export default class Vector extends GraphicalComponent {
     };
     attributes.tail = {
       createComponentOfType: "point",
+    };
+
+    attributes.displayDigits = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigits",
+      defaultValue: 10,
+      public: true,
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
+    };
+
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
     };
 
     return attributes;
@@ -800,6 +830,7 @@ export default class Vector extends GraphicalComponent {
       entryPrefixes: ["x"],
       hasEssential: true,
       essentialVarName: "displacement2", // since "displacement" used for displacementShadow
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       set: convertValueToMathExpression,
       returnWrappingComponents(prefix) {
         if (prefix === "x") {
@@ -1123,6 +1154,7 @@ export default class Vector extends GraphicalComponent {
       componentType: "math",
       isArray: true,
       entryPrefixes: ["headX"],
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       set: convertValueToMathExpression,
       returnWrappingComponents(prefix) {
         if (prefix === "headX") {
@@ -1305,6 +1337,7 @@ export default class Vector extends GraphicalComponent {
       isArray: true,
       entryPrefixes: ["tailX"],
       hasEssential: true,
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       defaultValueByArrayKey: () => me.fromAst(0),
       essentialVarName: "tail2",  // since tailShadow uses "tail"
       set: convertValueToMathExpression,
@@ -1563,7 +1596,6 @@ export default class Vector extends GraphicalComponent {
     }
 
     stateVariableDefinitions.displacementCoords = {
-      forRenderer: true,
       returnDependencies: () => ({
         displacement: {
           dependencyType: "stateVariable",
@@ -1611,6 +1643,52 @@ export default class Vector extends GraphicalComponent {
 
       }
     }
+
+    stateVariableDefinitions.displacementCoordsLatex = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        displacementCoords: {
+          dependencyType: "stateVariable",
+          variableName: "displacementCoords"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        let displacementCoordsLatex = roundForDisplay({
+          value: dependencyValues.displacementCoords,
+          dependencyValues, usedDefault
+        }).toLatex(params);
+
+        return { setValue: { displacementCoordsLatex } }
+
+      }
+    }
+
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
@@ -1693,6 +1771,7 @@ export default class Vector extends GraphicalComponent {
   static adapters = [{
     stateVariable: "displacementCoords",
     componentType: "coords",
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
   }];
 
   async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation, actionId }) {

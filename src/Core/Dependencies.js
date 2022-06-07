@@ -3912,7 +3912,7 @@ class AttributeComponentDependency extends Dependency {
     }
 
     if (this.fallBackToAttributeFromShadow) {
-      // if don't have an attribute component, i
+      // if don't have an attribute component,
       // check if shadows a component with that attribute component
 
       let comp = parent;
@@ -3928,8 +3928,7 @@ class AttributeComponentDependency extends Dependency {
 
         if (propVariable) {
           if (!(
-            comp.state[propVariable]?.additionalAttributeComponentsToShadow
-            && comp.state[propVariable].additionalAttributeComponentsToShadow.includes(this.attributeName)
+            comp.state[propVariable]?.additionalAttributeComponentsToShadow?.includes(this.attributeName)
           )) {
             break;
           }

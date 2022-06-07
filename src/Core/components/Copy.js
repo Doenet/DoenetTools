@@ -69,9 +69,9 @@ export default class Copy extends CompositeComponent {
       defaultValue: ["hide"],
       public: true,
     };
-    attributes.targetAttributesToAlwaysIgnore = {
+    attributes.targetAttributesToIgnoreRecursively = {
       createComponentOfType: "textList",
-      createStateVariable: "targetAttributesToAlwaysIgnore",
+      createStateVariable: "targetAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
     };
@@ -574,10 +574,10 @@ export default class Copy extends CompositeComponent {
               replacementSources.push(targetDep);
 
               let propName;
-              if(targetDep.stateValues) {
+              if (targetDep.stateValues) {
                 propName = Object.keys(targetDep.stateValues)[0];
               }
-              if(!propName && dependencyValues["propName" + ind]) {
+              if (!propName && dependencyValues["propName" + ind]) {
                 // a propName was specified, but it just wasn't found
                 propName = dependencyValues["propName" + ind];
               }
@@ -2143,6 +2143,8 @@ export async function replacementFromProp({ component, components,
                 flags
               });
 
+              // TODO: handle stateVarObj.additionalAttributeComponentsToShadow
+
               Object.assign(attributesForReplacement, attributesFromComponent)
 
             }
@@ -2261,6 +2263,8 @@ export async function replacementFromProp({ component, components,
                   componentInfoObjects,
                   flags
                 });
+
+                // TODO: handle stateVarObj.additionalAttributeComponentsToShadow
 
                 Object.assign(attributesForReplacement, attributesFromComponent)
 
@@ -2518,6 +2522,15 @@ export async function replacementFromProp({ component, components,
             componentInfoObjects,
             flags
           });
+
+          if (stateVarObj.additionalAttributeComponentsToShadow) {
+            for (let attrName of stateVarObj.additionalAttributeComponentsToShadow) {
+              if (target.attributes[attrName]?.component) {
+                attributesFromComponent[attrName] = { component: await target.attributes[attrName]?.component.serialize({ copyAll: true, copyVariants: true }) }
+
+              }
+            }
+          }
 
           Object.assign(attributesForReplacement, attributesFromComponent)
 
