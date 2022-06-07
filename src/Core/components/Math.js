@@ -136,6 +136,21 @@ export default class MathComponent extends InlineComponent {
           parentComponentType: "mathList",
           variableName: "displayDigits"
         },
+        numberListParentDisplayDigits: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "displayDigits"
+        },
+        mathListParentDisplayDecimals: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "displayDecimals"
+        },
+        numberListParentDisplayDecimals: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "displayDecimals"
+        },
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
@@ -153,7 +168,12 @@ export default class MathComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if(dependencyValues.mathListParentDisplayDigits !== null && !usedDefault.mathListParentDisplayDigits) {
+        let haveListParentWithDisplayDecimals =
+        dependencyValues.numberListParentDisplayDecimals !== null && !usedDefault.numberListParentDisplayDecimals
+        ||
+        dependencyValues.mathListParentDisplayDecimals !== null && !usedDefault.mathListParentDisplayDecimals;
+
+        if (dependencyValues.mathListParentDisplayDigits !== null && !usedDefault.mathListParentDisplayDigits) {
           // having a mathlist parent that prescribed displayDigits.
           // this overrides everything else
           return {
@@ -161,17 +181,32 @@ export default class MathComponent extends InlineComponent {
               displayDigits: dependencyValues.mathListParentDisplayDigits
             }
           }
-        } else if (dependencyValues.displayDigitsAttr !== null) {
+        } else if (dependencyValues.numberListParentDisplayDigits !== null && !usedDefault.numberListParentDisplayDigits) {
+          // having a numberlist parent that prescribed displayDigits.
+          // this overrides everything else
+          return {
+            setValue: {
+              displayDigits: dependencyValues.numberListParentDisplayDigits
+            }
+          }
+        } else if (
+          !haveListParentWithDisplayDecimals
+          && dependencyValues.displayDigitsAttr !== null
+        ) {
+          // have to check to exclude case where have displayDecimals from mathList parent
+          // because otherwise a non-default displayDigits will win over displayDecimals
           return {
             setValue: {
               displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
             }
           }
-        } else if (dependencyValues.displayDecimalsAttr === null
+        } else if (
+          !haveListParentWithDisplayDecimals
+          && dependencyValues.displayDecimalsAttr === null
           && dependencyValues.mathChildren.length === 1
           && !(usedDefault.mathChildren[0] && usedDefault.mathChildren[0].displayDigits)
         ) {
-          // have to check to exclude case where have displayDecimals attribute
+          // have to check to exclude case where have displayDecimals attribute or from mathList parent
           // because otherwise a non-default displayDigits will win over displayDecimals
           return {
             setValue: {
@@ -196,6 +231,11 @@ export default class MathComponent extends InlineComponent {
           parentComponentType: "mathList",
           variableName: "displayDecimals"
         },
+        numberListParentDisplayDecimals: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "displayDecimals"
+        },
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
@@ -208,12 +248,20 @@ export default class MathComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if(dependencyValues.mathListParentDisplayDecimals !== null && !usedDefault.mathListParentDisplayDecimals) {
+        if (dependencyValues.mathListParentDisplayDecimals !== null && !usedDefault.mathListParentDisplayDecimals) {
           // having a mathlist parent that prescribed displayDecimals.
           // this overrides everything else
           return {
             setValue: {
               displayDecimals: dependencyValues.mathListParentDisplayDecimals
+            }
+          }
+        } else if (dependencyValues.numberListParentDisplayDecimals !== null && !usedDefault.numberListParentDisplayDecimals) {
+          // having a numberlist parent that prescribed displayDecimals.
+          // this overrides everything else
+          return {
+            setValue: {
+              displayDecimals: dependencyValues.numberListParentDisplayDecimals
             }
           }
         } else if (dependencyValues.displayDecimalsAttr !== null) {
@@ -248,6 +296,11 @@ export default class MathComponent extends InlineComponent {
           parentComponentType: "mathList",
           variableName: "displaySmallAsZero"
         },
+        numberListParentDisplaySmallAsZero: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "displaySmallAsZero"
+        },
         displaySmallAsZeroAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displaySmallAsZero",
@@ -260,12 +313,20 @@ export default class MathComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if(dependencyValues.mathListParentDisplaySmallAsZero !== null && !usedDefault.mathListParentDisplaySmallAsZero) {
+        if (dependencyValues.mathListParentDisplaySmallAsZero !== null && !usedDefault.mathListParentDisplaySmallAsZero) {
           // having a mathlist parent that prescribed displaySmallAsZero.
           // this overrides everything else
           return {
             setValue: {
               displaySmallAsZero: dependencyValues.mathListParentDisplaySmallAsZero
+            }
+          }
+        } else if (dependencyValues.numberListParentDisplaySmallAsZero !== null && !usedDefault.numberListParentDisplaySmallAsZero) {
+          // having a numberlist parent that prescribed displaySmallAsZero.
+          // this overrides everything else
+          return {
+            setValue: {
+              displaySmallAsZero: dependencyValues.numberListParentDisplaySmallAsZero
             }
           }
         } else if (dependencyValues.displaySmallAsZeroAttr !== null) {
@@ -300,6 +361,11 @@ export default class MathComponent extends InlineComponent {
           parentComponentType: "mathList",
           variableName: "padZeros"
         },
+        numberListParentPadZeros: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "padZeros"
+        },
         padZerosAttr: {
           dependencyType: "attributeComponent",
           attributeName: "padZeros",
@@ -317,12 +383,20 @@ export default class MathComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if(dependencyValues.mathListParentPadZeros !== null && !usedDefault.mathListParentPadZeros) {
+        if (dependencyValues.mathListParentPadZeros !== null && !usedDefault.mathListParentPadZeros) {
           // having a mathlist parent that prescribed padZeros.
           // this overrides everything else
           return {
             setValue: {
               padZeros: dependencyValues.mathListParentPadZeros
+            }
+          }
+        } else if (dependencyValues.numberListParentPadZeros !== null && !usedDefault.numberListParentPadZeros) {
+          // having a numberlist parent that prescribed padZeros.
+          // this overrides everything else
+          return {
+            setValue: {
+              padZeros: dependencyValues.numberListParentPadZeros
             }
           }
         } else if (dependencyValues.padZerosAttr !== null) {

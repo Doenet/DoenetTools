@@ -256,7 +256,7 @@ describe('Number Tag Tests', function () {
     })
   })
 
-  it.only('pad zeros with rounding', () => {
+  it('pad zeros with rounding', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
