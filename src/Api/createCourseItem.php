@@ -97,6 +97,7 @@ if ($success){
     $pageDoenetId = include "randomId.php";
     $pageDoenetId = "_" . $pageDoenetId;
     $label = 'Untitled Activity';
+
     $jsonDefinition = '{"type":"activity","version": "0.1.0","isSinglePage": true,"content":["'.$pageDoenetId.'"],"assignedCid":null,"draftCid":null,"itemWeights": [1],"files":[]}';
 
     //We need to clone an existing item
