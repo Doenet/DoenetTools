@@ -59,6 +59,12 @@ export default class MathList extends InlineComponent {
       defaultValue: 0,
       public: true,
     };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
+    };
 
     return attributes;
   }
@@ -286,6 +292,7 @@ export default class MathList extends InlineComponent {
       isArray: true,
       entryPrefixes: ["math"],
       stateVariablesDeterminingDependencies: ["mergeMathLists", "childIndexByArrayKey"],
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       returnArraySizeDependencies: () => ({
         nComponents: {
           dependencyType: "stateVariable",
@@ -464,10 +471,23 @@ export default class MathList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
         },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         let latexs = [];
-
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
         if (dependencyValues.mathAndMathListChildren.length > 0) {
           for (let child of dependencyValues.mathAndMathListChildren) {
 
@@ -477,7 +497,7 @@ export default class MathList extends InlineComponent {
 
               if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
                 for (let i = 0; i < childValue.tree.length - 1; i++) {
-                  latexs.push(childValue.get_component(i).toLatex());
+                  latexs.push(childValue.get_component(i).toLatex(params));
                 }
               } else {
                 latexs.push(child.stateValues.latex);
@@ -492,7 +512,7 @@ export default class MathList extends InlineComponent {
             roundForDisplay({
               value: x,
               dependencyValues, usedDefault
-            }).toLatex())
+            }).toLatex(params))
 
         }
 

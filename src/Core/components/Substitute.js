@@ -56,6 +56,9 @@ export default class Substitute extends CompositeComponent {
     attributes.displaySmallAsZero = {
       leaveRaw: true
     }
+    attributes.padZeros = {
+      leaveRaw: true
+    }
 
     // attributes for text
     attributes.matchWholeWord = {
@@ -410,7 +413,7 @@ export default class Substitute extends CompositeComponent {
 
       let attributes = {};
       let foundAttribute = false;
-      for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals"]) {
+      for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
         if (attr in component.attributes) {
           attributes[attr] = component.attributes[attr];
           foundAttribute = true;

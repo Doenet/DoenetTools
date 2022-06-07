@@ -21,6 +21,9 @@ export default class NumberComponent extends InlineComponent {
       valueForTrue: 1E-14,
       valueForFalse: 0,
     };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+    }
     attributes.renderAsMath = {
       createComponentOfType: "boolean",
       createStateVariable: "renderAsMath",
@@ -86,6 +89,11 @@ export default class NumberComponent extends InlineComponent {
       hasEssential: true,
       defaultValue: 10,
       returnDependencies: () => ({
+        numberListParentDisplayDigits: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "displayDigits"
+        },
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
@@ -103,7 +111,15 @@ export default class NumberComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
+        if(dependencyValues.numberListParentDisplayDigits !== null && !usedDefault.numberListParentDisplayDigits) {
+          // having a numberlist parent that prescribed displayDigits.
+          // this overrides everything else
+          return {
+            setValue: {
+              displayDigits: dependencyValues.numberListParentDisplayDigits
+            }
+          }
+        } else if (dependencyValues.displayDigitsAttr !== null) {
           return {
             setValue: {
               displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
@@ -133,6 +149,11 @@ export default class NumberComponent extends InlineComponent {
       hasEssential: true,
       defaultValue: null,
       returnDependencies: () => ({
+        numberListParentDisplayDecimals: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "displayDecimals"
+        },
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
@@ -145,7 +166,15 @@ export default class NumberComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
+        if(dependencyValues.numberListParentDisplayDecimals !== null && !usedDefault.numberListParentDisplayDecimals) {
+          // having a numberlist parent that prescribed displayDecimals.
+          // this overrides everything else
+          return {
+            setValue: {
+              displayDecimals: dependencyValues.numberListParentDisplayDecimals
+            }
+          }
+        } else if (dependencyValues.displayDecimalsAttr !== null) {
           return {
             setValue: {
               displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
@@ -172,6 +201,11 @@ export default class NumberComponent extends InlineComponent {
       hasEssential: true,
       defaultValue: 0,
       returnDependencies: () => ({
+        numberListParentDisplaySmallAsZero: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "displaySmallAsZero"
+        },
         displaySmallAsZeroAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displaySmallAsZero",
@@ -184,7 +218,15 @@ export default class NumberComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displaySmallAsZeroAttr !== null) {
+        if(dependencyValues.numberListParentDisplaySmallAsZero !== null && !usedDefault.numberListParentDisplaySmallAsZero) {
+          // having a numberlist parent that prescribed displaySmallAsZero.
+          // this overrides everything else
+          return {
+            setValue: {
+              displaySmallAsZero: dependencyValues.numberListParentDisplaySmallAsZero
+            }
+          }
+        } else if (dependencyValues.displaySmallAsZeroAttr !== null) {
           return {
             setValue: {
               displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
@@ -200,6 +242,63 @@ export default class NumberComponent extends InlineComponent {
           };
         } else {
           return { useEssentialOrDefaultValue: { displaySmallAsZero: true } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.padZeros = {
+      public: true,
+      componentType: "boolean",
+      hasEssential: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        numberListParentPadZeros: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "numberList",
+          variableName: "padZeros"
+        },
+        padZerosAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "padZeros",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        numberMathChildren: {
+          dependencyType: "child",
+          childGroups: ["numbers", "maths"],
+          variableNames: ["padZeros"]
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if(dependencyValues.numberListParentPadZeros !== null && !usedDefault.numberListParentPadZeros) {
+          // having a numberlist parent that prescribed padZeros.
+          // this overrides everything else
+          return {
+            setValue: {
+              padZeros: dependencyValues.numberListParentPadZeros
+            }
+          }
+        } else if (dependencyValues.padZerosAttr !== null) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.padZerosAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.numberMathChildren.length === 1
+          && !(usedDefault.numberMathChildren[0] && usedDefault.numberMathChildren[0].padZeros)
+        ) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.numberMathChildren[0].stateValues.padZeros
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { padZeros: true } }
         }
 
       }
@@ -336,7 +435,7 @@ export default class NumberComponent extends InlineComponent {
       public: true,
       componentType: "number",
       hasEssential: true,
-      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       stateVariablesPrescribingAdditionalAttributes: {
         fixed: "fixed",
       },
@@ -679,6 +778,18 @@ export default class NumberComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "valueForDisplay"
         },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
         // value is just for inverse definition
         value: {
           dependencyType: "stateVariable",
@@ -686,7 +797,17 @@ export default class NumberComponent extends InlineComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { setValue: { text: dependencyValues.valueForDisplay.toString() } };
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        return { setValue: { text: dependencyValues.valueForDisplay.toString(params) } };
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues }) {
         let desiredNumber = Number(desiredStateVariableValues.text);
@@ -809,7 +930,7 @@ export default class NumberComponent extends InlineComponent {
   static adapters = [
     {
       stateVariable: "math",
-      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
     },
     "text"
   ];

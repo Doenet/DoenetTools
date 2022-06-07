@@ -54,6 +54,9 @@ export default class MathComponent extends InlineComponent {
       valueForTrue: 1E-14,
       valueForFalse: 0,
     };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+    }
     attributes.renderMode = {
       createComponentOfType: "text",
       createStateVariable: "renderMode",
@@ -128,6 +131,11 @@ export default class MathComponent extends InlineComponent {
       hasEssential: true,
       defaultValue: 10,
       returnDependencies: () => ({
+        mathListParentDisplayDigits: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "displayDigits"
+        },
         displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
@@ -145,7 +153,15 @@ export default class MathComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDigitsAttr !== null) {
+        if(dependencyValues.mathListParentDisplayDigits !== null && !usedDefault.mathListParentDisplayDigits) {
+          // having a mathlist parent that prescribed displayDigits.
+          // this overrides everything else
+          return {
+            setValue: {
+              displayDigits: dependencyValues.mathListParentDisplayDigits
+            }
+          }
+        } else if (dependencyValues.displayDigitsAttr !== null) {
           return {
             setValue: {
               displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
@@ -175,6 +191,11 @@ export default class MathComponent extends InlineComponent {
       hasEssential: true,
       defaultValue: null,
       returnDependencies: () => ({
+        mathListParentDisplayDecimals: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "displayDecimals"
+        },
         displayDecimalsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDecimals",
@@ -187,7 +208,15 @@ export default class MathComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
+        if(dependencyValues.mathListParentDisplayDecimals !== null && !usedDefault.mathListParentDisplayDecimals) {
+          // having a mathlist parent that prescribed displayDecimals.
+          // this overrides everything else
+          return {
+            setValue: {
+              displayDecimals: dependencyValues.mathListParentDisplayDecimals
+            }
+          }
+        } else if (dependencyValues.displayDecimalsAttr !== null) {
           return {
             setValue: {
               displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
@@ -214,6 +243,11 @@ export default class MathComponent extends InlineComponent {
       hasEssential: true,
       defaultValue: 0,
       returnDependencies: () => ({
+        mathListParentDisplaySmallAsZero: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "displaySmallAsZero"
+        },
         displaySmallAsZeroAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displaySmallAsZero",
@@ -226,7 +260,15 @@ export default class MathComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displaySmallAsZeroAttr !== null) {
+        if(dependencyValues.mathListParentDisplaySmallAsZero !== null && !usedDefault.mathListParentDisplaySmallAsZero) {
+          // having a mathlist parent that prescribed displaySmallAsZero.
+          // this overrides everything else
+          return {
+            setValue: {
+              displaySmallAsZero: dependencyValues.mathListParentDisplaySmallAsZero
+            }
+          }
+        } else if (dependencyValues.displaySmallAsZeroAttr !== null) {
           return {
             setValue: {
               displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
@@ -242,6 +284,63 @@ export default class MathComponent extends InlineComponent {
           };
         } else {
           return { useEssentialOrDefaultValue: { displaySmallAsZero: true } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.padZeros = {
+      public: true,
+      componentType: "boolean",
+      hasEssential: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        mathListParentPadZeros: {
+          dependencyType: "parentStateVariable",
+          parentComponentType: "mathList",
+          variableName: "padZeros"
+        },
+        padZerosAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "padZeros",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        mathChildren: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["padZeros"]
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if(dependencyValues.mathListParentPadZeros !== null && !usedDefault.mathListParentPadZeros) {
+          // having a mathlist parent that prescribed padZeros.
+          // this overrides everything else
+          return {
+            setValue: {
+              padZeros: dependencyValues.mathListParentPadZeros
+            }
+          }
+        } else if (dependencyValues.padZerosAttr !== null) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.padZerosAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.mathChildren.length === 1
+          && !(usedDefault.mathChildren[0] && usedDefault.mathChildren[0].padZeros)
+        ) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.mathChildren[0].stateValues.padZeros
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { padZeros: true } }
         }
 
       }
@@ -557,7 +656,7 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.value = {
       public: true,
       componentType: this.componentType,
-      additionalAttributeComponentsToShadow: ["unordered", "displayDigits", "displayDecimals", "displaySmallAsZero"],
+      additionalAttributeComponentsToShadow: ["unordered", "displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       stateVariablesPrescribingAdditionalAttributes: {
         fixed: "fixed",
         simplify: "simplify",
@@ -732,11 +831,33 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "valueForDisplay"
         },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         let latex;
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
         try {
-          latex = dependencyValues.valueForDisplay.toLatex();
+          latex = dependencyValues.valueForDisplay.toLatex(params);
         } catch (e) {
           latex = '\uff3f';
         }
@@ -766,16 +887,38 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "valueForDisplay"
         },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
         // value is just for inverse definition
         value: {
           dependencyType: "stateVariable",
           variableName: "value"
         },
       }),
-      definition: function ({ dependencyValues }) {
+      definition: function ({ dependencyValues, usedDefault }) {
         let text;
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
         try {
-          text = dependencyValues.valueForDisplay.toString();
+          text = dependencyValues.valueForDisplay.toString(params);
         } catch (e) {
           text = '\uff3f';
         }
@@ -1046,7 +1189,7 @@ export default class MathComponent extends InlineComponent {
   static adapters = [
     {
       stateVariable: "number",
-      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
     },
     "text",
     { componentType: "subsetOfReals", stateVariable: "value", substituteForPrimaryStateVariable: "subsetValue" }

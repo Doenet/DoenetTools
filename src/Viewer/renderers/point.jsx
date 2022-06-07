@@ -388,7 +388,7 @@ export default React.memo(function Point(props) {
 
   //Render text coordinates when outside of graph
 
-  let mathJaxify = "\\(" + me.fromAst(SVs.coordsForDisplay).toLatex() + "\\)";
+  let mathJaxify = "\\(" + SVs.coordsLatex + "\\)";
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 
 

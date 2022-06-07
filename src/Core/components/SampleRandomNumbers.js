@@ -85,6 +85,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     attributes.displaySmallAsZero = {
       leaveRaw: true
     }
+    attributes.padZeros = {
+      leaveRaw: true
+    }
 
     attributes.variantDeterminesSeed = {
       createComponentOfType: "boolean",
@@ -464,7 +467,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
-    for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals"]) {
+    for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
       if (attr in component.attributes) {
         attributesToConvert[attr] = component.attributes[attr]
       }

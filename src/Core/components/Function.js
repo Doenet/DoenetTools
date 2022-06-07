@@ -126,6 +126,9 @@ export default class Function extends InlineComponent {
       valueForTrue: 1E-14,
       valueForFalse: 0,
     };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+    }
 
     attributes.nearestPointAsCurve = {
       createComponentOfType: "boolean",
@@ -317,7 +320,7 @@ export default class Function extends InlineComponent {
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({
-        displayDecimalsAttr: {
+        displaySmallAsZeroAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displaySmallAsZero",
           variableNames: ["value"]
@@ -329,10 +332,10 @@ export default class Function extends InlineComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
+        if (dependencyValues.displaySmallAsZeroAttr !== null) {
           return {
             setValue: {
-              displaySmallAsZero: dependencyValues.displayDecimalsAttr.stateValues.value
+              displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
             }
           }
         } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
@@ -344,6 +347,44 @@ export default class Function extends InlineComponent {
         } else {
           return {
             useEssentialOrDefaultValue: { displaySmallAsZero: true }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.padZeros = {
+      public: true,
+      componentType: "boolean",
+      defaultValue: false,
+      hasEssential: true,
+      returnDependencies: () => ({
+        padZerosAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "padZeros",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["padZeros"],
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.padZerosAttr !== null) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.padZerosAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.functionChild[0].stateValues.padZeros
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { padZeros: true }
           }
         }
       }
@@ -3108,7 +3149,7 @@ export default class Function extends InlineComponent {
   {
     stateVariable: "formula",
     componentType: "math",
-    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
   }];
 
 }

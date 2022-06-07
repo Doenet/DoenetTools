@@ -209,6 +209,44 @@ export default class MathOperator extends MathComponent {
       }
     }
 
+    stateVariableDefinitions.padZeros = {
+      public: true,
+      componentType: "boolean",
+      hasEssential: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        padZerosAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "padZeros",
+          variableNames: ["value"]
+        },
+        mathLikeChildren: {
+          dependencyType: "child",
+          childGroups: ["maths", "numbers", "mathLists", "numberLists"],
+          variableNames: ["padZeros"]
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.padZerosAttr !== null) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.padZerosAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.mathLikeChildren.length === 1
+          && !(usedDefault.mathLikeChildren[0] && usedDefault.mathLikeChildren[0].padZeros)
+        ) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.mathLikeChildren[0].stateValues.padZeros
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { padZeros: true } }
+        }
+
+      }
+    }
 
     stateVariableDefinitions.isNumericOperator = {
       returnDependencies: () => ({
