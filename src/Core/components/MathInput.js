@@ -105,11 +105,7 @@ export default class MathInput extends Input {
       componentType: "math",
       hasEssential: true,
       shadowVariable: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
-      },
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",

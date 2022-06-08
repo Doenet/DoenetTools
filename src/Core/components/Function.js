@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { normalizeMathExpression, returnNVariables } from '../utils/math';
+import { normalizeMathExpression, returnNVariables, roundForDisplay } from '../utils/math';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 import { returnInterpolatedFunction, returnNumericalFunctionFromFormula, returnReturnDerivativesOfInterpolatedFunction, returnSymbolicFunctionFromFormula } from '../utils/function';
 
@@ -235,7 +235,7 @@ export default class Function extends InlineComponent {
       defaultValue: 10,
       hasEssential: true,
       returnDependencies: () => ({
-        displayDecimalsAttr: {
+        displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
           variableNames: ["value"]
@@ -252,10 +252,10 @@ export default class Function extends InlineComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
+        if (dependencyValues.displayDigitsAttr !== null) {
           return {
             setValue: {
-              displayDigits: dependencyValues.displayDecimalsAttr.stateValues.value
+              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
             }
           }
         } else if (dependencyValues.displayDecimalsAttr === null
@@ -836,6 +836,7 @@ export default class Function extends InlineComponent {
       componentType: "math",
       defaultValue: me.fromAst(0),
       hasEssential: true,
+      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       returnDependencies: () => ({
         unnormalizedFormula: {
           dependencyType: "stateVariable",
@@ -1646,9 +1647,39 @@ export default class Function extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "formula"
         },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
       }),
-      definition: function ({ dependencyValues }) {
-        return { setValue: { latex: dependencyValues.formula.toLatex() } };
+      definition: function ({ dependencyValues, usedDefault }) {
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        let latex = roundForDisplay({
+          value: dependencyValues.formula,
+          dependencyValues, usedDefault
+        }).toLatex(params);
+        return { setValue: { latex } };
       }
     }
 

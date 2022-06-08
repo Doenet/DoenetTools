@@ -3129,17 +3129,49 @@ export default class Core {
             variableName: redefineDependencies.propVariable,
           },
         });
+
+        let setDefault = false;
+        if (targetComponent.state[redefineDependencies.propVariable].defaultValue !== undefined) {
+          stateDef.defaultValue = targetComponent.state[redefineDependencies.propVariable].defaultValue;
+          if (stateDef.set) {
+            stateDef.defaultValue = stateDef.set(stateDef.defaultValue);
+          }
+          stateDef.hasEssential = true;
+          setDefault = true;
+        }
+
         if (stateDef.set) {
-          stateDef.definition = function ({ dependencyValues }) {
+          stateDef.definition = function ({ dependencyValues, usedDefault }) {
+            let valueFromTarget = stateDef.set(dependencyValues.targetVariable);
+            if (setDefault && usedDefault.targetVariable
+              && deepCompare(valueFromTarget, stateDef.defaultValue)
+            ) {
+              return {
+                useEssentialOrDefaultValue: {
+                  [primaryStateVariableForDefinition]: true
+                },
+                alwaysShadow: [primaryStateVariableForDefinition],
+              }
+            }
             return {
               setValue: {
-                [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.targetVariable),
+                [primaryStateVariableForDefinition]: valueFromTarget,
               },
               alwaysShadow: [primaryStateVariableForDefinition],
             };
           };
         } else {
-          stateDef.definition = function ({ dependencyValues }) {
+          stateDef.definition = function ({ dependencyValues, usedDefault }) {
+            if (setDefault && usedDefault.targetVariable
+              && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
+            ) {
+              return {
+                useEssentialOrDefaultValue: {
+                  [primaryStateVariableForDefinition]: true
+                },
+                alwaysShadow: [primaryStateVariableForDefinition],
+              }
+            }
             return {
               setValue: {
                 [primaryStateVariableForDefinition]: dependencyValues.targetVariable,

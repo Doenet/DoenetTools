@@ -192,6 +192,7 @@ export default class MathComponent extends InlineComponent {
         } else if (
           !haveListParentWithDisplayDecimals
           && dependencyValues.displayDigitsAttr !== null
+          && !usedDefault.displayDigitsAttr
         ) {
           // have to check to exclude case where have displayDecimals from mathList parent
           // because otherwise a non-default displayDigits will win over displayDecimals
@@ -202,7 +203,7 @@ export default class MathComponent extends InlineComponent {
           }
         } else if (
           !haveListParentWithDisplayDecimals
-          && dependencyValues.displayDecimalsAttr === null
+          && (dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr)
           && dependencyValues.mathChildren.length === 1
           && !(usedDefault.mathChildren[0] && usedDefault.mathChildren[0].displayDigits)
         ) {
@@ -264,7 +265,7 @@ export default class MathComponent extends InlineComponent {
               displayDecimals: dependencyValues.numberListParentDisplayDecimals
             }
           }
-        } else if (dependencyValues.displayDecimalsAttr !== null) {
+        } else if (dependencyValues.displayDecimalsAttr !== null && !usedDefault.displayDecimalsAttr) {
           return {
             setValue: {
               displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
@@ -329,7 +330,7 @@ export default class MathComponent extends InlineComponent {
               displaySmallAsZero: dependencyValues.numberListParentDisplaySmallAsZero
             }
           }
-        } else if (dependencyValues.displaySmallAsZeroAttr !== null) {
+        } else if (dependencyValues.displaySmallAsZeroAttr !== null && !usedDefault.displaySmallAsZeroAttr) {
           return {
             setValue: {
               displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
@@ -399,7 +400,7 @@ export default class MathComponent extends InlineComponent {
               padZeros: dependencyValues.numberListParentPadZeros
             }
           }
-        } else if (dependencyValues.padZerosAttr !== null) {
+        } else if (dependencyValues.padZerosAttr !== null && !usedDefault.padZerosAttr) {
           return {
             setValue: {
               padZeros: dependencyValues.padZerosAttr.stateValues.value

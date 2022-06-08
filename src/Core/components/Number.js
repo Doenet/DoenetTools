@@ -150,6 +150,7 @@ export default class NumberComponent extends InlineComponent {
         } else if (
           !haveListParentWithDisplayDecimals
           && dependencyValues.displayDigitsAttr !== null
+          && !usedDefault.displayDigitsAttr
         ) {
           // have to check to exclude case where have displayDecimals list parent
           // because otherwise a non-default displayDigits will win over displayDecimals
@@ -160,7 +161,7 @@ export default class NumberComponent extends InlineComponent {
           }
         } else if (
           !haveListParentWithDisplayDecimals
-          && dependencyValues.displayDecimalsAttr === null
+          && (dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr)
           && dependencyValues.numberMathChildren.length === 1
           && !(usedDefault.numberMathChildren[0] && usedDefault.numberMathChildren[0].displayDigits)
         ) {
@@ -222,7 +223,7 @@ export default class NumberComponent extends InlineComponent {
               displayDecimals: dependencyValues.mathListParentDisplayDecimals
             }
           }
-        } else if (dependencyValues.displayDecimalsAttr !== null) {
+        } else if (dependencyValues.displayDecimalsAttr !== null && !usedDefault.displayDecimalsAttr) {
           return {
             setValue: {
               displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
@@ -287,7 +288,7 @@ export default class NumberComponent extends InlineComponent {
               displaySmallAsZero: dependencyValues.mathListParentDisplaySmallAsZero
             }
           }
-        } else if (dependencyValues.displaySmallAsZeroAttr !== null) {
+        } else if (dependencyValues.displaySmallAsZeroAttr !== null && !usedDefault.displaySmallAsZeroAttr) {
           return {
             setValue: {
               displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
@@ -357,7 +358,7 @@ export default class NumberComponent extends InlineComponent {
               padZeros: dependencyValues.mathListParentPadZeros
             }
           }
-        } else if (dependencyValues.padZerosAttr !== null) {
+        } else if (dependencyValues.padZerosAttr !== null && !usedDefault.padZerosAttr) {
           return {
             setValue: {
               padZeros: dependencyValues.padZerosAttr.stateValues.value
@@ -716,9 +717,12 @@ export default class NumberComponent extends InlineComponent {
       },
       set: function (value) {
         // this function is called when
-        // - definition is overridden by a ref prop
+        // - definition is overridden by a copy prop
         // - when processing new state variable values
         //   (which could be from outside sources)
+        if (value === null) {
+          return NaN;
+        }
         let number = Number(value);
         if (Number.isNaN(number)) {
           try {
