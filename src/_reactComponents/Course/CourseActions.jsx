@@ -1449,7 +1449,6 @@ export const useCourse = (courseId) => {
   });
 
   function updateOrder({content,needleDoenetId,changesObj}){
-    console.log(">>needleDoenetId",needleDoenetId)
     let nextContent = [...content];
 
     for (let [i,item] of Object.entries(content)){
@@ -2099,6 +2098,7 @@ export const useCourse = (courseId) => {
             failureCallback(err);
           }
         }
+
         if (sourcePagesAndOrdersToMove.length > 0){
           let destinationType = destinationContainingObj.type;
           let destinationDoenetId = destinationContainingObj.doenetId;
@@ -2119,10 +2119,11 @@ export const useCourse = (courseId) => {
           let sourceJSONs = []
           let originalPageDoenetIds = []
           let previousDoenetId;
+          //Update source
           for (let cutObj of sourcePagesAndOrdersToMove){
             let sourceContainingDoenetId = cutObj.containingDoenetId
             let indexOfPriorEntry = sourceDoenetIds.indexOf(sourceContainingDoenetId)
-            //if already in in sourceDoenetIds then update that index
+            //if already is in sourceDoenetIds then update that index
             if (indexOfPriorEntry == -1){
               originalPageDoenetIds.push([cutObj.doenetId]);
               
@@ -2163,6 +2164,7 @@ export const useCourse = (courseId) => {
                 //if source is destination delete page from destination
                 if (destinationContainingObj.doenetId == cutObj.containingDoenetId){
                   destinationJSON = deletePageFromActivity({content:destinationJSON,needleDoenetId:cutObj.doenetId})
+                  destinationContainingObj.content = destinationJSON;
                 }
               }else if (containingObjtype == 'bank'){
                 //Remove from Collection
@@ -2177,7 +2179,10 @@ export const useCourse = (courseId) => {
               }
               sourceJSONs[indexOfPriorEntry] = updatedSourceItemJSON
             }
-            //Add to destination
+          }
+
+          //Add to destination
+          for (let cutObj of sourcePagesAndOrdersToMove){
             if (destinationType == 'bank'){
               destinationJSON.push(cutObj.doenetId)
               //find last item in the bank
@@ -2187,6 +2192,7 @@ export const useCourse = (courseId) => {
                 orderIdOrActivityIdToAddTo = singleSelectedObj.parentDoenetId;
               }
               let previousPreviousDoenetId = previousDoenetId;
+                
                 ({content:destinationJSON,previousDoenetId} = addPageToActivity({
                 activityOrOrderObj:destinationContainingObj,
                 needleOrderOrActivityId:orderIdOrActivityIdToAddTo,
