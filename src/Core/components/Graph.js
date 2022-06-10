@@ -226,7 +226,9 @@ export default class Graph extends BlockComponent {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
       defaultValue: -10,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -319,7 +321,9 @@ export default class Graph extends BlockComponent {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
       defaultValue: -10,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -424,7 +428,9 @@ export default class Graph extends BlockComponent {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
       defaultValue: -10,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -517,7 +523,9 @@ export default class Graph extends BlockComponent {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
       defaultValue: -10,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -622,7 +630,9 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.xscale = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         xmin: {
           dependencyType: "stateVariable",
@@ -644,7 +654,9 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.yscale = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         ymin: {
           dependencyType: "stateVariable",

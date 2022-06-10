@@ -384,11 +384,11 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
   if (typeof value !== "object") {
     // typically this would mean value is a string.
     // However, if had an attribute with no value, would get true.
-    // Also, when get stateVariablesPrescribingAdditionalAttributes,
+    // Also, when get addAttributeComponentsShadowingStateVariables,
     // it is possible their values are not strings
     value = { rawString: value.toString() }
   } else if (value === null) {
-    // could get null from stateVariablesPrescribingAdditionalAttributes
+    // could get null from addAttributeComponentsShadowingStateVariables
     value = { rawString: "" }
   }
 

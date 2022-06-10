@@ -403,7 +403,9 @@ export default class Angle extends GraphicalComponent {
 
     stateVariableDefinitions.radians = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       forRenderer: true,
       additionalStateVariablesDefined: [{
         variableName: "swapPointOrder",
@@ -505,7 +507,9 @@ export default class Angle extends GraphicalComponent {
 
     stateVariableDefinitions.degrees = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         radians: {

@@ -1500,11 +1500,11 @@ describe('Spreadsheet Tag Tests', function () {
         doenetML: `
   <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="cellC1" target="_spreadsheet1" componentType="cell" />
-    <copy prop="cellE1" target="_spreadsheet1" componentType="cell" />
+    <copy prop="cellC1" target="_spreadsheet1" createComponentOfType="cell" />
+    <copy prop="cellE1" target="_spreadsheet1" createComponentOfType="cell" />
     <cell>first</cell>
-    <copy prop="cellB1" target="_spreadsheet1" componentType="cell" />
-    <copy prop="cellC1" target="_spreadsheet1" componentType="cell" />
+    <copy prop="cellB1" target="_spreadsheet1" createComponentOfType="cell" />
+    <copy prop="cellC1" target="_spreadsheet1" createComponentOfType="cell" />
 
     <row rownum="2">
       <copy colnum="2" prop="cellC2" target="_spreadsheet1" />

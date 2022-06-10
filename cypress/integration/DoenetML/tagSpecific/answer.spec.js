@@ -22,7 +22,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer>x+y</answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='math' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -170,7 +170,7 @@ describe('Answer Tag Tests', function () {
   <math name="xy" hide>x+y</math>
   <p><answer>$xy</answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='math' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -321,7 +321,7 @@ describe('Answer Tag Tests', function () {
   <setup><math name="x">x</math><math name="y">y</math></setup>
   <p><answer>$x+$y</answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='math' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -467,7 +467,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer type="text">hello there</answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='text' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
 
   `}, "*");
@@ -586,7 +586,7 @@ describe('Answer Tag Tests', function () {
   <text name='h'>hello there</text>
   <p><answer type="text">$h</answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='text' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
 
   `}, "*");
@@ -704,7 +704,7 @@ describe('Answer Tag Tests', function () {
   <setup><text name="h">hello</text></setup>
   <p><answer type="text">$h there</answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='text' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
 
   `}, "*");
@@ -822,7 +822,7 @@ describe('Answer Tag Tests', function () {
   <setup><text name="h">hello</text><text name="t">there</text></setup>
   <p><answer type="text">$h $t</answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='text' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
 
   `}, "*");
@@ -940,7 +940,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <p><answer type="text">hello there</answer></p>
-  <p>Submitted responses: <copy prop="submittedResponses" target="_answer1" componentType="text" assignNames="sr1" /></p>
+  <p>Submitted responses: <copy prop="submittedResponses" target="_answer1" createComponentOfType="text" assignNames="sr1" /></p>
 
   `}, "*");
     });
@@ -1230,7 +1230,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer><award><math>x+y</math></award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType="math" assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="math" assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -1372,7 +1372,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer><award>x+y</award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType="math" assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="math" assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -1515,7 +1515,7 @@ describe('Answer Tag Tests', function () {
   <math name="xy" hide>x+y</math>
   <p><answer><award>$xy</award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType="math" assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="math" assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -1658,7 +1658,7 @@ describe('Answer Tag Tests', function () {
   <setup><math name="x">x</math><math name="y">y</math></setup>
   <p><answer><award>$x+$y</award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType="math" assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="math" assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -1800,7 +1800,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer><award><math>x+y-3+<copy target="n" /></math></award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType="math" assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="math" assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
 
   <copy name="n2" target="n3" />
@@ -1949,7 +1949,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer matchPartial><award><mathList>x+y z</mathList></award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType="math" assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="math" assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -2150,7 +2150,7 @@ describe('Answer Tag Tests', function () {
       <mathList isResponse>$mi1 $mi2</mathList> = <mathList>x+y z</mathList>
     </when></award></answer></p>
   <p>Current response: <copy prop="currentResponses" target="_answer1" assignNames="cr1 cr2" /></p>
-  <p>Submitted response: <copy prop="submittedResponses" target="_answer1" componentType="math" nComponents="2" assignNames="sr1 sr2" /></p>
+  <p>Submitted response: <copy prop="submittedResponses" target="_answer1" createComponentOfType="math" nComponents="2" assignNames="sr1 sr2" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -2405,7 +2405,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer type="text"><award><text>  hello there </text></award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='text' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -2521,7 +2521,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer type="text"><award>  hello there </award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='text' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -2638,7 +2638,7 @@ describe('Answer Tag Tests', function () {
   <setup><text name="h">hello</text></setup>
   <p><answer type="text"><award>$h there</award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='text' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -2754,7 +2754,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer type="text"><award><text><copy target="n" /></text></award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType="text" assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="text" assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
 
   <copy name="n2" target="n3" />
@@ -2880,7 +2880,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer type="text"><award matchPartial><textlist>  hello there </textlist></award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='text' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -3444,7 +3444,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer><award><math>x+y</math></award><award credit="0.5"><math>x</math></award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType="math" assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="math" assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -3641,7 +3641,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer><award><math><copy target="rightAnswer" /></math></award><award credit="0.5"><math>x-3+<copy target="n" /></math></award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='math' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
 
   <math name="rightAnswer">x+y-3+<copy target="n" /></math>
@@ -3844,7 +3844,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer type="text"><award><text>hello there</text></award><award credit="0.5"><text>bye</text></award></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='text' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   `}, "*");
     });
@@ -4004,7 +4004,7 @@ describe('Answer Tag Tests', function () {
     <award credit="0.5" newNamespace><math>x</math></award>
   </answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType='math' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
   </section>
 
@@ -4209,9 +4209,9 @@ describe('Answer Tag Tests', function () {
   <p>First current response again: <copy assignNames="cr1" prop="currentResponse1" target="_answer1" /></p>
   <p>Second current response: <copy assignNames="cr2" prop="currentResponse2" target="_answer1" /></p>
   <p>Both current responses together: <copy assignNames="crsa crsb" prop="currentResponses" target="_answer1" /></p>
-  <p>First submitted response: <copy assignNames="sr" prop="submittedResponse" target="_answer1" componentType="math" /></p>
-  <p>First submitted response again: <copy assignNames="sr1" prop="submittedResponse1" target="_answer1" componentType="math" /></p>
-  <p>Second submitted response: <copy assignNames="sr2" prop="submittedResponse2" target="_answer1" componentType="math" /></p>
+  <p>First submitted response: <copy assignNames="sr" prop="submittedResponse" target="_answer1" createComponentOfType="math" /></p>
+  <p>First submitted response again: <copy assignNames="sr1" prop="submittedResponse1" target="_answer1" createComponentOfType="math" /></p>
+  <p>Second submitted response: <copy assignNames="sr2" prop="submittedResponse2" target="_answer1" createComponentOfType="math" /></p>
   <p>Both submitted responses together: <copy assignNames="srsa srsb" prop="submittedResponses" target="_answer1" /></p>
   <p>Credit for submitted responses: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
   `}, "*");
@@ -4774,9 +4774,9 @@ describe('Answer Tag Tests', function () {
   <p>First current response again: <copy assignNames="cr1" prop="currentResponse1" target="_answer1" /></p>
   <p>Second current response: <copy assignNames="cr2" prop="currentResponse2" target="_answer1" /></p>
   <p>Both current responses together: <copy assignNames="crsa crsb" prop="currentResponses" target="_answer1" /></p>
-  <p>First submitted response: <copy assignNames="sr" prop="submittedResponse" target="_answer1" componentType="math" /></p>
-  <p>First submitted response again: <copy assignNames="sr1" prop="submittedResponse1" target="_answer1" componentType="math" /></p>
-  <p>Second submitted response: <copy assignNames="sr2" prop="submittedResponse2" target="_answer1" componentType="math" /></p>
+  <p>First submitted response: <copy assignNames="sr" prop="submittedResponse" target="_answer1" createComponentOfType="math" /></p>
+  <p>First submitted response again: <copy assignNames="sr1" prop="submittedResponse1" target="_answer1" createComponentOfType="math" /></p>
+  <p>Second submitted response: <copy assignNames="sr2" prop="submittedResponse2" target="_answer1" createComponentOfType="math" /></p>
   <p>Both submitted responses together: <copy assignNames="srsa srsb" prop="submittedResponses" target="_answer1" /></p>
   <p>Credit for submitted responses: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
   `}, "*");
@@ -5292,9 +5292,9 @@ describe('Answer Tag Tests', function () {
   <p>First current response again: <copy assignNames="cr1" prop="currentResponse1" target="_answer1" /></p>
   <p>Second current response: <copy assignNames="cr2" prop="currentResponse2" target="_answer1" /></p>
   <p>Both current responses together: <copy assignNames="crsa crsb" prop="currentResponses" target="_answer1" /></p>
-  <p>First submitted response: <copy assignNames="sr" prop="submittedResponse" target="_answer1" componentType="text" /></p>
-  <p>First submitted response again: <copy assignNames="sr1" prop="submittedResponse1" target="_answer1" componentType="text" /></p>
-  <p>Second submitted response: <copy assignNames="sr2" prop="submittedResponse2" target="_answer1" componentType="text" /></p>
+  <p>First submitted response: <copy assignNames="sr" prop="submittedResponse" target="_answer1" createComponentOfType="text" /></p>
+  <p>First submitted response again: <copy assignNames="sr1" prop="submittedResponse1" target="_answer1" createComponentOfType="text" /></p>
+  <p>Second submitted response: <copy assignNames="sr2" prop="submittedResponse2" target="_answer1" createComponentOfType="text" /></p>
   <p>Both submitted responses together: <copy assignNames="srsa srsb" prop="submittedResponses" target="_answer1" /></p>
   <p>Credit for submitted responses: <copy assignNames="ca" prop="creditAchieved" target="_answer1" /></p>
   `}, "*");
@@ -6031,7 +6031,7 @@ describe('Answer Tag Tests', function () {
         <p>Enter <m>x^$n</m>: <answer><award><math>x^$n</math></award></answer></p>
         <p>Credit achieved: <copy prop="creditAchieved" target="_answer1" assignNames="ca" /></p>
         <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr" /></p>
-        <p>Submitted response: <copy prop="submittedResponse" target="_answer1" componentType="math" assignNames="sr" /></p>
+        <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="math" assignNames="sr" /></p>
       </template>
       <sources alias="n"><sequence from="1" to="3" /></sources>
     </map>
@@ -7721,7 +7721,7 @@ describe('Answer Tag Tests', function () {
   </choiceinput>
   </answer>.</p>
   <p>Current response: <text name="cr"><copy prop="currentResponse" target="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" target="_answer1" componentType="text" /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" target="_answer1" createComponentOfType="text" /></text></p>
   <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" target="_answer1" /></number></p>
   `}, "*");
     });
@@ -7951,7 +7951,7 @@ describe('Answer Tag Tests', function () {
   </choiceinput>
   </answer>.</p>
   <p>Current response: <text name="cr"><copy prop="currentResponse" target="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" target="_answer1" componentType="text" /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" target="_answer1" createComponentOfType="text" /></text></p>
   <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" target="_answer1" /></number></p>
   `}, "*");
     });
@@ -8442,7 +8442,7 @@ describe('Answer Tag Tests', function () {
   </choiceinput>
   </answer>
   <p>Current response: <text name="cr"><copy prop="currentResponse" target="_answer1" /></text></p>
-  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" target="_answer1" componentType="text" /></text></p>
+  <p>Submitted response: <text name="sr"><copy prop="submittedResponse" target="_answer1" createComponentOfType="text" /></text></p>
   <p>Credit for submitted response: <number name="credit"><copy prop="creditAchieved" target="_answer1" /></number></p>
   `}, "*");
     });
@@ -10287,10 +10287,10 @@ describe('Answer Tag Tests', function () {
           </when></award>
         </answer>
         
-        <p>Your current math answer is <copy assignNames="cr1" prop="currentResponse" target="a" componentType="math" /></p>
-        <p>Your current text answer is <copy assignNames="cr2" prop="currentResponse2" target="a" componentType="text" /></p>
-        <p>Your submitted math answer is <copy assignNames="sr1" prop="submittedResponse" target="a" componentType="math" /></p>
-        <p>Your submitted text answer is <copy assignNames="sr2" prop="submittedResponse2" target="a" componentType="text" /></p>
+        <p>Your current math answer is <copy assignNames="cr1" prop="currentResponse" target="a" createComponentOfType="math" /></p>
+        <p>Your current text answer is <copy assignNames="cr2" prop="currentResponse2" target="a" createComponentOfType="text" /></p>
+        <p>Your submitted math answer is <copy assignNames="sr1" prop="submittedResponse" target="a" createComponentOfType="math" /></p>
+        <p>Your submitted text answer is <copy assignNames="sr2" prop="submittedResponse2" target="a" createComponentOfType="text" /></p>
         <p>Credit for your answers <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
  `}, "*");
     });
@@ -10397,10 +10397,10 @@ describe('Answer Tag Tests', function () {
           </when></award>
         </answer>
         
-        <p>Your current math answer is <copy assignNames="cr1" prop="currentResponse" target="a" componentType="math" /></p>
-        <p>Your current text answer is <copy assignNames="cr2" prop="currentResponse2" target="a" componentType="text" /></p>
-        <p>Your submitted math answer is <copy assignNames="sr1" prop="submittedResponse" target="a" componentType="math" /></p>
-        <p>Your submitted text answer is <copy assignNames="sr2" prop="submittedResponse2" target="a" componentType="text" /></p>
+        <p>Your current math answer is <copy assignNames="cr1" prop="currentResponse" target="a" createComponentOfType="math" /></p>
+        <p>Your current text answer is <copy assignNames="cr2" prop="currentResponse2" target="a" createComponentOfType="text" /></p>
+        <p>Your submitted math answer is <copy assignNames="sr1" prop="submittedResponse" target="a" createComponentOfType="math" /></p>
+        <p>Your submitted text answer is <copy assignNames="sr2" prop="submittedResponse2" target="a" createComponentOfType="text" /></p>
         <p>Credit for your answers <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
  `}, "*");
     });
@@ -10511,8 +10511,8 @@ describe('Answer Tag Tests', function () {
           </when></award>
         </answer>
         
-        <p>Your current answer: <copy assignNames="cr" prop="currentResponse" target="a" componentType="math" /></p>
-        <p>Your submitted answer: <copy assignNames="sr" prop="submittedResponse" target="a" componentType="math" /></p>
+        <p>Your current answer: <copy assignNames="cr" prop="currentResponse" target="a" createComponentOfType="math" /></p>
+        <p>Your submitted answer: <copy assignNames="sr" prop="submittedResponse" target="a" createComponentOfType="math" /></p>
         <p>Credit for your answer <copy assignNames="ca" prop="creditAchieved" target="a"/></p>
  `}, "*");
     });
@@ -10682,8 +10682,8 @@ describe('Answer Tag Tests', function () {
          <award targetsAreResponses="val"><when>$val > $min</when></award>
         </answer>
         
-        <p>Current response <copy assignNames="cr" prop="currentResponses" target="a" componentType="math" /></p>
-        <p>Submitted response <copy assignNames="sr" prop="submittedResponses" target="a" componentType="math" /></p>
+        <p>Current response <copy assignNames="cr" prop="currentResponses" target="a" createComponentOfType="math" /></p>
+        <p>Submitted response <copy assignNames="sr" prop="submittedResponses" target="a" createComponentOfType="math" /></p>
         <p>Credit: <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
  `}, "*");
     });
@@ -10759,8 +10759,8 @@ describe('Answer Tag Tests', function () {
          <award><when>$(QQ{prop='x'}) > $(PP{prop='x'}) and $(QQ{prop='y'}) > $(PP{prop='y'})</when></award>
         </answer>
         
-        <p>Current responses <aslist><copy assignNames="cr1 cr2" prop="currentResponses" target="a" componentType="math" nComponents="2" /></aslist></p>
-        <p>Submitted responses <aslist><copy assignNames="sr1 sr2" prop="submittedResponses" target="a" componentType="math" nComponents="2" /></aslist></p>
+        <p>Current responses <aslist><copy assignNames="cr1 cr2" prop="currentResponses" target="a" createComponentOfType="math" nComponents="2" /></aslist></p>
+        <p>Submitted responses <aslist><copy assignNames="sr1 sr2" prop="submittedResponses" target="a" createComponentOfType="math" nComponents="2" /></aslist></p>
         <p>Credit: <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
  `}, "*");
     });
@@ -11069,8 +11069,8 @@ describe('Answer Tag Tests', function () {
          <award targetsAreResponses="val"><when>$val > 3</when></award>
         </answer>
         
-        <p>Current response: <copy assignNames="cr" prop="currentResponses" target="a" componentType="math" /></p>
-        <p>Submitted response: <copy assignNames="sr" prop="submittedResponses" target="a" componentType="math" /></p>
+        <p>Current response: <copy assignNames="cr" prop="currentResponses" target="a" createComponentOfType="math" /></p>
+        <p>Submitted response: <copy assignNames="sr" prop="submittedResponses" target="a" createComponentOfType="math" /></p>
         <p>Credit: <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
  `}, "*");
     });
@@ -11369,8 +11369,8 @@ describe('Answer Tag Tests', function () {
 
         <copy prop="feedbacks" target="a" assignNames="fb1 fb2 fb3 fb4 fb5" />
 
-        <p>Current responses: <aslist><copy prop="currentResponses" target="a" componentType="math" nComponents="2" assignNames="cr1 cr2" /></aslist></p>
-        <p>Submitted response: <aslist><copy prop="submittedResponses" target="a" componentType="math" nComponents="2" assignNames="sr1 sr2" /></aslist></p>
+        <p>Current responses: <aslist><copy prop="currentResponses" target="a" createComponentOfType="math" nComponents="2" assignNames="cr1 cr2" /></aslist></p>
+        <p>Submitted response: <aslist><copy prop="submittedResponses" target="a" createComponentOfType="math" nComponents="2" assignNames="sr1 sr2" /></aslist></p>
         <p>Credit: <copy assignNames="ca" prop="creditAchieved" target="a" /></p>
  `}, "*");
     });
@@ -13641,12 +13641,12 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer name="ans1">x+y</answer></p>
   <p>Current response: <copy prop="currentResponse" target="ans1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="ans1" componentType='math' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans1" assignNames="ca1" /></p>
 
   <p><copy target="ans1" assignNames="ans2" /></p>
   <p>Current response: <copy prop="currentResponse" target="ans2" assignNames="cr2" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="ans2" componentType='math' assignNames="sr2" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans2" createComponentOfType='math' assignNames="sr2" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans2" assignNames="ca2" /></p>
 
 
@@ -13808,12 +13808,12 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p><answer name="ans1">x+y</answer></p>
   <p>Current response: <copy prop="currentResponse" target="ans1" assignNames="cr1" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="ans1" componentType='math' assignNames="sr1" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans1" assignNames="ca1" /></p>
 
   <p><copy target="ans1" assignNames="ans2" link='false' /></p>
   <p>Current response: <copy prop="currentResponse" target="ans2" assignNames="cr2" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="ans2" componentType='math' assignNames="sr2" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans2" createComponentOfType='math' assignNames="sr2" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans2" assignNames="ca2" /></p>
 
 
@@ -14082,7 +14082,7 @@ describe('Answer Tag Tests', function () {
     <award credit="0.5" nSignErrorsMatched="1">x^2-2x+3</award>
   </answer>
   <p>Current response: <copy prop="currentResponse" target="ans" assignNames="cr" /></p>
-  <p>Submitted response: <copy prop="submittedResponse" target="ans" componentType='math' assignNames="sr" /></p>
+  <p>Submitted response: <copy prop="submittedResponse" target="ans" createComponentOfType='math' assignNames="sr" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans" assignNames="ca" /></p>
 
   `}, "*");

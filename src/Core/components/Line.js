@@ -85,7 +85,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -116,7 +118,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["equationIdentity"],
       returnDependencies: function ({ stateValues }) {
         if (stateValues.equationIdentity === null) {
@@ -239,7 +243,9 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.variables = {
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
@@ -391,20 +397,22 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.points = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "pointX") {
+            return [];
+          } else {
+            // point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["pointX", "point"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "pointX") {
-          return [];
-        } else {
-          // point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "pointX") {
           // pointX1_2 is the 2nd component of the first point
@@ -894,24 +902,32 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.equation = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["equationIdentity"],
       additionalStateVariablesDefined: [
         {
           variableName: "coeff0",
           public: true,
-          componentType: "math",
+          shadowingInstructions: {
+            createComponentOfType: "math",
+          },
         },
         {
           variableName: "coeffvar1",
           public: true,
-          componentType: "math",
+          shadowingInstructions: {
+            createComponentOfType: "math",
+          },
         },
         {
           variableName: "coeffvar2",
           public: true,
-          componentType: "math",
+          shadowingInstructions: {
+            createComponentOfType: "math",
+          },
         }
       ],
       returnDependencies: function ({ stateValues }) {
@@ -1223,7 +1239,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.slope = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         coeffvar1: {
           dependencyType: "stateVariable",
@@ -1246,7 +1264,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.xintercept = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         coeff0: {
           dependencyType: "stateVariable",
@@ -1271,7 +1291,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.yintercept = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         coeff0: {
           dependencyType: "stateVariable",

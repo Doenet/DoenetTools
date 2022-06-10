@@ -40,7 +40,9 @@ export default class Ray extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -499,7 +501,9 @@ export default class Ray extends GraphicalComponent {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         basedOnThrough: {
           dependencyType: "stateVariable",
@@ -579,21 +583,23 @@ export default class Ray extends GraphicalComponent {
 
     stateVariableDefinitions.direction = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "directionX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <vector> and <xs>
+            return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["directionX"],
       hasEssential: true,
       essentialVarName: "direction2", // since "direction" used for directionShadow
       set: convertValueToMathExpression,
-      returnWrappingComponents(prefix) {
-        if (prefix === "directionX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <vector> and <xs>
-          return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: ["basedOnDirection", "basedOnThrough"],
       returnArraySizeDependencies: () => ({
         nDimDirection: {
@@ -778,19 +784,21 @@ export default class Ray extends GraphicalComponent {
 
     stateVariableDefinitions.through = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "throughX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["throughX"],
       set: convertValueToMathExpression,
-      returnWrappingComponents(prefix) {
-        if (prefix === "throughX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: ["basedOnThrough"],
       returnArraySizeDependencies: () => ({
         nDimThrough: {
@@ -959,22 +967,24 @@ export default class Ray extends GraphicalComponent {
 
     stateVariableDefinitions.endpoint = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "endpointX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["endpointX"],
       hasEssential: true,
       defaultValueByArrayKey: () => me.fromAst(0),
       essentialVarName: "endpoint2",  // since endpointShadow uses "endpoint"
       set: convertValueToMathExpression,
-      returnWrappingComponents(prefix) {
-        if (prefix === "endpointX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: ["basedOnEndpoint", "basedOnThrough", "basedOnDirection"],
       returnArraySizeDependencies: () => ({
         nDimEndpoint: {

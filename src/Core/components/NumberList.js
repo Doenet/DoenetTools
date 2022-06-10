@@ -126,7 +126,9 @@ export default class NumberList extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies: () => ({
         maximumNumber: {
@@ -192,11 +194,13 @@ export default class NumberList extends InlineComponent {
 
     stateVariableDefinitions.numbers = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       isArray: true,
       entryPrefixes: ["number"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
-      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       returnArraySizeDependencies: () => ({
         nComponents: {
           dependencyType: "stateVariable",
@@ -323,7 +327,9 @@ export default class NumberList extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: ["texts"],
       returnDependencies: () => ({
         numberAndNumberListChildren: {

@@ -2240,7 +2240,7 @@ export class DependencyHandler {
             inheritedComponentType: component.componentType,
             baseComponentType: "_composite"
           })
-          if (isComposite && !(component.attributes.componentType?.primitive)) {
+          if (isComposite && !(component.attributes.createComponentOfType?.primitive)) {
             if (stateVariable === "readyToExpandWhenResolved") {
               compositesWithReadyToExpandWhenResolved.push(componentName)
             } else if (stateVariable === component.constructor.stateVariableToEvaluateAfterReplacements) {
@@ -3321,7 +3321,7 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
 
             if (stateVarObj.isArray) {
               // if array, use componentType from wrapping components, if exist
-              if (stateVarObj.wrappingComponents && stateVarObj.wrappingComponents.length > 0) {
+              if (stateVarObj.wrappingComponents?.length > 0) {
                 let wrapCT = stateVarObj.wrappingComponents[stateVarObj.wrappingComponents.length - 1][0];
                 if (typeof wrapCT === "object") {
                   wrapCT = wrapCT.componentType;
@@ -3342,10 +3342,10 @@ class StateVariableComponentTypeDependency extends StateVariableDependency {
             }
             this.valuesChanged[0][mappedVarName] = {};
 
-            let hasVariableComponentType = stateVarObj.hasVariableComponentType;
+            let hasVariableComponentType = stateVarObj.shadowingInstructions?.hasVariableComponentType;
             if (!hasVariableComponentType && stateVarObj.isArrayEntry) {
               let arrayStateVarObj = depComponent.state[stateVarObj.arrayStateVariable];
-              hasVariableComponentType = arrayStateVarObj.hasVariableComponentType
+              hasVariableComponentType = arrayStateVarObj.shadowingInstructions?.hasVariableComponentType
             }
             if (!hasVariableComponentType) {
               // since this value won't change,
@@ -3850,9 +3850,9 @@ class AttributeComponentDependency extends Dependency {
 
     this.attributeName = this.definition.attributeName;
 
-    this.fallBackToAttributeFromShadow = true;
-    if (this.definition.fallBackToAttributeFromShadow !== undefined) {
-      this.fallBackToAttributeFromShadow = this.definition.fallBackToAttributeFromShadow;
+    this.fallBackToAttributeFromShadowTarget = true;
+    if (this.definition.fallBackToAttributeFromShadowTarget !== undefined) {
+      this.fallBackToAttributeFromShadowTarget = this.definition.fallBackToAttributeFromShadowTarget;
     }
 
     this.returnSingleComponent = true;
@@ -3911,7 +3911,7 @@ class AttributeComponentDependency extends Dependency {
       }
     }
 
-    if (this.fallBackToAttributeFromShadow) {
+    if (this.fallBackToAttributeFromShadowTarget) {
       // if don't have an attribute component,
       // check if shadows a component with that attribute component
 
@@ -3928,7 +3928,7 @@ class AttributeComponentDependency extends Dependency {
 
         if (propVariable) {
           if (!(
-            comp.state[propVariable]?.additionalAttributeComponentsToShadow?.includes(this.attributeName)
+            comp.state[propVariable]?.shadowingInstructions?.attributeComponentsToShadow?.includes(this.attributeName)
           )) {
             break;
           }
@@ -4199,7 +4199,7 @@ class ChildDependency extends Dependency {
               }
             }
             let compositeComp = this.dependencyHandler._components[compositeNotReady];
-            if (compositeComp.attributes.componentType?.primitive) {
+            if (compositeComp.attributes.createComponentOfType?.primitive) {
               compositesBlockingWithComponentType.push(compositeNotReady);
             } else {
               compositesBlockingWithoutComponentType.push(compositeNotReady)
@@ -4654,8 +4654,8 @@ class DescendantDependency extends Dependency {
     let adjustedUnexpanded = [];
     for (let compositeName of unexpandedComposites) {
       let composite = this.dependencyHandler._components[compositeName];
-      if (composite.attributes.componentType) {
-        let placeholderType = composite.attributes.componentType.primitive;
+      if (composite.attributes.createComponentOfType) {
+        let placeholderType = composite.attributes.createComponentOfType.primitive;
         let matches = this.componentTypes.some(ct =>
           this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: placeholderType,

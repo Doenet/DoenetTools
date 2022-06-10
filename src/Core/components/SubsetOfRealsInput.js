@@ -98,7 +98,9 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
     stateVariableDefinitions.subsetValue = {
       public: true,
-      componentType: "subsetOfReals",
+      shadowingInstructions: {
+        createComponentOfType: "subsetOfReals",
+      },
       hasEssential: true,
       returnDependencies: () => ({
         bindValueTo: {

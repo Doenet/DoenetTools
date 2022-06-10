@@ -250,7 +250,9 @@ export default class Triangle extends Polygon {
 
     stateVariableDefinitions.nVertices = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { nVertices: 3 } })

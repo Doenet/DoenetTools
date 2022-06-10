@@ -1529,7 +1529,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
 
       if (type === "uniform") {
-        step = 0;
+        step = 'NaN';
         expectedMean = (to + from) / 2
         expectedVariance = (to - from) ** 2 / 12;
       } else if (type === "discreteuniform") {
@@ -1537,9 +1537,9 @@ describe('SampleRandomNumbers Tag Tests', function () {
         expectedMean = (to + from) / 2
         expectedVariance = (((to - from) / step + 1) ** 2 - 1) * step ** 2 / 12
       } else {
-        from = 0;
-        to = 0;
-        step = 0;
+        from = 'NaN';
+        to = 'NaN';
+        step = 'NaN';
       }
 
       let expectedStandardDeviation = Math.sqrt(expectedVariance);
@@ -1674,7 +1674,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.4,
-        allowedErrorInVariance: 0.3,
+        allowedErrorInVariance: 0.4,
         checkAllSamples: false,
         stateVariables
       })

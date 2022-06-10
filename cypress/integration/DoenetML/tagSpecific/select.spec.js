@@ -1707,7 +1707,7 @@ describe('Select Tag Tests', function () {
     </setup>
     <aslist>
     <select assignnames="m1 m2 m3 m4 m5 m6" numbertoselect="6">
-      $a$var1^2  $b$var1/$var2  u-$b  $a  $var1-c $(var2{componentType="math"})
+      $a$var1^2  $b$var1/$var2  u-$b  $a  $var1-c $(var2{createComponentOfType="math"})
     </select>
     </aslist>
     `}, "*");
@@ -1777,7 +1777,7 @@ describe('Select Tag Tests', function () {
     </setup>
     <aslist>
     <select type="text" assignnames="w1 w2 w3 w4 w5" numbertoselect="5">
-      Lorem  ipsum$spaceD  sit  $(a{componentType="text"})  $(cSpace)adipiscing
+      Lorem  ipsum$spaceD  sit  $(a{createComponentOfType="text"})  $(cSpace)adipiscing
     </select>
     </aslist>
     `}, "*");
@@ -1842,7 +1842,7 @@ describe('Select Tag Tests', function () {
     </setup>
     <aslist>
     <select type="number" assignnames="n1 n2 n3 n4 n5 n6 n7 n8 n9 n10" numbertoselect="6">
-      2 $a+$b 3-$c $(a{componentType="number"}) $b-1 $c
+      2 $a+$b 3-$c $(a{createComponentOfType="number"}) $b-1 $c
     </select>
     </aslist>
     `}, "*");
@@ -1910,7 +1910,7 @@ describe('Select Tag Tests', function () {
     </setup>
     <aslist>
     <select type="boolean" assignnames="b1 b2 b3 b4 b5 b6 b7 b8 b9 b10 b11 b12 b13 b14 b15 b16 b17 b18 b19 b20" numbertoselect="20" withReplacement>
-      true false $t $f $(t{componentType="boolean"}) $(f{componentType="boolean"})
+      true false $t $f $(t{createComponentOfType="boolean"}) $(f{createComponentOfType="boolean"})
     </select>
     </aslist>
     `}, "*");

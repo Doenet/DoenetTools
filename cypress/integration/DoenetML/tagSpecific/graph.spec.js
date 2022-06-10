@@ -1084,12 +1084,12 @@ describe('Graph Tag Tests', function () {
   });
 
   // check for bug in placeholder adapter
-  it('graph with label as submitted response, componentType specified', () => {
+  it('graph with label as submitted response, createComponentOfType specified', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <graph xlabel="$(x{prop='submittedResponse' componentType='math'})" ylabel="y" />
+    <graph xlabel="$(x{prop='submittedResponse' createComponentOfType='math'})" ylabel="y" />
 
     <answer name="x">x</answer>
     <copy prop="submittedResponse" target="x" assignNames="sr" />

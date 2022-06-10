@@ -64,7 +64,9 @@ export default class Evaluate extends MathComponent {
 
     stateVariableDefinitions.displayDigits = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       defaultValue: 10,
       hasEssential: true,
       returnDependencies: () => ({
@@ -102,7 +104,9 @@ export default class Evaluate extends MathComponent {
 
     stateVariableDefinitions.displayDecimals = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       defaultValue: 10,
       hasEssential: true,
       returnDependencies: () => ({
@@ -140,7 +144,9 @@ export default class Evaluate extends MathComponent {
 
     stateVariableDefinitions.displaySmallAsZero = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({
@@ -178,7 +184,9 @@ export default class Evaluate extends MathComponent {
 
     stateVariableDefinitions.padZeros = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       defaultValue: false,
       hasEssential: true,
       returnDependencies: () => ({
@@ -216,7 +224,9 @@ export default class Evaluate extends MathComponent {
 
     stateVariableDefinitions.unnormalizedValue = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies() {
         return {
           inputAttr: {

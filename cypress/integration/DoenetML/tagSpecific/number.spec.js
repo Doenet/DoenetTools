@@ -222,8 +222,8 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/n2bm .mjx-mrow').eq(0).should('have.text', '5.429')
     cy.get('#\\/n2cm .mjx-mrow').eq(0).should('have.text', '5.43')
 
-    cy.get('#\\/n3').should('have.text', '5.02348134e-15')
-    cy.get('#\\/n3a').should('have.text', '5.02e-15')
+    cy.get('#\\/n3').should('have.text', '5.02348134 * 10^(-15)')
+    cy.get('#\\/n3a').should('have.text', '5.02 * 10^(-15)')
     cy.get('#\\/n3b').should('have.text', '0')
     cy.get('#\\/n3c').should('have.text', '0')
     cy.get('#\\/n3am .mjx-mrow').eq(0).should('have.text', '5.02⋅10−15')
@@ -479,17 +479,11 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/na').should('have.text', '35203423.0235')
     cy.get('#\\/nb').should('have.text', '35203423.02352')
 
-    cy.log('invalid precision means no rounding')
+    cy.log('invalid precision means default rounding')
     cy.get('#\\/ndigits textarea').type("{end}{backspace}{backspace}x{enter}", { force: true });
     cy.get('#\\/ndecimals textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
-    cy.get('#\\/na').should('contain.text', '35203423.023523')
-    cy.get('#\\/nb').should('contain.text', '35203423.023523')
-    cy.get('#\\/na').invoke('text').then(text => {
-      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
-    })
-    cy.get('#\\/nb').invoke('text').then(text => {
-      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
-    })
+    cy.get('#\\/na').should('have.text', '35203423.02')
+    cy.get('#\\/nb').should('have.text', '35203423.02')
 
     cy.log('low precision')
     cy.get('#\\/ndigits textarea').type("{end}{backspace}1{enter}", { force: true });
@@ -498,13 +492,10 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/nb').should('have.text', '35203423')
 
 
-    cy.log('negative precision, no rounding for displayDigits')
+    cy.log('negative precision, default rounding for displayDigits')
     cy.get('#\\/ndigits textarea').type("{end}{backspace}-3{enter}", { force: true });
     cy.get('#\\/ndecimals textarea').type("{end}{backspace}-3{enter}", { force: true });
-    cy.get('#\\/na').should('contain.text', '35203423.023523')
-    cy.get('#\\/na').invoke('text').then(text => {
-      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
-    })
+    cy.get('#\\/na').should('have.text', '35203423.02')
     cy.get('#\\/nb').should('have.text', '35203000')
 
   })
@@ -545,21 +536,21 @@ describe('Number Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/inf1').should('have.text', 'Infinity')
-    cy.get('#\\/inf2').should('have.text', 'Infinity')
-    cy.get('#\\/inf3').should('have.text', 'Infinity')
-    cy.get('#\\/inf4').should('have.text', 'Infinity')
-    cy.get('#\\/inf5').should('have.text', 'Infinity')
-    cy.get('#\\/inf6').should('have.text', 'Infinity')
-    cy.get('#\\/inf7').should('have.text', 'Infinity')
-    cy.get('#\\/inf8').should('have.text', 'Infinity')
+    cy.get('#\\/inf1').should('have.text', '∞')
+    cy.get('#\\/inf2').should('have.text', '∞')
+    cy.get('#\\/inf3').should('have.text', '∞')
+    cy.get('#\\/inf4').should('have.text', '∞')
+    cy.get('#\\/inf5').should('have.text', '∞')
+    cy.get('#\\/inf6').should('have.text', '∞')
+    cy.get('#\\/inf7').should('have.text', '∞')
+    cy.get('#\\/inf8').should('have.text', '∞')
  
-    cy.get('#\\/ninf1').should('have.text', '-Infinity')
-    cy.get('#\\/ninf2').should('have.text', '-Infinity')
-    cy.get('#\\/ninf3').should('have.text', '-Infinity')
-    cy.get('#\\/ninf4').should('have.text', '-Infinity')
-    cy.get('#\\/ninf5').should('have.text', '-Infinity')
-    cy.get('#\\/ninf6').should('have.text', '-Infinity')
+    cy.get('#\\/ninf1').should('have.text', '-∞')
+    cy.get('#\\/ninf2').should('have.text', '-∞')
+    cy.get('#\\/ninf3').should('have.text', '-∞')
+    cy.get('#\\/ninf4').should('have.text', '-∞')
+    cy.get('#\\/ninf5').should('have.text', '-∞')
+    cy.get('#\\/ninf6').should('have.text', '-∞')
  
     cy.get('#\\/nan1').should('have.text', 'NaN')
     cy.get('#\\/nan2').should('have.text', 'NaN')
@@ -646,9 +637,9 @@ describe('Number Tag Tests', function () {
 
     cy.get('#\\/n3').should('have.text', '0');
     cy.get('#\\/n3a').should('have.text', '0');
-    cy.get('#\\/n3b').should('have.text', '1.5382487e-17');
+    cy.get('#\\/n3b').should('have.text', '1.5382487 * 10^(-17)');
     cy.get('#\\/n3c').should('have.text', '0');
-    cy.get('#\\/n3d').should('have.text', '1.5382487e-17');
+    cy.get('#\\/n3d').should('have.text', '1.5382487 * 10^(-17)');
 
 
   });
@@ -660,32 +651,42 @@ describe('Number Tag Tests', function () {
   <p><text>a</text></p>
   <p><number name="m1"><math displayDigits="3">8.5203845251</math></number>
     <number name="m1a"><number displayDigits="3">8.5203845251</number></number>
-    <number name="m1b"><math displayDigits="3">8.5203845251</math>2</number>
-    <number name="m1c"><number displayDigits="3">8.5203845251</number>2</number>
-    <number name="m1d"><math displayDigits="3">8.5203845251</math><math displayDigits="3">2</math></number>
-    <number name="m1e"><number displayDigits="3">8.5203845251</number><math displayDigits="3">2</math></number>
+    <number name="m1b"><math displayDigits="3">8.5203845251</math>2.8392634947</number>
+    <number name="m1c"><number displayDigits="3">8.5203845251</number>2.8392634947</number>
+    <number name="m1d"><math displayDigits="3">8.5203845251</math><math displayDigits="3">2.8392634947</math></number>
+    <number name="m1e"><number displayDigits="3">8.5203845251</number><math displayDigits="3">2.8392634947</math></number>
     <number name="m1f" displayDigits="6"><math displayDigits="3">8.5203845251</math></number>
     <number name="m1g" displayDecimals="8"><math displayDigits="3">8.5203845251</math></number>
   </p>
 
   <p><number name="m2"><math displayDecimals="4">8.5203845251</math></number>
     <number name="m2a"><number displayDecimals="4">8.5203845251</number></number>
-    <number name="m2b"><math displayDecimals="4">8.5203845251</math>2</number>
-    <number name="m2c"><number displayDecimals="4">8.5203845251</number>2</number>
-    <number name="m2d"><math displayDecimals="4">8.5203845251</math><math displayDecimals="4">2</math></number>
-    <number name="m2e"><number displayDecimals="4">8.5203845251</number><math displayDecimals="4">2</math></number>
+    <number name="m2b"><math displayDecimals="4">8.5203845251</math>2.8392634947</number>
+    <number name="m2c"><number displayDecimals="4">8.5203845251</number>2.8392634947</number>
+    <number name="m2d"><math displayDecimals="4">8.5203845251</math><math displayDecimals="4">2.8392634947</math></number>
+    <number name="m2e"><number displayDecimals="4">8.5203845251</number><math displayDecimals="4">2.8392634947</math></number>
     <number name="m2f" displayDecimals="6"><math displayDecimals="4">8.5203845251</math></number>
     <number name="m2g" displayDigits="8"><math displayDecimals="4">8.5203845251</math></number>
   </p>
 
   <p><number name="m3"><math displaySmallAsZero>0.000000000000000015382487</math></number>
     <number name="m3a"><number displaySmallAsZero>0.000000000000000015382487</number></number>
-    <number name="m3b"><math displaySmallAsZero>0.000000000000000015382487</math>2</number>
-    <number name="m3c"><number displaySmallAsZero>0.000000000000000015382487</number>2</number>
-    <number name="m3d"><math displaySmallAsZero>0.000000000000000015382487</math><math displaySmallAsZero>2</math></number>
-    <number name="m3e"><number displaySmallAsZero>0.000000000000000015382487</number><math displaySmallAsZero>2</math></number>
+    <number name="m3b"><math displaySmallAsZero>0.000000000000000015382487</math>2.8392634947</number>
+    <number name="m3c"><number displaySmallAsZero>0.000000000000000015382487</number>2.8392634947</number>
+    <number name="m3d"><math displaySmallAsZero>0.000000000000000015382487</math><math displaySmallAsZero>2.8392634947</math></number>
+    <number name="m3e"><number displaySmallAsZero>0.000000000000000015382487</number><math displaySmallAsZero>2.8392634947</math></number>
     <number name="m3f" displaySmallAsZero="false"><math displaySmallAsZero>0.000000000000000015382487</math></number>
   </p>
+
+  <p><number name="m4"><math displayDigits="3" padZeros>8</math></number>
+    <number name="m4a"><number displayDigits="3" padZeros>8</number></number>
+    <number name="m4b"><math displayDigits="3" padZeros>8</math>2</number>
+    <number name="m4c"><number displayDigits="3" padZeros>8</number>2</number>
+    <number name="m4d"><math displayDigits="3" padZeros>8</math><math displayDigits="3" padZeros>2</math></number>
+    <number name="m4e"><number displayDigits="3" padZeros>8</number><math displayDigits="3" padZeros>2</math></number>
+    <number name="m4f" padZeros="false"><math displayDigits="3" padZeros>8</math></number>
+  </p>
+
 
   `}, "*");
     });
@@ -694,29 +695,37 @@ describe('Number Tag Tests', function () {
 
     cy.get('#\\/m1').should('have.text', '8.52');
     cy.get('#\\/m1a').should('have.text', '8.52');
-    cy.get('#\\/m1b').should('have.text', '17');
-    cy.get('#\\/m1c').should('have.text', '17');
-    cy.get('#\\/m1d').should('have.text', '17.04076905');
-    cy.get('#\\/m1e').should('have.text', '17.04076905');
+    cy.get('#\\/m1b').should('have.text', '24.19161674');
+    cy.get('#\\/m1c').should('have.text', '24.19161674');
+    cy.get('#\\/m1d').should('have.text', '24.19161674');
+    cy.get('#\\/m1e').should('have.text', '24.19161674');
     cy.get('#\\/m1f').should('have.text', '8.52038');
     cy.get('#\\/m1g').should('have.text', '8.52038453');
 
     cy.get('#\\/m2').should('have.text', '8.5204');
     cy.get('#\\/m2a').should('have.text', '8.5204');
-    cy.get('#\\/m2b').should('have.text', '17.0408');
-    cy.get('#\\/m2c').should('have.text', '17.0408');
-    cy.get('#\\/m2d').should('have.text', '17.04076905');
-    cy.get('#\\/m2e').should('have.text', '17.04076905');
+    cy.get('#\\/m2b').should('have.text', '24.19161674');
+    cy.get('#\\/m2c').should('have.text', '24.19161674');
+    cy.get('#\\/m2d').should('have.text', '24.19161674');
+    cy.get('#\\/m2e').should('have.text', '24.19161674');
     cy.get('#\\/m2f').should('have.text', '8.520385');
     cy.get('#\\/m2g').should('have.text', '8.5203845');
 
     cy.get('#\\/m3').should('have.text', '0');
     cy.get('#\\/m3a').should('have.text', '0');
-    cy.get('#\\/m3b').should('have.text', '0');
-    cy.get('#\\/m3c').should('have.text', '0');
-    cy.get('#\\/m3d').should('have.text', '3.0764974e-17');
-    cy.get('#\\/m3e').should('have.text', '3.0764974e-17');
-    cy.get('#\\/m3f').should('have.text', '1.5382487e-17');
+    cy.get('#\\/m3b').should('have.text', '4.36749338 * 10^(-17)');
+    cy.get('#\\/m3c').should('have.text', '4.36749338 * 10^(-17)');
+    cy.get('#\\/m3d').should('have.text', '4.36749338 * 10^(-17)');
+    cy.get('#\\/m3e').should('have.text', '4.36749338 * 10^(-17)');
+    cy.get('#\\/m3f').should('have.text', '1.5382487 * 10^(-17)');
+
+    cy.get('#\\/m4').should('have.text', '8.00');
+    cy.get('#\\/m4a').should('have.text', '8.00');
+    cy.get('#\\/m4b').should('have.text', '16');
+    cy.get('#\\/m4c').should('have.text', '16');
+    cy.get('#\\/m4d').should('have.text', '16');
+    cy.get('#\\/m4e').should('have.text', '16');
+    cy.get('#\\/m4f').should('have.text', '8');
 
   });
 

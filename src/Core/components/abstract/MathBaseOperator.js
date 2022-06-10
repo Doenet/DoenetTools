@@ -86,7 +86,9 @@ export default class MathOperator extends MathComponent {
 
     stateVariableDefinitions.displayDigits = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       hasEssential: true,
       defaultValue: 10,
       returnDependencies: () => ({
@@ -133,7 +135,9 @@ export default class MathOperator extends MathComponent {
 
     stateVariableDefinitions.displayDecimals = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       hasEssential: true,
       defaultValue: null,
       returnDependencies: () => ({
@@ -172,7 +176,9 @@ export default class MathOperator extends MathComponent {
 
     stateVariableDefinitions.displaySmallAsZero = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       hasEssential: true,
       defaultValue: 0,
       returnDependencies: () => ({
@@ -211,7 +217,9 @@ export default class MathOperator extends MathComponent {
 
     stateVariableDefinitions.padZeros = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       hasEssential: true,
       defaultValue: false,
       returnDependencies: () => ({

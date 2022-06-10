@@ -25,7 +25,9 @@ export default class Caption extends BlockComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",

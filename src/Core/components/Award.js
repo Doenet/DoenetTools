@@ -235,11 +235,15 @@ export default class Award extends BaseComponent {
 
     stateVariableDefinitions.creditAchievedIfSubmit = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: [{
         variableName: "fractionSatisfiedIfSubmit",
         public: true,
-        componentType: "number"
+        shadowingInstructions: {
+          createComponentOfType: "number",
+        },
       }],
       returnDependencies: () => ({
         credit: {
@@ -389,7 +393,9 @@ export default class Award extends BaseComponent {
 
     stateVariableDefinitions.fractionSatisfied = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({}),
@@ -416,7 +422,9 @@ export default class Award extends BaseComponent {
 
     stateVariableDefinitions.creditAchieved = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({}),
@@ -443,7 +451,9 @@ export default class Award extends BaseComponent {
 
     stateVariableDefinitions.awarded = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       defaultValue: false,
       hasEssential: true,
       returnDependencies: () => ({}),
@@ -517,7 +527,9 @@ export default class Award extends BaseComponent {
 
     stateVariableDefinitions.numberFeedbacks = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         allFeedbacks: {
           dependencyType: "stateVariable",
@@ -534,7 +546,9 @@ export default class Award extends BaseComponent {
 
     stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedback",
+      shadowingInstructions: {
+        createComponentOfType: "feedback",
+      },
       isArray: true,
       entryPrefixes: ["feedback"],
       returnArraySizeDependencies: () => ({

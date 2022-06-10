@@ -156,7 +156,9 @@ export default class ODESystem extends InlineComponent {
       }],
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
@@ -215,7 +217,9 @@ export default class ODESystem extends InlineComponent {
     stateVariableDefinitions.rhss = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       entryPrefixes: ["rhs", "righthandside"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
@@ -274,7 +278,9 @@ export default class ODESystem extends InlineComponent {
     stateVariableDefinitions.initialConditions = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       entryPrefixes: ["initialCondition"],
       defaultValueByArrayKey: () => me.fromAst(0),
       returnArraySizeDependencies: () => ({
@@ -343,7 +349,9 @@ export default class ODESystem extends InlineComponent {
 
     stateVariableDefinitions.equationTag = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["number"],
       returnDependencies({ stateValues }) {
@@ -372,7 +380,9 @@ export default class ODESystem extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies() {
         return {
@@ -628,11 +638,15 @@ export default class ODESystem extends InlineComponent {
       isArray: true,
       entryPrefixes: ["numericalSolution"],
       public: true,
-      componentType: "function",
-      createWorkspace: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        fDefinition: "numericalSolutionFDefinitions"
+      shadowingInstructions: {
+        createComponentOfType: "function",
+        addStateVariablesShadowingStateVariables: {
+          fDefinition: {
+            stateVariableToShadow: "numericalSolutionFDefinitions",
+          }
+        },
       },
+      createWorkspace: true,
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",

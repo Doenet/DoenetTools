@@ -21,7 +21,9 @@ export default class TextOrInline extends InlineComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: this.componentType,
+      shadowingInstructions: {
+        createComponentOfType: this.componentType
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
@@ -45,7 +47,9 @@ export default class TextOrInline extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",

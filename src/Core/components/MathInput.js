@@ -102,10 +102,12 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
+      },
       hasEssential: true,
       shadowVariable: true,
-      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -159,14 +161,12 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+      },
       hasEssential: true,
       shadowVariable: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
-      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -262,7 +262,9 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",
@@ -283,7 +285,9 @@ export default class MathInput extends Input {
       defaultValue: "",
       provideEssentialValuesInDefinition: true,
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: [{
         variableName: "lastValueForDisplay",
         hasEssential: true,

@@ -20,7 +20,8 @@ export default class Substitute extends CompositeComponent {
       createStateVariable: "type",
       defaultPrimitiveValue: "math",
       toLowerCase: true,
-      validValues: ["math", "text"]
+      validValues: ["math", "text"],
+      public: true,
     }
 
     attributes.match = {
@@ -131,7 +132,9 @@ export default class Substitute extends CompositeComponent {
 
     stateVariableDefinitions.displayDigits = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       hasEssential: true,
       defaultValue: 10,
       returnDependencies: () => ({
@@ -186,7 +189,9 @@ export default class Substitute extends CompositeComponent {
 
     stateVariableDefinitions.displayDecimals = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       hasEssential: true,
       defaultValue: null,
       returnDependencies: () => ({
@@ -232,7 +237,9 @@ export default class Substitute extends CompositeComponent {
 
     stateVariableDefinitions.displaySmallAsZero = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       hasEssential: true,
       defaultValue: 0,
       returnDependencies: () => ({
@@ -278,7 +285,9 @@ export default class Substitute extends CompositeComponent {
 
     stateVariableDefinitions.padZeros = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       hasEssential: true,
       defaultValue: false,
       returnDependencies: () => ({

@@ -24,7 +24,7 @@ export default class ConditionalContent extends CompositeComponent {
     let keepSerializedInds = [];
     for (let [ind, child] of serializedComponent.children.entries()) {
       if (!["case", "else"].includes(child.componentType)) {
-        if (!(child.attributes && child.attributes.componentType && ["case", "else"].includes(child.attributes.componentType.primitive))) {
+        if (!["case", "else"].includes(child.attributes?.createComponentOfType?.primitive)) {
           keepSerializedInds.push(ind)
         }
       }

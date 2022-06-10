@@ -1974,13 +1974,10 @@ describe('Problem Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
     
-    // TODO: determined index 2 is apple
-    // find better way to ensure get apple or look up generated variant
-
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariantIndex: 2
+        requestedVariantIndex: 1
       }, "*");
     });
 

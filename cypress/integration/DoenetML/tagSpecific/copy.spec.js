@@ -2827,7 +2827,7 @@ describe('Copy Tag Tests', function () {
   it('copy of external content retains desired variant', () => {
     let doenetML = `
     <text>a</text>
-    <copy assignNames="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" componentType="problem" />
+    <copy assignNames="problem1" uri="doenet:CID=bafkreifgmyjuw4m6odukznenshkyfupp3egx6ep3jgnlo747d6s5v7nznu" />
     `;
 
     cy.get('#testRunner_toggleControls').click();
