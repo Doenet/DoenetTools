@@ -1898,7 +1898,7 @@ export const useCourse = (courseId) => {
         let destPreviousContainingItemDoenetId;
         let destType = "section";
         let destinationContainingObj;
-        //Update parentDoenetId if single selection
+        //Update the destination parentDoenetId if single selection
         if (selectedDoenetIds.length == 1){
           singleSelectedObj = await snapshot.getPromise(itemByDoenetId(selectedDoenetIds[0]));
           destType = singleSelectedObj.type;
@@ -1942,6 +1942,11 @@ export const useCourse = (courseId) => {
           let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
           let lastItemInSelectedSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
           destPreviousItemDoenetId = lastItemInSelectedSectionDoenetId
+          //Empty section
+          if (!destPreviousItemDoenetId){
+            destPreviousItemDoenetId = sectionId;
+          }
+          console.log("Nothing selected section ids items and destPreviousItemDoenetId",authorItemSectionDoenetIds,destPreviousItemDoenetId)
           let lastItemInSelectedSectionObj = await snapshot.getPromise(itemByDoenetId(lastItemInSelectedSectionDoenetId));
           if (lastItemInSelectedSectionObj.type == 'section' || 
             lastItemInSelectedSectionObj.type == 'bank' ||
@@ -1954,8 +1959,8 @@ export const useCourse = (courseId) => {
             destPreviousContainingItemDoenetId = lastItemInSelectedSectionObj.containingDoenetId;
           }
         }
+        //Empty section
         if (!destPreviousItemDoenetId){
-          //Empty section
           destPreviousItemDoenetId = destParentDoenetId;
         }
 
@@ -1971,17 +1976,32 @@ export const useCourse = (courseId) => {
             ancestorsDoenetIds = await getAncestors(destinationContainingObj.doenetId)
           }
 
-          //Test if cut orders and pages can go in destination
+          let cuttingContaingItemFLAG = false;
           for (let cutObj of cutObjs){
+            if (cutObj.type == 'activity' || 
+            cutObj.type == 'bank' ||
+            cutObj.type == 'section'
+            ){
+              cuttingContaingItemFLAG = true;
+              break;
+            }
+          }
+          console.log("cuttingContaingItemFLAG",cuttingContaingItemFLAG)
+          //Test if cut orders and pages can go in destination
+          //TODO: if page or order check if we are also moving the containing item
+          for (let cutObj of cutObjs){
+            console.log("cutObj",cutObj)
+
             if (destType == 'section'  && 
             (cutObj.type == 'page' ||
-            cutObj.type == 'order'
-            )
+            cutObj.type == 'order' ) &&
+            !cuttingContaingItemFLAG
             ){
-              failureCallback(`Pasting ${cutObj.type} in a ${destType} is not supported.`)
+              failureCallback(`Pasting ${cutObj.type} in a section is not supported.`)
               return;
             }
-            if (cutObj.type == 'order' ){
+            if (cutObj.type == 'order' &&
+            !cuttingContaingItemFLAG){
               failureCallback("Pasting orders is not yet supported")
               return;
             }
@@ -1993,19 +2013,7 @@ export const useCourse = (courseId) => {
               failureCallback("Can't paste item into itself.")
               return;
             }
-            // if (destType == 'activity' && 
-            //   (cutObj.type == 'activity' ||
-            //   cutObj.type == 'section' ||
-            //   cutObj.type == 'bank' 
-            //   )
-            // ){
-            //   failureCallback("Activities can only accept orders or pages.")
-            //   return;
-            // }
-            // if (destType == 'order' && cutObj.type != 'page' ){
-            //   failureCallback("Orders can only accept pages.")
-            //   return;
-            // }
+           
             if (cutObj.type == 'activity' || cutObj.type == 'bank'){
               doenetIdsToMove.push(cutObj.doenetId);
             }
@@ -2017,17 +2025,25 @@ export const useCourse = (courseId) => {
               noParentUpdateDoenetIds = [...noParentUpdateDoenetIds,...additionalNoParentUpdateDoenetIds]
               doenetIdsToMove = [...doenetIdsToMove,cutObj.doenetId,...additionalNoParentUpdateDoenetIds]
             }
-            if (cutObj.type == 'order' || cutObj.type == 'page'){
+            if ((cutObj.type == 'order' || cutObj.type == 'page') && !cuttingContaingItemFLAG){
               sourcePagesAndOrdersToMove.push({...cutObj})
             }
 
           }
-          if (sourcePagesAndOrdersToMove.length > 0 && doenetIdsToMove.length > 0 ){
-            failureCallback("Can't paste pages or orders with other types.")
-            return;
-          }
+
+          //TODO: if cuttingContaingItemFLAG is true then test if pages and orders are all children of the containing items
+          // //If copying both containing items and pages and orders then ignore the pages and orders
+          // if (sourcePagesAndOrdersToMove.length > 0 && doenetIdsToMove.length > 0 ){
+          //   sourcePagesAndOrdersToMove = [];
+          //   // failureCallback("Can't paste pages or orders with other types.")
+          //   // return;
+          // }
+
+          console.log("doenetIdsToMove",doenetIdsToMove)
+          console.log("sourcePagesAndOrdersToMove",sourcePagesAndOrdersToMove)
       
 
+        //Move the containing items
         if (doenetIdsToMove.length > 0){
           // console.log("move",{
           //   courseId,
@@ -2047,16 +2063,20 @@ export const useCourse = (courseId) => {
             })
             // console.log("moveContent resp.data",resp.data)
             if (resp.status < 300) {
-              //update each containing item with new parentId 
-              //and turn off selection and isBeingCut
-              for (let doenetId of doenetIdsToMove){
-                set(itemByDoenetId(doenetId),(prevObj)=>{
+              //turn off selection and isBeingCut
+              for (let cutObj of cutObjs){
+                set(itemByDoenetId(cutObj.doenetId),(prevObj)=>{
                   let nextObj = {...prevObj}
                   nextObj["isBeingCut"] = false;
                   nextObj["isSelected"] = false;
-                  if (!noParentUpdateDoenetIds.includes(doenetId)){
-                    nextObj.parentDoenetId = destParentDoenetId;
-                  }
+                  return nextObj
+                }); 
+              }
+              //update each containing item with new parentId 
+              for (let doenetId of noParentUpdateDoenetIds){
+                set(itemByDoenetId(doenetId),(prevObj)=>{
+                  let nextObj = {...prevObj}
+                  nextObj.parentDoenetId = destParentDoenetId;
                   return nextObj
                 }); 
               }
