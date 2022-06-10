@@ -2283,9 +2283,27 @@ export const useCourse = (courseId) => {
           }
           let setOfOriginalPageDoenetIds = []
           for (let [i,sourceType] of Object.entries(sourceTypes)){
+            
             let sourceDoenetId = sourceDoenetIds[i]
             let sourceJSON = sourceJSONs[i];
 
+            for(let originalPageDoenetId of originalPageDoenetIds[i]){
+              setOfOriginalPageDoenetIds.push(originalPageDoenetId);
+              //Update pages
+              set(itemByDoenetId(originalPageDoenetId),(prev)=>{
+                let next = {...prev}
+                next.containingDoenetId = destinationDoenetId;
+                next.parentDoenetId = nextPagesParentDoenetId;
+                next.isBeingCut = false
+                return next;
+              })
+            }
+
+            //If they are equal then
+            //the source JSON is wrong and destination is the only one used
+            if (sourceDoenetId == destinationDoenetId){
+              continue;
+            }
             //Update source
             if (sourceType == 'bank'){
               set(itemByDoenetId(sourceDoenetId),(prev)=>{
@@ -2300,17 +2318,7 @@ export const useCourse = (courseId) => {
                 return next;
               })
             }
-            for(let originalPageDoenetId of originalPageDoenetIds[i]){
-              setOfOriginalPageDoenetIds.push(originalPageDoenetId);
-              //Update pages
-              set(itemByDoenetId(originalPageDoenetId),(prev)=>{
-                let next = {...prev}
-                next.containingDoenetId = destinationDoenetId;
-                next.parentDoenetId = nextPagesParentDoenetId;
-                next.isBeingCut = false
-                return next;
-              })
-            }
+           
 
           }
 
@@ -2348,6 +2356,7 @@ export const useCourse = (courseId) => {
                 }
                 insertIndex = indexPreviousToPrevious + 1;
               }
+
               //Need original page in item order
               if (destinationWasASinglePageActivity){
                 next.splice(insertIndex,0,destinationWasSinglePagesPageId,...setOfOriginalPageDoenetIds);  //insert
