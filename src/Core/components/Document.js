@@ -28,6 +28,13 @@ export default class Document extends BaseComponent {
       public: true,
     };
 
+    attributes.displayDigitsForCreditAchieved = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigitsForCreditAchieved",
+      defaultValue: 3,
+      public: true
+    }
+
     // at this point, we are creating these attributes
     // so that having them in the doenetML is valid
     // Do we want to do something with these attributes?
@@ -96,7 +103,9 @@ export default class Document extends BaseComponent {
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
@@ -117,7 +126,9 @@ export default class Document extends BaseComponent {
 
     stateVariableDefinitions.description = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         descriptionChild: {
           dependencyType: "child",
@@ -391,25 +402,28 @@ export default class Document extends BaseComponent {
     }
 
 
-    stateVariableDefinitions.displayDigitsForCreditAchieved = {
-      returnDependencies: () => ({}),
-      definition: () => ({ setValue: { displayDigitsForCreditAchieved: 3 } })
-    }
-
     stateVariableDefinitions.creditAchieved = {
       public: true,
-      componentType: "number",
       forRenderer: true,
       defaultValue: 0,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigitsForCreditAchieved",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForCreditAchieved",
+          }
+        },
       },
       additionalStateVariablesDefined: [{
         variableName: "percentCreditAchieved",
         public: true,
-        componentType: "number",
-        stateVariablesPrescribingAdditionalAttributes: {
-          displayDigits: "displayDigitsForCreditAchieved",
+        shadowingInstructions: {
+          createComponentOfType: "number",
+          addAttributeComponentsShadowingStateVariables: {
+            displayDigits: {
+              stateVariableToShadow: "displayDigitsForCreditAchieved",
+            }
+          }
         }
       }],
       returnDependencies: () => ({

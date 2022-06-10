@@ -439,7 +439,7 @@ export function mathStateVariableFromNumberStateVariable({
 
   if (isPublic) {
     mathDef.public = true;
-    mathDef.componentType = "math"
+    mathDef.shadowingInstructions = { createComponentOfType: "math" };
   }
 
   return mathDef;

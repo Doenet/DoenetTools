@@ -247,7 +247,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.symbol = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         symbolAttr: {
           dependencyType: "attributeComponent",
@@ -282,7 +284,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.massNumber = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       hasEssential: true,
       returnDependencies: () => ({
         symbol: {
@@ -320,7 +324,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.displayMassNumber = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       hasEssential: true,
       defaultValue: false,
       returnDependencies: () => ({
@@ -354,7 +360,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.atomicNumber = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",
@@ -374,7 +382,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.nValenceElectrons = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",
@@ -395,7 +405,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.electronConfiguration = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",
@@ -415,7 +427,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.orbitalDiagram = {
       public: true,
-      componentType: "orbitalDiagram",
+      shadowingInstructions: {
+        createComponentOfType: "orbitalDiagram",
+      },
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",
@@ -432,7 +446,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.mass = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         atomicNumber: {
           dependencyType: "stateVariable",
@@ -455,7 +471,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.groupNumber = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",
@@ -475,7 +493,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.groupName = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",
@@ -495,7 +515,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.metal = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",
@@ -515,7 +537,9 @@ export default class Atom extends InlineComponent {
 
     stateVariableDefinitions.isotopeSymbol = {
       public: true,
-      componentType: "m",
+      shadowingInstructions: {
+        createComponentOfType: "m",
+      },
       returnDependencies: () => ({
         symbol: {
           dependencyType: "stateVariable",

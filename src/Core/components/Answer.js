@@ -458,7 +458,9 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.nResponses = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["awardInputResponseChildren"],
       returnDependencies({ stateValues, componentInfoObjects }) {
         let dependencies = {
@@ -563,9 +565,11 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.currentResponses = {
       public: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       isArray: true,
       entryPrefixes: ["currentResponse"],
-      hasVariableComponentType: true,
       stateVariablesDeterminingDependencies: ["awardInputResponseChildren"],
       returnArraySizeDependencies: () => ({
         nResponses: {
@@ -715,7 +719,7 @@ export default class Answer extends InlineComponent {
 
         return {
           setValue: { currentResponses },
-          setComponentType: { currentResponses: componentType },
+          setCreateComponentOfType: { currentResponses: componentType },
         }
       }
     }
@@ -729,7 +733,9 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.nSubmittedResponses = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       hasEssential: true,
       defaultValue: 0,
       returnDependencies: () => ({}),
@@ -781,12 +787,13 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.submittedResponses = {
       public: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       isArray: true,
       entryPrefixes: ["submittedResponse"],
       defaultValueByArrayKey: () => '\uFF3F',
       hasEssential: true,
-      componentType: "math",
-      hasVariableComponentType: true,
       inverseShadowToSetEntireArray: true,
       doNotCombineInverseArrayInstructions: true,
       returnArraySizeDependencies: () => ({
@@ -838,7 +845,7 @@ export default class Answer extends InlineComponent {
           useEssentialOrDefaultValue: {
             submittedResponses: essentialSubmittedResponses,
           },
-          setComponentType: { submittedResponses: componentType },
+          setCreateComponentOfType: { submittedResponses: componentType },
         }
       },
       inverseArrayDefinitionByKey: function ({ desiredStateVariableValues, initialChange }) {
@@ -1014,7 +1021,9 @@ export default class Answer extends InlineComponent {
     stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       hasEssential: true,
       returnDependencies: () => ({}),
@@ -1036,7 +1045,9 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.responseHasBeenSubmitted = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       defaultValue: false,
       hasEssential: true,
       returnDependencies: () => ({}),
@@ -1110,7 +1121,9 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.justSubmitted = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
       hasEssential: true,
@@ -1204,7 +1217,9 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.numberFeedbacks = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         allFeedbacks: {
           dependencyType: "stateVariable",
@@ -1221,7 +1236,9 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedback",
+      shadowingInstructions: {
+        createComponentOfType: "feedback",
+      },
       isArray: true,
       entryPrefixes: ["feedback"],
       returnArraySizeDependencies: () => ({
@@ -1261,7 +1278,9 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.nSubmissions = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({}),
@@ -1281,7 +1300,9 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.numberOfAttemptsLeft = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         nSubmissions: {
@@ -1331,7 +1352,9 @@ export default class Answer extends InlineComponent {
 
     stateVariableDefinitions.disabled = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["disableAfterCorrect"],
       returnDependencies({ stateValues }) {
@@ -1460,7 +1483,7 @@ export default class Answer extends InlineComponent {
       updateType: "updateValue",
       componentName: this.componentName,
       stateVariable: "submittedResponsesComponentType",
-      value: this.state.currentResponses.componentType
+      value: this.state.currentResponses.shadowingInstructions.createComponentOfType
     })
 
     instructions.push({

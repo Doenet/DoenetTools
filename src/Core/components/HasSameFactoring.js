@@ -59,7 +59,9 @@ export default class HasSameFactoring extends BooleanComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         mathChildren: {

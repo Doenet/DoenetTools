@@ -3000,9 +3000,9 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment endpoints="$(_linesegment2{prop='endpoint2' componentType='point'}) (1,0)" />
-  <linesegment endpoints="$(_linesegment3{prop='endpoint2' componentType='point'}) (3,2)" />
-  <linesegment endpoints="$(_linesegment1{prop='endpoint2' componentType='point'}) (-1,4)" />
+  <linesegment endpoints="$(_linesegment2{prop='endpoint2' createComponentOfType='point'}) (1,0)" />
+  <linesegment endpoints="$(_linesegment3{prop='endpoint2' createComponentOfType='point'}) (3,2)" />
+  <linesegment endpoints="$(_linesegment1{prop='endpoint2' createComponentOfType='point'}) (-1,4)" />
   </graph>
   <copy prop="endpoint1" target="_linesegment1" assignNames="p11" />
   <copy prop="endpoint2" target="_linesegment1" assignNames="p12" />
@@ -3270,7 +3270,7 @@ describe('LineSegment Tag Tests', function () {
         args: { x: t1x, y: t1y }
       })
 
-      cy.get('#\\/slope').should('contain.text', String(m))
+      cy.get('#\\/slope').should('contain.text', '∞')
 
     })
 

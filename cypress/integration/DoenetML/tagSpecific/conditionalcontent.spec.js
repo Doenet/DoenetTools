@@ -2308,7 +2308,7 @@ describe('Conditional Content Tag Tests', function () {
     </conditionalContent></p>
     
     <p><conditionalContent>
-      <copy target="positiveCase" componentType="case" />
+      <copy target="positiveCase" createComponentOfType="case" />
       <case condition="$n<0" ><text>negative</text></case>
       <else><text>neither</text></else>
     </conditionalContent></p>
@@ -2370,7 +2370,7 @@ describe('Conditional Content Tag Tests', function () {
     <p><conditionalContent>
       <case condition="$n<0" ><text>hello</text></case>
       <case condition="$n>0" ><text>oops</text></case>
-      <copy target="bye" componentType="else" />
+      <copy target="bye" createComponentOfType="else" />
     </conditionalContent></p>
     
     <p><copy target="_conditionalcontent1" /></p>

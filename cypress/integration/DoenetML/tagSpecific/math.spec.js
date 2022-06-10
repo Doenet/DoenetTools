@@ -1278,15 +1278,15 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('35203423.02352')
     })
 
-    cy.log('invalid precision means no rounding')
+    cy.log('invalid precision means default rounding of 10 digits')
     cy.get('#\\/ndigits textarea').type("{end}{backspace}{backspace}x{enter}", { force: true });
     cy.get('#\\/ndecimals textarea').type("{end}{backspace}{backspace}y{enter}", { force: true });
     cy.get('#\\/ndecimals2').should('contain.text', 'y')
     cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+      expect(text).eq('35203423.02')
     })
     cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+      expect(text).eq('35203423.02')
     })
 
     cy.log('low precision')
@@ -1300,12 +1300,12 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('35203423')
     })
 
-    cy.log('negative precision, no rounding for displayDigits')
+    cy.log('negative precision, default rounding from negative displayDigits')
     cy.get('#\\/ndigits textarea').type("{end}{backspace}-3{enter}", { force: true });
     cy.get('#\\/ndecimals textarea').type("{end}{backspace}-3{enter}", { force: true });
     cy.get('#\\/ndecimals2').should('contain.text', `${nInDOM(-3)}`)
     cy.get('#\\/na').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(Number(text)).closeTo(35203423.02352343201, 1E-15)
+      expect(text).eq('35203423.02')
     })
     cy.get('#\\/nb').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('35203000')
@@ -2633,8 +2633,8 @@ describe('Math Tag Tests', function () {
   <p><text>a</text></p>
   <p><math name="m1"><math displayDigits="3">8.5203845251</math></math>
     <math name="m1a"><number displayDigits="3">8.5203845251</number></math>
-    <math name="m1b"><math displayDigits="3">8.5203845251</math>x</math>
-    <math name="m1c"><number displayDigits="3">8.5203845251</number>x</math>
+    <math name="m1b"><math displayDigits="3">8.5203845251</math>x+526195.5352</math>
+    <math name="m1c"><number displayDigits="3">8.5203845251</number>x+526195.5352</math>
     <math name="m1d"><math displayDigits="3">8.5203845251</math><math displayDigits="3">x</math></math>
     <math name="m1e"><number displayDigits="3">8.5203845251</number><math displayDigits="3">x</math></math>
     <math name="m1f" displayDigits="6"><math displayDigits="3">8.5203845251</math></math>
@@ -2643,8 +2643,8 @@ describe('Math Tag Tests', function () {
 
   <p><math name="m2"><math displayDecimals="4">8.5203845251</math></math>
     <math name="m2a"><number displayDecimals="4">8.5203845251</number></math>
-    <math name="m2b"><math displayDecimals="4">8.5203845251</math>x</math>
-    <math name="m2c"><number displayDecimals="4">8.5203845251</number>x</math>
+    <math name="m2b"><math displayDecimals="4">8.5203845251</math>x+526195.5352</math>
+    <math name="m2c"><number displayDecimals="4">8.5203845251</number>x+526195.5352</math>
     <math name="m2d"><math displayDecimals="4">8.5203845251</math><math displayDecimals="4">x</math></math>
     <math name="m2e"><number displayDecimals="4">8.5203845251</number><math displayDecimals="4">x</math></math>
     <math name="m2f" displayDecimals="6"><math displayDecimals="4">8.5203845251</math></math>
@@ -2653,12 +2653,21 @@ describe('Math Tag Tests', function () {
 
   <p><math name="m3"><math displaySmallAsZero>0.000000000000000015382487</math></math>
     <math name="m3a"><number displaySmallAsZero>0.000000000000000015382487</number></math>
-    <math name="m3b"><math displaySmallAsZero>0.000000000000000015382487</math>x</math>
-    <math name="m3c"><number displaySmallAsZero>0.000000000000000015382487</number>x</math>
+    <math name="m3b"><math displaySmallAsZero>0.000000000000000015382487</math>x+526195.5352</math>
+    <math name="m3c"><number displaySmallAsZero>0.000000000000000015382487</number>x+526195.5352</math>
     <math name="m3d"><math displaySmallAsZero>0.000000000000000015382487</math><math displaySmallAsZero>x</math></math>
     <math name="m3e"><number displaySmallAsZero>0.000000000000000015382487</number><math displaySmallAsZero>x</math></math>
     <math name="m3f" displaySmallAsZero="false"><math displaySmallAsZero>0.000000000000000015382487</math></math>
   </p>
+
+  <p><math name="m4"><math displayDigits="3" padZeros>8</math></math>
+  <math name="m4a"><number displayDigits="3" padZeros>8</number></math>
+  <math name="m4b"><math displayDigits="3" padZeros>8</math>x+526195.5352</math>
+  <math name="m4c"><number displayDigits="3" padZeros>8</number>x+526195.5352</math>
+  <math name="m4d"><math displayDigits="3" padZeros>8</math><math displayDigits="3" padZeros>x</math></math>
+  <math name="m4e"><number displayDigits="3" padZeros>8</number><math displayDigits="3" padZeros>x</math></math>
+  <math name="m4f" padZeros="false"><math displayDigits="3" padZeros>8</math></math>
+</p>
 
   `}, "*");
     });
@@ -2667,8 +2676,8 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', '8.52');
     cy.get('#\\/m1a .mjx-mrow').eq(0).should('have.text', '8.52');
-    cy.get('#\\/m1b .mjx-mrow').eq(0).should('have.text', '8.52x');
-    cy.get('#\\/m1c .mjx-mrow').eq(0).should('have.text', '8.52x');
+    cy.get('#\\/m1b .mjx-mrow').eq(0).should('have.text', '8.520384525x+526195.5352');
+    cy.get('#\\/m1c .mjx-mrow').eq(0).should('have.text', '8.520384525x+526195.5352');
     cy.get('#\\/m1d .mjx-mrow').eq(0).should('have.text', '8.520384525x');
     cy.get('#\\/m1e .mjx-mrow').eq(0).should('have.text', '8.520384525x');
     cy.get('#\\/m1f .mjx-mrow').eq(0).should('have.text', '8.52038');
@@ -2676,8 +2685,8 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '8.5204');
     cy.get('#\\/m2a .mjx-mrow').eq(0).should('have.text', '8.5204');
-    cy.get('#\\/m2b .mjx-mrow').eq(0).should('have.text', '8.5204x');
-    cy.get('#\\/m2c .mjx-mrow').eq(0).should('have.text', '8.5204x');
+    cy.get('#\\/m2b .mjx-mrow').eq(0).should('have.text', '8.520384525x+526195.5352');
+    cy.get('#\\/m2c .mjx-mrow').eq(0).should('have.text', '8.520384525x+526195.5352');
     cy.get('#\\/m2d .mjx-mrow').eq(0).should('have.text', '8.520384525x');
     cy.get('#\\/m2e .mjx-mrow').eq(0).should('have.text', '8.520384525x');
     cy.get('#\\/m2f .mjx-mrow').eq(0).should('have.text', '8.520385');
@@ -2685,11 +2694,19 @@ describe('Math Tag Tests', function () {
 
     cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '0');
     cy.get('#\\/m3a .mjx-mrow').eq(0).should('have.text', '0');
-    cy.get('#\\/m3b .mjx-mrow').eq(0).should('have.text', '0');
-    cy.get('#\\/m3c .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get('#\\/m3b .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17x+526195.5352');
+    cy.get('#\\/m3c .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17x+526195.5352');
     cy.get('#\\/m3d .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17x');
     cy.get('#\\/m3e .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17x');
     cy.get('#\\/m3f .mjx-mrow').eq(0).should('have.text', '1.5382487⋅10−17');
+
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '8.00');
+    cy.get('#\\/m4a .mjx-mrow').eq(0).should('have.text', '8.00');
+    cy.get('#\\/m4b .mjx-mrow').eq(0).should('have.text', '8x+526195.5352');
+    cy.get('#\\/m4c .mjx-mrow').eq(0).should('have.text', '8x+526195.5352');
+    cy.get('#\\/m4d .mjx-mrow').eq(0).should('have.text', '8x');
+    cy.get('#\\/m4e .mjx-mrow').eq(0).should('have.text', '8x');
+    cy.get('#\\/m4f .mjx-mrow').eq(0).should('have.text', '8');
 
 
   });

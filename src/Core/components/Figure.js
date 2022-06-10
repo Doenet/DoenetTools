@@ -41,13 +41,17 @@ export default class Figure extends BlockComponent {
 
     stateVariableDefinitions.figureEnumeration = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["number"],
       additionalStateVariablesDefined: [{
         variableName: "figureName",
         public: true,
-        componentType: "text",
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
         forRenderer: true,
       }],
       returnDependencies({ stateValues }) {
@@ -96,7 +100,9 @@ export default class Figure extends BlockComponent {
 
     stateVariableDefinitions.caption = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         captionChild: {

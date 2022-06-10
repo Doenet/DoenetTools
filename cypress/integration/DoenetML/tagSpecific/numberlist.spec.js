@@ -384,15 +384,15 @@ describe('Numberlist Tag Tests', function () {
     <p><numberlist>
       <number>1</number>
       <numberlist>2 3</numberlist>
-      <copy prop="number3" target="_numberlist1" componentType="number" />
+      <copy prop="number3" target="_numberlist1" createComponentOfType="number" />
       <numberlist>
         <numberlist name="mid">
-          <number><copy prop="number1" target="_numberlist1" componentType="number" /></number>
+          <number><copy prop="number1" target="_numberlist1" createComponentOfType="number" /></number>
           <numberlist>4 5</numberlist>
         </numberlist>
         <numberlist>
-          <copy prop="number2" target="_numberlist1" componentType="number" />
-          <copy prop="number5" target="_numberlist1" componentType="number" />
+          <copy prop="number2" target="_numberlist1" createComponentOfType="number" />
+          <copy prop="number5" target="_numberlist1" createComponentOfType="number" />
         </numberlist>
       </numberlist>
       <copy target="mid" />

@@ -27,7 +27,9 @@ export class M extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       defaultValue: "",
       hasEssential: true,
       returnDependencies: () => ({
@@ -187,7 +189,9 @@ export class Men extends M {
 
     stateVariableDefinitions.equationTag = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         equationCounter: {

@@ -702,15 +702,15 @@ describe('MathList Tag Tests', function () {
     <mathlist>
       <math>a</math>
       <mathlist>q r</mathlist>
-      <copy prop="math3" target="_mathlist1" assignNames="m4" componentType="math" />
+      <copy prop="math3" target="_mathlist1" assignNames="m4" createComponentOfType="math" />
       <mathlist>
         <mathlist name="mid">
-          <math><copy prop="math1" target="_mathlist1" componentType="math" /></math>
+          <math><copy prop="math1" target="_mathlist1" createComponentOfType="math" /></math>
           <mathlist>u v</mathlist>
         </mathlist>
         <mathlist>
-          <copy prop="math2" target="_mathlist1" assignNames="m8" componentType="math" />
-          <copy prop="math5" target="_mathlist1" assignNames="m9" componentType="math" />
+          <copy prop="math2" target="_mathlist1" assignNames="m8" createComponentOfType="math" />
+          <copy prop="math5" target="_mathlist1" assignNames="m9" createComponentOfType="math" />
         </mathlist>
       </mathlist>
       <copy target="mid" assignNames="mid2" />

@@ -151,7 +151,9 @@ export default class CodeEditor extends BlockComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       hasEssential: true,
       forRenderer: true,
       returnDependencies: () => ({
@@ -204,7 +206,9 @@ export default class CodeEditor extends BlockComponent {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       hasEssential: true,
       forRenderer: true,
       returnDependencies: () => ({
@@ -265,7 +269,9 @@ export default class CodeEditor extends BlockComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",

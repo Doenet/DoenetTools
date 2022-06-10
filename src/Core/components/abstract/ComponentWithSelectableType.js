@@ -105,7 +105,9 @@ export class ComponentWithSelectableType extends BaseComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      hasVariableComponentType: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       shadowVariable: true,
       returnDependencies: () => ({
         type: {
@@ -142,7 +144,7 @@ export class ComponentWithSelectableType extends BaseComponent {
 
         return {
           setValue: { value },
-          setComponentType: { value: dependencyValues.type },
+          setCreateComponentOfType: { value: dependencyValues.type },
         };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -259,9 +261,11 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
     stateVariableDefinitions.values = {
       public: true,
       isArray: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       entryPrefixes: ["value"],
       stateVariablesDeterminingDependencies: ["childForValue"],
-      hasVariableComponentType: true,
       returnArraySizeDependencies: () => ({
         nValues: {
           dependencyType: "stateVariable",
@@ -329,7 +333,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 
         return {
           setValue: { values },
-          setComponentType: { values: globalDependencyValues.type },
+          setCreateComponentOfType: { values: globalDependencyValues.type },
         };
       }
     }

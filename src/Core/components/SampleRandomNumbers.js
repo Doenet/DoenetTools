@@ -105,7 +105,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
     stateVariableDefinitions.step = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -129,11 +131,15 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
     stateVariableDefinitions.from = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: [{
         variableName: "to",
         public: true,
-        componentType: "number"
+        shadowingInstructions: {
+          createComponentOfType: "number",
+        },
       }, {
         variableName: "nDiscreteValues",
       }],
@@ -212,7 +218,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     stateVariableDefinitions.mean = {
       stateVariablesDeterminingDependencies: ["type"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies({ stateValues }) {
         let dependencies = {
           type: {
@@ -253,7 +261,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     stateVariableDefinitions.variance = {
       stateVariablesDeterminingDependencies: ["type"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies({ stateValues }) {
         let dependencies = {
           type: {
@@ -315,7 +325,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
     stateVariableDefinitions.standardDeviation = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         variance: {
           dependencyType: "stateVariable",

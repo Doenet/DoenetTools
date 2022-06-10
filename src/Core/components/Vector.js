@@ -171,7 +171,9 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -746,7 +748,9 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         basedOnHead: {
           dependencyType: "stateVariable",
@@ -825,22 +829,24 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.displacement = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "x") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <vector> and <xs>
+            return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["x"],
       hasEssential: true,
       essentialVarName: "displacement2", // since "displacement" used for displacementShadow
-      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       set: convertValueToMathExpression,
-      returnWrappingComponents(prefix) {
-        if (prefix === "x") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <vector> and <xs>
-          return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: ["basedOnDisplacement", "basedOnHead", "sourceOfDisplacement"],
       returnArraySizeDependencies: () => ({
         nDimDisplacement: {
@@ -1151,20 +1157,22 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.head = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "headX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["headX"],
-      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       set: convertValueToMathExpression,
-      returnWrappingComponents(prefix) {
-        if (prefix === "headX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: ["basedOnHead"],
       returnArraySizeDependencies: () => ({
         nDimHead: {
@@ -1333,23 +1341,25 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.tail = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "tailX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["tailX"],
       hasEssential: true,
-      additionalAttributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       defaultValueByArrayKey: () => me.fromAst(0),
       essentialVarName: "tail2",  // since tailShadow uses "tail"
       set: convertValueToMathExpression,
-      returnWrappingComponents(prefix) {
-        if (prefix === "tailX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: ["basedOnTail", "basedOnHead", "basedOnDisplacement"],
       returnArraySizeDependencies: () => ({
         nDimTail: {

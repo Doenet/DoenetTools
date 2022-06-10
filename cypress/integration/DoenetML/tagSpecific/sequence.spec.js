@@ -1404,5 +1404,60 @@ describe('Sequence Tag Tests', function () {
     })
   });
 
+
+  it("rounding", () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><sequence assignNames="n1a n1b n1c" from="10.12345" length="3" step="0.03257" /></aslist></p>
+    <p><aslist><sequence assignNames="n2a n2b n2c" from="10.12345" length="3" step="0.03257" displayDigits="3" /></aslist></p>
+    <p><aslist><sequence assignNames="n3a n3b n3c" from="10.12345" length="3" step="0.03257" displayDecimals="3" /></aslist></p>
+    <p><aslist><sequence assignNames="n4a n4b n4c" from="10" length="3" displayDigits="3" padZeros /></aslist></p>
+
+    <p><number name="n1a1">$n1a</number> <number name="n1b1">$n1b</number> <number name="n1c1">$n1c</number></p>
+    <p><number name="n2a1">$n2a</number> <number name="n2b1">$n2b</number> <number name="n2c1">$n2c</number></p>
+    <p><number name="n3a1">$n3a</number> <number name="n3b1">$n3b</number> <number name="n3c1">$n3c</number></p>
+    <p><number name="n4a1">$n4a</number> <number name="n4b1">$n4b</number> <number name="n4c1">$n4c</number></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    let na=10.12345;
+    let nb=na+0.03257;
+    let nc=nb+0.03257;
+
+    cy.get('#\\/n1a').should('have.text', String(Math.round(na * 10 ** 8) / 10 ** 8))
+    cy.get('#\\/n1b').should('have.text', String(Math.round(nb * 10 ** 8) / 10 ** 8))
+    cy.get('#\\/n1c').should('have.text', String(Math.round(nc * 10 ** 8) / 10 ** 8))
+    cy.get('#\\/n2a').should('have.text', String(Math.round(na * 10 ** 1) / 10 ** 1))
+    cy.get('#\\/n2b').should('have.text', String(Math.round(nb * 10 ** 1) / 10 ** 1))
+    cy.get('#\\/n2c').should('have.text', String(Math.round(nc * 10 ** 1) / 10 ** 1))
+    cy.get('#\\/n3a').should('have.text', String(Math.round(na * 10 ** 3) / 10 ** 3))
+    cy.get('#\\/n3b').should('have.text', String(Math.round(nb * 10 ** 3) / 10 ** 3))
+    cy.get('#\\/n3c').should('have.text', String(Math.round(nc * 10 ** 3) / 10 ** 3))
+    cy.get('#\\/n4a').should('have.text', '10.0');
+    cy.get('#\\/n4b').should('have.text', '11.0');
+    cy.get('#\\/n4c').should('have.text', '12.0');
+
+    cy.get('#\\/n1a1').should('have.text', String(Math.round(na * 10 ** 8) / 10 ** 8))
+    cy.get('#\\/n1b1').should('have.text', String(Math.round(nb * 10 ** 8) / 10 ** 8))
+    cy.get('#\\/n1c1').should('have.text', String(Math.round(nc * 10 ** 8) / 10 ** 8))
+    cy.get('#\\/n2a1').should('have.text', String(Math.round(na * 10 ** 1) / 10 ** 1))
+    cy.get('#\\/n2b1').should('have.text', String(Math.round(nb * 10 ** 1) / 10 ** 1))
+    cy.get('#\\/n2c1').should('have.text', String(Math.round(nc * 10 ** 1) / 10 ** 1))
+    cy.get('#\\/n3a1').should('have.text', String(Math.round(na * 10 ** 3) / 10 ** 3))
+    cy.get('#\\/n3b1').should('have.text', String(Math.round(nb * 10 ** 3) / 10 ** 3))
+    cy.get('#\\/n3c1').should('have.text', String(Math.round(nc * 10 ** 3) / 10 ** 3))
+    cy.get('#\\/n4a1').should('have.text', '10.0');
+    cy.get('#\\/n4b1').should('have.text', '11.0');
+    cy.get('#\\/n4c1').should('have.text', '12.0');
+
+
+  });
+
 });
 

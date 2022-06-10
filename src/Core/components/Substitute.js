@@ -20,7 +20,8 @@ export default class Substitute extends CompositeComponent {
       createStateVariable: "type",
       defaultPrimitiveValue: "math",
       toLowerCase: true,
-      validValues: ["math", "text"]
+      validValues: ["math", "text"],
+      public: true,
     }
 
     attributes.match = {
@@ -48,16 +49,18 @@ export default class Substitute extends CompositeComponent {
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
     attributes.displayDigits = {
-      leaveRaw: true
-    }
+      createComponentOfType: "integer",
+    };
     attributes.displayDecimals = {
-      leaveRaw: true
-    }
+      createComponentOfType: "integer",
+    };
     attributes.displaySmallAsZero = {
-      leaveRaw: true
-    }
+      createComponentOfType: "number",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+    };
     attributes.padZeros = {
-      leaveRaw: true
+      createComponentOfType: "boolean",
     }
 
     // attributes for text
@@ -125,6 +128,213 @@ export default class Substitute extends CompositeComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        type: {
+          dependencyType: "stateVariable",
+          variableName: "type"
+        },
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        child: {
+          dependencyType: "child",
+          childGroups: ["anything"],
+          variableNames: ["displayDigits"],
+          variablesOptional: true,
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.type !== "math") {
+          return { setValue: { displayDigits: null } }
+        } else if (dependencyValues.displayDigitsAttr !== null && !usedDefault.displayDigitsAttr) {
+          return {
+            setValue: {
+              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+            }
+          }
+        } else if (
+          (dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr)
+          && dependencyValues.child.length === 1
+          && !(usedDefault.child[0] && usedDefault.child[0].displayDigits)
+        ) {
+          // have to check to exclude case where have displayDecimals attribute
+          // because otherwise a non-default displayDigits will win over displayDecimals
+          return {
+            setValue: {
+              displayDigits: dependencyValues.child[0].stateValues.displayDigits
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { displayDigits: true } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.displayDecimals = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: null,
+      returnDependencies: () => ({
+        type: {
+          dependencyType: "stateVariable",
+          variableName: "type"
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        child: {
+          dependencyType: "child",
+          childGroups: ["anything"],
+          variableNames: ["displayDecimals"],
+          variablesOptional: true
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.type !== "math") {
+          return { setValue: { displayDecimals: null } }
+        } else if (dependencyValues.displayDecimalsAttr !== null && !usedDefault.displayDecimalsAttr) {
+          return {
+            setValue: {
+              displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.child.length === 1
+          && !(usedDefault.child[0] && usedDefault.child[0].displayDecimals)
+        ) {
+          return {
+            setValue: {
+              displayDecimals: dependencyValues.child[0].stateValues.displayDecimals
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { displayDecimals: true } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.displaySmallAsZero = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
+      hasEssential: true,
+      defaultValue: 0,
+      returnDependencies: () => ({
+        type: {
+          dependencyType: "stateVariable",
+          variableName: "type"
+        },
+        displaySmallAsZeroAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displaySmallAsZero",
+          variableNames: ["value"]
+        },
+        child: {
+          dependencyType: "child",
+          childGroups: ["anything"],
+          variableNames: ["displaySmallAsZero"],
+          variablesOptional: true
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.type !== "math") {
+          return { setValue: { displaySmallAsZero: null } }
+        } else if (dependencyValues.displaySmallAsZeroAttr !== null && !usedDefault.displaySmallAsZeroAttr) {
+          return {
+            setValue: {
+              displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.child.length === 1
+          && !(usedDefault.child[0] && usedDefault.child[0].displaySmallAsZero)
+        ) {
+          return {
+            setValue: {
+              displaySmallAsZero: dependencyValues.child[0].stateValues.displaySmallAsZero
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { displaySmallAsZero: true } }
+        }
+
+      }
+    }
+
+    stateVariableDefinitions.padZeros = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      hasEssential: true,
+      defaultValue: false,
+      returnDependencies: () => ({
+        type: {
+          dependencyType: "stateVariable",
+          variableName: "type"
+        },
+        padZerosAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "padZeros",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+        child: {
+          dependencyType: "child",
+          childGroups: ["anything"],
+          variableNames: ["padZeros"],
+          variablesOptional: true
+        }
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.type !== "math") {
+          return { setValue: { padZeros: null } }
+        } else if (dependencyValues.padZerosAttr !== null && !usedDefault.padZerosAttr) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.padZerosAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.child.length === 1
+          && !(usedDefault.child[0] && usedDefault.child[0].padZeros)
+        ) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.child[0].stateValues.padZeros
+            }
+          };
+        } else {
+          return { useEssentialOrDefaultValue: { padZeros: true } }
+        }
+
+      }
+    }
 
 
     stateVariableDefinitions.originalValue = {
@@ -410,28 +620,37 @@ export default class Substitute extends CompositeComponent {
     // for math type, if specified attributes in the substitute tag
     // give those attributes to serialized replacement
     if (type === "math") {
-
       let attributes = {};
-      let foundAttribute = false;
-      for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
-        if (attr in component.attributes) {
-          attributes[attr] = component.attributes[attr];
-          foundAttribute = true;
+
+      let attributesComponentTypes = {
+        displayDigits: "integer",
+        displayDecimals: "integer",
+        displaySmallAsZero: "number",
+        padZeros: "boolean"
+      }
+
+      for (let attr in attributesComponentTypes) {
+        let shadowComponent = {
+          componentType: attributesComponentTypes[attr],
+          downstreamDependencies: {
+            [component.componentName]: [
+              {
+                compositeName: component.componentName,
+                dependencyType: "referenceShadow",
+                propVariable: attr
+              }
+            ]
+          }
         }
-      }
 
-      if (foundAttribute) {
-
-        serializedReplacement.attributes = convertAttributesForComponentType({
-          attributes,
-          componentType: "math",
-          componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace,
-          flags
-        })
-
+        attributes[attr] = {
+          component: shadowComponent
+        }
 
       }
+
+      serializedReplacement.attributes = attributes;
+
     }
 
     let processResult = processAssignNames({

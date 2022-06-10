@@ -82,7 +82,9 @@ export default class Textinput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: () => ({
@@ -134,7 +136,9 @@ export default class Textinput extends Input {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       hasEssential: true,
       shadowVariable: true,
@@ -196,7 +200,9 @@ export default class Textinput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",

@@ -78,6 +78,11 @@ export default class Collect extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.link = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { link: true } })
+    }
+
     stateVariableDefinitions.targetComponent = {
       shadowVariable: true,
       returnDependencies: () => ({

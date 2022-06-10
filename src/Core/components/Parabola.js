@@ -48,7 +48,9 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.parMax = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { parMax: +Infinity } })
@@ -56,7 +58,9 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.parMin = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { parMin: -Infinity } })
@@ -113,20 +117,22 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "throughPointX") {
+            return [];
+          } else {
+            // through point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "throughPointX") {
-          return [];
-        } else {
-          // through point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
           // throughPointX1_2 is the 2nd component of the first through point
@@ -411,18 +417,24 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.a = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: [
         {
           variableName: "b",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           hasEssential: true,
           defaultValue: 0,
         }, {
           variableName: "c",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           hasEssential: true,
           defaultValue: 0,
         },
@@ -1021,18 +1033,20 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.vertex = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "vertexX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["vertexX"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "vertexX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       returnArraySizeDependencies: () => ({}),
       returnArraySize() {
         return [2];
@@ -1126,7 +1140,9 @@ export default class Parabola extends Curve {
 
     stateVariableDefinitions.equation = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       // TODO: implement additional properties
       additionalProperties: { simplify: "numberspreserveorder", displaysmallaszero: true },
 

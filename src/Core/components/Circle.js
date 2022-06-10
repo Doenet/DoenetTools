@@ -57,7 +57,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.parMax = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { parMax: NaN } })
@@ -65,7 +67,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.parMin = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { parMin: NaN } })
@@ -105,20 +109,22 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "throughPointX") {
+            return [];
+          } else {
+            // point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "throughPointX") {
-          return [];
-        } else {
-          // point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
           // throughPointX1_2 is the 2nd component of the first point
@@ -1537,7 +1543,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.radius = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       stateVariablesDeterminingDependencies: [
         "nThroughPoints", "havePrescribedCenter", "havePrescribedRadius",
       ],
@@ -1723,7 +1731,9 @@ export default class Circle extends Curve {
 
     stateVariableDefinitions.diameter = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         radius: {
           dependencyType: "stateVariable",
@@ -1751,18 +1761,20 @@ export default class Circle extends Curve {
     stateVariableDefinitions.center = {
       forRenderer: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "centerX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["centerX"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "centerX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: [
         "nThroughPoints", "havePrescribedCenter", "havePrescribedRadius"
       ],

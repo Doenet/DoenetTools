@@ -190,7 +190,7 @@ export default class BaseComponent {
         for (let varName in stateVariableDescriptions) {
           let stateDescrip = stateVariableDescriptions[varName];
 
-          let componentTypes = stateDescrip.componentType;
+          let componentTypes = stateDescrip.shadowingInstructions?.createComponentOfType;
           if (!Array.isArray(componentTypes)) {
             componentTypes = [componentTypes]
           }
@@ -369,7 +369,9 @@ export default class BaseComponent {
 
     stateVariableDefinitions.hidden = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         hide: {
@@ -405,7 +407,9 @@ export default class BaseComponent {
 
     stateVariableDefinitions.disabled = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       hasEssential: true,
       doNotShadowEssential: true,
@@ -498,7 +502,9 @@ export default class BaseComponent {
 
     stateVariableDefinitions.fixed = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
       hasEssential: true,
@@ -694,13 +700,29 @@ export default class BaseComponent {
     let arrayEntryPrefixes = {};
     let aliases = {};
 
-    for (let varName in attributeObject) {
-      let attrObj = attributeObject[varName];
-      let componentTypeOverride = attrObj.componentType;
-      if ((!onlyPublic || attrObj.public) && (!onlyForRenderer || attrObj.forRenderer)) {
-        stateVariableDescriptions[varName] = {
-          componentType: componentTypeOverride ? componentTypeOverride : varName,
-          public: attrObj.public,
+    for (let attrName in attributeObject) {
+      let attrObj = attributeObject[attrName];
+      let varName = attrObj.createStateVariable;
+      if (varName) {
+        if ((!onlyPublic || attrObj.public) && (!onlyForRenderer || attrObj.forRenderer)) {
+          if (attrObj.public) {
+            let attributeFromPrimitive = !attrObj.createComponentOfType;
+            let createComponentOfType;
+            if (attributeFromPrimitive) {
+              createComponentOfType = attrObj.createPrimitiveOfType;
+              if (createComponentOfType === "string") {
+                createComponentOfType = "text";
+              }
+            } else {
+              createComponentOfType = attrObj.createComponentOfType;
+            }
+            stateVariableDescriptions[varName] = {
+              createComponentOfType,
+              public: true,
+            }
+          } else {
+            stateVariableDescriptions[varName] = {}
+          }
         }
       }
 
@@ -715,15 +737,18 @@ export default class BaseComponent {
         continue;
       }
       if ((!onlyPublic || theStateDef.public) && (!onlyForRenderer || theStateDef.forRenderer)) {
-        stateVariableDescriptions[varName] = {
-          componentType: theStateDef.componentType,
-          public: theStateDef.public,
-          containsComponentNamesToCopy: theStateDef.containsComponentNamesToCopy,
-        };
+        if (theStateDef.public) {
+          stateVariableDescriptions[varName] = {
+            createComponentOfType: theStateDef.shadowingInstructions.createComponentOfType,
+            public: true,
+          };
+        } else {
+          stateVariableDescriptions[varName] = {}
+        }
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;
           stateVariableDescriptions[varName].nDimensions = theStateDef.nDimensions === undefined ? 1 : theStateDef.nDimensions;
-          stateVariableDescriptions[varName].wrappingComponents = theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents() : [];
+          stateVariableDescriptions[varName].wrappingComponents = theStateDef.shadowingInstructions?.returnWrappingComponents ? theStateDef.shadowingInstructions.returnWrappingComponents() : [];
           let entryPrefixes;
           if (theStateDef.entryPrefixes) {
             entryPrefixes = theStateDef.entryPrefixes;
@@ -734,7 +759,7 @@ export default class BaseComponent {
             arrayEntryPrefixes[prefix] = {
               arrayVariableName: varName,
               nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
-              wrappingComponents: theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents(prefix) : []
+              wrappingComponents: theStateDef.shadowingInstructions?.returnWrappingComponents ? theStateDef.shadowingInstructions.returnWrappingComponents(prefix) : []
             }
           }
           if (theStateDef.getArrayKeysFromVarName) {
@@ -965,7 +990,7 @@ export default class BaseComponent {
 
     if (adapterComponentType === undefined) {
       // if didn't override componentType, use componentType from state variable
-      adapterComponentType = stateFromAdapter.componentType;
+      adapterComponentType = stateFromAdapter.shadowingInstructions.createComponentOfType;
     }
 
     return {
@@ -1009,7 +1034,7 @@ export default class BaseComponent {
     }
 
     if (adapterComponentType === undefined) {
-      // if didn't override componentType, use componentType from state variable
+      // if didn't override componentType, use createComponentType from state variable
 
       let stateVarInfo = publicStateVariableInfo[this.componentType]
 
@@ -1019,7 +1044,7 @@ export default class BaseComponent {
           + this.componentType);
       }
 
-      adapterComponentType = varInfo.componentType;
+      adapterComponentType = varInfo.createComponentOfType;
 
       if (!adapterComponentType) {
         throw Error(`Couldn't get adapter component type for ${adapterStateVariable} of componentType ${this.componentType}`)

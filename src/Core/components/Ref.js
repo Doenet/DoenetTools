@@ -207,7 +207,9 @@ export default class Ref extends InlineComponent {
 
     stateVariableDefinitions.linkText = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["targetName"],
       returnDependencies({ stateValues }) {

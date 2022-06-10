@@ -117,7 +117,9 @@ export default class AnimateFromSequence extends BaseComponent {
 
     stateVariableDefinitions.selectedIndex = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       defaultValue: 1,
       hasEssential: true,
       returnDependencies: () => ({}),
@@ -141,7 +143,9 @@ export default class AnimateFromSequence extends BaseComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      hasVariableComponentType: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       returnDependencies: () => ({
         possibleValues: {
           dependencyType: "stateVariable",
@@ -159,7 +163,7 @@ export default class AnimateFromSequence extends BaseComponent {
       definition({ dependencyValues }) {
         return {
           setValue: { value: dependencyValues.possibleValues[dependencyValues.selectedIndex - 1] },
-          setComponentType: { value: dependencyValues.type },
+          setCreateComponentOfType: { value: dependencyValues.type },
         }
       },
       async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
@@ -220,7 +224,9 @@ export default class AnimateFromSequence extends BaseComponent {
 
     stateVariableDefinitions.currentAnimationDirection = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       hasEssential: true,
       returnDependencies: () => ({
         animationMode: {
