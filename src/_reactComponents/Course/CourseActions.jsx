@@ -1968,7 +1968,7 @@ export const useCourse = (courseId) => {
         if (cutObjs.length > 0){
 
           let doenetIdsToMove = [];
-          let noParentUpdateDoenetIds = [];
+          let noParentUpdateDoenetIds = []; 
           let sourcePagesAndOrdersToMove = [];
           let sourcePagesAndOrdersForTesting = [];
 
@@ -2081,12 +2081,15 @@ export const useCourse = (courseId) => {
                 }); 
               }
               //update each containing item with new parentId 
-              for (let doenetId of noParentUpdateDoenetIds){
-                set(itemByDoenetId(doenetId),(prevObj)=>{
-                  let nextObj = {...prevObj}
-                  nextObj.parentDoenetId = destParentDoenetId;
-                  return nextObj
-                }); 
+              //unless it's a child section of a moved section
+              for (let doenetId of doenetIdsToMove){
+                if (!noParentUpdateDoenetIds.includes(doenetId)){
+                  set(itemByDoenetId(doenetId),(prevObj)=>{
+                    let nextObj = {...prevObj}
+                    nextObj.parentDoenetId = destParentDoenetId;
+                    return nextObj
+                  }); 
+                }
               }
 
               //stack all doenetIds associated with the move
