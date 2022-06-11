@@ -1835,7 +1835,7 @@ export const useCourse = (courseId) => {
             for (let id of itemObj.content){
               if (id?.type == 'order'){
                 let subOrderIds = await getIds(itemObj.doenetId,id)
-                orderIds = [...orderIds,...subOrderIds]
+                orderIds = [...orderIds,id.doenetId,...subOrderIds]
               }else{
                 orderIds.push(id)
               }
@@ -2089,7 +2089,7 @@ export const useCourse = (courseId) => {
               }
               //Deduplicate
               sortedDoenetIdsToMove = [...new Set(sortedDoenetIdsToMove)]
-              // console.log("sortedDoenetIdsToMove",sortedDoenetIdsToMove)
+              // console.log(">>>sortedDoenetIdsToMove",sortedDoenetIdsToMove)
               //update author order with the changes 
               //remove from old positions
               //add as a stack to the new position
