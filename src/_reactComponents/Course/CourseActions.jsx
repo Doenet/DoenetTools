@@ -1946,7 +1946,6 @@ export const useCourse = (courseId) => {
           if (!destPreviousItemDoenetId){
             destPreviousItemDoenetId = sectionId;
           }
-          console.log("Nothing selected section ids items and destPreviousItemDoenetId",authorItemSectionDoenetIds,destPreviousItemDoenetId)
           let lastItemInSelectedSectionObj = await snapshot.getPromise(itemByDoenetId(lastItemInSelectedSectionDoenetId));
           if (lastItemInSelectedSectionObj.type == 'section' || 
             lastItemInSelectedSectionObj.type == 'bank' ||
@@ -2305,9 +2304,11 @@ export const useCourse = (courseId) => {
           
 
 
-
           let nextPagesParentDoenetId;
-          if (singleSelectedObj.type == 'order' || singleSelectedObj.type == 'bank'){
+          if (singleSelectedObj.type == 'order' || 
+          singleSelectedObj.type == 'bank' ||
+          singleSelectedObj.type == 'activity' 
+          ){
             nextPagesParentDoenetId = singleSelectedObj.doenetId;
           }else if (singleSelectedObj.type == 'page'){
             nextPagesParentDoenetId = singleSelectedObj.parentDoenetId;
