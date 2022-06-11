@@ -1449,7 +1449,6 @@ export const useCourse = (courseId) => {
   });
 
   function updateOrder({content,needleDoenetId,changesObj}){
-    console.log(">>needleDoenetId",needleDoenetId)
     let nextContent = [...content];
 
     for (let [i,item] of Object.entries(content)){
@@ -1836,7 +1835,7 @@ export const useCourse = (courseId) => {
             for (let id of itemObj.content){
               if (id?.type == 'order'){
                 let subOrderIds = await getIds(itemObj.doenetId,id)
-                orderIds = [...orderIds,...subOrderIds]
+                orderIds = [...orderIds,id.doenetId,...subOrderIds]
               }else{
                 orderIds.push(id)
               }
@@ -1899,7 +1898,7 @@ export const useCourse = (courseId) => {
         let destPreviousContainingItemDoenetId;
         let destType = "section";
         let destinationContainingObj;
-        //Update parentDoenetId if single selection
+        //Update the destination parentDoenetId if single selection
         if (selectedDoenetIds.length == 1){
           singleSelectedObj = await snapshot.getPromise(itemByDoenetId(selectedDoenetIds[0]));
           destType = singleSelectedObj.type;
@@ -1943,6 +1942,10 @@ export const useCourse = (courseId) => {
           let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
           let lastItemInSelectedSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
           destPreviousItemDoenetId = lastItemInSelectedSectionDoenetId
+          //Empty section
+          if (!destPreviousItemDoenetId){
+            destPreviousItemDoenetId = sectionId;
+          }
           let lastItemInSelectedSectionObj = await snapshot.getPromise(itemByDoenetId(lastItemInSelectedSectionDoenetId));
           if (lastItemInSelectedSectionObj.type == 'section' || 
             lastItemInSelectedSectionObj.type == 'bank' ||
@@ -1955,8 +1958,8 @@ export const useCourse = (courseId) => {
             destPreviousContainingItemDoenetId = lastItemInSelectedSectionObj.containingDoenetId;
           }
         }
+        //Empty section
         if (!destPreviousItemDoenetId){
-          //Empty section
           destPreviousItemDoenetId = destParentDoenetId;
         }
 
@@ -1964,25 +1967,38 @@ export const useCourse = (courseId) => {
         if (cutObjs.length > 0){
 
           let doenetIdsToMove = [];
-          let noParentUpdateDoenetIds = [];
+          let noParentUpdateDoenetIds = []; 
           let sourcePagesAndOrdersToMove = [];
+          let sourcePagesAndOrdersForTesting = [];
 
           let ancestorsDoenetIds = [];
           if (destinationContainingObj){
             ancestorsDoenetIds = await getAncestors(destinationContainingObj.doenetId)
           }
 
+          let cuttingContaingItemFLAG = false;
+          for (let cutObj of cutObjs){
+            if (cutObj.type == 'activity' || 
+            cutObj.type == 'bank' ||
+            cutObj.type == 'section'
+            ){
+              cuttingContaingItemFLAG = true;
+              break;
+            }
+          }
           //Test if cut orders and pages can go in destination
           for (let cutObj of cutObjs){
+
             if (destType == 'section'  && 
             (cutObj.type == 'page' ||
-            cutObj.type == 'order'
-            )
+            cutObj.type == 'order' ) &&
+            !cuttingContaingItemFLAG
             ){
-              failureCallback(`Pasting ${cutObj.type} in a ${destType} is not supported.`)
+              failureCallback(`Pasting ${cutObj.type} in a section is not supported.`)
               return;
             }
-            if (cutObj.type == 'order' ){
+            if (cutObj.type == 'order' &&
+            !cuttingContaingItemFLAG){
               failureCallback("Pasting orders is not yet supported")
               return;
             }
@@ -1994,19 +2010,7 @@ export const useCourse = (courseId) => {
               failureCallback("Can't paste item into itself.")
               return;
             }
-            // if (destType == 'activity' && 
-            //   (cutObj.type == 'activity' ||
-            //   cutObj.type == 'section' ||
-            //   cutObj.type == 'bank' 
-            //   )
-            // ){
-            //   failureCallback("Activities can only accept orders or pages.")
-            //   return;
-            // }
-            // if (destType == 'order' && cutObj.type != 'page' ){
-            //   failureCallback("Orders can only accept pages.")
-            //   return;
-            // }
+           
             if (cutObj.type == 'activity' || cutObj.type == 'bank'){
               doenetIdsToMove.push(cutObj.doenetId);
             }
@@ -2018,17 +2022,35 @@ export const useCourse = (courseId) => {
               noParentUpdateDoenetIds = [...noParentUpdateDoenetIds,...additionalNoParentUpdateDoenetIds]
               doenetIdsToMove = [...doenetIdsToMove,cutObj.doenetId,...additionalNoParentUpdateDoenetIds]
             }
-            if (cutObj.type == 'order' || cutObj.type == 'page'){
+            if ((cutObj.type == 'order' || cutObj.type == 'page') && !cuttingContaingItemFLAG){
               sourcePagesAndOrdersToMove.push({...cutObj})
             }
+            
+            if (cutObj.type == 'order' || cutObj.type == 'page'){
+              sourcePagesAndOrdersForTesting.push({...cutObj})
+            }
+          }
 
+          //only if cuttingContaingItemFLAG is true 
+          // test if pages and orders are all children of the containing items
+          if (sourcePagesAndOrdersForTesting.length > 0 && cuttingContaingItemFLAG ){
+            let acceptableOrderandPageIds = [];
+            for (let doenetId of doenetIdsToMove){
+              let acceptableIds = await getIds(doenetId)
+              acceptableOrderandPageIds = [...acceptableOrderandPageIds,...acceptableIds]
+            }
+            for (let testObj of sourcePagesAndOrdersForTesting){
+              if (!acceptableOrderandPageIds.includes(testObj.doenetId)){
+              failureCallback("Can't paste pages or orders with other types.")
+              return;
+              }
+            }
+            
           }
-          if (sourcePagesAndOrdersToMove.length > 0 && doenetIdsToMove.length > 0 ){
-            failureCallback("Can't paste pages or orders with other types.")
-            return;
-          }
+
       
 
+        //Move the containing items
         if (doenetIdsToMove.length > 0){
           // console.log("move",{
           //   courseId,
@@ -2048,18 +2070,25 @@ export const useCourse = (courseId) => {
             })
             // console.log("moveContent resp.data",resp.data)
             if (resp.status < 300) {
-              //update each containing item with new parentId 
-              //and turn off selection and isBeingCut
-              for (let doenetId of doenetIdsToMove){
-                set(itemByDoenetId(doenetId),(prevObj)=>{
+              //turn off selection and isBeingCut
+              for (let cutObj of cutObjs){
+                set(itemByDoenetId(cutObj.doenetId),(prevObj)=>{
                   let nextObj = {...prevObj}
                   nextObj["isBeingCut"] = false;
                   nextObj["isSelected"] = false;
-                  if (!noParentUpdateDoenetIds.includes(doenetId)){
-                    nextObj.parentDoenetId = destParentDoenetId;
-                  }
                   return nextObj
                 }); 
+              }
+              //update each containing item with new parentId 
+              //unless it's a child section of a moved section
+              for (let doenetId of doenetIdsToMove){
+                if (!noParentUpdateDoenetIds.includes(doenetId)){
+                  set(itemByDoenetId(doenetId),(prevObj)=>{
+                    let nextObj = {...prevObj}
+                    nextObj.parentDoenetId = destParentDoenetId;
+                    return nextObj
+                  }); 
+                }
               }
 
               //stack all doenetIds associated with the move
@@ -2070,7 +2099,7 @@ export const useCourse = (courseId) => {
               }
               //Deduplicate
               sortedDoenetIdsToMove = [...new Set(sortedDoenetIdsToMove)]
-              // console.log("sortedDoenetIdsToMove",sortedDoenetIdsToMove)
+              // console.log(">>>sortedDoenetIdsToMove",sortedDoenetIdsToMove)
               //update author order with the changes 
               //remove from old positions
               //add as a stack to the new position
@@ -2099,6 +2128,7 @@ export const useCourse = (courseId) => {
             failureCallback(err);
           }
         }
+
         if (sourcePagesAndOrdersToMove.length > 0){
           let destinationType = destinationContainingObj.type;
           let destinationDoenetId = destinationContainingObj.doenetId;
@@ -2119,10 +2149,11 @@ export const useCourse = (courseId) => {
           let sourceJSONs = []
           let originalPageDoenetIds = []
           let previousDoenetId;
+          //Update source
           for (let cutObj of sourcePagesAndOrdersToMove){
             let sourceContainingDoenetId = cutObj.containingDoenetId
             let indexOfPriorEntry = sourceDoenetIds.indexOf(sourceContainingDoenetId)
-            //if already in in sourceDoenetIds then update that index
+            //if already is in sourceDoenetIds then update that index
             if (indexOfPriorEntry == -1){
               originalPageDoenetIds.push([cutObj.doenetId]);
               
@@ -2163,6 +2194,7 @@ export const useCourse = (courseId) => {
                 //if source is destination delete page from destination
                 if (destinationContainingObj.doenetId == cutObj.containingDoenetId){
                   destinationJSON = deletePageFromActivity({content:destinationJSON,needleDoenetId:cutObj.doenetId})
+                  destinationContainingObj.content = destinationJSON;
                 }
               }else if (containingObjtype == 'bank'){
                 //Remove from Collection
@@ -2177,7 +2209,10 @@ export const useCourse = (courseId) => {
               }
               sourceJSONs[indexOfPriorEntry] = updatedSourceItemJSON
             }
-            //Add to destination
+          }
+
+          //Add to destination
+          for (let cutObj of sourcePagesAndOrdersToMove){
             if (destinationType == 'bank'){
               destinationJSON.push(cutObj.doenetId)
               //find last item in the bank
@@ -2187,6 +2222,7 @@ export const useCourse = (courseId) => {
                 orderIdOrActivityIdToAddTo = singleSelectedObj.parentDoenetId;
               }
               let previousPreviousDoenetId = previousDoenetId;
+                
                 ({content:destinationJSON,previousDoenetId} = addPageToActivity({
                 activityOrOrderObj:destinationContainingObj,
                 needleOrderOrActivityId:orderIdOrActivityIdToAddTo,
@@ -2268,18 +2304,38 @@ export const useCourse = (courseId) => {
           
 
 
-
           let nextPagesParentDoenetId;
-          if (singleSelectedObj.type == 'order' || singleSelectedObj.type == 'bank'){
+          if (singleSelectedObj.type == 'order' || 
+          singleSelectedObj.type == 'bank' ||
+          singleSelectedObj.type == 'activity' 
+          ){
             nextPagesParentDoenetId = singleSelectedObj.doenetId;
           }else if (singleSelectedObj.type == 'page'){
             nextPagesParentDoenetId = singleSelectedObj.parentDoenetId;
           }
           let setOfOriginalPageDoenetIds = []
           for (let [i,sourceType] of Object.entries(sourceTypes)){
+            
             let sourceDoenetId = sourceDoenetIds[i]
             let sourceJSON = sourceJSONs[i];
 
+            for(let originalPageDoenetId of originalPageDoenetIds[i]){
+              setOfOriginalPageDoenetIds.push(originalPageDoenetId);
+              //Update pages
+              set(itemByDoenetId(originalPageDoenetId),(prev)=>{
+                let next = {...prev}
+                next.containingDoenetId = destinationDoenetId;
+                next.parentDoenetId = nextPagesParentDoenetId;
+                next.isBeingCut = false
+                return next;
+              })
+            }
+
+            //If they are equal then
+            //the source JSON is wrong and destination is the only one used
+            if (sourceDoenetId == destinationDoenetId){
+              continue;
+            }
             //Update source
             if (sourceType == 'bank'){
               set(itemByDoenetId(sourceDoenetId),(prev)=>{
@@ -2294,17 +2350,7 @@ export const useCourse = (courseId) => {
                 return next;
               })
             }
-            for(let originalPageDoenetId of originalPageDoenetIds[i]){
-              setOfOriginalPageDoenetIds.push(originalPageDoenetId);
-              //Update pages
-              set(itemByDoenetId(originalPageDoenetId),(prev)=>{
-                let next = {...prev}
-                next.containingDoenetId = destinationDoenetId;
-                next.parentDoenetId = nextPagesParentDoenetId;
-                next.isBeingCut = false
-                return next;
-              })
-            }
+           
 
           }
 
@@ -2342,6 +2388,7 @@ export const useCourse = (courseId) => {
                 }
                 insertIndex = indexPreviousToPrevious + 1;
               }
+
               //Need original page in item order
               if (destinationWasASinglePageActivity){
                 next.splice(insertIndex,0,destinationWasSinglePagesPageId,...setOfOriginalPageDoenetIds);  //insert

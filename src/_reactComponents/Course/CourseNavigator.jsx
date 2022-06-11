@@ -171,7 +171,7 @@ function StudentActivity({courseId,doenetId,itemInfo,numberOfVisibleColumns,inde
 
 function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
-  console.log("authorItemOrder",authorItemOrder)
+  console.log("authorItemOrder",courseId,sectionId,authorItemOrder)
 
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
@@ -284,7 +284,7 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
 function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,orderInfo,courseNavigatorProps}){
   let {behavior,doenetId,content, numberToSelect, withReplacement} = orderInfo;
   let recoilOrderInfo = useRecoilValue(itemByDoenetId(doenetId));
-
+  
    let contentJSX = [];
    if (behavior == 'sequence'){
       contentJSX = content.map((pageOrOrder,i)=>{
@@ -317,11 +317,11 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
 
   if (recoilOrderInfo.isOpen){
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    <Row courseId={courseId} isBeingCut={recoilOrderInfo.isBeingCut} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
     {contentJSX}
     </>
   }else{
-    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    return <Row courseId={courseId} isBeingCut={recoilOrderInfo.isBeingCut} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
   }
 }
 
@@ -400,8 +400,12 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
       if (e.shiftKey){
         //Shift Click
         //Select all items from the last one selected to this one
-        //TODO: use sectionId to filter to correct section
-        const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
+        let sectionId = await snapshot.getPromise(searchParamAtomFamily('sectionId'))
+        if (!sectionId){
+          sectionId = courseId;
+        }
+        const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}))
+        // const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
         //build allRenderedRows on the fly
         let allRenderedRows = [];
         let skip = false;
