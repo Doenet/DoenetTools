@@ -1970,6 +1970,7 @@ export const useCourse = (courseId) => {
           let doenetIdsToMove = [];
           let noParentUpdateDoenetIds = [];
           let sourcePagesAndOrdersToMove = [];
+          let sourcePagesAndOrdersForTesting = [];
 
           let ancestorsDoenetIds = [];
           if (destinationContainingObj){
@@ -1986,11 +1987,8 @@ export const useCourse = (courseId) => {
               break;
             }
           }
-          console.log("cuttingContaingItemFLAG",cuttingContaingItemFLAG)
           //Test if cut orders and pages can go in destination
-          //TODO: if page or order check if we are also moving the containing item
           for (let cutObj of cutObjs){
-            console.log("cutObj",cutObj)
 
             if (destType == 'section'  && 
             (cutObj.type == 'page' ||
@@ -2028,19 +2026,29 @@ export const useCourse = (courseId) => {
             if ((cutObj.type == 'order' || cutObj.type == 'page') && !cuttingContaingItemFLAG){
               sourcePagesAndOrdersToMove.push({...cutObj})
             }
-
+            
+            if (cutObj.type == 'order' || cutObj.type == 'page'){
+              sourcePagesAndOrdersForTesting.push({...cutObj})
+            }
           }
 
-          //TODO: if cuttingContaingItemFLAG is true then test if pages and orders are all children of the containing items
-          // //If copying both containing items and pages and orders then ignore the pages and orders
-          // if (sourcePagesAndOrdersToMove.length > 0 && doenetIdsToMove.length > 0 ){
-          //   sourcePagesAndOrdersToMove = [];
-          //   // failureCallback("Can't paste pages or orders with other types.")
-          //   // return;
-          // }
+          //only if cuttingContaingItemFLAG is true 
+          // test if pages and orders are all children of the containing items
+          if (sourcePagesAndOrdersForTesting.length > 0 && cuttingContaingItemFLAG ){
+            let acceptableOrderandPageIds = [];
+            for (let doenetId of doenetIdsToMove){
+              let acceptableIds = await getIds(doenetId)
+              acceptableOrderandPageIds = [...acceptableOrderandPageIds,...acceptableIds]
+            }
+            for (let testObj of sourcePagesAndOrdersForTesting){
+              if (!acceptableOrderandPageIds.includes(testObj.doenetId)){
+              failureCallback("Can't paste pages or orders with other types.")
+              return;
+              }
+            }
+            
+          }
 
-          console.log("doenetIdsToMove",doenetIdsToMove)
-          console.log("sourcePagesAndOrdersToMove",sourcePagesAndOrdersToMove)
       
 
         //Move the containing items
