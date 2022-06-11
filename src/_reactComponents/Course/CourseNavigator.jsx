@@ -171,7 +171,7 @@ function StudentActivity({courseId,doenetId,itemInfo,numberOfVisibleColumns,inde
 
 function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
-  console.log("authorItemOrder",authorItemOrder)
+  console.log("authorItemOrder",courseId,sectionId,authorItemOrder)
 
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
@@ -400,8 +400,12 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
       if (e.shiftKey){
         //Shift Click
         //Select all items from the last one selected to this one
-        //TODO: use sectionId to filter to correct section
-        const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
+        let sectionId = await snapshot.getPromise(searchParamAtomFamily('sectionId'))
+        if (!sectionId){
+          sectionId = courseId;
+        }
+        const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}))
+        // const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
         //build allRenderedRows on the fly
         let allRenderedRows = [];
         let skip = false;
