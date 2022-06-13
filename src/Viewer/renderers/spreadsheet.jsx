@@ -9,7 +9,7 @@ import { registerAllModules } from 'handsontable/registry';
 registerAllModules();
 
 
-export default function SpreadsheetRenderer(props) {
+export default React.memo(function SpreadsheetRenderer(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -58,5 +58,5 @@ export default function SpreadsheetRenderer(props) {
       />
     </div>
   )
-}
+})
 

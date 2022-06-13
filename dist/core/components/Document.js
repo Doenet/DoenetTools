@@ -667,6 +667,9 @@ export default class Document extends BaseComponent {
       } else {
 
         nVariants = 100;
+        if (serializedComponent.variants?.numberOfVariantsPreIgnore <= 100) {
+          nVariants = serializedComponent.variants.numberOfVariantsPreIgnore;
+        }
 
         sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
         sharedParameters.variantIndicesToIgnore = [];
@@ -765,7 +768,18 @@ export default class Document extends BaseComponent {
     }
 
     if (!variantControlChild) {
-      return { success: true, numberOfVariants: 100, numberOfVariantsPreIgnore: 100 }
+
+      // if don't have variant control, check to see if have 100 or fewer unique variants
+
+      let result = super.determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects });
+
+      if (result.success && result.numberOfVariants <= 100) {
+        let numberOfVariants = result.numberOfVariants;
+        let numberOfVariantsPreIgnore = result.numberOfVariants;
+        return { success: true, numberOfVariants, numberOfVariantsPreIgnore }
+      } else {
+        return { success: false }
+      }
     }
 
     let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;

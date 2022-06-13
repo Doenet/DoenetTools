@@ -7,7 +7,7 @@ import {
   useRecoilState,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
-import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
 import {
   fileByPageId,
   pageVariantInfoAtom,
@@ -50,6 +50,7 @@ export default function EditorViewer() {
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
   const pageObj = useRecoilValue(itemByDoenetId(paramPageId));
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   useSetCourseIdFromDoenetId(doenetId);
   useInitCourseItems(courseId);
   let pageInitiated = false;
@@ -58,12 +59,19 @@ export default function EditorViewer() {
   }
   let initDoenetML = useRecoilCallback(({snapshot, set}) => async (pageId) => {
     let response = await snapshot.getPromise(fileByPageId(pageId));
+    let pageObj2 = await snapshot.getPromise(itemByDoenetId(pageId));
+    let containingObj = await snapshot.getPromise(itemByDoenetId(pageObj2.containingDoenetId));
     const doenetML = response;
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML);
     set(viewerDoenetMLAtom, doenetML);
     set(editorPageIdInitAtom, pageId);
-  }, []);
+    let suppress = [];
+    if (containingObj.type == "bank") {
+      suppress.push("AssignmentSettingsMenu");
+    }
+    setSuppressMenus(suppress);
+  }, [setSuppressMenus]);
   useEffect(() => {
     if (paramPageId !== "" && pageInitiated) {
       initDoenetML(paramPageId);
@@ -72,7 +80,9 @@ export default function EditorViewer() {
       setEditorInit("");
     };
   }, [paramPageId, pageInitiated]);
-  if (paramPageId !== initializedPageId) {
+  if (courseId === "__not_found__") {
+    return /* @__PURE__ */ React.createElement("h1", null, "Content not found or no permission to view content");
+  } else if (paramPageId !== initializedPageId) {
     return null;
   }
   let attemptNumber = 1;

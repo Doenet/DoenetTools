@@ -2,16 +2,11 @@
  * External dependencies
  */
 import React, {
-  // useContext,
-  // useRef,
-  // useEffect,
-  // Suspense,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react';
-// import axios from 'axios';
 import Measure from 'react-measure';
 import {
   // faLink,
@@ -24,22 +19,13 @@ import {
   faChevronDown,
   // faUsersSlash,
   // faUsers,
-  // faCheck,
+  faCheck,
   // faUserEdit,
   // faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { Link } from 'react-router-dom';
 import {
-  // atom,
-  // atomFamily,
-  // selector,
-  // selectorFamily,
-  // useSetRecoilState,
-  // useRecoilValueLoadable,
-  // useRecoilStateLoadable,
-  // useRecoilState,
   useRecoilValue,
   useRecoilCallback,
   useSetRecoilState,
@@ -52,8 +38,6 @@ import {
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
-  // findFirstPageOfActivity,
-  studentCourseItemOrderByCourseId,
   studentCourseItemOrderByCourseIdBySection
 } from '../../_reactComponents/Course/CourseActions';
 
@@ -61,7 +45,7 @@ import {
  * Internal dependencies
  */
 import '../../_utils/util.css';
-import { pageToolViewAtom, searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
+import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
 // import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
@@ -163,7 +147,7 @@ function StudentSection({courseId,doenetId,itemInfo,numberOfVisibleColumns,inden
 
   if (itemInfo.isOpen){
     let sectionItems = studentSectionItemOrder.map((doenetId)=>
-    <Item key={`itemcomponent${doenetId}`} courseNavigatorProps={courseNavigatorProps} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel+1} />)
+    <StudentItem key={`itemcomponent${doenetId}`} courseNavigatorProps={courseNavigatorProps} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel+1} />)
     
     return <>
     <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
@@ -176,14 +160,18 @@ function StudentSection({courseId,doenetId,itemInfo,numberOfVisibleColumns,inden
 }
 
 function StudentActivity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
+  let columnsJSX = [null]
+  if (itemInfo.dueDate){
+    columnsJSX[0] = <span key={`activityColumn2${doenetId}`}>{itemInfo.dueDate}</span>
+  }
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
+    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} columnsJSX={columnsJSX} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
      </>
 }
 
 function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
-  console.log("authorItemOrder",authorItemOrder)
+  console.log("authorItemOrder",courseId,sectionId,authorItemOrder)
 
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
@@ -226,25 +214,29 @@ function Item({courseId,doenetId,numberOfVisibleColumns,indentLevel,previousSect
 function Section({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
   let authorSectionItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId:itemInfo.doenetId}));
   let previousSections = useRef([]);
+  let columnsJSX = [null,null]
+  if (itemInfo.isAssigned){
+    columnsJSX[0] = <FontAwesomeIcon key={`activityColumn2${doenetId}`} icon={faCheck} />
+  }
   
   if (itemInfo.isOpen){
     let sectionItems = authorSectionItemOrder.map((doenetId)=>
     <Item key={`itemcomponent${doenetId}`} courseNavigatorProps={courseNavigatorProps} previousSections={previousSections} courseId={courseId} doenetId={doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel+1} />)
     
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} isBeingCut={itemInfo.isBeingCut} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    <Row courseId={courseId} columnsJSX={columnsJSX} courseNavigatorProps={courseNavigatorProps} isBeingCut={itemInfo.isBeingCut} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
     {sectionItems}
     </>
 
   }else{
-    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} isBeingCut={itemInfo.isBeingCut} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
+    return <Row courseId={courseId} columnsJSX={columnsJSX} courseNavigatorProps={courseNavigatorProps} isBeingCut={itemInfo.isBeingCut} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFolderTree} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel} />
   }
 }
 
 function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
   if (itemInfo.isOpen){
     let pages = itemInfo.pages.map((pageDoenetId,i)=>{
-      return <Page key={`Page${pageDoenetId}`} courseId={courseId} doenetId={pageDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1} />
+      return <Page key={`Page${pageDoenetId}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={pageDoenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} number={i+1} />
     })
 
   return <>
@@ -257,19 +249,34 @@ function Bank({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,cou
 }
 
 function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel,courseNavigatorProps}){
+
+  let columnsJSX = [null,null]
+  if (itemInfo.isAssigned){
+    columnsJSX[0] = <FontAwesomeIcon key={`activityColumn2${doenetId}`} icon={faCheck} />
+  }
+  if (itemInfo.isPublic){
+    columnsJSX[1] = <FontAwesomeIcon key={`activityColumn3${doenetId}`} icon={faCheck} />
+  }
   if (itemInfo.isSinglePage){
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
+    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} columnsJSX={columnsJSX} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} isSelected={itemInfo.isSelected} indentLevel={indentLevel} isBeingCut={itemInfo.isBeingCut}/>
      </>
   }
   if (itemInfo.isOpen){
+    let childRowsJSX = itemInfo.content.map((pageOrOrder,i)=>{
+      if (pageOrOrder?.type == 'order'){
+        return <Order key={`Order${i}${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+      }else{
+        return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={itemInfo.doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+      }
+    })
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
-    <Order key={`Order${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} columnsJSX={columnsJSX} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
+    {childRowsJSX}
      </>
   }else{
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
+    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} columnsJSX={columnsJSX} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId} hasToggle={true} isOpen={itemInfo.isOpen}  isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
      </>
   }
 }
@@ -277,7 +284,7 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
 function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,orderInfo,courseNavigatorProps}){
   let {behavior,doenetId,content, numberToSelect, withReplacement} = orderInfo;
   let recoilOrderInfo = useRecoilValue(itemByDoenetId(doenetId));
-
+  
    let contentJSX = [];
    if (behavior == 'sequence'){
       contentJSX = content.map((pageOrOrder,i)=>{
@@ -310,11 +317,11 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
 
   if (recoilOrderInfo.isOpen){
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    <Row courseId={courseId} isBeingCut={recoilOrderInfo.isBeingCut} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
     {contentJSX}
     </>
   }else{
-    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    return <Row courseId={courseId} isBeingCut={recoilOrderInfo.isBeingCut} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
   }
 }
 
@@ -324,7 +331,7 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
   return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
 
-function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false,courseNavigatorProps}){
+function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false,courseNavigatorProps}){
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
 
   let openCloseIndicator = null;
@@ -337,164 +344,170 @@ function Row({courseId,doenetId,numberOfVisibleColumns,icon,label,isSelected=fal
 
   },[doenetId])
 
-if (hasToggle){
-   openCloseIndicator = isOpen ? (
-      <span data-cy="folderToggleCloseIcon" onClick={ ()=>{
-        if (hasToggle){
-        toggleOpenClosed();
-      }}} >
-        <FontAwesomeIcon icon={faChevronDown} />
-      </span>
-    ) : (
-      <span data-cy="folderToggleOpenIcon" onClick={ ()=>{
-        if (hasToggle){
-        toggleOpenClosed();
-      }}} >
-        <FontAwesomeIcon icon={faChevronRight} />
-      </span>
-    );
-}
+  if (hasToggle){
+    openCloseIndicator = isOpen ? (
+        <span data-cy="folderToggleCloseIcon" onClick={ ()=>{
+          if (hasToggle){
+          toggleOpenClosed();
+        }}} >
+          <FontAwesomeIcon icon={faChevronDown} />
+        </span>
+      ) : (
+        <span data-cy="folderToggleOpenIcon" onClick={ ()=>{
+          if (hasToggle){
+          toggleOpenClosed();
+        }}} >
+          <FontAwesomeIcon icon={faChevronRight} />
+        </span>
+      );
+  }
 
-//Selection is based on course items and Recoil
-//Always append to the end of the array so we know the last selected item
-let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
-  e.preventDefault();
-  e.stopPropagation();
-  let selectedItems = await snapshot.getPromise(selectedCourseItems);
-  let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
-  console.log("clickedItem",clickedItem.type,clickedItem.doenetId,clickedItem)
-  
-  let newSelectedItems = [];
+  //Selection is based on course items and Recoil
+  //Always append to the end of the array so we know the last selected item
+  let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    let selectedItems = await snapshot.getPromise(selectedCourseItems);
+    let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
+    console.log("clickedItem",clickedItem.type,clickedItem.doenetId,clickedItem)
+    
+    let newSelectedItems = [];
 
-  if (selectedItems.length == 0){
-  //No items selected so select this item
-  newSelectedItems = [doenetId]
-  set(itemByDoenetId(doenetId),(was)=>{
-    let newObj = {...was};
-    newObj.isSelected = true;
-    return newObj;
-  })
+    if (selectedItems.length == 0){
+    //No items selected so select this item
+    newSelectedItems = [doenetId]
+    set(itemByDoenetId(doenetId),(was)=>{
+      let newObj = {...was};
+      newObj.isSelected = true;
+      return newObj;
+    })
 
-  }else if (selectedItems.length == 1 && selectedItems[0] == doenetId){
-    if(e.metaKey){
-      //If cmd then clear the one item
-      newSelectedItems = [];
-      set(itemByDoenetId(doenetId),(was)=>{
-        let newObj = {...was};
-        newObj.isSelected = false;
-        return newObj;
-      })
-    }else{
-      //Just keep the one item selected
-      newSelectedItems = [...selectedItems];
-    }
-
-  }else{
-    if (e.shiftKey){
-      //Shift Click
-      //Select all items from the last one selected to this one
-      //TODO: use sectionId to filter to correct section
-      const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
-      //build allRenderedRows on the fly
-      let allRenderedRows = [];
-      let skip = false;
-      let parentDoenetIdsToSkip = [];
-      for (let i = 0; i < authorItemDoenetIds.length; i++){
-        let itemDoenetId = authorItemDoenetIds[i];
-        const authorItemInfo = await snapshot.getPromise(itemByDoenetId(itemDoenetId))
-        if (skip){
-          //Check if back to same parent
-          if (!parentDoenetIdsToSkip.includes(authorItemInfo.parentDoenetId)){
-            skip = false;
-            parentDoenetIdsToSkip = [];
-          }else{
-            //Test if we need to add another child to the ids to skip
-            if (authorItemInfo.type == 'order'){
-              parentDoenetIdsToSkip.push(authorItemInfo.doenetId)
-            }
-          }
-        }
-        if (!skip){
-          allRenderedRows.push(itemDoenetId);
-          //Start skip when we have a closed item
-          if (authorItemInfo?.isOpen !== undefined && !authorItemInfo.isOpen){
-            skip = true;
-            parentDoenetIdsToSkip.push(authorItemInfo.doenetId);
-          }
-        }
-      }
- 
-      let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
-      let indexOfLastSelected = allRenderedRows.indexOf(lastSelectedDoenetId);
-      let indexOfClick = allRenderedRows.indexOf(doenetId);
-      let itemsToSelect = allRenderedRows.slice(Math.min(indexOfLastSelected,indexOfClick),(Math.max(indexOfLastSelected,indexOfClick)+1))
-      //Need to reverse when the new last item won't be at the end
-      if (indexOfLastSelected > indexOfClick){
-        itemsToSelect.reverse();
-      }
-      newSelectedItems = [...selectedItems];
-      for (let newDoenetId of itemsToSelect){
-        if (!selectedItems.includes(newDoenetId)){
-          newSelectedItems.push(newDoenetId);
-          set(itemByDoenetId(newDoenetId),(was)=>{
-            let newObj = {...was};
-            newObj.isSelected = true;
-            return newObj;
-          })
-        }
-      }
-    }else if(e.metaKey){
-      //Command Click means toggle the one item selected or not
-      let itemWasSelected = selectedItems.includes(doenetId);
-      if (itemWasSelected){
-        newSelectedItems = selectedItems.filter((testId)=>{return testId != doenetId});
+    }else if (selectedItems.length == 1 && selectedItems[0] == doenetId){
+      if(e.metaKey){
+        //If cmd then clear the one item
+        newSelectedItems = [];
         set(itemByDoenetId(doenetId),(was)=>{
           let newObj = {...was};
           newObj.isSelected = false;
           return newObj;
         })
-
       }else{
-        //Add this item to the selected items
-        newSelectedItems = [...selectedItems,doenetId];
-        set(itemByDoenetId(doenetId),(was)=>{
-          let newObj = {...was};
-          newObj.isSelected = true;
-          return newObj;
-        })
+        //Just keep the one item selected
+        newSelectedItems = [...selectedItems];
       }
-    }else{
 
-      //No Shift or Command Click
-      //Only select this option and remove the others
-      newSelectedItems = [doenetId];
-      set(itemByDoenetId(doenetId),(was)=>{
-                let newObj = {...was};
-                newObj.isSelected = true;
-                return newObj;
-              })
-      for (let doenetIdToUnselect of selectedItems){
-        if (doenetId != doenetIdToUnselect){ //Leave the selected on selected
-          set(itemByDoenetId(doenetIdToUnselect),(was)=>{
+    }else{
+      if (e.shiftKey){
+        //Shift Click
+        //Select all items from the last one selected to this one
+        let sectionId = await snapshot.getPromise(searchParamAtomFamily('sectionId'))
+        if (!sectionId){
+          sectionId = courseId;
+        }
+        const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}))
+        // const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
+        //build allRenderedRows on the fly
+        let allRenderedRows = [];
+        let skip = false;
+        let parentDoenetIdsToSkip = [];
+        for (let i = 0; i < authorItemDoenetIds.length; i++){
+          let itemDoenetId = authorItemDoenetIds[i];
+          const authorItemInfo = await snapshot.getPromise(itemByDoenetId(itemDoenetId))
+          if (skip){
+            //Check if back to same parent
+            if (!parentDoenetIdsToSkip.includes(authorItemInfo.parentDoenetId)){
+              skip = false;
+              parentDoenetIdsToSkip = [];
+            }else{
+              //Test if we need to add another child to the ids to skip
+              if (authorItemInfo.type == 'order'){
+                parentDoenetIdsToSkip.push(authorItemInfo.doenetId)
+              }
+            }
+          }
+          if (!skip){
+            allRenderedRows.push(itemDoenetId);
+            //Start skip when we have a closed item
+            if (authorItemInfo?.isOpen !== undefined && !authorItemInfo.isOpen){
+              skip = true;
+              parentDoenetIdsToSkip.push(authorItemInfo.doenetId);
+            }
+          }
+        }
+  
+        let lastSelectedDoenetId = selectedItems[selectedItems.length -1];
+        let indexOfLastSelected = allRenderedRows.indexOf(lastSelectedDoenetId);
+        let indexOfClick = allRenderedRows.indexOf(doenetId);
+        let itemsToSelect = allRenderedRows.slice(Math.min(indexOfLastSelected,indexOfClick),(Math.max(indexOfLastSelected,indexOfClick)+1))
+        //Need to reverse when the new last item won't be at the end
+        if (indexOfLastSelected > indexOfClick){
+          itemsToSelect.reverse();
+        }
+        newSelectedItems = [...selectedItems];
+        for (let newDoenetId of itemsToSelect){
+          if (!selectedItems.includes(newDoenetId)){
+            newSelectedItems.push(newDoenetId);
+            set(itemByDoenetId(newDoenetId),(was)=>{
+              let newObj = {...was};
+              newObj.isSelected = true;
+              return newObj;
+            })
+          }
+        }
+      }else if(e.metaKey){
+        //Command Click means toggle the one item selected or not
+        let itemWasSelected = selectedItems.includes(doenetId);
+        if (itemWasSelected){
+          newSelectedItems = selectedItems.filter((testId)=>{return testId != doenetId});
+          set(itemByDoenetId(doenetId),(was)=>{
             let newObj = {...was};
             newObj.isSelected = false;
             return newObj;
           })
+
+        }else{
+          //Add this item to the selected items
+          newSelectedItems = [...selectedItems,doenetId];
+          set(itemByDoenetId(doenetId),(was)=>{
+            let newObj = {...was};
+            newObj.isSelected = true;
+            return newObj;
+          })
+        }
+      }else{
+
+        //No Shift or Command Click
+        //Only select this option and remove the others
+        newSelectedItems = [doenetId];
+        set(itemByDoenetId(doenetId),(was)=>{
+                  let newObj = {...was};
+                  newObj.isSelected = true;
+                  return newObj;
+                })
+        for (let doenetIdToUnselect of selectedItems){
+          if (doenetId != doenetIdToUnselect){ //Leave the selected on selected
+            set(itemByDoenetId(doenetIdToUnselect),(was)=>{
+              let newObj = {...was};
+              newObj.isSelected = false;
+              return newObj;
+            })
+          }
         }
       }
     }
-  }
-  set(selectedCourseItems,newSelectedItems);
+    set(selectedCourseItems,newSelectedItems);
 
-  courseNavigatorProps?.updateSelectMenu({selectedItems:newSelectedItems});
+    courseNavigatorProps?.updateSelectMenu({selectedItems:newSelectedItems});
 
 },[doenetId, courseId, setSelectionMenu])
 
-  let bgcolor = '#ffffff';
+  let bgcolor = 'var(--canvas)';
+  let color = 'var(--canvastext)';
   if (isSelected){
-    bgcolor = 'hsl(209,54%,82%)';
+    color= 'black';
+    bgcolor = 'var(--lightBlue)';
   }else if (isBeingCut){
-    bgcolor = '#e2e2e2'; //grey
+    bgcolor = 'var(--mainGray)'; //grey
   }
 
   //Used to open editor or assignment
@@ -518,8 +531,9 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
       cursor: 'pointer',
       padding: '8px',
       border: '0px',
-      borderBottom: '2px solid black',
+      borderBottom: '2px solid var(--canvastext)',
       backgroundColor: bgcolor,
+      color: color,
       width: 'auto',
       // marginLeft: marginSize,
     }}
@@ -532,7 +546,7 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
     >
     <div
       style={{
-        marginLeft: `${indentLevel * indentPx}px`,
+        
         display: 'grid',
         gridTemplateColumns: columnsCSS,
         gridTemplateRows: '1fr',
@@ -541,16 +555,22 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         // marginBottom: '8px',
       }}
     >
-      <p style={{ display: 'inline', margin: '0px' }} >
+      <span style={{ 
+        marginLeft: `${indentLevel * indentPx}px`
+      }}>
+
+      <p style={{ 
+        display: 'inline', 
+        margin: '0px' }} >
        { numbered ?  <svg style={{verticalAlign:'middle'}} width="22" height="22" viewBox="0 0 22 22">
       <circle cx="11"
               cy="11"
               r="12"
-              stroke="white"
+              stroke="var(--canvas)"
               strokeWidth="2"
-              fill="#1A5A99"/>
+              fill="var(--mainBlue)"/>
       <text fontSize="14"
-            fill="white"
+            fill="var(--canvas)"
             fontFamily="Verdana"
             textAnchor="middle"
             alignmentBaseline="baseline"
@@ -563,6 +583,11 @@ let handleSingleSelectionClick = useRecoilCallback(({snapshot,set})=> async (e)=
         </span>
         <span style={{marginLeft:'4px'}} data-cy="rowLabel">{label} </span>
       </p>
+      </span>
+    {numberOfVisibleColumns > 1 ? <span style={{ textAlign: 'center' }}>{columnsJSX[0]}</span> : null}
+    {numberOfVisibleColumns > 2 ? <span style={{ textAlign: 'center' }}>{columnsJSX[1]}</span> : null}
+    {numberOfVisibleColumns > 3 ? <span style={{ textAlign: 'center' }}>{columnsJSX[2]}</span> : null}
+    {numberOfVisibleColumns > 4 ? <span style={{ textAlign: 'center' }}>{columnsJSX[3]}</span> : null}
       </div>
     </div>
   )
@@ -591,34 +616,45 @@ function CourseNavigationHeader({columnLabels,numberOfVisibleColumns,setNumberOf
   const updateNumColumns = useCallback(
     (width) => {
       const maxColumns = columnLabels.length + 1;
+      
       //update number of columns in header
       const breakpoints = [375, 500, 650, 800];
-      if (width >= breakpoints[3] && numberOfVisibleColumns !== 5) {
-        const numberOfVisibleColumns = Math.min(maxColumns, 5);
-        setNumberOfVisibleColumns?.(numberOfVisibleColumns);
+      if (width >= breakpoints[3] && 
+        numberOfVisibleColumns !== 5
+        ) {
+        const nextNumberOfVisibleColumns = Math.min(maxColumns, 5);
+        setNumberOfVisibleColumns?.(nextNumberOfVisibleColumns);
       } else if (
         width < breakpoints[3] &&
         width >= breakpoints[2] &&
-        numberOfVisibleColumns !== 4
+        numberOfVisibleColumns !== 4 
+
       ) {
-        const numberOfVisibleColumns = Math.min(maxColumns, 4);
-        setNumberOfVisibleColumns?.(numberOfVisibleColumns);
+        const nextNumberOfVisibleColumns = Math.min(maxColumns, 4);
+        setNumberOfVisibleColumns?.(nextNumberOfVisibleColumns);
       } else if (
         width < breakpoints[2] &&
         width >= breakpoints[1] &&
-        numberOfVisibleColumns !== 3
+        numberOfVisibleColumns !== 3 
       ) {
-        const numberOfVisibleColumns = Math.min(maxColumns, 3);
-        setNumberOfVisibleColumns?.(numberOfVisibleColumns);
+        const nextNumberOfVisibleColumns = Math.min(maxColumns, 3);
+        setNumberOfVisibleColumns?.(nextNumberOfVisibleColumns);
       } else if (
         width < breakpoints[1] &&
         width >= breakpoints[0] &&
-        numberOfVisibleColumns !== 2
+        numberOfVisibleColumns !== 2 
       ) {
-        const numberOfVisibleColumns = Math.min(maxColumns, 2);
-        setNumberOfVisibleColumns?.(numberOfVisibleColumns);
-      } else if (width < breakpoints[0] && numberOfVisibleColumns !== 1) {
+        const nextNumberOfVisibleColumns = Math.min(maxColumns, 2);
+        setNumberOfVisibleColumns?.(nextNumberOfVisibleColumns);
+      } else if (width < breakpoints[0] && 
+        numberOfVisibleColumns !== 1
+        ) {
         setNumberOfVisibleColumns?.(1);
+      }else if  (numberOfVisibleColumns > maxColumns) {
+        //If over the max set to max
+        setNumberOfVisibleColumns?.(maxColumns);
+
+      
       }
     },
     [columnLabels, numberOfVisibleColumns, setNumberOfVisibleColumns],
@@ -643,7 +679,7 @@ function CourseNavigationHeader({columnLabels,numberOfVisibleColumns,setNumberOf
           style={{
             padding: '8px',
             border: '0px',
-            borderBottom: '1px solid grey',
+            borderBottom: '1px solid var(--canvastext)',
             maxWidth: '850px',
             margin: '0px',
           }}

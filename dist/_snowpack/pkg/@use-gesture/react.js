@@ -115,10 +115,16 @@ function capitalize(string) {
   return string[0].toUpperCase() + string.slice(1);
 }
 
+const actionsWithoutCaptureSupported = ['enter', 'leave'];
+
+function hasCapture(capture = false, actionKey) {
+  return capture && !actionsWithoutCaptureSupported.includes(actionKey);
+}
+
 function toHandlerProp(device, action = '', capture = false) {
   const deviceProps = EVENT_TYPE_MAP[device];
   const actionKey = deviceProps ? deviceProps[action] || action : action;
-  return 'on' + capitalize(device) + capitalize(actionKey) + (capture ? 'Capture' : '');
+  return 'on' + capitalize(device) + capitalize(actionKey) + (hasCapture(capture, actionKey) ? 'Capture' : '');
 }
 const pointerCaptureEvents = ['gotpointercapture', 'lostpointercapture'];
 function parseProp(prop) {
@@ -570,6 +576,10 @@ const commonConfigResolver = {
     return value;
   },
 
+  eventOptions(value, _k, config) {
+    return _objectSpread2(_objectSpread2({}, config.shared.eventOptions), value);
+  },
+
   preventDefault(value = false) {
     return value;
   },
@@ -717,13 +727,13 @@ class DragEngine extends CoordinatesEngine {
     const config = this.config;
     const state = this.state;
     if (event.buttons != null && (Array.isArray(config.pointerButtons) ? !config.pointerButtons.includes(event.buttons) : config.pointerButtons !== -1 && config.pointerButtons !== event.buttons)) return;
-    this.ctrl.setEventIds(event);
+    const ctrlIds = this.ctrl.setEventIds(event);
 
     if (config.pointerCapture) {
       event.target.setPointerCapture(event.pointerId);
     }
 
-    if (state._pointerActive) return;
+    if (ctrlIds && ctrlIds.size > 1 && state._pointerActive) return;
     this.start(event);
     this.setupPointer(event);
     state._pointerId = pointerId(event);
@@ -878,11 +888,11 @@ class DragEngine extends CoordinatesEngine {
 
   setupScrollPrevention(event) {
     persistEvent(event);
-    this.eventStore.add(this.sharedConfig.window, 'touch', 'change', this.preventScroll.bind(this), {
+    const remove = this.eventStore.add(this.sharedConfig.window, 'touch', 'change', this.preventScroll.bind(this), {
       passive: false
     });
-    this.eventStore.add(this.sharedConfig.window, 'touch', 'end', this.clean.bind(this));
-    this.eventStore.add(this.sharedConfig.window, 'touch', 'cancel', this.clean.bind(this));
+    this.eventStore.add(this.sharedConfig.window, 'touch', 'end', remove);
+    this.eventStore.add(this.sharedConfig.window, 'touch', 'cancel', remove);
     this.timeoutStore.add('startPointerDrag', this.startPointerDrag.bind(this), this.config.preventScrollDelay, event);
   }
 
@@ -900,8 +910,8 @@ class DragEngine extends CoordinatesEngine {
     if (deltaFn) {
       const state = this.state;
       const factor = event.shiftKey ? 10 : event.altKey ? 0.1 : 1;
-      state._delta = deltaFn(factor);
       this.start(event);
+      state._delta = deltaFn(factor);
       state._keyboardActive = true;
       V.addTo(state._movement, state._delta);
       this.compute(event);
@@ -1738,26 +1748,36 @@ function parse(config, gestureKey) {
 }
 
 class EventStore {
-  constructor(ctrl) {
-    _defineProperty(this, "_listeners", []);
+  constructor(ctrl, gestureKey) {
+    _defineProperty(this, "_listeners", new Set());
 
     this._ctrl = ctrl;
+    this._gestureKey = gestureKey;
   }
 
   add(element, device, action, handler, options) {
+    const listeners = this._listeners;
     const type = toDomEventType(device, action);
 
-    const eventOptions = _objectSpread2(_objectSpread2({}, this._ctrl.config.shared.eventOptions), options);
+    const _options = this._gestureKey ? this._ctrl.config[this._gestureKey].eventOptions : {};
+
+    const eventOptions = _objectSpread2(_objectSpread2({}, _options), options);
 
     element.addEventListener(type, handler, eventOptions);
 
-    this._listeners.push(() => element.removeEventListener(type, handler, eventOptions));
+    const remove = () => {
+      element.removeEventListener(type, handler, eventOptions);
+      listeners.delete(remove);
+    };
+
+    listeners.add(remove);
+    return remove;
   }
 
   clean() {
     this._listeners.forEach(remove => remove());
 
-    this._listeners = [];
+    this._listeners.clear();
   }
 
 }
@@ -1820,8 +1840,10 @@ class Controller {
   setEventIds(event) {
     if (isTouch(event)) {
       this.touchIds = new Set(touchIds(event));
+      return this.touchIds;
     } else if ('pointerId' in event) {
       if (event.type === 'pointerup' || event.type === 'pointercancel') this.pointerIds.delete(event.pointerId);else if (event.type === 'pointerdown') this.pointerIds.add(event.pointerId);
+      return this.pointerIds;
     }
   }
 
@@ -1850,7 +1872,6 @@ class Controller {
 
   bind(...args) {
     const sharedConfig = this.config.shared;
-    const eventOptions = sharedConfig.eventOptions;
     const props = {};
     let target;
 
@@ -1859,18 +1880,21 @@ class Controller {
       if (!target) return;
     }
 
-    const bindFunction = bindToProps(props, eventOptions, !!target);
-
     if (sharedConfig.enabled) {
       for (const gestureKey of this.gestures) {
-        if (this.config[gestureKey].enabled) {
+        const gestureConfig = this.config[gestureKey];
+        const bindFunction = bindToProps(props, gestureConfig.eventOptions, !!target);
+
+        if (gestureConfig.enabled) {
           const Engine = EngineMap.get(gestureKey);
           new Engine(this, args, gestureKey).bind(bindFunction);
         }
       }
 
+      const nativeBindFunction = bindToProps(props, sharedConfig.eventOptions, !!target);
+
       for (const eventKey in this.nativeHandlers) {
-        bindFunction(eventKey, '', event => this.nativeHandlers[eventKey](_objectSpread2(_objectSpread2({}, this.state.shared), {}, {
+        nativeBindFunction(eventKey, '', event => this.nativeHandlers[eventKey](_objectSpread2(_objectSpread2({}, this.state.shared), {}, {
           event,
           args
         })), undefined, true);
@@ -1901,7 +1925,7 @@ class Controller {
 
 function setupGesture(ctrl, gestureKey) {
   ctrl.gestures.add(gestureKey);
-  ctrl.gestureEventStores[gestureKey] = new EventStore(ctrl);
+  ctrl.gestureEventStores[gestureKey] = new EventStore(ctrl, gestureKey);
   ctrl.gestureTimeoutStores[gestureKey] = new TimeoutStore();
 }
 

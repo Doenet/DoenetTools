@@ -149,11 +149,11 @@ export default function CollectionEditor() {
     >
       {assignedEntries}
       <div
-        style={{ height: '10px', background: 'black', borderRadius: '4px' }}
+        style={{ height: '10px', background: 'var(--canvastext)', borderRadius: '4px' }}
       ></div>
       {availableEntries}
       <div
-        style={{ height: '10px', background: 'black', borderRadius: '4px' }}
+        style={{ height: '10px', background: 'var(--canvastext)', borderRadius: '4px' }}
       ></div>
       <GroupsVerificationTable doenetId={doenetId} />
     </div>
@@ -351,7 +351,7 @@ function CollectionEntryDisplayLine({
       style={{
         display: 'flex',
         flexDirection: 'row',
-        background: '#e3e3e3',
+        background: 'var(--mainGray)',
         borderRadius: '4px',
         padding: '4px',
       }}
@@ -424,9 +424,9 @@ function GroupsVerificationTable({ doenetId }) {
                     colSpan={3}
                     style={{
                       textAlign: 'center',
-                      backgroundColor: '#1a5a99',
-                      color: 'white',
-                      borderBottom: '2px solid black',
+                      backgroundColor: 'var(--mainBlue)',
+                      color: 'var(--canvas)',
+                      borderBottom: '2px solid var(--canvastext)',
                     }}
                   >
                     Group {idx + 1}
@@ -434,14 +434,14 @@ function GroupsVerificationTable({ doenetId }) {
                 </tr>
                 <tr
                   style={{
-                    backgroundColor: '#1a5a99',
-                    color: 'white',
+                    backgroundColor: 'var(--mainBlue)',
+                    color: 'var(--canvas)',
                   }}
                 >
                   <th
                     style={{
                       whiteSpace: 'nowrap',
-                      borderRight: '2px solid black',
+                      borderRight: '2px solid var(--canvastext)',
                     }}
                   >
                     First
@@ -456,7 +456,7 @@ function GroupsVerificationTable({ doenetId }) {
                   <th
                     style={{
                       whiteSpace: 'nowrap',
-                      borderLeft: '2px solid black',
+                      borderLeft: '2px solid var(--canvastext)',
                     }}
                   >
                     Email

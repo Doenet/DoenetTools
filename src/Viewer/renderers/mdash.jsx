@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Ndash(props) {
+export default React.memo(function Ndash(props) {
   let { SVs } = useDoenetRender(props,false);
 
   if (SVs.hidden) {
@@ -10,4 +10,4 @@ export default function Ndash(props) {
 
   return <>&mdash;</>
 
-}
+})

@@ -10218,4 +10218,202 @@ describe('Point Tag Tests', function () {
 
   });
 
+  it('1D point with 2D constraint does not crash', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph>
+      <point x="1">
+        <constraints>
+          <constrainTo><function>x^2</function></constrainTo>
+        </constraints>
+      </point>
+      <point x="2">
+        <constraints>
+          <constrainTo>
+            <curve><function>x^2</function><function>x^3</function></curve>
+          </constrainTo>
+        </constraints>
+      </point>
+      <point x="3">
+        <constraints>
+          <constrainTo><circle/></constrainTo>
+        </constraints>
+      </point>
+      <point x="4">
+        <constraints>
+          <constrainTo><line>y=2x</line></constrainTo>
+        </constraints>
+      </point>
+      <point x="5">
+        <constraints>
+          <constrainTo><polygon vertices="(1,2) (3,4) (5,-6)" /></constrainTo>
+        </constraints>
+      </point>
+      <point x="6">
+        <constraints>
+          <constrainTo><polyline vertices="(1,2) (3,4) (5,-6)" /></constrainTo>
+        </constraints>
+      </point>
+      <point x="7">
+        <constraints>
+          <constrainTo><parabola/></constrainTo>
+        </constraints>
+      </point>
+    </graph>
+
+    <copy prop="x" target="_point1" assignNames="xa" />
+    <copy prop="x" target="_point2" assignNames="xb" />
+    <copy prop="x" target="_point3" assignNames="xc" />
+    <copy prop="x" target="_point4" assignNames="xd" />
+    <copy prop="x" target="_point5" assignNames="xe" />
+    <copy prop="x" target="_point6" assignNames="xf" />
+    <copy prop="x" target="_point7" assignNames="xg" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/xa .mjx-mrow').should('have.text', '1')
+    cy.get('#\\/xb .mjx-mrow').should('have.text', '2')
+    cy.get('#\\/xc .mjx-mrow').should('have.text', '3')
+    cy.get('#\\/xd .mjx-mrow').should('have.text', '4')
+    cy.get('#\\/xe .mjx-mrow').should('have.text', '5')
+    cy.get('#\\/xf .mjx-mrow').should('have.text', '6')
+    cy.get('#\\/xg .mjx-mrow').should('have.text', '7')
+
+
+  });
+
+  it('display digits propagates', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    
+    <point displayDigits="2" name="P">(32.252609, 0.0672854, 5)</point>
+    <point displayDecimals="2" name="Q" x="32.252609" y="0.0672854" z="5" />
+    <point padZeros name="R" x="32.252609" y="0.0672854" z="5" />
+
+    <copy prop="coords" target="P" assignNames="Pcoords" />
+    <copy prop="coords" target="Q" assignNames="Qcoords" />
+    <copy prop="coords" target="R" assignNames="Rcoords" />
+
+    <copy prop="coords" target="P" assignNames="PcoordsDec4" displayDecimals="4" displayDigits="0" />
+    <copy prop="coords" target="Q" assignNames="QcoordsDig4" displayDigits="4" />
+    <copy prop="coords" target="R" assignNames="RcoordsDig2" displayDigits="2" />
+
+    <copy prop="coords" target="P" assignNames="PcoordsPad" padZeros />
+    <copy prop="coords" target="Q" assignNames="QcoordsPad" padZeros />
+    <copy prop="coords" target="R" assignNames="RcoordsNoPad" padZeros="false" />
+
+    <copy prop="xs" target="P" assignNames="Px1 Px2 Px3" />
+    <copy prop="x1" target="Q" assignNames="Qx1" />
+    <copy prop="y" target="Q" assignNames="Qx2" />
+    <copy prop="z" target="R" assignNames="Rx3" />
+
+    <math name="Pmath">$P</math>
+    <math name="Qmath">$Q</math>
+    <math name="Rmath">$R</math>
+
+    <math name="PmathDec4" displayDecimals="4">$P</math>
+    <math name="QmathDig4" displayDigits="4">$Q</math>
+    <math name="RmathDig2" displayDigits="2">$R</math>
+
+    <number name="Px1number">$(P{prop="x"})</number>
+    <number name="Px2number"><copy prop="y" target="P" /></number>
+
+    <number name="Px1numberDec4" displayDecimals="4">$(P{prop="x"})</number>
+    <number name="Px2numberDig4" displayDigits="4"><copy prop="y" target="P" /></number>
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/P .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32,0.067,5)")
+    })
+    cy.get('#\\/Q .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.25,0.07,5)")
+    })
+    cy.get('#\\/R .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.25260900,0.06728540000,5.000000000)")
+    })
+    cy.get('#\\/Pcoords .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32,0.067,5)")
+    })
+    cy.get('#\\/Qcoords .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.25,0.07,5)")
+    })
+    cy.get('#\\/Rcoords .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.25260900,0.06728540000,5.000000000)")
+    })
+    cy.get('#\\/PcoordsDec4 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.2526,0.0673,5)")
+    })
+    cy.get('#\\/QcoordsDig4 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.25,0.06729,5)")
+    })
+    cy.get('#\\/RcoordsDig2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32,0.067,5.0)")
+    })
+    cy.get('#\\/PcoordsPad .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32,0.067,5.0)")
+    })
+    cy.get('#\\/QcoordsPad .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.25,0.07,5.00)")
+    })
+    cy.get('#\\/RcoordsNoPad .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.252609,0.0672854,5)")
+    })
+    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("32")
+    })
+    cy.get('#\\/Px2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0.067")
+    })
+    cy.get('#\\/Px3 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5")
+    })
+    cy.get('#\\/Qx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("32.25")
+    })
+    cy.get('#\\/Qx2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0.07")
+    })
+    cy.get('#\\/Rx3 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5.000000000")
+    })
+    cy.get('#\\/Pmath .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32,0.067,5)")
+    })
+    cy.get('#\\/Qmath .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.25,0.07,5)")
+    })
+    cy.get('#\\/Rmath .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.25260900,0.06728540000,5.000000000)")
+    })
+    cy.get('#\\/PmathDec4 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.2526,0.0673,5)")
+    })
+    cy.get('#\\/QmathDig4 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32.25,0.06729,5)")
+    })
+    cy.get('#\\/RmathDig2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("(32,0.067,5.0)")
+    })
+    cy.get('#\\/Px1number').should('have.text',"32")
+    cy.get('#\\/Px2number').should('have.text',"0.067")
+    cy.get('#\\/Px1numberDec4').should('have.text',"32.2526")
+    cy.get('#\\/Px2numberDig4').should('have.text',"0.06729")
+
+
+  });
+
+
 })

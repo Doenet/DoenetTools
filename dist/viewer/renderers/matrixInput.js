@@ -57,7 +57,7 @@ const Button = styled.button`
       color: black;
     };
   `;
-export default function MatrixInput(props) {
+export default React.memo(function MatrixInput(props) {
   let {name, SVs, actions, children, callAction} = useDoenetRender(props);
   let validationState = useRef(null);
   function updateValidationState() {
@@ -216,4 +216,4 @@ export default function MatrixInput(props) {
     className: "matrixInputSurroundingBox",
     id: name
   }, /* @__PURE__ */ React.createElement("table", null, /* @__PURE__ */ React.createElement("tbody", null, matrixInputs))), rowNumControls, colNumControls, checkWorkButton));
-}
+});

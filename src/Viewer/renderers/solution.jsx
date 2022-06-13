@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
 
-export default function Solution(props) {
+export default React.memo(function Solution(props) {
   let { name, SVs, children, actions, callAction } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -23,10 +23,13 @@ export default function Solution(props) {
     childrenToRender = children;
     infoBlockStyle = {
       display: 'block',
-      margin: '0px 4px 4px 4px',
+      margin: '0px 4px 12px 4px',
       padding: '6px',
-      border: '1px solid #ebebeb',
-      backgroundColor: '#fcfcfc',
+      border: '2px solid var(--canvastext)',
+      borderTop: '0px',
+      borderBottomLeftRadius: '5px',
+      borderBottomRightRadius: '5px',
+      backgroundColor: 'var(--canvas)',
     };
 
     if (SVs.canBeClosed) {
@@ -50,17 +53,22 @@ export default function Solution(props) {
   }
 
   return (
-    <aside id={name}>
+    <aside id={name}  style={{ margin: "12px 0" }}>
       <a name={name} />
       <span
         id={name + '_button'}
         style={{
           display: 'block',
-          margin: '4px 4px 0px 4px',
+          margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
           padding: '6px',
-          border: '1px solid #ebebeb',
-          backgroundColor: '#ebebeb',
-          cursor: cursorStyle,
+          border: '2px solid var(--canvastext)',
+          borderTopLeftRadius: '5px',
+          borderTopRightRadius: '5px',
+          borderBottomLeftRadius: SVs.open ? '0px' : '5px',
+          borderBottomRightRadius: SVs.open ? '0px' : '5px',
+          backgroundColor: 'var(--mainGray)',
+          cursor: 'pointer',
+        
         }}
         onClick={onClickFunction}
       >
@@ -69,4 +77,4 @@ export default function Solution(props) {
       <span style={infoBlockStyle}>{childrenToRender}</span>
     </aside>
   );
-}
+})

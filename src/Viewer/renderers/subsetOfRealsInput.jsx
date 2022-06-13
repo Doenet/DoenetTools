@@ -1,7 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from "styled-components";
 import useDoenetRender from './useDoenetRenderer';
-
+import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+import ToggleButtonGroup from '../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup';
+// import MathJax from 'react-mathjax';
 
 const TextNoSelect = styled.text`
   -webkit-user-select: none;
@@ -10,23 +14,23 @@ const TextNoSelect = styled.text`
   user-select: none;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 `;
-const ModeButton = styled.button`
-  &:focus {
-    outline: 0;
-  }
-  width: 120px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
-  margin-left: 1px;
-  margin-top: 1px;
-`;
 
+// Used before ActionButton and ToggleButton were implemented:
+// const ModeButton = styled.button`
+//   &:focus {
+//     outline: 0;
+//   }
+//   width: 120px;
+//   -webkit-user-select: none;
+//   -moz-user-select: none;
+//   -ms-user-select: none;
+//   user-select: none;
+//   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+//   margin-left: 1px;
+//   margin-top: 1px;
+// `;
 
-
-export default function subsetOfReals(props) {
+export default React.memo(function subsetOfReals(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props, false);
   let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
@@ -36,76 +40,61 @@ export default function subsetOfReals(props) {
     return null;
   }
 
-  //Build control buttons
-  const activeButtonColor = "lightblue";
-  const inactiveButtonColor = "lightgrey";
-  let primaryColor = "red";
-
-
-  let addRemovePointsStyle = { backgroundColor: inactiveButtonColor };
-  if (mode === "add remove points") {
-    addRemovePointsStyle = { backgroundColor: activeButtonColor };
+  function handleTogglePoints(val) {
+    // setTogglePoints(val);
+    if (val === 0) {
+      console.log(val);
+      setMode("add remove points");
+    } else if (val === 1) {
+      console.log(val);
+      setMode("toggle");
+    } else if (val === 2) {
+      console.log(val);
+      setMode("move points");
+    }
   }
-
-  let toggleStyle = { backgroundColor: inactiveButtonColor };
-  if (mode === "toggle") {
-    toggleStyle = { backgroundColor: activeButtonColor };
-  }
-
-  let movePointsStyle = { backgroundColor: inactiveButtonColor };
-  if (mode === "move points") {
-    movePointsStyle = { backgroundColor: activeButtonColor };
-  }
-
+ 
   let controlButtons = null;
-  if (!SVs.fixed) {
-    controlButtons = <>
-      <span>
-        <ModeButton
-          style={addRemovePointsStyle}
-          onClick={() => setMode("add remove points")}
+  if(!SVs.fixed) {
+    // Using ToggleButton and ActionButton from PanelHeaderComponents
+    controlButtons =
+    <>
+      <ToggleButtonGroup onClick={handleTogglePoints}>
+        <ToggleButton
+          value="Add/Remove points"
         >
-          Add/Remove points
-        </ModeButton>
-      </span>
-      <span>
-        <ModeButton
-          style={toggleStyle}
-          onClick={() => setMode("toggle")}
+        </ToggleButton>
+        <ToggleButton
+          value="Toggle points and intervals"
         >
-          Toggle points and intervals
-        </ModeButton>
-      </span>
-      <span>
-        <ModeButton
-          style={movePointsStyle}
-          onClick={() => setMode("move points")}
+        </ToggleButton>
+        <ToggleButton
+          value="Move Points"
         >
-          Move Points
-        </ModeButton>
-      </span>
-      <span>
-        <button
-          onClick={() => callAction({
+        </ToggleButton>
+      </ToggleButtonGroup>
+      <ActionButtonGroup>
+        <ActionButton
+          onClick={()=> callAction({
             action: actions.clear,
           })}
+          value="Clear"
         >
-          Clear
-        </button>
-      </span>
-      <span>
-        <button
-          onClick={() => callAction({
+        </ActionButton>
+        <ActionButton
+          onClick={()=> callAction({
             action: actions.setToR,
           })}
+          /* TODO: change the "R" to be the real numbers symbol, similar to the syntax below */
+          // value={<MathJax.Node inline formula={'a_b'} />}
+          value='R'
         >
-          R
-        </button>
-      </span>
+        </ActionButton>
+      </ActionButtonGroup>
     </>
   }
 
-  //Build axis
+  // Build axis
   let firstHashXPosition = 40;
   let xBetweenHashes = 36;
   let hashLines = [];
@@ -138,7 +127,7 @@ export default function subsetOfReals(props) {
     );
   }
 
-  //Build points
+  // Build points
   let storedPoints = [];
 
   for (let pt of SVs.points) {
@@ -146,7 +135,7 @@ export default function subsetOfReals(props) {
 
     let xPosition = xValueToXPosition(pt.value);
 
-    let currentFillColor = primaryColor;
+    let currentFillColor = "var(--mainPurple)"; // New CSS variable color
     if (!closed) {
       currentFillColor = "white";
     }
@@ -164,10 +153,9 @@ export default function subsetOfReals(props) {
         fill={currentFillColor}
       />
     );
-
   }
 
-  //Build lines
+  // Build lines
   let storedLines = [];
   for (let intervalObj of SVs.intervals) {
     if (intervalObj.right < intervalObj.left || !intervalObj.inSubset) { continue; } // Ignore imposible Intervals
@@ -177,7 +165,7 @@ export default function subsetOfReals(props) {
     const higherPointKey = `higherIntervalPoint${higherXPosition}`;
     const lineKey = `line${lowerXPosition}-${higherXPosition}`;
 
-    let currentFillColor = primaryColor;
+    let currentFillColor = "var(--mainPurple)";
 
     let lowerLine = lowerXPosition;
     let higherLine = higherXPosition;
@@ -226,8 +214,8 @@ export default function subsetOfReals(props) {
   function xValueToXPosition(xValue) {
     // let minValue = -10;
     // let maxValue = 10;
-    //Shift to positive numbers
-    //TODO: Calculate shiftAmount and intervalValueWidth
+    // Shift to positive numbers
+    // TODO: Calculate shiftAmount and intervalValueWidth
     let shiftAmount = 10;
     let intervalValueWidth = 1;
     let shiftedXValue = xValue + shiftAmount;
@@ -256,7 +244,6 @@ export default function subsetOfReals(props) {
     let pointHitTolerance = 0.2;
 
     if (inputState === "up") {
-
       if (mode === "move points") {
         if (pointGrabbed.current !== null) {
 
@@ -269,11 +256,8 @@ export default function subsetOfReals(props) {
             }
           })
           pointGrabbed.current = null;
-
         }
-
       }
-
       if (mode === "add remove points") {
         if (pointGrabbed.current !== null) {
           callAction({
@@ -305,9 +289,7 @@ export default function subsetOfReals(props) {
           })
         }
       }
-
     } else if (inputState === "down") {
-
       let pointInd = null;
       for (let [ind, pt] of SVs.points.entries()) {
         if (Math.abs(pt.value - xPosition) < pointHitTolerance) {
@@ -332,7 +314,6 @@ export default function subsetOfReals(props) {
             transient: true
           }
         })
-
       }
     } else if (inputState == "leave") {
       if (mode === "move points") {
@@ -350,55 +331,52 @@ export default function subsetOfReals(props) {
         }
       }
     }
-
-
-
   }
 
-  return (
-    <>
-      <a name={name} />
-      <div ref={bounds}>
-        {controlButtons}
-      </div>
-      <svg
-        width="808"
-        height="80"
-        style={{ backgroundColor: "white" }}
-        onMouseDown={e => {
-          handleInput(e, "down");
-        }}
-        onMouseUp={e => {
-          handleInput(e, "up");
-        }}
-        onMouseMove={e => {
-          handleInput(e, "move");
-        }}
-        onMouseLeave={e => {
-          handleInput(e, "leave");
-        }}
-      >
-        <polygon
-          points="5,40 20,50 20,30"
-          style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
-        />
-        <polygon
-          points="795,40 780,50 780,30"
-          style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
-        />
-        {storedLines}
-        {hashLines}
-        <line
-          x1="20"
-          y1="40"
-          x2="780"
-          y2="40"
-          style={{ stroke: "black", strokeWidth: "2" }}
-        />
-        {storedPoints}
-        {labels}
-      </svg>
-    </>
+ return  (
+  <>
+    <a name={name} />
+    <div ref={bounds} style={{display: "flex", gap: "12px"}}>
+      {controlButtons}
+    </div>
+    <svg
+      width="808"
+      height="80"
+      style={{ backgroundColor: "white" }}
+      onMouseDown={e => {
+        handleInput(e, "down");
+      }}
+      onMouseUp={e => {
+        handleInput(e, "up");
+      }}
+      onMouseMove={e => {
+        handleInput(e, "move");
+      }}
+      onMouseLeave={e => {
+        handleInput(e, "leave");
+      }}
+    >
+      <polygon
+        points="5,40 20,50 20,30"
+        style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
+      />
+      <polygon
+        points="795,40 780,50 780,30"
+        style={{ fill: "black", stroke: "black", strokeWidth: "1" }}
+      />
+      {storedLines}
+      {hashLines}
+      <line
+        x1="20"
+        y1="40"
+        x2="780"
+        y2="40"
+        style={{ stroke: "black", strokeWidth: "2" }}
+      />
+      {storedPoints}
+      {labels}
+    </svg>
+  </>
   );
-
 }
+

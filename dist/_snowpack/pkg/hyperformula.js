@@ -1,6 +1,6 @@
-import { k as fails, _ as _export, O as objectGetOwnPropertyNamesExternal, g as global_1, P as objectToArray, f as functionUncurryThis, Q as toAbsoluteIndex, K as stringRepeat } from './common/es.string.starts-with-aa41bca0.js';
+import { k as fails, _ as _export, O as objectGetOwnPropertyNamesExternal, g as global_1, P as objectToArray, Q as mathTrunc, f as functionUncurryThis, R as toAbsoluteIndex, K as stringRepeat } from './common/es.string.starts-with-a75d39b5.js';
 import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-f5d70792.js';
-import './common/es.string.ends-with-fbb374f8.js';
+import './common/es.string.ends-with-e08f4e9c.js';
 
 var getOwnPropertyNames = objectGetOwnPropertyNamesExternal.f;
 
@@ -1479,6 +1479,274 @@ function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Co
 function _defineProperties$1(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass$1(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var ReferenceType;
+
+(function (ReferenceType) {
+  ReferenceType["RELATIVE"] = "RELATIVE";
+  ReferenceType["ABSOLUTE"] = "ABSOLUTE";
+})(ReferenceType || (ReferenceType = {}));
+
+var ColumnAddress = /*#__PURE__*/function () {
+  function ColumnAddress(type, col, sheet) {
+    _classCallCheck$1(this, ColumnAddress);
+
+    this.type = type;
+    this.col = col;
+    this.sheet = sheet;
+  }
+
+  _createClass$1(ColumnAddress, [{
+    key: "isColumnAbsolute",
+    value: function isColumnAbsolute() {
+      return this.type === ReferenceType.ABSOLUTE;
+    }
+  }, {
+    key: "isColumnRelative",
+    value: function isColumnRelative() {
+      return this.type === ReferenceType.RELATIVE;
+    }
+  }, {
+    key: "isAbsolute",
+    value: function isAbsolute() {
+      return this.type === ReferenceType.ABSOLUTE && this.sheet !== undefined;
+    }
+  }, {
+    key: "moved",
+    value: function moved(toSheet, toRight, _toBottom) {
+      var newSheet = this.sheet === undefined ? undefined : toSheet;
+      return new ColumnAddress(this.type, this.col + toRight, newSheet);
+    }
+  }, {
+    key: "shiftedByColumns",
+    value: function shiftedByColumns(numberOfColumns) {
+      return new ColumnAddress(this.type, this.col + numberOfColumns, this.sheet);
+    }
+  }, {
+    key: "toSimpleColumnAddress",
+    value: function toSimpleColumnAddress(baseAddress) {
+      var sheet = absoluteSheetReference(this, baseAddress);
+      var column = this.col;
+
+      if (this.isColumnRelative()) {
+        column = baseAddress.col + this.col;
+      }
+
+      return simpleColumnAddress(sheet, column);
+    }
+  }, {
+    key: "shiftRelativeDimensions",
+    value: function shiftRelativeDimensions(toRight, _toBottom) {
+      var col = this.isColumnRelative() ? this.col + toRight : this.col;
+      return new ColumnAddress(this.type, col, this.sheet);
+    }
+  }, {
+    key: "shiftAbsoluteDimensions",
+    value: function shiftAbsoluteDimensions(toRight, _toBottom) {
+      var col = this.isColumnAbsolute() ? this.col + toRight : this.col;
+      return new ColumnAddress(this.type, col, this.sheet);
+    }
+  }, {
+    key: "withSheet",
+    value: function withSheet(sheet) {
+      return new ColumnAddress(this.type, this.col, sheet);
+    }
+  }, {
+    key: "isInvalid",
+    value: function isInvalid(baseAddress) {
+      return this.toSimpleColumnAddress(baseAddress).col < 0;
+    }
+  }, {
+    key: "hash",
+    value: function hash(withSheet) {
+      var sheetPart = withSheet && this.sheet !== undefined ? "#".concat(this.sheet) : '';
+
+      switch (this.type) {
+        case ReferenceType.RELATIVE:
+          {
+            return "".concat(sheetPart, "#COLR").concat(this.col);
+          }
+
+        case ReferenceType.ABSOLUTE:
+          {
+            return "".concat(sheetPart, "#COLA").concat(this.col);
+          }
+      }
+    }
+  }, {
+    key: "unparse",
+    value: function unparse(baseAddress) {
+      var simpleAddress = this.toSimpleColumnAddress(baseAddress);
+
+      if (invalidSimpleColumnAddress(simpleAddress)) {
+        return undefined;
+      }
+
+      var column = columnIndexToLabel(simpleAddress.col);
+      var dollar = this.type === ReferenceType.ABSOLUTE ? '$' : '';
+      return "".concat(dollar).concat(column);
+    }
+  }, {
+    key: "exceedsSheetSizeLimits",
+    value: function exceedsSheetSizeLimits(maxColumns) {
+      return this.col >= maxColumns;
+    }
+  }], [{
+    key: "absolute",
+    value: function absolute(column, sheet) {
+      return new ColumnAddress(ReferenceType.ABSOLUTE, column, sheet);
+    }
+  }, {
+    key: "relative",
+    value: function relative(column, sheet) {
+      return new ColumnAddress(ReferenceType.RELATIVE, column, sheet);
+    }
+  }, {
+    key: "compareByAbsoluteAddress",
+    value: function compareByAbsoluteAddress(baseAddress) {
+      return function (colA, colB) {
+        return colA.toSimpleColumnAddress(baseAddress).col - colB.toSimpleColumnAddress(baseAddress).col;
+      };
+    }
+  }]);
+
+  return ColumnAddress;
+}();
+
+function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties$2(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass$2(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$2(Constructor.prototype, protoProps); if (staticProps) _defineProperties$2(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var RowAddress = /*#__PURE__*/function () {
+  function RowAddress(type, row, sheet) {
+    _classCallCheck$2(this, RowAddress);
+
+    this.type = type;
+    this.row = row;
+    this.sheet = sheet;
+  }
+
+  _createClass$2(RowAddress, [{
+    key: "isRowAbsolute",
+    value: function isRowAbsolute() {
+      return this.type === ReferenceType.ABSOLUTE;
+    }
+  }, {
+    key: "isRowRelative",
+    value: function isRowRelative() {
+      return this.type === ReferenceType.RELATIVE;
+    }
+  }, {
+    key: "isAbsolute",
+    value: function isAbsolute() {
+      return this.type === ReferenceType.ABSOLUTE && this.sheet !== undefined;
+    }
+  }, {
+    key: "moved",
+    value: function moved(toSheet, toRight, toBottom) {
+      var newSheet = this.sheet === undefined ? undefined : toSheet;
+      return new RowAddress(this.type, this.row + toBottom, newSheet);
+    }
+  }, {
+    key: "shiftedByRows",
+    value: function shiftedByRows(numberOfColumns) {
+      return new RowAddress(this.type, this.row + numberOfColumns, this.sheet);
+    }
+  }, {
+    key: "toSimpleRowAddress",
+    value: function toSimpleRowAddress(baseAddress) {
+      var sheet = absoluteSheetReference(this, baseAddress);
+      var row = this.row;
+
+      if (this.isRowRelative()) {
+        row = baseAddress.row + this.row;
+      }
+
+      return simpleRowAddress(sheet, row);
+    }
+  }, {
+    key: "shiftRelativeDimensions",
+    value: function shiftRelativeDimensions(toRight, toBottom) {
+      var row = this.isRowRelative() ? this.row + toBottom : this.row;
+      return new RowAddress(this.type, row, this.sheet);
+    }
+  }, {
+    key: "shiftAbsoluteDimensions",
+    value: function shiftAbsoluteDimensions(toRight, toBottom) {
+      var row = this.isRowAbsolute() ? this.row + toBottom : this.row;
+      return new RowAddress(this.type, row, this.sheet);
+    }
+  }, {
+    key: "withSheet",
+    value: function withSheet(sheet) {
+      return new RowAddress(this.type, this.row, sheet);
+    }
+  }, {
+    key: "isInvalid",
+    value: function isInvalid(baseAddress) {
+      return this.toSimpleRowAddress(baseAddress).row < 0;
+    }
+  }, {
+    key: "hash",
+    value: function hash(withSheet) {
+      var sheetPart = withSheet && this.sheet !== undefined ? "#".concat(this.sheet) : '';
+
+      switch (this.type) {
+        case ReferenceType.RELATIVE:
+          {
+            return "".concat(sheetPart, "#ROWR").concat(this.row);
+          }
+
+        case ReferenceType.ABSOLUTE:
+          {
+            return "".concat(sheetPart, "#ROWA").concat(this.row);
+          }
+      }
+    }
+  }, {
+    key: "unparse",
+    value: function unparse(baseAddress) {
+      var simpleAddress = this.toSimpleRowAddress(baseAddress);
+
+      if (invalidSimpleRowAddress(simpleAddress)) {
+        return undefined;
+      }
+
+      var dollar = this.type === ReferenceType.ABSOLUTE ? '$' : '';
+      return "".concat(dollar).concat(simpleAddress.row + 1);
+    }
+  }, {
+    key: "exceedsSheetSizeLimits",
+    value: function exceedsSheetSizeLimits(maxRows) {
+      return this.row >= maxRows;
+    }
+  }], [{
+    key: "absolute",
+    value: function absolute(row, sheet) {
+      return new RowAddress(ReferenceType.ABSOLUTE, row, sheet);
+    }
+  }, {
+    key: "relative",
+    value: function relative(row, sheet) {
+      return new RowAddress(ReferenceType.RELATIVE, row, sheet);
+    }
+  }, {
+    key: "compareByAbsoluteAddress",
+    value: function compareByAbsoluteAddress(baseAddress) {
+      return function (rowA, rowB) {
+        return rowA.toSimpleRowAddress(baseAddress).row - rowB.toSimpleRowAddress(baseAddress).row;
+      };
+    }
+  }]);
+
+  return RowAddress;
+}();
+
+function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties$3(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass$3(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$3(Constructor.prototype, protoProps); if (staticProps) _defineProperties$3(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /** Possible kinds of cell references */
 
 var CellReferenceType;
@@ -1499,7 +1767,7 @@ var CellReferenceType;
 
 var CellAddress = /*#__PURE__*/function () {
   function CellAddress(col, row, type, sheet) {
-    _classCallCheck$1(this, CellAddress);
+    _classCallCheck$3(this, CellAddress);
 
     this.col = col;
     this.row = row;
@@ -1507,7 +1775,7 @@ var CellAddress = /*#__PURE__*/function () {
     this.sheet = sheet;
   }
 
-  _createClass$1(CellAddress, [{
+  _createClass$3(CellAddress, [{
     key: "toSimpleCellAddress",
     value:
     /**
@@ -1527,6 +1795,18 @@ var CellAddress = /*#__PURE__*/function () {
       } else {
         return simpleCellAddress(sheet, baseAddress.col + this.col, baseAddress.row + this.row);
       }
+    }
+  }, {
+    key: "toColumnAddress",
+    value: function toColumnAddress() {
+      var refType = this.isColumnRelative() ? ReferenceType.RELATIVE : ReferenceType.ABSOLUTE;
+      return new ColumnAddress(refType, this.col, this.sheet);
+    }
+  }, {
+    key: "toRowAddress",
+    value: function toRowAddress() {
+      var refType = this.isRowRelative() ? ReferenceType.RELATIVE : ReferenceType.ABSOLUTE;
+      return new RowAddress(refType, this.row, this.sheet);
     }
   }, {
     key: "toSimpleColumnAddress",
@@ -1594,8 +1874,8 @@ var CellAddress = /*#__PURE__*/function () {
       return new CellAddress(this.col + toRight, this.row + toBottom, this.type, newSheet);
     }
   }, {
-    key: "withAbsoluteSheet",
-    value: function withAbsoluteSheet(sheet) {
+    key: "withSheet",
+    value: function withSheet(sheet) {
       return new CellAddress(this.col, this.row, this.type, sheet);
     }
   }, {
@@ -1664,6 +1944,15 @@ var CellAddress = /*#__PURE__*/function () {
       return this.row >= maxRows || this.col >= maxColumns;
     }
   }], [{
+    key: "fromColAndRow",
+    value: function fromColAndRow(col, row, sheet) {
+      var factoryMethod = col.isColumnAbsolute() && row.isRowAbsolute() ? CellAddress.absolute.bind(this) : col.isColumnAbsolute() ? CellAddress.absoluteCol.bind(this) : row.isRowAbsolute() ? CellAddress.absoluteRow.bind(this) // this is because `CellAddress.relative` expects arguments in a different order
+      : function (col, row, sheet) {
+        return CellAddress.relative(row, col, sheet);
+      };
+      return factoryMethod(col.col, row.row, sheet);
+    }
+  }, {
     key: "relative",
     value: function relative(row, col, sheet) {
       return new CellAddress(col, row, CellReferenceType.CELL_REFERENCE_RELATIVE, sheet);
@@ -1686,137 +1975,6 @@ var CellAddress = /*#__PURE__*/function () {
   }]);
 
   return CellAddress;
-}();
-
-function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties$2(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass$2(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$2(Constructor.prototype, protoProps); if (staticProps) _defineProperties$2(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-var ReferenceType;
-
-(function (ReferenceType) {
-  ReferenceType["RELATIVE"] = "RELATIVE";
-  ReferenceType["ABSOLUTE"] = "ABSOLUTE";
-})(ReferenceType || (ReferenceType = {}));
-
-var ColumnAddress = /*#__PURE__*/function () {
-  function ColumnAddress(type, col, sheet) {
-    _classCallCheck$2(this, ColumnAddress);
-
-    this.type = type;
-    this.col = col;
-    this.sheet = sheet;
-  }
-
-  _createClass$2(ColumnAddress, [{
-    key: "isColumnAbsolute",
-    value: function isColumnAbsolute() {
-      return this.type === ReferenceType.ABSOLUTE;
-    }
-  }, {
-    key: "isColumnRelative",
-    value: function isColumnRelative() {
-      return this.type === ReferenceType.RELATIVE;
-    }
-  }, {
-    key: "isAbsolute",
-    value: function isAbsolute() {
-      return this.type === ReferenceType.ABSOLUTE && this.sheet !== undefined;
-    }
-  }, {
-    key: "moved",
-    value: function moved(toSheet, toRight, _toBottom) {
-      var newSheet = this.sheet === undefined ? undefined : toSheet;
-      return new ColumnAddress(this.type, this.col + toRight, newSheet);
-    }
-  }, {
-    key: "shiftedByColumns",
-    value: function shiftedByColumns(numberOfColumns) {
-      return new ColumnAddress(this.type, this.col + numberOfColumns, this.sheet);
-    }
-  }, {
-    key: "toSimpleColumnAddress",
-    value: function toSimpleColumnAddress(baseAddress) {
-      var sheet = absoluteSheetReference(this, baseAddress);
-      var column = this.col;
-
-      if (this.isColumnRelative()) {
-        column = baseAddress.col + this.col;
-      }
-
-      return simpleColumnAddress(sheet, column);
-    }
-  }, {
-    key: "shiftRelativeDimensions",
-    value: function shiftRelativeDimensions(toRight, _toBottom) {
-      var col = this.isColumnRelative() ? this.col + toRight : this.col;
-      return new ColumnAddress(this.type, col, this.sheet);
-    }
-  }, {
-    key: "shiftAbsoluteDimensions",
-    value: function shiftAbsoluteDimensions(toRight, _toBottom) {
-      var col = this.isColumnAbsolute() ? this.col + toRight : this.col;
-      return new ColumnAddress(this.type, col, this.sheet);
-    }
-  }, {
-    key: "withAbsoluteSheet",
-    value: function withAbsoluteSheet(sheet) {
-      return new ColumnAddress(this.type, this.col, sheet);
-    }
-  }, {
-    key: "isInvalid",
-    value: function isInvalid(baseAddress) {
-      return this.toSimpleColumnAddress(baseAddress).col < 0;
-    }
-  }, {
-    key: "hash",
-    value: function hash(withSheet) {
-      var sheetPart = withSheet && this.sheet !== undefined ? "#".concat(this.sheet) : '';
-
-      switch (this.type) {
-        case ReferenceType.RELATIVE:
-          {
-            return "".concat(sheetPart, "#COLR").concat(this.col);
-          }
-
-        case ReferenceType.ABSOLUTE:
-          {
-            return "".concat(sheetPart, "#COLA").concat(this.col);
-          }
-      }
-    }
-  }, {
-    key: "unparse",
-    value: function unparse(baseAddress) {
-      var simpleAddress = this.toSimpleColumnAddress(baseAddress);
-
-      if (invalidSimpleColumnAddress(simpleAddress)) {
-        return undefined;
-      }
-
-      var column = columnIndexToLabel(simpleAddress.col);
-      var dollar = this.type === ReferenceType.ABSOLUTE ? '$' : '';
-      return "".concat(dollar).concat(column);
-    }
-  }, {
-    key: "exceedsSheetSizeLimits",
-    value: function exceedsSheetSizeLimits(maxColumns) {
-      return this.col >= maxColumns;
-    }
-  }], [{
-    key: "absolute",
-    value: function absolute(column, sheet) {
-      return new ColumnAddress(ReferenceType.ABSOLUTE, column, sheet);
-    }
-  }, {
-    key: "relative",
-    value: function relative(column, sheet) {
-      return new ColumnAddress(ReferenceType.RELATIVE, column, sheet);
-    }
-  }]);
-
-  return ColumnAddress;
 }();
 
 /*
@@ -10508,6 +10666,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 var RANGE_OPERATOR = ':';
 var ABSOLUTE_OPERATOR = '$';
+var ALL_WHITESPACE_REGEXP = /\s+/;
+var ODFF_WHITESPACE_REGEXP = /[ \t\n\r]+/;
 /* arithmetic */
 // abstract for + -
 
@@ -10651,16 +10811,15 @@ var ErrorLiteral = createToken({
   name: 'ErrorLiteral',
   pattern: /#[A-Za-z0-9\/]+[?!]?/
 });
-/* skipping whitespaces */
-
-var WhiteSpace = createToken({
-  name: 'WhiteSpace',
-  pattern: /[ \t\n\r]+/
-});
 var buildLexerConfig = function buildLexerConfig(config) {
   var offsetProcedureNameLiteral = config.translationPackage.getFunctionTranslation('OFFSET');
   var errorMapping = config.errorMapping;
   var functionMapping = config.translationPackage.buildFunctionMapping();
+  var whitespaceTokenRegexp = config.ignoreWhiteSpace === 'standard' ? ODFF_WHITESPACE_REGEXP : ALL_WHITESPACE_REGEXP;
+  var WhiteSpace = createToken({
+    name: 'WhiteSpace',
+    pattern: whitespaceTokenRegexp
+  });
   var ArrayRowSeparator = createToken({
     name: 'ArrayRowSep',
     pattern: config.arrayRowSeparator
@@ -10704,6 +10863,7 @@ var buildLexerConfig = function buildLexerConfig(config) {
     OffsetProcedureName: OffsetProcedureName,
     ArrayRowSeparator: ArrayRowSeparator,
     ArrayColSeparator: ArrayColSeparator,
+    WhiteSpace: WhiteSpace,
     allTokens: allTokens,
     errorMapping: errorMapping,
     functionMapping: functionMapping,
@@ -10712,129 +10872,6 @@ var buildLexerConfig = function buildLexerConfig(config) {
     maxRows: config.maxRows
   };
 };
-
-function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties$3(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass$3(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$3(Constructor.prototype, protoProps); if (staticProps) _defineProperties$3(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-var RowAddress = /*#__PURE__*/function () {
-  function RowAddress(type, row, sheet) {
-    _classCallCheck$3(this, RowAddress);
-
-    this.type = type;
-    this.row = row;
-    this.sheet = sheet;
-  }
-
-  _createClass$3(RowAddress, [{
-    key: "isRowAbsolute",
-    value: function isRowAbsolute() {
-      return this.type === ReferenceType.ABSOLUTE;
-    }
-  }, {
-    key: "isRowRelative",
-    value: function isRowRelative() {
-      return this.type === ReferenceType.RELATIVE;
-    }
-  }, {
-    key: "isAbsolute",
-    value: function isAbsolute() {
-      return this.type === ReferenceType.ABSOLUTE && this.sheet !== undefined;
-    }
-  }, {
-    key: "moved",
-    value: function moved(toSheet, toRight, toBottom) {
-      var newSheet = this.sheet === undefined ? undefined : toSheet;
-      return new RowAddress(this.type, this.row + toBottom, newSheet);
-    }
-  }, {
-    key: "shiftedByRows",
-    value: function shiftedByRows(numberOfColumns) {
-      return new RowAddress(this.type, this.row + numberOfColumns, this.sheet);
-    }
-  }, {
-    key: "toSimpleRowAddress",
-    value: function toSimpleRowAddress(baseAddress) {
-      var sheet = absoluteSheetReference(this, baseAddress);
-      var row = this.row;
-
-      if (this.isRowRelative()) {
-        row = baseAddress.row + this.row;
-      }
-
-      return simpleRowAddress(sheet, row);
-    }
-  }, {
-    key: "shiftRelativeDimensions",
-    value: function shiftRelativeDimensions(toRight, toBottom) {
-      var row = this.isRowRelative() ? this.row + toBottom : this.row;
-      return new RowAddress(this.type, row, this.sheet);
-    }
-  }, {
-    key: "shiftAbsoluteDimensions",
-    value: function shiftAbsoluteDimensions(toRight, toBottom) {
-      var row = this.isRowAbsolute() ? this.row + toBottom : this.row;
-      return new RowAddress(this.type, row, this.sheet);
-    }
-  }, {
-    key: "withAbsoluteSheet",
-    value: function withAbsoluteSheet(sheet) {
-      return new RowAddress(this.type, this.row, sheet);
-    }
-  }, {
-    key: "isInvalid",
-    value: function isInvalid(baseAddress) {
-      return this.toSimpleRowAddress(baseAddress).row < 0;
-    }
-  }, {
-    key: "hash",
-    value: function hash(withSheet) {
-      var sheetPart = withSheet && this.sheet !== undefined ? "#".concat(this.sheet) : '';
-
-      switch (this.type) {
-        case ReferenceType.RELATIVE:
-          {
-            return "".concat(sheetPart, "#ROWR").concat(this.row);
-          }
-
-        case ReferenceType.ABSOLUTE:
-          {
-            return "".concat(sheetPart, "#ROWA").concat(this.row);
-          }
-      }
-    }
-  }, {
-    key: "unparse",
-    value: function unparse(baseAddress) {
-      var simpleAddress = this.toSimpleRowAddress(baseAddress);
-
-      if (invalidSimpleRowAddress(simpleAddress)) {
-        return undefined;
-      }
-
-      var dollar = this.type === ReferenceType.ABSOLUTE ? '$' : '';
-      return "".concat(dollar).concat(simpleAddress.row + 1);
-    }
-  }, {
-    key: "exceedsSheetSizeLimits",
-    value: function exceedsSheetSizeLimits(maxRows) {
-      return this.row >= maxRows;
-    }
-  }], [{
-    key: "absolute",
-    value: function absolute(row, sheet) {
-      return new RowAddress(ReferenceType.ABSOLUTE, row, sheet);
-    }
-  }, {
-    key: "relative",
-    value: function relative(row, sheet) {
-      return new RowAddress(ReferenceType.RELATIVE, row, sheet);
-    }
-  }]);
-
-  return RowAddress;
-}();
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray$1(arr, i) || _nonIterableRest(); }
 
@@ -11745,33 +11782,36 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
           startImage = _range$image$split2[0],
           endImage = _range$image$split2[1];
 
-      var start = _this.ACTION(function () {
+      var firstAddress = _this.ACTION(function () {
         return columnAddressFromString(_this.sheetMapping, startImage, _this.formulaAddress);
       });
 
-      var end = _this.ACTION(function () {
+      var secondAddress = _this.ACTION(function () {
         return columnAddressFromString(_this.sheetMapping, endImage, _this.formulaAddress);
       });
 
-      if (start === undefined || end === undefined) {
+      if (firstAddress === undefined || secondAddress === undefined) {
         return buildCellErrorAst(new CellError(ErrorType.REF));
       }
 
-      if (start.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns) || end.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns)) {
+      if (firstAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns) || secondAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns)) {
         return buildErrorWithRawInputAst(range.image, new CellError(ErrorType.NAME), range.leadingWhitespace);
       }
 
-      if (start.sheet === undefined && end.sheet !== undefined) {
+      if (firstAddress.sheet === undefined && secondAddress.sheet !== undefined) {
         return _this.parsingError(ParsingErrorType.ParserError, 'Malformed range expression');
       }
 
-      var sheetReferenceType = _this.rangeSheetReferenceType(start.sheet, end.sheet);
+      var _FormulaParser$fixShe = FormulaParser.fixSheetIdsForRangeEnds(firstAddress, secondAddress),
+          firstEnd = _FormulaParser$fixShe.firstEnd,
+          secondEnd = _FormulaParser$fixShe.secondEnd,
+          sheetRefType = _FormulaParser$fixShe.sheetRefType;
 
-      if (start.sheet !== undefined && end.sheet === undefined) {
-        end = end.withAbsoluteSheet(start.sheet);
-      }
+      var _this$orderColumnRang = _this.orderColumnRangeEnds(firstEnd, secondEnd),
+          start = _this$orderColumnRang.start,
+          end = _this$orderColumnRang.end;
 
-      return buildColumnRangeAst(start, end, sheetReferenceType, range.leadingWhitespace);
+      return buildColumnRangeAst(start, end, sheetRefType, range.leadingWhitespace);
     });
     /**
      * Rule for row range, e.g. 1:2, Sheet1!1:2, Sheet1!1:Sheet1!2
@@ -11785,33 +11825,36 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
           startImage = _range$image$split4[0],
           endImage = _range$image$split4[1];
 
-      var start = _this.ACTION(function () {
+      var firstAddress = _this.ACTION(function () {
         return rowAddressFromString(_this.sheetMapping, startImage, _this.formulaAddress);
       });
 
-      var end = _this.ACTION(function () {
+      var secondAddress = _this.ACTION(function () {
         return rowAddressFromString(_this.sheetMapping, endImage, _this.formulaAddress);
       });
 
-      if (start === undefined || end === undefined) {
+      if (firstAddress === undefined || secondAddress === undefined) {
         return buildCellErrorAst(new CellError(ErrorType.REF));
       }
 
-      if (start.exceedsSheetSizeLimits(_this.lexerConfig.maxRows) || end.exceedsSheetSizeLimits(_this.lexerConfig.maxRows)) {
+      if (firstAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxRows) || secondAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxRows)) {
         return buildErrorWithRawInputAst(range.image, new CellError(ErrorType.NAME), range.leadingWhitespace);
       }
 
-      if (start.sheet === undefined && end.sheet !== undefined) {
+      if (firstAddress.sheet === undefined && secondAddress.sheet !== undefined) {
         return _this.parsingError(ParsingErrorType.ParserError, 'Malformed range expression');
       }
 
-      var sheetReferenceType = _this.rangeSheetReferenceType(start.sheet, end.sheet);
+      var _FormulaParser$fixShe2 = FormulaParser.fixSheetIdsForRangeEnds(firstAddress, secondAddress),
+          firstEnd = _FormulaParser$fixShe2.firstEnd,
+          secondEnd = _FormulaParser$fixShe2.secondEnd,
+          sheetRefType = _FormulaParser$fixShe2.sheetRefType;
 
-      if (start.sheet !== undefined && end.sheet === undefined) {
-        end = end.withAbsoluteSheet(start.sheet);
-      }
+      var _this$orderRowRangeEn = _this.orderRowRangeEnds(firstEnd, secondEnd),
+          start = _this$orderRowRangeEn.start,
+          end = _this$orderRowRangeEn.end;
 
-      return buildRowRangeAst(start, end, sheetReferenceType, range.leadingWhitespace);
+      return buildRowRangeAst(start, end, sheetRefType, range.leadingWhitespace);
     });
     /**
      * Rule for cell reference expression (e.g. A1, $A1, A$1, $A$1, $Sheet42!A$17)
@@ -11889,15 +11932,7 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
           }
 
           if (offsetProcedure.type === AstNodeType.CELL_REFERENCE) {
-            var end = offsetProcedure.reference;
-            var sheetReferenceType = RangeSheetReferenceType.RELATIVE;
-
-            if (startAddress.sheet !== undefined) {
-              sheetReferenceType = RangeSheetReferenceType.START_ABSOLUTE;
-              end = end.withAbsoluteSheet(startAddress.sheet);
-            }
-
-            return buildCellRangeAst(startAddress, end, sheetReferenceType, (_a = start.leadingWhitespace) === null || _a === void 0 ? void 0 : _a.image);
+            return _this.buildCellRange(startAddress, offsetProcedure.reference, (_a = start.leadingWhitespace) === null || _a === void 0 ? void 0 : _a.image);
           } else {
             return _this.parsingError(ParsingErrorType.RangeOffsetNotAllowed, 'Range offset not allowed here');
           }
@@ -11954,15 +11989,7 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
           var offsetProcedure = _this.SUBRULE(_this.offsetProcedureExpression);
 
           if (offsetProcedure.type === AstNodeType.CELL_REFERENCE) {
-            var end = offsetProcedure.reference;
-            var sheetReferenceType = RangeSheetReferenceType.RELATIVE;
-
-            if (start.reference.sheet !== undefined) {
-              sheetReferenceType = RangeSheetReferenceType.START_ABSOLUTE;
-              end = end.withAbsoluteSheet(start.reference.sheet);
-            }
-
-            return buildCellRangeAst(start.reference, end, sheetReferenceType, start.leadingWhitespace);
+            return _this.buildCellRange(start.reference, offsetProcedure.reference, start.leadingWhitespace);
           } else {
             return _this.parsingError(ParsingErrorType.RangeOffsetNotAllowed, 'Range offset not allowed here');
           }
@@ -11970,12 +11997,12 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       }]);
     });
     /**
-     * Rule for expressions that start with OFFSET() function
+     * Rule for expressions that start with the OFFSET function.
      *
-     * OFFSET() function can occur as cell reference or part of cell range.
-     * In order to preserve LL(k) properties, expressions that starts with OFFSET() functions needs to have separate rule.
+     * The OFFSET function can occur as a cell reference, or as a part of a cell range.
+     * To preserve LL(k) properties, expressions that start with the OFFSET function need a separate rule.
      *
-     * Proper {@link Ast} node type is built depending on the presence of {@link RangeSeparator}
+     * Depending on the presence of the {@link RangeSeparator}, a proper {@link Ast} node type is built.
      */
 
     _this.offsetExpression = _this.RULE('offsetExpression', function () {
@@ -12361,28 +12388,106 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
     }
   }, {
     key: "buildCellRange",
-    value: function buildCellRange(startAddress, endAddress, leadingWhitespace) {
-      if (startAddress.sheet === undefined && endAddress.sheet !== undefined) {
+    value: function buildCellRange(firstAddress, secondAddress, leadingWhitespace) {
+      if (firstAddress.sheet === undefined && secondAddress.sheet !== undefined) {
         return this.parsingError(ParsingErrorType.ParserError, 'Malformed range expression');
       }
 
-      var sheetReferenceType = this.rangeSheetReferenceType(startAddress.sheet, endAddress.sheet);
+      var _FormulaParser$fixShe3 = FormulaParser.fixSheetIdsForRangeEnds(firstAddress, secondAddress),
+          firstEnd = _FormulaParser$fixShe3.firstEnd,
+          secondEnd = _FormulaParser$fixShe3.secondEnd,
+          sheetRefType = _FormulaParser$fixShe3.sheetRefType;
 
-      if (startAddress.sheet !== undefined && endAddress.sheet === undefined) {
-        endAddress = endAddress.withAbsoluteSheet(startAddress.sheet);
-      }
+      var _this$orderCellRangeE = this.orderCellRangeEnds(firstEnd, secondEnd),
+          start = _this$orderCellRangeE.start,
+          end = _this$orderCellRangeE.end;
 
-      return buildCellRangeAst(startAddress, endAddress, sheetReferenceType, leadingWhitespace);
+      return buildCellRangeAst(start, end, sheetRefType, leadingWhitespace);
     }
+  }, {
+    key: "orderCellRangeEnds",
+    value: function orderCellRangeEnds(endA, endB) {
+      var ends = [endA, endB];
+
+      var _ends$map$sort = ends.map(function (e) {
+        return e.toColumnAddress();
+      }).sort(ColumnAddress.compareByAbsoluteAddress(this.formulaAddress)),
+          _ends$map$sort2 = _slicedToArray$1(_ends$map$sort, 2),
+          startCol = _ends$map$sort2[0],
+          endCol = _ends$map$sort2[1];
+
+      var _ends$map$sort3 = ends.map(function (e) {
+        return e.toRowAddress();
+      }).sort(RowAddress.compareByAbsoluteAddress(this.formulaAddress)),
+          _ends$map$sort4 = _slicedToArray$1(_ends$map$sort3, 2),
+          startRow = _ends$map$sort4[0],
+          endRow = _ends$map$sort4[1];
+
+      var _ends$map$sort5 = ends.map(function (e) {
+        return e.sheet;
+      }).sort(FormulaParser.compareSheetIds.bind(this)),
+          _ends$map$sort6 = _slicedToArray$1(_ends$map$sort5, 2),
+          startSheet = _ends$map$sort6[0],
+          endSheet = _ends$map$sort6[1];
+
+      return {
+        start: CellAddress.fromColAndRow(startCol, startRow, startSheet),
+        end: CellAddress.fromColAndRow(endCol, endRow, endSheet)
+      };
+    }
+  }, {
+    key: "orderColumnRangeEnds",
+    value: function orderColumnRangeEnds(endA, endB) {
+      var ends = [endA, endB];
+
+      var _ends$sort = ends.sort(ColumnAddress.compareByAbsoluteAddress(this.formulaAddress)),
+          _ends$sort2 = _slicedToArray$1(_ends$sort, 2),
+          startCol = _ends$sort2[0],
+          endCol = _ends$sort2[1];
+
+      var _ends$map$sort7 = ends.map(function (e) {
+        return e.sheet;
+      }).sort(FormulaParser.compareSheetIds.bind(this)),
+          _ends$map$sort8 = _slicedToArray$1(_ends$map$sort7, 2),
+          startSheet = _ends$map$sort8[0],
+          endSheet = _ends$map$sort8[1];
+
+      return {
+        start: new ColumnAddress(startCol.type, startCol.col, startSheet),
+        end: new ColumnAddress(endCol.type, endCol.col, endSheet)
+      };
+    }
+  }, {
+    key: "orderRowRangeEnds",
+    value: function orderRowRangeEnds(endA, endB) {
+      var ends = [endA, endB];
+
+      var _ends$sort3 = ends.sort(RowAddress.compareByAbsoluteAddress(this.formulaAddress)),
+          _ends$sort4 = _slicedToArray$1(_ends$sort3, 2),
+          startRow = _ends$sort4[0],
+          endRow = _ends$sort4[1];
+
+      var _ends$map$sort9 = ends.map(function (e) {
+        return e.sheet;
+      }).sort(FormulaParser.compareSheetIds.bind(this)),
+          _ends$map$sort10 = _slicedToArray$1(_ends$map$sort9, 2),
+          startSheet = _ends$map$sort10[0],
+          endSheet = _ends$map$sort10[1];
+
+      return {
+        start: new RowAddress(startRow.type, startRow.row, startSheet),
+        end: new RowAddress(endRow.type, endRow.row, endSheet)
+      };
+    }
+  }, {
+    key: "handleOffsetHeuristic",
+    value:
     /**
      * Returns {@link CellReferenceAst} or {@link CellRangeAst} based on OFFSET function arguments
      *
      * @param args - OFFSET function arguments
      */
-
-  }, {
-    key: "handleOffsetHeuristic",
-    value: function handleOffsetHeuristic(args) {
+    function handleOffsetHeuristic(args) {
       var cellArg = args[0];
 
       if (cellArg.type !== AstNodeType.CELL_REFERENCE) {
@@ -12479,6 +12584,24 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       this.customParsingError = parsingError(type, message);
       return buildParsingErrorAst();
     }
+  }], [{
+    key: "fixSheetIdsForRangeEnds",
+    value: function fixSheetIdsForRangeEnds(firstEnd, secondEnd) {
+      var sheetRefType = FormulaParser.rangeSheetReferenceType(firstEnd.sheet, secondEnd.sheet);
+      var secondEndFixed = firstEnd.sheet !== undefined && secondEnd.sheet === undefined ? secondEnd.withSheet(firstEnd.sheet) : secondEnd;
+      return {
+        firstEnd: firstEnd,
+        secondEnd: secondEndFixed,
+        sheetRefType: sheetRefType
+      };
+    }
+  }, {
+    key: "compareSheetIds",
+    value: function compareSheetIds(sheetA, sheetB) {
+      sheetA = sheetA != null ? sheetA : Infinity;
+      sheetB = sheetB != null ? sheetB : Infinity;
+      return sheetA - sheetB;
+    }
   }, {
     key: "rangeSheetReferenceType",
     value: function rangeSheetReferenceType(start, end) {
@@ -12524,20 +12647,31 @@ var FormulaLexer = /*#__PURE__*/function () {
   }, {
     key: "skipWhitespacesInsideRanges",
     value: function skipWhitespacesInsideRanges(tokens) {
-      return this.filterTokensByNeighbors(tokens, function (previous, current, next) {
-        return (tokenMatcher(previous, CellReference) || tokenMatcher(previous, RangeSeparator)) && tokenMatcher(current, WhiteSpace) && (tokenMatcher(next, CellReference) || tokenMatcher(next, RangeSeparator));
+      var _this2 = this;
+
+      return FormulaLexer.filterTokensByNeighbors(tokens, function (previous, current, next) {
+        return (tokenMatcher(previous, CellReference) || tokenMatcher(previous, RangeSeparator)) && tokenMatcher(current, _this2.lexerConfig.WhiteSpace) && (tokenMatcher(next, CellReference) || tokenMatcher(next, RangeSeparator));
       });
     }
   }, {
     key: "skipWhitespacesBeforeArgSeparators",
     value: function skipWhitespacesBeforeArgSeparators(tokens) {
-      var _this2 = this;
+      var _this3 = this;
 
-      return this.filterTokensByNeighbors(tokens, function (previous, current, next) {
-        return !tokenMatcher(previous, _this2.lexerConfig.ArgSeparator) && tokenMatcher(current, WhiteSpace) && tokenMatcher(next, _this2.lexerConfig.ArgSeparator);
+      return FormulaLexer.filterTokensByNeighbors(tokens, function (previous, current, next) {
+        return !tokenMatcher(previous, _this3.lexerConfig.ArgSeparator) && tokenMatcher(current, _this3.lexerConfig.WhiteSpace) && tokenMatcher(next, _this3.lexerConfig.ArgSeparator);
       });
     }
   }, {
+    key: "trimTrailingWhitespaces",
+    value: function trimTrailingWhitespaces(tokens) {
+      if (tokens.length > 0 && tokenMatcher(tokens[tokens.length - 1], this.lexerConfig.WhiteSpace)) {
+        tokens.pop();
+      }
+
+      return tokens;
+    }
+  }], [{
     key: "filterTokensByNeighbors",
     value: function filterTokensByNeighbors(tokens, shouldBeSkipped) {
       if (tokens.length < 3) {
@@ -12557,15 +12691,6 @@ var FormulaLexer = /*#__PURE__*/function () {
 
       filteredTokens.push(tokens[i]);
       return filteredTokens;
-    }
-  }, {
-    key: "trimTrailingWhitespaces",
-    value: function trimTrailingWhitespaces(tokens) {
-      if (tokens.length > 0 && tokenMatcher(tokens[tokens.length - 1], WhiteSpace)) {
-        tokens.pop();
-      }
-
-      return tokens;
     }
   }]);
 
@@ -12797,7 +12922,7 @@ var ParserWithCaching = /*#__PURE__*/function () {
   _createClass$8(ParserWithCaching, [{
     key: "parse",
     value: function parse(text, formulaAddress) {
-      var lexerResult = this.lexer.tokenizeFormula(text);
+      var lexerResult = this.tokenizeFormula(text);
 
       if (lexerResult.errors.length > 0) {
         var errors = lexerResult.errors.map(function (e) {
@@ -12821,7 +12946,7 @@ var ParserWithCaching = /*#__PURE__*/function () {
       if (cacheResult !== undefined) {
         ++this.statsCacheUsed;
       } else {
-        var processedTokens = bindWhitespacesToTokens(lexerResult.tokens);
+        var processedTokens = this.bindWhitespacesToTokens(lexerResult.tokens);
         var parsingResult = this.formulaParser.parseFromTokens(processedTokens, formulaAddress);
 
         if (parsingResult.errors.length > 0) {
@@ -13048,36 +13173,43 @@ var ParserWithCaching = /*#__PURE__*/function () {
           }
       }
     }
+  }, {
+    key: "bindWhitespacesToTokens",
+    value: function bindWhitespacesToTokens(tokens) {
+      var processedTokens = [];
+      var first = tokens[0];
+
+      if (!tokenMatcher(first, this.lexerConfig.WhiteSpace)) {
+        processedTokens.push(first);
+      }
+
+      for (var i = 1; i < tokens.length; ++i) {
+        var current = tokens[i];
+
+        if (tokenMatcher(current, this.lexerConfig.WhiteSpace)) {
+          continue;
+        }
+
+        var previous = tokens[i - 1];
+
+        if (tokenMatcher(previous, this.lexerConfig.WhiteSpace)) {
+          current.leadingWhitespace = previous;
+        }
+
+        processedTokens.push(current);
+      }
+
+      return processedTokens;
+    }
+  }, {
+    key: "tokenizeFormula",
+    value: function tokenizeFormula(text) {
+      return this.lexer.tokenizeFormula(text);
+    }
   }]);
 
   return ParserWithCaching;
 }();
-function bindWhitespacesToTokens(tokens) {
-  var processedTokens = [];
-  var first = tokens[0];
-
-  if (!tokenMatcher(first, WhiteSpace)) {
-    processedTokens.push(first);
-  }
-
-  for (var i = 1; i < tokens.length; ++i) {
-    var current = tokens[i];
-
-    if (tokenMatcher(current, WhiteSpace)) {
-      continue;
-    }
-
-    var previous = tokens[i - 1];
-
-    if (tokenMatcher(previous, WhiteSpace)) {
-      current.leadingWhitespace = previous;
-    }
-
-    processedTokens.push(current);
-  }
-
-  return processedTokens;
-}
 
 var collectDependenciesFn = function collectDependenciesFn(ast, functionRegistry, dependenciesSet, needArgument) {
   switch (ast.type) {
@@ -18695,7 +18827,7 @@ var RangeVertex = /*#__PURE__*/function () {
   return RangeVertex;
 }();
 
-var collectAddressesDependentToRange = function collectAddressesDependentToRange(funcitonRegistry, vertex, range, lazilyTransformingAstService, dependencyGraph) {
+var collectAddressesDependentToRange = function collectAddressesDependentToRange(functionRegistry, vertex, range, lazilyTransformingAstService, dependencyGraph) {
   if (vertex instanceof RangeVertex) {
     var intersection = vertex.range.intersectionWith(range);
 
@@ -18716,7 +18848,7 @@ var collectAddressesDependentToRange = function collectAddressesDependentToRange
     return [];
   }
 
-  return collectDependencies(formula, funcitonRegistry).filter(function (d) {
+  return collectDependencies(formula, functionRegistry).filter(function (d) {
     return d instanceof AddressDependency;
   }).map(function (d) {
     return d.dependency.toSimpleCellAddress(address);
@@ -23959,6 +24091,7 @@ function _unsupportedIterableToArray$k(o, minLen) { if (!o) return; if (typeof o
 function _arrayLikeToArray$k(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 function _typeof$7(obj) { "@babel/helpers - typeof"; return _typeof$7 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$7(obj); }
+
 function configValueFromParam(inputValue, expectedType, paramName) {
   if (typeof inputValue === 'undefined') {
     return Config.defaultConfig[paramName];
@@ -24038,7 +24171,8 @@ function configCheckIfParametersNotInConflict() {
     }).join('; ');
     throw new Error("Config initialization failed. Parameters in conflict: ".concat(paramNames));
   }
-}
+} // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function validateArgToType(inputValue, expectedType, paramName) {
   if (_typeof$7(inputValue) !== expectedType) {
     throw new ExpectedValueOfTypeError(expectedType, paramName);
@@ -25194,7 +25328,7 @@ function checkLicenseKeyValidity(licenseKey) {
     /* VALID */
     ;
   } else if (typeof licenseKey === 'string' && checkKeySchema(licenseKey)) {
-    var _split = ("11/01/2022" ).split('/'),
+    var _split = ("14/04/2022" ).split('/'),
         _split2 = _slicedToArray$d(_split, 3),
         day = _split2[0],
         month = _split2[1],
@@ -32385,31 +32519,6 @@ var Interpreter = /*#__PURE__*/function () {
 
       return wrapperForRootVertex(val, state.formulaVertex);
     }
-  }, {
-    key: "getGpuInstance",
-    value: function getGpuInstance() {
-      var mode = this.config.gpuMode;
-      var gpujs = this.config.gpujs;
-
-      if (gpujs === undefined) {
-        throw Error('Cannot instantiate GPU.js. Constructor not provided.');
-      }
-
-      if (!this.gpu) {
-        this.gpu = new gpujs({
-          mode: mode
-        });
-      }
-
-      return this.gpu;
-    }
-  }, {
-    key: "destroyGpu",
-    value: function destroyGpu() {
-      var _a;
-
-      (_a = this.gpu) === null || _a === void 0 ? void 0 : _a.destroy();
-    }
     /**
      * Calculates cell value from formula abstract syntax tree
      *
@@ -34419,7 +34528,7 @@ var HyperFormula = /*#__PURE__*/function () {
    * const defaultConfig = HyperFormula.defaultConfig;
    * ```
    *
-   * @category Static Properties
+   * @category Static Accessors
    */
 
 
@@ -36732,8 +36841,8 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns information whether it is possible to remove sheet for the engine.
-     * Returns `true` if the provided name of a sheet exists and therefore it can be removed, doing [[removeSheet]] operation won't throw any errors.
-     * Returns `false` if there is no sheet with a given name.
+     * Returns `true` if the provided sheet exists and therefore it can be removed, doing [[removeSheet]] operation won't throw any errors.
+     * Returns `false` otherwise
      *
      * @param {number} sheetId - sheet ID.
      *
@@ -36767,7 +36876,7 @@ var HyperFormula = /*#__PURE__*/function () {
       }
     }
     /**
-     * Removes sheet with a specified name.
+     * Removes a sheet
      *
      * Note that this method may trigger dependency graph recalculation.
      *
@@ -36814,8 +36923,8 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns information whether it is possible to clear a specified sheet.
-     * If returns `true`, doing [[clearSheet]] operation won't throw any errors, provided name of a sheet exists and then its content can be cleared.
-     * Returns `false` if there is no sheet with a given name.
+     * If returns `true`, doing [[clearSheet]] operation won't throw any errors, provided sheet exists and its content can be cleared.
+     * Returns `false` otherwise
      *
      * @param {number} sheetId - sheet ID.
      *
@@ -36849,8 +36958,7 @@ var HyperFormula = /*#__PURE__*/function () {
       }
     }
     /**
-     * Clears the sheet content. Based on that the method finds the ID of a sheet to be cleared.
-     * Double-checks if the sheet exists.
+     * Clears the sheet content. Double-checks if the sheet exists.
      *
      * Note that this method may trigger dependency graph recalculation.
      *
@@ -36891,8 +36999,8 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns information whether it is possible to replace the sheet content.
-     * If returns `true`, doing [[setSheetContent]] operation won't throw any errors, the provided name of a sheet exists and then its content can be replaced.
-     * Returns `false` if there is no sheet with a given name.
+     * If returns `true`, doing [[setSheetContent]] operation won't throw any errors, the provided sheet exists and then its content can be replaced.
+     * Returns `false` otherwise
      *
      * @param {number} sheetId - sheet ID.
      * @param {RawCellContent[][]} values - array of new values
@@ -36906,7 +37014,7 @@ var HyperFormula = /*#__PURE__*/function () {
      *  MySheet2: [ ['10'] ],
      * });
      *
-     * // should return 'true' because 'MySheet1' (sheetId=0) exists
+     * // should return 'true' because sheet of ID 0 exists
      * // and the provided content can be placed in this sheet
      * const isReplaceable = hfInstance.isItPossibleToReplaceSheetContent(0, [['50'], ['60']]);
      * ```
@@ -36931,8 +37039,6 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Replaces the sheet content with new values.
-     * The new value is to be provided as an array of arrays of [[RawCellContent]].
-     * The method finds sheet ID based on the provided sheet name.
      *
      * @param {number} sheetId - sheet ID.
      * @param {RawCellContent[][]} values - array of new values
@@ -37620,7 +37726,7 @@ var HyperFormula = /*#__PURE__*/function () {
     /**
      * Renames a specified sheet.
      *
-     * @param {number} sheetId - a sheet number
+     * @param {number} sheetId - a sheet ID
      * @param {string} newName - a name of the sheet to be given, if is the same as the old one the method does nothing
      *
      * @fires [[sheetRenamed]] after the sheet was renamed
@@ -37730,7 +37836,7 @@ var HyperFormula = /*#__PURE__*/function () {
      *
      * // perform operations
      * hfInstance.setCellContents({ col: 3, row: 0, sheet: 0 }, [['=B1']]);
-     * hfInstance.setSheetContent('MySheet2', [['50'], ['60']]);
+     * hfInstance.setSheetContent(1, [['50'], ['60']]);
      *
      * // use resumeEvaluation to resume
      * const changes = hfInstance.resumeEvaluation();
@@ -37769,7 +37875,7 @@ var HyperFormula = /*#__PURE__*/function () {
      *
      * // perform operations
      * hfInstance.setCellContents({ col: 3, row: 0, sheet: 0 }, [['=B1']]);
-     * hfInstance.setSheetContent('MySheet2', [['50'], ['60']]);
+     * hfInstance.setSheetContent(1, [['50'], ['60']]);
      *
      * // resume the evaluation
      * const changes = hfInstance.resumeEvaluation();
@@ -38701,8 +38807,6 @@ var HyperFormula = /*#__PURE__*/function () {
   }, {
     key: "destroy",
     value: function destroy() {
-      this._evaluator.interpreter.destroyGpu();
-
       objectDestroy(this);
     }
   }, {
@@ -39174,21 +39278,21 @@ var HyperFormula = /*#__PURE__*/function () {
  * @category Static Properties
  */
 
-HyperFormula.version = "1.3.1";
+HyperFormula.version = "2.0.0";
 /**
  * Latest build date.
  *
  * @category Static Properties
  */
 
-HyperFormula.buildDate = "11/01/2022 10:43:03";
+HyperFormula.buildDate = "14/04/2022 09:14:09";
 /**
  * A release date.
  *
  * @category Static Properties
  */
 
-HyperFormula.releaseDate = "11/01/2022";
+HyperFormula.releaseDate = "14/04/2022";
 /**
  * Contains all available languages to use in registerLanguage.
  *
@@ -39215,7 +39319,6 @@ function _classCallCheck$17(instance, Constructor) { if (!(instance instanceof C
 function _defineProperties$17(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass$17(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$17(Constructor.prototype, protoProps); if (staticProps) _defineProperties$17(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-var PossibleGPUModeString = ['gpu', 'cpu', 'dev'];
 var privatePool = new WeakMap();
 var Config = /*#__PURE__*/function () {
   function Config() {
@@ -39235,12 +39338,11 @@ var Config = /*#__PURE__*/function () {
         evaluateNullToZero = options.evaluateNullToZero,
         functionArgSeparator = options.functionArgSeparator,
         functionPlugins = options.functionPlugins,
-        gpujs = options.gpujs,
-        gpuMode = options.gpuMode,
         ignorePunctuation = options.ignorePunctuation,
         leapYear1900 = options.leapYear1900,
         localeLang = options.localeLang,
         language = options.language,
+        ignoreWhiteSpace = options.ignoreWhiteSpace,
         licenseKey = options.licenseKey,
         matchWholeCell = options.matchWholeCell,
         arrayColumnSeparator = options.arrayColumnSeparator,
@@ -39265,7 +39367,7 @@ var Config = /*#__PURE__*/function () {
         useWildcards = options.useWildcards;
 
     if (showDeprecatedWarns) {
-      this.warnDeprecatedOptions(options);
+      Config.warnDeprecatedOptions(options);
     }
 
     this.useArrayArithmetic = configValueFromParam(useArrayArithmetic, 'boolean', 'useArrayArithmetic');
@@ -39279,14 +39381,13 @@ var Config = /*#__PURE__*/function () {
     this.functionArgSeparator = configValueFromParam(functionArgSeparator, 'string', 'functionArgSeparator');
     this.decimalSeparator = configValueFromParam(decimalSeparator, ['.', ','], 'decimalSeparator');
     this.language = configValueFromParam(language, 'string', 'language');
+    this.ignoreWhiteSpace = configValueFromParam(ignoreWhiteSpace, ['standard', 'any'], 'ignoreWhiteSpace');
     this.licenseKey = configValueFromParam(licenseKey, 'string', 'licenseKey');
     this.thousandSeparator = configValueFromParam(thousandSeparator, ['', ',', ' ', '.'], 'thousandSeparator');
     this.arrayColumnSeparator = configValueFromParam(arrayColumnSeparator, [',', ';'], 'arrayColumnSeparator');
     this.arrayRowSeparator = configValueFromParam(arrayRowSeparator, [';', '|'], 'arrayRowSeparator');
     this.localeLang = configValueFromParam(localeLang, 'string', 'localeLang');
     this.functionPlugins = _toConsumableArray$c(functionPlugins !== null && functionPlugins !== void 0 ? functionPlugins : Config.defaultConfig.functionPlugins);
-    this.gpujs = gpujs !== null && gpujs !== void 0 ? gpujs : Config.defaultConfig.gpujs;
-    this.gpuMode = configValueFromParam(gpuMode, PossibleGPUModeString, 'gpuMode');
     this.smartRounding = configValueFromParam(smartRounding, 'boolean', 'smartRounding');
     this.evaluateNullToZero = configValueFromParam(evaluateNullToZero, 'boolean', 'evaluateNullToZero');
     this.nullYear = configValueFromParam(nullYear, 'number', 'nullYear');
@@ -39314,16 +39415,7 @@ var Config = /*#__PURE__*/function () {
     this.maxRows = configValueFromParam(maxRows, 'number', 'maxRows');
     validateNumberToBeAtLeast(this.maxRows, 'maxRows', 1);
     this.maxColumns = configValueFromParam(maxColumns, 'number', 'maxColumns');
-    this.currencySymbol = _toConsumableArray$c(configValueFromParamCheck(currencySymbol, Array.isArray, 'array', 'currencySymbol'));
-    this.currencySymbol.forEach(function (val) {
-      if (typeof val !== 'string') {
-        throw new ExpectedValueOfTypeError('string[]', 'currencySymbol');
-      }
-
-      if (val === '') {
-        throw new ConfigValueEmpty('currencySymbol');
-      }
-    });
+    this.currencySymbol = this.setupCurrencySymbol(currencySymbol);
     validateNumberToBeAtLeast(this.maxColumns, 'maxColumns', 1);
     privatePool.set(this, {
       licenseKeyValidityState: checkLicenseKeyValidity(this.licenseKey)
@@ -39346,15 +39438,31 @@ var Config = /*#__PURE__*/function () {
       name: 'arrayColumnSeparator'
     });
   }
-  /**
-   * Proxied property to its private counterpart. This makes the property
-   * as accessible as the other Config options but without ability to change the value.
-   *
-   * @internal
-   */
-
 
   _createClass$17(Config, [{
+    key: "setupCurrencySymbol",
+    value: function setupCurrencySymbol(currencySymbol) {
+      var valueAfterCheck = _toConsumableArray$c(configValueFromParamCheck(currencySymbol, Array.isArray, 'array', 'currencySymbol'));
+
+      valueAfterCheck.forEach(function (val) {
+        if (typeof val !== 'string') {
+          throw new ExpectedValueOfTypeError('string[]', 'currencySymbol');
+        }
+
+        if (val === '') {
+          throw new ConfigValueEmpty('currencySymbol');
+        }
+      });
+      return valueAfterCheck;
+    }
+    /**
+     * Proxied property to its private counterpart. This makes the property
+     * as accessible as the other Config options but without ability to change the value.
+     *
+     * @internal
+     */
+
+  }, {
     key: "licenseKeyValidityState",
     get: function get() {
       return privatePool.get(this).licenseKeyValidityState;
@@ -39368,19 +39476,15 @@ var Config = /*#__PURE__*/function () {
     key: "mergeConfig",
     value: function mergeConfig(init) {
       var mergedConfig = Object.assign({}, this.getConfig(), init);
-      this.warnDeprecatedOptions(init);
+      Config.warnDeprecatedOptions(init);
       return new Config(mergedConfig, false);
     }
-  }, {
+  }], [{
     key: "warnDeprecatedOptions",
     value: function warnDeprecatedOptions(options) {
-      this.warnDeprecatedIfUsed(options.binarySearchThreshold, 'binarySearchThreshold', '1.1');
-      this.warnDeprecatedIfUsed(options.gpujs, 'gpujs', '1.2');
+      Config.warnDeprecatedIfUsed(options.binarySearchThreshold, 'binarySearchThreshold', '1.1');
+    } // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-      if (options.gpuMode !== Config.defaultConfig.gpuMode) {
-        this.warnDeprecatedIfUsed(options.gpuMode, 'gpuMode', '1.2');
-      }
-    }
   }, {
     key: "warnDeprecatedIfUsed",
     value: function warnDeprecatedIfUsed(inputValue, paramName, fromVersion, replacementName) {
@@ -39408,10 +39512,9 @@ Config.defaultConfig = {
   evaluateNullToZero: false,
   functionArgSeparator: ',',
   functionPlugins: [],
-  gpujs: undefined,
-  gpuMode: 'gpu',
   ignorePunctuation: false,
   language: 'enGB',
+  ignoreWhiteSpace: 'standard',
   licenseKey: '',
   leapYear1900: false,
   localeLang: 'en',
@@ -39443,7 +39546,8 @@ Config.defaultConfig = {
 };
 
 function getFullConfigFromPartial(partialConfig) {
-  var _a;
+  var _a; // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 
   var ret = {};
 
@@ -40680,15 +40784,10 @@ BooleanPlugin.implementedFunctions = {
   }
 };
 
-var ceil = Math.ceil;
-var floor = Math.floor;
-
 // `Math.trunc` method
 // https://tc39.es/ecma262/#sec-math.trunc
 _export({ target: 'Math', stat: true }, {
-  trunc: function trunc(it) {
-    return (it > 0 ? floor : ceil)(it);
-  }
+  trunc: mathTrunc
 });
 
 var RangeError$1 = global_1.RangeError;
@@ -40702,7 +40801,7 @@ var INCORRECT_LENGTH = !!$fromCodePoint && $fromCodePoint.length != 1;
 
 // `String.fromCodePoint` method
 // https://tc39.es/ecma262/#sec-string.fromcodepoint
-_export({ target: 'String', stat: true, forced: INCORRECT_LENGTH }, {
+_export({ target: 'String', stat: true, arity: 1, forced: INCORRECT_LENGTH }, {
   // eslint-disable-next-line no-unused-vars -- required for `.length`
   fromCodePoint: function fromCodePoint(x) {
     var elements = [];
@@ -42480,13 +42579,14 @@ var FinancialPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "rate",
     value: function rate(ast, state) {
+      // Newton's method: https://en.wikipedia.org/wiki/Newton%27s_method
       return this.runFunction(ast.args, state, this.metadata('RATE'), function (periods, payment, present, future, type, guess) {
         if (guess <= -1) {
           return new CellError(ErrorType.VALUE);
         }
 
-        var epsMax = 1e-10;
-        var iterMax = 20;
+        var epsMax = 1e-7;
+        var iterMax = 50;
         var rate = guess;
         type = type ? 1 : 0;
 
@@ -44284,55 +44384,16 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
   var _super = _createSuper$B(MatrixPlugin);
 
-  function MatrixPlugin(interpreter) {
-    var _this;
-
+  function MatrixPlugin() {
     _classCallCheck$1s(this, MatrixPlugin);
 
-    _this = _super.call(this, interpreter);
-
-    _this.createCpuKernel = function (kernel, outputSize) {
-      return function () {
-        var result = [];
-
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
-
-        for (var y = 0; y < outputSize.height; ++y) {
-          result.push([]);
-
-          for (var x = 0; x < outputSize.width; ++x) {
-            result[y][x] = kernel.apply({
-              thread: {
-                x: x,
-                y: y
-              }
-            }, args);
-          }
-        }
-
-        return result;
-      };
-    };
-
-    _this.createGpuJsKernel = function (kernel, outputSize) {
-      return _this.interpreter.getGpuInstance().createKernel(kernel).setPrecision('unsigned').setOutput([outputSize.width, outputSize.height]);
-    };
-
-    if (_this.config.gpujs === undefined) {
-      _this.createKernel = _this.createCpuKernel;
-    } else {
-      _this.createKernel = _this.createGpuJsKernel;
-    }
-
-    return _this;
+    return _super.apply(this, arguments);
   }
 
   _createClass$1s(MatrixPlugin, [{
     key: "mmult",
     value: function mmult(ast, state) {
-      var _this2 = this;
+      var _this = this;
 
       return this.runFunction(ast.args, state, this.metadata('MMULT'), function (leftMatrix, rightMatrix) {
         if (!leftMatrix.hasOnlyNumbers() || !rightMatrix.hasOnlyNumbers()) {
@@ -44345,7 +44406,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var outputSize = arraySizeForMultiplication(leftMatrix.size, rightMatrix.size);
 
-        var result = _this2.createKernel(function (a, b, width) {
+        var result = _this.createKernel(function (a, b, width) {
           var sum = 0;
 
           for (var i = 0; i < width; ++i) {
@@ -44361,7 +44422,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "mmultArraySize",
     value: function mmultArraySize(ast, state) {
-      var _this3 = this;
+      var _this2 = this;
 
       if (ast.args.length !== 2) {
         return ArraySize.error();
@@ -44371,7 +44432,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
       var subChecks = ast.args.map(function (arg) {
         var _a;
 
-        return _this3.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
+        return _this2.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
       });
 
       var _subChecks = _slicedToArray$s(subChecks, 2),
@@ -44383,7 +44444,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "maxpool",
     value: function maxpool(ast, state) {
-      var _this4 = this;
+      var _this3 = this;
 
       return this.runFunction(ast.args, state, this.metadata('MAXPOOL'), function (matrix, windowSize) {
         var stride = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : windowSize;
@@ -44394,7 +44455,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var outputSize = arraySizeForPoolFunction(matrix.size, windowSize, stride);
 
-        var result = _this4.createKernel(function (a, windowSize, stride) {
+        var result = _this3.createKernel(function (a, windowSize, stride) {
           var leftCornerX = this.thread.x * stride;
           var leftCornerY = this.thread.y * stride;
           var currentMax = a[leftCornerY][leftCornerX];
@@ -44414,7 +44475,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "medianpool",
     value: function medianpool(ast, state) {
-      var _this5 = this;
+      var _this4 = this;
 
       return this.runFunction(ast.args, state, this.metadata('MEDIANPOOL'), function (matrix, windowSize) {
         var stride = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : windowSize;
@@ -44425,7 +44486,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var outputSize = arraySizeForPoolFunction(matrix.size, windowSize, stride);
 
-        var result = _this5.createKernel(function (a, windowSize, stride) {
+        var result = _this4.createKernel(function (a, windowSize, stride) {
           var leftCornerX = this.thread.x * stride;
           var leftCornerY = this.thread.y * stride;
           var currentMax = a[leftCornerY][leftCornerX];
@@ -44491,7 +44552,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "maxpoolArraySize",
     value: function maxpoolArraySize(ast, state) {
-      var _this6 = this;
+      var _this5 = this;
 
       if (ast.args.length < 2 || ast.args.length > 3) {
         return ArraySize.error();
@@ -44501,7 +44562,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
       var subChecks = ast.args.map(function (arg) {
         var _a;
 
-        return _this6.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
+        return _this5.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
       });
       var array = subChecks[0];
       var windowArg = ast.args[1];
@@ -44558,7 +44619,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "transposeArraySize",
     value: function transposeArraySize(ast, state) {
-      var _this7 = this;
+      var _this6 = this;
 
       if (ast.args.length !== 1) {
         return ArraySize.error();
@@ -44568,13 +44629,39 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
       var subChecks = ast.args.map(function (arg) {
         var _a;
 
-        return _this7.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
+        return _this6.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
       });
 
       var _subChecks2 = _slicedToArray$s(subChecks, 1),
           size = _subChecks2[0];
 
       return new ArraySize(size.height, size.width);
+    }
+  }, {
+    key: "createKernel",
+    value: function createKernel(kernel, outputSize) {
+      return function () {
+        var result = [];
+
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+
+        for (var y = 0; y < outputSize.height; ++y) {
+          result.push([]);
+
+          for (var x = 0; x < outputSize.width; ++x) {
+            result[y][x] = kernel.apply({
+              thread: {
+                x: x,
+                y: y
+              }
+            }, args);
+          }
+        }
+
+        return result;
+      };
     }
   }]);
 
@@ -47923,7 +48010,8 @@ var mathExpm1 = (!$expm1
   // Tor Browser bug
   || $expm1(-2e-17) != -2e-17
 ) ? function expm1(x) {
-  return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : exp(x) - 1;
+  var n = +x;
+  return n == 0 ? n : n > -1e-6 && n < 1e-6 ? n + n * n / 2 : exp(n) - 1;
 } : $expm1;
 
 var abs = Math.abs;
@@ -47940,7 +48028,8 @@ var FORCED = fails(function () {
 // V8 near Chromium 38 has a problem with very small numbers
 _export({ target: 'Math', stat: true, forced: FORCED }, {
   sinh: function sinh(x) {
-    return abs(x = +x) < 1 ? (mathExpm1(x) - mathExpm1(-x)) / 2 : (exp$1(x - 1) - exp$1(-x - 1)) * (E$1 / 2);
+    var n = +x;
+    return abs(n) < 1 ? (mathExpm1(n) - mathExpm1(-n)) / 2 : (exp$1(n - 1) - exp$1(-n - 1)) * (E$1 / 2);
   }
 });
 
@@ -47950,7 +48039,8 @@ var log$1 = Math.log;
 var sqrt = Math.sqrt;
 
 function asinh(x) {
-  return !isFinite(x = +x) || x == 0 ? x : x < 0 ? -asinh(-x) : log$1(x + sqrt(x * x + 1));
+  var n = +x;
+  return !isFinite(n) || n == 0 ? n : n < 0 ? -asinh(-n) : log$1(n + sqrt(n * n + 1));
 }
 
 // `Math.asinh` method
@@ -47980,7 +48070,8 @@ var log$2 = Math.log;
 // https://tc39.es/ecma262/#sec-math.log1p
 // eslint-disable-next-line es-x/no-math-log1p -- safe
 var mathLog1p = Math.log1p || function log1p(x) {
-  return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : log$2(1 + x);
+  var n = +x;
+  return n > -1e-8 && n < 1e-8 ? n - n * n / 2 : log$2(1 + n);
 };
 
 // eslint-disable-next-line es-x/no-math-acosh -- required for testing
@@ -47999,9 +48090,10 @@ var FORCED$1 = !$acosh
 // https://tc39.es/ecma262/#sec-math.acosh
 _export({ target: 'Math', stat: true, forced: FORCED$1 }, {
   acosh: function acosh(x) {
-    return (x = +x) < 1 ? NaN : x > 94906265.62425156
-      ? log$3(x) + LN2
-      : mathLog1p(x - 1 + sqrt$1(x - 1) * sqrt$1(x + 1));
+    var n = +x;
+    return n < 1 ? NaN : n > 94906265.62425156
+      ? log$3(n) + LN2
+      : mathLog1p(n - 1 + sqrt$1(n - 1) * sqrt$1(n + 1));
   }
 });
 
@@ -48011,9 +48103,10 @@ var exp$2 = Math.exp;
 // https://tc39.es/ecma262/#sec-math.tanh
 _export({ target: 'Math', stat: true }, {
   tanh: function tanh(x) {
-    var a = mathExpm1(x = +x);
-    var b = mathExpm1(-x);
-    return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp$2(x) + exp$2(-x));
+    var n = +x;
+    var a = mathExpm1(n);
+    var b = mathExpm1(-n);
+    return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp$2(n) + exp$2(-n));
   }
 });
 
@@ -48026,7 +48119,8 @@ var log$4 = Math.log;
 // Tor Browser bug: Math.atanh(-0) -> 0
 _export({ target: 'Math', stat: true, forced: !($atanh && 1 / $atanh(-0) < 0) }, {
   atanh: function atanh(x) {
-    return (x = +x) == 0 ? x : log$4((1 + x) / (1 - x)) / 2;
+    var n = +x;
+    return n == 0 ? n : log$4((1 + n) / (1 - n)) / 2;
   }
 });
 

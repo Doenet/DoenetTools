@@ -6,7 +6,7 @@ import { toastType, useToast } from '@Toast';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState, atom } from 'recoil';
 import { useActivity } from '../../../_reactComponents/Activity/ActivityActions';
-import { AssignedDate, AssignTo, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent } from '../../../_reactComponents/Activity/SettingComponents';
+import { AssignedDate, AssignTo, AssignUnassignActivity, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent } from '../../../_reactComponents/Activity/SettingComponents';
 import {
   itemByDoenetId,
   findFirstPageOfActivity,
@@ -27,16 +27,14 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
     label: recoilLabel,
-    order,
-    isAssigned,
+    content
   } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const {
     renameItem,
     create,
     compileActivity,
-    deleteItem,
-    updateAssignItem
+    deleteItem
   } = useCourse(courseId);
 
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
@@ -46,8 +44,7 @@ export default function SelectedActivity() {
     setItemTextFieldLabel(recoilLabel);
   }, [recoilLabel]);
 
-  let firstPageDoenetId = findFirstPageOfActivity(order);
-
+  
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
     if (itemTextFieldLabel === '') {
@@ -55,7 +52,7 @@ export default function SelectedActivity() {
       if (recoilLabel === '') {
         effectiveItemLabel = 'Untitled';
       }
-
+      
       setItemTextFieldLabel(effectiveItemLabel);
       addToast('Every item must have a label.');
     }
@@ -64,13 +61,15 @@ export default function SelectedActivity() {
       renameItem(doenetId, effectiveItemLabel);
     }
   };
-
+  
   // useDebounce(handelLabelModfication, 500, [itemTextFieldLabel]);
-
+  
   if (doenetId == undefined) {
     return null;
   }
-
+  
+  let firstPageDoenetId = findFirstPageOfActivity(content);
+  
   let heading = (
     <h2 data-cy="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
       <FontAwesomeIcon icon={faFileCode} /> {recoilLabel}
@@ -100,11 +99,7 @@ export default function SelectedActivity() {
     );
   }
 
-  let assignActivityText = 'Assign Activity';
-  if (isAssigned) {
-    // if (assignedCid != null) {
-    assignActivityText = 'Update Assigned Activity';
-  }
+  
 
   
  
@@ -170,48 +165,8 @@ export default function SelectedActivity() {
         />
       </ActionButtonGroup>
       <br />
-      <ActionButtonGroup vertical>
 
-      <ActionButton
-        width="menu"
-        value={assignActivityText}
-        onClick={() => {
-          compileActivity({
-            activityDoenetId: doenetId,
-            isAssigned: true,
-            courseId,
-            // successCallback: () => {
-            //   addToast('Activity Assigned.', toastType.INFO);
-            // },
-          });
-          updateAssignItem({
-            doenetId,
-            isAssigned:true,
-            successCallback: () => {
-              addToast("Activity Assigned", toastType.INFO);
-            },
-          })
-        }}
-      />
-      {isAssigned ? 
-      <ActionButton
-        width="menu"
-        value="Unassign Activity"
-        alert
-        onClick={() => {
-          updateAssignItem({
-            doenetId,
-            isAssigned:false,
-            successCallback: () => {
-              addToast("Activity Unassigned", toastType.INFO);
-            },
-          })
-        
-        }}
-      />
-      : null}
-      </ActionButtonGroup>
-     
+      <AssignUnassignActivity doenetId={doenetId} courseId={courseId} />
   
       <Textfield
         label="Label"

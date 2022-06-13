@@ -217,7 +217,7 @@ describe('Conditional Content Tag Tests', function () {
 
   <p>If this is the slope at an equilibrium of a discrete dynamical system, the equilibrium is
   <answer>
-    <choiceinput inline="true" randomizeOrder><choice>stable</choice><choice>unstable</choice></choiceinput>
+    <choiceinput inline="true" shuffleOrder><choice>stable</choice><choice>unstable</choice></choiceinput>
     <award><when>
       <copy prop="selectedvalue" target="_choiceinput1" />
       =
@@ -294,7 +294,7 @@ describe('Conditional Content Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <p>Require <choiceinput inline="true" name="c" randomizeOrder><choice>positive</choice><choice>negative</choice></choiceinput>.</p>
+  <p>Require <choiceinput inline="true" name="c" shuffleOrder><choice>positive</choice><choice>negative</choice></choiceinput>.</p>
 
   <p>Condition on <m>x</m>:
   <answer>
@@ -2308,7 +2308,7 @@ describe('Conditional Content Tag Tests', function () {
     </conditionalContent></p>
     
     <p><conditionalContent>
-      <copy target="positiveCase" componentType="case" />
+      <copy target="positiveCase" createComponentOfType="case" />
       <case condition="$n<0" ><text>negative</text></case>
       <else><text>neither</text></else>
     </conditionalContent></p>
@@ -2370,7 +2370,7 @@ describe('Conditional Content Tag Tests', function () {
     <p><conditionalContent>
       <case condition="$n<0" ><text>hello</text></case>
       <case condition="$n>0" ><text>oops</text></case>
-      <copy target="bye" componentType="else" />
+      <copy target="bye" createComponentOfType="else" />
     </conditionalContent></p>
     
     <p><copy target="_conditionalcontent1" /></p>
@@ -2565,7 +2565,7 @@ describe('Conditional Content Tag Tests', function () {
 
     cy.get('#\\/n textarea').type("1", { force: true }).blur();
 
-    cy.get('#\\/_document1').should('have.text', '\n  a\n  1\n  before\n  nothing: \n  after\n  ')
+    cy.get('#\\/_document1').should('contain.text', '\n  a\n  1\n  before\n  nothing: \n  after\n  ')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

@@ -28,6 +28,7 @@ $latestAttemptOverrides = mysqli_real_escape_string(
 );
 $getDraft = mysqli_real_escape_string($conn, $_REQUEST["getDraft"]);
 $publicOnly = mysqli_real_escape_string($conn, $_REQUEST["publicOnly"]);
+$userCanViewSourceOnly = mysqli_real_escape_string($conn, $_REQUEST["userCanViewSourceOnly"]);
 
 
 if ($doenetId == "") {
@@ -66,6 +67,9 @@ if ($success) {
     }
     if ($publicOnly == "true") {
         $sql = "$sql AND isPublic = 1";
+    }
+    if ($userCanViewSourceOnly == "true") {
+        $sql = "$sql AND userCanViewSource = 1";
     }
 
     $result = $conn->query($sql);

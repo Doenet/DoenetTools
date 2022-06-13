@@ -36,6 +36,7 @@ export default function Enrollment() {
   const toast = useToast();
 
   const process = useRecoilValue(processAtom);
+  // console.log("process",process)
   const setProcess = useSetRecoilState(processAtom);
   const headers = useRecoilValue(headersAtom);
   const entries = useRecoilValue(entriesAtom);
@@ -55,7 +56,7 @@ export default function Enrollment() {
   let enrollmentRows = [];
   for (let [i, rowData] of enrollmentTableData.entries()) {
     if (rowData.withdrew === '0' || showWithdrawn) {
-      let bgcolor = 'white';
+      let bgcolor = 'var(--canvas)';
       let button = (
         <Button
           value="Withdraw"
@@ -63,7 +64,7 @@ export default function Enrollment() {
         />
       );
       if (rowData.withdrew === '1') {
-        bgcolor = 'grey';
+        bgcolor = 'var(--mainGray)';
         button = (
           <Button
             value="Enroll"
@@ -249,9 +250,10 @@ export default function Enrollment() {
                 mergeEmail,
                 mergeSection,
               };
-
-              recoilMergeData(payload)
-              setProcess('Display Enrollment');
+// console.log("recoilMergeData payload",payload)
+              recoilMergeData(payload).then(()=>{
+                setProcess('Display Enrollment');
+              })
      
             }}
           ></Button>

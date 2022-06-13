@@ -866,7 +866,7 @@ describe('Problem Tag Tests', function () {
 
         <p>banana: 
         <answer name="fruit">
-          <choiceinput randomizeOrder name="fruitInput">
+          <choiceinput shuffleOrder name="fruitInput">
             <choice credit="1">banana</choice>
             <choice>apple</choice>
             <choice>orange</choice>
@@ -1074,7 +1074,7 @@ describe('Problem Tag Tests', function () {
 
         <p>banana: 
         <answer name="fruit">
-          <choiceinput randomizeOrder name="fruitInput">
+          <choiceinput shuffleOrder name="fruitInput">
             <choice credit="1">banana</choice>
             <choice>apple</choice>
             <choice>orange</choice>
@@ -1283,7 +1283,7 @@ describe('Problem Tag Tests', function () {
 
         <p>banana: 
         <answer name="fruit">
-          <choiceinput randomizeOrder name="fruitInput">
+          <choiceinput shuffleOrder name="fruitInput">
             <choice credit="1">banana</choice>
             <choice>apple</choice>
             <choice>orange</choice>
@@ -1492,7 +1492,7 @@ describe('Problem Tag Tests', function () {
           <title>Sub problem a</title>
           <p>banana: 
           <answer name="fruit">
-            <choiceinput randomizeOrder name="fruitInput">
+            <choiceinput shuffleOrder name="fruitInput">
               <choice credit="1">banana</choice>
               <choice>apple</choice>
               <choice>orange</choice>
@@ -1722,7 +1722,7 @@ describe('Problem Tag Tests', function () {
           <title>Sub problem a</title>
           <p>banana: 
           <answer name="fruit">
-            <choiceinput randomizeOrder name="fruitInput">
+            <choiceinput shuffleOrder name="fruitInput">
               <choice credit="1">banana</choice>
               <choice>apple</choice>
               <choice>orange</choice>
@@ -1974,13 +1974,10 @@ describe('Problem Tag Tests', function () {
     cy.get('#testRunner_toggleControls').click();
 
     
-    // TODO: determined index 2 is apple
-    // find better way to ensure get apple or look up generated variant
-
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
-        requestedVariantIndex: 2
+        requestedVariantIndex: 1
       }, "*");
     });
 

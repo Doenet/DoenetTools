@@ -42,7 +42,9 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -72,7 +74,9 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         endpointsAttr: {
           dependencyType: "attributeComponent",
@@ -102,23 +106,25 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.endpoints = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "endpointX") {
+            return [];
+          } else {
+            // endpoint or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["endpointX", "endpoint"],
       hasEssential: true,
       set: convertValueToMathExpression,
       defaultValueByArrayKey: (arrayKey) => me.fromAst(arrayKey === "0,0" ? 1 : 0),
-      returnWrappingComponents(prefix) {
-        if (prefix === "endpointX") {
-          return [];
-        } else {
-          // endpoint or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "endpointX") {
           // pointX1_2 is the 2nd component of the first point
@@ -421,6 +427,32 @@ export default class LineSegment extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.slope = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
+      returnDependencies: () => ({
+        numericalEndpoints: {
+          dependencyType: "stateVariable",
+          variableName: "numericalEndpoints"
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.nDimensions !== 2) {
+          return { setValue: { slope: NaN } }
+        }
+
+        let ps = dependencyValues.numericalEndpoints;
+        let slope = (ps[1][1] - ps[0][1]) / (ps[1][0] - ps[0][0]);
+
+        return { setValue: { slope } }
+      }
+    }
 
     return stateVariableDefinitions;
   }

@@ -153,7 +153,6 @@ export function useEditorCrumb({ pageId, doenetId }) {
   let {label:pageLabel} = pageObj;
   const activityObj = useRecoilValue(itemByDoenetId(doenetId));
   let { label:activityLabel } = activityObj;
-
   let crumbs = [{
     label: activityLabel ?? '_',
     onClick: () => {
@@ -169,8 +168,8 @@ export function useEditorCrumb({ pageId, doenetId }) {
     },
   }]
 
-  if (!activityObj.isSinglePage){
-    let firstPageDoenetId = findFirstPageOfActivity(activityObj.order);
+  if (!activityObj.isSinglePage && activityObj.type != 'bank'){
+    let firstPageDoenetId = findFirstPageOfActivity(activityObj.content);
     crumbs = [
       {
       label: activityLabel ?? '_',
@@ -201,6 +200,24 @@ export function useEditorCrumb({ pageId, doenetId }) {
       },
     }]
   }
+
+  if (activityObj.type == 'bank') {
+    crumbs = [{
+      label: pageLabel ?? '_',
+      onClick: () => {
+        setPageToolView({
+          page: 'course',
+          tool: 'editor',
+          view: '',
+          params: {
+            doenetId,
+            pageId,
+          },
+        });
+      },
+    }]
+  }
+
   return crumbs;
 }
 

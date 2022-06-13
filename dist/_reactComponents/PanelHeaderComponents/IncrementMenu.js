@@ -4,15 +4,21 @@ import {faAngleRight, faAngleLeft} from "../../_snowpack/pkg/@fortawesome/free-s
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 const FONT_SIZES = [8, 9, 10, 11, 12, 14, 18, 24, 30, 36, 48, 60, 72, 96];
 const Container = styled.div`
+  display: ${(props) => props.label && !props.vertical && "flex"};
+  align-items: ${(props) => props.label && !props.vertical && "center"};
+`;
+const IncrementBox = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 20px;
-  max-width: 210px;
   margin: 0;
   border-radius: 5px;
   border: ${(props) => props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)"};
-
+`;
+const IncrementContainer = styled.div`
+  position: relative;
+  max-width: 210px;
 `;
 const IncreaseButton = styled.button`
   background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"};
@@ -52,7 +58,7 @@ const TextField = styled.input`
   outline: none;
   border: none;
 `;
-const Label = styled.div`
+const Label = styled.span`
   font-size: 14px;
   margin-right: 5px;
 `;
@@ -62,15 +68,17 @@ const Menu = styled.div`
   border: 'var(--mainBorder)';
   border-top: none;
   border-radius: 'var(--mainBorderRadius)';
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
   overflow: scroll;
   max-height: ${(props) => props.maxHeight};
-  width: fit-content;
+  z-index: 100;
 `;
 const MenuOption = styled.button`
   background-color: 'var(--mainGray)';
   display: block;
-  width: 146px;
+  width: 100%;
   height: 24px;
   border: none;
   border-bottom: 1px black solid;
@@ -298,19 +306,31 @@ export default function Increment(props) {
       value: size,
       onClick: onMenuClick
     }, size));
-  }
-  ;
-  if (values) {
+  } else if (values) {
     menuOptions = values.map((value2, index2) => /* @__PURE__ */ React.createElement(MenuOption, {
       key: index2,
       value: value2,
       onClick: onMenuClick
     }, value2));
+  } else {
+    let generalChoices = [];
+    let min = props.min !== void 0 ? props.min : 1;
+    let max = props.max !== void 0 ? props.max : 100;
+    let count = min;
+    for (let i = 0; i <= max - min; i++) {
+      generalChoices[i] = count;
+      count++;
+    }
+    menuOptions = generalChoices.map((choice, index2) => /* @__PURE__ */ React.createElement(MenuOption, {
+      key: index2,
+      value: choice,
+      onClick: onMenuClick
+    }, choice));
   }
-  ;
-  return /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex", alignItems: "center"}
-  }, props.vertical && props.label && /* @__PURE__ */ React.createElement(Label, null, props.label), /* @__PURE__ */ React.createElement(Container, {
+  return /* @__PURE__ */ React.createElement(Container, {
+    label: props.label,
+    vertical: props.vertical
+  }, props.label && /* @__PURE__ */ React.createElement(Label, null, props.label), props.label && props.vertical && /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(IncrementContainer, null, /* @__PURE__ */ React.createElement(IncrementBox, {
     ref: containerRef,
     onBlur: containerOnBlur,
     alert: props.alert
@@ -341,11 +361,7 @@ export default function Increment(props) {
     ref: incrementRef,
     disabled: props.disabled,
     onClick: incrementOnClick
-  }, increaseIcon)), menuOptions && menuToggle && /* @__PURE__ */ React.createElement("div", {
-    style: {display: "flex"}
-  }, !props.vertical && props.label ? /* @__PURE__ */ React.createElement(Label, {
-    style: {opacity: 0}
-  }, props.label) : null, /* @__PURE__ */ React.createElement(Menu, {
+  }, increaseIcon)), !props.deactivateDropdown && menuOptions && menuToggle && /* @__PURE__ */ React.createElement(Menu, {
     ref: menuRef,
     maxHeight: props.maxHeight ? props.maxHeight : "150px"
   }, menuOptions)));

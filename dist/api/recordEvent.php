@@ -94,7 +94,7 @@ if ($pageNumber == ""){
 
 if ($success){
   $sql = "INSERT INTO event (userId,deviceName,doenetId,activityCid,pageCid,pageNumber,attemptNumber,variantIndex,verb,object,result,context,version,timestamp,timestored)
-  VALUES ('$userId','$device','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$variantIndex,'$verb','$object','$result','$context','$version','$timestamp',NOW())";
+  VALUES ('$userId','$device','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$variantIndex,'$verb','$object','$result','$context','$version','$timestamp',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
   $result = $conn->query($sql);
 }
 

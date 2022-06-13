@@ -108,7 +108,7 @@ export default class Curve extends GraphicalComponent {
 
     attributes.nearestPointAsCurve = {
       createComponentOfType: "boolean",
-      createStateVariable: "nearestPointAsCurve",
+      createStateVariable: "nearestPointAsCurvePrelim",
       defaultValue: false,
     }
 
@@ -183,7 +183,9 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -295,7 +297,9 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.parMax = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         curveType: {
@@ -403,7 +407,9 @@ export default class Curve extends GraphicalComponent {
     stateVariableDefinitions.parMin = {
       forRenderer: true,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         curveType: {
           dependencyType: "stateVariable",
@@ -524,7 +530,9 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies() {
         return {
           through: {
@@ -553,20 +561,22 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.throughPoints = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "throughPointX") {
+            return [];
+          } else {
+            // throughPoint or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["throughPointX", "throughPoint"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "throughPointX") {
-          return [];
-        } else {
-          // throughPoint or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "throughPointX") {
           // throughPointX1_2 is the 2nd component of the first throughPoint
@@ -809,7 +819,9 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.vectorControlDirections = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       isArray: true,
       entryPrefixes: ["vectorControlDirection"],
       forRenderer: true,
@@ -898,7 +910,9 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.hiddenControls = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       isArray: true,
       entryPrefixes: ["hiddenControl"],
       forRenderer: true,
@@ -986,20 +1000,22 @@ export default class Curve extends GraphicalComponent {
     stateVariableDefinitions.controlVectors = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "controlVectorX") {
+            return [];
+          } else {
+            // controlVector or entire array
+            // wrap inner dimension by both <vector> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       entryPrefixes: ["controlVectorX", "controlVector"],
       nDimensions: 3,
       stateVariablesDeterminingDependencies: ["vectorControlDirections", "nThroughPoints"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "controlVectorX") {
-          return [];
-        } else {
-          // controlVector or entire array
-          // wrap inner dimension by both <vector> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "controlVectorX") {
           // controlVectorX3_2_1 is the first component of the second control vector
@@ -1343,19 +1359,21 @@ export default class Curve extends GraphicalComponent {
     stateVariableDefinitions.controlPoints = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "controlPointX") {
+            return [];
+          } else {
+            // controlPoint or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       entryPrefixes: ["controlPointX", "controlPoint"],
       nDimensions: 3,
-      returnWrappingComponents(prefix) {
-        if (prefix === "controlPointX") {
-          return [];
-        } else {
-          // controlPoint or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "controlPointX") {
           // controlPointX3_2_1 is the first component of the second control point
@@ -1656,7 +1674,9 @@ export default class Curve extends GraphicalComponent {
       additionalStateVariablesDefined: [{
         variableName: "extrapolateBackwardMode",
         public: true,
-        componentType: "text"
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
       }],
       returnDependencies({ stateValues }) {
 
@@ -1912,7 +1932,9 @@ export default class Curve extends GraphicalComponent {
       additionalStateVariablesDefined: [{
         variableName: "extrapolateForwardMode",
         public: true,
-        componentType: "text"
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
       }],
       returnDependencies({ stateValues }) {
 
@@ -2388,7 +2410,9 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.nXCriticalPoints = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         allXCriticalPoints: {
           dependencyType: "stateVariable",
@@ -2406,20 +2430,22 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.xCriticalPoints = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        returnWrappingComponents(prefix) {
+          if (prefix === "xCriticalPointX") {
+            return [];
+          } else {
+            // point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["xCriticalPointX", "xCriticalPoint"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "xCriticalPointX") {
-          return [];
-        } else {
-          // point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "xCriticalPointX") {
           // xCriticalPointX1_2 is the 2nd component of the first point
@@ -2602,7 +2628,9 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.nYCriticalPoints = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         allYCriticalPoints: {
           dependencyType: "stateVariable",
@@ -2620,20 +2648,22 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.yCriticalPoints = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        returnWrappingComponents(prefix) {
+          if (prefix === "yCriticalPointX") {
+            return [];
+          } else {
+            // point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["yCriticalPointX", "yCriticalPoint"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "yCriticalPointX") {
-          return [];
-        } else {
-          // point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "yCriticalPointX") {
           // yCriticalPointX1_2 is the 2nd component of the first point
@@ -2819,7 +2849,9 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.nCurvatureChangePoints = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         allCurvatureChangePoints: {
           dependencyType: "stateVariable",
@@ -2837,20 +2869,22 @@ export default class Curve extends GraphicalComponent {
 
     stateVariableDefinitions.curvatureChangePoints = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        returnWrappingComponents(prefix) {
+          if (prefix === "curvatureChangePointX") {
+            return [];
+          } else {
+            // point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["curvatureChangePointX", "curvatureChangePoint"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "curvatureChangePointX") {
-          return [];
-        } else {
-          // point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "curvatureChangePointX") {
           // curvatureChangePointX1_2 is the 2nd component of the first point
@@ -2946,6 +2980,34 @@ export default class Curve extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.nearestPointAsCurve = {
+      returnDependencies: () => ({
+        nearestPointAsCurvePrelim: {
+          dependencyType: "stateVariable",
+          variableName: "nearestPointAsCurvePrelim"
+        },
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["nearestPointAsCurve"]
+        },
+        adapterSourceValue: {
+          dependencyType: "adapterSourceStateVariable",
+          variableName: "nearestPointAsCurve"
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        let nearestPointAsCurve = dependencyValues.nearestPointAsCurvePrelim;
+        if (usedDefault.nearestPointAsCurvePrelim) {
+          if (dependencyValues.functionChild.length > 0) {
+            nearestPointAsCurve = dependencyValues.functionChild[0].stateValues.nearestPointAsCurve;
+          } else if (dependencyValues.adapterSourceValue !== null) {
+            nearestPointAsCurve = dependencyValues.adapterSourceValue;
+          }
+        }
+        return { setValue: { nearestPointAsCurve } }
+      }
+    }
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
@@ -3135,8 +3197,8 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
   return function ({ variables, scales }) {
 
-    let x1 = variables.x1.evaluate_to_constant();
-    let x2 = variables.x2.evaluate_to_constant();
+    let x1 = variables.x1?.evaluate_to_constant();
+    let x2 = variables.x2?.evaluate_to_constant();
 
     let xscale = scales[0];
     let yscale = scales[1];
@@ -3385,8 +3447,8 @@ function getNearestPointParametrizedCurve({ dependencyValues, numerics }) {
       return {};
     }
 
-    let x1 = variables.x1.evaluate_to_constant();
-    let x2 = variables.x2.evaluate_to_constant();
+    let x1 = variables.x1?.evaluate_to_constant();
+    let x2 = variables.x2?.evaluate_to_constant();
 
     if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
       return {};

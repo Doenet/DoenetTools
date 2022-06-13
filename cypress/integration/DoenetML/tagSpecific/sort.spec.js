@@ -106,7 +106,7 @@ describe('Sort Tag Tests', function () {
     });
     cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
 
-    cy.get('#\\/x1').should('have.text', "-Infinity")
+    cy.get('#\\/x1').should('have.text', "-∞")
     cy.get('#\\/x2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−π')
     })
@@ -137,7 +137,7 @@ describe('Sort Tag Tests', function () {
 
     cy.get('#\\/x2').should('contain.text', '−5')
 
-    cy.get('#\\/x1').should('have.text', "-Infinity")
+    cy.get('#\\/x1').should('have.text', "-∞")
     cy.get('#\\/x2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−5')
     })
@@ -169,7 +169,7 @@ describe('Sort Tag Tests', function () {
     cy.get('#\\/m2 textarea').type('{ctrl+home}{shift+end}{backspace}e^5{enter}', { force: true })
 
     cy.get('#\\/x4').should('have.text', '70')
-    cy.get('#\\/x1').should('have.text', "-Infinity")
+    cy.get('#\\/x1').should('have.text', "-∞")
     cy.get('#\\/x2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−5')
     })
@@ -198,7 +198,7 @@ describe('Sort Tag Tests', function () {
     cy.get('#\\/m3 textarea').type('{end}{backspace}-100{enter}', { force: true })
 
     cy.get('#\\/x5').should('have.text', '70')
-    cy.get('#\\/x1').should('have.text', "-Infinity")
+    cy.get('#\\/x1').should('have.text', "-∞")
     cy.get('#\\/x2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('−100')
     })

@@ -46,7 +46,9 @@ export default class FunctionIterates extends InlineComponent {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         functionAttr: {
           dependencyType: "attributeComponent",
@@ -72,7 +74,9 @@ export default class FunctionIterates extends InlineComponent {
 
     stateVariableDefinitions.allIterates = {
       public: true,
-      componentType: "mathList",
+      shadowingInstructions: {
+        createComponentOfType: "mathList",
+      },
       returnDependencies: () => ({
         functionAttr: {
           dependencyType: "attributeComponent",
@@ -176,7 +180,9 @@ export default class FunctionIterates extends InlineComponent {
 
     stateVariableDefinitions.allIteratesWithInitial = {
       public: true,
-      componentType: "mathList",
+      shadowingInstructions: {
+        createComponentOfType: "mathList",
+      },
       returnDependencies: () => ({
         initialValue: {
           dependencyType: "stateVariable",
@@ -202,7 +208,9 @@ export default class FunctionIterates extends InlineComponent {
     stateVariableDefinitions.iterates = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       entryPrefixes: ["iterate"],
       returnArraySizeDependencies: () => ({
         nIterates: {
@@ -239,7 +247,9 @@ export default class FunctionIterates extends InlineComponent {
 
     stateVariableDefinitions.finalIterate = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       stateVariablesDeterminingDependencies: ["nIterates"],
       returnDependencies({ stateValues }) {
         if (!Number.isFinite(stateValues.nIterates) || stateValues.nIterates < 0) {

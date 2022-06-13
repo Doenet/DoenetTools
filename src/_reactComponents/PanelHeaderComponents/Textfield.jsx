@@ -14,13 +14,14 @@ export default function Textfield(props) {
     border: 'var(--mainBorder)',
     fontFamily: 'Arial',
     borderRadius: 'var(--mainBorderRadius)',
-    color: '#000',
+    color: 'var(--canvastext)',
     value: `${props.value}`,
     resize:'none',
     whiteSpace: 'nowrap',
     padding:"0px 5px 0px 5px",
     lineHeight:"24px",
-    fontSize: "14px"
+    fontSize: "14px",
+    backgroundColor:"var(--canvas)"
   };
 
   var label ={

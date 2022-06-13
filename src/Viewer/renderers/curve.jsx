@@ -4,7 +4,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 
-export default function Curve(props) {
+export default React.memo(function Curve(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Curve.ignoreActionsWithoutCore = true;
@@ -121,6 +121,11 @@ export default function Curve(props) {
         position,
         anchorx,
       };
+      if (SVs.applyStyleToLabel) {
+        curveAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      } else {
+        curveAttributes.label.strokeColor = "#000000";
+      }
     }
 
 
@@ -186,8 +191,8 @@ export default function Curve(props) {
         visible: false,
         withLabel: false,
         fixed: true,
-        strokeColor: 'lightgray',
-        highlightStrokeColor: 'lightgray',
+        strokeColor: 'var(--mainGray)',
+        highlightStrokeColor: 'var(--mainGray)',
         layer: 10 * SVs.layer + 7,
         strokeWidth: 1,
         highlightStrokeWidth: 1,
@@ -198,16 +203,16 @@ export default function Curve(props) {
         fixed: false,
         fillColor: 'none',
         strokeColor: 'none',
-        highlightFillColor: 'lightgray',
-        highlightStrokeColor: 'lightgray',
+        highlightFillColor: 'var(--mainGray)',
+        highlightStrokeColor: 'var(--mainGray)',
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + 7,
         size: 3,
       };
       throughPointAlwaysVisible.current = {
-        fillcolor: 'lightgray',
-        strokecolor: 'lightgray',
+        fillcolor: 'var(--mainGray)',
+        strokecolor: 'var(--mainGray)',
       };
       throughPointHoverVisible.current = {
         fillcolor: 'none',
@@ -218,10 +223,10 @@ export default function Curve(props) {
         visible: false,
         withLabel: false,
         fixed: false,
-        fillColor: 'gray',
-        strokeColor: 'gray',
-        highlightFillColor: 'gray',
-        highlightStrokeColor: 'gray',
+        fillColor: 'var(--mainGray)',
+        strokeColor: 'var(--mainGray)',
+        highlightFillColor: 'var(--mainGray)',
+        highlightStrokeColor: 'var(--mainGray)',
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + 8,
@@ -630,6 +635,11 @@ export default function Curve(props) {
       if (curveJXG.current.hasLabel) {
         curveJXG.current.label.needsUpdate = true;
         curveJXG.current.label.visPropCalc.visible = SVs.showLabel && SVs.label !== "";
+        if (SVs.applyStyleToLabel) {
+          curveJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          curveJXG.current.label.visProp.strokecolor = "#000000";
+        }
         curveJXG.current.label.update();
       }
 
@@ -804,7 +814,7 @@ export default function Curve(props) {
   // don't think we want to return anything if not in board
   return <><a name={name} /></>
 
-}
+})
 
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {

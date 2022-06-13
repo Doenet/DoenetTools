@@ -6,7 +6,7 @@ import { faLightbulb as lightOn } from '@fortawesome/free-regular-svg-icons';
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 
-export default function Hint(props) {
+export default React.memo(function Hint(props) {
   let { name, SVs, children, actions, callAction } = useDoenetRender(props);
 
   if (!SVs.showHints) {
@@ -79,4 +79,4 @@ export default function Hint(props) {
       <span style={infoBlockStyle}>{info}</span>
     </aside>
   );
-}
+})

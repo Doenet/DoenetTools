@@ -143,13 +143,17 @@ export class Extremum extends BaseComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       defaultValue: null,
       hasEssential: true,
       additionalStateVariablesDefined: [{
         variableName: "location",
         public: true,
-        componentType: "math",
+        shadowingInstructions: {
+          createComponentOfType: "math",
+        },
         defaultValue: null,
         hasEssential: true,
       }],
@@ -413,9 +417,9 @@ export class Extrema extends BaseComponent {
           // could be extremaClass.componentTypeSingular, or with "Location" or "Value" appended
           let componentNum = Number(varName.slice(typeLen));
           if (Number.isInteger(componentNum) && componentNum > 0) {
-            if(propIndex === 1) {
+            if (propIndex === 1) {
               return extremaClass.componentTypeSingular + "Location" + componentNum
-            } else if(propIndex === 2) {
+            } else if (propIndex === 2) {
               return extremaClass.componentTypeSingular + "Value" + componentNum
             }
           }

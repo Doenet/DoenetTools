@@ -55,13 +55,14 @@ export default class Choiceinput extends Input {
       createStateVariable: "matchPartial",
       defaultValue: false,
       public: true,
+      fallBackToParentStateVariable: "matchPartial",
     };
     attributes.inline = {
       createComponentOfType: "boolean",
     };
-    attributes.randomizeOrder = {
+    attributes.shuffleOrder = {
       createPrimitiveOfType: "boolean",
-      createStateVariable: "randomizeOrder",
+      createStateVariable: "shuffleOrder",
       defaultValue: false,
       public: true,
     };
@@ -102,7 +103,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.inline = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
       hasEssential: true,
@@ -130,7 +133,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.numberChoices = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         choiceChildren: {
           dependencyType: "child",
@@ -151,9 +156,9 @@ export default class Choiceinput extends Input {
           childGroups: ["choices"],
           variableNames: ["text"]
         },
-        randomizeOrder: {
+        shuffleOrder: {
           dependencyType: "stateVariable",
-          variableName: "randomizeOrder"
+          variableName: "shuffleOrder"
         },
         variantRng: {
           dependencyType: "value",
@@ -167,7 +172,7 @@ export default class Choiceinput extends Input {
       definition: function ({ dependencyValues }) {
         let numberChoices = dependencyValues.choiceChildren.length;
         let choiceOrder;
-        if (!dependencyValues.randomizeOrder) {
+        if (!dependencyValues.shuffleOrder) {
           choiceOrder = [...Array(numberChoices).keys()].map(x => x + 1)
         } else {
 
@@ -221,9 +226,9 @@ export default class Choiceinput extends Input {
           dependencyType: "stateVariable",
           variableName: "choiceOrder"
         },
-        randomizeOrder: {
+        shuffleOrder: {
           dependencyType: "stateVariable",
-          variableName: "randomizeOrder"
+          variableName: "shuffleOrder"
         },
         variantDescendants: {
           dependencyType: "descendant",
@@ -246,7 +251,7 @@ export default class Choiceinput extends Input {
           meta: { createdBy: componentName }
         };
 
-        if (dependencyValues.randomizeOrder) {
+        if (dependencyValues.shuffleOrder) {
           generatedVariantInfo.indices = dependencyValues.choiceOrder;
         }
 
@@ -268,7 +273,13 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.choiceChildrenOrdered = {
       additionalStateVariablesDefined: [
-        { variableName: "numberChoices", public: true, componentType: "number" },
+        {
+          variableName: "numberChoices",
+          public: true, 
+          shadowingInstructions: {
+            createComponentOfType: "number"
+          }
+        },
       ],
       returnDependencies: () => ({
         choiceOrder: {
@@ -296,7 +307,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.choiceTexts = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       isArray: true,
       entryPrefixes: ["choiceText"],
       forRenderer: true,
@@ -629,7 +642,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.selectedIndices = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       isArray: true,
       entryPrefixes: ["selectedIndex"],
       forRenderer: true,
@@ -673,7 +688,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.selectedValues = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       isArray: true,
       entryPrefixes: ["selectedValue"],
       returnArraySizeDependencies: () => ({
@@ -895,7 +912,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.numberFeedbacks = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         allFeedbacks: {
           dependencyType: "stateVariable",
@@ -912,7 +931,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedback",
+      shadowingInstructions: {
+        createComponentOfType: "feedback",
+      },
       isArray: true,
       entryPrefixes: ["feedback"],
       returnArraySizeDependencies: () => ({
@@ -1044,7 +1065,7 @@ export default class Choiceinput extends Input {
   }) {
 
 
-    if (!serializedComponent.attributes.randomizeOrder?.primitive) {
+    if (!serializedComponent.attributes.shuffleOrder?.primitive) {
       return super.determineNumberOfUniqueVariants({
         serializedComponent, componentInfoObjects
       });
@@ -1060,7 +1081,7 @@ export default class Choiceinput extends Input {
           inheritedComponentType: child.componentType,
           baseComponentType: "composite"
         })
-          && child.attributes.componentType?.primitive === "choice"
+          && child.attributes.createComponentOfType?.primitive === "choice"
         ) {
           if (child.attributes.nComponents?.primitive !== undefined) {
             let newChoices = Number(child.attributes.nComponents?.primitive);
@@ -1116,7 +1137,7 @@ export default class Choiceinput extends Input {
     }
 
 
-    if (!serializedComponent.attributes.randomizeOrder?.primitive) {
+    if (!serializedComponent.attributes.shuffleOrder?.primitive) {
       return super.getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects });
     }
 

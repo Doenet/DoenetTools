@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 
-export default function Polyline(props) {
+export default React.memo(function Polyline(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Polyline.ignoreActionsWithoutCore = true;
@@ -83,6 +83,13 @@ export default function Polyline(props) {
     });
     if (!SVs.draggable || SVs.fixed || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
+    }
+
+    jsxPolylineAttributes.label = {};
+    if (SVs.applyStyleToLabel) {
+      jsxPolylineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxPolylineAttributes.label.strokeColor = "#000000";
     }
 
     // create invisible points at endpoints
@@ -314,6 +321,30 @@ export default function Polyline(props) {
         }
       }
 
+      if (polylineJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        polylineJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        polylineJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (polylineJXG.current.visProp.dash !== newDash) {
+        polylineJXG.current.visProp.dash = newDash;
+      }
+      if (polylineJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        polylineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+      }
+      
+      polylineJXG.current.name = SVs.label;
+
+      if (polylineJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          polylineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          polylineJXG.current.label.visProp.strokecolor = "#000000";
+        }
+        polylineJXG.current.label.needsUpdate = true;
+        polylineJXG.current.label.update();
+      }
+
       if (sourceOfUpdate.sourceInformation &&
         name in sourceOfUpdate.sourceInformation
       ) {
@@ -341,7 +372,7 @@ export default function Polyline(props) {
 
   // don't think we want to return anything if not in board
   return <><a name={name} /></>
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

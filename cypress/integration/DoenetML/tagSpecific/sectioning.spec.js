@@ -1203,6 +1203,122 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
+  it('prefill mathinput in aside', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <aside name="aside1">
+      <title>Starting closed</title>
+      <p>An expression: <mathinput name="expr1" prefill="(x+1)(x^2-1)" /></p>
+      <p>The value of the expression is <copy prop="value" target="expr1" assignNames="expr1a" /></p>
+    </aside>
+    <aside name="aside2" startOpen>
+      <title>Starting open</title>
+      <p>An expression: <mathinput name="expr2" prefill="(x-1)(x^2+1)" /></p>
+      <p>The value of the expression is <copy prop="value" target="expr2" assignNames="expr2a" /></p>
+    </aside>
+  
+    <p>The first expression is <copy prop="value" target="expr1" assignNames="expr1b" /></p>
+    <p>The second expression is <copy prop="value" target="expr2" assignNames="expr2b" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−1)");
+    })
+    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+1)");
+    })
+    cy.get('#\\/expr1a').should('not.exist')
+    cy.get('#\\/expr2a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+1)");
+    })
+
+    cy.get('#\\/expr1').should('not.exist')
+    cy.get('#\\/expr2 .mq-editable-field').invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+1)");
+    })
+
+    cy.get('#\\/aside1_title').click();
+
+    cy.get('#\\/expr1a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−1)");
+    })
+    cy.get('#\\/expr1 .mq-editable-field').invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−1)");
+    })
+
+    cy.get('#\\/aside2_title').click();
+    cy.get('#\\/expr2a').should('not.exist')
+    cy.get('#\\/expr2').should('not.exist')
+
+    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−1)");
+    })
+    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+1)");
+    })
+
+    cy.get('#\\/expr1 textarea').type("{end}{leftArrow}{backspace}4{enter}", { force: true }).blur()
+
+
+    cy.get('#\\/expr1a').should('contain.text', "(x+1)(x2−4)")
+    cy.get('#\\/expr1a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−4)");
+    })
+    cy.get('#\\/expr1 .mq-editable-field').invoke('text').then(text => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).eq("(x+1)(x2−4)");
+    })
+
+    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−4)");
+    })
+    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+1)");
+    })
+
+    cy.get('#\\/aside1_title').click();
+    cy.get('#\\/expr1a').should('not.exist')
+    cy.get('#\\/expr1').should('not.exist')
+
+    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−4)");
+    })
+    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+1)");
+    })
+
+    cy.get('#\\/aside2_title').click();
+
+    cy.get('#\\/expr2a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+1)");
+    })
+    cy.get('#\\/expr2 .mq-editable-field').invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+1)");
+    })
+
+    cy.get('#\\/expr2 textarea').type("{end}{leftArrow}{backspace}4{enter}", { force: true }).blur()
+
+    cy.get('#\\/expr2a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+4)");
+    })
+    cy.get('#\\/expr2 .mq-editable-field').invoke('text').then(text => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).eq("(x−1)(x2+4)");
+    })
+
+    cy.get('#\\/expr1b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x+1)(x2−4)");
+    })
+    cy.get('#\\/expr2b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(x−1)(x2+4)");
+    })
+
+  });
+
 
 
 

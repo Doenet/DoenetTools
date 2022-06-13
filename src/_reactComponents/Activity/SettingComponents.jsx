@@ -5,7 +5,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { useToast } from '../../Tools/_framework/Toast';
 import { DateToDateString } from '../../_utils/dateUtilityFunction';
 import DateTime from '../PanelHeaderComponents/DateTime';
 import { useActivity } from './ActivityActions';
@@ -13,9 +12,14 @@ import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox';
 import Increment from '../PanelHeaderComponents/IncrementMenu';
 import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
 import { useRecoilValue } from 'recoil';
-import { enrollmentByCourseId } from '../Course/CourseActions';
+import { enrollmentByCourseId, itemByDoenetId, useCourse } from '../Course/CourseActions';
 import axios from 'axios';
 import RelatedItems from '../PanelHeaderComponents/RelatedItems';
+import ActionButtonGroup from '../PanelHeaderComponents/ActionButtonGroup';
+import ActionButton from '../PanelHeaderComponents/ActionButton';
+import { toastType, useToast } from '@Toast';
+
+
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -37,6 +41,66 @@ const InputControl = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
+
+export const AssignUnassignActivity = ({ doenetId, courseId }) => {
+
+  const {
+    compileActivity,
+    updateAssignItem
+  } = useCourse(courseId);
+  const {
+    isAssigned,
+  } = useRecoilValue(itemByDoenetId(doenetId));
+  const addToast = useToast();
+
+
+  let assignActivityText = 'Assign Activity';
+  if (isAssigned) {
+    // if (assignedCid != null) {
+    assignActivityText = 'Update Assigned Activity';
+  }
+
+  return (<ActionButtonGroup vertical>
+  <ActionButton
+  width="menu"
+  value={assignActivityText}
+  onClick={() => {
+    compileActivity({
+      activityDoenetId: doenetId,
+      isAssigned: true,
+      courseId,
+      // successCallback: () => {
+      //   addToast('Activity Assigned.', toastType.INFO);
+      // },
+    });
+    updateAssignItem({
+      doenetId,
+      isAssigned:true,
+      successCallback: () => {
+        addToast("Activity Assigned", toastType.INFO);
+      },
+    })
+  }}
+/>
+{isAssigned ? 
+<ActionButton
+  width="menu"
+  value="Unassign Activity"
+  alert
+  onClick={() => {
+    updateAssignItem({
+      doenetId,
+      isAssigned:false,
+      successCallback: () => {
+        addToast("Activity Unassigned", toastType.INFO);
+      },
+    })
+  
+  }}
+/>
+: null}
+</ActionButtonGroup>)
+}
 
 export const AssignedDate = ({ doenetId, courseId }) => {
   const addToast = useToast();
@@ -506,7 +570,7 @@ export const CheckedSetting = ({
         style={{ marginRight: '5px' }}
         checked={invert ? !localValue : localValue}
         onClick={() => {
-          let valueDescription = invert ? 'True' : 'Flase';
+          let valueDescription = invert ? 'True' : 'False';
           let value = false;
           if (!localValue) {
             valueDescription = invert ? 'False' : 'True';
@@ -549,7 +613,7 @@ export const CheckedFlag = ({
         style={{ marginRight: '5px' }}
         checked={invert ? !localValue : localValue}
         onClick={() => {
-          let valueDescription = invert ? 'True' : 'Flase';
+          let valueDescription = invert ? 'True' : 'False';
           let value = false;
           if (!localValue) {
             valueDescription = invert ? 'False' : 'True';

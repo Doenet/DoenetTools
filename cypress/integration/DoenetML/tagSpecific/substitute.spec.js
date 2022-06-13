@@ -1565,5 +1565,131 @@ describe('Substitute Tag Tests', function () {
 
   });
 
+  it('rounding with math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="orig">ax+847.29418392+5y</math>
+    <math name="origDig3" displayDigits="3">ax+847.29418392+5y</math>
+    <math name="origDec3" displayDecimals="3">ax+847.29418392+5y</math>
+    <math name="origPad" padZeros>ax+847.29418392+5y</math>
+
+    <p><substitute match="a" replacement="0.07394918" assignNames="e1">
+      $orig
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e1Dig4" displayDigits="4">
+      $orig
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e1Dec4" displayDecimals="4">
+      $orig
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e1Pad" padZeros>
+      $orig
+    </substitute></p>
+
+
+    <p><substitute match="a" replacement="0.07394918" assignNames="e2">
+      $origDig3
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e2Dig4" displayDigits="4">
+      $origDig3
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e2Dec4" displayDecimals="4">
+      $origDig3
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e2Pad" padZeros>
+      $origDig3
+    </substitute></p>
+
+
+    <p><substitute match="a" replacement="0.07394918" assignNames="e3">
+      $origDec3
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e3Dig4" displayDigits="4">
+      $origDec3
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e3Dec4" displayDecimals="4">
+      $origDec3
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e3Pad" padZeros>
+      $origDec3
+    </substitute></p>
+
+
+    <p><substitute match="a" replacement="0.07394918" assignNames="e4">
+      $origPad
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e4Dig4" displayDigits="4">
+      $origPad
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e4Dec4" displayDecimals="4">
+      $origPad
+    </substitute>
+    <substitute match="a" replacement="0.07394918" assignNames="e4NoPad" padZeros="false">
+      $origPad
+    </substitute></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/e1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07394918x+847.2941839+5y')
+    })
+    cy.get('#\\/e1Dig4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07395x+847.3+5y')
+    })
+    cy.get('#\\/e1Dec4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847.2942+5y')
+    })
+    cy.get('#\\/e1Pad .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07394918000x+847.2941839+5.000000000y')
+    })
+
+
+    cy.get('#\\/e2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847+5y')
+    })
+    cy.get('#\\/e2Dig4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07395x+847.3+5y')
+    })
+    cy.get('#\\/e2Dec4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847.2942+5y')
+    })
+    cy.get('#\\/e2Pad .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847+5.00y')
+    })
+
+
+    cy.get('#\\/e3 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.074x+847.294+5y')
+    })
+    cy.get('#\\/e3Dig4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07395x+847.3+5y')
+    })
+    cy.get('#\\/e3Dec4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847.2942+5y')
+    })
+    cy.get('#\\/e3Pad .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.074x+847.294+5.000y')
+    })
+
+    cy.get('#\\/e4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07394918000x+847.2941839+5.000000000y')
+    })
+    cy.get('#\\/e4Dig4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07395x+847.3+5.000y')
+    })
+    cy.get('#\\/e4Dec4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847.2942+5.0000y')
+    })
+    cy.get('#\\/e4NoPad .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07394918x+847.2941839+5y')
+    })
+
+
+  });
 
 })

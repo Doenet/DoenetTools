@@ -1,8 +1,0 @@
-<graph>
-   <point name="a" label ="a">(1,-4)</point>
-   <point name="b" label ="b">(-1,-2)</point>
-   <point name="c" label ="c">(-2,-5)</point>
- 
-  <triangle  />
-   
-</graph>

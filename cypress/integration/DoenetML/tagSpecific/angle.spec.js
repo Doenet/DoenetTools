@@ -31,7 +31,7 @@ describe('Angle Tag Tests', function () {
     <point x="$_mathinput1" y="$_mathinput2" />
     <point>(2,4)</point>
     <point>(4,2)</point>
-    <angle through="$_point1 $_point2 $_point3" />
+    <angle through="$_point1 $_point2 $_point3" chooseReflexAngle="allowed" />
   </graph>
   `}, "*");
     });
@@ -124,7 +124,7 @@ describe('Angle Tag Tests', function () {
   <line through="$_point1 $_point2" />
   <line through="$_point1 $_point3" />
 
-  <angle radius="2" betweenLines="$_line1 $_line2" />
+  <angle radius="2" betweenLines="$_line1 $_line2" chooseReflexAngle="allowed" />
   </graph>
   `}, "*");
     });
@@ -344,7 +344,7 @@ describe('Angle Tag Tests', function () {
     <point>(5,0)</point>
     <point>(0,0)</point>
     <point x="8cos($_mathinput1)" y="8sin($_mathinput1)" />
-    <angle through="$_point1 $_point2 $_point3" />
+    <angle through="$_point1 $_point2 $_point3" chooseReflexAngle="allowed" />
   </graph>
   <p><copy assignNames="alpha" prop="angle" target="_angle1" /></p>
   <p><copy assignNames="alphadeg" prop="degrees" target="_angle1" /></p>
@@ -771,6 +771,131 @@ describe('Angle Tag Tests', function () {
       expect(stateVariables['/_angle1'].stateValues.radians).eqls(["/", "pi", 2]);
       expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
     })
+
+  })
+
+  it('choose reflex angle', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>choose reflex angle: <textinput name="ra"  /></p>
+  <copy prop="chooseReflexAngle" target="alpha" assignNames="ra2" />
+  <graph>
+    <point name="A">(-6,5)</point>
+    <point name="B">(0,0)</point>
+    <point name="C">(4,2)</point>
+    <angle name="alpha" through="$A $B $C" chooseReflexAngle="$ra" />
+  </graph>
+  <p>angle: <copy target="alpha" assignNames="alpha2" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    function angleFromPs(ps, reflex) {
+      let angle = Math.atan2(ps[2][1] - ps[1][1], ps[2][0] - ps[1][0]) -
+        Math.atan2(ps[0][1] - ps[1][1], ps[0][0] - ps[1][0]);
+      if (angle < 0) {
+        angle += 2 * Math.PI;
+      }
+      if (angle > Math.PI) {
+        if (reflex === -1) {
+          angle = 2 * Math.PI - angle;
+        }
+      } else if (reflex === 1) {
+        angle = 2 * Math.PI - angle;
+      }
+      return angle;
+    }
+
+    // not sure how to test this
+    // but at least make sure we don't throw any errors.
+
+    let points = [[-6, 5], [0, 0], [4, 2]];
+
+    // should now be > pi if no modifications
+
+    cy.get('#\\/ra2').should('have.text', 'never');
+    cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+      expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points, -1) * 1000))
+    })
+
+    cy.get('#\\/ra_input').clear().type('allowed{enter}');
+    cy.get('#\\/ra2').should('have.text', 'allowed');
+
+    cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+      expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
+    })
+
+
+    cy.get('#\\/ra_input').clear().type('always{enter}');
+    cy.get('#\\/ra2').should('have.text', 'always');
+
+    cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+      expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
+    })
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 1, y: -3 }
+      })
+
+      points[0] = [1, -3];
+      // should now be < pi if no modifications
+
+
+      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+        expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points, 1) * 1000))
+      })
+
+      cy.get('#\\/ra_input').clear().type('never{enter}');
+      cy.get('#\\/ra2').should('have.text', 'never');
+      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+        expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
+      })
+
+      cy.get('#\\/ra_input').clear().type('allowed{enter}');
+      cy.get('#\\/ra2').should('have.text', 'allowed');
+      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+        expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
+      })
+
+
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/C",
+        args: { x: -1, y: -5 }
+      })
+
+      points[2] = [-1,-5]
+      // should now be > pi if no modifications
+
+      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+        expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
+      })
+
+      cy.get('#\\/ra_input').clear().type('never{enter}');
+      cy.get('#\\/ra2').should('have.text', 'never');
+      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+        expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points,-1) * 1000))
+      })
+
+      cy.get('#\\/ra_input').clear().type('always{enter}');
+      cy.get('#\\/ra2').should('have.text', 'always');
+      cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
+        expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points) * 1000))
+      })
+
+    });
+
+
 
   })
 

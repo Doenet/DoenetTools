@@ -46,6 +46,13 @@ export default class BooleanInput extends Input {
       forRenderer: true,
       public: true,
     };
+    attributes.asToggleButton = {
+      createComponentOfType: "boolean",
+      createStateVariable: "asToggleButton",
+      defaultValue: false,
+      forRenderer: true,
+      public: true,
+    }
     attributes.bindValueTo = {
       createComponentOfType: "boolean"
     };
@@ -58,7 +65,9 @@ export default class BooleanInput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       hasEssential: true,
       shadowVariable: true,
@@ -110,7 +119,9 @@ export default class BooleanInput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",

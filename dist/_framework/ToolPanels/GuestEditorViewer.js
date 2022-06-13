@@ -6,59 +6,73 @@ import {
   useRecoilState,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
-import {pageToolViewAtom, searchParamAtomFamily} from "../NewToolRoot.js";
+import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {
-  fileByPageId,
   pageVariantInfoAtom,
   pageVariantPanelAtom
 } from "../ToolHandlers/CourseToolHandler.js";
 import {findFirstPageOfActivity} from "../../_reactComponents/Course/CourseActions.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom} from "./EditorViewer.js";
+import {retrieveTextFileForCid} from "../../core/utils/retrieveTextFile.js";
+import {parseActivityDefinition} from "../../_utils/activityUtils.js";
 export default function EditorViewer() {
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  const paramPageId = useRecoilValue(searchParamAtomFamily("pageId"));
   const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
   const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
   const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
-  const {page} = useRecoilValue(pageToolViewAtom);
+  const [pageCid, setPageCid] = useState(null);
   const [errMsg, setErrMsg] = useState(null);
-  const [pageId, setPageId] = useState(null);
   useEffect(async () => {
-    let resp = await axios.get(`/api/getPublicActivityDefinition.php`, {params: {doenetId}});
-    if (!resp.data.success) {
-      setErrMsg(resp.data.message);
+    let resp = await axios.get(`/api/getCidForAssignment.php`, {params: {doenetId, latestAttemptOverrides: false, publicOnly: true, userCanViewSourceOnly: true}});
+    let activityCid;
+    if (!resp.data.success || !resp.data.cid) {
+      if (resp.data.cid) {
+        setErrMsg(`Error loading activity: ${resp.data.message}`);
+      } else {
+        setErrMsg(`Error loading activity: public content with public source not found`);
+      }
+      return;
+    } else {
+      activityCid = resp.data.cid;
+    }
+    let activityDefinition;
+    try {
+      activityDefinition = await retrieveTextFileForCid(activityCid, "doenet");
+    } catch (e) {
+      setErrMsg(`Error loading activity: activity file not found`);
       return;
     }
-    let page2 = findFirstPageOfActivity(resp.data.json.order);
-    if (!page2) {
-      setErrMsg("Could not find a page of activity");
+    let parseResult = parseActivityDefinition(activityDefinition);
+    if (!parseResult.success) {
+      setErrMsg(`Invalid activity definition: ${parseResult.message}`);
       return;
     }
-    setPageId(page2);
-  }, [doenetId, paramPageId]);
-  let initDoenetML = useRecoilCallback(({snapshot, set}) => async (pageId2) => {
-    let response = await snapshot.getPromise(fileByPageId(pageId2));
-    const doenetML = response;
+    let activityJSON = parseResult.activityJSON;
+    setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.order));
+    if (errMsg) {
+      setErrMsg(null);
+    }
+  }, [doenetId]);
+  let initDoenetML = useRecoilCallback(({snapshot, set}) => async (pageCid2) => {
+    const doenetML = await retrieveTextFileForCid(pageCid2, "doenet");
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML);
     set(viewerDoenetMLAtom, doenetML);
-    set(editorPageIdInitAtom, pageId2);
   }, []);
   useEffect(() => {
-    if (pageId) {
-      initDoenetML(pageId);
+    if (pageCid) {
+      initDoenetML(pageCid);
     }
     return () => {
       setEditorInit("");
     };
-  }, [pageId]);
-  if (pageId !== initializedPageId) {
-    return null;
+  }, [pageCid]);
+  if (errMsg) {
+    return /* @__PURE__ */ React.createElement("h1", null, errMsg);
   }
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
@@ -73,8 +87,8 @@ export default function EditorViewer() {
       index: cleanGeneratedVariant.index
     });
   }
-  if (errMsg) {
-    return /* @__PURE__ */ React.createElement("h1", null, errMsg);
+  if (!viewerDoenetML) {
+    return null;
   }
   return /* @__PURE__ */ React.createElement(PageViewer, {
     key: `pageViewer${refreshNumber}`,
@@ -98,4 +112,23 @@ export default function EditorViewer() {
     setIsInErrorState,
     pageIsActive: true
   });
+}
+function findFirstPageCidFromCompiledActivity(orderObj) {
+  if (!orderObj?.content) {
+    return null;
+  }
+  if (orderObj.content.length == 0) {
+    return null;
+  }
+  for (let item of orderObj.content) {
+    if (item.type === "page") {
+      return item.cid;
+    } else {
+      let nextOrderResponse = findFirstPageOfActivity(item);
+      if (nextOrderResponse) {
+        return nextOrderResponse;
+      }
+    }
+  }
+  return null;
 }

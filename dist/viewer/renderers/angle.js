@@ -3,7 +3,7 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
-export default function Angle(props) {
+export default React.memo(function Angle(props) {
   let {name, SVs} = useDoenetRender(props);
   const board = useContext(BoardContext);
   let point1JXG = useRef(null);
@@ -47,7 +47,7 @@ export default function Angle(props) {
     };
     previousWithLabel.current = SVs.showLabel && SVs.label !== "";
     let through;
-    if (SVs.renderAsAcuteAngle && SVs.degrees.evaluate_to_constant() % 360 > 180) {
+    if (SVs.swapPointOrder) {
       through = [
         [...SVs.numericalPoints[2]],
         [...SVs.numericalPoints[1]],
@@ -78,7 +78,7 @@ export default function Angle(props) {
       deleteGraphicalObject();
     } else {
       let through;
-      if (SVs.renderAsAcuteAngle && SVs.degrees.evaluate_to_constant() % 360 > 180) {
+      if (SVs.swapPointOrder) {
         through = [
           [...SVs.numericalPoints[2]],
           [...SVs.numericalPoints[1]],
@@ -128,4 +128,4 @@ export default function Angle(props) {
     inline: true,
     dynamic: true
   }, mathJaxify)));
-}
+});

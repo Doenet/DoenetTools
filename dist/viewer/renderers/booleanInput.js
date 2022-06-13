@@ -4,7 +4,8 @@ import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesom
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {rendererState} from "./useDoenetRenderer.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
-export default function BooleanInput(props) {
+import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.js";
+export default React.memo(function BooleanInput(props) {
   let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   BooleanInput.baseStateVariable = "value";
   const [rendererValue, setRendererValue] = useState(SVs.value);
@@ -27,7 +28,7 @@ export default function BooleanInput(props) {
     }
   }
   function onChangeHandler(e) {
-    let newValue = e.target.checked;
+    let newValue = !rendererValue;
     setRendererValue(newValue);
     valueWhenSetState.current = SVs.value;
     setRendererState((was) => {
@@ -131,16 +132,29 @@ export default function BooleanInput(props) {
       checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", SVs.numberOfAttemptsLeft, ")"));
     }
   }
+  let input;
+  if (SVs.asToggleButton) {
+    input = /* @__PURE__ */ React.createElement(ToggleButton, {
+      id: inputKey,
+      key: inputKey,
+      isSelected: rendererValue,
+      onClick: onChangeHandler,
+      value: SVs.label,
+      disabled
+    });
+  } else {
+    input = /* @__PURE__ */ React.createElement("label", null, /* @__PURE__ */ React.createElement("input", {
+      type: "checkbox",
+      key: inputKey,
+      id: inputKey,
+      checked: rendererValue,
+      onChange: onChangeHandler,
+      disabled
+    }), SVs.label);
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
     id: name
   }, /* @__PURE__ */ React.createElement("a", {
     name
-  }), /* @__PURE__ */ React.createElement("label", null, /* @__PURE__ */ React.createElement("input", {
-    type: "checkbox",
-    key: inputKey,
-    id: inputKey,
-    checked: rendererValue,
-    onChange: onChangeHandler,
-    disabled
-  }), SVs.label), checkWorkButton));
-}
+  }), input, checkWorkButton));
+});

@@ -32,7 +32,9 @@ export default class BestFitLine extends Line {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.draggable = {
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       public: true,
       forRenderer: true,
       returnDependencies: () => ({}),
@@ -42,7 +44,9 @@ export default class BestFitLine extends Line {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { nDimensions: 2 } })
     }

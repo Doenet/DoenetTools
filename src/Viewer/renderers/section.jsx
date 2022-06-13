@@ -6,7 +6,7 @@ import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
 
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Section(props) {
+export default React.memo(function Section(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
   // console.log("name: ", name, " SVs: ", SVs," Children",children);
 
@@ -97,7 +97,7 @@ export default function Section(props) {
     let checkWorkStyle = {
       height: "23px",
       display: "inline-block",
-      backgroundColor: "rgb(2, 117, 216)",
+      backgroundColor: "var(--mainBlue)",
       padding: "1px 6px 1px 6px",
       color: "white",
       fontWeight: "bold",
@@ -126,7 +126,7 @@ export default function Section(props) {
 
     if (SVs.showCorrectness) {
       if (validationState.current === "correct") {
-        checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+        checkWorkStyle.backgroundColor = "var(--mainGreen)";
         checkworkComponent = (
           <span id={name + "_correct"}
             style={checkWorkStyle}
@@ -136,7 +136,7 @@ export default function Section(props) {
         Correct
           </span>);
       } else if (validationState.current === "incorrect") {
-        checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+        checkWorkStyle.backgroundColor = "var(--mainRed)";
         checkworkComponent = (
           <span id={name + "_incorrect"}
             style={checkWorkStyle}
@@ -146,7 +146,7 @@ export default function Section(props) {
         Incorrect
           </span>);
       } else if (validationState.current === "partialcorrect") {
-        checkWorkStyle.backgroundColor = "#efab34";
+        checkWorkStyle.backgroundColor = "var(--mainYellow)";
         let percent = Math.round(SVs.creditAchieved * 100);
         let partialCreditContents = `${percent}% Correct`;
 
@@ -160,7 +160,7 @@ export default function Section(props) {
     } else {
       // showCorrectness is false
       if (validationState.current !== "unvalidated") {
-        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkStyle.backgroundColor = "var(--mainPurple)";
         checkworkComponent = (
           <span id={name + "_saved"}
             style={checkWorkStyle}
@@ -187,19 +187,24 @@ export default function Section(props) {
   if (SVs.collapsible) {
     // if (SVs.open) {
       // if (SVs.boxed){
+
+    let innerContent = null;
+    if(SVs.open) {
+      innerContent = <div style={{ display: "block", padding: SVs.boxed && "6px" }}>
+      {children}
+      {checkworkComponent}
+    </div>
+    }
     content = 
-    <div style={{ border:"var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }} >
+    <div style={{ border: "var(--mainBorder)", borderRadius:"var(--mainBorderRadius)" }} >
       <div 
-        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: "var(--mainBorder)", borderTopLeftRadius:"var(--mainBorderRadius)", borderTopRightRadius:"var(--mainBorderRadius)" }} 
+        style={{ backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: SVs.open ? "var(--mainBorder)" : "none", borderTopLeftRadius:"var(--mainBorderRadius)", borderTopRightRadius:"var(--mainBorderRadius)" }} 
         onClick={() => callAction({action: SVs.open ? actions.closeSection : actions.revealSection})}
       >
         <a name={name} />
         {heading}
       </div>
-      <div style={{ display: SVs.open ? "block" : "none", padding: SVs.boxed && "6px" }}>
-        {children}
-        {checkworkComponent}
-      </div>
+      {innerContent}
     </div>
       // }else{
       //   content = <>
@@ -245,12 +250,12 @@ export default function Section(props) {
   } 
  
   switch (SVs.containerTag) {
-    case "aside": return <aside id={name} style={{ margin: "12px 0" }}> {content} </aside>; 
+    case "aside": return <aside id={name} style={{ margin: "12px 0"}}> {content} </aside>; 
     case "div": return <div id={name} style={{ margin: "12px 0" }}> {content} </div>; 
     case "none": return <>{content}</> ;
     default: return <section id={name} style={{ margin: "12px 0" }}> {content} </section>; 
   }
-}
+})
 
   // if (SVs.containerTag === "aside") {
   //   return <aside id={name} >

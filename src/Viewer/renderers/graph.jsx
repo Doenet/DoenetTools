@@ -5,9 +5,9 @@ import useDoenetRender from './useDoenetRenderer';
 
 export const BoardContext = createContext();
 
-export default function Graph(props) {
+export default React.memo(function Graph(props) {
   let { name, SVs, children, actions, callAction } = useDoenetRender(props);
-  // console.log({name, SVs, children, actions})
+  // console.log({ name, SVs, children, actions })
 
   const [board, setBoard] = useState(null);
 
@@ -16,8 +16,10 @@ export default function Graph(props) {
   const xaxis = useRef(null);
   const yaxis = useRef(null);
   const settingBoundingBox = useRef(false);
-  const resizingBoard = useRef(false);
+  // const resizingBoard = useRef(false);
   const boardJustInitialized = useRef(false);
+
+
 
   //Draw Board after mounting component
   useEffect(() => {
@@ -25,6 +27,8 @@ export default function Graph(props) {
     previousBoundingbox.current = boundingbox;
 
     JXG.Options.layer.numlayers = 100;
+    JXG.Options.navbar.highlightFillColor = "var(--canvastext)";
+    JXG.Options.navbar.strokeColor = "var(--canvastext)";
 
     let board = window.JXG.JSXGraph.initBoard(name,
       {
@@ -32,23 +36,26 @@ export default function Graph(props) {
         axis: false,
         showCopyright: false,
         showNavigation: SVs.showNavigation && !SVs.fixAxes,
-        keepAspectRatio: SVs.identicalAxisScales,
+        // keepAspectRatio: SVs.identicalAxisScales,
         zoom: { wheel: !SVs.fixAxes },
-        pan: { enabled: !SVs.fixAxes }
+        pan: { enabled: !SVs.fixAxes },
+
       });
 
     board.itemsRenderedLowQuality = {};
 
     board.on('boundingbox', () => {
-      if (!(settingBoundingBox.current || resizingBoard.current)) {
+      if (!(settingBoundingBox.current
+        //  || resizingBoard.current
+      )) {
         let newBoundingbox = board.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = newBoundingbox;
 
         // look for a change in bounding box that isn't due to roundoff error
-        let xscale = Math.abs(xmax-xmin);
-        let yscale = Math.abs(ymax-ymin);
-        let diffs = newBoundingbox.map((v,i)=> Math.abs(v - previousBoundingbox.current[i]));
-        if(Math.max(diffs[0]/xscale, diffs[1]/yscale, diffs[2]/xscale, diffs[3]/yscale) > 1E-12) {
+        let xscale = Math.abs(xmax - xmin);
+        let yscale = Math.abs(ymax - ymin);
+        let diffs = newBoundingbox.map((v, i) => Math.abs(v - previousBoundingbox.current[i]));
+        if (Math.max(diffs[0] / xscale, diffs[1] / yscale, diffs[2] / xscale, diffs[3] / yscale) > 1E-12) {
 
           previousBoundingbox.current = newBoundingbox;
           callAction({
@@ -62,7 +69,7 @@ export default function Graph(props) {
 
     previousDimensions.current = {
       width: parseFloat(sizeToCSS(SVs.width)),
-      height: parseFloat(sizeToCSS(SVs.height)),
+      aspectRatio: SVs.aspectRatio,
     };
 
 
@@ -82,7 +89,8 @@ export default function Graph(props) {
         xaxisOptions.label = {
           position,
           offset,
-          anchorx
+          anchorx,
+          strokeColor: "var(--canvastext)"
         };
       }
       xaxisOptions.ticks = {
@@ -92,7 +100,10 @@ export default function Graph(props) {
         },
         minorTicks: 4,
         precision: 4,
+        strokeColor: 'var(--canvastext)',
+        drawLabels: SVs.displayXAxisTickLabels
       }
+      xaxisOptions.strokeColor = "var(--canvastext)"
 
       if (SVs.grid === "dense") {
         xaxisOptions.ticks.majorHeight = -1;
@@ -132,9 +143,11 @@ export default function Graph(props) {
         yaxisOptions.label = {
           position,
           offset,
-          anchorx
+          anchorx,
+          strokeColor: "var(--canvastext)"
         }
       }
+      yaxisOptions.strokeColor = "var(--canvastext)"
       yaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
@@ -142,6 +155,8 @@ export default function Graph(props) {
         },
         minorTicks: 4,
         precision: 4,
+        strokeColor: "var(--canvastext)",
+        drawLabels: SVs.displayYAxisTickLabels
       }
 
       if (SVs.grid === "dense") {
@@ -175,14 +190,19 @@ export default function Graph(props) {
 
   const divStyle = {
     width: sizeToCSS(SVs.width),
-    height: sizeToCSS(SVs.height),
+    aspectRatio: String(SVs.aspectRatio),
+    maxWidth: "100%"
   }
 
   if (SVs.hidden) {
     divStyle.display = "none";
   }
-  divStyle.border = "2px solid black";
+  divStyle.border = "2px solid var(--canvastext)";
   divStyle.margin = "12px";
+  divStyle.backgroundColor = "var(--canvas)";
+  divStyle.color = "var(--canvastext)";
+
+
   if (!board) {
     return <>
       <a name={name} />
@@ -227,6 +247,7 @@ export default function Graph(props) {
 
     if (SVs.displayXAxis) {
       xaxis.current.name = SVs.xlabel;
+      xaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayXAxisTickLabels });
       if (xaxis.current.hasLabel) {
         let position = 'rt';
         let offset = [5, 10];
@@ -246,6 +267,7 @@ export default function Graph(props) {
 
     if (SVs.displayYAxis) {
       yaxis.current.name = SVs.ylabel;
+      yaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayYAxisTickLabels });
       if (yaxis.current.hasLabel) {
         let position = 'rt';
         let offset = [-10, -5];
@@ -267,17 +289,17 @@ export default function Graph(props) {
     }
     let currentDimensions = {
       width: parseFloat(sizeToCSS(SVs.width)),
-      height: parseFloat(sizeToCSS(SVs.height)),
+      aspectRatio: SVs.aspectRatio,
     }
 
     if ((currentDimensions.width !== previousDimensions.current.width ||
-      currentDimensions.height !== previousDimensions.current.height)
-      && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.height)
+      currentDimensions.aspectRatio !== previousDimensions.current.aspectRatio)
+      && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.aspectRatio)
     ) {
 
-      resizingBoard.current = true;
-      board.resizeContainer(currentDimensions.width, currentDimensions.height);
-      resizingBoard.current = false;
+      // resizingBoard.current = true;
+      // board.resizeContainer(currentDimensions.width, currentDimensions.height);
+      // resizingBoard.current = false;
       previousDimensions.current = currentDimensions;
     }
 
@@ -311,4 +333,4 @@ export default function Graph(props) {
       {children}
     </BoardContext.Provider>
   </>;
-}
+})

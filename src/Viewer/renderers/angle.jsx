@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
-export default function Angle(props) {
+export default React.memo(function Angle(props) {
   let { name, SVs } = useDoenetRender(props);
 
   const board = useContext(BoardContext);
@@ -66,7 +66,7 @@ export default function Angle(props) {
 
     let through;
 
-    if (SVs.renderAsAcuteAngle && (SVs.degrees.evaluate_to_constant() % 360) > 180) {
+    if (SVs.swapPointOrder) {
       through = [
         [...SVs.numericalPoints[2]],
         [...SVs.numericalPoints[1]],
@@ -111,7 +111,7 @@ export default function Angle(props) {
       //update
 
       let through;
-      if (SVs.renderAsAcuteAngle && (SVs.degrees.evaluate_to_constant() % 360) > 180) {
+      if (SVs.swapPointOrder) {
         through = [
           [...SVs.numericalPoints[2]],
           [...SVs.numericalPoints[1]],
@@ -164,6 +164,6 @@ export default function Angle(props) {
   }
 
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
-}
+})
 
 

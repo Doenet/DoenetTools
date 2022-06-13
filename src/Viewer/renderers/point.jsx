@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
-export default function Point(props) {
+export default React.memo(function Point(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Point.ignoreActionsWithoutCore = true;
@@ -47,7 +47,7 @@ export default function Point(props) {
   }, [])
 
   function createPointJXG() {
-    let fillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+    let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
 
     //things to be passed to JSXGraph as attributes
     let jsxPointAttributes = {
@@ -105,11 +105,16 @@ export default function Point(props) {
         anchorx,
         anchory
       };
+      if (SVs.applyStyleToLabel) {
+        jsxPointAttributes.label.strokeColor = SVs.selectedStyle.markerColor;
+      } else {
+        jsxPointAttributes.label.strokeColor = "#000000";
+      }
     }
 
     if (SVs.draggable && !SVs.fixed) {
-      jsxPointAttributes.highlightFillColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray"); 
-      jsxPointAttributes.highlightStrokeColor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"); 
+      jsxPointAttributes.highlightFillColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+      jsxPointAttributes.highlightStrokeColor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue");
       jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
     } else {
       jsxPointAttributes.highlightFillColor = fillColor;
@@ -130,14 +135,14 @@ export default function Point(props) {
 
     let newPointJXG = board.create('point', coords, jsxPointAttributes);
 
-    let shadowPointAttributes = {...jsxPointAttributes};
+    let shadowPointAttributes = { ...jsxPointAttributes };
     shadowPointAttributes.layer--;
     shadowPointAttributes.fixed = !SVs.draggable || SVs.fixed;
     shadowPointAttributes.showInfoBox = false;
     shadowPointAttributes.withLabel = false;
 
     let newShadowPointJXG = board.create('point', coords, shadowPointAttributes);
-    
+
 
     newShadowPointJXG.on('down', function (e) {
       pointerAtDown.current = [e.x, e.y];
@@ -220,7 +225,7 @@ export default function Point(props) {
       createPointJXG();
     } else {
       //if values update
-      let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+      let newFillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
       if (pointJXG.current.visProp.fillcolor !== newFillColor) {
         pointJXG.current.visProp.fillcolor = newFillColor;
       }
@@ -238,7 +243,7 @@ export default function Point(props) {
       let y = SVs.numericalXs?.[1];
 
       pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
-      if(!dragged.current) {
+      if (!dragged.current) {
         shadowPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
       }
 
@@ -267,25 +272,32 @@ export default function Point(props) {
 
       if (pointJXG.current.visProp.strokecolor !== SVs.selectedStyle.markerColor) {
         pointJXG.current.visProp.strokecolor = SVs.selectedStyle.markerColor;
+        shadowPointJXG.current.visProp.strokecolor = SVs.selectedStyle.markerColor;
       }
 
       let newFace = normalizeStyle(SVs.selectedStyle.markerStyle);
       if (pointJXG.current.visProp.face !== newFace) {
         pointJXG.current.setAttribute({ face: newFace });
+        shadowPointJXG.current.setAttribute({ face: newFace });
       }
       if (pointJXG.current.visProp.size !== SVs.selectedStyle.markerSize) {
         pointJXG.current.visProp.size = SVs.selectedStyle.markerSize
+        shadowPointJXG.current.visProp.size = SVs.selectedStyle.markerSize
       }
 
       if (SVs.draggable && !SVs.fixed) {
-        pointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray"); 
-        pointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"); 
+        pointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        pointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue");
         pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
+        shadowPointJXG.current.visProp.highlightfillcolor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        shadowPointJXG.current.visProp.highlightstrokecolor = getComputedStyle(document.documentElement).getPropertyValue("--lightBlue");
         shadowPointJXG.current.visProp.fixed = false;
       } else {
         pointJXG.current.visProp.highlightfillcolor = newFillColor;
         pointJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.markerColor;
         pointJXG.current.visProp.showinfobox = false;
+        shadowPointJXG.current.visProp.highlightfillcolor = newFillColor;
+        shadowPointJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.markerColor;
         shadowPointJXG.current.visProp.fixed = true;
       }
 
@@ -306,7 +318,11 @@ export default function Point(props) {
 
       if (pointJXG.current.hasLabel) {
         pointJXG.current.label.needsUpdate = true;
-
+        if (SVs.applyStyleToLabel) {
+          pointJXG.current.label.visProp.strokecolor = SVs.selectedStyle.markerColor;
+        } else {
+          pointJXG.current.label.visProp.strokecolor = "#000000";
+        }
         if (SVs.labelPosition !== previousLabelPosition.current) {
           let anchorx, anchory, offset;
           if (SVs.labelPosition === "upperright") {
@@ -372,11 +388,11 @@ export default function Point(props) {
 
   //Render text coordinates when outside of graph
 
-  let mathJaxify = "\\(" + me.fromAst(SVs.coordsForDisplay).toLatex() + "\\)";
+  let mathJaxify = "\\(" + SVs.coordsLatex + "\\)";
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 
 
-}
+})
 
 function normalizeStyle(style) {
   if (style === "triangle") {

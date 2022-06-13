@@ -744,4 +744,36 @@ describe('Math Display Tag Tests', function () {
 
   })
 
+  it('aslist inside displayed math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    
+    <m>s=<aslist name="al"><sequence from="1" to="3" /></aslist></m>
+    <m>s=$al</m>
+    <me>s = $al</me>
+    <md>
+      <mrow>s \\amp= $al</mrow>
+    </md>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('s=1,2,3')
+    })
+    cy.get('#\\/_m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('s=1,2,3')
+    })
+    cy.get('#\\/_me1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('s=1,2,3')
+    })
+    cy.get('#\\/_md1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('s=1,2,3')
+    })
+
+  })
+
 })

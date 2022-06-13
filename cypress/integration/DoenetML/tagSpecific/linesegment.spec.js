@@ -3000,9 +3000,9 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment endpoints="$(_linesegment2{prop='endpoint2' componentType='point'}) (1,0)" />
-  <linesegment endpoints="$(_linesegment3{prop='endpoint2' componentType='point'}) (3,2)" />
-  <linesegment endpoints="$(_linesegment1{prop='endpoint2' componentType='point'}) (-1,4)" />
+  <linesegment endpoints="$(_linesegment2{prop='endpoint2' createComponentOfType='point'}) (1,0)" />
+  <linesegment endpoints="$(_linesegment3{prop='endpoint2' createComponentOfType='point'}) (3,2)" />
+  <linesegment endpoints="$(_linesegment1{prop='endpoint2' createComponentOfType='point'}) (-1,4)" />
   </graph>
   <copy prop="endpoint1" target="_linesegment1" assignNames="p11" />
   <copy prop="endpoint2" target="_linesegment1" assignNames="p12" />
@@ -3212,23 +3212,93 @@ describe('LineSegment Tag Tests', function () {
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
     cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-  
-    cy.get('#\\/n textarea').type("1{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force: true});
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
-  
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('not.exist');
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
-  
 
+
+  });
+
+  it('lineSegment slope', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="A">(3,4)</point>
+      <point name="B">(7,-2)</point>
+      <linesegment name="l" endpoints="$A $B" />
+    </graph>
+    <copy prop="slope" target="l" assignNames="slope" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 3, t1y = 4;
+    let t2x = 7, t2y = -2;
+    let m = (t1y - t2y) / (t1x - t2x);
+
+    cy.get('#\\/slope').should('contain.text', String(m))
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.slope).eq(m);
+    })
+
+    cy.window().then(async (win) => {
+
+      t1x = 7;
+      t1y = 3;
+      m = (t1y - t2y) / (t1x - t2x);
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: t1x, y: t1y }
+      })
+
+      cy.get('#\\/slope').should('contain.text', '∞')
+
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(Math.abs(stateVariables['/l'].stateValues.slope)).eq(Infinity);
+    })
+
+
+    cy.window().then(async (win) => {
+
+      t2x = -9;
+      t2y = 5;
+      m = (t1y - t2y) / (t1x - t2x);
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: t2x, y: t2y }
+      })
+
+      cy.get('#\\/slope').should('contain.text', String(m))
+
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.slope).eq(m);
+    })
   });
 
 });

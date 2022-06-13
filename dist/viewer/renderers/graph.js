@@ -2,7 +2,7 @@ import React, {useEffect, useState, useRef, createContext} from "../../_snowpack
 import {sizeToCSS} from "./utils/css.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export const BoardContext = createContext();
-export default function Graph(props) {
+export default React.memo(function Graph(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
   const [board, setBoard] = useState(null);
   const previousDimensions = useRef(null);
@@ -72,7 +72,8 @@ export default function Graph(props) {
           offset: [-5, -15]
         },
         minorTicks: 4,
-        precision: 4
+        precision: 4,
+        drawLabels: SVs.displayXAxisTickLabels
       };
       if (SVs.grid === "dense") {
         xaxisOptions.ticks.majorHeight = -1;
@@ -117,7 +118,8 @@ export default function Graph(props) {
           offset: [12, -2]
         },
         minorTicks: 4,
-        precision: 4
+        precision: 4,
+        drawLabels: SVs.displayYAxisTickLabels
       };
       if (SVs.grid === "dense") {
         yaxisOptions.ticks.majorHeight = -1;
@@ -190,6 +192,7 @@ export default function Graph(props) {
     }
     if (SVs.displayXAxis) {
       xaxis.current.name = SVs.xlabel;
+      xaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayXAxisTickLabels});
       if (xaxis.current.hasLabel) {
         let position = "rt";
         let offset = [5, 10];
@@ -208,6 +211,7 @@ export default function Graph(props) {
     }
     if (SVs.displayYAxis) {
       yaxis.current.name = SVs.ylabel;
+      yaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayYAxisTickLabels});
       if (yaxis.current.hasLabel) {
         let position = "rt";
         let offset = [-10, -5];
@@ -258,4 +262,4 @@ export default function Graph(props) {
   }), /* @__PURE__ */ React.createElement(BoardContext.Provider, {
     value: board
   }, children));
-}
+});

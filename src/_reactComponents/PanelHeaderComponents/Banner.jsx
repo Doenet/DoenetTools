@@ -32,21 +32,21 @@ export default function Banner(props) {
 
     switch (props.type) {
         case 'ERROR':
-            container.backgroundColor = 'rgba(193, 41, 46, 1)';
-            container.color = 'white';
-            closeButton.color = 'white';
+            container.backgroundColor = 'var(--mainRed)';
+            container.color = 'var(--canvas)';
+            closeButton.color = 'var(--canvas)';
             break;
         case 'ALERT':
-            container.backgroundColor = '#f5ed85';
+            container.backgroundColor = 'var(--lightYellow)';
             break;
         case 'ACTION':
-            container.backgroundColor = 'hsl(209,54%,82%)';
+            container.backgroundColor = 'var(--lightBlue)';
             break;
         case 'SUCCESS':
-            container.backgroundColor = '#a6f19f';
+            container.backgroundColor = 'var(--lightGreen)';
             break;
         default:
-            container.backgroundColor = '#E2E2E2';
+            container.backgroundColor = 'var(--mainGreen)';
             break;
     }
 

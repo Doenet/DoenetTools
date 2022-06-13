@@ -24,7 +24,6 @@ export default function DoenetMLEditor(props) {
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom)
-
   const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
   const courseId = useRecoilValue(courseIdAtom)
   

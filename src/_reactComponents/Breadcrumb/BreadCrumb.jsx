@@ -30,7 +30,7 @@ const BreadcrumbItem = styled.li`
   &:last-of-type span {
     border-radius: 0px 15px 15px 0px;
     padding: 0px 25px 0px 45px;
-    background: hsl(209, 54%, 82%);
+    background: var(--lightBlue);
     color: black;
   }
   &:first-of-type span {
@@ -39,7 +39,7 @@ const BreadcrumbItem = styled.li`
   &:only-child span {
     border-radius: 15px;
     padding: 0px 30px 0px 30px;
-    background: hsl(209, 54%, 82%);
+    background: var(--lightBlue);
     color: black;
   }
 `;
@@ -48,8 +48,8 @@ const BreadcrumbSpan = styled.span`
   padding: 0px 0px 0px 45px;
   position: relative;
   float: left;
-  color: white;
-  background: #1a5a99;
+  color: var(--canvas);
+  background: var(--mainBlue);
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
   &::after {
@@ -58,7 +58,7 @@ const BreadcrumbSpan = styled.span`
     height: 0;
     border-top: 50px solid transparent;
     border-bottom: 50px solid transparent;
-    border-left: 30px solid #1a5a99;
+    border-left: 30px solid var(--mainBlue);
     position: absolute;
     top: 50%;
     margin-top: -50px;
@@ -71,7 +71,7 @@ const BreadcrumbSpan = styled.span`
     height: 0;
     border-top: 50px solid transparent;
     border-bottom: 50px solid transparent;
-    border-left: 30px solid white;
+    border-left: 30px solid var(--canvas);
     position: absolute;
     top: 50%;
     margin-top: -50px;

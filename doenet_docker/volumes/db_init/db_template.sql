@@ -1,37 +1,30 @@
--- MySQL dump 10.13  Distrib 5.7.29, for Linux (x86_64)
---
--- Host: localhost    Database: doenet_local
--- ------------------------------------------------------
--- Server version	5.7.29
+# ************************************************************
+# Sequel Ace SQL dump
+# Version 20033
+#
+# https://sequel-ace.com/
+# https://github.com/Sequel-Ace/Sequel-Ace
+#
+# Host: 127.0.0.1 (MySQL 5.7.29)
+# Database: doenet_local
+# Generation Time: 2022-05-19 20:23:31 +0000
+# ************************************************************
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+SET NAMES utf8mb4;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40101 SET @OLD_SQL_MODE='NO_AUTO_VALUE_ON_ZERO', SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Current Database: `doenet_local`
---
 
-/*!40000 DROP DATABASE IF EXISTS `doenet_local`*/;
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `doenet_local` /*!40100 DEFAULT CHARACTER SET latin1 */;
-
-USE `doenet_local`;
-
---
--- Table structure for table `activity_state`
---
+# Dump of table activity_state
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `activity_state`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `activity_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
@@ -48,24 +41,14 @@ CREATE TABLE `activity_state` (
   KEY `saveId` (`saveId`),
   KEY `cid` (`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `activity_state`
---
 
-LOCK TABLES `activity_state` WRITE;
-/*!40000 ALTER TABLE `activity_state` DISABLE KEYS */;
-/*!40000 ALTER TABLE `activity_state` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `assignment`
---
+# Dump of table assignment
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `assignment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -90,24 +73,14 @@ CREATE TABLE `assignment` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `assignment`
---
 
-LOCK TABLES `assignment` WRITE;
-/*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `class_times`
---
+# Dump of table class_times
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `class_times`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `class_times` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `driveId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -117,24 +90,14 @@ CREATE TABLE `class_times` (
   `sortOrder` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `class_times`
---
 
-LOCK TABLES `class_times` WRITE;
-/*!40000 ALTER TABLE `class_times` DISABLE KEYS */;
-/*!40000 ALTER TABLE `class_times` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `collection`
---
+# Dump of table collection
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `collection`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `collection` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` char(21) DEFAULT '',
@@ -144,24 +107,14 @@ CREATE TABLE `collection` (
   `entryVariant` text NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `collection`
---
 
-LOCK TABLES `collection` WRITE;
-/*!40000 ALTER TABLE `collection` DISABLE KEYS */;
-/*!40000 ALTER TABLE `collection` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `collection_groups`
---
+# Dump of table collection_groups
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `collection_groups`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `collection_groups` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` char(21) NOT NULL DEFAULT '',
@@ -171,24 +124,14 @@ CREATE TABLE `collection_groups` (
   `preAssigned` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `collection_groups`
---
 
-LOCK TABLES `collection_groups` WRITE;
-/*!40000 ALTER TABLE `collection_groups` DISABLE KEYS */;
-/*!40000 ALTER TABLE `collection_groups` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `content`
---
+# Dump of table content
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `content`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -206,24 +149,14 @@ CREATE TABLE `content` (
   KEY `cid` (`cid`),
   KEY `doenetId` (`doenetId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `content`
---
 
-LOCK TABLES `content` WRITE;
-/*!40000 ALTER TABLE `content` DISABLE KEYS */;
-/*!40000 ALTER TABLE `content` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `content_interactions`
---
+# Dump of table content_interactions
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `content_interactions`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `content_interactions` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
@@ -238,29 +171,27 @@ CREATE TABLE `content_interactions` (
   PRIMARY KEY (`id`),
   KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `content_interactions`
---
 
 LOCK TABLES `content_interactions` WRITE;
 /*!40000 ALTER TABLE `content_interactions` DISABLE KEYS */;
-INSERT INTO `content_interactions` VALUES (1,'devuserid','Rubber fig','jCig69KJ8-Vg8n29eI_IT','e0ed824db15dea742250f59c536a03de0cdc3c5fb4127a1100c0710cb241eed2','{\"/__mathinput_KXh6glTyP5\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"rawRendererValue\":\"ï¼¿\"},\"/__math_d9bmzOvKly\":{\"expressionWithCodes\":{\"objectType\":\"math-expression\",\"tree\":2}},\"/_answer1\":{\"justSubmitted\":true,\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"mergeObject\":true},\"submittedResponsesComponentType\":[\"math\"],\"creditAchievedDependenciesAtSubmit\":\"n54ElwqKNsTmUihVxGz6Hx0Mcfo=\",\"nSubmissions\":2,\"hasBeenCorrect\":true},\"/__award_XTZPmlFGuS\":{\"awarded\":true,\"creditAchieved\":1,\"fractionSatisfied\":1}}','{\"index\":14,\"name\":\"n\",\"meta\":{\"createdBy\":\"/_document1\",\"subvariantsSpecified\":false},\"subvariants\":[]}',2,NULL,'2022-03-11 16:47:18');
+
+INSERT INTO `content_interactions` (`id`, `userId`, `deviceName`, `doenetId`, `contentId`, `stateVariables`, `variant`, `attemptNumber`, `interactionSource`, `timestamp`)
+VALUES
+	(1,'devuserid','Rubber fig','jCig69KJ8-Vg8n29eI_IT','e0ed824db15dea742250f59c536a03de0cdc3c5fb4127a1100c0710cb241eed2','{\"/__mathinput_KXh6glTyP5\":{\"immediateValue\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"rawRendererValue\":\"ï¼¿\"},\"/__math_d9bmzOvKly\":{\"expressionWithCodes\":{\"objectType\":\"math-expression\",\"tree\":2}},\"/_answer1\":{\"justSubmitted\":true,\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":{\"objectType\":\"math-expression\",\"tree\":\"ï¼¿\"},\"mergeObject\":true},\"submittedResponsesComponentType\":[\"math\"],\"creditAchievedDependenciesAtSubmit\":\"n54ElwqKNsTmUihVxGz6Hx0Mcfo=\",\"nSubmissions\":2,\"hasBeenCorrect\":true},\"/__award_XTZPmlFGuS\":{\"awarded\":true,\"creditAchieved\":1,\"fractionSatisfied\":1}}','{\"index\":14,\"name\":\"n\",\"meta\":{\"createdBy\":\"/_document1\",\"subvariantsSpecified\":false},\"subvariants\":[]}',2,NULL,'2022-03-11 16:47:18');
+
 /*!40000 ALTER TABLE `content_interactions` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `course`
---
+
+# Dump of table course
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `course`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `course` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'Untitled',
+  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'Untitled Course',
   `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
   `isDeleted` tinyint(1) DEFAULT '0',
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -268,24 +199,14 @@ CREATE TABLE `course` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`courseId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `course`
---
 
-LOCK TABLES `course` WRITE;
-/*!40000 ALTER TABLE `course` DISABLE KEYS */;
-/*!40000 ALTER TABLE `course` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `course_content`
---
+# Dump of table course_content
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `course_content`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `course_content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `type` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -305,24 +226,14 @@ CREATE TABLE `course_content` (
   UNIQUE KEY `doenetId` (`doenetId`),
   KEY `courseId` (`courseId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `course_content`
---
 
-LOCK TABLES `course_content` WRITE;
-/*!40000 ALTER TABLE `course_content` DISABLE KEYS */;
-/*!40000 ALTER TABLE `course_content` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `course_grade_category`
---
+# Dump of table course_grade_category
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `course_grade_category`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `course_grade_category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -333,24 +244,14 @@ CREATE TABLE `course_grade_category` (
   PRIMARY KEY (`id`),
   KEY `course_grade_category` (`courseId`,`gradeCategory`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `course_grade_category`
---
 
-LOCK TABLES `course_grade_category` WRITE;
-/*!40000 ALTER TABLE `course_grade_category` DISABLE KEYS */;
-/*!40000 ALTER TABLE `course_grade_category` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `course_user`
---
+# Dump of table course_user
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `course_user`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `course_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -373,24 +274,14 @@ CREATE TABLE `course_user` (
   PRIMARY KEY (`id`),
   KEY `userDrive` (`userId`,`courseId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `course_user`
---
 
-LOCK TABLES `course_user` WRITE;
-/*!40000 ALTER TABLE `course_user` DISABLE KEYS */;
-/*!40000 ALTER TABLE `course_user` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `drive`
---
+# Dump of table drive
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `drive`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `drive` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -406,24 +297,14 @@ CREATE TABLE `drive` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `drive`
---
 
-LOCK TABLES `drive` WRITE;
-/*!40000 ALTER TABLE `drive` DISABLE KEYS */;
-/*!40000 ALTER TABLE `drive` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `drive_content`
---
+# Dump of table drive_content
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `drive_content`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `drive_content` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `driveId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -444,24 +325,14 @@ CREATE TABLE `drive_content` (
   UNIQUE KEY `doenetId` (`doenetId`),
   KEY `driveId` (`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `drive_content`
---
 
-LOCK TABLES `drive_content` WRITE;
-/*!40000 ALTER TABLE `drive_content` DISABLE KEYS */;
-/*!40000 ALTER TABLE `drive_content` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `drive_user`
---
+# Dump of table drive_user
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `drive_user`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `drive_user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -483,24 +354,14 @@ CREATE TABLE `drive_user` (
   PRIMARY KEY (`id`),
   KEY `userDrive` (`userId`,`driveId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `drive_user`
---
 
-LOCK TABLES `drive_user` WRITE;
-/*!40000 ALTER TABLE `drive_user` DISABLE KEYS */;
-/*!40000 ALTER TABLE `drive_user` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `enrollment`
---
+# Dump of table enrollment
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `enrollment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `enrollment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -522,24 +383,14 @@ CREATE TABLE `enrollment` (
   PRIMARY KEY (`id`),
   KEY `driveId_userId` (`courseId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `enrollment`
---
 
-LOCK TABLES `enrollment` WRITE;
-/*!40000 ALTER TABLE `enrollment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `enrollment` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `event`
---
+# Dump of table event
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `event`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `event` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
@@ -560,24 +411,14 @@ CREATE TABLE `event` (
   `valid` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `event`
---
 
-LOCK TABLES `event` WRITE;
-/*!40000 ALTER TABLE `event` DISABLE KEYS */;
-/*!40000 ALTER TABLE `event` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `experiment`
---
+# Dump of table experiment
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `experiment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `experiment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `experimentId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -588,24 +429,14 @@ CREATE TABLE `experiment` (
   `numberOfGroups` int(11) DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `experiment`
---
 
-LOCK TABLES `experiment` WRITE;
-/*!40000 ALTER TABLE `experiment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `experiment` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `initial_renderer_state`
---
+# Dump of table initial_renderer_state
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `initial_renderer_state`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `initial_renderer_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `cid` char(64) COLLATE utf8_unicode_ci NOT NULL,
@@ -615,24 +446,14 @@ CREATE TABLE `initial_renderer_state` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `cid-variantIndex` (`cid`,`variantIndex`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `initial_renderer_state`
---
 
-LOCK TABLES `initial_renderer_state` WRITE;
-/*!40000 ALTER TABLE `initial_renderer_state` DISABLE KEYS */;
-/*!40000 ALTER TABLE `initial_renderer_state` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `ipfs_to_upload`
---
+# Dump of table ipfs_to_upload
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `ipfs_to_upload`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `ipfs_to_upload` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `cid` varchar(64) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -641,24 +462,14 @@ CREATE TABLE `ipfs_to_upload` (
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `ipfs_to_upload`
---
 
-LOCK TABLES `ipfs_to_upload` WRITE;
-/*!40000 ALTER TABLE `ipfs_to_upload` DISABLE KEYS */;
-/*!40000 ALTER TABLE `ipfs_to_upload` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `page_state`
---
+# Dump of table page_state
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `page_state`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `page_state` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
@@ -677,24 +488,14 @@ CREATE TABLE `page_state` (
   KEY `saveId` (`saveId`),
   KEY `cid` (`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `page_state`
---
 
-LOCK TABLES `page_state` WRITE;
-/*!40000 ALTER TABLE `page_state` DISABLE KEYS */;
-/*!40000 ALTER TABLE `page_state` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `pages`
---
+# Dump of table pages
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `pages`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `pages` (
   `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `containingDoenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -705,24 +506,14 @@ CREATE TABLE `pages` (
   KEY `doenetId` (`doenetId`),
   CONSTRAINT `pages_ibfk_1` FOREIGN KEY (`containingDoenetId`) REFERENCES `course_content` (`doenetId`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `pages`
---
 
-LOCK TABLES `pages` WRITE;
-/*!40000 ALTER TABLE `pages` DISABLE KEYS */;
-/*!40000 ALTER TABLE `pages` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `support_files`
---
+# Dump of table support_files
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `support_files`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `support_files` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci DEFAULT '0',
@@ -740,24 +531,14 @@ CREATE TABLE `support_files` (
   PRIMARY KEY (`id`),
   KEY `userId` (`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `support_files`
---
 
-LOCK TABLES `support_files` WRITE;
-/*!40000 ALTER TABLE `support_files` DISABLE KEYS */;
-/*!40000 ALTER TABLE `support_files` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `user`
---
+# Dump of table user
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `user`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
@@ -773,29 +554,30 @@ CREATE TABLE `user` (
   `roleWatchdog` tinyint(1) DEFAULT '0',
   `roleCommunityTA` tinyint(1) DEFAULT '0',
   `roleLiveDataCommunity` tinyint(1) DEFAULT '0',
+  `canUpload` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `userId` (`userId`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `user`
---
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,1,1,0,0,0,0),(2,'s1userid','S1','s1@example.com','User','Student1','quokka',1,1,0,0,0,0,0),(26,'s2userid','S2','s2@example.com','User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,1,0,0,0,0,0);
+
+INSERT INTO `user` (`id`, `userId`, `screenName`, `email`, `lastName`, `firstName`, `profilePicture`, `trackingConsent`, `roleStudent`, `roleInstructor`, `roleCourseDesigner`, `roleWatchdog`, `roleCommunityTA`, `roleLiveDataCommunity`, `canUpload`)
+VALUES
+	(1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,1,1,0,0,0,0,1),
+	(2,'s1userid','S1','s1@example.com','User','Student1','quokka',1,1,0,0,0,0,0,0),
+	(26,'s2userid','S2','s2@example.com','User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,1,0,0,0,0,0,0);
+
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `user_assignment`
---
+
+# Dump of table user_assignment
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `user_assignment`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `user_assignment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -812,24 +594,14 @@ CREATE TABLE `user_assignment` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId-userId` (`doenetId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `user_assignment`
---
 
-LOCK TABLES `user_assignment` WRITE;
-/*!40000 ALTER TABLE `user_assignment` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_assignment` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `user_assignment_attempt`
---
+# Dump of table user_assignment_attempt
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `user_assignment_attempt`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `user_assignment_attempt` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -842,24 +614,14 @@ CREATE TABLE `user_assignment_attempt` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `userid-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `user_assignment_attempt`
---
 
-LOCK TABLES `user_assignment_attempt` WRITE;
-/*!40000 ALTER TABLE `user_assignment_attempt` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_assignment_attempt` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `user_assignment_attempt_item`
---
+# Dump of table user_assignment_attempt_item
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `user_assignment_attempt_item`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `user_assignment_attempt_item` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `doenetId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
@@ -874,24 +636,14 @@ CREATE TABLE `user_assignment_attempt_item` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `user_assignment_attempt_item`
---
 
-LOCK TABLES `user_assignment_attempt_item` WRITE;
-/*!40000 ALTER TABLE `user_assignment_attempt_item` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_assignment_attempt_item` ENABLE KEYS */;
-UNLOCK TABLES;
 
---
--- Table structure for table `user_device`
---
+# Dump of table user_device
+# ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `user_device`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `user_device` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) DEFAULT NULL,
@@ -902,24 +654,13 @@ CREATE TABLE `user_device` (
   `signedIn` int(1) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `user_device`
---
 
-LOCK TABLES `user_device` WRITE;
-/*!40000 ALTER TABLE `user_device` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_device` ENABLE KEYS */;
-UNLOCK TABLES;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
+
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2022-05-10  2:35:48

@@ -11,7 +11,7 @@ const FormInput = styled.input `
   border-radius: var(--mainBorderRadius);
   position: relative;
   padding: 0px 30px 0px 5px;
-  color: #000;
+  color: var(--canvastext);
   overflow: hidden;
   width: 175px;
   resize: none;
@@ -32,7 +32,7 @@ const CancelButton = styled.button `
   border: 0px;
   background-color: transparent;
   visibility: ${props => props.cancelShown};
-  color: #000;
+  color: var(--canvastext);
   overflow: hidden;
   outline: none;
 `;
@@ -46,13 +46,13 @@ const SubmitButton = styled.button `
   border: ${props => props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)'};
   border-radius: 0px 5px 5px 0px;
   background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
-  color: ${props => props.disabled ? 'black' : 'white'};
+  color: ${props => props.disabled ? 'var(--canvastext)' : 'var(--canvas)'};
   cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   font-size: 12px;
   overflow: hidden;
 
   &:hover {
-    color: black;
+    color: var(--canvastext);
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
 `;

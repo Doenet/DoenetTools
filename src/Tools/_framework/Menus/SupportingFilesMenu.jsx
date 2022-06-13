@@ -1,6 +1,8 @@
 import React, { useCallback, useState, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 // import parse from 'csv-parse';
 import {
   useSetRecoilState,
@@ -69,7 +71,7 @@ function EditableText({text,submit}){
   let textSpanStyle = {width:'110px',display: "inline-block",textOverflow:"ellipsis",whiteSpace:"nowrap"}
   if (displayText === ''){
     displayText = ' *Required';
-    textSpanStyle['border'] = "solid 2px #C1292E";
+    textSpanStyle['border'] = "solid 2px var(--mainRed)";
   }
 
   if (!editingMode){
@@ -103,13 +105,12 @@ function EditableText({text,submit}){
 export default function SupportingFilesMenu(props){
   const addToast = useToast();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const [{ canUpload, userQuotaBytesAvailable, supportingFiles, quotaBytes},setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
+  const [{ canUpload, userQuotaBytesAvailable, supportingFiles, quotaBytes, canEditContent},setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
   // const { canUpload, userQuotaBytesAvailable, supportingFiles} = useRecoilValue(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
   // console.log("supportingFiles",{ canUpload, userQuotaBytesAvailable, supportingFiles})
   // let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
   // let userQuotaBytesAvailable = supportingFiles.userQuotaBytesAvailable
-  let typesAllowed = ["image/jpeg","image/png"]
-  // let typesAllowed = ["text/csv","image/jpeg","image/png"]
+  let typesAllowed = ["text/csv","image/jpeg","image/png"]
   let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
   let numberOfFilesUploading = useRef(0);
 
@@ -152,17 +153,33 @@ export default function SupportingFilesMenu(props){
   },[doenetId]);
 
   const deleteFile = useRecoilCallback(({set})=> async (cid)=>{
-    // console.log("Delete file",{doenetId,cid});
-    //Update quota info using the server's records
-    let { data } = await axios.get('/api/deleteFile.php',{params:{doenetId,cid}});
-    // console.log("deleteFile data",data)
-    let { userQuotaBytesAvailable } = data;
-    set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
-      let newObj = {...was};
-      newObj.supportingFiles = was.supportingFiles.filter((file)=>file.cid !== cid);
-      newObj.userQuotaBytesAvailable = userQuotaBytesAvailable;
-      return newObj;
-    })
+    try {
+      //Update quota info using the server's records
+      let resp = await axios.get('/api/deleteFile.php',{params:{doenetId,cid}});
+      // console.log("deleteFile resp.data",resp.data)
+      if (resp.status < 300 && resp?.data?.success) {
+        addToast('File deleted.')
+
+        let { userQuotaBytesAvailable } = resp.data;
+        set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
+          let newObj = {...was};
+          newObj.supportingFiles = was.supportingFiles.filter((file)=>file.cid !== cid);
+          newObj.userQuotaBytesAvailable = userQuotaBytesAvailable;
+          return newObj;
+        })
+
+      } else {
+        if (resp?.data?.success == false){
+          addToast(resp?.data?.message,toastType.ERROR)
+        }else{
+          throw new Error(`response code: ${resp.status}`);
+        }
+      }
+    } catch (err) {
+      throw new Error(`Error deleting file ${err}`);
+    }
+    
+    
 
   },[doenetId])
 
@@ -196,7 +213,6 @@ export default function SupportingFilesMenu(props){
       }
     })
 
-
     //If file sizes are over quota or any files aren't right type then abort
     if (!success){ return; }
 
@@ -223,7 +239,6 @@ export default function SupportingFilesMenu(props){
         const uploadData = new FormData();
         uploadData.append('file',file);
         uploadData.append('doenetId',doenetId);
-  
           axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
         const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
             if (totalLength !== null) {
@@ -300,7 +315,7 @@ export default function SupportingFilesMenu(props){
     )}
     </div>
     <CollapseSection title="Accepted File Types" collapsed={true} >
-      <div><b>Image</b>.jpg .png</div>
+      <div><b>Image</b>.jpg .png .csv</div>
       {/* <div><b>Data</b>.csv</div> */}
       {/* <div><b>Audio</b></div> */}
     </CollapseSection>
@@ -323,11 +338,7 @@ export default function SupportingFilesMenu(props){
     let source = `doenet:cid=${cid}`;
     if (fileType === 'image/jpeg' || fileType === 'image/png'){
       doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}' width='${width}' height='${height}' mimeType='${fileType}' />`
-    }else if (fileType === 'text/csv'){
-      doenetMLCode = `<dataset source='${source}' />`
-    }
-
-    let description_required_css = {};
+      let description_required_css = {};
     // if (description === ''){
     //   description_required_css = {border:"solid 2px #C1292E"}
     // }
@@ -343,17 +354,56 @@ export default function SupportingFilesMenu(props){
         <EditableText text={description} submit={(text)=>{updateDescription(text,cid)}}/>
       </div>
       <div>
-        <button onClick={()=>{
-          deleteFile(cid);
-        }}>delete</button>
+        <ActionButtonGroup width="menu">
+          {canUpload ? 
+          <ActionButton alert value="Delete" onClick={()=>{
+            deleteFile(cid);
+          }}/>
+          : null}
+          
         <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
-          <button onClick={()=>{
-            
-          }}>Code <FontAwesomeIcon icon={faClipboard}/></button> 
-          </CopyToClipboard>
+          <ActionButton disabled={description == ''}  icon={<FontAwesomeIcon icon={faClipboard}/>} value="Copy Code"/>
+        </CopyToClipboard>
+        </ActionButtonGroup>
+       
       </div>
       <hr />
     </div>)
+    }else if (fileType === 'text/csv'){
+      doenetMLCode = `<dataFrame source='${source}' hasHeader="true" />`
+      let description_required_css = {};
+    // if (description === ''){
+    //   description_required_css = {border:"solid 2px #C1292E"}
+    // }
+
+    //TODO:
+    //Checkbox for hasHeader attr hasHeader={T/F} default is true Also in DB
+    
+    supportFilesJSX.push(
+    <div>
+      <div>
+        <span style={{width:'116px'}}>fileName: <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,cid)}}/></span>
+        
+      </div>
+      <div>
+        <ActionButtonGroup width="menu">
+          {canUpload ? 
+          <ActionButton alert value="Delete" onClick={()=>{
+            deleteFile(cid);
+          }}/>
+          : null}
+          
+        <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
+          <ActionButton icon={<FontAwesomeIcon icon={faClipboard}/>} value="Copy Code"/>
+        </CopyToClipboard>
+        </ActionButtonGroup>
+       
+      </div>
+      <hr />
+    </div>)
+    }
+
+    
    
   })
   

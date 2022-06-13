@@ -1954,9 +1954,9 @@ describe('Specifying subvariants tests', function () {
 
     let problemRepeatedAsExternalCopies = `
       <text>a</text>
-      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem1" />
-      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem2" />
-      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem3" />
+      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" assignNames="problem1" />
+      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" assignNames="problem2" />
+      <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" assignNames="problem3" />
     `
 
     // TODO: how to make this work?
@@ -2014,9 +2014,9 @@ describe('Specifying subvariants tests', function () {
       <text>a</text>
       <paginatorControls paginatorTname="pgn" name="pcontrols" />
       <paginator name="pgn">
-        <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem1" />
-        <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem2" />
-        <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" componentType="problem" assignNames="problem3" />
+        <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" assignNames="problem1" />
+        <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" assignNames="problem2" />
+        <copy uri="doenet:contentId=bafkreif3jsrmitv2j5urwrmru7ra56aapzniexoul5elyr2y2osd6wxs7i" assignNames="problem3" />
       </paginator>
     `
 

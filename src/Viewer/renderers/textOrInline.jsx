@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function TextOrInline(props) {
+export default React.memo(function TextOrInline(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -9,4 +9,4 @@ export default function TextOrInline(props) {
   }
 
   return <span id={name}><a name={name} />{children}</span>;
-}
+})

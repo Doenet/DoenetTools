@@ -65,7 +65,9 @@ export default class BooleanOperator extends BooleanComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         booleanChildren: {

@@ -20,7 +20,9 @@ export default class Case extends Template {
 
     stateVariableDefinitions.conditionSatisfied = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         condition: {
           dependencyType: "attributeComponent",

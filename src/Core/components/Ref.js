@@ -27,12 +27,6 @@ export default class Ref extends InlineComponent {
       defaultValue: false,
       forRenderer: true,
     };
-    attributes.edit = {
-      createComponentOfType: "boolean",
-      createStateVariable: "edit",
-      defaultValue: null,
-      forRenderer: true,
-    };
     return attributes;
   }
 
@@ -213,7 +207,9 @@ export default class Ref extends InlineComponent {
 
     stateVariableDefinitions.linkText = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["targetName"],
       returnDependencies({ stateValues }) {

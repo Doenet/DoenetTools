@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Figure(props) {
+export default React.memo(function Figure(props) {
   let {name, SVs, children} = useDoenetRender(props);
 
   if (SVs.hidden || !children) {
@@ -45,5 +45,5 @@ export default function Figure(props) {
         <figcaption id={ name + "_caption" }>{caption}</figcaption>
       </figure>
     )
-}
+})
 

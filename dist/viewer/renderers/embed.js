@@ -2,7 +2,7 @@ import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import cssesc from "../../_snowpack/pkg/cssesc.js";
 import {sizeToCSS} from "./utils/css.js";
-export default function Figure(props) {
+export default React.memo(function Figure(props) {
   let {name, SVs} = useDoenetRender(props);
   useEffect(() => {
     if (SVs.encodedGeogebraContent) {
@@ -75,4 +75,4 @@ export default function Figure(props) {
   }
   console.warn("Nothing specified to embed");
   return null;
-}
+});

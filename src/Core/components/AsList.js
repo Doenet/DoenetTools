@@ -20,7 +20,9 @@ export default class AsList extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
@@ -44,6 +46,39 @@ export default class AsList extends InlineComponent {
         let text = textpieces.join(', ');
 
         return { setValue: { text } };
+      }
+    }
+
+    stateVariableDefinitions.latex = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        inlineChildren: {
+          dependencyType: "child",
+          childGroups: ["inline"],
+          variableNames: ["text", "latex"],
+          variablesOptional: true,
+        }
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let latexpieces = [];
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child !== "object") {
+            latexpieces.push(child.toString());
+          } else if (typeof child.stateValues.latex === "string") {
+            latexpieces.push(child.stateValues.latex);
+          } else if (typeof child.stateValues.text === "string") {
+            latexpieces.push(child.stateValues.text);
+          } else {
+            latexpieces.push('');
+          }
+        }
+        let latex = latexpieces.join(', ');
+
+        return { setValue: { latex } };
       }
     }
 
