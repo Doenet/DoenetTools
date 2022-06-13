@@ -16,10 +16,10 @@ export default React.memo(function Graph(props) {
   const xaxis = useRef(null);
   const yaxis = useRef(null);
   const settingBoundingBox = useRef(false);
-  const resizingBoard = useRef(false);
+  // const resizingBoard = useRef(false);
   const boardJustInitialized = useRef(false);
 
-  
+
 
   //Draw Board after mounting component
   useEffect(() => {
@@ -27,9 +27,8 @@ export default React.memo(function Graph(props) {
     previousBoundingbox.current = boundingbox;
 
     JXG.Options.layer.numlayers = 100;
-    JXG.Options.navbar.highlightFillColor="var(--canvastext)";
-    JXG.Options.navbar.strokeColor="var(--canvastext)";
-    console.log(JXG.Options.navbar);
+    JXG.Options.navbar.highlightFillColor = "var(--canvastext)";
+    JXG.Options.navbar.strokeColor = "var(--canvastext)";
 
     let board = window.JXG.JSXGraph.initBoard(name,
       {
@@ -37,16 +36,18 @@ export default React.memo(function Graph(props) {
         axis: false,
         showCopyright: false,
         showNavigation: SVs.showNavigation && !SVs.fixAxes,
-        keepAspectRatio: SVs.identicalAxisScales,
+        // keepAspectRatio: SVs.identicalAxisScales,
         zoom: { wheel: !SVs.fixAxes },
         pan: { enabled: !SVs.fixAxes },
-        
+
       });
-     
+
     board.itemsRenderedLowQuality = {};
 
     board.on('boundingbox', () => {
-      if (!(settingBoundingBox.current || resizingBoard.current)) {
+      if (!(settingBoundingBox.current
+        //  || resizingBoard.current
+      )) {
         let newBoundingbox = board.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = newBoundingbox;
 
@@ -68,7 +69,7 @@ export default React.memo(function Graph(props) {
 
     previousDimensions.current = {
       width: parseFloat(sizeToCSS(SVs.width)),
-      height: parseFloat(sizeToCSS(SVs.height)),
+      aspectRatio: SVs.aspectRatio,
     };
 
 
@@ -102,7 +103,7 @@ export default React.memo(function Graph(props) {
         strokeColor: 'var(--canvastext)',
         drawLabels: SVs.displayXAxisTickLabels
       }
-      xaxisOptions.strokeColor="var(--canvastext)"
+      xaxisOptions.strokeColor = "var(--canvastext)"
 
       if (SVs.grid === "dense") {
         xaxisOptions.ticks.majorHeight = -1;
@@ -146,7 +147,7 @@ export default React.memo(function Graph(props) {
           strokeColor: "var(--canvastext)"
         }
       }
-        yaxisOptions.strokeColor = "var(--canvastext)"
+      yaxisOptions.strokeColor = "var(--canvastext)"
       yaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
@@ -189,7 +190,8 @@ export default React.memo(function Graph(props) {
 
   const divStyle = {
     width: sizeToCSS(SVs.width),
-    height: sizeToCSS(SVs.height),
+    aspectRatio: String(SVs.aspectRatio),
+    maxWidth: "100%"
   }
 
   if (SVs.hidden) {
@@ -198,9 +200,9 @@ export default React.memo(function Graph(props) {
   divStyle.border = "2px solid var(--canvastext)";
   divStyle.margin = "12px";
   divStyle.backgroundColor = "var(--canvas)";
-  divStyle.color="var(--canvastext)";
-  
-  
+  divStyle.color = "var(--canvastext)";
+
+
   if (!board) {
     return <>
       <a name={name} />
@@ -287,17 +289,17 @@ export default React.memo(function Graph(props) {
     }
     let currentDimensions = {
       width: parseFloat(sizeToCSS(SVs.width)),
-      height: parseFloat(sizeToCSS(SVs.height)),
+      aspectRatio: SVs.aspectRatio,
     }
 
     if ((currentDimensions.width !== previousDimensions.current.width ||
-      currentDimensions.height !== previousDimensions.current.height)
-      && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.height)
+      currentDimensions.aspectRatio !== previousDimensions.current.aspectRatio)
+      && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.aspectRatio)
     ) {
 
-      resizingBoard.current = true;
-      board.resizeContainer(currentDimensions.width, currentDimensions.height);
-      resizingBoard.current = false;
+      // resizingBoard.current = true;
+      // board.resizeContainer(currentDimensions.width, currentDimensions.height);
+      // resizingBoard.current = false;
       previousDimensions.current = currentDimensions;
     }
 

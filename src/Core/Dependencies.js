@@ -2825,6 +2825,17 @@ class Dependency {
         }
 
 
+        for (let upVar of this.upstreamVariableNames) {
+          this.dependencyHandler.deleteFromNeededToResolve({
+            componentNameBlocked: this.componentName,
+            typeBlocked: "stateVariable",
+            stateVariableBlocked: upVar,
+            blockerType: "stateVariable",
+            blockerCode: downCompName + "|" + vName,
+          })
+        }
+
+
         if (vName !== this.downstreamVariableNameIfNoVariables) {
           for (let upstreamVarName of this.upstreamVariableNames) {
             // TODO: check why have to do this when delete a dependency
