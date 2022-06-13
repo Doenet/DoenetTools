@@ -86,7 +86,9 @@ export default class CodeViewer extends BlockComponent {
 
     stateVariableDefinitions.hasCodeEditorParent = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         codeEditorParent: {
@@ -107,7 +109,9 @@ export default class CodeViewer extends BlockComponent {
 
     stateVariableDefinitions.width = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       hasEssential: true,
       forRenderer: true,
       defaultValue: { size: 600, isAbsolute: true },
@@ -139,7 +143,9 @@ export default class CodeViewer extends BlockComponent {
 
     stateVariableDefinitions.height = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       hasEssential: true,
       forRenderer: true,
       defaultValue: { size: 400, isAbsolute: true },

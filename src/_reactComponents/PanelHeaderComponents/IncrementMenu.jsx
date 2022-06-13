@@ -18,7 +18,8 @@ const IncrementBox = styled.div`
   margin: 0;
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-`;
+  background-color: var(--canvas);`
+
 
 const IncrementContainer = styled.div`
   position: relative;
@@ -30,12 +31,12 @@ const IncreaseButton = styled.button`
   border-radius: 0px 2px 2px 0px;
   height: 100%;
   width: 36px;
-  color: ${(props) => (props.disabled ? 'black' : 'white')};
+  color: ${(props) => (props.disabled ? 'var(--canvas)' : 'var(--canvastext)')};
   font-size: 18px;
   border: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-    color: black;
+    color: var(--canvas);
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
 `;
@@ -46,12 +47,12 @@ const DecreaseButton = styled.button`
   text-align: center;
   height: 100%;
   width: 36px;
-  color: ${(props) => (props.disabled ? 'black' : 'white')};
+  color: ${(props) => (props.disabled ? 'var(--canvas)' : 'var(--canvastext)')};
   font-size: 18px;
   border: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-    color: black;
+    color: var(--canvas);
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
   }
 `;
@@ -73,7 +74,7 @@ const Label = styled.span`
 
 const Menu = styled.div`
   background-color: 'var(--mainGray)';
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 8px 16px 0px var(--mainGray);
   border: 'var(--mainBorder)';
   border-top: none;
   border-radius: 'var(--mainBorderRadius)';
@@ -91,7 +92,7 @@ const MenuOption = styled.button`
   width: 100%;
   height: 24px;
   border: none;
-  border-bottom: 1px black solid;
+  border-bottom: 1px var(--canvastext) solid;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;

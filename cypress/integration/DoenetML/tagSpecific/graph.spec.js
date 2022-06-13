@@ -329,15 +329,14 @@ describe('Graph Tag Tests', function () {
 
   });
 
-  it('identical axis scales', () => {
+  it('identical axis scales, with given aspect ratio', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -369,33 +368,33 @@ describe('Graph Tag Tests', function () {
     let xmin = -10, xmax = 10, ymin = -10, ymax = 10;
 
     checkLimits(xmin, xmax, ymin, ymax)
+    cy.get('#\\/g').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+    cy.get('#\\/g').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -5;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -20;
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      ymin = -40;
-      ymax = 40;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      ymin = -10;
-      ymax = 10;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
 
 
@@ -406,10 +405,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>b</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-5" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-5" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -426,35 +424,37 @@ describe('Graph Tag Tests', function () {
       ymin = -10;
       ymax = 10;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -5;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -20;
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+
     })
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      ymin = -40;
-      ymax = 40;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      ymin = -10;
-      ymax = 10;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
 
     cy.reload();
 
@@ -463,10 +463,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>c</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" xmax="5" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmax="5" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -483,34 +482,35 @@ describe('Graph Tag Tests', function () {
       ymin = -10;
       ymax = 10;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -5;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -20;
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      ymin = -40;
-      ymax = 40;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      ymin = -10;
-      ymax = 10;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
 
     cy.reload();
@@ -520,10 +520,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>d</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" ymin="-5" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" ymin="-5" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -540,30 +539,33 @@ describe('Graph Tag Tests', function () {
       ymin = -5;
       ymax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymax = 35;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      ymax = 75;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      ymax = 15;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
 
     cy.reload();
@@ -573,10 +575,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>e</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" ymax="5" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" ymax="5" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -593,30 +594,33 @@ describe('Graph Tag Tests', function () {
       ymin = -15;
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -5;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -35;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      ymin = -75;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      ymin = -15;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
 
     cy.reload();
@@ -626,10 +630,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>f</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" xmin='-20' xmax="40" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin='-20' xmax="40" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -646,36 +649,36 @@ describe('Graph Tag Tests', function () {
       ymin = -30;
       ymax = 30;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = -15;
       ymax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -60;
       ymax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      ymin = -120;
-      ymax = 120;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      ymin = -30;
-      ymax = 30;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
 
     cy.reload();
 
@@ -684,10 +687,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>g</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" ymin='-20' ymax="40" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" ymin='-20' ymax="40" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -704,34 +706,35 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmin = -60;
       xmax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmin = -15;
       xmax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      xmin = -7.5;
-      xmax = 7.5;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      xmin = -30;
-      xmax = 30;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
 
     cy.reload();
@@ -742,10 +745,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>h</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-50" xmax="30" ymin='-20' ymax="40" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-50" xmax="30" ymin='-20' ymax="40" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -762,32 +764,35 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmax = 70;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmax = 30;
       ymax = 140;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      ymax = 300;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      ymax = 60;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
 
     cy.reload();
@@ -797,10 +802,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>i</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" xmax="30" ymin='-20' ymax="40" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmax="30" ymin='-20' ymax="40" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -817,30 +821,33 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmin = -90;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmin = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      xmin = 15;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      xmin = -30;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
 
     cy.reload();
@@ -850,10 +857,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>j</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-30" ymin='-20' ymax="40" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-30" ymin='-20' ymax="40" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -870,32 +876,34 @@ describe('Graph Tag Tests', function () {
       ymin = -20;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       xmax = 90;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       xmax = 0;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      xmax = -15;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      xmax = 30;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
 
     cy.reload();
 
@@ -904,10 +912,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>k</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-50" xmax="30" ymax="40" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-50" xmax="30" ymax="40" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -924,30 +931,33 @@ describe('Graph Tag Tests', function () {
       ymin = -40;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymin = 0;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymin = -120;
       checkLimits(xmin, xmax, ymin, ymax)
-    })
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      ymin = -280;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
-
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      ymin = -40;
-      checkLimits(xmin, xmax, ymin, ymax)
     })
 
     cy.reload();
@@ -957,10 +967,9 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>l</text>
-    <p>Width: <mathinput name="width" prefill="200" /></p>
-    <p>Height: <mathinput name="height" prefill="200" /></p>
+    <p>Aspect ratio: <mathinput name="aspectRatio" prefill="1" /></p>
 
-    <graph name="g" identicalAxisScales width="$width" height="$height" xmin="-50" xmax="30" ymin="-40" />
+    <graph name="g" identicalAxisScales aspectRatio="$aspectRatio" xmin="-50" xmax="30" ymin="-40" />
 
     <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
     <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
@@ -977,31 +986,109 @@ describe('Graph Tag Tests', function () {
       ymin = -40;
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
     })
 
-    cy.log('set width to 400')
-    cy.get('#\\/width textarea').type('{rightArrow}{backspace}4{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
       ymax = 0;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+
     })
 
-    cy.log('set width to 100')
-    cy.get('#\\/width textarea').type('{backspace}1{enter}', { force: true }).then(() => {
+    cy.log('set aspect ratio to 1/2')
+    cy.get('#\\/aspectRatio textarea').type('{end}{backspace}1/2{enter}', { force: true }).then(() => {
       ymax = 120;
       checkLimits(xmin, xmax, ymin, ymax)
+      cy.get('#\\/g').invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      cy.get('#\\/g').invoke('css', 'height')
+        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+
     })
 
-    cy.log('set height to 400')
-    cy.get('#\\/height textarea').type('{rightarrow}{backspace}4{enter}', { force: true }).then(() => {
-      ymax = 280;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
+  });
 
-    cy.log('set height to 100')
-    cy.get('#\\/height textarea').type('{backspace}1{enter}', { force: true }).then(() => {
-      ymax = 40;
-      checkLimits(xmin, xmax, ymin, ymax)
-    })
+
+  it('identical axis scales, without given aspect ratio', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g" identicalAxisScales />
+
+    <p>xmin: <copy prop="xmin" target="g" assignNames="xmin" /></p>
+    <p>xmax: <copy prop="xmax" target="g" assignNames="xmax" /></p>
+    <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
+    <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
+
+    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$(g{prop='xmin'})" /></p>
+    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$(g{prop='xmax'})" /></p>
+    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$(g{prop='ymin'})" /></p>
+    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$(g{prop='ymax'})" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    function checkLimits(xmin, xmax, ymin, ymax) {
+      cy.get('#\\/xmin').should('have.text', String(xmin));
+      cy.get('#\\/xmax').should('have.text', String(xmax));
+      cy.get('#\\/ymin').should('have.text', String(ymin));
+      cy.get('#\\/ymax').should('have.text', String(ymax));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables["/g"].stateValues.xmin).eq(xmin);
+        expect(stateVariables["/g"].stateValues.xmax).eq(xmax);
+        expect(stateVariables["/g"].stateValues.ymin).eq(ymin);
+        expect(stateVariables["/g"].stateValues.ymax).eq(ymax);
+
+      })
+
+    }
+
+
+    cy.get('#\\/g').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+    cy.get('#\\/g').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+
+
+    checkLimits(-10, 10, -10, 10)
+
+
+    cy.log('set xmin to -5')
+    cy.get("#\\/xminInput textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}-5{enter}", { force: true });
+
+    cy.get('#\\/xmin').should('have.text', '-5');
+    cy.get('#\\/g').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+    cy.get('#\\/g').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 399).and('be.lte', 401)
+
+    checkLimits(-5, 10, -10, 10)
+
+    cy.log('set ymax to 0')
+    cy.get("#\\/ymaxInput textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}0{enter}", { force: true });
+
+    cy.get('#\\/ymax').should('have.text', '0');
+    cy.get('#\\/g').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+    cy.get('#\\/g').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 199).and('be.lte', 201)
+
+    checkLimits(-5, 10, -10, 0)
 
 
   });
@@ -1084,12 +1171,12 @@ describe('Graph Tag Tests', function () {
   });
 
   // check for bug in placeholder adapter
-  it('graph with label as submitted response, componentType specified', () => {
+  it('graph with label as submitted response, createComponentOfType specified', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <graph xlabel="$(x{prop='submittedResponse' componentType='math'})" ylabel="y" />
+    <graph xlabel="$(x{prop='submittedResponse' createComponentOfType='math'})" ylabel="y" />
 
     <answer name="x">x</answer>
     <copy prop="submittedResponse" target="x" assignNames="sr" />
@@ -1195,6 +1282,58 @@ describe('Graph Tag Tests', function () {
     })
 
 
+
+  });
+
+  it('relative width', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g100" width="100%" />
+    <graph name="g50" width="50%" />
+
+    <graph name="g100_2" width="100%" aspectRatio="2" />
+    <graph name="g50_2" width="50%" aspectRatio="2" />
+
+    <graph name="g100_12" width="100%" aspectRatio="1/2" />
+    <graph name="g50_12" width="50%" aspectRatio="1/2" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.get('#\\/g100').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 849).and('be.lte', 851)
+    cy.get('#\\/g100').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
+
+    cy.get('#\\/g50').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
+    cy.get('#\\/g50').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
+
+    cy.get('#\\/g100_2').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 849).and('be.lte', 851)
+    cy.get('#\\/g100_2').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
+
+    cy.get('#\\/g50_2').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
+    cy.get('#\\/g50_2').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
+
+    cy.get('#\\/g100_12').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 849).and('be.lte', 851)
+    cy.get('#\\/g100_12').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 1699).and('be.lte', 1701)
+
+    cy.get('#\\/g50_12').invoke('css', 'width')
+      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
+    cy.get('#\\/g50_12').invoke('css', 'height')
+      .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
   });
 

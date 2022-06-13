@@ -32,7 +32,9 @@ export default class OrbitalDiagramInput extends BlockComponent {
       hasEssential: true,
       forRenderer: true,
       public: true,
-      componentType: "orbitalDiagram",
+      shadowingInstructions: {
+        createComponentOfType: "orbitalDiagram",
+      },
       returnDependencies: () => ({
         prefill: {
           dependencyType: "stateVariable",
@@ -86,7 +88,9 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     stateVariableDefinitions.rows = {
       public: true,
-      componentType: "orbitalDiagram",
+      shadowingInstructions: {
+        createComponentOfType: "orbitalDiagram",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {
@@ -113,7 +117,9 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
     stateVariableDefinitions.numRows = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         rows: {
           dependencyType: "stateVariable",
@@ -131,7 +137,9 @@ export default class OrbitalDiagramInput extends BlockComponent {
       hasEssential: true,
       forRenderer: true,
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({}),
       definition: function () {
         return { useEssentialOrDefaultValue: { selectedRowIndex: true } };
@@ -161,7 +169,9 @@ export default class OrbitalDiagramInput extends BlockComponent {
       hasEssential: true,
       forRenderer: true,
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({}),
       definition: function () {
         return { useEssentialOrDefaultValue: { selectedBoxIndex: true } };

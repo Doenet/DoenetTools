@@ -1,6 +1,6 @@
 import InlineComponent from './abstract/InlineComponent';
 import me from 'math-expressions';
-import { normalizeMathExpression, returnNVariables } from '../utils/math';
+import { normalizeMathExpression, returnNVariables, roundForDisplay } from '../utils/math';
 import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 import { returnInterpolatedFunction, returnNumericalFunctionFromFormula, returnReturnDerivativesOfInterpolatedFunction, returnSymbolicFunctionFromFormula } from '../utils/function';
 
@@ -126,20 +126,14 @@ export default class Function extends InlineComponent {
       valueForTrue: 1E-14,
       valueForFalse: 0,
     };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+    }
 
     attributes.nearestPointAsCurve = {
       createComponentOfType: "boolean",
       createStateVariable: "nearestPointAsCurve",
       defaultValue: false,
-    }
-
-    // Note: specifying this attribute in DoenetML don't do anything
-    // it is just for passing the definition when copy a property that returns a function
-    // TODO: a cleaner approach that doesn't introduce a dummy attribute
-    attributes.fDefinition = {
-      leaveRaw: true,
-      createStateVariable: "fDefinitionAttr",
-      defaultValue: null
     }
 
     return attributes;
@@ -199,7 +193,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -228,13 +224,20 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.displayDigits = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       defaultValue: 10,
       hasEssential: true,
       returnDependencies: () => ({
-        displayDecimalsAttr: {
+        displayDigitsAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
           variableNames: ["value"]
         },
         functionChild: {
@@ -244,13 +247,17 @@ export default class Function extends InlineComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
+        if (dependencyValues.displayDigitsAttr !== null) {
           return {
             setValue: {
-              displayDigits: dependencyValues.displayDecimalsAttr.stateValues.value
+              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
             }
           }
-        } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
+        } else if (dependencyValues.displayDecimalsAttr === null
+          && dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]
+        ) {
+          // have to check to exclude case where have displayDecimals attribute
+          // because otherwise a non-default displayDigits will win over displayDecimals
           return {
             setValue: {
               displayDigits: dependencyValues.functionChild[0].stateValues.displayDigits
@@ -266,8 +273,10 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.displayDecimals = {
       public: true,
-      componentType: "integer",
-      defaultValue: 10,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      defaultValue: null,
       hasEssential: true,
       returnDependencies: () => ({
         displayDecimalsAttr: {
@@ -304,11 +313,13 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.displaySmallAsZero = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       defaultValue: 0,
       hasEssential: true,
       returnDependencies: () => ({
-        displayDecimalsAttr: {
+        displaySmallAsZeroAttr: {
           dependencyType: "attributeComponent",
           attributeName: "displaySmallAsZero",
           variableNames: ["value"]
@@ -320,10 +331,10 @@ export default class Function extends InlineComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.displayDecimalsAttr !== null) {
+        if (dependencyValues.displaySmallAsZeroAttr !== null) {
           return {
             setValue: {
-              displaySmallAsZero: dependencyValues.displayDecimalsAttr.stateValues.value
+              displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
             }
           }
         } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
@@ -335,6 +346,46 @@ export default class Function extends InlineComponent {
         } else {
           return {
             useEssentialOrDefaultValue: { displaySmallAsZero: true }
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.padZeros = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      defaultValue: false,
+      hasEssential: true,
+      returnDependencies: () => ({
+        padZerosAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "padZeros",
+          variableNames: ["value"]
+        },
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["padZeros"],
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+        if (dependencyValues.padZerosAttr !== null) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.padZerosAttr.stateValues.value
+            }
+          }
+        } else if (dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]) {
+          return {
+            setValue: {
+              padZeros: dependencyValues.functionChild[0].stateValues.padZeros
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { padZeros: true }
           }
         }
       }
@@ -373,7 +424,9 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.nInputs = {
       defaultValue: 1,
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       hasEssential: true,
       returnDependencies: () => ({
         nInputsAttr: {
@@ -423,7 +476,9 @@ export default class Function extends InlineComponent {
       defaultValue: 1,
       hasEssential: true,
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         nOutputsAttr: {
           dependencyType: "attributeComponent",
@@ -502,7 +557,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.simplify = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         simplifySpecified: {
           dependencyType: "stateVariable",
@@ -550,7 +607,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.expand = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         expandSpecified: {
           dependencyType: "stateVariable",
@@ -621,7 +680,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.symbolic = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       defaultValue: false,
       hasEssential: true,
       returnDependencies: () => ({
@@ -662,7 +723,9 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.variables = {
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
         nInputs: {
@@ -783,7 +846,10 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.formula = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       defaultValue: me.fromAst(0),
       hasEssential: true,
       returnDependencies: () => ({
@@ -1453,10 +1519,6 @@ export default class Function extends InlineComponent {
             domain: {
               dependencyType: "stateVariable",
               variableName: "domain"
-            },
-            fDefinitionAttr: {
-              dependencyType: "stateVariable",
-              variableName: "fDefinitionAttr"
             }
           }
         }
@@ -1496,10 +1558,6 @@ export default class Function extends InlineComponent {
             setValue: {
               fDefinition: dependencyValues.functionChild[0].stateValues.fDefinition
             }
-          }
-        } else if (dependencyValues.fDefinitionAttr) {
-          return {
-            setValue: { fDefinition: dependencyValues.fDefinitionAttr }
           }
         } else if (dependencyValues.numericalfShadow) {
           // TODO: ??
@@ -1590,15 +1648,47 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         formula: {
           dependencyType: "stateVariable",
           variableName: "formula"
         },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
       }),
-      definition: function ({ dependencyValues }) {
-        return { setValue: { latex: dependencyValues.formula.toLatex() } };
+      definition: function ({ dependencyValues, usedDefault }) {
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        let latex = roundForDisplay({
+          value: dependencyValues.formula,
+          dependencyValues, usedDefault
+        }).toLatex(params);
+        return { setValue: { latex } };
       }
     }
 
@@ -1996,7 +2086,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.numberMinima = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         allMinima: {
           dependencyType: "stateVariable",
@@ -2014,22 +2106,24 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.minima = {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        returnWrappingComponents(prefix) {
+          if (prefix === "minimum" || prefix === undefined) {
+            // minimum or entire array
+            // These are points,
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          } else {
+            // don't wrap minimumLocation(s) or minimumValues(s)
+            return [];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["minimum", "minimumLocations", "minimumLocation", "minimumValues", "minimumValue"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "minimum" || prefix === undefined) {
-          // minimum or entire array
-          // These are points,
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        } else {
-          // don't wrap minimumLocation(s) or minimumValues(s)
-          return [];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (["minimum", "minimumLocation", "minimumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
@@ -2535,7 +2629,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.numberMaxima = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         allMaxima: {
           dependencyType: "stateVariable",
@@ -2553,22 +2649,24 @@ export default class Function extends InlineComponent {
     stateVariableDefinitions.maxima = {
       stateVariablesDeterminingDependencies: ["isInterpolatedFunction"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        returnWrappingComponents(prefix) {
+          if (prefix === "maximum" || prefix === undefined) {
+            // maximum or entire array
+            // These are points,
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          } else {
+            // don't wrap maximumLocation(s) or maximumValues(s)
+            return [];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["maximum", "maximumLocations", "maximumLocation", "maximumValues", "maximumValue"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "maximum" || prefix === undefined) {
-          // maximum or entire array
-          // These are points,
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        } else {
-          // don't wrap maximumLocation(s) or maximumValues(s)
-          return [];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (["maximum", "maximumLocation", "maximumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
@@ -2691,7 +2789,9 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.numberExtrema = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         numberMinima: {
           dependencyType: "stateVariable",
@@ -2736,22 +2836,24 @@ export default class Function extends InlineComponent {
 
     stateVariableDefinitions.extrema = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        returnWrappingComponents(prefix) {
+          if (prefix === "extremum" || prefix === undefined) {
+            // extremum or entire array
+            // These are points,
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          } else {
+            // don't wrap extremumLocation(s) or extremumValues(s)
+            return [];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["extremum", "extremumLocations", "extremumLocation", "extremumValues", "extremumValue"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "extremum" || prefix === undefined) {
-          // extremum or entire array
-          // These are points,
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        } else {
-          // don't wrap extremumLocation(s) or extremumValues(s)
-          return [];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (["extremum", "extremumLocation", "extremumValue"].includes(arrayEntryPrefix)) {
           let pointInd = Number(varEnding) - 1;
@@ -3098,7 +3200,8 @@ export default class Function extends InlineComponent {
   },
   {
     stateVariable: "formula",
-    componentType: "math"
+    componentType: "math",
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
   }];
 
 }

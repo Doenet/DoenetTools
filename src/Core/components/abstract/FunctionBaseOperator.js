@@ -130,7 +130,9 @@ export default class FunctionOperator extends Function {
 
     stateVariableDefinitions.formula = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       additionalStateVariablesDefined: ["operatorBasedOnFormula"],
       // stateVariablesDeterminingDependencies: ["operatorBasedOnFormulaIfAvailable"],
       returnDependencies: () => ({

@@ -17,6 +17,19 @@ export default class Sequence extends CompositeComponent {
       leaveRaw: true
     }
 
+    attributes.displayDigits = {
+      leaveRaw: true
+    }
+    attributes.displayDecimals = {
+      leaveRaw: true
+    }
+    attributes.displaySmallAsZero = {
+      leaveRaw: true
+    }
+    attributes.padZeros = {
+      leaveRaw: true
+    }
+
     let sequenceAttributes = returnStandardSequenceAttributes();
     Object.assign(attributes, sequenceAttributes);
 
@@ -125,15 +138,24 @@ export default class Sequence extends CompositeComponent {
 
     let replacements = [];
 
+
+    let attributesToConvert = {};
+    for (let attr of ["fixed", "displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
+      if (attr in component.attributes) {
+        attributesToConvert[attr] = component.attributes[attr]
+      }
+    }
+
     for (let componentValue of sequenceValues) {
 
       // allow one to override the fixed (default true) attribute
+      // as well as rounding settings
       // by specifying it on the sequence
       let attributesFromComposite = {};
 
-      if ("fixed" in component.attributes) {
+      if (Object.keys(attributesToConvert).length > 0) {
         attributesFromComposite = convertAttributesForComponentType({
-          attributes: { fixed: component.attributes.fixed },
+          attributes: attributesToConvert,
           componentType,
           componentInfoObjects,
           compositeCreatesNewNamespace: newNamespace,
@@ -327,6 +349,13 @@ export default class Sequence extends CompositeComponent {
         let newSerializedReplacements = [];
         let newNamespace = component.attributes.newNamespace?.primitive;
 
+        let attributesToConvert = {};
+        for (let attr of ["fixed", "displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
+          if (attr in component.attributes) {
+            attributesToConvert[attr] = component.attributes[attr]
+          }
+        }
+
         for (let ind = prevlength; ind < await component.stateValues.length; ind++) {
           let componentValue = returnSequenceValueForIndex({
             index: ind,
@@ -343,12 +372,13 @@ export default class Sequence extends CompositeComponent {
           }
 
           // allow one to override the fixed (default true) attribute
+          // as well as rounding settings
           // by specifying it on the sequence
           let attributesFromComposite = {};
 
-          if ("fixed" in component.attributes) {
+          if (Object.keys(attributesToConvert).length > 0) {
             attributesFromComposite = convertAttributesForComponentType({
-              attributes: { fixed: component.attributes.fixed },
+              attributes: attributesToConvert,
               componentType,
               componentInfoObjects,
               compositeCreatesNewNamespace: newNamespace,

@@ -1,17 +1,17 @@
 .doenetComponentBackgroundInactive {
-    color: #E2E2E2;
+    color: var(--mainGray);
 }
 
 .doenetComponentForegroundInactive {
-    color: #3d3d3d;
+    color: var(--canvastext);
 }
 
 .doenetComponentBackgroundActive {
-    color: #288ae9;
+    color: var(--lightBlue);
 }
 
 .doenetComponentForegroundActive {
-    color: #1a5a99;
+    color: var(--mainBlue);
 }
 
 .noselect {

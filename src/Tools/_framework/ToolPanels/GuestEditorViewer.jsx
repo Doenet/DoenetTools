@@ -172,7 +172,7 @@ function findFirstPageCidFromCompiledActivity(orderObj) {
       return item.cid;
     } else {
       //First item of content is another order
-      let nextOrderResponse = findFirstPageOfActivity(item);
+      let nextOrderResponse = findFirstPageOfActivity(item.content);
       if (nextOrderResponse) {
         return nextOrderResponse;
       }

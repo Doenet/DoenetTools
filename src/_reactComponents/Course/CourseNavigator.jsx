@@ -171,7 +171,7 @@ function StudentActivity({courseId,doenetId,itemInfo,numberOfVisibleColumns,inde
 
 function AuthorCourseNavigation({courseId,sectionId,numberOfVisibleColumns,setNumberOfVisibleColumns,courseNavigatorProps}){
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
-  console.log("authorItemOrder",authorItemOrder)
+  console.log("authorItemOrder",courseId,sectionId,authorItemOrder)
 
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
@@ -263,9 +263,16 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
      </>
   }
   if (itemInfo.isOpen){
+    let childRowsJSX = itemInfo.content.map((pageOrOrder,i)=>{
+      if (pageOrOrder?.type == 'order'){
+        return <Order key={`Order${i}${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+      }else{
+        return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={itemInfo.doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+      }
+    })
     return <>
     <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} columnsJSX={columnsJSX} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileCode} label={itemInfo.label} doenetId={doenetId}  hasToggle={true} isOpen={itemInfo.isOpen} isSelected={itemInfo.isSelected} indentLevel={indentLevel}  isBeingCut={itemInfo.isBeingCut}/>
-    <Order key={`Order${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={itemInfo.order} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+    {childRowsJSX}
      </>
   }else{
     return <>
@@ -277,7 +284,7 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
 function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,orderInfo,courseNavigatorProps}){
   let {behavior,doenetId,content, numberToSelect, withReplacement} = orderInfo;
   let recoilOrderInfo = useRecoilValue(itemByDoenetId(doenetId));
-
+  
    let contentJSX = [];
    if (behavior == 'sequence'){
       contentJSX = content.map((pageOrOrder,i)=>{
@@ -310,11 +317,11 @@ function Order({courseId,activityDoenetId,numberOfVisibleColumns,indentLevel,ord
 
   if (recoilOrderInfo.isOpen){
     return <>
-    <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    <Row courseId={courseId} isBeingCut={recoilOrderInfo.isBeingCut} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
     {contentJSX}
     </>
   }else{
-    return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
+    return <Row courseId={courseId} isBeingCut={recoilOrderInfo.isBeingCut} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faFileExport} label={label} doenetId={doenetId} hasToggle={true} isOpen={recoilOrderInfo.isOpen} isSelected={recoilOrderInfo.isSelected} indentLevel={indentLevel}/>
   }
 }
 
@@ -393,8 +400,12 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
       if (e.shiftKey){
         //Shift Click
         //Select all items from the last one selected to this one
-        //TODO: use sectionId to filter to correct section
-        const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
+        let sectionId = await snapshot.getPromise(searchParamAtomFamily('sectionId'))
+        if (!sectionId){
+          sectionId = courseId;
+        }
+        const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}))
+        // const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId))
         //build allRenderedRows on the fly
         let allRenderedRows = [];
         let skip = false;
@@ -488,7 +499,16 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
 
     courseNavigatorProps?.updateSelectMenu({selectedItems:newSelectedItems});
 
-  },[doenetId, courseId, setSelectionMenu])
+},[doenetId, courseId, setSelectionMenu])
+
+  let bgcolor = 'var(--canvas)';
+  let color = 'var(--canvastext)';
+  if (isSelected){
+    color= 'black';
+    bgcolor = 'var(--lightBlue)';
+  }else if (isBeingCut){
+    bgcolor = 'var(--mainGray)'; //grey
+  }
 
   //Used to open editor or assignment
   let handleDoubleClick = useRecoilCallback(()=> async (e)=>{
@@ -496,13 +516,6 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     e.stopPropagation();
     courseNavigatorProps?.doubleClickItem({doenetId,courseId});
   },[doenetId,courseId,courseNavigatorProps]);
-
-  let bgcolor = '#ffffff';
-  if (isSelected){
-    bgcolor = 'hsl(209,54%,82%)';
-  }else if (isBeingCut){
-    bgcolor = '#e2e2e2'; //grey
-  }
 
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
   const indentPx = 25;
@@ -518,8 +531,9 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
       cursor: 'pointer',
       padding: '8px',
       border: '0px',
-      borderBottom: '2px solid black',
+      borderBottom: '2px solid var(--canvastext)',
       backgroundColor: bgcolor,
+      color: color,
       width: 'auto',
       // marginLeft: marginSize,
     }}
@@ -552,11 +566,11 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
       <circle cx="11"
               cy="11"
               r="12"
-              stroke="white"
+              stroke="var(--canvas)"
               strokeWidth="2"
-              fill="#1A5A99"/>
+              fill="var(--mainBlue)"/>
       <text fontSize="14"
-            fill="white"
+            fill="var(--canvas)"
             fontFamily="Verdana"
             textAnchor="middle"
             alignmentBaseline="baseline"
@@ -665,7 +679,7 @@ function CourseNavigationHeader({columnLabels,numberOfVisibleColumns,setNumberOf
           style={{
             padding: '8px',
             border: '0px',
-            borderBottom: '1px solid grey',
+            borderBottom: '1px solid var(--canvastext)',
             maxWidth: '850px',
             margin: '0px',
           }}

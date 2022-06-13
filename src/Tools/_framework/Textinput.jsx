@@ -17,10 +17,10 @@ import styled from "styled-components";
 import { doenetComponentForegroundActive } from './temp/theme'
 
 // PARAMETERS
-const LABELCOLOR = "#1a5a99";
+const LABELCOLOR = "var(--mainBlue)";
 const FONTFAMILY = "sans-serif";
-const BACKGROUNDCOLOR = "#eee";
-const FOCUSBACKGROUNDCOLOR = "#1a5a99";
+const BACKGROUNDCOLOR = "var(--mainGray)";
+const FOCUSBACKGROUNDCOLOR = "var(--mainBlue)";
 
 function randomAlphaString(len) {
   let c = "abcdefghijklmnopqrstuvwxyz";
@@ -65,7 +65,7 @@ const labelStyles = {
     fontSize: "0.7em"
   },
   active: {
-    color: "#eee",
+    color: "var(--mainGray)",
     top: "0.3em",
     fontSize: "0.7em",
   }
@@ -82,11 +82,11 @@ const inputStyles = {
     width: "calc(100% - 1em)"
   },
   inactive: {
-    color: "#000",
+    color: "var(--canvastext)",
     backgroundColor: BACKGROUNDCOLOR
   },
   active: {
-    color: "#eee",
+    color: "var(--mainGray)",
     backgroundColor: FOCUSBACKGROUNDCOLOR
   }
 };

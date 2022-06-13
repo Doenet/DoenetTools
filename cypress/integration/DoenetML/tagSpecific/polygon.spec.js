@@ -1321,7 +1321,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="(1,2) (3,4)(-5,6) $(_polygon1{prop='vertex1' componentType='point'})" />
+  <polygon vertices="(1,2) (3,4)(-5,6) $(_polygon1{prop='vertex1' createComponentOfType='point'})" />
   </graph>
   <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4" />
   `}, "*");
@@ -1442,7 +1442,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="$(_polygon1{prop='vertex4' componentType='point' }) (3,4) (-5,6) (1,2)" />
+  <polygon vertices="$(_polygon1{prop='vertex4' createComponentOfType='point' }) (3,4) (-5,6) (1,2)" />
   </graph>
   <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4" />
   
@@ -1565,7 +1565,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon vertices="$(_polygon1{prop='vertex4' componentType='point'}) (3,4)(-5,6) (1,2) ($(_polygon1{prop='vertexX1_1'})+1,2)" />
+  <polygon vertices="$(_polygon1{prop='vertex4' createComponentOfType='point'}) (3,4)(-5,6) (1,2) ($(_polygon1{prop='vertexX1_1'})+1,2)" />
   </graph>
   <copy target="_polygon1" prop="vertices" assignNames="p1 p2 p3 p4 p5" />
   
@@ -1720,7 +1720,7 @@ describe('Polygon Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polygon name="P" vertices="$(P{prop='vertex4' componentType='point'}) (1,2) (3,4) $(P{prop='vertex7' componentType='point'}) (5,7) (-5,7) $(P{prop='vertex10' componentType='point'}) (3,1) (5,0) (-5,-1)" />
+  <polygon name="P" vertices="$(P{prop='vertex4' createComponentOfType='point'}) (1,2) (3,4) $(P{prop='vertex7' createComponentOfType='point'}) (5,7) (-5,7) $(P{prop='vertex10' createComponentOfType='point'}) (3,1) (5,0) (-5,-1)" />
   </graph>
   <copy target="P" prop="vertices" assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10" />
   

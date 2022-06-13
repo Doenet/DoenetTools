@@ -7,9 +7,9 @@ const DropdownMenu = (props) => {
     option: (provided, state) => {
       return {
         ...provided,
-        color: 'black',
-        backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'white',
-        ':active': { backgroundColor: 'white' },
+        color: 'var(--canvastext)',
+        backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+        ':active': { backgroundColor: 'var(--canvas)' },
       };
     },
     menu: (provided, state) => ({
@@ -17,6 +17,9 @@ const DropdownMenu = (props) => {
       width: state.selectProps.width,
       maxHeigh: state.selectProps.maxMenuHeight,
       overflow: 'scroll',
+      color: 'var(--canvastext)',
+      backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+      ':active': { backgroundColor: 'var(--canvas)' },
     }),
     container: (provided, state) => ({
       ...provided,
@@ -25,24 +28,42 @@ const DropdownMenu = (props) => {
       right: props.absolute && props.right ? props.right : null,
       left: props.absolute && props.left ? props.left : null,
       bottom: props.absolute && props.bottom ? props.bottom : null,
+      color: 'var(--canvastext)',
+      backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+      ':active': { backgroundColor: 'var(--canvas)' },
       //   left: props.absolute && props.left ? props.left : null,
       //   top: props.absolute && props.top ? props.top : null,
     }),
     valueContainer: (provided, state) => ({
       ...provided,
       height: '20px',
+      color: 'var(--canvastext)',
+      backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+      ':active': { backgroundColor: 'var(--canvas)' },
       // padding: '0 6px',
     }),
     indicatorsContainer: (provided, state) => ({
       ...provided,
       height: '20px',
+      color: 'var(--canvastext)',
+      backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+      ':active': { backgroundColor: 'var(--canvas)' },
     }),
+    singleValue: (provided, state) => {
+      return {
+        ...provided,
+        color: 'var(--canvastext)',
+        backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+        ':active': { backgroundColor: 'var(--canvas)' },
+      };
+    },
     control: (provided, state) => {
       return {
         // margin: '0px 4px 0px 4px',
         alignItems: 'center',
         fontFamily: 'Open Sans',
-        backgroundColor: 'hsl(0, 0%, 100%)',
+        color:'var(--canvastext)',
+        backgroundColor: 'var(--canvas)',
         cursor: state.isDisabled ? 'not-allowed' : 'default',
         display: 'flex',
         flexWrap: 'wrap',

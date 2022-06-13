@@ -72,7 +72,9 @@ export default class Input extends InlineComponent {
     stateVariableDefinitions.creditAchieved = {
       defaultValue: 0,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         answerAncestor: {

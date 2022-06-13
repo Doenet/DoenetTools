@@ -3,7 +3,7 @@ import React from 'react';
 const BreadcrumbDivider = ({ children, ...props }) => {
   
   const breadcrumbDividerStyle = {
-    color: "#8a8a8a",
+    color: "var(--mainGray)",
     margin: "auto 6px",
     userSelect: "none",
     fontSize: "20px",

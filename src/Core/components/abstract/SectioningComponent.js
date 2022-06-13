@@ -125,7 +125,9 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       shadowVariable: true,
       returnDependencies: () => ({
@@ -280,22 +282,30 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.creditAchieved = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForCreditAchieved",
+          }
+        },
+      },
       forRenderer: true,
       defaultValue: 0,
       hasEssential: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigitsForCreditAchieved",
-      },
       additionalStateVariablesDefined: [{
         variableName: "percentCreditAchieved",
         public: true,
-        componentType: "number",
+        shadowingInstructions: {
+          createComponentOfType: "number",
+          addAttributeComponentsShadowingStateVariables: {
+            displayDigits: {
+              stateVariableToShadow: "displayDigitsForCreditAchieved",
+            }
+          },
+        },
         defaultValue: 0,
         hasEssential: true,
-        stateVariablesPrescribingAdditionalAttributes: {
-          displayDigits: "displayDigitsForCreditAchieved",
-        }
       }],
       stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
       returnDependencies({ stateValues }) {
@@ -480,7 +490,6 @@ export default class SectioningComponent extends BlockComponent {
     }
 
     stateVariableDefinitions.collapsible = {
-      componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({}),
       definition() {
@@ -490,7 +499,9 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.open = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: true,
       hasEssential: true,

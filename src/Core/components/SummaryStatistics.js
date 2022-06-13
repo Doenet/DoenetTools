@@ -62,7 +62,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.statisticsToDisplay = {
       public: true,
-      componentType: "textList",
+      shadowingInstructions: {
+        createComponentOfType: "textList",
+      },
       returnDependencies: () => ({
         statisticsToDisplayPrelim: {
           dependencyType: "stateVariable",
@@ -97,7 +99,9 @@ export default class SummaryStatistics extends BlockComponent {
       additionalStateVariablesDefined: [{
         variableName: "columnName",
         public: true,
-        componentType: "text",
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
         forRenderer: true,
       }],
       returnDependencies() {
@@ -139,7 +143,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.count = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         dataColumn: {
           dependencyType: "stateVariable",
@@ -160,11 +166,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.sum = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -184,11 +188,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.mean = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -208,11 +210,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.stdev = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -232,11 +232,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.variance = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -256,11 +254,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.stderr = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         stdev: {
@@ -284,11 +280,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.minimum = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -307,11 +301,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.maximum = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -330,11 +322,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.median = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -353,11 +343,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.quartile1 = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -376,11 +364,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.quartile3 = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -399,11 +385,9 @@ export default class SummaryStatistics extends BlockComponent {
 
     stateVariableDefinitions.range = {
       public: true,
-      componentType: "number",
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         minimum: {

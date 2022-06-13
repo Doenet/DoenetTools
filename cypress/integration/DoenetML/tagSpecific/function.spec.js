@@ -4896,4 +4896,171 @@ describe('Function Tag Tests', function () {
 
   })
 
+  it('rounding', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <function name="f1">255.029847 sin(0.52952342x) + 3</function>
+  <function name="f2" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f3" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f4" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f5" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+
+  <copy target="f1" assignNames="f1a" />
+  <copy target="f2" assignNames="f2a" />
+  <copy target="f3" assignNames="f3a" />
+  <copy target="f4" assignNames="f4a" />
+  <copy target="f5" assignNames="f5a" />
+
+  <copy target="f1" prop="formula" assignNames="f1b" />
+  <copy target="f2" prop="formula" assignNames="f2b" />
+  <copy target="f3" prop="formula" assignNames="f3b" />
+  <copy target="f4" prop="formula" assignNames="f4b" />
+  <copy target="f5" prop="formula" assignNames="f5b" />
+
+  <math name="f1c">$f1</math>
+  <math name="f2c">$f2</math>
+  <math name="f3c">$f3</math>
+  <math name="f4c">$f4</math>
+  <math name="f5c">$f5</math>
+
+  <math name="f1d"><copy prop="formula" target="f1" /></math>
+  <math name="f2d"><copy prop="formula" target="f2" /></math>
+  <math name="f3d"><copy prop="formula" target="f3" /></math>
+  <math name="f4d"><copy prop="formula" target="f4" /></math>
+  <math name="f5d"><copy prop="formula" target="f5" /></math>
+
+  <math name="f1e">$f1a</math>
+  <math name="f2e">$f2a</math>
+  <math name="f3e">$f3a</math>
+  <math name="f4e">$f4a</math>
+  <math name="f5e">$f5a</math>
+
+  <math name="f1f">$f1b</math>
+  <math name="f2f">$f2b</math>
+  <math name="f3f">$f3b</math>
+  <math name="f4f">$f4b</math>
+  <math name="f5f">$f5b</math>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/f1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.52952342x)+3")
+    })
+    cy.get('#\\/f2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f3 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f4 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
+    })
+    cy.get('#\\/f5 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+    cy.get('#\\/f1a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.52952342x)+3")
+    })
+    cy.get('#\\/f2a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f3a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f4a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
+    })
+    cy.get('#\\/f5a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+    cy.get('#\\/f1b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.52952342x)+3")
+    })
+    cy.get('#\\/f2b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f3b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f4b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
+    })
+    cy.get('#\\/f5b .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+    cy.get('#\\/f1c .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.52952342x)+3")
+    })
+    cy.get('#\\/f2c .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f3c .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f4c .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
+    })
+    cy.get('#\\/f5c .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+    cy.get('#\\/f1d .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.52952342x)+3")
+    })
+    cy.get('#\\/f2d .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f3d .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f4d .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
+    })
+    cy.get('#\\/f5d .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+    cy.get('#\\/f1e .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.52952342x)+3")
+    })
+    cy.get('#\\/f2e .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f3e .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f4e .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
+    })
+    cy.get('#\\/f5e .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+    cy.get('#\\/f1f .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.52952342x)+3")
+    })
+    cy.get('#\\/f2f .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f3f .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f4f .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
+    })
+    cy.get('#\\/f5f .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+  })
+
 });

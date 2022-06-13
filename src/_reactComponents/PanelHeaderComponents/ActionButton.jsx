@@ -108,7 +108,7 @@ export default function ActionButton(props) {
 
   if (props.disabled) {
     actionButton.backgroundColor = 'var(--mainGray)';
-    actionButton.color = 'black';
+    actionButton.color = 'var(--canvastext)';
     actionButton.cursor = 'not-allowed';
   }
 

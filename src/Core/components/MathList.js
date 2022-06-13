@@ -59,6 +59,12 @@ export default class MathList extends InlineComponent {
       defaultValue: 0,
       public: true,
     };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
+    };
 
     return attributes;
   }
@@ -132,7 +138,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.mergeMathLists = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         mergeMathListsPreliminary: {
           dependencyType: "stateVariable",
@@ -164,7 +172,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["mergeMathLists"],
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies({ stateValues }) {
@@ -282,7 +292,10 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.maths = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       isArray: true,
       entryPrefixes: ["math"],
       stateVariablesDeterminingDependencies: ["mergeMathLists", "childIndexByArrayKey"],
@@ -431,7 +444,9 @@ export default class MathList extends InlineComponent {
     stateVariableDefinitions.latex = {
       additionalStateVariablesDefined: ["latexs"],
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         mathAndMathListChildren: {
@@ -464,10 +479,23 @@ export default class MathList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
         },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         let latexs = [];
-
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
         if (dependencyValues.mathAndMathListChildren.length > 0) {
           for (let child of dependencyValues.mathAndMathListChildren) {
 
@@ -477,7 +505,7 @@ export default class MathList extends InlineComponent {
 
               if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
                 for (let i = 0; i < childValue.tree.length - 1; i++) {
-                  latexs.push(childValue.get_component(i).toLatex());
+                  latexs.push(childValue.get_component(i).toLatex(params));
                 }
               } else {
                 latexs.push(child.stateValues.latex);
@@ -492,7 +520,7 @@ export default class MathList extends InlineComponent {
             roundForDisplay({
               value: x,
               dependencyValues, usedDefault
-            }).toLatex())
+            }).toLatex(params))
 
         }
 
@@ -512,7 +540,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: ["texts"],
       returnDependencies: () => ({
         mathAndMathListChildren: {

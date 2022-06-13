@@ -102,7 +102,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       let varX = me.math.var(samples, 'uncorrected');
 
       expect(meanX).closeTo(4, 0.5);
-      expect(varX).closeTo(8 ** 2 / 12, 0.5)
+      expect(varX).closeTo(8 ** 2 / 12, 0.8)
 
       let firstSample = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
       expect(firstSample.stateValues.mean).closeTo(4, 1E-10)
@@ -1529,7 +1529,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
 
       if (type === "uniform") {
-        step = 0;
+        step = 'NaN';
         expectedMean = (to + from) / 2
         expectedVariance = (to - from) ** 2 / 12;
       } else if (type === "discreteuniform") {
@@ -1537,9 +1537,9 @@ describe('SampleRandomNumbers Tag Tests', function () {
         expectedMean = (to + from) / 2
         expectedVariance = (((to - from) / step + 1) ** 2 - 1) * step ** 2 / 12
       } else {
-        from = 0;
-        to = 0;
-        step = 0;
+        from = 'NaN';
+        to = 'NaN';
+        step = 'NaN';
       }
 
       let expectedStandardDeviation = Math.sqrt(expectedVariance);
@@ -1674,7 +1674,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
         specifiedFrom, specifiedTo, specifiedStep,
         sampleComponent: stateVariables["/samples"],
         allowedErrorInMean: 0.4,
-        allowedErrorInVariance: 0.3,
+        allowedErrorInVariance: 0.4,
         checkAllSamples: false,
         stateVariables
       })
@@ -2018,5 +2018,48 @@ describe('SampleRandomNumbers Tag Tests', function () {
 
   });
 
+
+  it("rounding", () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><sampleRandomNumbers assignNames="n1" from="10" to="20" /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n2" from="10" to="20" displayDigits="3" /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n3" from="10" to="20" displayDecimals="3" /></aslist></p>
+    <p><aslist><sampleRandomNumbers assignNames="n4" type="discreteUniform" from="10" to="20" displayDigits="3" padZeros /></aslist></p>
+
+    <p><number name="n1a">$n1</number></p>
+    <p><number name="n2a">$n2</number></p>
+    <p><number name="n3a">$n3</number></p>
+    <p><number name="n4a">$n4</number></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let n1 = stateVariables["/n1"].stateValues.value;
+      let n2 = stateVariables["/n2"].stateValues.value;
+      let n3 = stateVariables["/n3"].stateValues.value;
+      let n4 = stateVariables["/n4"].stateValues.value;
+
+      cy.get('#\\/n1').should('have.text', String(Math.round(n1*10**8)/10**8))
+      cy.get('#\\/n2').should('have.text', String(Math.round(n2*10**1)/10**1))
+      cy.get('#\\/n3').should('have.text', String(Math.round(n3*10**3)/10**3))
+      cy.get('#\\/n4').should('have.text', String(n4)+".0")
+
+      cy.get('#\\/n1a').should('have.text', String(Math.round(n1*10**8)/10**8))
+      cy.get('#\\/n2a').should('have.text', String(Math.round(n2*10**1)/10**1))
+      cy.get('#\\/n3a').should('have.text', String(Math.round(n3*10**3)/10**3))
+      cy.get('#\\/n4a').should('have.text', String(n4)+".0")
+
+    });
+
+  });
 
 })

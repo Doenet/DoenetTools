@@ -546,18 +546,23 @@ export default class Select extends CompositeComponent {
       }
     }
 
-    let processResult = processAssignNames({
-      assignNames,
-      serializedComponents: replacements,
-      parentName: component.componentName,
-      parentCreatesNewNamespace: newNamespace,
-      componentInfoObjects,
-    });
+    let newReplacements = [];
 
-    // console.log(`replacements for select`)
-    // console.log(deepClone(processResult.serializedComponents));
+    for(let [ind, rep] of replacements.entries()) {
+      let processResult = processAssignNames({
+        assignNames,
+        serializedComponents: [rep],
+        parentName: component.componentName,
+        parentCreatesNewNamespace: newNamespace,
+        componentInfoObjects,
+        indOffset: ind
+      });
 
-    return { replacements: processResult.serializedComponents };
+      newReplacements.push(processResult.serializedComponents[0])
+    }
+
+
+    return { replacements: newReplacements };
 
   }
 

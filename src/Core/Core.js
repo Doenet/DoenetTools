@@ -2201,11 +2201,11 @@ export default class Core {
 
         let replaceWithPlaceholders = false;
 
-        // if an unexpanded composite has a componentType specified
+        // if an unexpanded composite has a createComponentOfType specified
         // replace with placeholders
         // otherwise, leave composite as an activeChild
         if (!child.isExpanded) {
-          if (child.attributes.componentType?.primitive) {
+          if (child.attributes.createComponentOfType?.primitive) {
             replaceWithPlaceholders = true;
           } else {
             continue;
@@ -2225,7 +2225,7 @@ export default class Core {
           }
 
           let componentType = this.componentInfoObjects.
-            componentTypeLowerCaseMapping[child.attributes.componentType.primitive.toLowerCase()];
+            componentTypeLowerCaseMapping[child.attributes.createComponentOfType.primitive.toLowerCase()];
           replacements = [];
 
           for (let i = 0; i < nComponents; i++) {
@@ -2434,6 +2434,7 @@ export default class Core {
               ignorePrimaryStateVariable: dep.ignorePrimaryStateVariable,
               substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
               firstLevelReplacement: dep.firstLevelReplacement,
+              additionalStateVariableShadowing: dep.additionalStateVariableShadowing
             }
           } else if (dep.dependencyType === "adapter") {
             redefineDependencies = {
@@ -2441,6 +2442,7 @@ export default class Core {
               adapterTargetIdentity: dep.adapterTargetIdentity,
               adapterVariable: dep.adapterVariable,
               substituteForPrimaryStateVariable: dep.substituteForPrimaryStateVariable,
+              stateVariablesToShadow: dep.stateVariablesToShadow,
             }
           }
         }
@@ -2501,13 +2503,14 @@ export default class Core {
 
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
-        if (stateVarDef.componentType === undefined) {
-          if (attributeFromPrimitive) {
-            stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
-          } else {
-            stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.shadowingInstructions = {};
+        if (attributeFromPrimitive) {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
+          if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "text";
           }
+        } else {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
         }
       }
 
@@ -2679,16 +2682,14 @@ export default class Core {
 
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
-        if (stateVarDef.componentType === undefined) {
-          if (attributeFromPrimitive) {
-            stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
-            if (stateVarDef.componentType === "string") {
-              stateVarDef.componentType = "text";
-            }
-          } else {
-            stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.shadowingInstructions = {};
+        if (attributeFromPrimitive) {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
+          if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "text";
           }
+        } else {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
         }
       }
 
@@ -2802,6 +2803,14 @@ export default class Core {
       };
     };
 
+    if (redefineDependencies.stateVariablesToShadow) {
+      this.modifyStateDefsToBeShadows({
+        stateVariablesToShadow: redefineDependencies.stateVariablesToShadow,
+        stateVariableDefinitions,
+        targetComponent: adapterTargetComponent
+      });
+    }
+
   }
 
   async createReferenceShadowStateVariableDefinitions({ redefineDependencies, stateVariableDefinitions, componentClass }) {
@@ -2809,26 +2818,21 @@ export default class Core {
     let compositeComponent = this._components[redefineDependencies.compositeName];
     let targetComponent = this._components[redefineDependencies.targetName];
 
-    let additionalAttributesFromStateVariables = {};
-
     if (redefineDependencies.propVariable) {
-      let propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
-
       // if we have an array entry state variable that hasn't been created yet
-      // create it now so that we can look up stateVariablesPrescribingAdditionalAttributes
-      if (!propStateVariableInTarget && this.checkIfArrayEntry({
-        stateVariable: redefineDependencies.propVariable,
-        component: targetComponent
-      })) {
+      // create it now
+      if (!targetComponent.state[redefineDependencies.propVariable]
+        && this.checkIfArrayEntry({
+          stateVariable: redefineDependencies.propVariable,
+          component: targetComponent
+        })
+      ) {
         await this.createFromArrayEntry({
           stateVariable: redefineDependencies.propVariable,
           component: targetComponent
         })
-        propStateVariableInTarget = targetComponent.state[redefineDependencies.propVariable];
       }
-      if (propStateVariableInTarget && propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes) {
-        additionalAttributesFromStateVariables = propStateVariableInTarget.stateVariablesPrescribingAdditionalAttributes
-      }
+
     }
 
     // attributes depend 
@@ -2854,16 +2858,14 @@ export default class Core {
 
       if (attributeSpecification.public) {
         stateVarDef.public = true;
-        stateVarDef.componentType = attributeSpecification.stateVariableComponentType;
-        if (stateVarDef.componentType === undefined) {
-          if (attributeFromPrimitive) {
-            stateVarDef.componentType = attributeSpecification.createPrimitiveOfType;
-            if (stateVarDef.componentType === "string") {
-              stateVarDef.componentType = "text";
-            }
-          } else {
-            stateVarDef.componentType = attributeSpecification.createComponentOfType;
+        stateVarDef.shadowingInstructions = {};
+        if (attributeFromPrimitive) {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
+          if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "text";
           }
+        } else {
+          stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
         }
       }
 
@@ -2898,7 +2900,7 @@ export default class Core {
           dependencyType: "attributeComponent",
           attributeName: attrName,
           variableNames: [stateVariableForAttributeValue],
-          fallBackToAttributeFromShadow: false,
+          fallBackToAttributeFromShadowTarget: false,
         }
       }
 
@@ -2922,25 +2924,12 @@ export default class Core {
         }
       }
 
-      if ("targetAttributesToAlwaysIgnore" in compositeComponent.state) {
-        thisDependencies.targetAttributesToAlwaysIgnore = {
+      if ("targetAttributesToIgnoreRecursively" in compositeComponent.state) {
+        thisDependencies.targetAttributesToIgnoreRecursively = {
           dependencyType: "stateVariable",
           componentName: compositeComponent.componentName,
-          variableName: "targetAttributesToAlwaysIgnore",
+          variableName: "targetAttributesToIgnoreRecursively",
         };
-      }
-
-      // We overwrite targetVariable here as the instructions
-      // mean we should map this variable from the target
-      // onto attribute of replacement
-      // (rather than state variable attribute from the target
-      // even if it were to exist)
-      if (additionalAttributesFromStateVariables[attrName]) {
-        thisDependencies.targetVariable = {
-          dependencyType: "stateVariable",
-          componentName: targetComponent.componentName,
-          variableName: additionalAttributesFromStateVariables[attrName]
-        }
       }
 
       if (attributeSpecification.fallBackToParentStateVariable) {
@@ -2965,8 +2954,8 @@ export default class Core {
           if (dependencyValues.targetAttributesToIgnore) {
             targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
           }
-          if (dependencyValues.targetAttributesToAlwaysIgnore) {
-            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+          if (dependencyValues.targetAttributesToIgnoreRecursively) {
+            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnoreRecursively);
           }
 
           if (dependencyValues.targetVariable !== undefined
@@ -3017,8 +3006,8 @@ export default class Core {
             if (dependencyValues.targetAttributesToIgnore) {
               targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
             }
-            if (dependencyValues.targetAttributesToAlwaysIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToAlwaysIgnore);
+            if (dependencyValues.targetAttributesToIgnoreRecursively) {
+              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnoreRecursively);
             }
 
             if (dependencyValues.targetVariable !== undefined
@@ -3117,17 +3106,49 @@ export default class Core {
             variableName: redefineDependencies.propVariable,
           },
         });
+
+        let setDefault = false;
+        if (targetComponent.state[redefineDependencies.propVariable].defaultValue !== undefined) {
+          stateDef.defaultValue = targetComponent.state[redefineDependencies.propVariable].defaultValue;
+          if (stateDef.set) {
+            stateDef.defaultValue = stateDef.set(stateDef.defaultValue);
+          }
+          stateDef.hasEssential = true;
+          setDefault = true;
+        }
+
         if (stateDef.set) {
-          stateDef.definition = function ({ dependencyValues }) {
+          stateDef.definition = function ({ dependencyValues, usedDefault }) {
+            let valueFromTarget = stateDef.set(dependencyValues.targetVariable);
+            if (setDefault && usedDefault.targetVariable
+              && deepCompare(valueFromTarget, stateDef.defaultValue)
+            ) {
+              return {
+                useEssentialOrDefaultValue: {
+                  [primaryStateVariableForDefinition]: true
+                },
+                alwaysShadow: [primaryStateVariableForDefinition],
+              }
+            }
             return {
               setValue: {
-                [primaryStateVariableForDefinition]: stateDef.set(dependencyValues.targetVariable),
+                [primaryStateVariableForDefinition]: valueFromTarget,
               },
               alwaysShadow: [primaryStateVariableForDefinition],
             };
           };
         } else {
-          stateDef.definition = function ({ dependencyValues }) {
+          stateDef.definition = function ({ dependencyValues, usedDefault }) {
+            if (setDefault && usedDefault.targetVariable
+              && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
+            ) {
+              return {
+                useEssentialOrDefaultValue: {
+                  [primaryStateVariableForDefinition]: true
+                },
+                alwaysShadow: [primaryStateVariableForDefinition],
+              }
+            }
             return {
               setValue: {
                 [primaryStateVariableForDefinition]: dependencyValues.targetVariable,
@@ -3145,6 +3166,24 @@ export default class Core {
             }]
           };
         };
+      }
+
+      if (redefineDependencies.additionalStateVariableShadowing) {
+        let stateVariablesToShadow = [];
+        let differentStateVariablesInTarget = [];
+        for (let varName in redefineDependencies.additionalStateVariableShadowing) {
+          stateVariablesToShadow.push(varName);
+          differentStateVariablesInTarget.push(
+            redefineDependencies.additionalStateVariableShadowing[varName].stateVariableToShadow
+          )
+        }
+
+        this.modifyStateDefsToBeShadows({
+          stateVariablesToShadow,
+          stateVariableDefinitions,
+          targetComponent,
+          differentStateVariablesInTarget
+        });
       }
 
       // for referencing a prop variable, don't shadow standard state variables
@@ -3203,7 +3242,10 @@ export default class Core {
 
   }
 
-  modifyStateDefsToBeShadows({ stateVariablesToShadow, stateVariableDefinitions, foundReadyToExpandWhenResolved, targetComponent }) {
+  modifyStateDefsToBeShadows({ stateVariablesToShadow, stateVariableDefinitions,
+    foundReadyToExpandWhenResolved, targetComponent,
+    differentStateVariablesInTarget = []
+  }) {
 
     // Note: if add a markStale function to these shadow,
     // will need to modify array size state variable definition
@@ -3211,7 +3253,7 @@ export default class Core {
     // to not overwrite markStale when it finds a shadow
 
     let deleteStateVariablesFromDefinition = {};
-    for (let varName of stateVariablesToShadow) {
+    for (let [varInd, varName] of stateVariablesToShadow.entries()) {
       let stateDef = stateVariableDefinitions[varName];
 
       if (stateDef === undefined) {
@@ -3246,7 +3288,7 @@ export default class Core {
         delete stateDef.stateVariablesDeterminingDependencies;
       }
 
-      let copyComponentType = stateDef.public && stateDef.hasVariableComponentType;
+      let copyComponentType = stateDef.public && stateDef.shadowingInstructions.hasVariableComponentType;
 
       if (stateDef.isArray) {
         stateDef.returnArrayDependenciesByKey = function ({ arrayKeys }) {
@@ -3311,7 +3353,7 @@ export default class Core {
 
           // TODO: how do we make it do this just once?
           if ("targetVariableComponentType" in globalDependencyValues) {
-            result.setComponentType = {
+            result.setCreateComponentOfType = {
               [varName]: globalDependencyValues.targetVariableComponentType
             }
           }
@@ -3365,19 +3407,24 @@ export default class Core {
           returnStartingDependencies = stateDef.returnDependencies.bind(stateDef);
         }
 
+        let varNameInTarget = differentStateVariablesInTarget[varInd];
+        if (!varNameInTarget) {
+          varNameInTarget = varName;
+        }
+
         stateDef.returnDependencies = function (args) {
           let dependencies = Object.assign({}, returnStartingDependencies(args));
 
           dependencies.targetVariable = {
             dependencyType: "stateVariable",
             componentName: targetComponent.componentName,
-            variableName: varName,
+            variableName: varNameInTarget,
           };
           if (copyComponentType) {
             dependencies.targetVariableComponentType = {
               dependencyType: "stateVariableComponentType",
               componentName: targetComponent.componentName,
-              variableName: varName,
+              variableName: varNameInTarget,
             }
           }
           return dependencies;
@@ -3389,14 +3436,14 @@ export default class Core {
 
           // TODO: how do we make it do this just once?
           if ("targetVariableComponentType" in dependencyValues) {
-            result.setComponentType = {
+            result.setCreateComponentOfType = {
               [varName]: dependencyValues.targetVariableComponentType
             }
           }
 
-          // TODO: this will throw an error since did not set hasEssential
-          // But does this make sense if don't set essential in inverse definition?
-          if (usedDefault.targetVariable && "defaultValue" in stateDef) {
+          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential
+            && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
+          ) {
             result.useEssentialOrDefaultValue = { [varName]: true }
           } else {
             result.setValue = { [varName]: dependencyValues.targetVariable }
@@ -3647,7 +3694,6 @@ export default class Core {
     stateVarObj.providePreviousValuesInDefinition = arrayStateVarObj.providePreviousValuesInDefinition;
 
     stateVarObj.nDimensions = arrayStateVarObj.returnEntryDimensions(arrayEntryPrefix);
-    stateVarObj.wrappingComponents = arrayStateVarObj.returnWrappingComponents(arrayEntryPrefix);
     stateVarObj.entryPrefix = arrayEntryPrefix;
     stateVarObj.varEnding = stateVariable.slice(arrayEntryPrefix.length)
 
@@ -3686,27 +3732,20 @@ export default class Core {
     }
 
 
-    // if any of the state variables prescribing additional entries are arrays,
-    // transform to their array entry
-    if (arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-      stateVarObj.stateVariablesPrescribingAdditionalAttributes = {};
+    if (arrayStateVarObj.shadowingInstructions) {
+      stateVarObj.shadowingInstructions = {};
 
-      let entryPrefixInd = arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
+      stateVarObj.wrappingComponents = arrayStateVarObj.shadowingInstructions.returnWrappingComponents(arrayEntryPrefix);
 
-      for (let attrName in arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes) {
-        let varName = arrayStateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName];
+      if (arrayStateVarObj.shadowingInstructions.attributeComponentsToShadow) {
+        stateVarObj.shadowingInstructions.attributeComponentsToShadow
+          = arrayStateVarObj.shadowingInstructions.attributeComponentsToShadow;
+      }
 
-        let sObj = component.state[varName];
-
-        if (sObj.isArray) {
-
-          // find the same array entry prefix in the other array state variable
-          let newArrayEntryPrefix = sObj.entryPrefixes[entryPrefixInd];
-          let arrayEntryVarName = newArrayEntryPrefix + stateVarObj.varEnding;
-
-          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = arrayEntryVarName;
-        } else {
-          stateVarObj.stateVariablesPrescribingAdditionalAttributes[attrName] = varName;
+      if (arrayStateVarObj.shadowingInstructions.createComponentOfType) {
+        let entryPrefixInd = arrayStateVarObj.entryPrefixes.indexOf(arrayEntryPrefix);
+        if (arrayStateVarObj.shadowingInstructions.createComponentOfType[entryPrefixInd]) {
+          stateVarObj.shadowingInstructions.createComponentOfType = [arrayStateVarObj.shadowingInstructions.createComponentOfType[entryPrefixInd]]
         }
       }
     }
@@ -4172,12 +4211,13 @@ export default class Core {
       stateVarObj.returnEntryDimensions = () => 1;
     }
 
-    // function that returns wrapping components for whole array or entries (if given prefix)
-    if (!stateVarObj.returnWrappingComponents) {
-      stateVarObj.returnWrappingComponents = prefix => [];
+    if (stateVarObj.shadowingInstructions) {
+      // function that returns wrapping components for whole array or entries (if given prefix)
+      if (!stateVarObj.shadowingInstructions.returnWrappingComponents) {
+        stateVarObj.shadowingInstructions.returnWrappingComponents = prefix => [];
+      }
+      stateVarObj.wrappingComponents = stateVarObj.shadowingInstructions.returnWrappingComponents();
     }
-
-    stateVarObj.wrappingComponents = stateVarObj.returnWrappingComponents();
 
     stateVarObj.usedDefaultByArrayKey = {};
 
@@ -5424,35 +5464,39 @@ export default class Core {
     }
 
 
-    if (result.setComponentType) {
-      for (let varName in result.setComponentType) {
-        if (!component.state[varName].hasVariableComponentType) {
+    if (result.setCreateComponentOfType) {
+      for (let varName in result.setCreateComponentOfType) {
+        if (!component.state[varName].shadowingInstructions?.hasVariableComponentType) {
           throw Error(`Cannot set type of ${varName} of ${component.componentName} as it it does not have the hasVariableComponentType attribute.`)
         }
         let changedComponentType = false;
-        let originalComponentType = component.state[varName].componentType;
-        let newComponentType = result.setComponentType[varName];
-        if (Array.isArray(originalComponentType)) {
-          if (Array.isArray(newComponentType)) {
-            if (originalComponentType.length !== newComponentType.length) {
+        let shadowingInstructions = component.state[varName].shadowingInstructions;
+        if (!shadowingInstructions) {
+          shadowingInstructions = component.state[varName].shadowingInstructions = {}
+        }
+        let originalCreateComponentOfType = shadowingInstructions.createComponentOfType;
+        let newCreateComponentOfType = result.setCreateComponentOfType[varName];
+        if (Array.isArray(originalCreateComponentOfType)) {
+          if (Array.isArray(newCreateComponentOfType)) {
+            if (originalCreateComponentOfType.length !== newCreateComponentOfType.length) {
               changedComponentType = true;
-            } else if (originalComponentType.some((v, i) => v != newComponentType[i])) {
+            } else if (originalCreateComponentOfType.some((v, i) => v != newCreateComponentOfType[i])) {
               changedComponentType = true;
             }
           } else {
             changedComponentType = true;
           }
-        } else if (Array.isArray(newComponentType)) {
+        } else if (Array.isArray(newCreateComponentOfType)) {
           changedComponentType = true;
         } else {
-          changedComponentType = originalComponentType !== newComponentType
+          changedComponentType = originalCreateComponentOfType !== newCreateComponentOfType
         }
         if (changedComponentType) {
           valuesChanged[varName] = true;
         }
-        component.state[varName].componentType = result.setComponentType[varName];
+        shadowingInstructions.createComponentOfType = result.setCreateComponentOfType[varName];
         if (component.state[varName].isArray && component.state[varName].arrayEntryNames) {
-          let arrayComponentType = result.setComponentType[varName];
+          let arrayComponentType = result.setCreateComponentOfType[varName];
           let arrayComponentTypeIsArray = Array.isArray(arrayComponentType)
           for (let arrayEntryName of component.state[varName].arrayEntryNames) {
             // TODO: address multidimensional arrays
@@ -5463,9 +5507,9 @@ export default class Core {
                 let ind = component.state[varName].keyToIndex(arrayKey);
                 componentType.push(arrayComponentType[ind])
               }
-              component.state[arrayEntryName].componentType = componentType;
+              component.state[arrayEntryName].shadowingInstructions.createComponentOfType = componentType;
             } else {
-              component.state[arrayEntryName].componentType = arrayComponentType;
+              component.state[arrayEntryName].shadowingInstructions.createComponentOfType = arrayComponentType;
 
             }
           }

@@ -13,7 +13,8 @@ export const mainPanelClickAtom = atom({
 
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
+  color: var(--canvastext);
   height: 100%;
   // border-radius: 0 0 4px 4px;
   overflow: auto;
@@ -24,20 +25,20 @@ const ControlsWrapper = styled.div`
   display: flex;
   flex-direction: row;
   gap: 4px;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   // border-radius: 4px 4px 0 0;
   overflow: auto hidden;
   justify-content: flex-start;
   align-items: center;
   height: 40px;
-  // border-bottom: 2px solid #e3e3e3;
+  // border-bottom: 2px solid var(--mainGray);
 `;
 
 const OpenButton = styled.button`
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
   height: 35px;
   width: 20px;
-  color: white;
+  color: var(--canvas);
   border: none;
   position: relative;
   cursor: pointer;

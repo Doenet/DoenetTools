@@ -1930,4 +1930,47 @@ describe('SelectFromSequence Tag Tests', function () {
   });
 
 
+  it("rounding", () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><aslist><selectFromSequence assignNames="n1" from="10" to="20" step="0.000001" /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n2" from="10" to="20" step="0.000001" displayDigits="3" /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n3" from="10" to="20" step="0.000001" displayDecimals="3" /></aslist></p>
+    <p><aslist><selectFromSequence assignNames="n4" from="10" to="20" displayDigits="3" padZeros /></aslist></p>
+
+    <p><number name="n1a">$n1</number></p>
+    <p><number name="n2a">$n2</number></p>
+    <p><number name="n3a">$n3</number></p>
+    <p><number name="n4a">$n4</number></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let n1 = stateVariables["/n1"].stateValues.value;
+      let n2 = stateVariables["/n2"].stateValues.value;
+      let n3 = stateVariables["/n3"].stateValues.value;
+      let n4 = stateVariables["/n4"].stateValues.value;
+
+      cy.get('#\\/n1').should('have.text', String(Math.round(n1*10**8)/10**8))
+      cy.get('#\\/n2').should('have.text', String(Math.round(n2*10**1)/10**1))
+      cy.get('#\\/n3').should('have.text', String(Math.round(n3*10**3)/10**3))
+      cy.get('#\\/n4').should('have.text', String(n4)+".0")
+
+      cy.get('#\\/n1a').should('have.text', String(Math.round(n1*10**8)/10**8))
+      cy.get('#\\/n2a').should('have.text', String(Math.round(n2*10**1)/10**1))
+      cy.get('#\\/n3a').should('have.text', String(Math.round(n3*10**3)/10**3))
+      cy.get('#\\/n4a').should('have.text', String(n4)+".0")
+
+    });
+
+  });
+
 })

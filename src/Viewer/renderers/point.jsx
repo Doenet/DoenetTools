@@ -47,7 +47,7 @@ export default React.memo(function Point(props) {
   }, [])
 
   function createPointJXG() {
-    let fillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+    let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
 
     //things to be passed to JSXGraph as attributes
     let jsxPointAttributes = {
@@ -225,7 +225,7 @@ export default React.memo(function Point(props) {
       createPointJXG();
     } else {
       //if values update
-      let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+      let newFillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
       if (pointJXG.current.visProp.fillcolor !== newFillColor) {
         pointJXG.current.visProp.fillcolor = newFillColor;
       }
@@ -388,7 +388,7 @@ export default React.memo(function Point(props) {
 
   //Render text coordinates when outside of graph
 
-  let mathJaxify = "\\(" + me.fromAst(SVs.coordsForDisplay).toLatex() + "\\)";
+  let mathJaxify = "\\(" + SVs.coordsLatex + "\\)";
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 
 
