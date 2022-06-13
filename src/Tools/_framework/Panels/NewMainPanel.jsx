@@ -95,9 +95,9 @@ export default function MainPanel({
   return (
     <>
       {hasNoHeaderPanel === true ? null : (
-        <ControlsWrapper>{controls}</ControlsWrapper>
+        <ControlsWrapper role="navigation">{controls}</ControlsWrapper>
       )}
-      <ContentWrapper onClick={mpOnClick}>
+      <ContentWrapper onClick={mpOnClick} role="main">
         {/* <Banner></Banner>  */}
         {/* Uncomment the line above to show banner on the main panel. Change the color of banner
       using type={'TYPENAME'}. The types can be found in Banner.jsx. */}
