@@ -4,7 +4,7 @@
     "start": "docker compose up",
     "start:ci": "docker compose up -d",
     "start:dev": "npm install --no-optional && npx snowpack dev",
-    "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8;'",
+    "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
     "dev:cmd": "docker compose exec dev",
     "dev:restart": "docker compose restart dev",
     "dev:install": "docker compose exec dev npm install",
