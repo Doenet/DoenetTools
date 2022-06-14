@@ -36,6 +36,11 @@ export default class NumberComponent extends InlineComponent {
       createStateVariable: "convertBoolean",
       defaultValue: false,
     };
+    attributes.valueOnNaN = {
+      createPrimitiveOfType: "number",
+      createStateVariable: "valueOnNaN",
+      defaultValue: NaN,
+    };
     return attributes;
   }
 
@@ -361,7 +366,7 @@ export default class NumberComponent extends InlineComponent {
         }
       }),
       definition({ dependencyValues, usedDefault }) {
-       
+
         let foundDefaultValue = false;
         let theDefaultValueFound;
 
@@ -711,6 +716,10 @@ export default class NumberComponent extends InlineComponent {
               childGroups: ["strings"],
               variableNames: ["value"],
             },
+            valueOnNaN: {
+              dependencyType: "stateVariable",
+              variableName: "valueOnNaN"
+            },
           }
         } else {
 
@@ -753,16 +762,19 @@ export default class NumberComponent extends InlineComponent {
               dependencyType: "stateVariable",
               variableName: "numberChildrenByCode",
             },
+            valueOnNaN: {
+              dependencyType: "stateVariable",
+              variableName: "valueOnNaN"
+            },
           }
         }
       },
-      defaultValue: NaN,
       definition({ dependencyValues, componentInfoObjects }) {
 
         if (dependencyValues.singleNumberOrStringChild) {
           if (dependencyValues.numberChild.length === 0) {
             if (dependencyValues.stringChild.length === 0) {
-              return { useEssentialOrDefaultValue: { value: true } }
+              return { useEssentialOrDefaultValue: { value: { defaultValue: dependencyValues.valueOnNaN } } }
             }
             let number = Number(dependencyValues.stringChild[0]);
             if (Number.isNaN(number)) {
@@ -773,7 +785,7 @@ export default class NumberComponent extends InlineComponent {
                   if (dependencyValues.convertBoolean) {
                     number = number ? 1 : 0;
                   } else {
-                    number = NaN;
+                    number = dependencyValues.valueOnNaN;
                   }
                 } else if (number === null || Number.isNaN(number)) {
 
@@ -799,29 +811,33 @@ export default class NumberComponent extends InlineComponent {
                         numberListChildrenByCode: {},
                         otherChildrenByCode: {},
                       },
-                      valueOnInvalid: NaN
+                      valueOnInvalid: dependencyValues.valueOnNaN
                     })
                   } else {
-                    number = NaN;
+                    number = dependencyValues.valueOnNaN;
                   }
 
                 }
               } catch (e) {
-                number = NaN;
+                number = dependencyValues.valueOnNaN;
               }
             }
             return { setValue: { value: number } };
           } else {
-            return { setValue: { value: dependencyValues.numberChild[0].stateValues.value } }
+            let number = dependencyValues.numberChild[0].stateValues.value;
+            if (Number.isNaN(number)) {
+              number = dependencyValues.valueOnNaN;
+            }
+            return { setValue: { value: number} }
           }
         } else {
 
           if (dependencyValues.parsedExpression === null) {
             // if don't have parsed expression
             // (which could occur if have invalid form)
-            // return NaN
+            // return dependencyValues.valueOnNaN
             return {
-              setValue: { value: NaN }
+              setValue: { value: dependencyValues.valueOnNaN }
             }
           }
 
@@ -854,7 +870,7 @@ export default class NumberComponent extends InlineComponent {
             try {
               number = me.fromAst(replaceMath(dependencyValues.parsedExpression.tree)).evaluate_to_constant();
             } catch (e) {
-              number = NaN;
+              number = dependencyValues.valueOnNaN;
             }
 
             if (Number.isFinite(number) || number === Infinity || number === -Infinity) {
@@ -866,7 +882,7 @@ export default class NumberComponent extends InlineComponent {
           }
 
           if (!dependencyValues.convertBoolean) {
-            return { setValue: { value: NaN } }
+            return { setValue: { value: dependencyValues.valueOnNaN } }
           }
 
 
@@ -880,7 +896,7 @@ export default class NumberComponent extends InlineComponent {
           let fractionSatisfied = evaluateLogic({
             logicTree: dependencyValues.parsedExpression.tree,
             dependencyValues,
-            valueOnInvalid: NaN,
+            valueOnInvalid: dependencyValues.valueOnNaN,
           });
 
           // fractionSatisfied will be either 0 or 1 as have not
@@ -895,6 +911,10 @@ export default class NumberComponent extends InlineComponent {
         // - definition is overridden by a copy prop
         // - when processing new state variable values
         //   (which could be from outside sources)
+
+        // TODO: we can't access the state variable valueOnNaN here
+        // so we can set value to NaN
+        // Is there a way to use valueOnNaN?  Is there a case where we'd need to?
         if (value === null) {
           return NaN;
         }
@@ -924,10 +944,13 @@ export default class NumberComponent extends InlineComponent {
         if (desiredValue instanceof me.class) {
           desiredValue = desiredValue.evaluate_to_constant();
           if (!Number.isFinite(desiredValue)) {
-            desiredValue = NaN;
+            desiredValue = dependencyValues.valueOnNaN;
           }
         } else {
           desiredValue = Number(desiredValue);
+          if (Number.isNaN(desiredValue)) {
+            desiredValue = dependencyValues.valueOnNaN;
+          }
         }
 
         if (!dependencyValues.singleNumberOrStringChild) {
