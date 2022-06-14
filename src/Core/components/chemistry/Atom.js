@@ -26,83 +26,13 @@ export default class Atom extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.atomDatabase = {
+    stateVariableDefinitions.dataForAtom = {
       returnDependencies: () => ({
         fileContents: {
           dependencyType: "file",
           cid: "bafkreifow4gfnfdgxu44ahkx565dt7rb75vhollgt3nbcdfwwksyzw53ry",
           fileType: "csv"
         },
-      }),
-
-
-      definition: function ({ dependencyValues }) {
-
-        let originalData = dependencyValues.fileContents.trim().split("\n")
-          .map(x => x.trim().split(",").map(y => y.trim()))
-
-        let numColumns = originalData[0]?.length;
-
-        let data = [];
-
-        let columnNames = originalData[0].map(value => {
-          if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
-            value = value.substring(1, value.length - 1).trim();
-          }
-          return value;
-        });
-        data = originalData.slice(1);
-
-        let atomDatabase = { byAtomicNumber: {}, bySymbol: {} };
-
-        let numRows = data.length;
-
-        // data is an array of array of strings
-
-        let columnTypes = ["number", "string", "string", "number", "number", "string", "number", "number", "number", "number", "number", "number", "number", "string"];
-
-        let atomicNumberInd = columnNames.indexOf("Atomic Number");
-        let symbolInd = columnNames.indexOf("Symbol");
-
-
-        for (let rowInd = 0; rowInd < numRows; rowInd++) {
-          let row = data[rowInd];
-          let atomicNumber = row[atomicNumberInd];
-          let symbol = row[symbolInd];
-
-          let dataForAtom = {};
-          for (let colInd = 0; colInd < numColumns; colInd++) {
-            let colName = columnNames[colInd];
-            let prescribedType = columnTypes[colInd];
-            let value;
-            if (prescribedType === "number") {
-              value = Number(row[colInd]);
-            } else {
-              value = row[colInd];
-              if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
-                value = value.substring(1, value.length - 1);
-              }
-            }
-            if (colName === "Electron Configuration") {
-              dataForAtom[colName] = me.fromText(value);
-            } else {
-              dataForAtom[colName] = value;
-            }
-          }
-
-          atomDatabase.byAtomicNumber[atomicNumber] = dataForAtom;
-          atomDatabase.bySymbol[symbol.toLowerCase()] = dataForAtom;
-
-        }
-
-
-        return { setValue: { atomDatabase } };
-      },
-
-    }
-
-    stateVariableDefinitions.dataForAtom = {
-      returnDependencies: () => ({
         symbolAttr: {
           dependencyType: "attributeComponent",
           attributeName: "symbol",
@@ -113,24 +43,73 @@ export default class Atom extends InlineComponent {
           attributeName: "atomicNumber",
           variableNames: ["value"]
         },
-        atomDatabase: {
-          dependencyType: "stateVariable",
-          variableName: "atomDatabase",
-        },
       }),
-      definition({ dependencyValues }) {
-        let dataForAtom;
+
+
+      definition: function ({ dependencyValues }) {
+
+        let symbol = null, atomicNumber = null;
         if (dependencyValues.symbolAttr) {
-          dataForAtom = dependencyValues.atomDatabase.bySymbol[dependencyValues.symbolAttr.stateValues.value.toLowerCase()];
+          symbol = dependencyValues.symbolAttr.stateValues.value.toLowerCase();
         } else if (dependencyValues.atomicNumberAttr) {
-          dataForAtom = dependencyValues.atomDatabase.byAtomicNumber[dependencyValues.atomicNumberAttr.stateValues.value]
+          atomicNumber = dependencyValues.atomicNumberAttr.stateValues.value;
+        } else {
+          return { setValue: { dataForAtom: null } }
         }
-        if (!dataForAtom) {
-          dataForAtom = null;
+
+        let allRowData = dependencyValues.fileContents.trim().split("\n");
+
+        let rowInd;
+
+        if (atomicNumber !== null) {
+          rowInd = atomicNumber - 1;
+        } else {
+          rowInd = ["h", "he", "li", "be", "b", "c", "n", "o", "f", "ne", "na", "mg", "al", "si", "p", "s", "cl", "ar", "k", "ca", "sc", "ti", "v", "cr", "mn", "fe", "co", "ni", "cu", "zn", "ga", "ge", "as", "se", "br", "kr", "rb", "sr", "y", "zr", "nb", "mo", "tc", "ru", "rh", "pd", "ag", "cd", "in", "sn", "sb", "te", "i", "xe", "cs", "ba", "la", "ce", "pr", "nd", "pm", "sm", "eu", "gd", "tb", "dy", "ho", "er", "tm", "yb", "lu", "hf", "ta", "w", "re", "os", "ir", "pt", "au", "hg", "tl", "pb", "bi", "po", "at", "rn", "fr", "ra", "ac", "th", "pa", "u", "np", "pu", "am", "cm", "bk", "cf", "es", "fm", "md", "no", "lr", "rf", "db", "sg", "bh", "hs", "mt", "ds", "rg", "cn", "nh", "fl", "mc", "lv", "ts", "og"].indexOf(symbol.toLowerCase());
+        }
+
+        let rowData = allRowData.slice(1)[rowInd];
+        if (!rowData) {
+          return { setValue: { dataForAtom: null } }
+        }
+
+        rowData = rowData.trim().split(",").map(y => y.trim())
+
+        let columnNames = allRowData[0].trim().split(",").map(y => y.trim()).map(value => {
+          if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
+            value = value.substring(1, value.length - 1).trim();
+          }
+          return value;
+        });
+
+        let numColumns = columnNames.length;
+
+        let columnTypes = ["number", "string", "string", "number", "number", "string", "number", "number", "number", "number", "number", "number", "number", "string"];
+
+
+        let dataForAtom = {};
+        for (let colInd = 0; colInd < numColumns; colInd++) {
+          let colName = columnNames[colInd];
+          let prescribedType = columnTypes[colInd];
+          let value;
+          if (prescribedType === "number") {
+            value = Number(rowData[colInd]);
+          } else {
+            value = rowData[colInd];
+            if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
+              value = value.substring(1, value.length - 1);
+            }
+          }
+          if (colName === "Electron Configuration") {
+            dataForAtom[colName] = me.fromText(value);
+          } else {
+            dataForAtom[colName] = value;
+          }
         }
 
         return { setValue: { dataForAtom } };
-      }
+
+      },
+
     }
 
     stateVariableDefinitions.atomicNumber = {
@@ -507,7 +486,7 @@ export default class Atom extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         let orbitalDiagram;
-        if(dependencyValues.electronConfiguration) {
+        if (dependencyValues.electronConfiguration) {
           orbitalDiagram = electronConfigurationToOrbitalDiagram(dependencyValues.electronConfiguration)
         } else {
           orbitalDiagram = null;
@@ -572,7 +551,7 @@ export default class Atom extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         let latex;
-        if(dependencyValues.symbol) {
+        if (dependencyValues.symbol) {
           latex = `\\text{${dependencyValues.symbol}}`
         } else {
           latex = "[Invalid Chemical Symbol]";
@@ -613,26 +592,26 @@ function electronConfigurationToOrbitalDiagram(electronConfiguration) {
       return null;
     }
 
-    let infoObj = electronConfig[2*rowInd+1];
-    if(!(Array.isArray(infoObj) && infoObj[0] === "^")) {
+    let infoObj = electronConfig[2 * rowInd + 1];
+    if (!(Array.isArray(infoObj) && infoObj[0] === "^")) {
       return null;
     }
 
     let shellType = infoObj[1];
     let nElectrons = infoObj[2];
 
-    if(!(["s", "p", "d", "f"].includes(shellType) && Number.isInteger(nElectrons) && nElectrons>0)) {
+    if (!(["s", "p", "d", "f"].includes(shellType) && Number.isInteger(nElectrons) && nElectrons > 0)) {
       return null;
     }
 
     let orbitalText = `${electronLevel}${shellType}`;
 
     let nBoxes;
-    if(shellType === "s") {
+    if (shellType === "s") {
       nBoxes = 1;
-    } else if(shellType === "p") {
+    } else if (shellType === "p") {
       nBoxes = 3;
-    } else if(shellType === "d") {
+    } else if (shellType === "d") {
       nBoxes = 5;
     } else {
       nBoxes = 7;
@@ -640,15 +619,15 @@ function electronConfigurationToOrbitalDiagram(electronConfiguration) {
 
     let boxes = Array(nBoxes).fill("");
 
-    for(let electronInd = 0; electronInd < Math.min(nBoxes, nElectrons); electronInd++) {
-      if(nElectrons <= electronInd + nBoxes) {
+    for (let electronInd = 0; electronInd < Math.min(nBoxes, nElectrons); electronInd++) {
+      if (nElectrons <= electronInd + nBoxes) {
         boxes[electronInd] = "U";
       } else {
         boxes[electronInd] = "UD";
       }
     }
-    
-    orbitalDiagram.push({orbitalText, boxes})
+
+    orbitalDiagram.push({ orbitalText, boxes })
   }
 
   return orbitalDiagram;
