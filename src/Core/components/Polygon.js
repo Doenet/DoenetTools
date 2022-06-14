@@ -15,6 +15,97 @@ export default class Polygon extends Polyline {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.styleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let borderDescription = "";
+        if (dependencyValues.selectedStyle.lineWidth >= 4) {
+          borderDescription += "thick";
+        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
+          borderDescription += "thin";
+        }
+        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
+          borderDescription += " dashed";
+        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
+          borderDescription += " dotted";
+        }
+
+
+        let styleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescription = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord;
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " border";
+          } else {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescription } };
+      }
+    }
+    
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let borderDescription = "";
+        if (dependencyValues.selectedStyle.lineWidth >= 4) {
+          borderDescription += "thick";
+        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
+          borderDescription += "thin";
+        }
+        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
+          borderDescription += " dashed";
+        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
+          borderDescription += " dotted";
+        }
+
+
+        let styleDescriptionWithNoun;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescriptionWithNoun = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+          + " polygon";
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+            + " polygon with a " + borderDescription + " border";
+          } else {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " polygon with a " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
     // overwrite nearestPoint so that it includes 
     // segement between first and last vertex
     stateVariableDefinitions.nearestPoint = {
