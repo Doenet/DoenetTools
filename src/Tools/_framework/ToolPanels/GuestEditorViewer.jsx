@@ -34,6 +34,7 @@ export default function EditorViewer() {
 
 
   useEffect(async () => {
+    const prevTitle = document.title;
 
     // determine cid
     let resp = await axios.get(
@@ -77,6 +78,12 @@ export default function EditorViewer() {
 
     if (errMsg) {
       setErrMsg(null);
+    }
+    
+    document.title = `${resp.data.label} - Doenet`;
+
+    return () => {
+      document.title = prevTitle;
     }
 
   }, [doenetId])

@@ -51,6 +51,18 @@ export default function DraftAssignmentViewer() {
   useInitCourseItems(courseId);
 
   let itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
+  let label = itemObj.label;
+
+  useEffect(() => {
+    const prevTitle = document.title;
+    if(label) {
+      document.title = `${label} - Doenet`;
+    }
+    return () => {
+      document.title = prevTitle;
+    }
+  }, [label])
+
 
   useEffect(() => {
     initializeValues(recoilDoenetId, itemObj);

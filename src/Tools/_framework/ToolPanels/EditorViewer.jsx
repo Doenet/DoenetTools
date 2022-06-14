@@ -62,6 +62,7 @@ export default function EditorViewer() {
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
   const pageObj = useRecoilValue(itemByDoenetId(paramPageId))
+  const activityObj = useRecoilValue(itemByDoenetId(doenetId))
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
 
 
@@ -69,9 +70,25 @@ export default function EditorViewer() {
   useInitCourseItems(courseId);
 
   let pageInitiated = false;
+  let label = null;
   if (Object.keys(pageObj).length > 0) {
     pageInitiated = true;
+    if(activityObj.isSinglePage) {
+      label = activityObj.label;
+    } else {
+      label = pageObj.label;
+    }
   }
+
+  useEffect(() => {
+    const prevTitle = document.title;
+    if(label) {
+      document.title = `${label} - Doenet`;
+    }
+    return () => {
+      document.title = prevTitle;
+    }
+  }, [label])
 
 
   let initDoenetML = useRecoilCallback(({ snapshot, set }) => async (pageId) => {
