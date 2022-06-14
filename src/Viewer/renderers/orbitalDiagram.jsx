@@ -18,7 +18,7 @@ export default React.memo(function orbitalDiagram(props) {
   let fixed = createRef(SVs.fixed);
   fixed.current = SVs.fixed;
 
-  if (SVs.hidden) {
+  if (SVs.hidden || !SVs.value) {
     return null;
   }
 
