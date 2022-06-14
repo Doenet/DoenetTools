@@ -544,14 +544,14 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/inf6').should('have.text', '∞')
     cy.get('#\\/inf7').should('have.text', '∞')
     cy.get('#\\/inf8').should('have.text', '∞')
- 
+
     cy.get('#\\/ninf1').should('have.text', '-∞')
     cy.get('#\\/ninf2').should('have.text', '-∞')
     cy.get('#\\/ninf3').should('have.text', '-∞')
     cy.get('#\\/ninf4').should('have.text', '-∞')
     cy.get('#\\/ninf5').should('have.text', '-∞')
     cy.get('#\\/ninf6').should('have.text', '-∞')
- 
+
     cy.get('#\\/nan1').should('have.text', 'NaN')
     cy.get('#\\/nan2').should('have.text', 'NaN')
     cy.get('#\\/nan3').should('have.text', 'NaN')
@@ -560,7 +560,7 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/nan6').should('have.text', 'NaN')
     cy.get('#\\/nan7').should('have.text', 'NaN')
     cy.get('#\\/nan8').should('have.text', 'NaN')
- 
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/inf1'].stateValues.value).eq(Infinity);
@@ -729,5 +729,285 @@ describe('Number Tag Tests', function () {
 
   });
 
+  it('value on NaN', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  
+  <p>
+    <mathinput name="mi1" />
+    <number name="n1">$mi1</number>
+  </p>
+  
+  <p>
+    <mathinput name="mi2" />
+    <number name="n2" valueOnNaN="3">$mi2</number>
+  </p>
+
+  <p>
+    <mathinput name="mi3" bindValueTo="$n3" />
+    <number name="n3" />
+  </p>
+
+  <p>
+    <mathinput name="mi4" bindValueTo="$n4" />
+    <number name="n4" valueOnNan="5" />
+  </p>
+
+
+  <p>
+    <mathinput name="mi1a" />
+    <number name="n1a"><number>$mi1a</number></number>
+  </p>
+  
+  <p>
+    <mathinput name="mi2a" />
+    <number name="n2a" valueOnNaN="3"><number>$mi2a</number></number>
+  </p>
+  
+  <p>
+    <mathinput name="mi2b" />
+    <number name="n2b"><number valueOnNaN="3">$mi2b</number></number>
+  </p>
+
+  <p>
+    <mathinput name="mi3a" bindValueTo="$n3a" />
+    <number name="n3a"><number /></number>
+  </p>
+
+  <p>
+    <mathinput name="mi4a" bindValueTo="$n4a" />
+    <number name="n4a" valueOnNan="5"><number/></number>
+  </p>
+
+  <p>
+    <mathinput name="mi4b" bindValueTo="$n4b" />
+    <number name="n4b"><number valueOnNan="5"/></number>
+  </p>
+
+
+  <p>
+    <number name="n5">8/</number>
+    <number name="n6" valueOnNan="7">8/</number>
+  </p>
+
+  <p>
+    <boolean name="b" hide />
+    <number name="n7" convertBoolean>$b>y</number>
+    <number name="n8" convertBoolean valueOnNaN="9">$b>y</number>
+  </p>
+
+  <p>
+    <number name="n9">x>y</number>
+    <number name="n10" valueOnNaN="-9">x>y</number>
+  </p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get('#\\/n1').should('have.text', 'NaN');
+
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get('#\\/n2').should('have.text', '3');
+
+    cy.get(`#\\/mi3 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
+    })
+    cy.get('#\\/n3').should('have.text', 'NaN');
+
+    cy.get(`#\\/mi4 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+    cy.get('#\\/n4').should('have.text', '5');
+
+
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get('#\\/n1a').should('have.text', 'NaN');
+
+    cy.get(`#\\/mi2a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get('#\\/n2a').should('have.text', '3');
+
+    cy.get(`#\\/mi3a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
+    })
+    cy.get('#\\/n3a').should('have.text', 'NaN');
+
+    cy.get(`#\\/mi4a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+    cy.get('#\\/n4a').should('have.text', '5');
+
+
+    cy.get(`#\\/mi2b .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get('#\\/n2b').should('have.text', '3');
+
+    cy.get(`#\\/mi4b .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+    cy.get('#\\/n4b').should('have.text', '5');
+
+
+
+    cy.get('#\\/n5').should('have.text', 'NaN');
+    cy.get('#\\/n6').should('have.text', '7');
+
+    cy.get('#\\/n7').should('have.text', 'NaN');
+    cy.get('#\\/n8').should('have.text', '9');
+
+    cy.get('#\\/n9').should('have.text', 'NaN');
+    cy.get('#\\/n10').should('have.text', '-9');
+
+
+    cy.get('#\\/mi1 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get('#\\/mi2 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get('#\\/mi3 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get('#\\/mi4 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+
+    cy.get('#\\/mi1a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get('#\\/mi2a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get('#\\/mi3a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get('#\\/mi4a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+
+    cy.get('#\\/mi2b textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+    cy.get('#\\/mi4b textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}3/4{enter}", { force: true })
+
+    cy.get(`#\\/mi4b .mq-editable-field`).should('contain.text', '0.75')
+
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
+    })
+    cy.get('#\\/n1').should('have.text', '0.75');
+
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
+    })
+    cy.get('#\\/n2').should('have.text', '0.75');
+
+    cy.get(`#\\/mi3 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
+    })
+    cy.get('#\\/n3').should('have.text', '0.75');
+
+    cy.get(`#\\/mi4 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
+    })
+    cy.get('#\\/n4').should('have.text', '0.75');
+
+
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
+    })
+    cy.get('#\\/n1a').should('have.text', '0.75');
+
+    cy.get(`#\\/mi2a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
+    })
+    cy.get('#\\/n2a').should('have.text', '0.75');
+
+    cy.get(`#\\/mi3a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
+    })
+    cy.get('#\\/n3a').should('have.text', '0.75');
+
+    cy.get(`#\\/mi4a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
+    })
+    cy.get('#\\/n4a').should('have.text', '0.75');
+
+
+    cy.get(`#\\/mi2b .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('34')
+    })
+    cy.get('#\\/n2b').should('have.text', '0.75');
+
+    cy.get(`#\\/mi4b .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.75')
+    })
+    cy.get('#\\/n4b').should('have.text', '0.75');
+
+
+
+    cy.get('#\\/mi1 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get('#\\/mi2 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get('#\\/mi3 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get('#\\/mi4 textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+
+    cy.get('#\\/mi1a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get('#\\/mi2a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get('#\\/mi3a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get('#\\/mi4a textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+
+    cy.get('#\\/mi2b textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+    cy.get('#\\/mi4b textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}x{enter}", { force: true })
+
+    cy.get(`#\\/mi4b .mq-editable-field`).should('contain.text', '5')
+
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+    cy.get('#\\/n1').should('have.text', 'NaN');
+
+    cy.get(`#\\/mi2 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+    cy.get('#\\/n2').should('have.text', '3');
+
+    cy.get(`#\\/mi3 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
+    })
+    cy.get('#\\/n3').should('have.text', 'NaN');
+
+    cy.get(`#\\/mi4 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+    cy.get('#\\/n4').should('have.text', '5');
+
+
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+    cy.get('#\\/n1a').should('have.text', 'NaN');
+
+    cy.get(`#\\/mi2a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+    cy.get('#\\/n2a').should('have.text', '3');
+
+    cy.get(`#\\/mi3a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
+    })
+    cy.get('#\\/n3a').should('have.text', 'NaN');
+
+    cy.get(`#\\/mi4a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+    cy.get('#\\/n4a').should('have.text', '5');
+
+
+    cy.get(`#\\/mi2b .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+    cy.get('#\\/n2b').should('have.text', '3');
+
+    cy.get(`#\\/mi4b .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+    cy.get('#\\/n4b').should('have.text', '5');
+
+  });
 
 });

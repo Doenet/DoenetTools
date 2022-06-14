@@ -3200,6 +3200,10 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let x1 = variables.x1?.evaluate_to_constant();
     let x2 = variables.x2?.evaluate_to_constant();
 
+    // Note: if x1 and and x2 are not numbers,
+    // the below algorithm may yield values calculated at parMin or parMax
+
+
     let xscale = scales[0];
     let yscale = scales[1];
 

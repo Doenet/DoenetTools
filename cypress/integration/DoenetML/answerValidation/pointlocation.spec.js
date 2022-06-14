@@ -878,6 +878,7 @@ describe('Point location validation tests', function () {
 
     cy.log("Submit answer")
     cy.get('#\\/_answer1_submit').click();
+    cy.get(`#\\/srs .mjx-mrow`).should('contain.text', '((4.9,−1.1),(−2.3,−3.4))')
     cy.get('#\\/_answer1_submit').should('not.exist');
     cy.get('#\\/_answer1_correct').should('not.exist');
     cy.get('#\\/_answer1_incorrect').invoke('text').then((text) => {
