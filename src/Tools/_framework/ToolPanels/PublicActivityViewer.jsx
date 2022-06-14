@@ -17,6 +17,7 @@ export default function Public(props){
   const [errMsg, setErrMsg] = useState(null);
 
   useEffect(async () => {
+    const prevTitle = document.title;
 
     // determine cid
     let resp = await axios.get(
@@ -34,9 +35,13 @@ export default function Public(props){
     } else {
       setCid(resp.data.cid);
       setErrMsg(null);
+      document.title = `${resp.data.label} - Doenet`;
+
     }
 
-
+    return () => {
+      document.title = prevTitle;
+    }
   }, doenetId)
 
   if (errMsg) {
