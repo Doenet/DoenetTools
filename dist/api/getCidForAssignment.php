@@ -28,8 +28,10 @@ $latestAttemptOverrides = mysqli_real_escape_string(
 );
 $getDraft = mysqli_real_escape_string($conn, $_REQUEST["getDraft"]);
 $publicOnly = mysqli_real_escape_string($conn, $_REQUEST["publicOnly"]);
-$userCanViewSourceOnly = mysqli_real_escape_string($conn, $_REQUEST["userCanViewSourceOnly"]);
-
+$userCanViewSourceOnly = mysqli_real_escape_string(
+    $conn,
+    $_REQUEST["userCanViewSourceOnly"]
+);
 
 if ($doenetId == "") {
     $success = false;
@@ -51,8 +53,8 @@ if ($success) {
 
     // get cid from course_content
     // unless draft, use it only as long as it is assigned
-    // and either 
-    // - activity is globally assigned 
+    // and either
+    // - activity is globally assigned
     // - activity is assigned to user via user_assignment
     // - we are getting publicOnly information, or
     // - user has edit access to course
@@ -62,11 +64,16 @@ if ($success) {
         WHERE doenetId = '$doenetId'
         ";
 
+    if ($publicOnly == "true") {
+        $sql = "SELECT isGloballyAssigned, courseId, label,
+        CAST(jsonDefinition as CHAR) AS json
+        FROM course_content
+        WHERE doenetId = '$doenetId' AND isPublic = 1
+        ";
+    }
+
     if ($getDraft != "true") {
         $sql = "$sql AND isAssigned = 1";
-    }
-    if ($publicOnly == "true") {
-        $sql = "$sql AND isPublic = 1";
     }
     if ($userCanViewSourceOnly == "true") {
         $sql = "$sql AND userCanViewSource = 1";
@@ -78,7 +85,10 @@ if ($success) {
         $json = json_decode($row["json"], true);
         if ($getDraft == "true") {
             $cid = $json["draftCid"];
-        } elseif ($row["isGloballyAssigned"] || $publicOnly == "true") {
+        } elseif ($publicOnly == "true") {
+            $cid = $json["assignedCid"];
+            $label = $row["label"];
+        } elseif ($row["isGloballyAssigned"]) {
             $cid = $json["assignedCid"];
         } else {
             // not globally assigned and not publicOnly.  See if assigned to user.
@@ -90,7 +100,7 @@ if ($success) {
             if ($result2->num_rows > 0) {
                 $cid = $json["assignedCid"];
             } else {
-                $courseId = $row["courseId"];  // Note: row is still from previous query
+                $courseId = $row["courseId"]; // Note: row is still from previous query
                 $permissions = permissionsAndSettingsForOneCourseFunction(
                     $conn,
                     $userId,
@@ -133,6 +143,7 @@ $response_arr = [
     "message" => $message,
     "cid" => $cid,
     "cidChanged" => $cidChanged,
+    "label" => $label,
 ];
 
 http_response_code(200);

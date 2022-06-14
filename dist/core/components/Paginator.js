@@ -34,7 +34,9 @@ export class Paginator extends BlockComponent {
 
     stateVariableDefinitions.nPages = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
@@ -51,7 +53,9 @@ export class Paginator extends BlockComponent {
 
     stateVariableDefinitions.currentPage = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       hasEssential: true,
       returnDependencies: () => ({
         initialPage: {

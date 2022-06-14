@@ -2315,6 +2315,10 @@ span.bp4-icon:empty::before{
   content:"\f32b";
 }
 
+.bp4-icon-floating-point::before{
+  content:"\f32c";
+}
+
 .bp4-text-muted{
   color:#5f6b7c;
 }
@@ -2679,7 +2683,7 @@ a > .bp4-dark .bp4-running-text code{
 }
 
 :focus{
-  outline:rgba(45, 114, 210, 0.6) auto 2px;
+  outline:rgba(45, 114, 210, 0.6) solid 2px;
   outline-offset:2px;
   -moz-outline-radius:6px;
 }
@@ -4566,6 +4570,9 @@ a.bp4-button.bp4-disabled{
 }
 .bp4-dark .bp4-multistep-dialog-left-panel{
   background:#252a31;
+  border-bottom:1px solid rgba(255, 255, 255, 0.2);
+  border-bottom-left-radius:4px;
+  border-left:1px solid rgba(255, 255, 255, 0.2);
 }
 
 .bp4-multistep-dialog-right-panel{
@@ -4579,7 +4586,10 @@ a.bp4-button.bp4-disabled{
 }
 .bp4-dark .bp4-multistep-dialog-right-panel{
   background-color:#2f343c;
-  border-left:1px solid rgba(17, 20, 24, 0.4);
+  border-bottom:1px solid rgba(255, 255, 255, 0.2);
+  border-bottom-right-radius:4px;
+  border-left:1px solid rgba(255, 255, 255, 0.2);
+  border-right:1px solid rgba(255, 255, 255, 0.2);
 }
 
 .bp4-multistep-dialog-footer{
@@ -4596,7 +4606,7 @@ a.bp4-button.bp4-disabled{
 }
 .bp4-dark .bp4-multistep-dialog-footer{
   background:#383e47;
-  border-top:1px solid rgba(17, 20, 24, 0.4);
+  border-top:1px solid rgba(255, 255, 255, 0.2);
 }
 .bp4-multistep-dialog-footer .bp4-dialog-footer-actions{
   -webkit-box-flex:1;
@@ -4610,7 +4620,7 @@ a.bp4-button.bp4-disabled{
 }
 .bp4-dark .bp4-dialog-step-container{
   background:#2f343c;
-  border-bottom:1px solid rgba(17, 20, 24, 0.4);
+  border-bottom:1px solid rgba(255, 255, 255, 0.2);
 }
 .bp4-dialog-step-container.bp4-dialog-step-viewed{
   background-color:#fff;
@@ -5560,10 +5570,10 @@ a.bp4-button.bp4-disabled{
   cursor:not-allowed;
 }
 .bp4-control input:focus ~ .bp4-control-indicator{
-  outline:rgba(45, 114, 210, 0.6) auto 2px;
+  outline:rgba(45, 114, 210, 0.6) solid 2px;
   outline-offset:2px;
   -moz-outline-radius:6px;
-  outline:#2d72d2 auto 2px;
+  outline:#2d72d2 solid 2px;
 }
 .bp4-control.bp4-align-right .bp4-control-indicator{
   float:right;
@@ -5821,7 +5831,7 @@ a.bp4-button.bp4-disabled{
   background-color:rgba(143, 153, 168, 0.15);
 }
 .bp4-dark .bp4-control input:focus ~ .bp4-control-indicator{
-  outline:#8abbff auto 2px;
+  outline:#8abbff solid 2px;
 }
 .bp4-dark .bp4-control input:not(:disabled):active ~ .bp4-control-indicator{
   background:rgba(143, 153, 168, 0.3);
@@ -9945,6 +9955,10 @@ span.bp4-icon:empty::before{
 .bp4-icon-open-application::before{
   content:"\f32b";
 }
+
+.bp4-icon-floating-point::before{
+  content:"\f32c";
+}
 .bp4-submenu > .bp4-popover-wrapper{
   display:block;
 }
@@ -12265,7 +12279,7 @@ span.bp4-popover-target{
   margin-right:0;
 }
 .bp4-tag:focus{
-  outline:rgba(45, 114, 210, 0.6) auto 2px;
+  outline:rgba(45, 114, 210, 0.6) solid 2px;
   outline-offset:0;
   -moz-outline-radius:6px;
 }
@@ -12735,7 +12749,7 @@ span.bp4-popover-target{
   overflow-wrap:break-word;
 }
 .bp4-tag-input .bp4-tag.bp4-active{
-  outline:rgba(45, 114, 210, 0.6) auto 2px;
+  outline:rgba(45, 114, 210, 0.6) solid 2px;
   outline-offset:0;
   -moz-outline-radius:6px;
 }

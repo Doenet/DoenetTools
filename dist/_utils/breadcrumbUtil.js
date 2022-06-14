@@ -169,7 +169,7 @@ export function useEditorCrumb({ pageId, doenetId }) {
   }]
 
   if (!activityObj.isSinglePage && activityObj.type != 'bank'){
-    let firstPageDoenetId = findFirstPageOfActivity(activityObj.order);
+    let firstPageDoenetId = findFirstPageOfActivity(activityObj.content);
     crumbs = [
       {
       label: activityLabel ?? '_',

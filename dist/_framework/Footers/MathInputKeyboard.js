@@ -21,8 +21,8 @@ const Panel = styled.div`
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #fff;
-  color: white;
+  background-color: var(--canvas);
+  color: var(--canvas);
   display: flex;
   flex-direction: row;
   text-align: center;
@@ -73,16 +73,16 @@ const LettersSection = styled.div`
 const Button = styled.button`
   flex-basis: 23%;
   height: 30px;
-  color: ${doenetMainBlue};
-  border: 2px solid ${doenetMainBlue};
+  color: var(--mainBlue);
+  border: 2px solid var(--mainBlue);
   background: white;
   border-radius: 5px;
 `;
 const Button33 = styled.button`
   flex-basis: 30%;
   height: 30px;
-  color: ${doenetMainBlue};
-  border: 2px solid ${doenetMainBlue};
+  color: var(--mainBlue);
+  border: 2px solid var(--mainBlue);
   border-radius: 5px;
   background: white;
 `;
@@ -90,7 +90,7 @@ const White15Button = styled.button`
   flex-basis: 14%;
   margin: 1px;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -98,7 +98,7 @@ const White15Button = styled.button`
 const CursorButton = styled.button`
   flex-basis: 42%;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -106,7 +106,7 @@ const CursorButton = styled.button`
 const DeleteButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -114,7 +114,7 @@ const DeleteButton = styled.button`
 const EnterButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -123,7 +123,7 @@ const White20Button = styled.button`
   flex-basis: 19%;
   margin: 1px;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -132,8 +132,8 @@ const LetterButton = styled.button`
   flex-basis: 9%;
   margin: 1px;
   height: 30px;
-  color: ${doenetMainBlue};
-  border: 2px solid ${doenetMainBlue};
+  color: var(--mainBlue);
+  border: 2px solid var(--mainBlue);
   background: white;
   border-radius: 5px;
 `;

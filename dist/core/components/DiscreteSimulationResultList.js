@@ -198,7 +198,9 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     stateVariableDefinitions.numRows = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumRows: {
           dependencyType: "stateVariable",
@@ -221,7 +223,9 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     stateVariableDefinitions.numColumns = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumColumns: {
           dependencyType: "stateVariable",
@@ -249,7 +253,9 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     stateVariableDefinitions.height = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         heightAttr: {

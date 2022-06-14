@@ -6,17 +6,18 @@ const Button = styled.button`
   border: ${(props) => props.alert ? "2px solid var(--mainRed)" : props.disabled ? "2px solid var(--mainGray)" : "2px solid var(--mainBlue)"};
   border-width: 2px;
   color: ${(props) => props.alert ? "var(--mainRed)" : props.disabled ? "var(--mainGray)" : "var(--mainBlue)"};
-  background-color: white;
+  background-color: var(--canvas);
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
   cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
   font-size: 12px;
   text-align: center;
 
-  &:hover { // Button color lightens on hover
+  &:hover {
+    // Button color lightens on hover
     color: ${(props) => props.disabled ? "var(--mainGray)" : "black"};
     background-color: ${(props) => props.alert ? "var(--lightRed)" : props.disabled ? "none" : "var(--lightBlue)"};
-  };
+  }
 `;
 Button.defaultProps = {
   theme: {
@@ -61,7 +62,6 @@ export default function ToggleButton(props) {
       toggleButton.value = "";
     }
   }
-  ;
   if (isSelected === true) {
     if (!props.disabled) {
       if (!props.alert) {
@@ -69,21 +69,18 @@ export default function ToggleButton(props) {
       } else {
         toggleButton.backgroundColor = "var(--mainRed)";
       }
-      toggleButton.color = "#FFF";
+      toggleButton.color = "var(--canvas)";
       if (props.switch_value)
         toggleButton.value = props.switch_value;
     }
   }
-  ;
   function handleClick() {
     if (props.onClick)
       props.onClick(props.index !== null && props.index !== void 0 ? props.index : null);
   }
-  ;
   if (props.label) {
     label.value = props.label;
   }
-  ;
   if (props.width) {
     if (props.width === "menu") {
       toggleButton.width = "235px";
@@ -93,23 +90,18 @@ export default function ToggleButton(props) {
       }
     }
   }
-  ;
   if (props.num === "first") {
     toggleButton.borderRadius = "5px 0px 0px 5px";
   }
-  ;
   if (props.num === "last") {
     toggleButton.borderRadius = "0px 5px 5px 0px";
   }
-  ;
   if (props.num === "first_vert") {
     toggleButton.borderRadius = "5px 5px 0px 0px";
   }
-  ;
   if (props.num === "last_vert") {
     toggleButton.borderRadius = "0px 0px 5px 5px";
   }
-  ;
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: container
   }, /* @__PURE__ */ React.createElement("p", {
@@ -124,4 +116,3 @@ export default function ToggleButton(props) {
     }
   }, icon, " ", toggleButton.value)));
 }
-;

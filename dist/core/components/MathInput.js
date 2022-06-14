@@ -102,14 +102,12 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
+      },
       hasEssential: true,
       shadowVariable: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
-      },
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -163,14 +161,12 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+      },
       hasEssential: true,
       shadowVariable: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigits",
-        displayDecimals: "displayDecimals",
-        displaySmallAsZero: "displaySmallAsZero",
-      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -266,7 +262,9 @@ export default class MathInput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         valueForDisplay: {
           dependencyType: "stateVariable",
@@ -287,7 +285,9 @@ export default class MathInput extends Input {
       defaultValue: "",
       provideEssentialValuesInDefinition: true,
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: [{
         variableName: "lastValueForDisplay",
         hasEssential: true,
@@ -510,7 +510,7 @@ export default class MathInput extends Input {
           // since have invalid math,
           // don't update rawRendererValue,
           // but only update lastValueForDisplay to keep it in sync
-          // (lastValueForDisplay is also update if set rawRenderValue to math
+          // (lastValueForDisplay is also update if set rawRendererValue to math
           // as above)
           updateInstructions.push({
             updateType: "updateValue",

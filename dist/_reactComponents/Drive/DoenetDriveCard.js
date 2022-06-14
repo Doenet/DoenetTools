@@ -14,13 +14,14 @@ const DriveCardContainer = styled.figure`
   display: flex; // added
   flex-direction: column; // added
   justify-content: space-between;
+  
+  border: 2px solid var(--canvastext);
   cursor: pointer;
-  border: 2px solid #040f1a;
 `;
 const Image = styled.img`
   height: 100%;
   //width: 100%;
-  color: red;
+  color: var(--mainRed);
   // display: none;
   background-image: ${(props) => props.url == "url(/media/drive_pictures/none)" ? "none" : props.url};
   background-color: ${(props) => props.color == "none" ? "none" : "#" + props.color};
@@ -30,18 +31,19 @@ const Image = styled.img`
 const Info = styled.figcaption`
   border-radius: 0px 0px 5px 5px;
   // position: absolute;
-  border-top: 2px solid #040f1a;
+  border-top: 2px solid var(--canvastext);
   height: 65px;
   width: inherit;
-  background: #fff;
+  background: var(--canvas);
+  
 `;
 const LabelContainer = styled.p`
   text-transform: capitalize;
   text-align: ${(props) => props.textAlign ? props.textAlign : "left"};
   line-height: ${(props) => props.lineHeight ? props.lineHeight : "normal"};
   margin: 7px;
-  //width: 100%;
-  color: #040f1a;
+  width: 100%;
+  color: var(--canvastext);
   font-family: helvetica;
   font-size: 12px;
   overflow: hidden;
@@ -61,17 +63,21 @@ const DriveCard = (props) => {
     color: props.color
   }), /* @__PURE__ */ React.createElement(Info, {
     style: {
-      backgroundColor: props.isSelected ? "rgb(184, 210, 234)" : ""
+      backgroundColor: props.isSelected ? "var(--lightBlue)" : ""
     }
   }, /* @__PURE__ */ React.createElement(LabelContainer, {
     textAlign: props.textAlign,
     lineHeight: props.lineHeight,
-    whiteSpace: props.whiteSpace
+    whiteSpace: props.whiteSpace,
+    style: {
+      color: props.isSelected ? "black" : "var(--canvastext)"
+    }
   }, /* @__PURE__ */ React.createElement("b", {
     "data-cy": "driveCardLabel"
   }, props.label)), props?.role?.map((item) => {
     return /* @__PURE__ */ React.createElement(LabelContainer, {
-      key: item
+      key: item,
+      style: {color: props.isSelected ? "black" : "var(--canvastext)"}
     }, item);
   })));
 };

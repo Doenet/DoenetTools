@@ -110,12 +110,7 @@ export class SideBySide extends BlockComponent {
 
 
     stateVariableDefinitions.allWidthsSpecified = {
-      additionalStateVariablesDefined: [{
-        variableName: "widthsAbsolute",
-        // public: true,
-        // componentType: "boolean",
-        // forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["widthsAbsolute"],
       returnDependencies() {
         return {
           nPanels: {
@@ -255,12 +250,7 @@ export class SideBySide extends BlockComponent {
 
 
     stateVariableDefinitions.allMarginsSpecified = {
-      additionalStateVariablesDefined: [{
-        variableName: "marginsAbsolute",
-        // public: true,
-        // componentType: "boolean",
-        // forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["marginsAbsolute"],
       returnDependencies() {
         return {
           nPanels: {
@@ -355,7 +345,9 @@ export class SideBySide extends BlockComponent {
 
     stateVariableDefinitions.absoluteMeasurements = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         widthsAbsolute: {
@@ -401,7 +393,9 @@ export class SideBySide extends BlockComponent {
         {
           variableName: "gapWidth",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           forRenderer: true
         }
       ],
@@ -538,7 +532,9 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.widths = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["width"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -668,7 +664,9 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.margins = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["margin"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({}),
@@ -866,7 +864,9 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.valigns = {
       public: true,
       isArray: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       entryPrefixes: ["valign"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -1258,9 +1258,6 @@ export class SbsGroup extends BlockComponent {
     }
 
     stateVariableDefinitions.widthsAbsolute = {
-      // public: true,
-      // componentType: "boolean",
-      // forRenderer: true,
       returnDependencies: () => ({
         widthsAbsoluteArray: {
           dependencyType: "stateVariable",
@@ -1466,9 +1463,6 @@ export class SbsGroup extends BlockComponent {
 
 
     stateVariableDefinitions.marginsAbsolute = {
-      // public: true,
-      // componentType: "boolean",
-      // forRenderer: true,
       returnDependencies: () => ({
         marginsAbsoluteArray: {
           dependencyType: "stateVariable",
@@ -1497,7 +1491,9 @@ export class SbsGroup extends BlockComponent {
 
     stateVariableDefinitions.absoluteMeasurements = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       // forRenderer: true,
       returnDependencies: () => ({
         widthsAbsolute: {
@@ -1543,7 +1539,9 @@ export class SbsGroup extends BlockComponent {
         {
           variableName: "gapWidth",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           // forRenderer: true
         }
       ],
@@ -1680,7 +1678,9 @@ export class SbsGroup extends BlockComponent {
     stateVariableDefinitions.widths = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["width"],
       // forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -1749,7 +1749,9 @@ export class SbsGroup extends BlockComponent {
     stateVariableDefinitions.margins = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["margin"],
       // forRenderer: true,
       returnArraySizeDependencies: () => ({}),
@@ -1816,7 +1818,9 @@ export class SbsGroup extends BlockComponent {
     stateVariableDefinitions.valigns = {
       public: true,
       isArray: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       entryPrefixes: ["valign"],
       // forRenderer: true,
       hasEssential: true,

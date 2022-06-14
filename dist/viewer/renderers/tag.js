@@ -11,7 +11,8 @@ export default React.memo(function Tag(props) {
     close = "/>";
   }
   return /* @__PURE__ */ React.createElement("code", {
-    id: name
+    id: name,
+    style: {color: "var(--mainGreen)"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), open, children, close);

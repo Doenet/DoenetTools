@@ -42,13 +42,17 @@ export default class Table extends BlockComponent {
 
     stateVariableDefinitions.tableEnumeration = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["number"],
       additionalStateVariablesDefined: [{
         variableName: "tableName",
         public: true,
-        componentType: "text",
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
         forRenderer: true,
       }],
       returnDependencies({ stateValues }) {
@@ -98,7 +102,9 @@ export default class Table extends BlockComponent {
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {

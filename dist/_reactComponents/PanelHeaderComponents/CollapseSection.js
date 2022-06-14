@@ -19,14 +19,14 @@ const SectionHeader = Styled.div`
   display: block;
   text-align: center;
   background-color: var(--mainGray);
-  color: black;
+  color: var(--canvastext);
 `;
 const SectionContent = Styled.div`
   padding: 1em;
   border-radius: 0 0 .5em .5em;
   border: var(--mainBorder);
   border-top: none;
-  background-color: white;
+  background-color: var(--canvas);
 `;
 const Label = Styled.p` // Only visible with vertical label prop
   font-size: 14px;

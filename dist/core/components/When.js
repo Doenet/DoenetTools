@@ -40,16 +40,22 @@ export default class When extends BooleanComponent {
     // condition satisfied is just an alias to value
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       additionalStateVariablesDefined: [
         {
           variableName: "fractionSatisfied",
           public: true,
-          componentType: "number"
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
         }, {
           variableName: "conditionSatisfied",
           public: true,
-          componentType: "boolean"
+          shadowingInstructions: {
+            createComponentOfType: "boolean",
+          },
         }
       ],
       returnDependencies: () => ({

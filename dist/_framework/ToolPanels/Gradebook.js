@@ -32,11 +32,11 @@ export const Styles = styled.div`
     thead {
       position: sticky;
       top: 0;
-      box-shadow: 0 2px 0 0px #000000;
+      box-shadow: 0 2px 0 0px var(--canvastext);
     }
 
     a {
-      text-decoration: #1a5a99 underline;
+      text-decoration: var(--mainBlue) underline;
     }
 
     .sortIcon {
@@ -44,7 +44,7 @@ export const Styles = styled.div`
     }
 
     tbody tr:not(:last-child) {
-      border-bottom: 1px solid #e2e2e2;
+      border-bottom: 1px solid var(--mainGray);
     }
 
     td:first-child {
@@ -58,7 +58,7 @@ export const Styles = styled.div`
     th {
       position: sticky;
       top: 0;
-      background: white;
+      background: var(--canvas);
       user-select: none;
       max-width: 4rem;
       //word-wrap: break-word;
@@ -100,7 +100,7 @@ export const Styles = styled.div`
     }
     td,
     th {
-      border-right: 2px solid black;
+      border-right: 2px solid var(--canvastext);
       :last-child {
         border-right: 0;
       }
@@ -110,8 +110,8 @@ export const Styles = styled.div`
       font-weight: bolder;
       position: sticky;
       bottom: 0;
-      background-color: white;
-      box-shadow: inset 0 2px 0 #000000;
+      background-color: var(--canvas);
+      box-shadow: inset 0 2px 0 var(--canvastext);
     }
   }
 `;
@@ -441,7 +441,7 @@ function DefaultColumnFilter({
       setFilter(e.target.value || void 0);
     },
     placeholder: `Search ${count} records...`,
-    style: {border: "2px solid black", borderRadius: "5px"}
+    style: {border: "2px solid var(--canvastext)", borderRadius: "5px"}
   });
 }
 function GradebookOverview() {

@@ -1,12 +1,15 @@
 
 export let styleAttributes = {
   lineColor: { componentType: "text" },
+  lineColorWord: { componentType: "text" },
   lineWidth: { componentType: "number" },
   lineStyle: { componentType: "text" },
   markerColor: { componentType: "text" },
+  markerColorWord: { componentType: "text" },
   markerStyle: { componentType: "text" },
   markerSize: { componentType: "number" },
   fillColor: { componentType: "text" },
+  fillColorWord: { componentType: "text" },
 }
 
 let defaultStyle = {
@@ -19,6 +22,7 @@ let defaultStyle = {
   markerStyle: "circle",
   markerSize: 3,
   fillColor: "none",
+  fillColorWord: "none",
 }
 
 
@@ -35,6 +39,7 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "circle",
       markerSize: 3,
       fillColor: "none",
+      fillColorWord: "none",
     },
     2: {
       lineColor: "#D4042D",
@@ -46,6 +51,7 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "square",
       markerSize: 4,
       fillColor: "none",
+      fillColorWord: "none",
     },
     3: {
       lineColor: "#F19143",
@@ -57,6 +63,7 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "triangle",
       markerSize: 5,
       fillColor: "none",
+      fillColorWord: "none",
     },
     4: {
       lineColor: "#644CD6",
@@ -68,6 +75,7 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "diamond",
       markerSize: 4,
       fillColor: "none",
+      fillColorWord: "none",
     },
     5: {
       lineColor: "black",
@@ -79,6 +87,7 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "circle",
       markerSize: 2,
       fillColor: "none",
+      fillColorWord: "none",
     },
     6: {
       lineColor: "gray",
@@ -90,6 +99,7 @@ function returnDefaultStyleDefinitions() {
       markerStyle: "circle",
       markerSize: 2,
       fillColor: "none",
+      fillColorWord: "none",
     }
   }
 }
@@ -171,7 +181,21 @@ export function returnStyleDefinitionStateVariables() {
           if (!styleDef) {
             styleDef = styleDefinitions[styleNumber] = Object.assign({}, defaultStyle);
           }
-          Object.assign(styleDef, newStyleDefs[styleNumber])
+
+          let theNewDef = Object.assign({}, newStyleDefs[styleNumber]);
+          if ("markerColor" in theNewDef && !("markerColorWord" in theNewDef)) {
+            theNewDef.markerColorWord = theNewDef.markerColor;
+          }
+          if ("lineColor" in theNewDef && !("lineColorWord" in theNewDef)) {
+            theNewDef.lineColorWord = theNewDef.lineColor;
+          }
+          if ("fillColor" in theNewDef && !("fillColorWord" in theNewDef)) {
+            theNewDef.fillColorWord = theNewDef.fillColor;
+          }
+
+          Object.assign(styleDef, theNewDef);
+
+
         }
       }
 

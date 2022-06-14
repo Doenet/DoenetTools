@@ -7,7 +7,7 @@ export default React.memo(function CallAction(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement("div", {
-    style: {margin: "12px 0"}
+    style: {margin: "12px 0", display: "inline-block"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement(Button, {

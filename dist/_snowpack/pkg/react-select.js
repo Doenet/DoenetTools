@@ -1,8 +1,8 @@
-import { _ as _extends } from './common/extends-7477639a.js';
+import { _ as _extends } from './common/extends-b13c3e88.js';
 import { R as React, r as react } from './common/index-61623f21.js';
 import { m as memoize, u as unitlessKeys } from './common/unitless.browser.esm-2a8c2f28.js';
-import { o as objectWithoutPropertiesLoose } from './common/defineProperty-61bdd77a.js';
-import { _ as _objectWithoutPropertiesLoose, a as _setPrototypeOf } from './common/setPrototypeOf-ac4e41f8.js';
+import { o as objectWithoutPropertiesLoose } from './common/defineProperty-42ace2b1.js';
+import { _ as _objectWithoutPropertiesLoose, a as _setPrototypeOf } from './common/setPrototypeOf-e07fe23a.js';
 import { c as createCommonjsModule, g as getDefaultExportFromCjs } from './common/_commonjsHelpers-f5d70792.js';
 import { p as propTypes } from './common/index-d3677bfe.js';
 import { r as reactDom } from './common/index-eaf9e997.js';
@@ -61,6 +61,7 @@ function createStyleElement(options) {
 }
 
 var StyleSheet = /*#__PURE__*/function () {
+  // Using Node instead of HTMLElement since container may be a ShadowRoot
   function StyleSheet(options) {
     var _this = this;
 
@@ -768,8 +769,7 @@ var createCache = function createCache(options) {
 
   var stylisPlugins = options.stylisPlugins || defaultStylisPlugins;
 
-  var inserted = {}; // $FlowFixMe
-
+  var inserted = {};
   var container;
   var nodesToHydrate = [];
 
@@ -970,6 +970,8 @@ var processStyleValue = function processStyleValue(key, value) {
   return value;
 };
 
+var noComponentSelectorMessage = 'Component selectors can only be used in conjunction with ' + '@emotion/babel-plugin, the swc Emotion plugin, or another Emotion-aware ' + 'compiler transform.';
+
 function handleInterpolation(mergedProps, registered, interpolation) {
   if (interpolation == null) {
     return '';
@@ -1062,7 +1064,7 @@ function createStringFromObject(mergedProps, registered, obj) {
         }
       } else {
         if (_key === 'NO_COMPONENT_SELECTOR' && "production" !== 'production') {
-          throw new Error('Component selectors can only be used in conjunction with @emotion/babel-plugin.');
+          throw new Error(noComponentSelectorMessage);
         }
 
         if (Array.isArray(value) && typeof value[0] === 'string' && (registered == null || registered[value[0]] === undefined)) {

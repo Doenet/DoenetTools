@@ -1,4 +1,4 @@
-import React, {useState, lazy, Suspense, useRef} from "../_snowpack/pkg/react.js";
+import React, {useState, lazy, Suspense, useRef, useEffect} from "../_snowpack/pkg/react.js";
 import {
   atom,
   selector,
@@ -17,6 +17,7 @@ import SupportPanel from "./Panels/NewSupportPanel.js";
 import MenuPanel from "./Panels/NewMenuPanel.js";
 import FooterPanel from "./Panels/FooterPanel.js";
 import {animated} from "../_snowpack/pkg/@react-spring/web.js";
+import {darkModeAtom} from "./Panels/NewMenuPanel.js";
 import {useNavigate, useLocation} from "../_snowpack/pkg/react-router.js";
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -26,13 +27,15 @@ const ToolContainer = styled(animated.div)`
     / auto 1fr auto;
   width: 100vw;
   height: 100vh;
-  background-color: #e2e2e2;
+  background-color: var(--mainGray);
   position: fixed;
   top: 0;
   left: 0;
   padding: 0px;
   gap: 0px;
   box-sizing: border-box;
+  border: var(--canvastext);
+  color: var(--canvastext);
 `;
 export const profileAtom = atom({
   key: "profileAtom",
@@ -58,6 +61,7 @@ export const paramObjAtom = atom({
   default: {}
 });
 export default function ToolRoot() {
+  const darkModeToggle = useRecoilValue(darkModeAtom);
   const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
     pageName: "init",
     menuPanelCap: "",
@@ -128,39 +132,39 @@ export default function ToolRoot() {
     key: MainPanelKey,
     fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, /* @__PURE__ */ React.createElement(Svg, null, /* @__PURE__ */ React.createElement(DonutG1, null, /* @__PURE__ */ React.createElement(Circle, {
       id: "donut",
-      fill: "rgb(238,161,119)",
+      fill: "var(--donutBody)",
       r: "60"
     }), /* @__PURE__ */ React.createElement(Circle, {
       id: "donut-topping",
-      fill: "rgb(109,68,69)",
+      fill: "var(--donutTopping)",
       r: "48"
     }), /* @__PURE__ */ React.createElement(Circle, {
       id: "donut-hole",
-      fill: "hsl(0, 0%, 99%)",
+      fill: "var(--canvas)",
       r: "19"
     }))), /* @__PURE__ */ React.createElement(Svg, null, /* @__PURE__ */ React.createElement(DonutG2, null, /* @__PURE__ */ React.createElement(Circle, {
       id: "donut",
-      fill: "rgb(238,161,119)",
+      fill: "var(--donutBody)",
       r: "60"
     }), /* @__PURE__ */ React.createElement(Circle, {
       id: "donut-topping",
-      fill: "rgb(109,68,69)",
+      fill: "var(--donutTopping)",
       r: "48"
     }), /* @__PURE__ */ React.createElement(Circle, {
       id: "donut-hole",
-      fill: "hsl(0, 0%, 99%)",
+      fill: "var(--canvas)",
       r: "19"
     }))), /* @__PURE__ */ React.createElement(Svg, null, /* @__PURE__ */ React.createElement(DonutG3, null, /* @__PURE__ */ React.createElement(Circle, {
       id: "donut",
-      fill: "rgb(238,161,119)",
+      fill: "var(--donutBody)",
       r: "60"
     }), /* @__PURE__ */ React.createElement(Circle, {
       id: "donut-topping",
-      fill: "rgb(109,68,69)",
+      fill: "var(--donutTopping)",
       r: "48"
     }), /* @__PURE__ */ React.createElement(Circle, {
       id: "donut-hole",
-      fill: "hsl(0, 0%, 99%)",
+      fill: "var(--canvas)",
       r: "19"
     }))))
   }, React.createElement(LazyPanelObj[toolRootMenusAndPanels.currentMainPanel], {MainPanelKey}));
@@ -239,7 +243,8 @@ export default function ToolRoot() {
     footer = /* @__PURE__ */ React.createElement(FooterPanel, {
       id: "keyboard",
       isInitOpen: toolRootMenusAndPanels.footer.open,
-      height: toolRootMenusAndPanels.footer.height
+      height: toolRootMenusAndPanels.footer.height,
+      "aria-label": "keyboard"
     }, /* @__PURE__ */ React.createElement(Suspense, {
       key: footerKey,
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
@@ -247,7 +252,9 @@ export default function ToolRoot() {
       key: {footerKey}
     })));
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ToolContainer, null, menus, /* @__PURE__ */ React.createElement(ContentPanel, {
+  return /* @__PURE__ */ React.createElement("html", {
+    dark: darkModeToggle === true ? "true" : null
+  }, /* @__PURE__ */ React.createElement(ToolContainer, null, menus, /* @__PURE__ */ React.createElement(ContentPanel, {
     main: /* @__PURE__ */ React.createElement(MainPanel, {
       headerControls,
       setMenusOpen,
@@ -326,7 +333,8 @@ let navigationObj = {
       menusInitOpen: [false, false],
       headerControls: ["DashboardBreadCrumb"],
       onLeave: "DashboardLeave",
-      waitForMenuSuppression: true
+      waitForMenuSuppression: true,
+      color: "var(--canvastext)"
     },
     draftactivity: {
       pageName: "DraftActivity",
@@ -766,7 +774,7 @@ function RootController(props) {
   return null;
 }
 const LoadingFallback = styled.div`
-  background-color: hsl(0, 0%, 99%);
+  background-color: var(--canvas);
   border-radius: 4px;
   display: ${(props) => props.display ? props.display : "flex"};
   justify-content: center;
@@ -822,7 +830,7 @@ const BreadcrumbContainer = styled.ul`
   height: 21px;
   display: flex;
   margin-left: -35px;
-  background-color: white;
+  background-color: var(--canvas);
 `;
 const shimmerAnimation = keyframes`
   from {
@@ -837,7 +845,7 @@ const BreadcrumbOutline = styled.li`
   border-radius: 15px;
   padding: 0px 30px 0px 30px;
   /* background: var(--mainGray); */
-  /* background-color: #F5F5F5; */
+  /* background-color: var(--canvas); */
   color: black;
 
   animation-duration: 3s;
@@ -845,8 +853,8 @@ const BreadcrumbOutline = styled.li`
   animation-iteration-count: infinite;
   animation-name: ${shimmerAnimation};
   animation-timing-function: linear;
-  background: #f6f7f8;
-  background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+  background: var(--canvas);
+  background: linear-gradient(to right, var(--mainGray) 8%, var(--mainGray) 18%, var(--mainGray) 33%);
   background-size: 1000px 640px;
   position: relative;
 `;
@@ -859,7 +867,7 @@ const Table = styled.table`
   margin: 8px;
 `;
 const Tr = styled.tr`
-  /* border-bottom: 2px solid black; */
+  /* border-bottom: 2px solid var(--canvastext); */
 `;
 const Td = styled.td`
   height: 40px;
@@ -874,7 +882,7 @@ const Td3Span = styled.span`
   display: block;
   height: 14px;
   border-radius: 5px;
-  background: linear-gradient(to right, #eee 20%, #ddd 50%, #eee 80%);
+  background: linear-gradient(to right, var(--mainGray) 20%, var(--mainGray) 50%, var(--mainGray) 80%);
   background-size: 500px 100px;
   animation-name: ${movingGradient};
   animation-duration: 1s;

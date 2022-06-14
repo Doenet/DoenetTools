@@ -8,7 +8,8 @@ export default React.memo(function UpdateValue(props) {
   }
   return /* @__PURE__ */ React.createElement("div", {
     id: name,
-    margin: "12px 0"
+    margin: "12px 0",
+    style: {display: "inline-block"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement(Button, {
