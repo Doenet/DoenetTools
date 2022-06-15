@@ -32,7 +32,7 @@ export default React.memo(function Point(props) {
     };
   }, []);
   function createPointJXG() {
-    let fillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+    let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
     let jsxPointAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
@@ -165,7 +165,7 @@ export default React.memo(function Point(props) {
     if (pointJXG.current === null) {
       createPointJXG();
     } else {
-      let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+      let newFillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
       if (pointJXG.current.visProp.fillcolor !== newFillColor) {
         pointJXG.current.visProp.fillcolor = newFillColor;
       }
@@ -293,7 +293,7 @@ export default React.memo(function Point(props) {
   if (SVs.hidden) {
     return null;
   }
-  let mathJaxify = "\\(" + me.fromAst(SVs.coordsForDisplay).toLatex() + "\\)";
+  let mathJaxify = "\\(" + SVs.coordsLatex + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {

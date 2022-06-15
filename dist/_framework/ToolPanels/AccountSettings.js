@@ -58,7 +58,7 @@ export default function DoenetProfile(props) {
     }, /* @__PURE__ */ React.createElement("div", {
       style: {
         ...props.style,
-        border: "1px solid grey",
+        border: "1px solid var(--mainGray)",
         borderRadius: "20px",
         margin: "auto",
         marginTop: "10%",
@@ -72,10 +72,10 @@ export default function DoenetProfile(props) {
         marginBottom: "20px"
       }
     }, /* @__PURE__ */ React.createElement("h2", null, "You are not signed in"), /* @__PURE__ */ React.createElement("h2", null, "Account Settings currently requires sign in for use"), /* @__PURE__ */ React.createElement("button", {
-      style: {background: "#1a5a99", borderRadius: "5px"}
+      style: {background: "var(--mainBlue)", borderRadius: "5px"}
     }, /* @__PURE__ */ React.createElement("a", {
       href: "/#/signin",
-      style: {color: "white", textDecoration: "none"}
+      style: {color: "var(--canvas)", textDecoration: "none"}
     }, "Sign in with this link")))));
   }
   return /* @__PURE__ */ React.createElement("div", {

@@ -116,7 +116,9 @@ export default class Constraints extends BaseComponent {
 
     stateVariableDefinitions.scales = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["graphComponentName"],
       returnDependencies({ stateValues }) {
         if (stateValues.graphComponentName) {
@@ -478,7 +480,9 @@ export default class Constraints extends BaseComponent {
 
     stateVariableDefinitions.constraintUsed = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         constraintUsedByComponent: {
           dependencyType: "stateVariable",

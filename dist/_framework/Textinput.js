@@ -2,10 +2,10 @@ import React, {useState, useEffect} from "../_snowpack/pkg/react.js";
 import {useSpring, animated} from "../_snowpack/pkg/@react-spring/web.js";
 import styled from "../_snowpack/pkg/styled-components.js";
 import {doenetComponentForegroundActive} from "./temp/theme.js";
-const LABELCOLOR = "#1a5a99";
+const LABELCOLOR = "var(--mainBlue)";
 const FONTFAMILY = "sans-serif";
-const BACKGROUNDCOLOR = "#eee";
-const FOCUSBACKGROUNDCOLOR = "#1a5a99";
+const BACKGROUNDCOLOR = "var(--mainGray)";
+const FOCUSBACKGROUNDCOLOR = "var(--mainBlue)";
 function randomAlphaString(len) {
   let c = "abcdefghijklmnopqrstuvwxyz";
   let str = "";
@@ -48,7 +48,7 @@ const labelStyles = {
     fontSize: "0.7em"
   },
   active: {
-    color: "#eee",
+    color: "var(--mainGray)",
     top: "0.3em",
     fontSize: "0.7em"
   }
@@ -64,11 +64,11 @@ const inputStyles = {
     width: "calc(100% - 1em)"
   },
   inactive: {
-    color: "#000",
+    color: "var(--canvastext)",
     backgroundColor: BACKGROUNDCOLOR
   },
   active: {
-    color: "#eee",
+    color: "var(--mainGray)",
     backgroundColor: FOCUSBACKGROUNDCOLOR
   }
 };

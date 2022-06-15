@@ -26,7 +26,7 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
     label: recoilLabel,
-    order
+    content
   } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const {
@@ -40,7 +40,6 @@ export default function SelectedActivity() {
   useEffect(() => {
     setItemTextFieldLabel(recoilLabel);
   }, [recoilLabel]);
-  let firstPageDoenetId = findFirstPageOfActivity(order);
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
     if (itemTextFieldLabel === "") {
@@ -58,6 +57,7 @@ export default function SelectedActivity() {
   if (doenetId == void 0) {
     return null;
   }
+  let firstPageDoenetId = findFirstPageOfActivity(content);
   let heading = /* @__PURE__ */ React.createElement("h2", {
     "data-cy": "infoPanelItemLabel",
     style: {margin: "16px 5px"}

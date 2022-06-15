@@ -99,7 +99,9 @@ export default class SolveEquations extends InlineComponent {
     stateVariableDefinitions.variables = {
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
         // nInputs: {
@@ -507,7 +509,9 @@ export default class SolveEquations extends InlineComponent {
 
     stateVariableDefinitions.numberSolutions = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         allSolutions: {
           dependencyType: "stateVariable",
@@ -522,7 +526,9 @@ export default class SolveEquations extends InlineComponent {
 
     stateVariableDefinitions.solutions = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       isArray: true,
       entryPrefixes: ["solution"],
       returnArraySizeDependencies: () => ({

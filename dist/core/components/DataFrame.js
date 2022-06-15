@@ -71,19 +71,27 @@ export default class DataFrame extends BaseComponent {
       additionalStateVariablesDefined: [{
         variableName: "numRows",
         public: true,
-        componentType: "integer"
+        shadowingInstructions: {
+          createComponentOfType: "integer",
+        },
       }, {
         variableName: "numColumns",
         public: true,
-        componentType: "integer"
+        shadowingInstructions: {
+          createComponentOfType: "integer",
+        },
       }, {
         variableName: "columnTypes",
         public: true,
-        componentType: "textList"
+        shadowingInstructions: {
+          createComponentOfType: "textList",
+        },
       }, {
         variableName: "columnNames",
         public: true,
-        componentType: "textList"
+        shadowingInstructions: {
+          createComponentOfType: "textList",
+        },
       }],
       returnDependencies: ({ stateValues }) => ({
         fileContents: {
@@ -231,7 +239,9 @@ export default class DataFrame extends BaseComponent {
 
     stateVariableDefinitions.means = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       isArray: true,
       entryPrefixes: ["mean"],
       returnArraySizeDependencies: () => ({

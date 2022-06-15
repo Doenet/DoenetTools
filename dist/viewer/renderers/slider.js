@@ -2,15 +2,15 @@ import React, {useRef, useState, useEffect} from "../../_snowpack/pkg/react.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup.js";
-import {doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray} from "../../_reactComponents/PanelHeaderComponents/theme.js";
+import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton.js";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {rendererState} from "./useDoenetRenderer.js";
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
 const SliderContainer = styled.div`
     width: fit-content;
     height: ${(props) => props.labeled && props.noTicked ? "60px" : props.labeled ? "80px" : props.noTicked ? "40px" : "60px"};
+    margin-bottom: 12px;
     &:focus {outline: 0;};
 `;
 const SubContainer2 = styled.div`
@@ -20,8 +20,8 @@ const SubContainer2 = styled.div`
 const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
-  background: #888888 ;
-  height: 1px;
+  background: black; // black?
+  height: 2px;
   width: ${(props) => props.width};
   user-select: none;
 `;
@@ -36,24 +36,24 @@ const StyledThumb = styled.div`
   position: relative;
   top: -4px;
   opacity: 1;
-  background: ${(props) => props.disabled ? "#404040" : `${doenetComponentForegroundActive}`};
+  background: ${(props) => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"}; // var(--mainBlue)?
   cursor: pointer;
 `;
 const Tick = styled.div`
     position: absolute;
-    border-left: 2px solid  ${doenetLightGray};
+    border-left: 2px solid var(--mainGray);
     height: 10px;
-    top:1px;
-    z-Index:-2;
+    top: 1px;
+    z-Index: -2;
     left: ${(props) => props.x};
     user-select: none;
 `;
 const Label = styled.p`
     position: absolute;
     left: ${(props) => props.x};
-    color: ${doenetComponentForegroundInactive};
+    color: black;
     font-size: 12px;
-    top:1px;
+    top: 1px;
     user-select: none;
 `;
 function generateNumericLabels(points, div_width, point_start_val, SVs) {
@@ -317,13 +317,13 @@ export default React.memo(function Slider(props) {
   if (SVs.disabled) {
     let controls2 = "";
     if (SVs.showControls) {
-      controls2 = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
-        style: {marginTop: "-20px"},
+      controls2 = /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+        style: {marginBottom: "12px"}
+      }, /* @__PURE__ */ React.createElement(ActionButton, {
         value: "Prev",
         onClick: (e) => handlePrevious(e),
         disabled: true
-      }), /* @__PURE__ */ React.createElement(Button, {
-        style: {marginTop: "-20px"},
+      }), /* @__PURE__ */ React.createElement(ActionButton, {
         value: "Next",
         onClick: (e) => handleNext(e),
         disabled: true
@@ -343,13 +343,29 @@ export default React.memo(function Slider(props) {
     } else {
       ticksAndLabels2 = labels2;
     }
+    let myLabel2 = null;
+    if (SVs.label) {
+      if (SVs.showValue) {
+        myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label + " = " + SVs.valueForDisplay);
+        console.log("both");
+      } else {
+        myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label);
+        console.log("just label");
+      }
+    } else if (!SVs.label && SVs.showValue) {
+      myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.valueForDisplay);
+      console.log("just value");
+    } else {
+      myLabel2 = null;
+      console.log("neither");
+    }
     return /* @__PURE__ */ React.createElement(SliderContainer, {
       labeled: SVs.showControls || SVs.label,
       noTicked: SVs.showTicks === false,
       ref: containerRef
     }, /* @__PURE__ */ React.createElement("div", {
-      style: {height: SVs.label ? "20px" : "0px"}
-    }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label) : null), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
+      style: {height: SVs.label || SVs.showValue ? "20px" : "0px"}
+    }, myLabel2), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
       width: `${SVs.width.size}px`
     }, /* @__PURE__ */ React.createElement(StyledThumb, {
       disabled: true,
@@ -536,19 +552,41 @@ export default React.memo(function Slider(props) {
   }
   let controls = "";
   if (SVs.showControls) {
-    controls = /* @__PURE__ */ React.createElement(ButtonGroup, null, /* @__PURE__ */ React.createElement(Button, {
-      style: {marginTop: "-20px"},
+    controls = /* @__PURE__ */ React.createElement(ActionButtonGroup, {
+      style: {marginBottom: "12px"}
+    }, /* @__PURE__ */ React.createElement(ActionButton, {
       value: "Prev",
       onClick: (e) => handlePrevious(e),
       "data-cy": `${name}-prevbutton`
-    }), /* @__PURE__ */ React.createElement(Button, {
-      style: {marginTop: "-20px"},
+    }), /* @__PURE__ */ React.createElement(ActionButton, {
       value: "Next",
       onClick: (e) => handleNext(e),
       "data-cy": `${name}-nextbutton`
     }));
   } else {
     null;
+  }
+  let valueDisplay = null;
+  if (SVs.showValue) {
+    valueDisplay = /* @__PURE__ */ React.createElement("span", {
+      style: {left: `${thumbXPos - 4}px`, userSelect: "none"}
+    }, SVs.valueForDisplay, " ");
+  }
+  let myLabel = null;
+  if (SVs.label) {
+    if (SVs.showValue) {
+      myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label + " = " + SVs.valueForDisplay);
+      console.log("both");
+    } else {
+      myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label);
+      console.log("just label");
+    }
+  } else if (!SVs.label && SVs.showValue) {
+    myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.valueForDisplay);
+    console.log("just value");
+  } else {
+    myLabel = null;
+    console.log("neither");
   }
   return /* @__PURE__ */ React.createElement(SliderContainer, {
     ref: containerRef,
@@ -557,8 +595,8 @@ export default React.memo(function Slider(props) {
     onKeyDown: handleKeyDown,
     tabIndex: "0"
   }, /* @__PURE__ */ React.createElement("div", {
-    style: {height: SVs.label ? "20px" : "0px"}
-  }, SVs.label ? /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label + " = " + SVs.valueForDisplay) : null), /* @__PURE__ */ React.createElement(SubContainer2, {
+    style: {height: SVs.label || SVs.showValue ? "20px" : "0px"}
+  }, myLabel), /* @__PURE__ */ React.createElement(SubContainer2, {
     onMouseDown: handleDragEnter,
     onMouseUp: handleDragExit,
     onMouseMove: handleDragThrough,

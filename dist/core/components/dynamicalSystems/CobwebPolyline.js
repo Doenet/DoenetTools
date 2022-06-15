@@ -73,19 +73,21 @@ export default class CobwebPolyline extends Polyline {
     stateVariableDefinitions.initialPoint = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "initialPointX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       entryPrefixes: ["initialPointX"],
       defaultValueByArrayKey: () => me.fromAst(0),
       hasEssential: true,
-      returnWrappingComponents(prefix) {
-        if (prefix === "initialPointX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       returnArraySizeDependencies: () => ({}),
       returnArraySize: () => [2],
       returnArrayDependenciesByKey({ arrayKeys }) {
@@ -586,7 +588,9 @@ export default class CobwebPolyline extends Polyline {
     stateVariableDefinitions.correctVertices = {
       isArray: true,
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       entryPrefixes: ["correctVertex"],
       returnArraySizeDependencies: () => ({
         nVertices: {
@@ -621,16 +625,22 @@ export default class CobwebPolyline extends Polyline {
 
     stateVariableDefinitions.fractionCorrectVertices = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: [{
         variableName: "nGradedVertices",
         public: true,
-        componentType: "number"
+        shadowingInstructions: {
+          createComponentOfType: "number",
+        },
       },
       {
         variableName: "nCorrectVertices",
         public: true,
-        componentType: "number"
+        shadowingInstructions: {
+          createComponentOfType: "number",
+        },
       }
       ],
       returnDependencies: () => ({
@@ -663,11 +673,15 @@ export default class CobwebPolyline extends Polyline {
 
     stateVariableDefinitions.fractionCorrectVerticesAdjusted = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: [{
         variableName: "nGradedVerticesAdjusted",
         public: true,
-        componentType: "number"
+        shadowingInstructions: {
+          createComponentOfType: "number",
+        },
       }],
       returnDependencies: () => ({
         nCorrectVertices: {
@@ -705,7 +719,9 @@ export default class CobwebPolyline extends Polyline {
 
     stateVariableDefinitions.nIterateValues = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         nVertices: {
           dependencyType: "stateVariable",
@@ -720,7 +736,9 @@ export default class CobwebPolyline extends Polyline {
     stateVariableDefinitions.iterateValues = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       entryPrefixes: ["iterateValue"],
       returnArraySizeDependencies: () => ({
         nIterateValues: {
@@ -767,7 +785,9 @@ export default class CobwebPolyline extends Polyline {
     //   stateVariablesDeterminingDependencies: ["nPoints"],
     //   isArray: true,
     //   public: true,
-    //   componentType: "math",
+    //   shadowingInstructions: {
+    //     createComponentOfType: "math",
+    //   },
     //   entryPrefixes: ["lastVertexX"],
     //   returnWrappingComponents(prefix) {
     //     if (prefix === "lastVertexX") {

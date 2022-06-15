@@ -30,7 +30,7 @@ export default class Extract extends CompositeComponent {
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
-    attributes.componentType = {
+    attributes.createComponentOfType = {
       createPrimitiveOfType: "string",
     };
     attributes.nComponents = {
@@ -65,6 +65,11 @@ export default class Extract extends CompositeComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.link = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { link: true } })
+    }
 
     stateVariableDefinitions.propName = {
       shadowVariable: true,

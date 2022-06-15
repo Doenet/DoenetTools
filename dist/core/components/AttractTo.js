@@ -30,7 +30,9 @@ export default class AttractTo extends ConstraintComponent {
 
     stateVariableDefinitions.threshold = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       hasEssential: true,
       returnDependencies: () => ({
         thresholdAttr: {

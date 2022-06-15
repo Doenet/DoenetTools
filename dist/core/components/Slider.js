@@ -144,7 +144,9 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.items = {
       forRenderer: true,
       public: true,
-      hasVariableComponentType: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       // isArray: true,
       // entryPrefixes: ["item"],
       // entireArrayAtOnce: true,
@@ -200,7 +202,7 @@ export default class Slider extends BaseComponent {
 
         return {
           setValue: { items },
-          setComponentType: { items: dependencyValues.type },
+          setCreateComponentOfType: { items: dependencyValues.type },
         };
       }
     }
@@ -209,7 +211,9 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.nItems = {
       forRenderer: true,
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         items: {
           dependencyType: "stateVariable",
@@ -488,7 +492,9 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.value = {
       forRenderer: true,
       public: true,
-      hasVariableComponentType: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -522,7 +528,7 @@ export default class Slider extends BaseComponent {
 
         return {
           setValue: { value },
-          setComponentType: { value: dependencyValues.type },
+          setCreateComponentOfType: { value: dependencyValues.type },
         }
 
       },

@@ -308,7 +308,7 @@ export default React.memo(function Vector(props) {
   if (SVs.hidden) {
     return null;
   }
-  let mathJaxify = "\\(" + me.fromAst(SVs.displacementCoords).toLatex() + "\\)";
+  let mathJaxify = "\\(" + SVs.displacementCoordsLatex + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {

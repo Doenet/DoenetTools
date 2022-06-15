@@ -95,14 +95,14 @@ function Collection(props) {
     setInstanceParentId(props.pathItemId);
   }, [props.pathItemId, setInstanceParentId]);
   const indentPx = 25;
-  let bgcolor = "#ffffff";
+  let bgcolor = "var(--canvas)";
   let borderSide = "0px";
   let marginSize = "0";
   if (isSelected) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = "#e2e2e2";
+    bgcolor = "var(--mainGray)";
   }
   let woIndent = 250 - props.indentLevel * indentPx;
   let columns = `${woIndent}px repeat(4,1fr)`;
@@ -121,11 +121,11 @@ function Collection(props) {
   let column5 = ColumnJSX(props.columnTypes[3], props.item);
   const isDraggedOver = dropState.activeDropTargetId === itemId && !dragState.draggedItemsId?.has(itemId);
   if (isDraggedOver) {
-    bgcolor = "#f0f0f0";
+    bgcolor = "var(--mainGray)";
   }
   const isDropTargetFolder = dragState.dragShadowParentId === itemId;
   if (isDropTargetFolder) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   useEffect(() => {
     isOpenRef.current = isOpen;
@@ -253,7 +253,7 @@ function Collection(props) {
         cursor: "pointer",
         padding: "8px",
         border: "0px",
-        borderBottom: "2px solid black",
+        borderBottom: "2px solid var(--canvastext)",
         backgroundColor: bgcolor,
         marginLeft: marginSize,
         borderLeft: borderSide

@@ -5,7 +5,7 @@ import axios from "../../_snowpack/pkg/axios.js";
 import {creditAchievedAtom, currentAttemptNumber} from "../ToolPanels/AssignmentViewer.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 const Line = styled.div`
-  border-bottom: 2px solid black;
+  border-bottom: 2px solid var(--canvastext);
   height: 2px;
   width: 230px;
 `;

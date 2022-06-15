@@ -10,7 +10,7 @@ const Button = styled.button`
   border: 2px solid;
   border-color: ${(props) => props.color};
   border-radius: var(--mainBorderRadius);
-  color: #fff;
+  color: var(--canvastext);
   background-color: ${(props) => props.color};
   
   &:hover {

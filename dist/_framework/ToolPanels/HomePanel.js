@@ -13,7 +13,7 @@ const DoenetLogo = styled.div`
   position: relative;
   width: 100%;
   min-height: 340px;
-  background-color: #e3e2e2;
+  background-color: var(--mainGray);
   justify-content: center;
   align-items: center;
 `;
@@ -22,8 +22,8 @@ const DoenetImage = styled.img`
   width:500px;
 }`;
 const CloudColor = styled.div`
-  background-color: #fff;
-  color: #333333;
+  background-color: var(--canvas);
+  color: var(--canvastext);
 `;
 const CloudColorSection = styled(CloudColor)`
   padding: 20px 10px 60px 10px;
@@ -33,8 +33,8 @@ const CloudColorSection = styled(CloudColor)`
   text-align: center;
 `;
 const LightBlueColor = styled.div`
-background-color: hsl(209,54%,82%);
-color:black;
+background-color: var(--lightBlue);
+color: black;
 `;
 const LightBlueColorSection = styled(LightBlueColor)`
   padding: 20px 10px 60px 10px;
@@ -63,8 +63,8 @@ const Paragraph = styled.p`
         display: block;
     }`;
 const Footer = styled.div`
-  background-color: #e3e2e2;
-  color: #333333;
+  background-color: var(--mainGray);
+  color: var(--canvastext);
   font-size: 14px;
   padding: 20px 40px;
   text-align: center;
@@ -99,7 +99,7 @@ export default function HomePage(props) {
     size: "medium",
     value: "Sign In"
   })), /* @__PURE__ */ React.createElement(Paragraph, null, "The Distributed Open Education Network (Doenet) is an open data-driven educational technology platform designed to measure and share student interactions with web pages. Anonymized and aggregated data will be stored in an open distributed data warehouse to facilitate studies on content effectiveness. The Doenet platform includes tools for authoring interactive educational content and conducting educational research using the content.  Our ultimate goal is to provide research-based tools to help instructors and learners discover the most effective content."), /* @__PURE__ */ React.createElement(Paragraph, null, "Although we are still in the early stages, we are excited to introduce Doenet and illustrate the richly interactive activities that one can author with it."), /* @__PURE__ */ React.createElement(Paragraph, null, "For more background and information on the Doenet project, see", " ", /* @__PURE__ */ React.createElement("a", {
-    style: {color: "#6d4445"},
+    style: {color: "var(--whiteBlankLink)"},
     href: "https://www.mathvalues.org/masterblog/reimagining-online-mathematics"
   }, "this MAA DUE Point article")))), /* @__PURE__ */ React.createElement(LightBlueColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"
@@ -212,8 +212,10 @@ export default function HomePage(props) {
   }, "DoenetML Reference"))))), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"
   }, "Workshop on developing learning experiments in Doenet"), /* @__PURE__ */ React.createElement(Paragraph, null, "Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our ", /* @__PURE__ */ React.createElement("a", {
+    style: {color: "var(--whiteBlankLink)"},
     href: "https://ima.umn.edu/2021-2022/SW5.23-26.22"
   }, "workshop"), " for a hands-on introduction to authoring and running experiments, led by the developers of Doenet.  Designed for instructors of college STEM courses, the workshop will be held from May 23 - May 26, 2022, at the University of Minnesota."), /* @__PURE__ */ React.createElement(Paragraph, null, "For more information and to apply to the workshop, see the ", /* @__PURE__ */ React.createElement("a", {
+    style: {color: "var(--whiteBlankLink)"},
     href: "https://ima.umn.edu/2021-2022/SW5.23-26.22"
   }, "workshop site"), "."))), /* @__PURE__ */ React.createElement(LightBlueColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"

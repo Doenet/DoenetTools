@@ -45,7 +45,14 @@ export default function DateTime(props) {
       vertical: props.vertical
     }, props.label) : null, /* @__PURE__ */ React.createElement("input", {
       ...propsRI,
-      style: {border: borderColor, cursor: cursorStyle, width, ...props.style},
+      style: {
+        border: borderColor,
+        cursor: cursorStyle,
+        width,
+        color: "var(--canvastext)",
+        backgroundColor: "var(--canvas)",
+        ...props.style
+      },
       ref: inputRef,
       onChange: (e) => {
         setCursorStart(e.target.selectionStart);
@@ -74,7 +81,8 @@ export default function DateTime(props) {
       readOnly: true,
       style: {
         cursor: "not-allowed",
-        color: "#545454",
+        color: "var(--canvastext)",
+        backgroundColor: "var(--canvas)",
         height: "18px",
         width: "170px",
         border: "2px solid var(--mainGray)",

@@ -55,6 +55,7 @@ export default function PageVariant(props) {
       });
     }
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Select variant name", /* @__PURE__ */ React.createElement("select", {
+    style: {backgroundColor: "var(--canvas)", color: "var(--canvastext)", border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)"},
     value: variantPanel.index,
     onChange: (e) => {
       setVariantInfo((was) => {

@@ -65,6 +65,7 @@ if ($success){
         // return mysqli_real_escape_string($conn, $item);
         return json_encode($item);
     }, $_POST['sourceJSONs']);
+    $destinationWasASinglePageActivity = mysqli_real_escape_string($conn, $_POST['destinationWasASinglePageActivity']);
 
     $destinationType = mysqli_real_escape_string($conn, $_POST['destinationType']);
     $destinationDoenetId = mysqli_real_escape_string($conn, $_POST['destinationDoenetId']);
@@ -103,7 +104,7 @@ if ($success) {
             }else if ($sourceType == 'activity'){
                 $sql = "
                 UPDATE course_content
-                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$sourceJSON'))
+                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.content',JSON_MERGE('[]','$sourceJSON'))
                 WHERE doenetId='$sourceDoenetId'
                 AND courseId='$courseId'
                 ";
@@ -141,11 +142,20 @@ if ($success) {
         }else if ($destinationType == 'activity'){
             $sql = "
             UPDATE course_content
-            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.order',JSON_MERGE('{}','$destinationJSON'))
+            SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.content',JSON_MERGE('[]','$destinationJSON'))
             WHERE doenetId='$destinationDoenetId'
             AND courseId='$courseId'
             ";
             $result = $conn->query($sql);
+            if ($destinationWasASinglePageActivity){
+                $sql = "
+                UPDATE course_content
+                SET jsonDefinition=JSON_REPLACE(jsonDefinition,'$.isSinglePage',false)
+                WHERE doenetId='$destinationDoenetId'
+                AND courseId='$courseId'
+                ";
+                $result = $conn->query($sql);
+            }
         }
     // }
     

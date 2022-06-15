@@ -919,4 +919,4 @@ const defaultHighlightStyle = /*@__PURE__*/HighlightStyle.define([
         color: "#f00" }
 ]);
 
-export { defaultHighlightStyle as d, styleTags as s, tags as t };
+export { HighlightStyle as H, defaultHighlightStyle as d, styleTags as s, tags as t };

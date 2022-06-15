@@ -30,6 +30,7 @@
     "esm-seedrandom": "./esm-seedrandom.js",
     "handsontable/dist/handsontable.full.css": "./handsontable/dist/handsontable.full.css",
     "handsontable/registry": "./handsontable/registry.js",
+    "handsontable/renderers": "./handsontable/renderers.js",
     "hi-base32": "./hi-base32.js",
     "hyperformula": "./hyperformula.js",
     "idb-keyval": "./idb-keyval.js",

@@ -2,13 +2,13 @@ import { _ as __extends, a as __assign, b as __rest, c as __spreadArray } from '
 import { c as createCommonjsModule, g as getDefaultExportFromCjs, a as commonjsGlobal } from '../common/_commonjsHelpers-f5d70792.js';
 import { r as react } from '../common/index-61623f21.js';
 import { p as process$1 } from '../common/process-e9e98960.js';
-import { _ as _defineProperty, a as _objectWithoutPropertiesLoose, b as _extends$1 } from '../common/defineProperty-61bdd77a.js';
+import { _ as _defineProperty, a as _objectWithoutPropertiesLoose, b as _extends$1 } from '../common/defineProperty-42ace2b1.js';
 import { g as global$1 } from '../common/_polyfill-node:global-acbc543a.js';
 import { p as propTypes } from '../common/index-d3677bfe.js';
 import { r as reactDom } from '../common/index-eaf9e997.js';
-import { _ as _extends$2 } from '../common/extends-7477639a.js';
-import { _ as _objectWithoutPropertiesLoose$1 } from '../common/setPrototypeOf-ac4e41f8.js';
-import { _ as _inheritsLoose$1 } from '../common/inheritsLoose-44198c63.js';
+import { _ as _extends$2 } from '../common/extends-b13c3e88.js';
+import { _ as _objectWithoutPropertiesLoose$1 } from '../common/setPrototypeOf-e07fe23a.js';
+import { _ as _inheritsLoose$1 } from '../common/inheritsLoose-3d19f0d2.js';
 
 /*
  * Copyright 2018 Palantir Technologies, Inc. All rights reserved.
@@ -673,7 +673,7 @@ var classnames = createCommonjsModule(function (module) {
 
 var setPrototypeOf = createCommonjsModule(function (module) {
 function _setPrototypeOf(o, p) {
-  module.exports = _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+  module.exports = _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
     o.__proto__ = p;
     return o;
   }, module.exports.__esModule = true, module.exports["default"] = module.exports;
@@ -1191,6 +1191,7 @@ var $concat = functionBind.call(Function.call, Array.prototype.concat);
 var $spliceApply = functionBind.call(Function.apply, Array.prototype.splice);
 var $replace = functionBind.call(Function.call, String.prototype.replace);
 var $strSlice = functionBind.call(Function.call, String.prototype.slice);
+var $exec = functionBind.call(Function.call, RegExp.prototype.exec);
 
 /* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
 var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
@@ -1246,6 +1247,9 @@ var getIntrinsic = function GetIntrinsic(name, allowMissing) {
 		throw new $TypeError('"allowMissing" argument must be a boolean');
 	}
 
+	if ($exec(/^%?[^%]*%?$/g, name) === null) {
+		throw new $SyntaxError('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
+	}
 	var parts = stringToPath(name);
 	var intrinsicBaseName = parts.length > 0 ? parts[0] : '';
 
@@ -1527,13 +1531,13 @@ var objectIs = polyfill$1;
 
 var hasToStringTag$1 = shams$1();
 var has$1;
-var $exec;
+var $exec$1;
 var isRegexMarker;
 var badStringifier;
 
 if (hasToStringTag$1) {
 	has$1 = callBound('Object.prototype.hasOwnProperty');
-	$exec = callBound('RegExp.prototype.exec');
+	$exec$1 = callBound('RegExp.prototype.exec');
 	isRegexMarker = {};
 
 	var throwRegexMarker = function () {
@@ -1567,7 +1571,7 @@ var isRegex = hasToStringTag$1
 		}
 
 		try {
-			$exec(value, badStringifier);
+			$exec$1(value, badStringifier);
 		} catch (e) {
 			return e === isRegexMarker;
 		}
@@ -7059,6 +7063,7 @@ var ResizeSensor = /** @class */ (function (_super) {
     };
     ResizeSensor.prototype.componentWillUnmount = function () {
         this.observer.disconnect();
+        this.element = null;
     };
     /**
      * Observe the DOM element, if defined and different from the currently
@@ -8196,6 +8201,8 @@ var flame = ["M9.217 0c0 1.368.368 2.462 1.104 3.282C12.774 5.197 14 7.385 14 9.
 
 var flash = ["M4 8c0-.55-.45-1-1-1H1c-.55 0-1 .45-1 1s.45 1 1 1h2c.55 0 1-.45 1-1zm4-4c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1S7 .45 7 1v2c0 .55.45 1 1 1zM3.79 5.21a1.003 1.003 0 001.42-1.42l-1.5-1.5a1.003 1.003 0 00-1.42 1.42l1.5 1.5zm.71 5.29c-.28 0-.53.11-.71.29l-1.5 1.5a1.003 1.003 0 001.42 1.42l1.5-1.5a1.003 1.003 0 00-.71-1.71zm7-5c.28 0 .53-.11.71-.29l1.5-1.5a1.003 1.003 0 00-1.42-1.42l-1.5 1.5a1.003 1.003 0 00.71 1.71zm.71 5.29a1.003 1.003 0 00-1.42 1.42l1.5 1.5a1.003 1.003 0 001.42-1.42l-1.5-1.5zM15 7h-2c-.55 0-1 .45-1 1s.45 1 1 1h2c.55 0 1-.45 1-1s-.45-1-1-1zM8 5C6.34 5 5 6.34 5 8s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm0 3c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1z"];
 
+var floatingPoint = ["M1 5.326c.274 0 .541-.023.8-.069.259-.046.491-.122.697-.228a1.71 1.71 0 00.537-.412c.153-.167.252-.373.297-.617h1.063v8H2.966V6.354H1V5.326zM12.172 4.01c.55 0 .997.128 1.342.385.352.25.623.572.814.968.198.389.33.818.396 1.287.073.47.11.924.11 1.364 0 .44-.037.895-.11 1.364-.066.47-.198.902-.396 1.298-.19.389-.462.711-.814.968-.345.25-.792.374-1.342.374s-1.001-.125-1.353-.374a2.74 2.74 0 01-.814-.968 4.618 4.618 0 01-.396-1.298 9.795 9.795 0 01-.099-1.364c0-.44.033-.895.099-1.364.073-.47.205-.898.396-1.287.198-.396.47-.719.814-.968.352-.257.803-.385 1.353-.385zm0 6.963c.271 0 .499-.077.682-.231.183-.161.326-.374.429-.638.11-.271.187-.587.231-.946.044-.36.066-.74.066-1.144 0-.403-.022-.781-.066-1.133a3.724 3.724 0 00-.231-.946 1.51 1.51 0 00-.429-.638.995.995 0 00-.682-.242c-.279 0-.51.08-.693.242a1.656 1.656 0 00-.429.638 4.08 4.08 0 00-.22.946c-.044.352-.066.73-.066 1.133s.022.785.066 1.144c.044.36.117.675.22.946.11.264.253.477.429.638.183.154.414.231.693.231zM8.089 10.5H6.5v1.543h1.589V10.5z"];
+
 var floppyDisk = ["M15.71 2.29l-2-2A.997.997 0 0013 0h-1v6H4V0H1C.45 0 0 .45 0 1v14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V3c0-.28-.11-.53-.29-.71zM14 15H2V9c0-.55.45-1 1-1h10c.55 0 1 .45 1 1v6zM11 1H9v4h2V1z"];
 
 var flowBranch = ["M10.643 6.595c.22.418.344.894.344 1.399 0 .439-.094.855-.263 1.231l3.265 3.462-.002-1.75a.973.973 0 01.314-.68.99.99 0 011.388.048c.186.2.316.46.3.715l-.009 4.03a.959.959 0 01-.3.68.972.972 0 01-.698.266l-4.053.002a.97.97 0 01-.679-.314 1.031 1.031 0 01.05-1.42.972.972 0 01.698-.266l1.7-.001-3.305-3.35a2.998 2.998 0 01-4.228-1.653H.999a1 1 0 010-2h4.166a2.998 2.998 0 014.06-1.735l3.449-3.268-1.745.002a.979.979 0 01-.631-1.692c.199-.186.459-.316.713-.3l4.025.009c.247.008.493.1.679.3.186.2.274.451.265.7l.002 4.046a.972.972 0 01-.313.68 1.03 1.03 0 01-1.42-.05.973.973 0 01-.266-.7V3.295l-3.34 3.301z"];
@@ -9130,6 +9137,7 @@ var IconSvgPaths16 = /*#__PURE__*/Object.freeze({
     Flag: flag,
     Flame: flame,
     Flash: flash,
+    FloatingPoint: floatingPoint,
     FloppyDisk: floppyDisk,
     FlowBranch: flowBranch,
     FlowEnd: flowEnd,
@@ -9864,6 +9872,8 @@ var flag$1 = ["M3 3c-.55 0-1 .45-1 1v15c0 .55.45 1 1 1s1-.45 1-1V4c0-.55-.45-1-1
 var flame$1 = ["M11.622 0c0 1.71.49 3.077 1.472 4.103C16.364 6.496 18 9.23 18 12.308c0 3.418-1.962 5.983-5.887 7.692 2.887-3 2.453-4.23-.49-8C8.5 13.5 9 14.5 9.5 16.5c-1.048 0-2 0-2.5-.5 0 .684 1.197 2.5 1.952 4-3.924-1.026-8.123-7.18-6.651-7.692.981-.342 2.126-.171 3.434.513C4.1 6.667 6.062 2.393 11.622 0z"];
 
 var flash$1 = ["M4.96 6.37a1.003 1.003 0 001.42-1.42l-2-2a1.07 1.07 0 00-.71-.28 1.003 1.003 0 00-.71 1.71l2 1.99zm9.37.3c.28 0 .53-.11.71-.29l2-2a1.003 1.003 0 00-1.42-1.42l-2 2a1.003 1.003 0 00.71 1.71zM10 5c.55 0 1-.45 1-1V1c0-.55-.45-1-1-1S9 .45 9 1v3c0 .55.45 1 1 1zm-5 5c0-.55-.45-1-1-1H1c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1zm14-1h-3c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1s-.45-1-1-1zm-9-3c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm5.04 1.63a1.003 1.003 0 00-1.42 1.42l2 2a1.003 1.003 0 001.42-1.42l-2-2zM10 15c-.55 0-1 .45-1 1v3c0 .55.45 1 1 1s1-.45 1-1v-3c0-.55-.45-1-1-1zm-4.33-1.67c-.28 0-.53.11-.71.29l-2 2a1.003 1.003 0 001.42 1.42l2-2a1.003 1.003 0 00-.71-1.71z"];
+
+var floatingPoint$1 = ["M1 6.648c.343 0 .676-.028 1-.085.324-.057.614-.152.871-.284.267-.133.49-.303.672-.512.19-.208.314-.464.371-.767h1.329v9.947H3.457v-7.02H1V6.648zm13.965-1.635c.688 0 1.247.16 1.677.478.44.31.78.711 1.018 1.204.247.483.413 1.016.495 1.6.092.583.137 1.149.137 1.696 0 .547-.045 1.112-.137 1.696a5.182 5.182 0 01-.495 1.614 3.234 3.234 0 01-1.018 1.203c-.43.31-.99.465-1.677.465-.688 0-1.251-.155-1.691-.465-.431-.319-.77-.72-1.018-1.203a5.714 5.714 0 01-.495-1.614 12.116 12.116 0 01-.123-1.696c0-.547.04-1.113.123-1.696a5.534 5.534 0 01.495-1.6 3.26 3.26 0 011.018-1.204c.44-.319 1.004-.478 1.691-.478zm0 8.657c.34 0 .623-.096.853-.287.229-.2.407-.465.536-.794a4.61 4.61 0 00.288-1.176c.056-.447.083-.92.083-1.422 0-.502-.027-.971-.083-1.409a4.61 4.61 0 00-.288-1.176c-.129-.337-.307-.602-.536-.793-.23-.2-.514-.301-.853-.301-.348 0-.637.1-.866.3-.22.192-.399.457-.537.794-.128.337-.22.73-.274 1.176-.056.438-.083.907-.083 1.409 0 .501.027.975.082 1.422.055.447.147.84.275 1.176.138.329.317.593.537.794.229.191.518.287.866.287zm-5.104-.588H7.875V15h1.986v-1.918z"];
 
 var floppyDisk$1 = ["M14 1h-3v5h3V1zm5.71 2.29l-3-3A.997.997 0 0016 0h-1v7H5V0H1C.45 0 0 .45 0 1v18c0 .55.45 1 1 1h18c.55 0 1-.45 1-1V4c0-.28-.11-.53-.29-.71zM17 19H3v-8c0-.55.45-1 1-1h12c.55 0 1 .45 1 1v8z"];
 
@@ -10799,6 +10809,7 @@ var IconSvgPaths20 = /*#__PURE__*/Object.freeze({
     Flag: flag$1,
     Flame: flame$1,
     Flash: flash$1,
+    FloatingPoint: floatingPoint$1,
     FloppyDisk: floppyDisk$1,
     FlowBranch: flowBranch$1,
     FlowEnd: flowEnd$1,
@@ -11304,7 +11315,7 @@ var Spinner = /** @class */ (function (_super) {
     };
     Spinner.prototype.render = function () {
         var _a;
-        var _b = this.props, className = _b.className, intent = _b.intent, value = _b.value, _c = _b.tagName, tagName = _c === void 0 ? "div" : _c;
+        var _b = this.props, className = _b.className, intent = _b.intent, value = _b.value, _c = _b.tagName, tagName = _c === void 0 ? "div" : _c, htmlProps = __rest(_b, ["className", "intent", "value", "tagName"]);
         var size = this.getSize();
         var classes = classnames(SPINNER, intentClass(intent), (_a = {}, _a[SPINNER_NO_SPIN] = value != null, _a), className);
         // keep spinner track width consistent at all sizes (down to about 10px).
@@ -11313,10 +11324,7 @@ var Spinner = /** @class */ (function (_super) {
         // multiple DOM elements around SVG are necessary to properly isolate animation:
         // - SVG elements in IE do not support anim/trans so they must be set on a parent HTML element.
         // - SPINNER_ANIMATION isolates svg from parent display and is always centered inside root element.
-        return react.createElement(tagName, {
-            className: classes,
-            role: "progressbar",
-        }, react.createElement(tagName, { className: SPINNER_ANIMATION }, react.createElement("svg", { width: size, height: size, strokeWidth: strokeWidth.toFixed(2), viewBox: this.getViewBox(strokeWidth) },
+        return react.createElement(tagName, __assign({ "aria-valuemax": 100, "aria-valuemin": 0, "aria-valuenow": value === undefined ? undefined : value * 100, className: classes, role: "progressbar" }, htmlProps), react.createElement(tagName, { className: SPINNER_ANIMATION }, react.createElement("svg", { width: size, height: size, strokeWidth: strokeWidth.toFixed(2), viewBox: this.getViewBox(strokeWidth) },
             react.createElement("path", { className: SPINNER_TRACK, d: SPINNER_TRACK$1 }),
             react.createElement("path", { className: SPINNER_HEAD, d: SPINNER_TRACK$1, pathLength: PATH_LENGTH, strokeDasharray: "".concat(PATH_LENGTH, " ").concat(PATH_LENGTH), strokeDashoffset: strokeOffset }))));
     };
@@ -11416,8 +11424,9 @@ var AbstractButton = /** @class */ (function (_super) {
     }
     AbstractButton.prototype.getCommonButtonProps = function () {
         var _a;
-        var _b = this.props, active = _b.active, alignText = _b.alignText, fill = _b.fill, large = _b.large, loading = _b.loading, outlined = _b.outlined, minimal = _b.minimal, small = _b.small, tabIndex = _b.tabIndex;
-        var disabled = this.props.disabled || loading;
+        var _b;
+        var _c = this.props, active = _c.active, alignText = _c.alignText, fill = _c.fill, large = _c.large, _d = _c.loading, loading = _d === void 0 ? false : _d, outlined = _c.outlined, minimal = _c.minimal, small = _c.small, tabIndex = _c.tabIndex;
+        var disabled = (_b = this.props.disabled) !== null && _b !== void 0 ? _b : loading;
         var className = classnames(BUTTON, (_a = {},
             _a[ACTIVE] = !disabled && (active || this.state.isActive),
             _a[DISABLED] = disabled,
@@ -11540,7 +11549,7 @@ var Menu = /** @class */ (function (_super) {
         var _a;
         var _b = this.props, className = _b.className, children = _b.children, large = _b.large, ulRef = _b.ulRef, htmlProps = __rest(_b, ["className", "children", "large", "ulRef"]);
         var classes = classnames(MENU, (_a = {}, _a[LARGE] = large, _a), className);
-        return (react.createElement("ul", __assign({}, htmlProps, { className: classes, ref: ulRef }), children));
+        return (react.createElement("ul", __assign({ role: "menu" }, htmlProps, { className: classes, ref: ulRef }), children));
     };
     Menu.displayName = "".concat(DISPLAYNAME_PREFIX, ".Menu");
     return Menu;
@@ -11629,7 +11638,7 @@ var MenuItem = /** @class */ (function (_super) {
         var _a, _b;
         var _c = this.props, 
         // eslint-disable-next-line deprecation/deprecation
-        active = _c.active, className = _c.className, children = _c.children, disabled = _c.disabled, icon = _c.icon, intent = _c.intent, labelClassName = _c.labelClassName, labelElement = _c.labelElement, multiline = _c.multiline, popoverProps = _c.popoverProps, selected = _c.selected, shouldDismissPopover = _c.shouldDismissPopover, text = _c.text, textClassName = _c.textClassName, _d = _c.tagName, tagName = _d === void 0 ? "a" : _d, htmlTitle = _c.htmlTitle, htmlProps = __rest(_c, ["active", "className", "children", "disabled", "icon", "intent", "labelClassName", "labelElement", "multiline", "popoverProps", "selected", "shouldDismissPopover", "text", "textClassName", "tagName", "htmlTitle"]);
+        active = _c.active, className = _c.className, children = _c.children, disabled = _c.disabled, icon = _c.icon, intent = _c.intent, labelClassName = _c.labelClassName, labelElement = _c.labelElement, multiline = _c.multiline, popoverProps = _c.popoverProps, selected = _c.selected, shouldDismissPopover = _c.shouldDismissPopover, submenuProps = _c.submenuProps, text = _c.text, textClassName = _c.textClassName, _d = _c.tagName, tagName = _d === void 0 ? "a" : _d, htmlTitle = _c.htmlTitle, htmlProps = __rest(_c, ["active", "className", "children", "disabled", "icon", "intent", "labelClassName", "labelElement", "multiline", "popoverProps", "selected", "shouldDismissPopover", "submenuProps", "text", "textClassName", "tagName", "htmlTitle"]);
         var hasIcon = icon != null;
         var hasSubmenu = children != null;
         var intentClass$1 = intentClass(intent);
@@ -11640,13 +11649,13 @@ var MenuItem = /** @class */ (function (_super) {
             _a[POPOVER_DISMISS] = shouldDismissPopover && !disabled && !hasSubmenu,
             _a[SELECTED] = selected || (active && intentClass$1 === undefined),
             _a), className);
-        var target = react.createElement(tagName, __assign(__assign(__assign({ tabIndex: 0 }, htmlProps), (disabled ? DISABLED_PROPS : {})), { className: anchorClasses }), hasIcon ? (
+        var target = react.createElement(tagName, __assign(__assign(__assign({ role: "menuitem", tabIndex: 0 }, htmlProps), (disabled ? DISABLED_PROPS : {})), { className: anchorClasses }), hasIcon ? (
         // wrap icon in a <span> in case `icon` is a custom element rather than a built-in icon identifier,
         // so that we always render this class
         react.createElement("span", { className: MENU_ITEM_ICON },
             react.createElement(Icon, { icon: icon, "aria-hidden": true, tabIndex: -1 }))) : undefined, react.createElement(Text, { className: classnames(FILL, textClassName), ellipsize: !multiline, title: htmlTitle }, text), this.maybeRenderLabel(labelElement), hasSubmenu ? (react.createElement(Icon, { className: MENU_SUBMENU_ICON, title: "Open sub menu", icon: "caret-right" })) : undefined);
         var liClasses = classnames((_b = {}, _b[MENU_SUBMENU] = hasSubmenu, _b));
-        return react.createElement("li", { className: liClasses }, this.maybeRenderPopover(target, children));
+        return (react.createElement("li", { className: liClasses, role: "none" }, this.maybeRenderPopover(target, children)));
     };
     MenuItem.prototype.maybeRenderLabel = function (labelElement) {
         var _a = this.props, label = _a.label, labelClassName = _a.labelClassName;
@@ -11661,10 +11670,10 @@ var MenuItem = /** @class */ (function (_super) {
         if (children == null) {
             return target;
         }
-        var _a = this.props, disabled = _a.disabled, popoverProps = _a.popoverProps;
+        var _a = this.props, disabled = _a.disabled, popoverProps = _a.popoverProps, submenuProps = _a.submenuProps;
         return (
         /* eslint-disable-next-line deprecation/deprecation */
-        react.createElement(Popover, __assign({ autoFocus: false, captureDismiss: false, disabled: disabled, enforceFocus: false, hoverCloseDelay: 0, interactionKind: PopoverInteractionKind.HOVER, modifiers: SUBMENU_POPOVER_MODIFIERS, position: Position.RIGHT_TOP, usePortal: false }, popoverProps, { content: react.createElement(Menu, null, children), minimal: true, popoverClassName: classnames(MENU_SUBMENU, popoverProps === null || popoverProps === void 0 ? void 0 : popoverProps.popoverClassName), target: target })));
+        react.createElement(Popover, __assign({ autoFocus: false, captureDismiss: false, disabled: disabled, enforceFocus: false, hoverCloseDelay: 0, interactionKind: PopoverInteractionKind.HOVER, modifiers: SUBMENU_POPOVER_MODIFIERS, position: Position.RIGHT_TOP, usePortal: false }, popoverProps, { content: react.createElement(Menu, __assign({}, submenuProps), children), minimal: true, popoverClassName: classnames(MENU_SUBMENU, popoverProps === null || popoverProps === void 0 ? void 0 : popoverProps.popoverClassName), target: target })));
     };
     MenuItem.defaultProps = {
         active: false,
@@ -11964,6 +11973,7 @@ var HTMLSelect = /** @class */ (function (_super) {
     }
     HTMLSelect.prototype.render = function () {
         var _a;
+        var _this = this;
         var _b = this.props, className = _b.className, disabled = _b.disabled, elementRef = _b.elementRef, fill = _b.fill, iconProps = _b.iconProps, large = _b.large, minimal = _b.minimal, _c = _b.options, options = _c === void 0 ? [] : _c, htmlProps = __rest(_b, ["className", "disabled", "elementRef", "fill", "iconProps", "large", "minimal", "options"]);
         var classes = classnames(HTML_SELECT, (_a = {},
             _a[DISABLED] = disabled,
@@ -11973,7 +11983,7 @@ var HTMLSelect = /** @class */ (function (_super) {
             _a), className);
         var optionChildren = options.map(function (option) {
             var props = typeof option === "object" ? option : { value: option };
-            return react.createElement("option", __assign({}, props, { key: props.value, children: props.label || props.value }));
+            return (react.createElement("option", __assign({}, props, { key: props.value, children: props.label || props.value, selected: _this.props.value === props.value })));
         });
         return (react.createElement("div", { className: classes },
             react.createElement("select", __assign({ disabled: disabled, ref: elementRef }, htmlProps, { multiple: false }),
@@ -12005,6 +12015,7 @@ var DATEINPUT_POPOVER = "".concat(DATEINPUT, "-popover");
 var DATEPICKER = "".concat(NS$1, "-datepicker");
 var DATEPICKER_CAPTION = "".concat(DATEPICKER, "-caption");
 var DATEPICKER_CAPTION_MEASURE = "".concat(DATEPICKER_CAPTION, "-measure");
+var DATEPICKER_CONTENT = "".concat(DATEPICKER, "-content");
 var DATEPICKER_DAY_WRAPPER = "".concat(DATEPICKER, "-day-wrapper");
 var DATEPICKER_FOOTER = "".concat(DATEPICKER, "-footer");
 var DATEPICKER_MONTH_SELECT = "".concat(DATEPICKER, "-month-select");
@@ -14504,8 +14515,8 @@ var DatePickerCaption = /** @class */ (function (_super) {
             years.push({ value: displayYear, disabled: true });
         }
         this.displayedMonthText = months[displayMonth];
-        var monthSelect = (react.createElement(HTMLSelect, { iconProps: { style: { right: this.state.monthRightOffset } }, className: DATEPICKER_MONTH_SELECT, key: "month", minimal: true, onChange: this.handleMonthSelectChange, value: displayMonth, options: monthOptionElements }));
-        var yearSelect = (react.createElement(HTMLSelect, { className: DATEPICKER_YEAR_SELECT, key: "year", minimal: true, onChange: this.handleYearSelectChange, value: displayYear, options: years }));
+        var monthSelect = (react.createElement(HTMLSelect, { "aria-label": "Month", iconProps: { style: { right: this.state.monthRightOffset } }, className: DATEPICKER_MONTH_SELECT, key: "month", minimal: true, onChange: this.handleMonthSelectChange, value: displayMonth, options: monthOptionElements }));
+        var yearSelect = (react.createElement(HTMLSelect, { "aria-label": "Year", className: DATEPICKER_YEAR_SELECT, key: "year", minimal: true, onChange: this.handleYearSelectChange, value: displayYear, options: years }));
         var orderedSelects = this.props.reverseMonthAndYearMenus
             ? [yearSelect, monthSelect]
             : [monthSelect, yearSelect];
@@ -14598,8 +14609,8 @@ var DatePickerNavbar = /** @class */ (function (_super) {
     DatePickerNavbar.prototype.render = function () {
         var _a = this.props, classes = _a.classNames, month = _a.month, maxDate = _a.maxDate, minDate = _a.minDate;
         return (react.createElement("div", { className: classnames(DATEPICKER_NAVBAR, classes.navBar) },
-            this.props.hideLeftNavButton || (react.createElement(Button, { className: classes.navButtonPrev, disabled: areSameMonth(month, minDate), icon: "chevron-left", minimal: true, onClick: this.handlePreviousClick })),
-            this.props.hideRightNavButton || (react.createElement(Button, { className: classes.navButtonNext, disabled: areSameMonth(month, maxDate), icon: "chevron-right", minimal: true, onClick: this.handleNextClick }))));
+            this.props.hideLeftNavButton || (react.createElement(Button, { "aria-label": "Go to previous month", className: classes.navButtonPrev, disabled: areSameMonth(month, minDate), icon: "chevron-left", minimal: true, onClick: this.handlePreviousClick })),
+            this.props.hideRightNavButton || (react.createElement(Button, { "aria-label": "Go to next month", className: classes.navButtonNext, disabled: areSameMonth(month, maxDate), icon: "chevron-right", minimal: true, onClick: this.handleNextClick }))));
     };
     return DatePickerNavbar;
 }(react.PureComponent));
@@ -14639,7 +14650,7 @@ var Shortcuts = /** @class */ (function (_super) {
             ? createDefaultShortcuts(this.props.allowSingleDayRange, this.props.timePrecision !== undefined, this.props.useSingleDateShortcuts === true)
             : this.props.shortcuts;
         var shortcutElements = shortcuts.map(function (shortcut, index) { return (react.createElement(MenuItem, { active: _this.props.selectedShortcutIndex === index, disabled: !_this.isShortcutInRange(shortcut.dateRange), key: index, onClick: _this.getShorcutClickHandler(shortcut, index), shouldDismissPopover: false, text: shortcut.label })); });
-        return (react.createElement(Menu, { className: DATERANGEPICKER_SHORTCUTS, tabIndex: 0 }, shortcutElements));
+        return (react.createElement(Menu, { "aria-label": "Date picker shortcuts", className: DATERANGEPICKER_SHORTCUTS, tabIndex: 0 }, shortcutElements));
     };
     Shortcuts.defaultProps = {
         selectedShortcutIndex: -1,
@@ -15088,14 +15099,15 @@ var DatePicker = /** @class */ (function (_super) {
     }
     DatePicker.prototype.render = function () {
         var _a;
-        var _b = this.props, className = _b.className, dayPickerProps = _b.dayPickerProps, locale = _b.locale, localeUtils = _b.localeUtils, maxDate = _b.maxDate, minDate = _b.minDate, showActionsBar = _b.showActionsBar;
+        var _b = this.props, className = _b.className, dayPickerProps = _b.dayPickerProps, footerElement = _b.footerElement, locale = _b.locale, localeUtils = _b.localeUtils, maxDate = _b.maxDate, minDate = _b.minDate, showActionsBar = _b.showActionsBar;
         var _c = this.state, displayMonth = _c.displayMonth, displayYear = _c.displayYear;
         return (react.createElement("div", { className: classnames(DATEPICKER, className) },
             this.maybeRenderShortcuts(),
-            react.createElement("div", null,
+            react.createElement("div", { className: DATEPICKER_CONTENT },
                 react.createElement(DayPicker, __assign({ showOutsideDays: true, locale: locale, localeUtils: localeUtils, modifiers: this.getDatePickerModifiers() }, dayPickerProps, { canChangeMonth: true, captionElement: this.renderCaption, navbarElement: this.renderNavbar, disabledDays: this.getDisabledDaysModifier(), fromMonth: minDate, month: new Date(displayYear, displayMonth), onDayClick: this.handleDayClick, onMonthChange: this.handleMonthChange, selectedDays: this.state.value, toMonth: maxDate, renderDay: (_a = dayPickerProps === null || dayPickerProps === void 0 ? void 0 : dayPickerProps.renderDay) !== null && _a !== void 0 ? _a : this.renderDay })),
                 this.maybeRenderTimePicker(),
-                showActionsBar && this.renderOptionsBar())));
+                showActionsBar && this.renderOptionsBar(),
+                footerElement)));
     };
     DatePicker.prototype.componentDidUpdate = function (prevProps, prevState) {
         _super.prototype.componentDidUpdate.call(this, prevProps, prevState);

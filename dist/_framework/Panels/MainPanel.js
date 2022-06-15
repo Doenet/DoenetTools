@@ -2,7 +2,7 @@ import React from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 const ContentWrapper = styled.div`
   grid-area: mainPanel;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   height: 100%;
   border-radius: 0 0 4px 4px;
   overflow: auto;
@@ -11,7 +11,7 @@ const ControlsWrapper = styled.div`
   grid-area: mainControls;
   display: flex;
   gap: 4px;
-  background-color: hsl(0, 0%, 89%);
+  background-color: var(--mainGray);
   border-radius: 4px 4px 0 0;
   overflow: auto hidden;
 `;

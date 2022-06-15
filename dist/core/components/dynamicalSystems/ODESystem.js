@@ -43,6 +43,12 @@ export default class ODESystem extends InlineComponent {
       defaultValue: 0,
       public: true,
     };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
+    };
 
     attributes.renderMode = {
       createComponentOfType: "text",
@@ -150,7 +156,9 @@ export default class ODESystem extends InlineComponent {
       }],
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
@@ -209,7 +217,9 @@ export default class ODESystem extends InlineComponent {
     stateVariableDefinitions.rhss = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       entryPrefixes: ["rhs", "righthandside"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
@@ -268,7 +278,9 @@ export default class ODESystem extends InlineComponent {
     stateVariableDefinitions.initialConditions = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       entryPrefixes: ["initialCondition"],
       defaultValueByArrayKey: () => me.fromAst(0),
       returnArraySizeDependencies: () => ({
@@ -337,7 +349,9 @@ export default class ODESystem extends InlineComponent {
 
     stateVariableDefinitions.equationTag = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["number"],
       returnDependencies({ stateValues }) {
@@ -366,7 +380,9 @@ export default class ODESystem extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies() {
         return {
@@ -398,6 +414,10 @@ export default class ODESystem extends InlineComponent {
             dependencyType: "stateVariable",
             variableName: "displaySmallAsZero"
           },
+          padZeros: {
+            dependencyType: "stateVariable",
+            variableName: "padZeros"
+          },
           independentVariable: {
             dependencyType: "stateVariable",
             variableName: "independentVariable"
@@ -424,6 +444,17 @@ export default class ODESystem extends InlineComponent {
       },
       definition({ dependencyValues, usedDefault }) {
 
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+
         let systemDisplay = [];
         let indVar = dependencyValues.independentVariable.toLatex();
         for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
@@ -434,7 +465,7 @@ export default class ODESystem extends InlineComponent {
             dependencyValues, usedDefault
           });
 
-          let thisLatex = `\\frac{d${variable}}{d${indVar}} &=  ${rhs.toLatex()}`
+          let thisLatex = `\\frac{d${variable}}{d${indVar}} &=  ${rhs.toLatex(params)}`
           if (dependencyValues.number && dim === 0) {
             thisLatex += `\\tag{${dependencyValues.equationTag}}`
           } else {
@@ -453,7 +484,7 @@ export default class ODESystem extends InlineComponent {
               dependencyValues, usedDefault
             });
 
-            systemDisplay.push(`${variable}(${indVarVal0}) &= ${ic.toLatex()}\\notag`)
+            systemDisplay.push(`${variable}(${indVarVal0}) &= ${ic.toLatex(params)}\\notag`)
           }
         }
         let latex = systemDisplay.join('\\\\');
@@ -607,11 +638,15 @@ export default class ODESystem extends InlineComponent {
       isArray: true,
       entryPrefixes: ["numericalSolution"],
       public: true,
-      componentType: "function",
-      createWorkspace: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        fDefinition: "numericalSolutionFDefinitions"
+      shadowingInstructions: {
+        createComponentOfType: "function",
+        addStateVariablesShadowingStateVariables: {
+          fDefinition: {
+            stateVariableToShadow: "numericalSolutionFDefinitions",
+          }
+        },
       },
+      createWorkspace: true,
       returnArraySizeDependencies: () => ({
         nDimensions: {
           dependencyType: "stateVariable",

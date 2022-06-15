@@ -378,5 +378,5 @@ export default React.memo(function subsetOfReals(props) {
     </svg>
   </>
   );
-}
+})
 

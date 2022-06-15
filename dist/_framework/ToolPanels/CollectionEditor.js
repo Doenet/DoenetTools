@@ -114,9 +114,9 @@ export default function CollectionEditor() {
       margin: "10px 20px"
     }
   }, assignedEntries, /* @__PURE__ */ React.createElement("div", {
-    style: {height: "10px", background: "black", borderRadius: "4px"}
+    style: {height: "10px", background: "var(--canvastext)", borderRadius: "4px"}
   }), availableEntries, /* @__PURE__ */ React.createElement("div", {
-    style: {height: "10px", background: "black", borderRadius: "4px"}
+    style: {height: "10px", background: "var(--canvastext)", borderRadius: "4px"}
   }), /* @__PURE__ */ React.createElement(GroupsVerificationTable, {
     doenetId
   }));
@@ -255,7 +255,7 @@ function CollectionEntryDisplayLine({
     style: {
       display: "flex",
       flexDirection: "row",
-      background: "#e3e3e3",
+      background: "var(--mainGray)",
       borderRadius: "4px",
       padding: "4px"
     }
@@ -312,19 +312,19 @@ function GroupsVerificationTable({doenetId}) {
         colSpan: 3,
         style: {
           textAlign: "center",
-          backgroundColor: "#1a5a99",
-          color: "white",
-          borderBottom: "2px solid black"
+          backgroundColor: "var(--mainBlue)",
+          color: "var(--canvas)",
+          borderBottom: "2px solid var(--canvastext)"
         }
       }, "Group ", idx + 1)), /* @__PURE__ */ React.createElement("tr", {
         style: {
-          backgroundColor: "#1a5a99",
-          color: "white"
+          backgroundColor: "var(--mainBlue)",
+          color: "var(--canvas)"
         }
       }, /* @__PURE__ */ React.createElement("th", {
         style: {
           whiteSpace: "nowrap",
-          borderRight: "2px solid black"
+          borderRight: "2px solid var(--canvastext)"
         }
       }, "First"), /* @__PURE__ */ React.createElement("th", {
         style: {
@@ -333,7 +333,7 @@ function GroupsVerificationTable({doenetId}) {
       }, "Last"), /* @__PURE__ */ React.createElement("th", {
         style: {
           whiteSpace: "nowrap",
-          borderLeft: "2px solid black"
+          borderLeft: "2px solid var(--canvastext)"
         }
       }, "Email"))), /* @__PURE__ */ React.createElement("tbody", null, group.map((email, idz) => /* @__PURE__ */ React.createElement("tr", {
         key: email

@@ -60,7 +60,7 @@ function EditableText({text, submit}) {
   let textSpanStyle = {width: "110px", display: "inline-block", textOverflow: "ellipsis", whiteSpace: "nowrap"};
   if (displayText === "") {
     displayText = " *Required";
-    textSpanStyle["border"] = "solid 2px #C1292E";
+    textSpanStyle["border"] = "solid 2px var(--mainRed)";
   }
   if (!editingMode) {
     return /* @__PURE__ */ React.createElement("span", {

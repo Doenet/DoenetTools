@@ -55,7 +55,7 @@ export default function SurveyDataViewer() {
     cellsJSX.unshift(/* @__PURE__ */ React.createElement("td", null, svObj.email));
     cellsJSX.unshift(/* @__PURE__ */ React.createElement("td", null, `${svObj.firstName} ${svObj.lastName}`));
     rowsJSX.push(/* @__PURE__ */ React.createElement("tr", {
-      style: {borderBottom: "1pt solid black"}
+      style: {borderBottom: "1pt solid var(--canvastext)"}
     }, cellsJSX));
   }
   let thJSX = [];
@@ -70,6 +70,6 @@ export default function SurveyDataViewer() {
   }, /* @__PURE__ */ React.createElement("table", {
     style: {borderCollapse: "collapse"}
   }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", {
-    style: {borderBottom: "2pt solid black"}
+    style: {borderBottom: "2pt solid var(--canvastext)"}
   }, thJSX)), /* @__PURE__ */ React.createElement("tbody", null, rowsJSX)));
 }

@@ -10,7 +10,7 @@ export default React.memo(function orbitalDiagram(props) {
   let {name, SVs} = useDoenetRenderer(props);
   let fixed = createRef(SVs.fixed);
   fixed.current = SVs.fixed;
-  if (SVs.hidden) {
+  if (SVs.hidden || !SVs.value) {
     return null;
   }
   let rows = [...SVs.value].reverse();

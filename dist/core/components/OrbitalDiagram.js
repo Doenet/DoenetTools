@@ -58,7 +58,9 @@ export default class OrbitalDiagram extends BaseComponent {
     stateVariableDefinitions.value = {
       defaultValue: [{ orbitalText: "", boxes: [] }],
       public: true,
-      componentType: "orbitalDiagram",
+      shadowingInstructions: {
+        createComponentOfType: "orbitalDiagram",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         orbitalDiagramChildren: {

@@ -184,7 +184,7 @@ export default class SelectRandomNumbers extends SampleRandomNumbers {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
-    for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals"]) {
+    for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
       if (attr in component.attributes) {
         attributesToConvert[attr] = component.attributes[attr]
       }

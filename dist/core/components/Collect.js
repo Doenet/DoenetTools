@@ -59,9 +59,9 @@ export default class Collect extends CompositeComponent {
       public: true,
     };
 
-    attributes.targetAttributesToAlwaysIgnore = {
+    attributes.targetAttributesToIgnoreRecursively = {
       createComponentOfType: "textList",
-      createStateVariable: "targetAttributesToAlwaysIgnore",
+      createStateVariable: "targetAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
     };
@@ -77,6 +77,11 @@ export default class Collect extends CompositeComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.link = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { link: true } })
+    }
 
     stateVariableDefinitions.targetComponent = {
       shadowVariable: true,

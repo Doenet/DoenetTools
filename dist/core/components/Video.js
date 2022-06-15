@@ -44,146 +44,152 @@ export default class Video extends BlockComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.width = {
-      defaultValue: {size:720,isAbsolute:true},
+      defaultValue: { size: 720, isAbsolute: true },
       public: true,
       hasEssential: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       forRenderer: true,
-      additionalStateVariablesDefined:[{
-        variableName:'height',
-        componentType: "_componentSize",
-        defaultValue: {size:405,isAbsolute:true},
+      additionalStateVariablesDefined: [{
+        variableName: 'height',
+        shadowingInstructions: {
+          createComponentOfType: "_componentSize",
+        },
+        defaultValue: { size: 405, isAbsolute: true },
         public: true,
         forRenderer: true,
         hasEssential: true,
 
       },
       {
-        variableName:'aspectRatio',
-        componentType: "number",
-        defaultValue: 16/9,
+        variableName: 'aspectRatio',
+        shadowingInstructions: {
+          createComponentOfType: "number",
+        },
+        defaultValue: 16 / 9,
         public: true,
         forRenderer: true,
         hasEssential: true,
       }
-    ],
-      returnDependencies:()=>({
+      ],
+      returnDependencies: () => ({
         widthAttr: {
-          dependencyType:'attributeComponent',
-          attributeName:'width',
-          variableNames:['componentSize'],
+          dependencyType: 'attributeComponent',
+          attributeName: 'width',
+          variableNames: ['componentSize'],
         },
         heightAttr: {
-          dependencyType:'attributeComponent',
-          attributeName:'height',
-          variableNames:['componentSize'],
+          dependencyType: 'attributeComponent',
+          attributeName: 'height',
+          variableNames: ['componentSize'],
         },
         aspectRatioAttr: {
-          dependencyType:'attributeComponent',
-          attributeName:'aspectRatio',
-          variableNames:['value'],
+          dependencyType: 'attributeComponent',
+          attributeName: 'aspectRatio',
+          variableNames: ['value'],
         }
       }),
-      definition:({dependencyValues})=>{
-        console.log("dependencyValues",dependencyValues)
-      
-        if (dependencyValues.widthAttr){
+      definition: ({ dependencyValues }) => {
+        console.log("dependencyValues", dependencyValues)
+
+        if (dependencyValues.widthAttr) {
           let width = dependencyValues.widthAttr.stateValues.componentSize;
-          if (!width.isAbsolute){ throw Error("Have not implemented relative width for video")}
-          if (dependencyValues.heightAttr){
+          if (!width.isAbsolute) { throw Error("Have not implemented relative width for video") }
+          if (dependencyValues.heightAttr) {
             //Have width and height so override aspectRatio even if it exists
             let height = dependencyValues.heightAttr.stateValues.componentSize;
-            if (!height.isAbsolute){ throw Error("Have not implemented relative height for video")}
-            let aspectRatio = width.size/height.size;
+            if (!height.isAbsolute) { throw Error("Have not implemented relative height for video") }
+            let aspectRatio = width.size / height.size;
             return {
-              setValue:{
+              setValue: {
                 width,
                 height,
                 aspectRatio
               }
             }
-          }else if(dependencyValues.aspectRatioAttr){
+          } else if (dependencyValues.aspectRatioAttr) {
             //Have width and aspectRatio but not height
             let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
-            let height = {isAbsolute:true,size:width.size/aspectRatio}
+            let height = { isAbsolute: true, size: width.size / aspectRatio }
             return {
-              setValue:{
+              setValue: {
                 width,
                 height,
                 aspectRatio
               }
             }
-          }else{
+          } else {
             //Have width and not height or aspectRatio
-            let height = {isAbsolute:true,size:width.size/(16/9)}
+            let height = { isAbsolute: true, size: width.size / (16 / 9) }
             return {
-              setValue:{
+              setValue: {
                 width,
                 height
               },
-              useEssentialOrDefaultValue:{
-                aspectRatio:true,
+              useEssentialOrDefaultValue: {
+                aspectRatio: true,
               }
             }
           }
-        }else{
+        } else {
           //Don't have width
 
-          if (dependencyValues.heightAttr){
+          if (dependencyValues.heightAttr) {
             let height = dependencyValues.heightAttr.stateValues.componentSize;
-            if (!height.isAbsolute){ throw Error("Have not implemented relative height for video")}
+            if (!height.isAbsolute) { throw Error("Have not implemented relative height for video") }
 
-            if(dependencyValues.aspectRatioAttr){
+            if (dependencyValues.aspectRatioAttr) {
               //Have height and aspectRatio, No width
               let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
-              let width = {isAbsolute:true,size:height.size*aspectRatio}
+              let width = { isAbsolute: true, size: height.size * aspectRatio }
               return {
-                setValue:{
+                setValue: {
                   width,
                   height,
                   aspectRatio
                 }
               }
-            }else{
+            } else {
               //Have height, no width, no aspectRatio
-              let width = {isAbsolute:true,size:height.size*(16/9)}
+              let width = { isAbsolute: true, size: height.size * (16 / 9) }
               return {
-                setValue:{
+                setValue: {
                   width,
                   height
                 },
-                useEssentialOrDefaultValue:{
-                  aspectRatio:true,
+                useEssentialOrDefaultValue: {
+                  aspectRatio: true,
                 }
               }
             }
-          }else{
-            
-            if(dependencyValues.aspectRatioAttr){
+          } else {
+
+            if (dependencyValues.aspectRatioAttr) {
               //Have aspectRatio, No height, no width
               let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
-              let height = {isAbsolute:true,size:720/aspectRatio}
+              let height = { isAbsolute: true, size: 720 / aspectRatio }
               return {
-                setValue:{
+                setValue: {
                   aspectRatio,
                   height
                 },
-                useEssentialOrDefaultValue:{
-                  width:true,
+                useEssentialOrDefaultValue: {
+                  width: true,
                 }
               }
-            }else{
+            } else {
               //No aspectRatio, No height, no width
               return {
-                useEssentialOrDefaultValue:{
-                  width:true,
-                  height:true,
-                  aspectRatio:true,
+                useEssentialOrDefaultValue: {
+                  width: true,
+                  height: true,
+                  aspectRatio: true,
                 }
               }
             }
           }
-          
+
 
         }
       }

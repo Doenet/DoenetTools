@@ -10,7 +10,7 @@ export default React.memo(function Tabular(props) {
     width: sizeToCSS(SVs.width),
     height: sizeToCSS(SVs.height),
     borderCollapse: "collapse",
-    borderColor: "black",
+    borderColor: "var(--canvastext)",
     borderRadius: "var(--mainBorderRadius)"
   };
   if (SVs.top !== "none") {

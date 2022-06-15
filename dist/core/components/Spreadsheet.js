@@ -145,7 +145,9 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.numRows = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumRows: {
           dependencyType: "stateVariable",
@@ -181,7 +183,9 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.numColumns = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumColumns: {
           dependencyType: "stateVariable",
@@ -222,7 +226,9 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.height = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         heightAttr: {
@@ -257,7 +263,21 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.cells = {
       public: true,
-      componentType: "cell",
+      shadowingInstructions: {
+        createComponentOfType: "cell",
+        returnWrappingComponents(prefix) {
+          if (prefix === "cell") {
+            return [];
+          } else if (prefix === "row") {
+            return [["row"]];
+          } else if (prefix === "column") {
+            return [["column"]];
+          } else {
+            // range or entire array
+            return [["row"], ["cellBlock"]]
+          }
+        },
+      },
       forRenderer: true,
       isArray: true,
       entryPrefixes: ["cell", "row", "column", "range"],
@@ -281,18 +301,6 @@ export default class Spreadsheet extends BlockComponent {
         return [dependencyValues.numRows, dependencyValues.numColumns];
       },
       returnEntryDimensions: prefix => prefix === "range" ? 2 : 1,
-      returnWrappingComponents(prefix) {
-        if (prefix === "cell") {
-          return [];
-        } else if (prefix === "row") {
-          return [["row"]];
-        } else if (prefix === "column") {
-          return [["column"]];
-        } else {
-          // range or entire array
-          return [["row"], ["cellBlock"]]
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "cell") {
           // accept two formats: cellB1 or cell(1,2)
@@ -562,7 +570,21 @@ export default class Spreadsheet extends BlockComponent {
     stateVariableDefinitions.evaluatedCells = {
       isArray: true,
       public: true,
-      componentType: "cell",
+      shadowingInstructions: {
+        createComponentOfType: "cell",
+        returnWrappingComponents(prefix) {
+          if (prefix === "evaluatedCell") {
+            return [];
+          } else if (prefix === "evaluatedRow") {
+            return [["row"]];
+          } else if (prefix === "evaluatedColumn") {
+            return [["column"]];
+          } else {
+            // range or entire array
+            return [["row"], ["cellBlock"]]
+          }
+        },
+      },
       entryPrefixes: ["evaluatedCell", "evaluatedRow", "evaluatedColumn", "evaluatedRange"],
       nDimensions: 2,
       stateVariablesDeterminingDependencies: ["cellNamesByRowCol"],
@@ -580,18 +602,6 @@ export default class Spreadsheet extends BlockComponent {
         return [dependencyValues.numRows, dependencyValues.numColumns];
       },
       returnEntryDimensions: prefix => prefix === "range" ? 2 : 1,
-      returnWrappingComponents(prefix) {
-        if (prefix === "evaluatedCell") {
-          return [];
-        } else if (prefix === "evaluatedRow") {
-          return [["row"]];
-        } else if (prefix === "evaluatedColumn") {
-          return [["column"]];
-        } else {
-          // range or entire array
-          return [["row"], ["cellBlock"]]
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "evaluatedCell") {
           // accept two formats: evaluatedCellB1 or evaluatedCell(1,2)
@@ -811,7 +821,9 @@ export default class Spreadsheet extends BlockComponent {
       isArray: true,
       nDimensions: 2,
       public: true,
-      componentType: "point",
+      shadowingInstructions: {
+        createComponentOfType: "point",
+      },
       entryPrefixes: ["pointsInCell", "pointsInRow", "pointsInColumn", "pointsInRange"],
       returnArraySizeDependencies: () => ({
         numRows: {
