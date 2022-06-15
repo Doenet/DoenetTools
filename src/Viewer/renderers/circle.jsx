@@ -58,9 +58,19 @@ export default React.memo(function Circle(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
+      fillColor: SVs.selectedStyle.fillColor,
+      fillOpacity: 0.4,
+      highlightFillColor: SVs.selectedStyle.fillColor,
+      highlightFillOpacity: 0.4,
     };
 
-    if(SVs.showLabel && SVs.label !== "") {
+
+    if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
+      jsxCircleAttributes.hasInnerPoints = true;
+    }
+
+
+    if (SVs.showLabel && SVs.label !== "") {
       jsxCircleAttributes.label = {
       };
       if (SVs.applyStyleToLabel) {
@@ -207,6 +217,13 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
       }
 
+      if (circleJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
+        circleJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.highlightfillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
+      }
+
+
       circleJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
@@ -216,7 +233,8 @@ export default React.memo(function Circle(props) {
       }
 
       circleJXG.current.needsUpdate = true;
-      circleJXG.current.update()
+      circleJXG.current.update();
+
       if (circleJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
           circleJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor

@@ -47,7 +47,7 @@ export default React.memo(function Polygon(props) {
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
-      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"), 
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       visible: SVs.draggable && !SVs.fixed && !SVs.hidden,
       withLabel: false,
       layer: 10 * SVs.layer + 9,
@@ -74,7 +74,7 @@ export default React.memo(function Polygon(props) {
       layer: 10 * SVs.layer + 7,
 
       //specific to polygon
-      fillColor: 'none',
+      fillColor: SVs.selectedStyle.fillColor,
       highlight: false,
       vertices: jsxPointAttributes.current,
       borders: jsxBorderAttributes,
@@ -87,8 +87,8 @@ export default React.memo(function Polygon(props) {
       jsxPolygonAttributes.label.strokeColor = "#000000";
     }
 
-    if (SVs.selectedStyle.fillColor !== "none") {
-      jsxPolygonAttributes.fillColor = SVs.selectedStyle.fillColor;
+    if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
+      jsxPolygonAttributes.hasInnerPoints = true;
     }
 
 
@@ -96,7 +96,7 @@ export default React.memo(function Polygon(props) {
 
     let pts = [];
 
-    for(let p of SVs.numericalVertices) {
+    for (let p of SVs.numericalVertices) {
       pts.push(
         board.create('point', [...p], jsxPointAttributes.current)
       )
@@ -317,6 +317,11 @@ export default React.memo(function Polygon(props) {
         }
         polygonJXG.current.label.needsUpdate = true;
         polygonJXG.current.label.update();
+      }
+
+      if (polygonJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
+        polygonJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
+        polygonJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
       }
 
       polygonJXG.current.needsUpdate = true;
