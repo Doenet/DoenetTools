@@ -32,6 +32,11 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       return null;
     }
 
+    let fillColor = SVs.selectedStyle.fillColor;
+    if(fillColor === "none") {
+      fillColor = SVs.selectedStyle.lineColor;
+    }
+
     let jsxAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
@@ -39,10 +44,11 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       fixed: true,
       layer: 10 * SVs.layer + 7,
 
-      // TODO: use more appropriate style attribute
-      fillColor: SVs.selectedStyle.lineColor,
+      fillColor,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
       highlight: false,
 
+      // don't display points at left and right endpoints along function
       curveLeft: { visible: false },
       curveRight: { visible: false }
     };
@@ -91,6 +97,25 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       integralJXG.current.curveLeft.coords.setCoordinates(JXG.COORDS_BY_USER, [x1, y1]);
       integralJXG.current.curveRight.coords.setCoordinates(JXG.COORDS_BY_USER, [x2, y2]);
 
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = integralJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        integralJXG.current.setAttribute({ layer });
+      }
+
+      let fillColor = SVs.selectedStyle.fillColor;
+      if(fillColor === "none") {
+        fillColor = SVs.selectedStyle.lineColor;
+      }
+
+      if (integralJXG.current.visProp.fillcolor !== fillColor) {
+        integralJXG.current.visProp.fillcolor = fillColor;
+      }
+
+      if (integralJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        integralJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+      }
 
       // including both update and full updates for all parts of curve and board
       // makes sure that it updates consistently.

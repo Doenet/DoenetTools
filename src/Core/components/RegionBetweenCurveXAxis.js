@@ -19,7 +19,6 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
     }
 
 
-
     return attributes;
   }
 
@@ -41,21 +40,33 @@ export default class RegionBetweenCurveXAxis extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let lineDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          lineDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          lineDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          lineDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          lineDescription += "dotted ";
+        let styleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescription = dependencyValues.selectedStyle.lineColorWord;
+        } else {
+          styleDescription = dependencyValues.selectedStyle.fillColorWord;
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColorWord;
+        return { setValue: { styleDescription } };
+      }
+    }
 
-        return { setValue: { styleDescription: lineDescription } };
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " region";
+
+        return { setValue: { styleDescriptionWithNoun } };
       }
     }
 

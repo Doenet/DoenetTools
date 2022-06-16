@@ -96,14 +96,16 @@ export default React.memo(function Graph(props) {
       xaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
-          offset: [-5, -15]
+          offset: [-5, -15],
+          layer: 2,
         },
         minorTicks: 4,
         precision: 4,
         strokeColor: 'var(--canvastext)',
         drawLabels: SVs.displayXAxisTickLabels
       }
-      xaxisOptions.strokeColor = "var(--canvastext)"
+      xaxisOptions.strokeColor = "var(--canvastext)";
+      xaxisOptions.highlight = false;
 
       if (SVs.grid === "dense") {
         xaxisOptions.ticks.majorHeight = -1;
@@ -147,11 +149,14 @@ export default React.memo(function Graph(props) {
           strokeColor: "var(--canvastext)"
         }
       }
-      yaxisOptions.strokeColor = "var(--canvastext)"
+      yaxisOptions.strokeColor = "var(--canvastext)";
+      yaxisOptions.highlight = false;
+
       yaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
-          offset: [12, -2]
+          offset: [12, -2],
+          layer: 2
         },
         minorTicks: 4,
         precision: 4,

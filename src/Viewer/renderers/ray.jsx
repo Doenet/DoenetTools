@@ -47,6 +47,8 @@ export default React.memo(function Ray(props) {
       return;
     }
 
+    let fixed = !SVs.draggable || SVs.fixed;
+
     //things to be passed to JSXGraph as attributes
     var jsxRayAttributes = {
       name: SVs.label,
@@ -54,11 +56,15 @@ export default React.memo(function Ray(props) {
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: !SVs.draggable || SVs.fixed,
       layer: 10 * SVs.layer + 7,
+      fixed,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
+      highlight: !fixed,
       straightFirst: false,
     };
 
@@ -200,16 +206,33 @@ export default React.memo(function Ray(props) {
         // rayJXG.current.setAttribute({visible: false})
       }
 
+      let fixed = !SVs.draggable || SVs.fixed;
+
+      rayJXG.current.visProp.fixed = fixed;
+      rayJXG.current.visProp.highlight = !fixed;
+
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = rayJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        rayJXG.current.setAttribute({ layer });
+      }
+
       if (rayJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         rayJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         rayJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
       }
+      if (rayJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        rayJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+        rayJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
+      }
+      if (rayJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        rayJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
+        rayJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (rayJXG.current.visProp.dash !== newDash) {
         rayJXG.current.visProp.dash = newDash;
-      }
-      if (rayJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
-        rayJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
       }
 
       rayJXG.current.name = SVs.label;

@@ -57,8 +57,7 @@ export default React.memo(function Angle(props) {
       radius: SVs.numericalRadius,
       fillColor: angleColor,
       strokeColor: angleColor,
-      highlightFillColor: angleColor,
-      highlightStrokeColor: angleColor,
+      highlight: false
     };
 
 
