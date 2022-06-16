@@ -26,7 +26,7 @@ export default React.memo(function Curve(props) {
   let throughPointHoverVisible = useRef(null);
   let controlPointAttributes = useRef(null);
   let previousNumberOfPoints = useRef(null);
-  let segmentsJXG = useRef(null);
+  let segmentsJXG = useRef([]);
   let vectorControlsVisible = useRef(null);
   let hitObject = useRef(null);
   let vectorControlDirections = useRef(null);
@@ -73,9 +73,10 @@ export default React.memo(function Curve(props) {
       fixed: true,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
-      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       strokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
+      highlight: false,
     };
 
 
@@ -299,7 +300,7 @@ export default React.memo(function Curve(props) {
   }
 
   function deleteControls() {
-    if (segmentsJXG.current) {
+    if (segmentsJXG.current.length > 0) {
       segmentsJXG.current.forEach(x => x.forEach(y => {
         if (y) {
           y.off('down');
@@ -579,10 +580,22 @@ export default React.memo(function Curve(props) {
       curveJXG.current.visProp["visible"] = visible;
       curveJXG.current.visPropCalc["visible"] = visible;
 
+      let curveLayer = 10 * SVs.layer + 5;
+      let layerChanged = curveJXG.current.visProp.layer !== curveLayer;
+
+      if (layerChanged) {
+        curveJXG.current.setAttribute({ layer: curveLayer });
+        segmentAttributes.current.layer = curveLayer + 2;
+        throughPointAttributes.current.layer = curveLayer + 2;
+        controlPointAttributes.current.layer = curveLayer + 3;
+      }
 
       if (curveJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         curveJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         curveJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (curveJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        curveJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
       }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (curveJXG.current.visProp.dash !== newDash) {
@@ -651,14 +664,14 @@ export default React.memo(function Curve(props) {
 
 
       if (!SVs.draggable || SVs.fixed) {
-        if (segmentsJXG.current) {
+        if (segmentsJXG.current.length > 0) {
           deleteControls();
         }
         board.updateRenderer();
         return <><a name={name} /></>
       }
 
-      if (!segmentsJXG.current) {
+      if (segmentsJXG.current.length === 0) {
         createControls();
 
         previousNumberOfPoints.current = SVs.numericalThroughPoints.length;
@@ -670,6 +683,7 @@ export default React.memo(function Curve(props) {
 
       // add or delete segments and points if number changed
       if (SVs.numericalThroughPoints.length > previousNumberOfPoints.current) {
+        // add new segments and point
 
         let iPreviousLast = previousNumberOfPoints.current - 1;
 
@@ -719,6 +733,8 @@ export default React.memo(function Curve(props) {
           makeVectorControlVisible(iPreviousLast);
         }
       } else if (SVs.numericalThroughPoints.length < previousNumberOfPoints.current) {
+        // delete old segments and points
+
         for (let i = previousNumberOfPoints.current - 1; i >= SVs.numericalThroughPoints.length; i--) {
 
           segmentsJXG.current[i][0].off('down')
@@ -752,7 +768,7 @@ export default React.memo(function Curve(props) {
 
       }
 
-      // move old points
+      // move old points and modify attributes, if needed
       let nOld = Math.min(SVs.numericalThroughPoints.length, previousNumberOfPoints.current);
 
       for (let i = 0; i < nOld; i++) {
@@ -762,6 +778,14 @@ export default React.memo(function Curve(props) {
         ) {
           // refresh visibility
           makeVectorControlVisible(i);
+        }
+
+        if (layerChanged) {
+          throughPointsJXG.current[i].setAttribute({ layer: curveLayer + 2 });
+          segmentsJXG.current[i][0].setAttribute({ layer: curveLayer + 2 });
+          controlPointsJXG.current[i][0].setAttribute({ layer: curveLayer + 3 });
+          segmentsJXG.current[i][1].setAttribute({ layer: curveLayer + 2 });
+          controlPointsJXG.current[i][1].setAttribute({ layer: curveLayer + 3 });
         }
 
         throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalThroughPoints[i]]);

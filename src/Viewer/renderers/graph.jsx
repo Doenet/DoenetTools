@@ -103,7 +103,8 @@ export default React.memo(function Graph(props) {
         strokeColor: 'var(--canvastext)',
         drawLabels: SVs.displayXAxisTickLabels
       }
-      xaxisOptions.strokeColor = "var(--canvastext)"
+      xaxisOptions.strokeColor = "var(--canvastext)";
+      xaxisOptions.highlight = false;
 
       if (SVs.grid === "dense") {
         xaxisOptions.ticks.majorHeight = -1;
@@ -147,7 +148,9 @@ export default React.memo(function Graph(props) {
           strokeColor: "var(--canvastext)"
         }
       }
-      yaxisOptions.strokeColor = "var(--canvastext)"
+      yaxisOptions.strokeColor = "var(--canvastext)";
+      yaxisOptions.highlight = false;
+
       yaxisOptions.ticks = {
         ticksDistance: 2,
         label: {

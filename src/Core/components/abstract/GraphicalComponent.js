@@ -28,7 +28,7 @@ export default class GraphicalComponent extends BaseComponent {
       forRenderer: true
     };
     attributes.layer = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "layer",
       defaultValue: 0,
       public: true,

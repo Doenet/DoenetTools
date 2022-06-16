@@ -270,6 +270,13 @@ export default React.memo(function Point(props) {
         // pointJXG.current.setAttribute({visible: false})
       }
 
+      let layer = 10 * SVs.layer + 9;
+      let layerChanged = pointJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        pointJXG.current.setAttribute({ layer });
+      }
+
       if (pointJXG.current.visProp.strokecolor !== SVs.selectedStyle.markerColor) {
         pointJXG.current.visProp.strokecolor = SVs.selectedStyle.markerColor;
         shadowPointJXG.current.visProp.strokecolor = SVs.selectedStyle.markerColor;

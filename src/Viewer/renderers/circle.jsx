@@ -46,22 +46,27 @@ export default React.memo(function Circle(props) {
       return null;
     }
 
+    let fixed = !SVs.draggable || SVs.fixed;
+
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
       fillColor: SVs.selectedStyle.fillColor,
-      fillOpacity: 0.4,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
       highlightFillColor: SVs.selectedStyle.fillColor,
-      highlightFillOpacity: 0.4,
+      highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
+      highlight: !fixed,
     };
 
 
@@ -205,9 +210,26 @@ export default React.memo(function Circle(props) {
         // circleJXG.current.setAttribute({visible: false})
       }
 
+      let fixed = !SVs.draggable || SVs.fixed;
+
+      
+      circleJXG.current.visProp.fixed = fixed;
+      circleJXG.current.visProp.highlight = !fixed;
+
+      let layer = 10 * SVs.layer + 5;
+      let layerChanged = circleJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        circleJXG.current.setAttribute({ layer });
+      }
+
       if (circleJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         circleJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         circleJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (circleJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        circleJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        circleJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (circleJXG.current.visProp.dash !== newDash) {
@@ -215,6 +237,7 @@ export default React.memo(function Circle(props) {
       }
       if (circleJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
         circleJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+        circleJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
       }
 
       if (circleJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
@@ -222,7 +245,10 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.highlightfillcolor = SVs.selectedStyle.fillColor;
         circleJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
       }
-
+      if (circleJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        circleJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+        circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
+      }
 
       circleJXG.current.name = SVs.label;
 
