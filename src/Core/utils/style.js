@@ -22,7 +22,7 @@ export let styleAttributes = {
 let defaultStyle = {
   lineColor: "#648FFF",
   lineColorWord: "blue",
-  lineOpacity: 1,
+  lineOpacity: 0.7,
   lineWidth: 4,
   lineWidthWord: "thick",
   lineStyle: "solid",
@@ -44,7 +44,7 @@ function returnDefaultStyleDefinitions() {
     1: {
       lineColor: "#648FFF",
       lineColorWord: "blue",
-      lineOpacity: 1,
+      lineOpacity: 0.7,
       lineWidth: 4,
       lineWidthWord: "thick",
       lineStyle: "solid",
@@ -61,7 +61,7 @@ function returnDefaultStyleDefinitions() {
     2: {
       lineColor: "#D4042D",
       lineColorWord: "red",
-      lineOpacity: 1,
+      lineOpacity: 0.7,
       lineWidth: 2,
       lineWidthWord: "",
       lineStyle: "solid",
@@ -78,7 +78,7 @@ function returnDefaultStyleDefinitions() {
     3: {
       lineColor: "#F19143",
       lineColorWord: "orange",
-      lineOpacity: 1,
+      lineOpacity: 0.7,
       lineWidth: 3,
       lineWidthWord: "",
       lineStyle: "solid",
@@ -95,7 +95,7 @@ function returnDefaultStyleDefinitions() {
     4: {
       lineColor: "#644CD6",
       lineColorWord: "purple",
-      lineOpacity: 1,
+      lineOpacity: 0.7,
       lineWidth: 2,
       lineWidthWord: "",
       lineStyle: "solid",
@@ -112,7 +112,7 @@ function returnDefaultStyleDefinitions() {
     5: {
       lineColor: "black",
       lineColorWord: "black",
-      lineOpacity: 1,
+      lineOpacity: 0.7,
       lineWidth: 1,
       lineWidthWord: "thin",
       lineStyle: "solid",
@@ -129,7 +129,7 @@ function returnDefaultStyleDefinitions() {
     6: {
       lineColor: "gray",
       lineColorWord: "gray",
-      lineOpacity: 1,
+      lineOpacity: 0.7,
       lineWidth: 1,
       lineWidthWord: "thin",
       lineStyle: "dotted",

@@ -59,7 +59,7 @@ export default React.memo(function Polygon(props) {
       highlight: false,
       visible: !SVs.hidden,
       layer: 10 * SVs.layer + 8,
-      fixed,
+      fixed: true,
       strokeColor: SVs.selectedStyle.lineColor,
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
@@ -351,7 +351,6 @@ export default React.memo(function Polygon(props) {
         let border = polygonJXG.current.borders[i];
         border.visProp.visible = visibleNow;
         border.visPropCalc.visible = visibleNow;
-        border.visProp.fixed = fixed;
 
         if (layerChanged) {
           border.setAttribute({ layer: polygonLayer + 1 });

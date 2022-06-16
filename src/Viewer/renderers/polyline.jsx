@@ -264,6 +264,10 @@ export default React.memo(function Polyline(props) {
       }
 
       let fixed = !SVs.draggable || SVs.fixed;
+
+      polylineJXG.current.visProp.fixed = fixed;
+      polylineJXG.current.visProp.highlight = !fixed;
+
       let polylineLayer = 10 * SVs.layer + 7;
       let layerChanged = polylineJXG.current.visProp.layer !== polylineLayer;
 

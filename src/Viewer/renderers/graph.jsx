@@ -96,7 +96,8 @@ export default React.memo(function Graph(props) {
       xaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
-          offset: [-5, -15]
+          offset: [-5, -15],
+          layer: 2,
         },
         minorTicks: 4,
         precision: 4,
@@ -154,7 +155,8 @@ export default React.memo(function Graph(props) {
       yaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
-          offset: [12, -2]
+          offset: [12, -2],
+          layer: 2
         },
         minorTicks: 4,
         precision: 4,
