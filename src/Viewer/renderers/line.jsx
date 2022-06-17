@@ -49,9 +49,14 @@ export default React.memo(function Line(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
+
     //things to be passed to JSXGraph as attributes
     var jsxLineAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -66,7 +71,12 @@ export default React.memo(function Line(props) {
       highlight: !fixed,
     };
 
-    jsxLineAttributes.label = {};
+    if (SVs.labelIsLatex) {
+      jsxLineAttributes.label = { useMathJax: true };
+    } else {
+      jsxLineAttributes.label = {};
+    }
+
     if (SVs.applyStyleToLabel) {
       jsxLineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
     } else {
@@ -238,8 +248,11 @@ export default React.memo(function Line(props) {
         lineJXG.current.visProp.dash = newDash;
       }
 
-      lineJXG.current.name = SVs.label;
-      // lineJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      lineJXG.current.name = label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {

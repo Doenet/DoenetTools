@@ -56,9 +56,14 @@ export default React.memo(function Vector(props) {
     let layer = 10 * SVs.layer + 7;
     let fixed = !SVs.draggable || SVs.fixed;
 
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
+
     //things to be passed to JSXGraph as attributes
     var jsxVectorAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -106,7 +111,12 @@ export default React.memo(function Vector(props) {
     let newPoint2JXG = board.create('point', endpoints[1], headPointAttributes);
 
 
-    jsxVectorAttributes.label = {};
+    if (SVs.labelIsLatex) {
+      jsxVectorAttributes.label = { useMathJax: true };
+    } else {
+      jsxVectorAttributes.label = {};
+    }
+
     if (SVs.applyStyleToLabel) {
       jsxVectorAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
     } else {
@@ -392,8 +402,11 @@ export default React.memo(function Vector(props) {
         vectorJXG.current.visProp.dash = newDash;
       }
 
-      vectorJXG.current.name = SVs.label;
-      // vectorJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      vectorJXG.current.name = label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {

@@ -59,9 +59,15 @@ export default React.memo(function Polyline(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
+
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
+
     //things to be passed to JSXGraph as attributes
     let jsxPolylineAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.label !== "",
       layer: 10 * SVs.layer + 7,
@@ -90,7 +96,11 @@ export default React.memo(function Polyline(props) {
       jsxPointAttributes.current.visible = false;
     }
 
-    jsxPolylineAttributes.label = {};
+    if (SVs.labelIsLatex) {
+      jsxPolylineAttributes.label = { useMathJax: true };
+    } else {
+      jsxPolylineAttributes.label = {};
+    }
     if (SVs.applyStyleToLabel) {
       jsxPolylineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
     } else {
@@ -357,7 +367,12 @@ export default React.memo(function Polyline(props) {
         polylineJXG.current.visProp.dash = newDash;
       }
 
-      polylineJXG.current.name = SVs.label;
+
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      polylineJXG.current.name = label;
 
       if (polylineJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {

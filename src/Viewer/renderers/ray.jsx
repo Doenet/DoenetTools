@@ -49,9 +49,14 @@ export default React.memo(function Ray(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
+
     //things to be passed to JSXGraph as attributes
     var jsxRayAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: !SVs.draggable || SVs.fixed,
@@ -68,7 +73,13 @@ export default React.memo(function Ray(props) {
       straightFirst: false,
     };
 
-    jsxRayAttributes.label = {};
+
+    if (SVs.labelIsLatex) {
+      jsxRayAttributes.label = { useMathJax: true };
+    } else {
+      jsxRayAttributes.label = {};
+    }
+
     if (SVs.applyStyleToLabel) {
       jsxRayAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
     } else {
@@ -235,7 +246,12 @@ export default React.memo(function Ray(props) {
         rayJXG.current.visProp.dash = newDash;
       }
 
-      rayJXG.current.name = SVs.label;
+
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      rayJXG.current.name = label;
       // rayJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
       let withlabel = SVs.showLabel && SVs.label !== "";
