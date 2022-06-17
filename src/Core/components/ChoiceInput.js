@@ -84,6 +84,24 @@ export default class Choiceinput extends Input {
       forRenderer: true,
     }
 
+    attributes.submitLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabel",
+      defaultValue: "Check Work",
+      public: true,
+      forRenderer: true,
+      fallBackToParentStateVariable: "submitLabel",
+    }
+
+    attributes.submitLabelNoCorrectness = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabelNoCorrectness",
+      defaultValue: "Submit Response",
+      public: true,
+      forRenderer: true,
+      fallBackToParentStateVariable: "submitLabelNoCorrectness",
+    }
+
     return attributes;
   }
 
@@ -275,7 +293,7 @@ export default class Choiceinput extends Input {
       additionalStateVariablesDefined: [
         {
           variableName: "numberChoices",
-          public: true, 
+          public: true,
           shadowingInstructions: {
             createComponentOfType: "number"
           }
