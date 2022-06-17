@@ -48,8 +48,13 @@ export default React.memo(function Angle(props) {
 
     let angleColor = getComputedStyle(document.documentElement).getPropertyValue("--solidLightBlue");
 
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
+
     var jsxAngleAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,//SVs.draggable !== true,
@@ -60,6 +65,9 @@ export default React.memo(function Angle(props) {
       highlight: false
     };
 
+    if (SVs.labelIsLatex) {
+      jsxAngleAttributes.label = { useMathJax: true };
+    }
 
     previousWithLabel.current = SVs.showLabel && SVs.label !== "";
 
@@ -131,8 +139,13 @@ export default React.memo(function Angle(props) {
 
       angleJXG.current.setAttribute({ radius: SVs.numericalRadius, visible: !SVs.hidden });
 
-      angleJXG.current.name = SVs.label;
 
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      angleJXG.current.name = label;
+  
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
         angleJXG.current.setAttribute({ withlabel: withlabel });

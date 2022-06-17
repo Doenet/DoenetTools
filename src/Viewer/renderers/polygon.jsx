@@ -70,8 +70,13 @@ export default React.memo(function Polygon(props) {
     };
 
 
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
+
     let jsxPolygonAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -87,7 +92,13 @@ export default React.memo(function Polygon(props) {
       borders: jsxBorderAttributes,
     };
 
-    jsxPolygonAttributes.label = {};
+
+    if (SVs.labelIsLatex) {
+      jsxPolygonAttributes.label = { useMathJax: true };
+    } else {
+      jsxPolygonAttributes.label = {};
+    }
+
     if (SVs.applyStyleToLabel) {
       jsxPolygonAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
     } else {
@@ -321,7 +332,12 @@ export default React.memo(function Polygon(props) {
         polygonJXG.current.setAttribute({ layer: polygonLayer });
       }
 
-      polygonJXG.current.name = SVs.label;
+
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      polygonJXG.current.name = label;
 
       if (polygonJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {

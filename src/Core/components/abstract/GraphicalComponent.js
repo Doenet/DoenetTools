@@ -7,7 +7,7 @@ export default class GraphicalComponent extends BaseComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.label = {
-      createComponentOfType: "text",
+      createComponentOfType: "_textOrLatexFromInline",
       createStateVariable: "label",
       defaultValue: "",
       public: true,
@@ -46,6 +46,20 @@ export default class GraphicalComponent extends BaseComponent {
     let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
 
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+
+    stateVariableDefinitions.labelIsLatex = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        labelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "label",
+          variableNames: ["isLatex"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { labelIsLatex: dependencyValues.labelAttr?.stateValues.isLatex === true } }
+      }
+    }
 
     return stateVariableDefinitions;
   }

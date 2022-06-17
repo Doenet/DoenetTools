@@ -64,10 +64,14 @@ export default React.memo(function Curve(props) {
       return null;
     }
 
-    //things to be passed to JSXGraph as attributes
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
 
+    //things to be passed to JSXGraph as attributes
     var curveAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,
@@ -122,10 +126,19 @@ export default React.memo(function Curve(props) {
         position,
         anchorx,
       };
+
+      if (SVs.labelIsLatex) {
+        curveAttributes.label.useMathJax = true;
+      }
+
       if (SVs.applyStyleToLabel) {
         curveAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
       } else {
         curveAttributes.label.strokeColor = "#000000";
+      }
+    } else {
+      if (SVs.labelIsLatex) {
+        curveAttributes.label = { useMathJax: true };
       }
     }
 
@@ -575,7 +588,11 @@ export default React.memo(function Curve(props) {
 
       let visible = !SVs.hidden;
 
-      curveJXG.current.name = SVs.label;
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      curveJXG.current.name = label;
 
       curveJXG.current.visProp["visible"] = visible;
       curveJXG.current.visPropCalc["visible"] = visible;
