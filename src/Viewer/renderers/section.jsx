@@ -104,9 +104,9 @@ export default React.memo(function Section(props) {
       marginBottom: "30px",  //Space after check work
     }
 
-    let checkWorkText = "Check Work";
+    let checkWorkText = SVs.submitLabel;
     if (!SVs.showCorrectness) {
-      checkWorkText = "Submit Response";
+      checkWorkText = SVs.submitLabelNoCorrectness;
     }
     checkworkComponent = (
       <button id={name + "_submit"}

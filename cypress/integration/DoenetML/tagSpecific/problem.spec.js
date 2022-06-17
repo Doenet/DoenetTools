@@ -1935,6 +1935,166 @@ describe('Problem Tag Tests', function () {
 
   });
 
+  it('section wide checkwork, submit label', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <problem sectionWideCheckwork name="prob1">
+        <answer name="ans1">x</answer>
+      </problem>
+      <problem sectionWideCheckwork name="prob2" submitLabel="Hit it!">
+        <answer name="ans2">x</answer>
+      </problem>
+      <problem sectionWideCheckwork name="prob3" submitLabelNoCorrectness="Guess">
+        <answer name="ans3">x</answer>
+      </problem>
+      <problem sectionWideCheckwork name="prob4" submitLabel="Hit it!" submitLabelNoCorrectness="Guess">
+        <answer name="ans4">x</answer>
+      </problem>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let mathinput1Name = stateVariables['/ans1'].stateValues.inputChildren[0].componentName
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+
+      let mathinput2Name = stateVariables['/ans2'].stateValues.inputChildren[0].componentName
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+
+      let mathinput3Name = stateVariables['/ans3'].stateValues.inputChildren[0].componentName
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+
+      let mathinput4Name = stateVariables['/ans4'].stateValues.inputChildren[0].componentName
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+
+
+      cy.get('#\\/prob1_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Check Work')
+      })
+      cy.get('#\\/prob2_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Hit it!')
+      })
+      cy.get('#\\/prob3_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Check Work')
+      })
+      cy.get('#\\/prob4_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Hit it!')
+      })
+
+      cy.get(mathinput1Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput2Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput3Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput4Anchor).type("x{enter}", { force: true })
+
+      cy.get("#\\/prob1_submit").click();
+      cy.get("#\\/prob2_submit").click();
+      cy.get("#\\/prob3_submit").click();
+      cy.get("#\\/prob4_submit").click();
+
+      cy.get("#\\/prob1_correct").should('contain.text', 'Correct')
+      cy.get("#\\/prob2_correct").should('contain.text', 'Correct')
+      cy.get("#\\/prob3_correct").should('contain.text', 'Correct')
+      cy.get("#\\/prob4_correct").should('contain.text', 'Correct')
+
+      cy.get('#testRunner_toggleControls').click();
+      cy.get('#testRunner_showCorrectness').click()
+      cy.wait(100)
+      cy.get('#testRunner_toggleControls').click();
+
+      cy.get("#\\/prob1_submit").should('contain.text', 'Submit Response')
+      cy.get("#\\/prob2_submit").should('contain.text', 'Submit Response')
+      cy.get("#\\/prob3_submit").should('contain.text', 'Guess')
+      cy.get("#\\/prob4_submit").should('contain.text', 'Guess')
+
+      cy.get('#\\/prob1_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Submit Response')
+      })
+      cy.get('#\\/prob2_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Submit Response')
+      })
+      cy.get('#\\/prob3_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Guess')
+      })
+      cy.get('#\\/prob4_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Guess')
+      })
+
+      cy.get(mathinput1Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput2Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput3Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput4Anchor).type("x{enter}", { force: true })
+
+      cy.get("#\\/prob1_submit").click();
+      cy.get("#\\/prob2_submit").click();
+      cy.get("#\\/prob3_submit").click();
+      cy.get("#\\/prob4_submit").click();
+
+      cy.get("#\\/prob1_saved").should('contain.text', 'Response Saved')
+      cy.get("#\\/prob2_saved").should('contain.text', 'Response Saved')
+      cy.get("#\\/prob3_saved").should('contain.text', 'Response Saved')
+      cy.get("#\\/prob4_saved").should('contain.text', 'Response Saved')
+
+    });
+
+  });
+
+  it('document wide checkwork, submit label', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <document documentWideCheckwork name="doc" submitLabel="Hit it!" submitLabelNoCorrectness="Guess">
+        <text>a</text>
+        <answer name="ans1">x</answer>
+      </document>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let mathinput1Name = stateVariables['/ans1'].stateValues.inputChildren[0].componentName
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+
+      cy.get('#\\/doc_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Hit it!')
+      })
+
+      cy.get(mathinput1Anchor).type("x{enter}", { force: true })
+
+      cy.get("#\\/doc_submit").click();
+
+      cy.get("#\\/doc_correct").should('contain.text', 'Correct')
+
+      cy.get('#testRunner_toggleControls').click();
+      cy.get('#testRunner_showCorrectness').click()
+      cy.wait(100)
+      cy.get('#testRunner_toggleControls').click();
+
+      cy.get("#\\/doc_submit").should('contain.text', 'Guess')
+
+      cy.get('#\\/doc_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Guess')
+      })
+
+      cy.get(mathinput1Anchor).type("x{enter}", { force: true })
+
+      cy.get("#\\/doc_submit").click();
+
+      cy.get("#\\/doc_saved").should('contain.text', 'Response Saved')
+
+    });
+
+  });
+
   it('maintain state while reloading problem', () => {
 
     let doenetML = `
@@ -1973,7 +2133,7 @@ describe('Problem Tag Tests', function () {
     cy.wait(100)
     cy.get('#testRunner_toggleControls').click();
 
-    
+
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML,
@@ -2020,7 +2180,7 @@ describe('Problem Tag Tests', function () {
 
 
     cy.wait(2000); // wait to make sure debounce save happened
-    
+
     cy.reload();
 
     cy.window().then(async (win) => {
@@ -2042,7 +2202,7 @@ describe('Problem Tag Tests', function () {
 
 
     cy.wait(2000); // wait to make sure debounce save happened
-    
+
     cy.reload();
 
     cy.window().then(async (win) => {
