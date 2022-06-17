@@ -3,31 +3,33 @@
 function getpermissionsAndSettings($conn,$userId){
   $permissionsAndSettings = [];
 
-  $sql = "
-  SELECT c.courseId,
+  $sql = "SELECT
+  c.courseId,
   c.label,
   c.isPublic,
   c.image,
   c.color,
-  cu.canViewCourse,
-  cu.canViewContentSource,
-  cu.canEditContent,
-  cu.canPublishContent,
-  cu.canViewUnassignedContent,
-  cu.canProctor,
-  cu.canViewAndModifyGrades,
-  cu.canViewActivitySettings,
-  cu.canModifyCourseSettings,
-  cu.canViewUsers,
-  cu.canManageUsers,
-  cu.canModifyRoles,
-  cu.isOwner,
-  CAST(cu.roleLabels as CHAR) AS roleLabels
-  FROM course_user AS cu
-  LEFT JOIN course AS c
+  cr.label as roleLabel,
+  cr.canViewCourse,
+  cr.canViewContentSource,
+  cr.canEditContent,
+  cr.canPublishContent,
+  cr.canViewUnassignedContent,
+  cr.canProctor,
+  cr.canViewAndModifyGrades,
+  cr.canViewActivitySettings,
+  cr.canModifyCourseSettings,
+  cr.canViewUsers,
+  cr.canManageUsers,
+  cr.canModifyRoles,
+  cr.isOwner
+  FROM course_role AS cr
+  LEFT JOIN course_user as cu
+  ON cu.roleId = cr.roleId
+  RIGHT JOIN course as c
   ON c.courseId = cu.courseId
   WHERE cu.userId = '$userId'
-  AND cu.canViewCourse = '1'
+  AND cr.canViewCourse = '1'
   AND c.isDeleted = '0'
   ORDER BY c.id DESC
   ";
@@ -41,6 +43,7 @@ function getpermissionsAndSettings($conn,$userId){
         "isPublic"=>$row['isPublic'],
         "image"=>$row['image'],
         "color"=>$row['color'],
+        'roleLabel' => $row['roleLabel'],
         "canViewCourse"=>$row['canViewCourse'],
         "canViewContentSource"=>$row['canViewContentSource'],
         "canEditContent"=>$row['canEditContent'],
@@ -54,7 +57,6 @@ function getpermissionsAndSettings($conn,$userId){
         "canManageUsers"=>$row['canManageUsers'],
         "canModifyRoles"=>$row['canModifyRoles'],
         "isOwner"=>$row['isOwner'],
-        "roleLabels"=>json_decode($row['roleLabels'],true)
       );
       array_push($permissionsAndSettings,$oneCourse);
     }
