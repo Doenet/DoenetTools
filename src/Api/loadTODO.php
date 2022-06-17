@@ -11,24 +11,24 @@ include "db_connection.php";
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
-$driveId = mysqli_real_escape_string($conn,$_REQUEST["driveId"]);
+$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
 $success = TRUE;
 $message = "";
 
-if ($driveId == ""){
+if ($courseId == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing driveId';
+  $message = 'Internal Error: missing courseId';
 }
 
 //Check if they have view rights
 if ($success){
 $sql = "
-SELECT canViewDrive
-FROM drive_user
+SELECT canViewCourse
+FROM course_user
 WHERE userId='$userId'
-AND driveId='$driveId'
-AND canViewDrive='1'
+AND courseId='$courseId'
+AND canViewCourse='1'
 ";
 $result = $conn->query($sql); 
   if ($result->num_rows < 1) {
@@ -38,83 +38,85 @@ $result = $conn->query($sql);
 }
 
 //Get Assignment data
-if ($success){
-$sql = "
-SELECT 
-dc.itemType,
-dc.creationDate,
-dc.doenetId,
-dc.driveId,
-dc.isAssigned,
-dc.isPublic,
-dc.isReleased,
-dc.itemId,
-dc.label,
-dc.parentFolderId,
-dc.sortOrder,
-a.assignedDate,
-a.dueDate,
-a.pinnedAfterDate
-FROM drive_content AS dc
-LEFT JOIN assignment AS a
-ON a.doenetId = dc.doenetId
-WHERE (dc.driveId = '$driveId'
-AND dc.isReleased = '1'
-AND dc.isDeleted = '0'
-AND a.dueDate IS NOT NULL )
-OR (dc.driveId = '$driveId'
-AND dc.isReleased = '1'
-AND dc.isDeleted = '0'
-AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
-AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
-ORDER BY a.dueDate ASC, a.pinnedAfterDate ASC
+if ($success) {
+  $sql = "
+  SELECT 
+  cc.type, 
+  cc.doenetId, 
+  cc.parentDoenetId, 
+  cc.label,
+  cc.creationDate, 
+  cc.isDeleted, 
+  cc.isAssigned, 
+  cc.isGloballyAssigned, 
+  cc.isPublic, 
+  cc.userCanViewSource, 
+  cc.sortOrder, 
+  a.assignedDate, 
+  a.dueDate, 
+  a.pinnedAfterDate,
+  a.pinnedUntilDate
+  FROM course_content AS cc
+  LEFT JOIN assignment AS a
+  ON cc.doenetId = a.doenetId
+  WHERE (cc.courseId='$courseId'
+  AND cc.isAssigned = '1'
+  AND cc.isDeleted = '0'
+  AND a.dueDate IS NOT NULL) 
+  OR (cc.courseId='$courseId'
+  AND cc.isAssigned = '1'
+  AND cc.isDeleted = '0'
+  AND a.pinnedAfterDate < CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
+  AND a.pinnedUntilDate > CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))
+  ORDER BY a.dueDate ASC, a.pinnedAfterDate ASC 
+  ";
 
-";
-// ORDER BY a.assignedDate ASC, a.pinnedAfterDate ASC
-//AND a.assignedDate < NOW()
-
-$result = $conn->query($sql); 
-$assignments = [];
-$pinned = [];
-if ($result->num_rows > 0) {
-  while($row = $result->fetch_assoc()){
-    if ($row['pinnedAfterDate'] == ""){
-      array_push($assignments,array(
-        "itemType"=>$row['itemType'],
-        "pinnedAfterDate"=>$row['pinnedAfterDate'],
-        "creationDate"=>$row['creationDate'],
-        "assignedDate"=>$row['assignedDate'],
-        "dueDate"=>$row['dueDate'],
-        "doenetId"=>$row['doenetId'],
-        "driveId"=>$row['driveId'],
-        "isAssigned"=>$row['isAssigned'],
-        "isPublic"=>$row['isPublic'],
-        "isReleased"=>$row['isReleased'],
-        "itemId"=>$row['itemId'],
-        "label"=>$row['label'],
-        "parentFolderId"=>$row['parentFolderId'],
-        "sortOrder"=>$row['sortOrder']
-      ));
-    }else{
-      array_push($pinned,array(
-        "itemType"=>$row['itemType'],
-        "pinnedAfterDate"=>$row['pinnedAfterDate'],
-        "creationDate"=>$row['creationDate'],
-        "assignedDate"=>$row['assignedDate'],
-        "dueDate"=>$row['dueDate'],
-        "doenetId"=>$row['doenetId'],
-        "driveId"=>$row['driveId'],
-        "isAssigned"=>$row['isAssigned'],
-        "isPublic"=>$row['isPublic'],
-        "isReleased"=>$row['isReleased'],
-        "itemId"=>$row['itemId'],
-        "label"=>$row['label'],
-        "parentFolderId"=>$row['parentFolderId'],
-        "sortOrder"=>$row['sortOrder']
-      ));
+  $result = $conn->query($sql); 
+  $assignments = [];
+  $pinned = [];
+  if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()){   // get row of results
+      if ($row['pinnedAfterDate'] == NULL){     // not pinned items
+        array_push($assignments,array(
+          "type"=>$row['type'], 
+          "label"=>$row['label'],
+          "pinnedAfterDate"=>$row['pinnedAfterDate'],
+          "creationDate"=>$row['creationDate'],
+          "assignedDate"=>$row['assignedDate'],
+          "dueDate"=>$row['dueDate'],
+          "doenetId"=>$row['doenetId'],
+          "courseId"=>$row['courseId'],
+          "isAssigned"=>$row['isAssigned'],
+          "isPublic"=>$row['isPublic'],
+          "isReleased"=>$row['isReleased'],
+          "parentDoenetId"=>$row['parentDoenetId'],
+          "sortOrder"=>$row['sortOrder']
+        ));
+      }else{
+        array_push($pinned,array(            // pinned items 
+          "type"=>$row['type'],
+          "label"=>$row['label'],
+          "pinnedAfterDate"=>$row['pinnedAfterDate'],
+          "creationDate"=>$row['creationDate'],
+          "assignedDate"=>$row['assignedDate'],
+          "dueDate"=>$row['dueDate'],
+          "doenetId"=>$row['doenetId'],
+          "courseId"=>$row['courseId'],
+          "isAssigned"=>$row['isAssigned'],
+          "isPublic"=>$row['isPublic'],
+          "isReleased"=>$row['isReleased'],
+          "parentFolderId"=>$row['parentFolderId'],
+          "sortOrder"=>$row['sortOrder']
+        ));
+      }
     }
   }
-}
+
+  // echo "assigned: \n"; 
+  // var_dump($assignments);
+
+  // echo "pinned: \n";
+  // var_dump($pinned); 
 
   $classTimes = [];
   $sql = "
@@ -122,7 +124,7 @@ if ($result->num_rows > 0) {
   DATE_FORMAT(startTime, '%H:%i') AS startTime,
   DATE_FORMAT(endTime, '%H:%i') AS endTime
   FROM class_times
-  WHERE driveId = '$driveId'
+  WHERE courseId = '$courseId'
   ORDER BY sortOrder
   ";
   $result = $conn->query($sql); 
@@ -141,12 +143,12 @@ $completed = [];
 
 $sql = "
 SELECT ua.doenetId
-FROM drive_content AS dc
+FROM course_content AS cc
 LEFT JOIN user_assignment AS ua
 ON ua.doenetId = dc.doenetId
 WHERE ua.userId = '$userId'
 AND ua.completed = '1'
-AND dc.driveId = '$driveId'
+AND cc.courseId = '$courseId'
 ";
 
 $result = $conn->query($sql); 
