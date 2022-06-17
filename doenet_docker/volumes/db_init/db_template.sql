@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-05-19 20:23:31 +0000
+# Generation Time: 2022-06-17 17:38:26 +0000
 # ************************************************************
 
 
@@ -100,13 +100,13 @@ DROP TABLE IF EXISTS `collection`;
 
 CREATE TABLE `collection` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) DEFAULT '',
-  `entryId` char(21) NOT NULL,
-  `entryDoenetId` char(21) NOT NULL DEFAULT '',
-  `entryContentId` char(64) NOT NULL DEFAULT '',
-  `entryVariant` text NOT NULL,
+  `doenetId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `entryId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `entryDoenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `entryContentId` char(64) COLLATE utf8_unicode_ci NOT NULL,
+  `entryVariant` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 
@@ -117,13 +117,13 @@ DROP TABLE IF EXISTS `collection_groups`;
 
 CREATE TABLE `collection_groups` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `doenetId` char(21) NOT NULL DEFAULT '',
+  `doenetId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `minStudents` int(11) NOT NULL DEFAULT '1',
   `maxStudents` int(11) NOT NULL DEFAULT '1',
   `preferredStudents` int(11) NOT NULL DEFAULT '1',
   `preAssigned` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
 
@@ -247,32 +247,49 @@ CREATE TABLE `course_grade_category` (
 
 
 
+# Dump of table course_role
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `course_role`;
+
+CREATE TABLE `course_role` (
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `roleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled Role',
+  `canViewCourse` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewContentSource` tinyint(1) NOT NULL DEFAULT '0',
+  `canEditContent` tinyint(1) NOT NULL DEFAULT '0',
+  `canPublishContent` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewUnassignedContent` tinyint(1) NOT NULL DEFAULT '0',
+  `canProctor` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewAndModifyGrades` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewActivitySettings` tinyint(1) NOT NULL DEFAULT '0',
+  `canModifyCourseSettings` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewUsers` tinyint(1) NOT NULL DEFAULT '0',
+  `canManageUsers` tinyint(1) NOT NULL DEFAULT '0',
+  `canModifyRoles` tinyint(1) NOT NULL DEFAULT '0',
+  `isOwner` tinyint(1) NOT NULL DEFAULT '0',
+  `sectionPermissionOnly` int(255) DEFAULT NULL,
+  PRIMARY KEY (`courseId`,`roleId`),
+  UNIQUE KEY `roleId` (`roleId`),
+  CONSTRAINT `course_role_ibfk_1` FOREIGN KEY (`courseId`) REFERENCES `course` (`courseId`) ON DELETE CASCADE ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
 # Dump of table course_user
 # ------------------------------------------------------------
 
 DROP TABLE IF EXISTS `course_user`;
 
 CREATE TABLE `course_user` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `userId` char(21) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `canViewCourse` tinyint(1) DEFAULT '0',
-  `canViewContentSource` tinyint(1) DEFAULT '0',
-  `canEditContent` tinyint(1) DEFAULT '0',
-  `canPublishContent` tinyint(1) DEFAULT '0',
-  `canViewUnassignedContent` tinyint(1) DEFAULT '0',
-  `canProctor` tinyint(1) DEFAULT '0',
-  `canViewAndModifyGrades` tinyint(1) DEFAULT '0',
-  `canViewActivitySettings` tinyint(1) DEFAULT '0',
-  `canModifyCourseSettings` tinyint(1) DEFAULT '0',
-  `canViewUsers` tinyint(1) DEFAULT '0',
-  `canManageUsers` tinyint(1) DEFAULT '0',
-  `canModifyRoles` tinyint(1) DEFAULT '0',
-  `isOwner` tinyint(1) DEFAULT '0',
-  `sectionPermissionOnly` int(255) DEFAULT NULL,
-  `roleLabels` json DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `userDrive` (`userId`,`courseId`)
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
+  `roleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`courseId`,`userId`),
+  KEY `roleId` (`roleId`),
+  CONSTRAINT `course_user_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `course_role` (`roleId`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `course_user_ibfk_2` FOREIGN KEY (`courseId`) REFERENCES `course` (`courseId`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 
