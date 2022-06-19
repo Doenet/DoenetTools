@@ -22,8 +22,16 @@ describe('Slider Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a')  // to wait for page to load
+    
+    cy.get('#\\/sv').should('have.text', '1')
 
-    cy.log('move handle to 100 px');
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let slider1value = stateVariables['/s'].stateValues.value;
+      expect(slider1value).eq(1)
+    })
+
+    cy.log('move handle less than half way, stays at 1');
     cy.get('[data-cy=\\/s-handle]')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: 145, clientY: 0 })
@@ -37,6 +45,7 @@ describe('Slider Tag Tests', function () {
       expect(slider1value).eq(1)
     })
 
+    cy.log('move handle past halfway, goes to 2')
     cy.get('[data-cy=\\/s-handle]')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: 180, clientY: 0 })
@@ -50,6 +59,7 @@ describe('Slider Tag Tests', function () {
       expect(slider1value).eq(2)
     })
 
+    cy.log('clicking at left of sliders moves it to 1')
     cy.get('[data-cy=\\/s]')
       .click('left');
 
@@ -79,6 +89,7 @@ describe('Slider Tag Tests', function () {
     });
 
     let numberToPx = x => 27 + 30 * x;
+    let numberToPx2 = x => 30 * x;
 
     cy.get('#\\/_text1').should('have.text', 'a')  // to wait for page to load
 
@@ -97,7 +108,7 @@ describe('Slider Tag Tests', function () {
 
 
 
-    cy.log('move handle to 1');
+    cy.log('drag handle to 1');
     cy.get('[data-cy=\\/s-handle]')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(1), clientY: 0 })
@@ -116,7 +127,7 @@ describe('Slider Tag Tests', function () {
     })
 
 
-    cy.log('move handle to 9');
+    cy.log('drag handle to 9');
     cy.get('[data-cy=\\/s-handle]')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(9), clientY: 0 })
@@ -169,6 +180,90 @@ describe('Slider Tag Tests', function () {
       expect(stateVariables['/s'].stateValues.value).eq(3)
       expect(stateVariables['/sv'].stateValues.value).eq(3)
       expect(stateVariables['/mi'].stateValues.value).eq(3)
+    })
+
+    cy.log('drag handle past below document and past end sets to maximum 10');
+    cy.get('#\\/_document1')
+      .trigger('mousedown', numberToPx2(3), 100)
+      .trigger('mousemove', numberToPx2(25), 400, {force: true})
+      .trigger('mouseup')
+
+    cy.get('#\\/sv').should('have.text', '10')
+    cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('10')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(10)
+      expect(stateVariables['/sv'].stateValues.value).eq(10)
+      expect(stateVariables['/mi'].stateValues.value).eq(10)
+    })
+
+    cy.log('hold down mouse at 6');
+    cy.get('#\\/_document1')
+      .trigger('mousedown', numberToPx2(6), 100)
+
+    cy.get('#\\/sv').should('have.text', '6')
+    cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('6')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(6)
+      expect(stateVariables['/sv'].stateValues.value).eq(6)
+      expect(stateVariables['/mi'].stateValues.value).eq(6)
+    })
+
+    cy.log('drag to 2, but above lisder');
+    cy.get('#\\/_document1')
+      .trigger('mousemove', numberToPx2(2), 0)
+
+    cy.get('#\\/sv').should('have.text', '2')
+    cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('2')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(2)
+      expect(stateVariables['/sv'].stateValues.value).eq(2)
+      expect(stateVariables['/mi'].stateValues.value).eq(2)
+    })
+
+
+    cy.log('drag past left edge and below slider');
+    cy.get('#\\/_document1')
+      .trigger('mousemove', numberToPx2(-1), 200, {force: true})
+
+    cy.get('#\\/sv').should('have.text', '0')
+    cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(0)
+      expect(stateVariables['/sv'].stateValues.value).eq(0)
+      expect(stateVariables['/mi'].stateValues.value).eq(0)
+    })
+
+
+    cy.log('drag to 7, but below slider');
+    cy.get('#\\/_document1')
+      .trigger('mousemove', numberToPx2(7), 300, {force: true})
+
+    cy.get('#\\/sv').should('have.text', '7')
+    cy.get("#\\/mi .mq-editable-field").invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('7')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(7)
+      expect(stateVariables['/sv'].stateValues.value).eq(7)
+      expect(stateVariables['/mi'].stateValues.value).eq(7)
     })
 
 
