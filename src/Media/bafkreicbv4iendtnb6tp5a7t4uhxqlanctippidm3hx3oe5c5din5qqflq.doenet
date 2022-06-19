@@ -6,13 +6,13 @@
     <customAttribute componentType="math" attribute="goalx" defaultValue="3" assignNames="goalx" />
     <customAttribute componentType="math" attribute="goaly" defaultValue="4" assignNames="goaly" />
     <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
-    <customAttribute componentType="_componentSize" attribute="height" defaultValue="300px" assignNames="height" />
+    <customAttribute componentType="number" attribute="aspectRatio" defaultValue="1" assignNames="aspectRatio" />
   </setup>
 
   <problem name="prob"><title>$title</title>
 
     <p>Move the point to <m>($goalx, $goaly)</m>.</p>
-    <graph width="$width" height="$height">
+    <graph width="$width" aspectRatio="$aspectRatio">
       <point x="$(initialx{link='false'})" y="$(initialy{link='false'})" name="P">
         <constraints>
           <attractTo><point x="$goalx" y="$goaly" ></point></attractTo>
