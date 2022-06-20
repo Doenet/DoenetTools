@@ -7,7 +7,6 @@ header('Content-Type: application/json');
 
 include "db_connection.php";
 
-
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
 
@@ -112,12 +111,6 @@ if ($success) {
     }
   }
 
-  // echo "assigned: \n"; 
-  // var_dump($assignments);
-
-  // echo "pinned: \n";
-  // var_dump($pinned); 
-
   $classTimes = [];
   $sql = "
   SELECT dotwIndex,
@@ -140,12 +133,11 @@ if ($success) {
 }
 
 $completed = [];
-
 $sql = "
 SELECT ua.doenetId
 FROM course_content AS cc
 LEFT JOIN user_assignment AS ua
-ON ua.doenetId = dc.doenetId
+ON ua.doenetId = cc.doenetId
 WHERE ua.userId = '$userId'
 AND ua.completed = '1'
 AND cc.courseId = '$courseId'

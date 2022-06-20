@@ -12,15 +12,17 @@ $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 
-$driveId =  mysqli_real_escape_string($conn,$_POST["driveId"]);
+// $courseId =  mysqli_real_escape_string($conn,$_POST["courseId"]);
+$courseId = mysqli_real_escape_string($conn,$_REQUEST["courseId"]);
 
 $success = TRUE;
 $message = "";
 
-if ($driveId == ""){
+if ($courseId == ""){
   $success = FALSE;
-  $message = "Internal Error: missing versionId";
+  $message = "Internal Error: missing courseId";
 }
+
 $dotwIndexes = array_map(function($item) use($conn) {
     return mysqli_real_escape_string($conn, $item);
 }, $_POST['dotwIndexes']);
@@ -34,9 +36,9 @@ $endTimes = array_map(function($item) use($conn) {
 if ($success){
 
 $sql = "SELECT canEditContent
-        FROM drive_user
+        FROM course_user
         WHERE userId = '$userId'
-        AND driveId = '$driveId'
+        AND courseId = '$courseId'
         ";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
@@ -56,7 +58,7 @@ $sql = "SELECT canEditContent
 if ($success){
     $sql = "
     DELETE FROM class_times
-    WHERE driveId='$driveId'
+    WHERE courseId='$courseId'
     ";
 
 $result = $conn->query($sql);
@@ -69,10 +71,10 @@ $result = $conn->query($sql);
         if ($key > 0){
             $values = $values . ','; 
         }
-        $values = $values . "('$driveId','$dotwIndex','$startTime','$endTime','$key')";
+        $values = $values . "('$courseId','$dotwIndex','$startTime','$endTime','$key')";
     }
     $sql = "
-        INSERT INTO class_times(driveId,dotwIndex,startTime,endTime,sortOrder)
+        INSERT INTO class_times(courseId,dotwIndex,startTime,endTime,sortOrder)
         VALUES
         $values
         ";
