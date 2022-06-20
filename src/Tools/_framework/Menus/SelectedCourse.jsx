@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
 import { useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
-import { fetchDrivesSelector } from '../../../_reactComponents/Drive/NewDrive';
 import {
   faChalkboard,
-  // faUserCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
@@ -19,27 +17,24 @@ import axios from 'axios';
 
 export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
-  const setDrivesInfo = useSetRecoilState(fetchDrivesSelector);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
 
-  if (selection.length === 1 && selection[0]?.roleLabels[0] === 'Owner') {
+  if (selection.length === 1 && (selection[0]?.isOwner || selection[0]?.canModifyCourseSettings)) {
     return (
       <CourseInfoPanel
-        key={`DriveInfoPanel${selection[0].courseId}`}
+        key={`CourseInfoPanel${selection[0].courseId}`}
         courseId={selection[0].courseId}
       />
     );
-  } else if (selection[0]?.roleLabels[0] === 'Student') {
-    let dIcon = <FontAwesomeIcon icon={faChalkboard} />;
-
+  } else if (selection.length === 1 && selection[0]?.canViewCourse) {
     return (
       <>
         <h2>
-          {dIcon} {selection[0].label}
+          <FontAwesomeIcon icon={faChalkboard} /> {selection[0].label}
         </h2>
       </>
     );
-  } else if (selection.length > 1 && selection[0].roleLabels[0] === 'Owner') {
+  } else if (selection.length > 1 && selection[0]?.isOwner) { //should be aware of all course permissons
     return (
       <>
         <h2> {selection.length} Courses Selected</h2>
@@ -51,62 +46,27 @@ export default function SelectedCourse() {
               e.preventDefault();
               e.stopPropagation();
               console.log('>>>This will Duplicate courses');
+              setDrivecardSelection([]);
             }}
           />
           <Button
             width="menu"
-            value="Delete Course"
+            value="Delete Courses (Soon)"
             alert
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              // alert("Delete Drive")
-              let selectionArr = [];
-              for (let x = 0; x < selection.length; x++) {
-                selectionArr.push(selection[x].driveId);
-              }
-
-              setDrivesInfo({
-                color: '',
-                label: '',
-                image: '',
-                newDriveId: selectionArr,
-                type: 'delete drive',
-              });
+              console.log('>>>This will Delete multiple courses');
               setDrivecardSelection([]);
-              // }
             }}
           />
         </ButtonGroup>
       </>
     );
-  } else if (
-    selection.length === 1 &&
-    selection[0]?.roleLabels[0] === 'Administrator'
-  ) {
-    return (
-      <CourseInfoPanel
-        key={`DriveInfoPanel${selection[0].courseId}`}
-        courseId={selection[0].courseId}
-      />
-    );
   } else {
     return '';
   }
 }
-
-const CoursePassword = ({ driveId }) => {
-  let [password, setPassword] = useState(null);
-
-  useEffect(() => {
-    const getPassword = async (driveId) => {
-      // console.log(">>>>driveId",driveId)
-    };
-    getPassword(driveId);
-  }, [driveId]);
-
-  return <div>Set course password (soon)</div>;
-};
 
 const CourseInfoPanel = function ({ courseId }) {
   const { deleteCourse, modifyCourse, label, color, image } =
@@ -198,7 +158,7 @@ function ManageRoles({courseId}) {
   const handleEmailChange = async () => {
     if (isEmailValid) {
       //Add user permission (admin only for now), then cb on success. php will add new user if they dont exisit.
-      // const {data: {success}} = await axios.post('/api/updateUserRole.php', { role: selectedEmailRole});
+      const {data: {success}} = await axios.post('/api/updateUserRole.php', { roleLabels: selectedEmailRole});
       setUserEmails((prev) => [...prev, <option value={emailInput} key={emailInput}>({emailInput})</option>]);
       setEmailInput('');
     };
