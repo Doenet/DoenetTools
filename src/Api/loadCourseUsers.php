@@ -33,11 +33,13 @@ if ($permissions['canViewUsers'] != '1') {
 
 if ($success) {
     $sql = "SELECT 
-      CAST(cu.roleLabels as CHAR) as roles,
+      cr.label as roleLabel,
       u.screenName AS screenName,
       u.email AS email,
       u.userId AS userId
       FROM course_user AS cu
+      LEFT JOIN course_role AS cr
+      ON cu.roleId = cr.roleId
       LEFT JOIN user AS u
       ON cu.userId = u.userId
       WHERE cu.courseId = '$courseId' 

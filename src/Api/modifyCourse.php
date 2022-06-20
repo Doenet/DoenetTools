@@ -6,7 +6,7 @@ header('Access-Control-Allow-Credentials: true');
 header('Content-Type: application/json');
 
 include 'db_connection.php';
-include 'permissionsAndSettingsFunction.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
@@ -17,20 +17,12 @@ $_POST = json_decode(file_get_contents('php://input'), true);
 if (array_key_exists('courseId', $_POST)) {
     $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
 
-    $sql = "SELECT canModifyCourseSettings 
-        FROM course_user 
-        WHERE courseId = '$courseId'
-        AND userId = '$userId'
-        LIMIT 1";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $allowed = $row['canModifyCourseSettings'];
-    } else {
-        //Fail because there is no DB row for the user on this course
-        // so we shouldn't allow an add
-        http_response_code(401); //User has bad auth
-    }
+    $permissons = permissionsAndSettingsForOneCourseFunction(
+        $conn,
+        $userId,
+        $courseId
+    );
+    $allowed = $permissons['canModifyCourseSettings']; //TODO Emilio deal with undefined (for a 401?)
 
     if ($allowed) {
         //TODO: should check for db success from result object
