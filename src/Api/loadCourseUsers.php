@@ -33,10 +33,10 @@ if ($permissions['canViewUsers'] != '1') {
 
 if ($success) {
     $sql = "SELECT 
+      cu.userId AS userId
       cr.label as roleLabel,
-      u.screenName AS screenName,
       u.email AS email,
-      u.userId AS userId
+      u.screenName AS screenName,
       FROM course_user AS cu
       LEFT JOIN course_role AS cr
       ON cu.roleId = cr.roleId
@@ -56,7 +56,7 @@ if ($success) {
                 'email' => $row['email'],
                 'screenName' => $row['screenName'],
                 'isUser' => $row['userId'] == $userId,
-                'roles' => json_decode($row['roles']),
+                'roleLabel' => $row['roleLabel'],
             ]);
         }
     }
