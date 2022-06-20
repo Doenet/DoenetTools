@@ -55,8 +55,6 @@ export default function CheckboxButton(props) {
     labelValue = props.label;
   };
 
-  console.log('what', props.disabled);
-
   return (
     <Container 
       align={align}
