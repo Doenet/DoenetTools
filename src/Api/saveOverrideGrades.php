@@ -77,10 +77,10 @@ if ($success){
     $sql = "
     SELECT u.userId
     FROM user AS u
-    INNER JOIN enrollment AS e
-    ON e.userId = u.userId
+    INNER JOIN course_user AS cu
+    ON cu.userId = u.userId
     WHERE u.email = '$email'
-    AND e.driveId = '$driveId' 
+    AND cu.courseId = '$driveId' 
     ";
     $result = $conn->query($sql);
     //Uploaded data requires students who are enrolled

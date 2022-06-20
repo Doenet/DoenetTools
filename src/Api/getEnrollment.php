@@ -28,16 +28,17 @@ if (array_key_exists('courseId', $_REQUEST)) {
 $enrollmentArray = [];
 
 if ($allowed) {
-    $sql = "SELECT userId,
-		firstName,
-		lastName,
-		email,
-		empId,
-		dateEnrolled,
-		section,
-		withdrew
-		FROM enrollment
-		WHERE courseId = '$courseId'
+    $sql = "SELECT cu.userId,
+		u.firstName,
+		u.lastName,
+		u.email,
+		cu.externalId,
+		cu.dateEnrolled,
+		cu.section,
+		cu.withdrew
+		FROM course_user AS cu, user AS u
+		WHERE cu.userId = u.userId
+        AND cu.courseId = '$courseId'
 		ORDER BY firstName
 		";
     $result = $conn->query($sql);
@@ -48,7 +49,7 @@ if ($allowed) {
             'firstName' => $row['firstName'],
             'lastName' => $row['lastName'],
             'email' => $row['email'],
-            'empId' => $row['empId'],
+            'externalId' => $row['externalId'],
             'dateEnrolled' => $row['dateEnrolled'],
             'section' => $row['section'],
             'withdrew' => $row['withdrew'],
