@@ -944,7 +944,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       win.postMessage({
-        doenetML }, "*");
+        doenetML
+      }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
@@ -1032,7 +1033,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       win.postMessage({
-        doenetML }, "*");
+        doenetML
+      }, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
@@ -5492,7 +5494,7 @@ describe('MathInput Tag Tests', function () {
     // then the refresh on blur (from the focus field recoil atoms changing)
     // would cause rendererValue.current to be changed to the old SV value
     // as the update wouldn't be ignored
-  
+
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -5506,17 +5508,17 @@ describe('MathInput Tag Tests', function () {
 
     // by highlighting and typing a number, we make sure the rendererValue changes directly 
     // from 10 to 20 and back to 10 (without other changes that would hide the bug)
-    cy.get('#\\/n textarea').type("{home}{shift+rightArrow}2", {force: true}).blur();
+    cy.get('#\\/n textarea').type("{home}{shift+rightArrow}2", { force: true }).blur();
     cy.get('#\\/n2').should('contain.text', "20");
 
-    cy.get('#\\/n textarea').type("{home}{shift+rightArrow}1", {force: true}).blur();
+    cy.get('#\\/n textarea').type("{home}{shift+rightArrow}1", { force: true }).blur();
     cy.get('#\\/n2').should('contain.text', "10");
 
 
   });
 
 
-  it('check ignoreUpdate bug 1', () => {
+  it('check ignoreUpdate bug 2', () => {
     // if set core to delay 1 second on updates
     // the extra update from focusing another mathinput wasn't being ignored
     // leading rendererValue to get out of sync
@@ -5554,5 +5556,926 @@ describe('MathInput Tag Tests', function () {
     })
   })
 
+  it('mathinput with number child', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><mathinput name="mi" ><number /></mathinput></p>
+  <p>Value: <copy prop="value" target="mi" assignNames="mv" /></p>
+  <p>Immediate Value: <copy prop="immediateValue" target="mi" assignNames="miv" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+
+
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(NaN)
+    });
+
+
+    cy.log('type a number')
+    cy.get('#\\/mi textarea').type('5', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '5')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(5)
+    });
+
+
+    cy.log('hit enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '5')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(5)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(5)
+    });
+
+
+
+    cy.log('type pi')
+    // for some reason, need a significant delay in between keystrokes
+    // or MathJax doesn't render immediate value correctly.
+    cy.get('#\\/mi textarea').type('{end}{backspace}pi', { force: true, delay: 50 })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'π')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("π");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('π')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(5)
+      expect(stateVariables["/miv"].stateValues.value).eqls("pi")
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '3.141592654')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '3.141592654')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3.141592654");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3.141592654");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3.141592654')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(Math.PI)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(Math.PI)
+    });
+
+
+    cy.log('type x')
+    cy.get('#\\/mi textarea').type('{ctrl+home}{shift+ctrl+end}{backspace}x', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'x')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3.141592654");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(Math.PI)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls("x")
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', 'NaN')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'NaN')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(NaN)
+    });
+
+
+    cy.log('type 2/3')
+    cy.get('#\\/mi textarea').type('2/3', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '23')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("23");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('23')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["/", 2, 3])
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '0.6666666667')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '0.6666666667')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0.6666666667");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0.6666666667");
+    })
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.6666666667')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(2/3)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(2/3)
+    });
+
+
+
+  });
+
+  it('mathinput with number child, do not hide NaN', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><mathinput name="mi" hideNaN="false"><number /></mathinput></p>
+  <p>Value: <copy prop="value" target="mi" assignNames="mv" /></p>
+  <p>Immediate Value: <copy prop="immediateValue" target="mi" assignNames="miv" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+
+
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'NaN')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(NaN)
+    });
+
+
+    cy.log('type a number')
+    // for some reason, need a significant delay in between keystrokes
+    // or MathJax doesn't render immediate value correctly.
+    cy.get('#\\/mi textarea').type('{ctrl+home}{shift+ctrl+end}{backspace}5', { force: true, delay: 100 })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '5')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(5)
+    });
+
+
+    cy.log('hit enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '5')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(5)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(5)
+    });
+
+
+
+    cy.log('type pi')
+    // for some reason, need a significant delay in between keystrokes
+    // or MathJax doesn't render immediate value correctly.
+    cy.get('#\\/mi textarea').type('{end}{backspace}pi', { force: true, delay: 100 })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'π')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("π");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('π')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(5)
+      expect(stateVariables["/miv"].stateValues.value).eqls("pi")
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '3.141592654')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '3.141592654')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3.141592654");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3.141592654");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3.141592654')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(Math.PI)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(Math.PI)
+    });
+
+
+    cy.log('type x')
+    cy.get('#\\/mi textarea').type('{ctrl+home}{shift+ctrl+end}{backspace}x', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'x')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3.141592654");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(Math.PI)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls("x")
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', 'NaN')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'NaN')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(NaN)
+    });
+
+
+    cy.log('type 2/3')
+    cy.get('#\\/mi textarea').type('{ctrl+home}{shift+ctrl+end}{backspace}2/3', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '23')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("23");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('23')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["/", 2, 3])
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '0.6666666667')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '0.6666666667')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0.6666666667");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0.6666666667");
+    })
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.6666666667')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(2/3)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(2/3)
+    });
+
+
+
+  });
+
+  it('mathinput with number child, value on NaN', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><mathinput name="mi"><number valueOnNaN='0' /></mathinput></p>
+  <p>Value: <copy prop="value" target="mi" assignNames="mv" /></p>
+  <p>Immediate Value: <copy prop="immediateValue" target="mi" assignNames="miv" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0");
+    })
+
+
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '0')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(0)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(0)
+    });
+
+
+    cy.log('type a number')
+    // for some reason, need a significant delay in between keystrokes
+    // or MathJax doesn't render immediate value correctly.
+    cy.get('#\\/mi textarea').type('{end}{backspace}5', { force: true, delay: 100 })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '5')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(0)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(5)
+    });
+
+
+    cy.log('hit enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '5')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(5)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(5)
+    });
+
+
+
+    cy.log('type pi')
+    // for some reason, need a significant delay in between keystrokes
+    // or MathJax doesn't render immediate value correctly.
+    cy.get('#\\/mi textarea').type('{end}{backspace}pi', { force: true, delay: 100 })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'π')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("π");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('π')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(5)
+      expect(stateVariables["/miv"].stateValues.value).eqls("pi")
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '3.141592654')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '3.141592654')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3.141592654");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3.141592654");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3.141592654')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(Math.PI)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(Math.PI)
+    });
+
+
+    cy.log('type x')
+    cy.get('#\\/mi textarea').type('{ctrl+home}{shift+ctrl+end}{backspace}x', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'x')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3.141592654");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(Math.PI)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls("x")
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '0')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '0')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0");
+    })
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(0)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(0)
+    });
+
+
+    cy.log('type 2/3')
+    cy.get('#\\/mi textarea').type('{end}{backspace}2/3', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '23')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("23");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('23')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(0)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["/", 2, 3])
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '0.6666666667')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '0.6666666667')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0.6666666667");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("0.6666666667");
+    })
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('0.6666666667')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(2/3)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(2/3)
+    });
+
+
+
+  });
+
+  it('mathinput with number child, force positive integer', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><mathinput name="mi">
+    <clampNumber lowerValue="1" upperValue="Infinity"><integer/></clampNumber>
+  </mathinput></p>
+  <p>Value: <copy prop="value" target="mi" assignNames="mv" /></p>
+  <p>Immediate Value: <copy prop="immediateValue" target="mi" assignNames="miv" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+
+
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(NaN)
+    });
+
+
+    cy.log('type a number')
+    cy.get('#\\/mi textarea').type('5', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '5')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(5)
+    });
+
+
+    cy.log('hit enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '5')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('5')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(5)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(5)
+    });
+
+
+
+    cy.log('type pi')
+    // for some reason, need a significant delay in between keystrokes
+    // or MathJax doesn't render immediate value correctly.
+    cy.get('#\\/mi textarea').type('{end}{backspace}pi', { force: true, delay: 50 })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'π')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("5");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("π");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('π')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(5)
+      expect(stateVariables["/miv"].stateValues.value).eqls("pi")
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '3')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '3')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('3')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(3)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(3)
+    });
+
+
+    cy.log('type x')
+    cy.get('#\\/mi textarea').type('{ctrl+home}{shift+ctrl+end}{backspace}x', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'x')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("3");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(3)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls("x")
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', 'NaN')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', 'NaN')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(NaN)
+    });
+
+
+    cy.log('type -3')
+    cy.get('#\\/mi textarea').type('-3', { force: true })
+
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '−3')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("NaN");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("−3");
+    })
+
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('−3')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(NaN)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(-3)
+    });
+
+
+    cy.log('press enter')
+    cy.get('#\\/mi textarea').type('{enter}', { force: true })
+
+    cy.get('#\\/mv .mjx-mrow').should('contain.text', '1')
+    cy.get('#\\/miv .mjx-mrow').should('contain.text', '1')
+
+    cy.get('#\\/mv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("1");
+    })
+    cy.get('#\\/miv .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("1");
+    })
+
+    cy.get(`#\\/mi .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('1')
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(1)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(1)
+    });
+
+
+
+  });
 
 });
