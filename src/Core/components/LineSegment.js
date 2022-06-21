@@ -472,6 +472,32 @@ export default class LineSegment extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.length = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
+      returnDependencies: () => ({
+        numericalEndpoints: {
+          dependencyType: "stateVariable",
+          variableName: "numericalEndpoints"
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        }
+      }),
+      definition({ dependencyValues }) {
+        let ps = dependencyValues.numericalEndpoints;
+        let length2 = 0;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          length2 += (ps[1][dim] - ps[0][dim]) ** 2;
+        }
+
+        return { setValue: { length: Math.sqrt(length2) } }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
