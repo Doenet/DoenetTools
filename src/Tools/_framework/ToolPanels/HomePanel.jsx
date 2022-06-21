@@ -259,11 +259,11 @@ export default function HomePage(props) {
       <SectionText>
         <Headings className="section-headline">Workshop on developing learning experiments in Doenet</Headings>
         <Paragraph>
-          Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our <a style={{color:"var(--whiteBlankLink)"}}href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop</a> for a hands-on introduction to authoring and running experiments, led
-          by the developers of Doenet.  Designed for instructors of college STEM courses, the workshop will be held from May 23 - May 26, 2022, at the University of Minnesota.
+          From May 23 - May 26, 2022, we hosted a <a style={{color:"var(--whiteBlankLink)"}}href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop</a> on developing content and learning experiments in Doenet.  Held at the University of Minnesota, the workshop for instructors of college STEM courses was a hands-on introduction to authoring and running experiments, led
+          by the developers of Doenet.
         </Paragraph>
         <Paragraph>
-          For more information and to apply to the workshop, see the <a style= {{color:"var(--whiteBlankLink)"}} href="https://ima.umn.edu/2021-2022/SW5.23-26.22">workshop site</a>.
+          For information about future workshops, please contact us at <a style= {{color:"var(--whiteBlankLink)"}} href="mailto:info@doenet.org">info@doenet.org</a>.
         </Paragraph>
       </SectionText>
     </CloudColorSection>
@@ -311,7 +311,7 @@ export default function HomePage(props) {
             </p>
             <p>
               Doenet is a collaborative project involving the University of
-              Minnesota, the Ohio State University, and Ithaca College, with
+              Minnesota, the Ohio State University, and Cornell University, with
               support from the National Science Foundation (DUE-1915294,
               DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions
               or recommendations expressed in this material are those of the
