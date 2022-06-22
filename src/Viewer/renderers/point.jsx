@@ -50,9 +50,6 @@ export default React.memo(function Point(props) {
     let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
 
     let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
 
     let fixed = !SVs.draggable || SVs.fixed;
 
@@ -116,7 +113,7 @@ export default React.memo(function Point(props) {
         anchory,
       };
 
-      if (SVs.labelIsLatex) {
+      if (SVs.labelHasLatex) {
         jsxPointAttributes.label.useMathJax = true;
       }
 
@@ -126,7 +123,7 @@ export default React.memo(function Point(props) {
         jsxPointAttributes.label.strokeColor = "#000000";
       }
     } else {
-      if (SVs.labelIsLatex) {
+      if (SVs.labelHasLatex) {
         jsxPointAttributes.label = { useMathJax: true };
       }
     }
