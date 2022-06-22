@@ -157,6 +157,8 @@ import OrbitalDiagram from './components/OrbitalDiagram';
 import DataFrame from './components/DataFrame';
 import SummaryStatistics from './components/SummaryStatistics';
 import Chart from './components/Chart';
+import Legend from './components/Legend';
+import Label from './components/Label';
 
 
 //Extended
@@ -313,6 +315,8 @@ const componentTypeArray = [
   DataFrame,
   SummaryStatistics,
   Chart,
+  Legend,
+  Label,
 
   BaseComponent,
   InlineComponent,

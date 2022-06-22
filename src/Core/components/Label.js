@@ -1,8 +1,9 @@
-import InlineComponent from './InlineComponent';
+import InlineComponent from './abstract/InlineComponent';
 
-export default class TextOrLatexFromInline extends InlineComponent {
-  static componentType = "_textOrLatexFromInline";
+export default class Label extends InlineComponent {
+  static componentType = "label";
   static renderChildren = true;
+  static rendererType = "container";
 
   static includeBlankStringChildren = true;
 
@@ -31,7 +32,7 @@ export default class TextOrLatexFromInline extends InlineComponent {
           createComponentOfType: "text"
         },
       }, {
-        variableName: "isLatex",
+        variableName: "hasLatex",
         public: true,
         shadowingInstructions: {
           createComponentOfType: "boolean"
@@ -39,6 +40,7 @@ export default class TextOrLatexFromInline extends InlineComponent {
       }, {
         variableName: "value",
         public: true,
+        forRenderer: true,
         shadowingInstructions: {
           createComponentOfType: "text"
         },
@@ -54,30 +56,27 @@ export default class TextOrLatexFromInline extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let text = "";
         let latex = "";
-        let nLatex = 0;
-        let nNonLatex = 0;
+        let value = "";
+        let hasLatex = false;
         for (let comp of dependencyValues.inlineChildren) {
           if (typeof comp !== "object") {
             let s = comp.toString()
             text += s;
             latex += s;
-            nNonLatex++;
+            value += s;
           } else if (typeof comp.stateValues.latex === "string") {
             text += comp.stateValues.latex;
             latex += comp.stateValues.latex;
-            nLatex++;
+            value += "\\(" + comp.stateValues.latex + "\\)";
+            hasLatex = true;
           } else if (typeof comp.stateValues.text === "string") {
             text += comp.stateValues.text;
             latex += comp.stateValues.text;
-            nNonLatex++;
+            value += comp.stateValues.text;
           }
         }
 
-        let isLatex = nLatex > 0 && nNonLatex === 0;
-
-        let value = isLatex ? latex : text;
-
-        return { setValue: { text, latex, isLatex, value } };
+        return { setValue: { text, latex, hasLatex, value } };
       }
     }
 

@@ -54,7 +54,7 @@ export default class Function extends InlineComponent {
     // for case when function is adapted into a curve
 
     attributes.label = {
-      createComponentOfType: "text",
+      createComponentOfType: "_textOrLatexFromInline",
       createStateVariable: "label",
       defaultValue: "",
       public: true,
@@ -238,6 +238,20 @@ export default class Function extends InlineComponent {
         let styleDescriptionWithNoun = dependencyValues.styleDescription + " function";
 
         return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+    stateVariableDefinitions.labelIsLatex = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        labelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "label",
+          variableNames: ["isLatex"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { labelIsLatex: dependencyValues.labelAttr?.stateValues.isLatex === true } }
       }
     }
 
@@ -3215,7 +3229,8 @@ export default class Function extends InlineComponent {
 
   static adapters = [{
     stateVariable: "numericalf",
-    componentType: "curve"
+    componentType: "curve",
+    stateVariablesToShadow: ["labelIsLatex"]
   },
   {
     stateVariable: "formula",
