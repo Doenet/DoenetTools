@@ -287,13 +287,11 @@ export default React.memo(function Slider(props) {
   const containerRef = useRef(null);
   const setRendererState = useSetRecoilState(rendererState(rendererName));
   const [thumbXPos, setThumbXPos] = useState(0);
-  const [thumbValue, setThumbValue] = useState(SVs.firstItem);
-  const [isMouseDown, setIsMouseDown] = useState(0);
+  const isMouseDown = useRef(false);
   const [offsetLeft, setOffsetLeft] = useState(0);
   const startValue = SVs.type === "text" ? 0 : SVs.firstItem;
   let divisionWidth = SVs.width.size / (SVs.nItems - 1);
   const [index, setIndex] = useState(0);
-  const width = SVs.width.size;
   useEffect(() => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
@@ -301,8 +299,7 @@ export default React.memo(function Slider(props) {
     }
   }, []);
   useEffect(() => {
-    if (!isMouseDown && !ignoreUpdate) {
-      setThumbValue(SVs.value);
+    if (!isMouseDown.current && !ignoreUpdate) {
       setIndex(SVs.index);
       if (!(SVs.type === "text")) {
         setThumbXPos(SVs.index / (SVs.nItems - 1) * SVs.width.size);
@@ -347,17 +344,13 @@ export default React.memo(function Slider(props) {
     if (SVs.label) {
       if (SVs.showValue) {
         myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label + " = " + SVs.valueForDisplay);
-        console.log("both");
       } else {
         myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label);
-        console.log("just label");
       }
     } else if (!SVs.label && SVs.showValue) {
       myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.valueForDisplay);
-      console.log("just value");
     } else {
       myLabel2 = null;
-      console.log("neither");
     }
     return /* @__PURE__ */ React.createElement(SliderContainer, {
       labeled: SVs.showControls || SVs.label,
@@ -375,12 +368,13 @@ export default React.memo(function Slider(props) {
     }, controls2));
   }
   function handleDragEnter(e) {
-    setIsMouseDown(true);
+    isMouseDown.current = true;
+    document.addEventListener("mousemove", handleDragThrough);
+    document.addEventListener("mouseup", handleDragExit);
     setThumbXPos(e.nativeEvent.clientX - offsetLeft);
     if (!(SVs.type === "text")) {
       let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
       let valindexpair = nearestValue(refval, SVs.items, SVs);
-      setThumbValue(valindexpair[0]);
       setIndex(valindexpair[1]);
       setRendererState((was) => {
         let newObj = {...was};
@@ -395,7 +389,6 @@ export default React.memo(function Slider(props) {
     } else {
       let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
       setIndex(i);
-      setThumbValue(SVs.items[i]);
       setRendererState((was) => {
         let newObj = {...was};
         newObj.ignoreUpdate = true;
@@ -409,17 +402,18 @@ export default React.memo(function Slider(props) {
     }
   }
   function handleDragExit(e) {
-    if (!isMouseDown) {
+    document.removeEventListener("mousemove", handleDragThrough);
+    document.removeEventListener("mouseup", handleDragExit);
+    if (!isMouseDown.current) {
       return;
     }
-    setIsMouseDown(false);
+    isMouseDown.current = false;
     if (!(SVs.type === "text")) {
       let xPositionToValue2 = function(ref, div_width, start_val) {
         return start_val + ref / div_width;
       };
-      let refval = xPositionToValue2(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+      let refval = xPositionToValue2(e.clientX - offsetLeft, divisionWidth, startValue);
       let valindexpair = nearestValue(refval, SVs.items, SVs);
-      setThumbValue(valindexpair[0]);
       setIndex(valindexpair[1]);
       setThumbXPos(valindexpair[1] * divisionWidth);
       setRendererState((was) => {
@@ -433,10 +427,9 @@ export default React.memo(function Slider(props) {
         baseVariableValue: valindexpair[1]
       });
     } else {
-      let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+      let i = Math.round((e.clientX - offsetLeft) / divisionWidth);
       i = Math.max(0, Math.min(SVs.nItems - 1, i));
       setIndex(i);
-      setThumbValue(SVs.items[i]);
       setThumbXPos(i * divisionWidth);
       setRendererState((was) => {
         let newObj = {...was};
@@ -451,12 +444,11 @@ export default React.memo(function Slider(props) {
     }
   }
   function handleDragThrough(e) {
-    if (isMouseDown) {
-      setThumbXPos(Math.max(0, Math.min(SVs.width.size, e.nativeEvent.clientX - offsetLeft)));
+    if (isMouseDown.current) {
+      setThumbXPos(Math.max(0, Math.min(SVs.width.size, e.clientX - offsetLeft)));
       if (!(SVs.type === "text")) {
-        let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+        let refval = xPositionToValue(e.clientX - offsetLeft, divisionWidth, startValue);
         let valindexpair = nearestValue(refval, SVs.items, SVs);
-        setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
         setRendererState((was) => {
           let newObj = {...was};
@@ -469,9 +461,8 @@ export default React.memo(function Slider(props) {
           baseVariableValue: valindexpair[1]
         });
       } else {
-        let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+        let i = Math.round((e.clientX - offsetLeft) / divisionWidth);
         setIndex(i);
-        setThumbValue(SVs.items[i]);
         setRendererState((was) => {
           let newObj = {...was};
           newObj.ignoreUpdate = true;
@@ -505,7 +496,6 @@ export default React.memo(function Slider(props) {
       args: {value: val},
       baseVariableValue: index + 1
     });
-    setThumbValue(val);
     setIndex(index + 1);
   }
   function handlePrevious(e) {
@@ -528,7 +518,6 @@ export default React.memo(function Slider(props) {
       args: {value: val},
       baseVariableValue: index - 1
     });
-    setThumbValue(val);
     setIndex(index - 1);
   }
   function handleKeyDown(e) {
@@ -576,17 +565,13 @@ export default React.memo(function Slider(props) {
   if (SVs.label) {
     if (SVs.showValue) {
       myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label + " = " + SVs.valueForDisplay);
-      console.log("both");
     } else {
       myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label);
-      console.log("just label");
     }
   } else if (!SVs.label && SVs.showValue) {
     myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.valueForDisplay);
-    console.log("just value");
   } else {
     myLabel = null;
-    console.log("neither");
   }
   return /* @__PURE__ */ React.createElement(SliderContainer, {
     ref: containerRef,
@@ -597,10 +582,7 @@ export default React.memo(function Slider(props) {
   }, /* @__PURE__ */ React.createElement("div", {
     style: {height: SVs.label || SVs.showValue ? "20px" : "0px"}
   }, myLabel), /* @__PURE__ */ React.createElement(SubContainer2, {
-    onMouseDown: handleDragEnter,
-    onMouseUp: handleDragExit,
-    onMouseMove: handleDragThrough,
-    onMouseLeave: handleDragExit
+    onMouseDown: handleDragEnter
   }, /* @__PURE__ */ React.createElement(StyledSlider, {
     width: `${SVs.width.size}px`,
     "data-cy": `${name}`

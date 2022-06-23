@@ -37,8 +37,29 @@ export default class Parabola extends Curve {
 
     let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
 
-    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+    // also defines graphXmax, graphYmin, and graphYmax
     stateVariableDefinitions.graphXmin = curveStateVariableDefinitions.graphXmin;
+
+    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " parabola";
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
 
     stateVariableDefinitions.curveType = {
       forRenderer: true,

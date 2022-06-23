@@ -35,17 +35,25 @@ export default React.memo(function Polyline(props) {
         validCoords = false;
       }
     }
+    let fixed = !SVs.draggable || SVs.fixed;
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
     let jsxPolylineAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
       layer: 10 * SVs.layer + 7,
+      fixed,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
-      dash: styleToDash(SVs.selectedStyle.lineStyle)
+      dash: styleToDash(SVs.selectedStyle.lineStyle),
+      highlight: !fixed
     };
     jsxPointAttributes.current = Object.assign({}, jsxPolylineAttributes);
     Object.assign(jsxPointAttributes.current, {
@@ -56,10 +64,14 @@ export default React.memo(function Polyline(props) {
       highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + 9
     });
-    if (!SVs.draggable || SVs.fixed || SVs.hidden || !validCoords) {
+    if (fixed || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
     }
-    jsxPolylineAttributes.label = {};
+    if (SVs.labelIsLatex) {
+      jsxPolylineAttributes.label = {useMathJax: true};
+    } else {
+      jsxPolylineAttributes.label = {};
+    }
     if (SVs.applyStyleToLabel) {
       jsxPolylineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
     } else {
@@ -186,6 +198,15 @@ export default React.memo(function Polyline(props) {
           validCoords = false;
         }
       }
+      let fixed = !SVs.draggable || SVs.fixed;
+      polylineJXG.current.visProp.fixed = fixed;
+      polylineJXG.current.visProp.highlight = !fixed;
+      let polylineLayer = 10 * SVs.layer + 7;
+      let layerChanged = polylineJXG.current.visProp.layer !== polylineLayer;
+      if (layerChanged) {
+        polylineJXG.current.setAttribute({layer: polylineLayer});
+        jsxPointAttributes.current.layer = polylineLayer + 2;
+      }
       if (SVs.nVertices > previousNVertices.current) {
         for (let i = previousNVertices.current; i < SVs.nVertices; i++) {
           pointsJXG.current.push(board.create("point", [...SVs.numericalVertices[i]], jsxPointAttributes.current));
@@ -217,7 +238,7 @@ export default React.memo(function Polyline(props) {
       if (validCoords) {
         polylineJXG.current.visProp["visible"] = visible;
         polylineJXG.current.visPropCalc["visible"] = visible;
-        let pointsVisible = visible && SVs.draggable && !SVs.fixed;
+        let pointsVisible = visible && !fixed;
         for (let i = 0; i < SVs.nVertices; i++) {
           pointsJXG.current[i].visProp["visible"] = pointsVisible;
           pointsJXG.current[i].visPropCalc["visible"] = pointsVisible;
@@ -234,14 +255,23 @@ export default React.memo(function Polyline(props) {
         polylineJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         polylineJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
       }
+      if (polylineJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        polylineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+        polylineJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth;
+      }
+      if (polylineJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        polylineJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        polylineJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (polylineJXG.current.visProp.dash !== newDash) {
         polylineJXG.current.visProp.dash = newDash;
       }
-      if (polylineJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
-        polylineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
       }
-      polylineJXG.current.name = SVs.label;
+      polylineJXG.current.name = label;
       if (polylineJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
           polylineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
@@ -260,6 +290,9 @@ export default React.memo(function Polyline(props) {
       polylineJXG.current.needsUpdate = true;
       polylineJXG.current.update().updateVisibility();
       for (let i = 0; i < SVs.nVertices; i++) {
+        if (layerChanged) {
+          pointsJXG.current[i].setAttribute({layer: polylineLayer + 2});
+        }
         pointsJXG.current[i].needsUpdate = true;
         pointsJXG.current[i].update();
       }

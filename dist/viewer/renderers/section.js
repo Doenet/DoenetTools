@@ -101,9 +101,9 @@ export default React.memo(function Section(props) {
       fontWeight: "bold",
       marginBottom: "30px"
     };
-    let checkWorkText = "Check Work";
+    let checkWorkText = SVs.submitLabel;
     if (!SVs.showCorrectness) {
-      checkWorkText = "Submit Response";
+      checkWorkText = SVs.submitLabelNoCorrectness;
     }
     checkworkComponent = /* @__PURE__ */ React.createElement("button", {
       id: name + "_submit",
