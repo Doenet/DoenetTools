@@ -45,22 +45,40 @@ export default class Polyline extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-
-        let styleDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          styleDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          styleDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          styleDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          styleDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
+
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
 
         return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " polyline";
+
+        return { setValue: { styleDescriptionWithNoun } };
       }
     }
 

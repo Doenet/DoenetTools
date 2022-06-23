@@ -192,7 +192,8 @@ export default class Graph extends BlockComponent {
       returnDependencies: () => ({
         graphicalDescendants: {
           dependencyType: "descendant",
-          componentTypes: ["_graphical"]
+          componentTypes: ["_graphical"],
+          variableNames: ["selectedStyle", "styleNumber"]
         },
       }),
       definition: function ({ dependencyValues }) {

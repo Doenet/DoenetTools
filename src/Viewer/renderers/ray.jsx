@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
-import me from 'math-expressions';
+// import me from 'math-expressions';
 
 export default React.memo(function Ray(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
