@@ -12,7 +12,7 @@ const Button = styled.button`
   border-radius: var(--mainBorderRadius);
   color: ${(props) => props.textColor};
   background-color: ${(props) => props.color};
-  cursor: ${(props) => props.disabled};
+  cursor: ${(props) => props.cursor};
   &:hover {
     color: black;
     background-color: ${(props) => props.alert ? "var(--lightRed)" : props.disabled ? "var(--mainGray)" : "var(--lightBlue)"};
@@ -43,6 +43,7 @@ export default function CheckboxButton(props) {
   const cursor = props.disabled ? "not-allowed" : "pointer";
   const labelVisible = props.label ? "static" : "none";
   const align = props.vertical ? "static" : "flex";
+  const disabled = props.disabled ? true : false;
   let labelValue = "Label:";
   if (props.label) {
     labelValue = props.label;
@@ -58,9 +59,12 @@ export default function CheckboxButton(props) {
     color,
     textColor,
     ref: buttonRef,
-    disabled: cursor,
+    disabled,
+    cursor,
     onClick: (e) => {
-      props.onClick(e);
+      if (props.onClick) {
+        props.onClick(e);
+      }
     }
   }, icon));
 }

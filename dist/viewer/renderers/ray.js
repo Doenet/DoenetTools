@@ -1,7 +1,6 @@
 import React, {useContext, useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
-import me from "../../_snowpack/pkg/math-expressions.js";
 export default React.memo(function Ray(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Ray.ignoreActionsWithoutCore = true;
@@ -37,7 +36,6 @@ export default React.memo(function Ray(props) {
       name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
       layer: 10 * SVs.layer + 7,
       fixed,
       strokeColor: SVs.selectedStyle.lineColor,
