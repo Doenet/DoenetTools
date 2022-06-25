@@ -5,6 +5,11 @@ export default class MathOperator extends MathComponent {
   static componentType = "_mathOperator";
   static rendererType = "math";
 
+  // since math operator treats each child a separate argument
+  // composites with no replacement should be ignored.
+  // turn off this flag set in math
+  static descendantCompositesMustHaveAReplacement = false;
+
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.forceSymbolic = {
