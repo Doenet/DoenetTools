@@ -6,6 +6,7 @@ import me from 'math-expressions';
 export default class Circle extends Curve {
   static componentType = "circle";
   static rendererType = "circle";
+  static representsClosedPath = true;
 
   actions = {
     moveCircle: this.moveCircle.bind(this),

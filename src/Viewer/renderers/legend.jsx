@@ -7,7 +7,7 @@ export default React.memo(function Legend(props) {
 
   const board = useContext(BoardContext);
 
-  let graphicalSnippets = useRef([]);
+  let swatches = useRef([]);
   let labels = useRef([])
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default React.memo(function Legend(props) {
     let legendDx = (xmax - xmin) * 0.02;
 
     let legendX = xmin + (xmax - xmin) * 0.05
-    
+
     let legendY;
 
     if (SVs.position.slice(0, 5) === "upper") {
@@ -44,7 +44,7 @@ export default React.memo(function Legend(props) {
 
     let atRight = SVs.position.slice(SVs.position.length - 5, SVs.position.length) === "right";
 
-    graphicalSnippets.current = [];
+    swatches.current = [];
     labels.current = [];
 
     let maxTextWidth = 0;
@@ -84,10 +84,11 @@ export default React.memo(function Legend(props) {
 
     for (let [ind, element] of SVs.legendElements.entries()) {
       let y = legendY - ind * legendDy;
-      if (element.legendType === "marker") {
+      if (element.swatchType === "marker") {
         let pointStyle = {
           fillColor: element.markerColor,
-          strokeColor: element.markerColor,
+          fillOpacity: element.lineOpacity,
+          strokeColor: "none",
           size: element.markerSize,
           face: normalizeStyle(element.markerStyle),
           fixed: true,
@@ -96,18 +97,41 @@ export default React.memo(function Legend(props) {
           showInfoBox: false,
         }
         let point = board.create('point', [legendX + legendLineLength / 2, y], pointStyle);
-        graphicalSnippets.current.push(point);
+        swatches.current.push(point);
 
+      } else if (element.swatchType === "rectangle") {
+        let rectangleStyle = {
+          fillColor: element.fillColor,
+          fillOpacity: element.fillOpacity,
+          fixed: true,
+          highlight: false,
+          vertices: { visible: false },
+          borders: {
+            strokeColor: element.lineColor,
+            strokeWidth: element.lineWidth,
+            strokeOpacity: element.lineOpacity,
+            dash: styleToDash(element.lineStyle),
+            fixed: true,
+            highlight: false,
+          }
+        }
+
+        let seg = board.create('polygon', [
+          [legendX, y + legendDy / 4], [legendX + legendLineLength, y + legendDy / 4],
+          [legendX + legendLineLength, y - legendDy / 4], [legendX, y - legendDy / 4]
+        ], rectangleStyle)
+        swatches.current.push(seg);
       } else {
         let lineStyle = {
           strokeColor: element.lineColor,
           strokeWidth: element.lineWidth,
+          strokeOpacity: element.lineOpacity,
           dash: styleToDash(element.lineStyle),
           fixed: true,
           highlight: false,
         }
         let seg = board.create('segment', [[legendX, y], [legendX + legendLineLength, y]], lineStyle)
-        graphicalSnippets.current.push(seg);
+        swatches.current.push(seg);
       }
       if (atRight && element.label) {
         labels.current[ind].coords.setCoordinates(JXG.COORDS_BY_USER, [legendX + legendLineLength + legendDx, y])
@@ -127,18 +151,32 @@ export default React.memo(function Legend(props) {
 
         legendX = Math.max(legendX, xmax - legendLineLength - 3 * legendDx - maxTextWidth);
 
-        for (let [ind, snippet] of graphicalSnippets.current.entries()) {
+        for (let [ind, swatch] of swatches.current.entries()) {
 
           let y = legendY - ind * legendDy;
-          if (snippet.elType === "point") {
-            snippet.coords.setCoordinates(JXG.COORDS_BY_USER, [legendX + legendLineLength / 2, y])
-            snippet.needsUpdate = true;
-            snippet.update();
+          if (swatch.elType === "point") {
+            swatch.coords.setCoordinates(JXG.COORDS_BY_USER, [legendX + legendLineLength / 2, y])
+            swatch.needsUpdate = true;
+            swatch.update();
+          } else if (swatch.elType === "polygon") {
+            swatch.vertices[0].coords.setCoordinates(JXG.COORDS_BY_USER, [legendX, y + legendDy / 4]);
+            swatch.vertices[1].coords.setCoordinates(JXG.COORDS_BY_USER, [legendX + legendLineLength, y + legendDy / 4]);
+            swatch.vertices[2].coords.setCoordinates(JXG.COORDS_BY_USER, [legendX + legendLineLength, y - legendDy / 4]);
+            swatch.vertices[3].coords.setCoordinates(JXG.COORDS_BY_USER, [legendX, y - legendDy / 4]);
+
+            for (let i = 0; i < 4; i++) {
+              swatch.vertices[i].needsUpdate = true;
+              swatch.vertices[i].update();
+              swatch.borders[i].needsUpdate = true;
+              swatch.borders[i].update();
+            }
+            swatch.needsUpdate = true;
+            swatch.update();
           } else {
-            snippet.point1.coords.setCoordinates(JXG.COORDS_BY_USER, [legendX, y]);
-            snippet.point2.coords.setCoordinates(JXG.COORDS_BY_USER, [legendX + legendLineLength, y]);
-            snippet.needsUpdate = true;
-            snippet.update();
+            swatch.point1.coords.setCoordinates(JXG.COORDS_BY_USER, [legendX, y]);
+            swatch.point2.coords.setCoordinates(JXG.COORDS_BY_USER, [legendX + legendLineLength, y]);
+            swatch.needsUpdate = true;
+            swatch.update();
           }
 
           if (labels.current[ind]) {
@@ -158,20 +196,20 @@ export default React.memo(function Legend(props) {
 
 
   function deleteLegend() {
-    for(let snippet of graphicalSnippets.current) {
-      board.removeObject(snippet);
+    for (let swatch of swatches.current) {
+      board.removeObject(swatch);
     }
-    for(let txt of labels.current) {
+    for (let txt of labels.current) {
       board.removeObject(txt);
     }
-    graphicalSnippets.current = [];
+    swatches.current = [];
     labels.current = [];
 
   }
 
 
   if (board) {
-    if (graphicalSnippets.current.length > 0) {
+    if (swatches.current.length > 0) {
 
       deleteLegend();
 
@@ -192,8 +230,8 @@ export default React.memo(function Legend(props) {
   return <><a name={name} /></>
 })
 
-function styleToDash(style, dash) {
-  if (style === "dashed" || dash) {
+function styleToDash(style) {
+  if (style === "dashed") {
     return 2;
   } else if (style === "solid") {
     return 0;

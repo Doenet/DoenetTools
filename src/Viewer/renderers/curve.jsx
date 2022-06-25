@@ -81,6 +81,7 @@ export default React.memo(function Curve(props) {
       strokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
       highlight: false,
+      lineCap: "butt"
     };
 
 

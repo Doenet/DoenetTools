@@ -7,6 +7,19 @@ export default class Label extends InlineComponent {
 
   static includeBlankStringChildren = true;
 
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
+    attributes.forTarget = {
+      createPrimitiveOfType: "string",
+      createStateVariable: "forTarget",
+      defaultValue: null,
+      public: true,
+    }
+
+    return attributes;
+  }
+
   static returnChildGroups() {
 
     return [{
@@ -78,6 +91,20 @@ export default class Label extends InlineComponent {
 
         return { setValue: { text, latex, hasLatex, value } };
       }
+    }
+
+    stateVariableDefinitions.forTargetComponentName = {
+      stateVariablesDeterminingDependencies: ["forTarget"],
+      returnDependencies: ({ stateValues }) => ({
+        forTargetComponentName: {
+          dependencyType: "expandTargetName",
+          target: stateValues.forTarget
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { forTargetComponentName: dependencyValues.forTargetComponentName } }
+      }
+
     }
 
     return stateVariableDefinitions;

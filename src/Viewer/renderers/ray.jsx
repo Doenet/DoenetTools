@@ -240,7 +240,7 @@ export default React.memo(function Ray(props) {
         rayJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
         rayJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (rayJXG.current.visProp.dash !== newDash) {
         rayJXG.current.visProp.dash = newDash;
       }
