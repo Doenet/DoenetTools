@@ -1389,7 +1389,7 @@ export default class Line extends GraphicalComponent {
 
         return {
           setValue: {
-            nearestPoint: function ({ variables, scales }) {
+            nearestPoint: function ({ variables, scales = [1, 1] }) {
 
               if (skip) {
                 return {};

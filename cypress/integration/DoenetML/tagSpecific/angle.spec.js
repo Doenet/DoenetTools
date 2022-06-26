@@ -48,6 +48,7 @@ describe('Angle Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(Math.PI / 4, 1E-12);
+      expect(stateVariables["/_angle1"].stateValues.points).eqls([[2, 2], [2, 4], [4, 2]])
     })
 
     cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}4{enter}', { force: true });
@@ -65,6 +66,7 @@ describe('Angle Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(7 * Math.PI / 4, 1E-12);
+      expect(stateVariables["/_angle1"].stateValues.points).eqls([[4, 4], [2, 4], [4, 2]])
     })
 
     cy.get('#\\/_mathinput1 textarea').type('{end}{backspace}0{enter}', { force: true });
@@ -83,6 +85,7 @@ describe('Angle Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(Math.PI / 2, 1E-12);
+      expect(stateVariables["/_angle1"].stateValues.points).eqls([[0, 2], [2, 4], [4, 2]])
     })
 
 
@@ -101,6 +104,7 @@ describe('Angle Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).closeTo(3 * Math.PI / 2, 1E-12);
+      expect(stateVariables["/_angle1"].stateValues.points).eqls([[4, 6], [2, 4], [4, 2]])
     })
 
   })
@@ -559,6 +563,9 @@ describe('Angle Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
+  <graph>
+    $_angle1
+  </graph>
   <angle>pi/2</angle>
   <math simplify>2<copy target="_angle1" /></math>
   <math simplify>2<copy prop="angle" target="_angle1" /></math>
@@ -586,6 +593,10 @@ describe('Angle Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', 'pi', 2]);
       expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(0, 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).eq(1);
     })
 
   })
@@ -595,6 +606,9 @@ describe('Angle Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
+  <graph>
+    $_angle1
+  </graph>
   <angle radians="pi/2" />
   <math simplify>2<copy target="_angle1" /></math>
   <math simplify>2<copy prop="angle" target="_angle1" /></math>
@@ -622,6 +636,10 @@ describe('Angle Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', 'pi', 2]);
       expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(0, 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).eq(1);
     })
 
   })
@@ -631,6 +649,9 @@ describe('Angle Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
+  <graph>
+    $_angle1
+  </graph>
   <angle degrees="90" />
   <math simplify>2<copy target="_angle1" /></math>
   <math simplify>2<copy prop="angle" target="_angle1" /></math>
@@ -659,6 +680,10 @@ describe('Angle Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(me.fromAst(stateVariables['/_angle1'].stateValues.radians).evaluate_to_constant()).closeTo(Math.PI / 2, 1E-12);
       expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(0, 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).eq(1);
     })
 
   })
@@ -696,6 +721,9 @@ describe('Angle Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).eq('alpha');
       expect(stateVariables['/_angle1'].stateValues.degrees).eqls(["/", ["*", 180, "alpha"], "pi"]);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[2]).eqls(['\uff3f', '\uff3f']);
     })
 
   })
@@ -732,6 +760,49 @@ describe('Angle Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_angle1'].stateValues.radians).eq('alpha');
       expect(stateVariables['/_angle1'].stateValues.degrees).eqls(["/", ["*", 180, "alpha"], "pi"]);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[2]).eqls(['\uff3f', '\uff3f']);
+    })
+
+  })
+
+  it('angle from variable degrees', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <angle degrees="alpha" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("απ180")
+    })
+    // TODO: add once can simplify fractions
+    // cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq("απ90")
+    // })
+    // cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq("απ90")
+    // })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("2α")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(["/", ["*", "alpha", "pi"], 180]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).eq("alpha");
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[2]).eqls(['\uff3f', '\uff3f']);
     })
 
   })
@@ -741,6 +812,9 @@ describe('Angle Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
+  <graph>
+    $_angle1
+  </graph>
   <angle>$pi/2</angle>
   <math simplify>2<copy target="_angle1" /></math>
   <math simplify>2<copy prop="angle" target="_angle1" /></math>
@@ -874,7 +948,7 @@ describe('Angle Tag Tests', function () {
         args: { x: -1, y: -5 }
       })
 
-      points[2] = [-1,-5]
+      points[2] = [-1, -5]
       // should now be > pi if no modifications
 
       cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
@@ -884,7 +958,7 @@ describe('Angle Tag Tests', function () {
       cy.get('#\\/ra_input').clear().type('never{enter}');
       cy.get('#\\/ra2').should('have.text', 'never');
       cy.get('#\\/alpha2 .mjx-mrow').eq(0).invoke("text").then(text => {
-        expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points,-1) * 1000))
+        expect(Math.trunc(Number(text) * 1000)).eq(Math.trunc(angleFromPs(points, -1) * 1000))
       })
 
       cy.get('#\\/ra_input').clear().type('always{enter}');
@@ -895,6 +969,1173 @@ describe('Angle Tag Tests', function () {
 
     });
 
+
+
+  })
+
+  it('empty angle', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    $_angle1
+  </graph>
+  <angle/>
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(Math.PI / 2);
+      expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0]);
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(0, 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).eq(1);
+    })
+
+  })
+
+  it('angle through 1 point', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="A">(3,5)</point>
+    $_angle1
+  </graph>
+  <angle through="$A" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <copy target="A" assignNames="A2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(Math.PI / 2);
+      expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([3, 5]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      let theta = Math.atan2(5, 3) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('move point')
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 1, y: 7 }
+      })
+    })
+
+    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).closeTo(Math.PI / 2, 1E-14);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(90, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      let theta = Math.atan2(7, 1) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(Math.sin(theta), 1E-14);
+    })
+
+  })
+
+  it('angle through 1 point, specify radians', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Desired radians: <mathinput name="desiredRadians" prefill="pi/3" /></p>
+  <graph>
+    <point name="A">(3,5)</point>
+    $_angle1
+  </graph>
+  <angle through="$A" radians="$desiredRadians" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <copy target="A" assignNames="A2" />
+  <copy target="desiredRadians" prop="value" assignNames="desiredRadians2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π3')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("120")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', 'pi', 3]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([3, 5]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      let theta = Math.atan2(5, 3) + Math.PI / 3;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('move point')
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 1, y: 7 }
+      })
+    })
+
+    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π3')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("120")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', 'pi', 3]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      let theta = Math.atan2(7, 1) + Math.PI / 3;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change desired radians')
+    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}2pi/5{enter}", { force: true })
+
+    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', '2π5')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π5')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('4π5')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('4π5')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("144")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', ['*', 2, 'pi'], 5]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(72, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      let theta = Math.atan2(7, 1) + 2 * Math.PI / 5;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change desired radians to variable')
+    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+
+    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', 'θ')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('θ')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2θ')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2θ')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("360θπ")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls('theta');
+      expect(stateVariables['/_angle1'].stateValues.degrees).eqls(['/', ['*', 180, 'theta'], 'pi']);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      expect(stateVariables['/_angle1'].stateValues.points[2]).eqls(['\uff3f', '\uff3f'])
+    })
+
+
+  })
+
+  it('angle through 1 point, specify degrees', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Desired degrees: <mathinput name="desiredDegrees" prefill="90" /></p>
+  <graph>
+    <point name="A">(3,5)</point>
+    $_angle1
+  </graph>
+  <angle through="$A" degrees="$desiredDegrees" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <copy target="A" assignNames="A2" />
+  <copy target="desiredDegrees" prop="value" assignNames="desiredDegrees2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    // TODO: add when can simplify ratios
+    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('π2')
+    // })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(me.fromAst(stateVariables['/_angle1'].stateValues.radians).equals(me.fromAst(['/', 'pi', 2]))).eq(true);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(90, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([3, 5]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      let theta = Math.atan2(5, 3) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('move point')
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 1, y: 7 }
+      })
+    })
+
+    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+
+    // TODO: add when can simplify ratios
+    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('π2')
+    // })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(me.fromAst(stateVariables['/_angle1'].stateValues.radians).equals(me.fromAst(['/', 'pi', 2]))).eq(true);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(90, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      let theta = Math.atan2(7, 1) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change desired degrees')
+    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}180{enter}", { force: true })
+
+    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', '180')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("360")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls('pi');
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(180, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      let theta = Math.atan2(7, 1) + Math.PI;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change desired degrees to variable')
+    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+
+    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', 'θ')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('πθ180')
+    })
+    // TODO: uncomment when can simplify fractions
+    // cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('πθ90')
+    // })
+    // cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('πθ90')
+    // })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("2θ")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', ['*', 'pi', 'theta'], 180]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).eqls('theta');
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([0, 0])
+      expect(stateVariables['/_angle1'].stateValues.points[2]).eqls(['\uff3f', '\uff3f'])
+    })
+
+  })
+
+  it('angle through 2 points', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="A">(3,5)</point>
+    <point name="B">(6,1)</point>
+    $_angle1
+  </graph>
+  <angle through="$A $B" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <copy target="A" assignNames="A2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(Math.PI / 2);
+      expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([3, 5]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6, 1])
+      let theta = Math.atan2(5 - 1, 3 - 6) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(6 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(1 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('move points')
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: -3, y: -2 }
+      })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 1, y: 7 }
+      })
+    })
+
+    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).closeTo(Math.PI / 2, 1E-14);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(90, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-3, -2])
+      let theta = Math.atan2(7 - -2, 1 - -3) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(-3 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(-2 + Math.sin(theta), 1E-14);
+    })
+
+  })
+
+  it('angle through 2 points, specify radians', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Desired radians: <mathinput name="desiredRadians" prefill="pi/3" /></p>
+  <graph>
+    <point name="A">(3,5)</point>
+    <point name="B">(6,1)</point>
+    $_angle1
+  </graph>
+  <angle through="$A $B" radians="$desiredRadians" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <copy target="A" assignNames="A2" />
+  <copy target="desiredRadians" prop="value" assignNames="desiredRadians2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π3')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("120")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', 'pi', 3]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([3, 5]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6, 1])
+      let theta = Math.atan2(5 - 1, 3 - 6) + Math.PI / 3;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(6 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(1 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('move points')
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: -3, y: -2 }
+      })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 1, y: 7 }
+      })
+    })
+
+    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π3')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("120")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', 'pi', 3]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-3, -2])
+      let theta = Math.atan2(7 - -2, 1 - -3) + Math.PI / 3;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(-3 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(-2 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change desired radians')
+    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}2pi/5{enter}", { force: true })
+
+    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', '2π5')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π5')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('4π5')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('4π5')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("144")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', ['*', 2, 'pi'], 5]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(72, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-3, -2])
+      let theta = Math.atan2(7 - -2, 1 - -3) + 2 * Math.PI / 5;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(-3 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(-2 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change desired radians to variable')
+    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+
+    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', 'θ')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('θ')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2θ')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2θ')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("360θπ")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls('theta');
+      expect(stateVariables['/_angle1'].stateValues.degrees).eqls(['/', ['*', 180, 'theta'], 'pi']);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-3, -2])
+      expect(stateVariables['/_angle1'].stateValues.points[2]).eqls(['\uff3f', '\uff3f'])
+    })
+
+
+  })
+
+  it('angle through 2 points, specify degrees', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Desired degrees: <mathinput name="desiredDegrees" prefill="90" /></p>
+  <graph>
+    <point name="A">(3,5)</point>
+    <point name="B">(6,1)</point>
+    $_angle1
+  </graph>
+  <angle through="$A $B" degrees="$desiredDegrees" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <copy target="A" assignNames="A2" />
+  <copy target="desiredDegrees" prop="value" assignNames="desiredDegrees2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    // TODO: add when can simplify ratios
+    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('π2')
+    // })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(me.fromAst(stateVariables['/_angle1'].stateValues.radians).equals(me.fromAst(['/', 'pi', 2]))).eq(true);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(90, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([3, 5]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6, 1])
+      let theta = Math.atan2(5 - 1, 3 - 6) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(6 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(1 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('move points')
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: -3, y: -2 }
+      })
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: 1, y: 7 }
+      })
+    })
+
+    cy.get('#\\/A2 .mjx-mrow').should('contain.text', '(1,7)')
+
+    // TODO: add when can simplify ratios
+    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('π2')
+    // })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(me.fromAst(stateVariables['/_angle1'].stateValues.radians).equals(me.fromAst(['/', 'pi', 2]))).eq(true);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(90, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-3, -2])
+      let theta = Math.atan2(7 - -2, 1 - -3) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(-3 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(-2 + Math.sin(theta), 1E-14);
+    })
+
+    cy.log('change desired degrees')
+    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}180{enter}", { force: true })
+
+    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', '180')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("360")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls('pi');
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(180, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-3, -2])
+      let theta = Math.atan2(7 - -2, 1 - -3) + Math.PI;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(-3 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(-2 + Math.sin(theta), 1E-14);
+    })
+
+
+
+    cy.log('change desired degrees to variable')
+    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+
+    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', 'θ')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('πθ180')
+    })
+    // TODO: uncomment when can simplify fractions
+    // cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('πθ90')
+    // })
+    // cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('πθ90')
+    // })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("2θ")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', ['*', 'pi', 'theta'], 180]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).eqls('theta');
+      expect(stateVariables['/_angle1'].stateValues.points[0]).eqls([1, 7]);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-3, -2])
+      expect(stateVariables['/_angle1'].stateValues.points[2]).eqls(['\uff3f', '\uff3f'])
+    })
+
+
+  })
+
+  it('angle with one line', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Equation of line: <mathinput name="equation" prefill="y=2x+1" /></p>
+  <graph>
+    <line name="l">$equation</line>
+    $_angle1
+  </graph>
+  <angle betweenLines="$l" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <copy target="equation" prop="value" assignNames="equation2" />
+  `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(Math.PI / 2);
+      expect(stateVariables['/_angle1'].stateValues.degrees).eq(90);
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(-2 / 5 + 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(1 / 5 + 2 / Math.sqrt(5), 1E-14);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-2 / 5, 1 / 5])
+      let theta = Math.atan2(2 / Math.sqrt(5), 1 / Math.sqrt(5)) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(-2 / 5 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(1 / 5 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change line')
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}y=-1/2{rightarrow}x+3{enter}", { force: true })
+
+    cy.get('#\\/equation2 .mjx-mrow').should('contain.text', 'y=−(12)x+3')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI / 2 * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq((Math.round(Math.PI * 10 ** 9) / 10 ** 9).toString())
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).closeTo(Math.PI / 2, 1E-14);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(90, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(6 / 5 + 2 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(12 / 5 - 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6 / 5, 12 / 5])
+      let theta = Math.atan2(-1 / Math.sqrt(5), 2 / Math.sqrt(5)) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(6 / 5 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(12 / 5 + Math.sin(theta), 1E-14);
+    })
+
+  })
+
+  it('angle with one line, specify radians', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Equation of line: <mathinput name="equation" prefill="y=2x+1" /></p>
+  <p>Desired radians: <mathinput name="desiredRadians" prefill="pi/3" /></p>
+  <graph>
+    <line name="l">$equation</line>
+    $_angle1
+  </graph>
+  <angle betweenLines="$l" radians="$desiredRadians" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <copy target="equation" prop="value" assignNames="equation2" />
+  <copy target="desiredRadians" prop="value" assignNames="desiredRadians2" />
+  `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π3')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("120")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', 'pi', 3]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(-2 / 5 + 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(1 / 5 + 2 / Math.sqrt(5), 1E-14);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-2 / 5, 1 / 5])
+      let theta = Math.atan2(2 / Math.sqrt(5), 1 / Math.sqrt(5)) + Math.PI / 3;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(-2 / 5 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(1 / 5 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change line')
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}y=-1/2{rightarrow}x+3{enter}", { force: true })
+
+    cy.get('#\\/equation2 .mjx-mrow').should('contain.text', 'y=−(12)x+3')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π3')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π3')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("120")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', 'pi', 3]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(60, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(6 / 5 + 2 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(12 / 5 - 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6 / 5, 12 / 5])
+      let theta = Math.atan2(-1 / Math.sqrt(5), 2 / Math.sqrt(5)) + Math.PI / 3;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(6 / 5 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(12 / 5 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change desired radians')
+    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}2pi/5{enter}", { force: true })
+
+    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', '2π5')
+
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π5')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('4π5')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('4π5')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("144")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', ['*', 2, 'pi'], 5]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(72, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(6 / 5 + 2 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(12 / 5 - 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6 / 5, 12 / 5])
+      let theta = Math.atan2(-1 / Math.sqrt(5), 2 / Math.sqrt(5)) + 2 * Math.PI / 5;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(6 / 5 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(12 / 5 + Math.sin(theta), 1E-14);
+    })
+
+
+
+    cy.log('change desired radians to variable')
+    cy.get('#\\/desiredRadians textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+
+    cy.get('#\\/desiredRadians2 .mjx-mrow').should('contain.text', 'θ')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('θ')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2θ')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2θ')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("360θπ")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls('theta');
+      expect(stateVariables['/_angle1'].stateValues.degrees).eqls(['/', ['*', 180, 'theta'], 'pi']);
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(6 / 5 + 2 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(12 / 5 - 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6 / 5, 12 / 5])
+      expect(stateVariables['/_angle1'].stateValues.points[2]).eqls(['\uff3f', '\uff3f'])
+    })
+
+
+  })
+
+  it('angle with one line, specify degrees', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Equation of line: <mathinput name="equation" prefill="y=2x+1" /></p>
+  <p>Desired degrees: <mathinput name="desiredDegrees" prefill="90" /></p>
+  <graph>
+    <line name="l">$equation</line>
+    $_angle1
+  </graph>
+  <angle betweenLines="$l" degrees="$desiredDegrees" />
+  <math simplify>2<copy target="_angle1" /></math>
+  <math simplify>2<copy prop="angle" target="_angle1" /></math>
+  <math simplify>2<copy prop="degrees" target="_angle1" /></math>
+  <copy target="equation" prop="value" assignNames="equation2" />
+  <copy target="desiredDegrees" prop="value" assignNames="desiredDegrees2" />
+  `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    // TODO: add when can simplify ratios
+    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('π2')
+    // })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(me.fromAst(stateVariables['/_angle1'].stateValues.radians).equals(me.fromAst(['/', 'pi', 2]))).eq(true);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(90, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(-2 / 5 + 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(1 / 5 + 2 / Math.sqrt(5), 1E-14);
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([-2 / 5, 1 / 5])
+      let theta = Math.atan2(2 / Math.sqrt(5), 1 / Math.sqrt(5)) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(-2 / 5 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(1 / 5 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change line')
+    cy.get('#\\/equation textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}y=-1/2{rightarrow}x+3{enter}", { force: true })
+
+    cy.get('#\\/equation2 .mjx-mrow').should('contain.text', 'y=−(12)x+3')
+
+    // TODO: add when can simplify ratios
+    // cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('π2')
+    // })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("180")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(me.fromAst(stateVariables['/_angle1'].stateValues.radians).equals(me.fromAst(['/', 'pi', 2]))).eq(true);
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(90, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(6 / 5 + 2 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(12 / 5 - 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6 / 5, 12 / 5])
+      let theta = Math.atan2(-1 / Math.sqrt(5), 2 / Math.sqrt(5)) + Math.PI / 2;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(6 / 5 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(12 / 5 + Math.sin(theta), 1E-14);
+    })
+
+
+    cy.log('change desired degrees')
+    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}180{enter}", { force: true })
+
+    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', '180')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('π')
+    })
+    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π')
+    })
+    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('2π')
+    })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("360")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls('pi');
+      expect(stateVariables['/_angle1'].stateValues.degrees).closeTo(180, 1E-12);
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(6 / 5 + 2 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(12 / 5 - 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6 / 5, 12 / 5])
+      let theta = Math.atan2(-1 / Math.sqrt(5), 2 / Math.sqrt(5)) + Math.PI;
+      expect(stateVariables['/_angle1'].stateValues.points[2][0]).closeTo(6 / 5 + Math.cos(theta), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[2][1]).closeTo(12 / 5 + Math.sin(theta), 1E-14);
+    })
+
+
+
+    cy.log('change desired degrees to variable')
+    cy.get('#\\/desiredDegrees textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}theta{enter}", { force: true })
+
+    cy.get('#\\/desiredDegrees2 .mjx-mrow').should('contain.text', 'θ')
+
+    cy.get('#\\/_angle1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq('πθ180')
+    })
+    // TODO: uncomment when can simplify fractions
+    // cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('πθ90')
+    // })
+    // cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    //   expect(text).eq('πθ90')
+    // })
+    cy.get('#\\/_math3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("2θ")
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_angle1'].stateValues.radians).eqls(['/', ['*', 'pi', 'theta'], 180]);
+      expect(stateVariables['/_angle1'].stateValues.degrees).eqls('theta');
+      expect(stateVariables['/_angle1'].stateValues.points[0][0]).closeTo(6 / 5 + 2 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[0][1]).closeTo(12 / 5 - 1 / Math.sqrt(5), 1E-14)
+      expect(stateVariables['/_angle1'].stateValues.points[1]).eqls([6 / 5, 12 / 5])
+      expect(stateVariables['/_angle1'].stateValues.points[2]).eqls(['\uff3f', '\uff3f'])
+    })
 
 
   })
