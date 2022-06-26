@@ -1,5 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
+import { roundForDisplay } from '../utils/math';
 
 export default class Angle extends GraphicalComponent {
   static componentType = "angle";
@@ -49,6 +50,37 @@ export default class Angle extends GraphicalComponent {
       createComponentOfType: "_lineListComponent",
     };
 
+
+    attributes.displayDigits = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigits",
+      defaultValue: 10,
+      public: true,
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
+    };
+
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
+    };
+
     return attributes;
   }
 
@@ -96,23 +128,6 @@ export default class Angle extends GraphicalComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.lineNames = {
-      returnDependencies: () => ({
-        betweenLines: {
-          dependencyType: "attributeComponent",
-          attributeName: "betweenLines",
-          variableNames: ["lineNames"],
-        },
-      }),
-      definition({ dependencyValues }) {
-        let lineNames = [];
-
-        if (dependencyValues.betweenLines !== null) {
-          lineNames = dependencyValues.betweenLines.stateValues.lineNames;
-        }
-        return { setValue: { lineNames } }
-      }
-    }
 
     stateVariableDefinitions.betweenLinesName = {
       returnDependencies: () => ({
@@ -158,29 +173,10 @@ export default class Angle extends GraphicalComponent {
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["pointX", "point"],
-      hasEssential: true,
-      defaultValueByArrayKey: (arrayKey) => me.fromAst(["0,1", "2,0"].includes(arrayKey) ? 1 : 0),
-      stateVariablesDeterminingDependencies: ["nPointsSpecified", "betweenLinesName"],
-      returnArraySizeDependencies: () => ({
-        radians: {
-          dependencyType: "attributeComponent",
-          attributeName: "radians",
-          variableNames: ["value"],
-        },
-        degrees: {
-          dependencyType: "attributeComponent",
-          attributeName: "degrees",
-          variableNames: ["value"],
-        },
-      }),
-      returnArraySize({ dependencyValues }) {
-        if (dependencyValues.radians !== null ||
-          dependencyValues.degrees !== null
-        ) {
-          return [0, 0]
-        } else {
-          return [3, 2];
-        }
+      stateVariablesDeterminingDependencies: ["betweenLinesName"],
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize() {
+        return [3, 2];
       },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "pointX") {
@@ -225,19 +221,26 @@ export default class Angle extends GraphicalComponent {
           }
         }
       },
-      returnArrayDependenciesByKey({ arrayKeys, stateValues }) {
+      returnArrayDependenciesByKey({ stateValues }) {
         let globalDependencies = {
-          // lineChildren: {
-          //   dependencyType: "child",
-          //   childLogicName: "exactlyOneBetweenLines",
-          //   variableNames: ["points", "nDimensions", "coeff0", "coeffvar1", "coeffvar2"]
-          // },
-          // use value of state variable determining dependency
-          // (rather than reference to state variable value)
-          // so that this dependency corresponds to the value used to set up dependencies, below
           nPointsSpecified: {
-            dependencyType: "value",
-            value: stateValues.nPointsSpecified
+            dependencyType: "stateVariable",
+            variableName: "nPointsSpecified"
+          },
+          throughAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "through",
+            variableNames: ["points"],
+          },
+          radiansAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "radians",
+            variableNames: ["value"],
+          },
+          degreesAttr: {
+            dependencyType: "attributeComponent",
+            attributeName: "degrees",
+            variableNames: ["value"],
           },
         }
 
@@ -246,55 +249,93 @@ export default class Angle extends GraphicalComponent {
             dependencyType: "child",
             parentName: stateValues.betweenLinesName,
             childGroups: ["lines"],
-            variableNames: ["points", "nDimensions", "coeff0", "coeffvar1", "coeffvar2"]
+            variableNames: ["points", "nDimensions", "coeff0", "coeffvar1", "coeffvar2", "nearestPoint"]
           }
         }
 
-
-
-        let dependenciesByKey = {};
-
-        for (let arrayKey of arrayKeys) {
-
-          let [pointInd, dim] = arrayKey.split(",");
-
-          if (pointInd === "0" || stateValues.nPointsSpecified > 2) {
-
-            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
-
-            dependenciesByKey[arrayKey] = {
-              through: {
-                dependencyType: "attributeComponent",
-                attributeName: "through",
-                variableNames: ["pointX" + varEnding],
-              },
-            }
-          } else if (pointInd === "2" && stateValues.nPointsSpecified === 2) {
-
-            // if have 2 points specified, third point is second specified point
-
-            let varEnding = "2_" + (Number(dim) + 1)
-
-            dependenciesByKey[arrayKey] = {
-              through: {
-                dependencyType: "attributeComponent",
-                attributeName: "through",
-                variableNames: ["pointX" + varEnding],
-              },
-            }
-
-          }
-        }
-
-        return { globalDependencies, dependenciesByKey };
+        return { globalDependencies };
 
       },
-      arrayDefinitionByKey({ dependencyValuesByKey, globalDependencyValues, arrayKeys }) {
+      arrayDefinitionByKey({ globalDependencyValues }) {
 
         if (globalDependencyValues.lineChildren) {
-          if (globalDependencyValues.lineChildren.length !== 2) {
+          if (globalDependencyValues.lineChildren.length > 2) {
             console.warn(`Cannot define an angle between ${globalDependencyValues.lineChildren.length} line(s)`)
+
+            let points = {};
+            for (let i = 0; i < 3; i++) {
+              for (let j = 0; j < 2; j++) {
+                points[i + "," + j] = me.fromAst("\uff3f")
+              }
+            }
+            return { setValue: { points } }
+
+          } else if (globalDependencyValues.lineChildren.length === 1) {
+
+            let line1 = globalDependencyValues.lineChildren[0];
+            if (line1.stateValues.nDimensions !== 2) {
+              let points = {};
+              for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 2; j++) {
+                  points[i + "," + j] = me.fromAst("\uff3f")
+                }
+              }
+              return { setValue: { points } }
+            }
+
+            // find closest point to origin
+            let pointNearOrigin = line1.stateValues.nearestPoint({
+              variables: {
+                x1: me.fromAst(0),
+                x2: me.fromAst(0)
+              }
+            });
+
+            let a1 = line1.stateValues.points[0][0].evaluate_to_constant();
+            let a2 = line1.stateValues.points[0][1].evaluate_to_constant();
+            let b1 = line1.stateValues.points[1][0].evaluate_to_constant();
+            let b2 = line1.stateValues.points[1][1].evaluate_to_constant();
+
+            let angleOfLine = Math.atan2(b2 - a2, b1 - a1)
+
+            let points = {
+              "0,0": me.fromAst(pointNearOrigin.x1 + Math.cos(angleOfLine)),
+              "0,1": me.fromAst(pointNearOrigin.x2 + Math.sin(angleOfLine)),
+              "1,0": me.fromAst(pointNearOrigin.x1),
+              "1,1": me.fromAst(pointNearOrigin.x2)
+            }
+
+            let radians = null;
+            if (globalDependencyValues.radiansAttr) {
+              radians = globalDependencyValues.radiansAttr.stateValues.value.evaluate_to_constant();
+              if (!Number.isFinite(radians)) {
+                let points = {};
+                points["2,0"] = me.fromAst('\uff3f')
+                points["2,1"] = me.fromAst('\uff3f')
+                return { setValue: { points } }
+              }
+            } else if (globalDependencyValues.degreesAttr) {
+              let degrees = globalDependencyValues.degreesAttr.stateValues.value.evaluate_to_constant();
+              if (Number.isFinite(degrees)) {
+                radians = degrees / 180 * Math.PI;
+              } else {
+                points["2,0"] = me.fromAst('\uff3f')
+                points["2,1"] = me.fromAst('\uff3f')
+                return { setValue: { points } }
+              }
+            } else {
+              radians = Math.PI / 2;
+            }
+
+            let desiredAngle = angleOfLine + radians;
+
+            points["2,0"] = me.fromAst(pointNearOrigin.x1 + Math.cos(desiredAngle));
+            points["2,1"] = me.fromAst(pointNearOrigin.x2 + Math.sin(desiredAngle));
+            return { setValue: { points } }
+
+
           } else {
+            // exactly two line children
 
             let line1 = globalDependencyValues.lineChildren[0];
             let line2 = globalDependencyValues.lineChildren[1];
@@ -348,54 +389,65 @@ export default class Angle extends GraphicalComponent {
         }
 
         let nPointsSpecified = globalDependencyValues.nPointsSpecified;
+        let prescribedPoints;
+        if (globalDependencyValues.throughAttr) {
+          prescribedPoints = globalDependencyValues.throughAttr.stateValues.points
+        } else {
+          prescribedPoints = [];
+        }
+
         let points = {};
-        let essentialPoints = {};
 
-        for (let arrayKey of arrayKeys) {
-          let [pointInd, dim] = arrayKey.split(",");
+        for (let [ind, prescribedPoint] of prescribedPoints.entries()) {
+          points[ind + ",0"] = prescribedPoint[0];
+          points[ind + ",1"] = prescribedPoint[1];
+        }
 
-          if (pointInd === "0" || nPointsSpecified > 2) {
+        if (nPointsSpecified === 0) {
+          points["0,0"] = me.fromAst(1);
+          points["0,1"] = me.fromAst(0);
+        }
 
-            let varEnding = (Number(pointInd) + 1) + "_" + (Number(dim) + 1)
-            let specifiedPointComponent;
-            if (dependencyValuesByKey[arrayKey].through !== null) {
-              specifiedPointComponent = dependencyValuesByKey[arrayKey].through.stateValues["pointX" + varEnding];
+        if (nPointsSpecified < 2) {
+          points["1,0"] = me.fromAst(0);
+          points["1,1"] = me.fromAst(0);
+        }
+
+        if (nPointsSpecified < 3) {
+          let radians = null;
+          if (globalDependencyValues.radiansAttr) {
+            radians = globalDependencyValues.radiansAttr.stateValues.value.evaluate_to_constant();
+            if (!Number.isFinite(radians)) {
+              points["2,0"] = me.fromAst('\uff3f')
+              points["2,1"] = me.fromAst('\uff3f')
+              return { setValue: { points } }
             }
-            if (specifiedPointComponent === undefined) {
-              essentialPoints[arrayKey] = true;
+          } else if (globalDependencyValues.degreesAttr) {
+            let degrees = globalDependencyValues.degreesAttr.stateValues.value.evaluate_to_constant();
+            if (Number.isFinite(degrees)) {
+              radians = degrees / 180 * Math.PI;
             } else {
-              points[arrayKey] = specifiedPointComponent;
-            }
-
-          } else if (pointInd === "2" && nPointsSpecified === 2) {
-
-            // if have 2 points specified, third point is second specified point
-
-            let varEnding = "2_" + (Number(dim) + 1)
-            let specifiedPointComponent;
-            if (dependencyValuesByKey[arrayKey].through !== null) {
-              specifiedPointComponent = dependencyValuesByKey[arrayKey].through.stateValues["pointX" + varEnding];
-            }
-            if (specifiedPointComponent === undefined) {
-              essentialPoints[arrayKey] = true;
-            } else {
-              points[arrayKey] = specifiedPointComponent;
+              points["2,0"] = me.fromAst('\uff3f')
+              points["2,1"] = me.fromAst('\uff3f')
+              return { setValue: { points } }
             }
           } else {
-            essentialPoints[arrayKey] = true;
+            radians = Math.PI / 2;
           }
+
+          let a1 = points["0,0"].evaluate_to_constant();
+          let a2 = points["0,1"].evaluate_to_constant();
+          let b1 = points["1,0"].evaluate_to_constant();
+          let b2 = points["1,1"].evaluate_to_constant();
+
+          let angleFromTwoPoints = Math.atan2(a2 - b2, a1 - b1)
+          let desiredAngle = angleFromTwoPoints + radians;
+
+          points["2,0"] = me.fromAst(b1 + Math.cos(desiredAngle))
+          points["2,1"] = me.fromAst(b2 + Math.sin(desiredAngle))
         }
 
-
-        let result = {};
-
-        if (Object.keys(points).length > 0) {
-          result.setValue = { points }
-        }
-        if (Object.keys(essentialPoints).length > 0) {
-          result.useEssentialOrDefaultValue = { points: essentialPoints }
-        }
-        return result;
+        return { setValue: { points } };
 
       }
 
@@ -405,8 +457,8 @@ export default class Angle extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
-      forRenderer: true,
       additionalStateVariablesDefined: [{
         variableName: "swapPointOrder",
         forRenderer: true,
@@ -478,12 +530,12 @@ export default class Angle extends GraphicalComponent {
           radians += 2 * Math.PI;
         }
 
-        if(radians > Math.PI) {
-          if (dependencyValues.chooseReflexAngle ==="never") {
-          radians = 2 * Math.PI - radians;
-          swapPointOrder = true;
+        if (radians > Math.PI) {
+          if (dependencyValues.chooseReflexAngle === "never") {
+            radians = 2 * Math.PI - radians;
+            swapPointOrder = true;
           }
-        } else if(dependencyValues.chooseReflexAngle === "always") {
+        } else if (dependencyValues.chooseReflexAngle === "always") {
           radians = 2 * Math.PI - radians;
           swapPointOrder = true;
         }
@@ -509,8 +561,8 @@ export default class Angle extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
-      forRenderer: true,
       returnDependencies: () => ({
         radians: {
           dependencyType: "stateVariable",
@@ -529,30 +581,73 @@ export default class Angle extends GraphicalComponent {
       }
     }
 
+
+    stateVariableDefinitions.latexForRenderer = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        inDegrees: {
+          dependencyType: "stateVariable",
+          variableName: "inDegrees"
+        },
+        radians: {
+          dependencyType: "stateVariable",
+          variableName: "radians"
+        },
+        degrees: {
+          dependencyType: "stateVariable",
+          variableName: "degrees"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+
+        let value = dependencyValues.inDegrees ? dependencyValues.degrees : dependencyValues.radians;
+        let latexForRenderer = roundForDisplay({
+          value,
+          dependencyValues, usedDefault
+        }).toLatex(params);
+        if (dependencyValues.inDegrees) {
+          latexForRenderer += "^\\circ"
+        }
+
+        return { setValue: { latexForRenderer } }
+
+      }
+    }
+
+
     stateVariableDefinitions.numericalPoints = {
       isArray: true,
       entryPrefixes: ["numericalPoint"],
       forRenderer: true,
-      returnArraySizeDependencies: () => ({
-        radians: {
-          dependencyType: "attributeComponent",
-          attributeName: "radians",
-          variableNames: ["value"],
-        },
-        degrees: {
-          dependencyType: "attributeComponent",
-          attributeName: "degrees",
-          variableNames: ["value"],
-        },
-      }),
-      returnArraySize({ dependencyValues }) {
-        if (dependencyValues.radians !== null ||
-          dependencyValues.degrees !== null
-        ) {
-          return [0]
-        } else {
-          return [3];
-        }
+      returnArraySizeDependencies: () => ({}),
+      returnArraySize() {
+        return [3];
       },
       returnArrayDependenciesByKey({ arrayKeys }) {
 
