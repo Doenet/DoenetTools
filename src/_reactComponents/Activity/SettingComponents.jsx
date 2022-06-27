@@ -102,7 +102,8 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
 </ActionButtonGroup>)
 }
 
-export const AssignedDate = ({ doenetId, courseId }) => {
+//TODO: Emilio ask CLARA about non edible display
+export const AssignedDate = ({ doenetId, courseId, editable = false }) => {
   const addToast = useToast();
 
   const {
