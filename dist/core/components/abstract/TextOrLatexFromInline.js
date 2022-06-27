@@ -1,24 +1,10 @@
-import InlineComponent from './abstract/InlineComponent';
+import InlineComponent from './InlineComponent.js';
 
-export default class Label extends InlineComponent {
-  static componentType = "label";
+export default class TextOrLatexFromInline extends InlineComponent {
+  static componentType = "_textOrLatexFromInline";
   static renderChildren = true;
-  static rendererType = "container";
 
   static includeBlankStringChildren = true;
-
-  static createAttributesObject() {
-    let attributes = super.createAttributesObject();
-
-    attributes.forTarget = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "forTarget",
-      defaultValue: null,
-      public: true,
-    }
-
-    return attributes;
-  }
 
   static returnChildGroups() {
 
@@ -45,7 +31,7 @@ export default class Label extends InlineComponent {
           createComponentOfType: "text"
         },
       }, {
-        variableName: "hasLatex",
+        variableName: "isLatex",
         public: true,
         shadowingInstructions: {
           createComponentOfType: "boolean"
@@ -53,7 +39,6 @@ export default class Label extends InlineComponent {
       }, {
         variableName: "value",
         public: true,
-        forRenderer: true,
         shadowingInstructions: {
           createComponentOfType: "text"
         },
@@ -69,42 +54,31 @@ export default class Label extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let text = "";
         let latex = "";
-        let value = "";
-        let hasLatex = false;
+        let nLatex = 0;
+        let nNonLatex = 0;
         for (let comp of dependencyValues.inlineChildren) {
           if (typeof comp !== "object") {
             let s = comp.toString()
             text += s;
             latex += s;
-            value += s;
+            nNonLatex++;
           } else if (typeof comp.stateValues.latex === "string") {
             text += comp.stateValues.latex;
             latex += comp.stateValues.latex;
-            value += "\\(" + comp.stateValues.latex + "\\)";
-            hasLatex = true;
+            nLatex++;
           } else if (typeof comp.stateValues.text === "string") {
             text += comp.stateValues.text;
             latex += comp.stateValues.text;
-            value += comp.stateValues.text;
+            nNonLatex++;
           }
         }
 
-        return { setValue: { text, latex, hasLatex, value } };
-      }
-    }
+        let isLatex = nLatex > 0 && nNonLatex === 0;
 
-    stateVariableDefinitions.forTargetComponentName = {
-      stateVariablesDeterminingDependencies: ["forTarget"],
-      returnDependencies: ({ stateValues }) => ({
-        forTargetComponentName: {
-          dependencyType: "expandTargetName",
-          target: stateValues.forTarget
-        }
-      }),
-      definition({ dependencyValues }) {
-        return { setValue: { forTargetComponentName: dependencyValues.forTargetComponentName } }
-      }
+        let value = isLatex ? latex : text;
 
+        return { setValue: { text, latex, isLatex, value } };
+      }
     }
 
     return stateVariableDefinitions;

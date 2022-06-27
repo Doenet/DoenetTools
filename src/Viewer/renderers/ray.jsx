@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
-import me from 'math-expressions';
+// import me from 'math-expressions';
 
 export default React.memo(function Ray(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
@@ -59,7 +59,6 @@ export default React.memo(function Ray(props) {
       name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
       layer: 10 * SVs.layer + 7,
       fixed,
       strokeColor: SVs.selectedStyle.lineColor,
@@ -241,7 +240,7 @@ export default React.memo(function Ray(props) {
         rayJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
         rayJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (rayJXG.current.visProp.dash !== newDash) {
         rayJXG.current.visProp.dash = newDash;
       }

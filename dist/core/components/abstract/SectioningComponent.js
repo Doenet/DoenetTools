@@ -24,12 +24,28 @@ export default class SectioningComponent extends BlockComponent {
       defaultValue: 1,
       public: true,
     };
+
     attributes.sectionWideCheckWork = {
       createComponentOfType: "boolean",
       createStateVariable: "sectionWideCheckWork",
       defaultValue: false,
       public: true,
     };
+    attributes.submitLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabel",
+      defaultValue: "Check Work",
+      public: true,
+      forRenderer: true,
+    }
+    attributes.submitLabelNoCorrectness = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabelNoCorrectness",
+      defaultValue: "Submit Response",
+      public: true,
+      forRenderer: true,
+    }
+
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
     attributes.boxed = {

@@ -6334,5 +6334,31 @@ describe('Math Operator Tag Tests', function () {
 
   })
 
+  it('math operators that take multiple inputs ignore composites with no replacements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <function name="f" domain="(0,2)">(x+1)(x-2)(x-4)</function>
+      <p>Max on [0,2]: <min name="min02">$$f(0) $(f{prop="minimumValues"}) $$f(2)</min>.</p>
+      <p>Abs treats as product of three factors: <abs name="abs">$$f(0) $(f{prop="minimumValues"}) $$f(2)</abs>.</p>
+      `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/min02').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    });
+    cy.get('#\\/abs').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('∣∣8＿⋅0∣∣')
+    });
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/min02"].stateValues.value).eq(0);
+      expect(stateVariables["/abs"].stateValues.value).eqls([ 'apply', 'abs', [ '*', 8, '＿', 0 ] ]);
+    })
+  })
 
 })

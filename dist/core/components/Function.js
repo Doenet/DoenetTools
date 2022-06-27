@@ -54,7 +54,7 @@ export default class Function extends InlineComponent {
     // for case when function is adapted into a curve
 
     attributes.label = {
-      createComponentOfType: "text",
+      createComponentOfType: "_textOrLatexFromInline",
       createStateVariable: "label",
       defaultValue: "",
       public: true,
@@ -204,21 +204,54 @@ export default class Function extends InlineComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let curveDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          curveDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          curveDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          curveDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          curveDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        curveDescription += dependencyValues.selectedStyle.lineColorWord;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
 
-        return { setValue: { styleDescription: curveDescription } };
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " function";
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+    stateVariableDefinitions.labelIsLatex = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        labelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "label",
+          variableNames: ["isLatex"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        return { setValue: { labelIsLatex: dependencyValues.labelAttr?.stateValues.isLatex === true } }
       }
     }
 
@@ -3196,7 +3229,8 @@ export default class Function extends InlineComponent {
 
   static adapters = [{
     stateVariable: "numericalf",
-    componentType: "curve"
+    componentType: "curve",
+    stateVariablesToShadow: ["labelIsLatex"]
   },
   {
     stateVariable: "formula",

@@ -80,6 +80,7 @@ export default React.memo(function Polyline(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
       highlight: !fixed,
+      lineCap: "butt"
     };
 
 
@@ -362,7 +363,7 @@ export default React.memo(function Polyline(props) {
         polylineJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
         polylineJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (polylineJXG.current.visProp.dash !== newDash) {
         polylineJXG.current.visProp.dash = newDash;
       }

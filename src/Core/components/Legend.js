@@ -16,6 +16,13 @@ export default class Legend extends GraphicalComponent {
       validValues: ["upperright", "upperleft", "lowerright", "lowerleft"]
     }
 
+    attributes.displayClosedSwatches = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displayClosedSwatches",
+      defaultValue: false,
+      public: true,
+    }
+
     return attributes;
   }
 
@@ -45,7 +52,11 @@ export default class Legend extends GraphicalComponent {
         labelChildren: {
           dependencyType: "child",
           childGroups: ["labels"],
-          variableNames: ["value", "hasLatex"]
+          variableNames: ["value", "hasLatex", "forTargetComponentName"]
+        },
+        displayClosedSwatches: {
+          dependencyType: "stateVariable",
+          variableName: "displayClosedSwatches"
         }
       }),
       definition({ dependencyValues, componentInfoObjects }) {
@@ -54,42 +65,130 @@ export default class Legend extends GraphicalComponent {
 
         if (dependencyValues.graphAncestor) {
 
-          let labels = [];
-          for (let labelChild of dependencyValues.labelChildren) {
-            labels.push(labelChild.stateValues)
-          }
-
           let pointStyleNumbersFound = [];
+          let closedPathStyleNumbersFound = [];
           let otherStyleNumbersFound = [];
 
-          for (let comp of dependencyValues.graphAncestor.stateValues.graphicalDescendants) {
-            let selectedStyle = comp.stateValues.selectedStyle;
-            let styleNumber = comp.stateValues.styleNumber;
-            if (comp.componentType === "legend") {
-              continue;
-            } else if (componentInfoObjects.isInheritedComponentType({
-              inheritedComponentType: comp.componentType,
-              baseComponentType: "point"
-            })) {
-              if (!pointStyleNumbersFound.includes(styleNumber)) {
+          let graphicalDescendantsLeft = [...dependencyValues.graphAncestor.stateValues.graphicalDescendants]
+          let graphicalDescendantComponentNamesLeft = graphicalDescendantsLeft.map(x => x.componentName);
+
+
+          let labelsInOrder = [];
+          let labelsByComponentName = {};
+          for (let labelChild of dependencyValues.labelChildren) {
+            let labelInfo = {
+              value: labelChild.stateValues.value,
+              hasLatex: labelChild.stateValues.hasLatex
+            }
+            if (labelChild.stateValues.forTargetComponentName) {
+              labelsByComponentName[labelChild.stateValues.forTargetComponentName] = labelInfo;
+
+              // in this first pass, we only mark the styleNumber as being taken
+              // so that in the second pass, undesignated labels skip this style number
+              // even if they come before this label
+              let ind = graphicalDescendantComponentNamesLeft.indexOf(labelChild.stateValues.forTargetComponentName);
+              if (ind !== -1) {
+                let comp = graphicalDescendantsLeft[ind];
+                if (componentInfoObjects.isInheritedComponentType({
+                  inheritedComponentType: comp.componentType,
+                  baseComponentType: "point"
+                })) {
+                  pointStyleNumbersFound.push(comp.stateValues.styleNumber);
+                } else if (dependencyValues.displayClosedSwatches &&
+                  componentInfoObjects.allComponentClasses[comp.componentType].representsClosedPath) {
+                  closedPathStyleNumbersFound.push(comp.stateValues.styleNumber);
+                } else if (comp.componentType !== "legend") {
+                  otherStyleNumbersFound.push(comp.stateValues.styleNumber);
+                }
+              }
+            }
+            labelsInOrder.push({
+              labelInfo,
+              forTarget: labelChild.stateValues.forTargetComponentName
+            })
+
+          }
+
+
+          // first find any style numbers found by labels with designated targets
+
+          for (let label of labelsInOrder) {
+            let componentForLabel;
+            if (label.forTarget) {
+              let ind = graphicalDescendantComponentNamesLeft.indexOf(label.forTarget);
+              if (ind !== -1) {
+                componentForLabel = graphicalDescendantsLeft[ind];
+                graphicalDescendantsLeft.splice(ind, 1);
+                graphicalDescendantComponentNamesLeft.splice(ind, 1);
+              }
+            } else {
+              for (let ind = 0; ind < graphicalDescendantsLeft.length; ind++) {
+                let comp = graphicalDescendantsLeft[ind];
+                if (!(comp.componentName in labelsByComponentName)) {
+                  if (componentInfoObjects.isInheritedComponentType({
+                    inheritedComponentType: comp.componentType,
+                    baseComponentType: "point"
+                  })) {
+                    if (!pointStyleNumbersFound.includes(comp.stateValues.styleNumber)) {
+                      componentForLabel = comp;
+                      break;
+                    }
+                  } else if (dependencyValues.displayClosedSwatches &&
+                    componentInfoObjects.allComponentClasses[comp.componentType].representsClosedPath
+                  ) {
+                    if (!closedPathStyleNumbersFound.includes(comp.stateValues.styleNumber)) {
+                      componentForLabel = comp;
+                      break;
+                    }
+                  } else if (comp.componentType !== "legend") {
+                    if (!otherStyleNumbersFound.includes(comp.stateValues.styleNumber)) {
+                      componentForLabel = comp;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+
+            if (componentForLabel) {
+              let selectedStyle = componentForLabel.stateValues.selectedStyle;
+              let styleNumber = componentForLabel.stateValues.styleNumber;
+              if (componentInfoObjects.isInheritedComponentType({
+                inheritedComponentType: componentForLabel.componentType,
+                baseComponentType: "point"
+              })) {
                 pointStyleNumbersFound.push(styleNumber);
                 legendElements.push({
-                  legendType: "marker",
+                  swatchType: "marker",
                   markerStyle: selectedStyle.markerStyle,
                   markerColor: selectedStyle.markerColor,
                   markerSize: selectedStyle.markerSize,
-                  label: labels[legendElements.length]
+                  lineOpacity: selectedStyle.lineOpacity,
+                  label: label.labelInfo
                 })
-              }
-            } else {
-              if (!otherStyleNumbersFound.includes(styleNumber)) {
-                otherStyleNumbersFound.push(styleNumber);
+              } else if (dependencyValues.displayClosedSwatches &&
+                componentInfoObjects.allComponentClasses[componentForLabel.componentType].representsClosedPath
+              ) {
+                closedPathStyleNumbersFound.push(styleNumber);
                 legendElements.push({
-                  legendType: "line",
+                  swatchType: "rectangle",
                   lineStyle: selectedStyle.lineStyle,
                   lineColor: selectedStyle.lineColor,
                   lineWidth: selectedStyle.lineWidth,
-                  label: labels[legendElements.length]
+                  lineOpacity: selectedStyle.lineOpacity,
+                  fillColor: selectedStyle.fillColor,
+                  fillOpacity: selectedStyle.fillOpacity,
+                  label: label.labelInfo
+                })
+              } else {
+                otherStyleNumbersFound.push(styleNumber);
+                legendElements.push({
+                  swatchType: "line",
+                  lineStyle: selectedStyle.lineStyle,
+                  lineColor: selectedStyle.lineColor,
+                  lineWidth: selectedStyle.lineWidth,
+                  lineOpacity: selectedStyle.lineOpacity,
+                  label: label.labelInfo
                 })
               }
             }

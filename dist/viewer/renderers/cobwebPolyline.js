@@ -56,8 +56,12 @@ export default React.memo(function CobwebPolyline(props) {
         validCoords = false;
       }
     }
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
     let jsxPolylineAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,
@@ -68,6 +72,9 @@ export default React.memo(function CobwebPolyline(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle)
     };
+    if (SVs.labelIsLatex) {
+      jsxPolylineAttributes.label = {useMathJax: true};
+    }
     jsxPointAttributes.current = {
       fixed: !SVs.draggable || SVs.fixed,
       visible: !SVs.hidden && validCoords && SVs.draggable,

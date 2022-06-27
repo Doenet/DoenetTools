@@ -324,7 +324,7 @@ export default React.memo(function LineSegment(props) {
         lineSegmentJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
         lineSegmentJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (lineSegmentJXG.current.visProp.dash !== newDash) {
         lineSegmentJXG.current.visProp.dash = newDash;
       }

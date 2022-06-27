@@ -1,4 +1,4 @@
-import InlineComponent from './abstract/InlineComponent';
+import InlineComponent from './abstract/InlineComponent.js';
 
 export default class Label extends InlineComponent {
   static componentType = "label";
@@ -6,19 +6,6 @@ export default class Label extends InlineComponent {
   static rendererType = "container";
 
   static includeBlankStringChildren = true;
-
-  static createAttributesObject() {
-    let attributes = super.createAttributesObject();
-
-    attributes.forTarget = {
-      createPrimitiveOfType: "string",
-      createStateVariable: "forTarget",
-      defaultValue: null,
-      public: true,
-    }
-
-    return attributes;
-  }
 
   static returnChildGroups() {
 
@@ -91,20 +78,6 @@ export default class Label extends InlineComponent {
 
         return { setValue: { text, latex, hasLatex, value } };
       }
-    }
-
-    stateVariableDefinitions.forTargetComponentName = {
-      stateVariablesDeterminingDependencies: ["forTarget"],
-      returnDependencies: ({ stateValues }) => ({
-        forTargetComponentName: {
-          dependencyType: "expandTargetName",
-          target: stateValues.forTarget
-        }
-      }),
-      definition({ dependencyValues }) {
-        return { setValue: { forTargetComponentName: dependencyValues.forTargetComponentName } }
-      }
-
     }
 
     return stateVariableDefinitions;

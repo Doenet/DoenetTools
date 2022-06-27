@@ -211,13 +211,13 @@ export default function HomePage(props) {
     href: "/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q"
   }, "DoenetML Reference"))))), /* @__PURE__ */ React.createElement(CloudColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"
-  }, "Workshop on developing learning experiments in Doenet"), /* @__PURE__ */ React.createElement(Paragraph, null, "Interested in learning how to create and implement online learning experiments using Doenet?  Apply to attend our ", /* @__PURE__ */ React.createElement("a", {
+  }, "Workshop on developing learning experiments in Doenet"), /* @__PURE__ */ React.createElement(Paragraph, null, "From May 23 - May 26, 2022, we hosted a ", /* @__PURE__ */ React.createElement("a", {
     style: {color: "var(--whiteBlankLink)"},
     href: "https://ima.umn.edu/2021-2022/SW5.23-26.22"
-  }, "workshop"), " for a hands-on introduction to authoring and running experiments, led by the developers of Doenet.  Designed for instructors of college STEM courses, the workshop will be held from May 23 - May 26, 2022, at the University of Minnesota."), /* @__PURE__ */ React.createElement(Paragraph, null, "For more information and to apply to the workshop, see the ", /* @__PURE__ */ React.createElement("a", {
+  }, "workshop"), " on developing content and learning experiments in Doenet.  Held at the University of Minnesota, the workshop for instructors of college STEM courses was a hands-on introduction to authoring and running experiments, led by the developers of Doenet."), /* @__PURE__ */ React.createElement(Paragraph, null, "For information about future workshops, please contact us at ", /* @__PURE__ */ React.createElement("a", {
     style: {color: "var(--whiteBlankLink)"},
-    href: "https://ima.umn.edu/2021-2022/SW5.23-26.22"
-  }, "workshop site"), "."))), /* @__PURE__ */ React.createElement(LightBlueColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
+    href: "mailto:info@doenet.org"
+  }, "info@doenet.org"), "."))), /* @__PURE__ */ React.createElement(LightBlueColorSection, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement(Headings, {
     className: "section-headline"
   }, "Timeline"), /* @__PURE__ */ React.createElement(Paragraph, null, "Doenet was conceived in 2018 and began as a partnership of the University of Minnesota, Ohio State University and Ithaca College.  We piloted Doenet content in 2020 and ran our first courses with Doenet in 2021.  We have used Doenet for both content delivery and assessment, incorporating learning experiments in order to perform analyses on the effectiveness of the materials."), /* @__PURE__ */ React.createElement(Paragraph, null, "In 2022, we are beginning to expand the availability of Doenet beyond the original partner institutions."))), /* @__PURE__ */ React.createElement(Footer, null, /* @__PURE__ */ React.createElement(SectionText, null, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("h4", {
     style: {marginBottom: "0px"}
@@ -235,5 +235,5 @@ export default function HomePage(props) {
   })), /* @__PURE__ */ React.createElement("br", null), "This work is licensed under a", " ", /* @__PURE__ */ React.createElement("a", {
     rel: "license",
     href: "http://creativecommons.org/licenses/by/4.0/"
-  }, "Creative Commons Attribution 4.0 International License"), "."), /* @__PURE__ */ React.createElement("p", null, "Doenet is a collaborative project involving the University of Minnesota, the Ohio State University, and Ithaca College, with support from the National Science Foundation (DUE-1915294, DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.", " ")))));
+  }, "Creative Commons Attribution 4.0 International License"), "."), /* @__PURE__ */ React.createElement("p", null, "Doenet is a collaborative project involving the University of Minnesota, the Ohio State University, and Cornell University, with support from the National Science Foundation (DUE-1915294, DUE-1915363, DUE-1915438). Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.", " ")))));
 }

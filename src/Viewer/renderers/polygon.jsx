@@ -380,7 +380,7 @@ export default React.memo(function Polygon(props) {
           border.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
           border.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
         }
-        let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+        let newDash = styleToDash(SVs.selectedStyle.lineStyle);
         if (border.visProp.dash !== newDash) {
           border.visProp.dash = newDash;
         }

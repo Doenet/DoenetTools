@@ -257,12 +257,8 @@ export default class Point extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let pointDescription = dependencyValues.selectedStyle.markerColorWord;
-        if (dependencyValues.selectedStyle.markerStyle === "circle") {
-          pointDescription += " point";
-        } else {
-          pointDescription += ` ${dependencyValues.selectedStyle.markerStyle}`
-        }
+        let pointDescription = dependencyValues.selectedStyle.markerColorWord
+          + " " + dependencyValues.selectedStyle.markerStyleWord;
         return { setValue: { styleDescriptionWithNoun: pointDescription } };
       }
     }

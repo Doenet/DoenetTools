@@ -29,19 +29,31 @@ export default React.memo(function LineSegment(props) {
       point2JXG.current = null;
       return;
     }
+    let fixed = !SVs.draggable || SVs.fixed;
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
     var jsxSegmentAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
-      dash: styleToDash(SVs.selectedStyle.lineStyle)
+      dash: styleToDash(SVs.selectedStyle.lineStyle),
+      highlight: !fixed
     };
-    jsxSegmentAttributes.label = {};
+    if (SVs.labelIsLatex) {
+      jsxSegmentAttributes.label = {useMathJax: true};
+    } else {
+      jsxSegmentAttributes.label = {};
+    }
     if (SVs.applyStyleToLabel) {
       jsxSegmentAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
     } else {
@@ -207,18 +219,37 @@ export default React.memo(function LineSegment(props) {
         lineSegmentJXG.current.visProp["visible"] = false;
         lineSegmentJXG.current.visPropCalc["visible"] = false;
       }
+      let fixed = !SVs.draggable || SVs.fixed;
+      lineSegmentJXG.current.visProp.fixed = fixed;
+      lineSegmentJXG.current.visProp.highlight = !fixed;
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = lineSegmentJXG.current.visProp.layer !== layer;
+      if (layerChanged) {
+        lineSegmentJXG.current.setAttribute({layer});
+        point1JXG.current.setAttribute({layer: layer + 1});
+        point2JXG.current.setAttribute({layer: layer + 1});
+      }
       if (lineSegmentJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         lineSegmentJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         lineSegmentJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (lineSegmentJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        lineSegmentJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+        lineSegmentJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth;
+      }
+      if (lineSegmentJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        lineSegmentJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        lineSegmentJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (lineSegmentJXG.current.visProp.dash !== newDash) {
         lineSegmentJXG.current.visProp.dash = newDash;
       }
-      if (lineSegmentJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
-        lineSegmentJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
       }
-      lineSegmentJXG.current.name = SVs.label;
+      lineSegmentJXG.current.name = label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
         lineSegmentJXG.current.setAttribute({withlabel});

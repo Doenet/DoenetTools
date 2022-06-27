@@ -239,7 +239,7 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
         circleJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (circleJXG.current.visProp.dash !== newDash) {
         circleJXG.current.visProp.dash = newDash;
       }

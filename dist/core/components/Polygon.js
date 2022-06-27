@@ -28,19 +28,13 @@ export default class Polygon extends Polyline {
       }),
       definition: function ({ dependencyValues }) {
 
-
-        let borderDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          borderDescription += "thick";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          borderDescription += "thin";
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          borderDescription += " dashed";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          borderDescription += " dotted";
-        }
-
 
         let styleDescription;
         if (dependencyValues.selectedStyle.fillColor === "none") {
@@ -59,7 +53,7 @@ export default class Polygon extends Polyline {
         return { setValue: { styleDescription } };
       }
     }
-    
+
     stateVariableDefinitions.styleDescriptionWithNoun = {
       public: true,
       shadowingInstructions: {
@@ -73,28 +67,22 @@ export default class Polygon extends Polyline {
       }),
       definition: function ({ dependencyValues }) {
 
-
-        let borderDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          borderDescription += "thick";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          borderDescription += "thin";
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          borderDescription += " dashed";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          borderDescription += " dotted";
-        }
-
 
         let styleDescriptionWithNoun;
         if (dependencyValues.selectedStyle.fillColor === "none") {
           styleDescriptionWithNoun = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
-          + " polygon";
+            + " polygon";
         } else {
           if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
             styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
-            + " polygon with a " + borderDescription + " border";
+              + " polygon with a " + borderDescription + " border";
           } else {
             styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
               + " polygon with a " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
@@ -103,6 +91,64 @@ export default class Polygon extends Polyline {
         }
 
         return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+
+    stateVariableDefinitions.borderStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let borderStyleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderStyleDescription) {
+            borderStyleDescription += " ";
+          }
+          borderStyleDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        if (borderStyleDescription) {
+          borderStyleDescription += " ";
+        }
+        
+        borderStyleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { borderStyleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.fillStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let fillStyleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          fillStyleDescription = "unfilled";
+        } else {
+          fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;
+        }
+
+        return { setValue: { fillStyleDescription } };
       }
     }
 

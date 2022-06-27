@@ -168,12 +168,7 @@ export default React.memo(function Angle(props) {
 
 
 
-  let mathJaxify;
-  if (SVs.inDegrees) {
-    mathJaxify = "\\(" + me.fromAst(SVs.degrees).toLatex() + "^\\circ \\)";
-  } else {
-    mathJaxify = "\\(" + me.fromAst(SVs.radians).toLatex() + "\\)";
-  }
+  let mathJaxify = "\\(" + SVs.latexForRenderer + "\\)";
 
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 })
