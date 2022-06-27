@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 import Measure from 'react-measure';
 import {
-  // faLink,
   faCode,
   faFileCode,
   faFileExport,
@@ -17,11 +16,7 @@ import {
   faFolderTree,
   faChevronRight,
   faChevronDown,
-  // faUsersSlash,
-  // faUsers,
   faCheck,
-  // faUserEdit,
-  // faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -34,7 +29,6 @@ import {
 import { 
   authorCourseItemOrderByCourseId, 
   itemByDoenetId,
-  coursePermissionsAndSettingsByCourseId, 
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
@@ -47,17 +41,15 @@ import {
 import '../../_utils/util.css';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
-// import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
-import { effectiveRoleAtom } from '../PanelHeaderComponents/RoleDropdown';
+import { effectivePermissions } from '../PanelHeaderComponents/RoleDropdown';
 
 export default function CourseNavigator(props) {
   console.log("=== CourseNavigator")
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const {canViewUnassignedContent} = useRecoilValue(effectivePermissions(courseId));
 
-  let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
   let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
@@ -84,15 +76,10 @@ export default function CourseNavigator(props) {
     })
   },[clearSelections, setMainPanelClick])
 
-
-  if (!coursePermissionsAndSettings){
-    return null;
-  }
-
-  if (coursePermissionsAndSettings.canEditContent == '0' || effectiveRole == 'student' || props.displayRole == 'student'){
+  if (canViewUnassignedContent == '0' || props.displayRole == 'student'){
     return <StudentCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
-  if (coursePermissionsAndSettings.canEditContent == '1' || effectiveRole == 'instructor' || props.displayRole == 'instructor'){
+  if (canViewUnassignedContent == '1' || props.displayRole == 'instructor'){
     return <AuthorCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
   return null;
