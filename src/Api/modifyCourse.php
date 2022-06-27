@@ -38,11 +38,13 @@ if (array_key_exists('courseId', $_POST)) {
         if (array_key_exists('image', $_POST)) {
             $image = mysqli_real_escape_string($conn, $_POST['image']);
             $sql = "UPDATE course SET image='$image' WHERE courseId ='$courseId'";
+            // $sql = "UPDATE course SET color='none' WHERE courseId ='$courseId'";
             $result = $conn->query($sql);
         }
         if (array_key_exists('color', $_POST)) {
             $color = mysqli_real_escape_string($conn, $_POST['color']);
             $sql = "UPDATE course SET color='$color' WHERE courseId ='$courseId'";
+            // $sql = "UPDATE course SET image='none' WHERE courseId ='$courseId'";
             $result = $conn->query($sql);
         }
         if (array_key_exists('label', $_POST)) {

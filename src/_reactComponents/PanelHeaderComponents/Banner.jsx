@@ -55,15 +55,15 @@ export default function Banner(props) {
     }
 
     return (
-        <div>
+        <div aria-labelledby='banner-text'>
             <div style={container}> 
                 <div style={banner}>
-                    <div style={bannerText}>
+                    <div style={bannerText} id="banner-text">
                         <strong>Reminder:</strong> Your assignment is due tomorrow. Please contact the instructor to request an extension.
                         Here is some more text! I am trying out this banner to see how many words I can fit.
                         Please contact the help desk if you need any assistance. They can be reached at 651-713-8393.
                     </div>
-                    <button style={closeButton} onClick={() => { clearBanner() }} ><FontAwesomeIcon icon={faTimes}/></button>
+                    <button aria-label="Close banner" style={closeButton} onClick={() => { clearBanner() }} ><FontAwesomeIcon icon={faTimes}/></button>
                 </div>
             </div>
             <div style={{padding: '5px'}}></div>
