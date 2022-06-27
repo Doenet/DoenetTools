@@ -6,7 +6,6 @@ import {  itemByDoenetId, selectedCourseItems, studentCourseItemOrderByCourseIdB
 } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import { searchParamAtomFamily } from '../NewToolRoot';
-// import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { useToast, toastType } from '../Toast';
 
 
