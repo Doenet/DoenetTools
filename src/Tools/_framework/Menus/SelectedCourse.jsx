@@ -158,10 +158,10 @@ const CourseInfoPanel = function ({ courseId }) {
         initialImage={image}
         initialColor={color}
         imageCallback={(newImage) => {
-          modifyCourse({ image: newImage });
+          modifyCourse({ image: newImage, color: 'none' });
         }}
         colorCallback={(newColor) => {
-          modifyCourse({ color: newColor });
+          modifyCourse({ color: newColor, image: 'none' });
         }}
       />
       <br />
