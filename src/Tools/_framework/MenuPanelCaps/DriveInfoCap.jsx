@@ -12,7 +12,7 @@ export default function DriveInfoCap(){
 if (!course || Object.keys(course).length == 0){
   return null;
 }
-let roles = [...course.roleLabels];
+let role = course.roleLabel;
 let color = course.color;
 let image = course.image;
 let label = course.label;
@@ -40,8 +40,8 @@ let label = course.label;
     <b>{toolText}</b>
     <div style={{ padding:'16px 12px' }}>
       <span style={{ marginBottom: "15px" }}>{label}</span> <br />
-      <span style={{ marginBottom: "15px" }}>{roles}</span> <br />
-      <RoleDropdown />
+      <span style={{ marginBottom: "15px" }}>{role}</span> <br />
+      <RoleDropdown/>
     </div>
   </>
 }

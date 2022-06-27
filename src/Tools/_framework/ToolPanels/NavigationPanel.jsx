@@ -1,22 +1,19 @@
 /**
  * External dependencies
  */
-import React, { useState, Suspense, useEffect, useLayoutEffect } from 'react';
+import React, { Suspense, useLayoutEffect } from 'react';
 import { useRecoilCallback, useRecoilValue, useSetRecoilState } from 'recoil';
+import styled, { keyframes } from 'styled-components';
 /**
  * Internal dependencies
  */
-import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
-
-
-import CourseNavigator from '../../../_reactComponents/Course/CourseNavigator';
-import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
-// import { mainPanelClickAtom } from '../Panels/NewMainPanel';
-import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { suppressMenusAtom } from '../NewToolRoot';
-import styled, { keyframes } from 'styled-components';
-import { itemByDoenetId, findFirstPageOfActivity, selectedCourseItems } from '../../../_reactComponents/Course/CourseActions';
 import { useToast, toastType } from '../Toast';
+import { suppressMenusAtom } from '../NewToolRoot';
+import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
+import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
+import CourseNavigator from '../../../_reactComponents/Course/CourseNavigator';
+import { effectivePermissions } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { itemByDoenetId, findFirstPageOfActivity } from '../../../_reactComponents/Course/CourseActions';
 
 const movingGradient = keyframes `
   0% { background-position: -250px 0; }
@@ -67,24 +64,16 @@ const Td3Span = styled.span `
 `;
 
 export default function NavigationPanel() {
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  //TODO: swtich to effectivePermissons
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const { canEditContent } = useRecoilValue(effectivePermissions(courseId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const addToast = useToast();
 
 
   useLayoutEffect(() => {
-    switch (effectiveRole) {
-      case 'instructor':
-        // setColumnTypes(['Released', 'Assigned', 'Public']);
-        setSuppressMenus([]);
-        break;
-      case 'student':
-        // setColumnTypes(['Due Date']);
-        setSuppressMenus(['AddDriveItems','CutCopyPasteMenu']);
-        break;
-      default:
-    }
-  }, [effectiveRole, setSuppressMenus]);
+    setSuppressMenus(canEditContent ==  '1' ? [] : ['AddDriveItems','CutCopyPasteMenu']);
+  }, [canEditContent, setSuppressMenus]);
 
   
   const updateSelectMenu = useRecoilCallback(
@@ -115,7 +104,7 @@ export default function NavigationPanel() {
     ({set,snapshot}) =>
       async ({ doenetId, courseId }) => {
         let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
-        let effectiveRole = await snapshot.getPromise(effectiveRoleAtom);
+        let {canEditContent} = await snapshot.getPromise(effectivePermissions);
     if (clickedItem.type == 'page'){
       set(pageToolViewAtom,(prev)=>{return {
         page: 'course',
@@ -124,17 +113,7 @@ export default function NavigationPanel() {
         params: { pageId: doenetId, doenetId: clickedItem.containingDoenetId },
         }})
     }else if (clickedItem.type == 'activity'){
-      if (effectiveRole == 'student'){
-        set(pageToolViewAtom,{
-          page: 'course',
-          tool: 'assignment',
-          view: '',
-          params: {
-            doenetId,
-          },
-        })
-        
-      }else{
+      if (canEditContent == '1'){
         //Find first page
         let pageDoenetId = findFirstPageOfActivity(clickedItem.content);
         if (pageDoenetId == null){
@@ -147,6 +126,15 @@ export default function NavigationPanel() {
               params: { doenetId, pageId:pageDoenetId },
           }})
         }
+      }else{
+        set(pageToolViewAtom,{
+          page: 'course',
+          tool: 'assignment',
+          view: '',
+          params: {
+            doenetId,
+          },
+        })
       }
     }else if (clickedItem.type == 'section'){
       set(pageToolViewAtom,(prev)=>{return {
