@@ -1337,4 +1337,199 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('tick scale factor', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="none" />
+
+    <graph name="xpi" xTickScaleFactor="pi" />
+    <graph name="ypi" yTickScaleFactor="pi" />
+    <graph name="bothpi" xTickScaleFactor="pi" yTickScaleFactor="pi" />
+
+    <graph name="xe" xTickScaleFactor="e" />
+    <graph name="ye" yTickScaleFactor="e" />
+    <graph name="bothe" xTickScaleFactor="e" yTickScaleFactor="e" />
+
+    <graph name="ignorebad" xTickScaleFactor="x" yTickScaleFactor="/" />
+
+    <copy prop="xmin" target="ignorebad" assignNames="xmin" />
+    <copy prop="xmax" target="ignorebad" assignNames="xmax" />
+    <copy prop="ymin" target="ignorebad" assignNames="ymin" />
+    <copy prop="ymax" target="ignorebad" assignNames="ymax" />
+
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // Note: these are brittle tests and could start failing if internals of jsxgraph changes
+
+       
+    cy.get('#\\/none').should('not.contain.text', 'π')
+    cy.get('#\\/none').should('not.contain.text', 'e')
+    cy.get('#\\/none').should('contain.text', '68')
+    cy.get('#\\/none').should('contain.text', '−2−4−6−8')
+
+    cy.get('#\\/xpi').should('contain.text', 'π2π3π')
+    cy.get('#\\/xpi').should('contain.text', '−π−2π−3π')
+    cy.get('#\\/xpi').should('contain.text', '24')
+    cy.get('#\\/xpi').should('contain.text', '68')
+    cy.get('#\\/xpi').should('contain.text', '−2−4−6−8')
+
+    cy.get('#\\/ypi').should('contain.text', 'π2π3π')
+    cy.get('#\\/ypi').should('contain.text', '−π−2π−3π')
+    cy.get('#\\/ypi').should('contain.text', '24')
+    cy.get('#\\/ypi').should('contain.text', '68')
+    cy.get('#\\/ypi').should('contain.text', '−2−4−6−8')
+
+    cy.get('#\\/bothpi').should('contain.text', 'π2π3π')
+    cy.get('#\\/bothpi').should('contain.text', '−π−2π−3π')
+    cy.get('#\\/bothpi').should('not.contain.text', '24')
+    cy.get('#\\/bothpi').should('not.contain.text', '68')
+    cy.get('#\\/bothpi').should('not.contain.text', '−2−4−6−8')
+
+    cy.get('#\\/xe').should('contain.text', 'e2e3e')
+    cy.get('#\\/xe').should('contain.text', '−e−2e−3e')
+    cy.get('#\\/xe').should('contain.text', '24')
+    cy.get('#\\/xe').should('contain.text', '68')
+    cy.get('#\\/xe').should('contain.text', '−2−4−6−8')
+
+    cy.get('#\\/ye').should('contain.text', 'e2e3e')
+    cy.get('#\\/ye').should('contain.text', '−e−2e−3e')
+    cy.get('#\\/ye').should('contain.text', '24')
+    cy.get('#\\/ye').should('contain.text', '68')
+    cy.get('#\\/ye').should('contain.text', '−2−4−6−8')
+
+    cy.get('#\\/bothe').should('contain.text', 'e2e3e')
+    cy.get('#\\/bothe').should('contain.text', '−e−2e−3e')
+    cy.get('#\\/bothe').should('not.contain.text', '24')
+    cy.get('#\\/bothe').should('not.contain.text', '68')
+    cy.get('#\\/bothe').should('not.contain.text', '−2−4−6−8')
+
+    cy.get('#\\/ignorebad').should('not.contain.text', 'π')
+    cy.get('#\\/ignorebad').should('not.contain.text', 'e')
+    cy.get('#\\/ignorebad').should('contain.text', '68')
+    cy.get('#\\/ignorebad').should('contain.text', '−2−4−6−8')
+
+
+    cy.get('#\\/none_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/xpi_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/ypi_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/bothpi_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/xe_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/ye_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/bothe_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/ignorebad_navigationbar > :nth-child(1)').click();
+
+    cy.get('#\\/xmax').should('have.text', '12.5')
+
+    cy.get('#\\/none').should('not.contain.text', 'π')
+    cy.get('#\\/none').should('not.contain.text', 'e')
+    cy.get('#\\/none').should('contain.text', '10')
+    cy.get('#\\/none').should('contain.text', '−10')
+
+    cy.get('#\\/xpi').should('contain.text', 'π2π3π')
+    cy.get('#\\/xpi').should('contain.text', '−π−2π−3π')
+    cy.get('#\\/xpi').should('contain.text', '10')
+    cy.get('#\\/xpi').should('contain.text', '−10')
+
+    cy.get('#\\/ypi').should('contain.text', 'π2π3π')
+    cy.get('#\\/ypi').should('contain.text', '−π−2π−3π')
+    cy.get('#\\/ypi').should('contain.text', '10')
+    cy.get('#\\/ypi').should('contain.text', '−10')
+
+    cy.get('#\\/bothpi').should('contain.text', 'π2π3π')
+    cy.get('#\\/bothpi').should('contain.text', '−π−2π−3π')
+    cy.get('#\\/bothpi').should('not.contain.text', '10')
+    cy.get('#\\/bothpi').should('not.contain.text', '−10')
+
+    cy.get('#\\/xe').should('contain.text', 'e2e3e4e')
+    cy.get('#\\/xe').should('contain.text', '−e−2e')
+    cy.get('#\\/xe').should('contain.text', '−3e−4e')
+    cy.get('#\\/xe').should('contain.text', '10')
+    cy.get('#\\/xe').should('contain.text', '−10')
+
+    cy.get('#\\/ye').should('contain.text', 'e2e3e4e')
+    cy.get('#\\/ye').should('contain.text', '−e−2e')
+    cy.get('#\\/ye').should('contain.text', '−3e−4e')
+    cy.get('#\\/ye').should('contain.text', '10')
+    cy.get('#\\/ye').should('contain.text', '−10')
+
+    cy.get('#\\/bothe').should('contain.text', 'e2e3e4e')
+    cy.get('#\\/bothe').should('contain.text', '−e−2e')
+    cy.get('#\\/bothe').should('contain.text', '−3e−4e')
+    cy.get('#\\/bothe').should('not.contain.text', '10')
+    cy.get('#\\/bothe').should('not.contain.text', '−10')
+
+    cy.get('#\\/ignorebad').should('not.contain.text', 'π')
+    cy.get('#\\/ignorebad').should('not.contain.text', 'e')
+    cy.get('#\\/ignorebad').should('contain.text', '10')
+    cy.get('#\\/ignorebad').should('contain.text', '−10')
+
+
+    cy.get('#\\/none_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/xpi_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/ypi_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/bothpi_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/xe_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/ye_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/bothe_navigationbar > :nth-child(1)').click();
+    cy.get('#\\/ignorebad_navigationbar > :nth-child(1)').click();
+
+    cy.get('#\\/xmax').should('have.text', '15.625')
+
+    cy.get('#\\/none').should('not.contain.text', 'π')
+    cy.get('#\\/none').should('not.contain.text', 'e')
+    cy.get('#\\/none').should('contain.text', '10')
+    cy.get('#\\/none').should('contain.text', '−10')
+
+    cy.get('#\\/xpi').should('contain.text', 'π2π3π4π')
+    cy.get('#\\/xpi').should('contain.text', '−π−2π')
+    cy.get('#\\/xpi').should('contain.text', '−3π−4π')
+    cy.get('#\\/xpi').should('contain.text', '10')
+    cy.get('#\\/xpi').should('contain.text', '−10')
+
+    cy.get('#\\/ypi').should('contain.text', 'π2π3π4π')
+    cy.get('#\\/ypi').should('contain.text', '−π−2π')
+    cy.get('#\\/ypi').should('contain.text', '−3π−4π')
+    cy.get('#\\/ypi').should('contain.text', '10')
+    cy.get('#\\/ypi').should('contain.text', '−10')
+
+    cy.get('#\\/bothpi').should('contain.text', 'π2π3π4π')
+    cy.get('#\\/bothpi').should('contain.text', '−π−2π')
+    cy.get('#\\/bothpi').should('contain.text', '−3π−4π')
+    cy.get('#\\/bothpi').should('not.contain.text', '10')
+    cy.get('#\\/bothpi').should('not.contain.text', '−10')
+
+    cy.get('#\\/xe').should('contain.text', 'e2e3e4e5e')
+    cy.get('#\\/xe').should('contain.text', '−e')
+    cy.get('#\\/xe').should('contain.text', '−2e−3e−4e−5e')
+    cy.get('#\\/xe').should('contain.text', '10')
+    cy.get('#\\/xe').should('contain.text', '−10')
+
+    cy.get('#\\/ye').should('contain.text', 'e2e3e4e5e')
+    cy.get('#\\/ye').should('contain.text', '−e−2e')
+    cy.get('#\\/ye').should('contain.text', '−3e−4e−5e')
+    cy.get('#\\/ye').should('contain.text', '10')
+    cy.get('#\\/ye').should('contain.text', '−10')
+
+    cy.get('#\\/bothe').should('contain.text', 'e2e3e4e5e')
+    cy.get('#\\/bothe').should('contain.text', '−e−2e')
+    cy.get('#\\/bothe').should('contain.text', '−3e−4e−5e')
+    cy.get('#\\/bothe').should('not.contain.text', '10')
+    cy.get('#\\/bothe').should('not.contain.text', '−10')
+
+    cy.get('#\\/ignorebad').should('not.contain.text', 'π')
+    cy.get('#\\/ignorebad').should('not.contain.text', 'e')
+    cy.get('#\\/ignorebad').should('contain.text', '10')
+    cy.get('#\\/ignorebad').should('contain.text', '−10')
+
+
+  });
+
 });
