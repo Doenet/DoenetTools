@@ -90,6 +90,13 @@ export default class Graph extends BlockComponent {
       toLowerCase: true,
       validValues: ["right", "left"]
     };
+    attributes.xTickScaleFactor = {
+      createComponentOfType: "math",
+      createStateVariable: "xTickScaleFactor",
+      defaultValue: null,
+      public: true,
+      forRenderer: true,
+    }
     attributes.ylabel = {
       createComponentOfType: "text",
       createStateVariable: "ylabel",
@@ -115,6 +122,13 @@ export default class Graph extends BlockComponent {
       toLowerCase: true,
       validValues: ["left", "right"]
     };
+    attributes.yTickScaleFactor = {
+      createComponentOfType: "math",
+      createStateVariable: "yTickScaleFactor",
+      defaultValue: null,
+      public: true,
+      forRenderer: true,
+    }
     attributes.showNavigation = {
       createComponentOfType: "boolean",
       createStateVariable: "showNavigation",

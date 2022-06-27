@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, createContext } from 'react';
 import { sizeToCSS } from './utils/css';
 import useDoenetRender from './useDoenetRenderer';
-
+import me from 'math-expressions';
 
 export const BoardContext = createContext();
 
@@ -104,6 +104,15 @@ export default React.memo(function Graph(props) {
         strokeColor: 'var(--canvastext)',
         drawLabels: SVs.displayXAxisTickLabels
       }
+      if(SVs.xTickScaleFactor !== null) {
+        let xTickScaleFactor = me.fromAst(SVs.xTickScaleFactor);
+        let scale = xTickScaleFactor.evaluate_to_constant();
+        if(scale > 0) {
+          let scaleSymbol = xTickScaleFactor.toString();
+          xaxisOptions.ticks.scale = scale;
+          xaxisOptions.ticks.scaleSymbol = scaleSymbol;
+        }
+      }
       xaxisOptions.strokeColor = "var(--canvastext)";
       xaxisOptions.highlight = false;
 
@@ -123,6 +132,20 @@ export default React.memo(function Graph(props) {
       }
 
       xaxis.current = board.create('axis', [[0, 0], [1, 0]], xaxisOptions)
+
+      xaxis.current.defaultTicks.ticksFunction = function () {
+        var delta, b, dist;
+
+        b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
+        dist = b.upper - b.lower;
+
+        delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
+        if (dist <= 6 * delta) {
+          delta *= 0.5;
+        }
+        return delta;
+
+      };
     }
 
     if (SVs.displayYAxis) {
@@ -163,7 +186,15 @@ export default React.memo(function Graph(props) {
         strokeColor: "var(--canvastext)",
         drawLabels: SVs.displayYAxisTickLabels
       }
-
+      if(SVs.yTickScaleFactor !== null) {
+        let yTickScaleFactor = me.fromAst(SVs.yTickScaleFactor);
+        let scale = yTickScaleFactor.evaluate_to_constant();
+        if(scale > 0) {
+          let scaleSymbol = yTickScaleFactor.toString();
+          yaxisOptions.ticks.scale = scale;
+          yaxisOptions.ticks.scaleSymbol = scaleSymbol;
+        }
+      }
       if (SVs.grid === "dense") {
         yaxisOptions.ticks.majorHeight = -1;
         yaxisOptions.ticks.minorHeight = -1;
@@ -180,6 +211,20 @@ export default React.memo(function Graph(props) {
       }
 
       yaxis.current = board.create('axis', [[0, 0], [0, 1]], yaxisOptions)
+
+      yaxis.current.defaultTicks.ticksFunction = function () {
+        var delta, b, dist;
+
+        b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
+        dist = b.upper - b.lower;
+
+        delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
+        if (dist <= 6 * delta) {
+          delta *= 0.5;
+        }
+        return delta;
+
+      };
     }
 
     boardJustInitialized.current = true;
