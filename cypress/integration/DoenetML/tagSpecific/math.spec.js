@@ -1010,24 +1010,24 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('1.3000x+4.0000π')
     })
 
-    cy.get('#\\/dig5aText').should('have.text','62.1')
-    cy.get('#\\/dig5apadText').should('have.text','62.100')
-    cy.get('#\\/dig5bText').should('have.text','162.1 * 10^(-3)')
-    cy.get('#\\/dig5bpadText').should('have.text','162.10 * 10^(-3)')
-    cy.get('#\\/dig5cText').should('have.text','1.3 x + 4 π')
-    cy.get('#\\/dig5cpadText').should('have.text','1.3000 x + 4.0000 π')
-    cy.get('#\\/dec5aText').should('have.text','62.1')
-    cy.get('#\\/dec5apadText').should('have.text','62.10000')
-    cy.get('#\\/dec5bText').should('have.text','162.1 * 10^(-3)')
-    cy.get('#\\/dec5bpadText').should('have.text','162.10000 * 10^(-3)')
-    cy.get('#\\/dec5cText').should('have.text','1.3 x + 4 π')
-    cy.get('#\\/dec5cpadText').should('have.text','1.30000 x + 4.00000 π')
-    cy.get('#\\/dig5dec1aText').should('have.text','62.1')
-    cy.get('#\\/dig5dec1apadText').should('have.text','62.100')
-    cy.get('#\\/dig5dec1bText').should('have.text','162.1 * 10^(-3)')
-    cy.get('#\\/dig5dec1bpadText').should('have.text','162.10 * 10^(-3)')
-    cy.get('#\\/dig5dec1cText').should('have.text','1.3 x + 4 π')
-    cy.get('#\\/dig5dec1cpadText').should('have.text','1.3000 x + 4.0000 π')
+    cy.get('#\\/dig5aText').should('have.text', '62.1')
+    cy.get('#\\/dig5apadText').should('have.text', '62.100')
+    cy.get('#\\/dig5bText').should('have.text', '162.1 * 10^(-3)')
+    cy.get('#\\/dig5bpadText').should('have.text', '162.10 * 10^(-3)')
+    cy.get('#\\/dig5cText').should('have.text', '1.3 x + 4 π')
+    cy.get('#\\/dig5cpadText').should('have.text', '1.3000 x + 4.0000 π')
+    cy.get('#\\/dec5aText').should('have.text', '62.1')
+    cy.get('#\\/dec5apadText').should('have.text', '62.10000')
+    cy.get('#\\/dec5bText').should('have.text', '162.1 * 10^(-3)')
+    cy.get('#\\/dec5bpadText').should('have.text', '162.10000 * 10^(-3)')
+    cy.get('#\\/dec5cText').should('have.text', '1.3 x + 4 π')
+    cy.get('#\\/dec5cpadText').should('have.text', '1.30000 x + 4.00000 π')
+    cy.get('#\\/dig5dec1aText').should('have.text', '62.1')
+    cy.get('#\\/dig5dec1apadText').should('have.text', '62.100')
+    cy.get('#\\/dig5dec1bText').should('have.text', '162.1 * 10^(-3)')
+    cy.get('#\\/dig5dec1bpadText').should('have.text', '162.10 * 10^(-3)')
+    cy.get('#\\/dig5dec1cText').should('have.text', '1.3 x + 4 π')
+    cy.get('#\\/dig5dec1cpadText').should('have.text', '1.3000 x + 4.0000 π')
 
 
     cy.get('#\\/dig5aValue').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1086,24 +1086,24 @@ describe('Math Tag Tests', function () {
     })
 
 
-    cy.get('#\\/dig5aNumber').should('have.text','62.1')
-    cy.get('#\\/dig5apadNumber').should('have.text','62.100')
-    cy.get('#\\/dig5bNumber').should('have.text','0.1621')
-    cy.get('#\\/dig5bpadNumber').should('have.text','0.16210')
-    cy.get('#\\/dig5cNumber').should('have.text','NaN')
-    cy.get('#\\/dig5cpadNumber').should('have.text','NaN')
-    cy.get('#\\/dec5aNumber').should('have.text','62.1')
-    cy.get('#\\/dec5apadNumber').should('have.text','62.10000')
-    cy.get('#\\/dec5bNumber').should('have.text','0.1621')
-    cy.get('#\\/dec5bpadNumber').should('have.text','0.16210')
-    cy.get('#\\/dec5cNumber').should('have.text','NaN')
-    cy.get('#\\/dec5cpadNumber').should('have.text','NaN')
-    cy.get('#\\/dig5dec1aNumber').should('have.text','62.1')
-    cy.get('#\\/dig5dec1apadNumber').should('have.text','62.100')
-    cy.get('#\\/dig5dec1bNumber').should('have.text','0.1621')
-    cy.get('#\\/dig5dec1bpadNumber').should('have.text','0.16210')
-    cy.get('#\\/dig5dec1cNumber').should('have.text','NaN')
-    cy.get('#\\/dig5dec1cpadNumber').should('have.text','NaN')
+    cy.get('#\\/dig5aNumber').should('have.text', '62.1')
+    cy.get('#\\/dig5apadNumber').should('have.text', '62.100')
+    cy.get('#\\/dig5bNumber').should('have.text', '0.1621')
+    cy.get('#\\/dig5bpadNumber').should('have.text', '0.16210')
+    cy.get('#\\/dig5cNumber').should('have.text', 'NaN')
+    cy.get('#\\/dig5cpadNumber').should('have.text', 'NaN')
+    cy.get('#\\/dec5aNumber').should('have.text', '62.1')
+    cy.get('#\\/dec5apadNumber').should('have.text', '62.10000')
+    cy.get('#\\/dec5bNumber').should('have.text', '0.1621')
+    cy.get('#\\/dec5bpadNumber').should('have.text', '0.16210')
+    cy.get('#\\/dec5cNumber').should('have.text', 'NaN')
+    cy.get('#\\/dec5cpadNumber').should('have.text', 'NaN')
+    cy.get('#\\/dig5dec1aNumber').should('have.text', '62.1')
+    cy.get('#\\/dig5dec1apadNumber').should('have.text', '62.100')
+    cy.get('#\\/dig5dec1bNumber').should('have.text', '0.1621')
+    cy.get('#\\/dig5dec1bpadNumber').should('have.text', '0.16210')
+    cy.get('#\\/dig5dec1cNumber').should('have.text', 'NaN')
+    cy.get('#\\/dig5dec1cpadNumber').should('have.text', 'NaN')
 
 
     cy.get('#\\/dig5aMath').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1162,24 +1162,24 @@ describe('Math Tag Tests', function () {
     })
 
 
-    cy.get('#\\/dig5aNumber2').should('have.text','62.1')
-    cy.get('#\\/dig5apadNumber2').should('have.text','62.100')
-    cy.get('#\\/dig5bNumber2').should('have.text','0.1621')
-    cy.get('#\\/dig5bpadNumber2').should('have.text','0.16210')
-    cy.get('#\\/dig5cNumber2').should('have.text','NaN')
-    cy.get('#\\/dig5cpadNumber2').should('have.text','NaN')
-    cy.get('#\\/dec5aNumber2').should('have.text','62.1')
-    cy.get('#\\/dec5apadNumber2').should('have.text','62.10000')
-    cy.get('#\\/dec5bNumber2').should('have.text','0.1621')
-    cy.get('#\\/dec5bpadNumber2').should('have.text','0.16210')
-    cy.get('#\\/dec5cNumber2').should('have.text','NaN')
-    cy.get('#\\/dec5cpadNumber2').should('have.text','NaN')
-    cy.get('#\\/dig5dec1aNumber2').should('have.text','62.1')
-    cy.get('#\\/dig5dec1apadNumber2').should('have.text','62.100')
-    cy.get('#\\/dig5dec1bNumber2').should('have.text','0.1621')
-    cy.get('#\\/dig5dec1bpadNumber2').should('have.text','0.16210')
-    cy.get('#\\/dig5dec1cNumber2').should('have.text','NaN')
-    cy.get('#\\/dig5dec1cpadNumber2').should('have.text','NaN')
+    cy.get('#\\/dig5aNumber2').should('have.text', '62.1')
+    cy.get('#\\/dig5apadNumber2').should('have.text', '62.100')
+    cy.get('#\\/dig5bNumber2').should('have.text', '0.1621')
+    cy.get('#\\/dig5bpadNumber2').should('have.text', '0.16210')
+    cy.get('#\\/dig5cNumber2').should('have.text', 'NaN')
+    cy.get('#\\/dig5cpadNumber2').should('have.text', 'NaN')
+    cy.get('#\\/dec5aNumber2').should('have.text', '62.1')
+    cy.get('#\\/dec5apadNumber2').should('have.text', '62.10000')
+    cy.get('#\\/dec5bNumber2').should('have.text', '0.1621')
+    cy.get('#\\/dec5bpadNumber2').should('have.text', '0.16210')
+    cy.get('#\\/dec5cNumber2').should('have.text', 'NaN')
+    cy.get('#\\/dec5cpadNumber2').should('have.text', 'NaN')
+    cy.get('#\\/dig5dec1aNumber2').should('have.text', '62.1')
+    cy.get('#\\/dig5dec1apadNumber2').should('have.text', '62.100')
+    cy.get('#\\/dig5dec1bNumber2').should('have.text', '0.1621')
+    cy.get('#\\/dig5dec1bpadNumber2').should('have.text', '0.16210')
+    cy.get('#\\/dig5dec1cNumber2').should('have.text', 'NaN')
+    cy.get('#\\/dig5dec1cpadNumber2').should('have.text', 'NaN')
 
 
 
@@ -2709,6 +2709,27 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/m4f .mjx-mrow').eq(0).should('have.text', '8');
 
 
+  });
+
+
+  it('negative integer to power of integer', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math>(-3)^2</math>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).should('have.text', '(−3)2');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_math1"].stateValues.latex).eq("\\left(-3\\right)^{2}")
+    })
   });
 
 
