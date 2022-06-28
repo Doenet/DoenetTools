@@ -22,6 +22,7 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
     cr.canViewUsers,
     cr.canManageUsers,
     cr.canModifyRoles,
+    cr.dataAccessPermisson,
     cr.isOwner
     FROM course_role AS cr
     LEFT JOIN course_user as cu
@@ -60,6 +61,7 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
             'canViewUsers' => $row['canViewUsers'],
             'canManageUsers' => $row['canManageUsers'],
             'canModifyRoles' => $row['canModifyRoles'],
+            'dataAccessPermisson' => $row['dataAccessPermisson'],
             'isOwner' => $row['isOwner'],
         ];
     }

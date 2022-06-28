@@ -1,12 +1,31 @@
-import {
-  faFileCode,
-} from '@fortawesome/free-solid-svg-icons';
+import { faFileCode } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toastType, useToast } from '@Toast';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState, atom } from 'recoil';
 import { useActivity } from '../../../_reactComponents/Activity/ActivityActions';
-import { AssignedDate, AssignTo, AssignUnassignActivity, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent } from '../../../_reactComponents/Activity/SettingComponents';
+import {
+  AssignedDate,
+  AssignTo,
+  AssignUnassignActivity,
+  AttempLimit,
+  AttemptAggregation,
+  DueDate,
+  GradeCategory,
+  Individualize,
+  MakePublic,
+  PinAssignment,
+  ProctorMakesAvailable,
+  ShowCorrectness,
+  ShowCreditAchieved,
+  ShowDoenetMLSource,
+  ShowFeedback,
+  ShowHints,
+  ShowSolution,
+  ShowSolutionInGradebook,
+  TimeLimit,
+  TotalPointsOrPercent,
+} from '../../../_reactComponents/Activity/SettingComponents';
 import {
   itemByDoenetId,
   findFirstPageOfActivity,
@@ -17,7 +36,7 @@ import ActionButton from '../../../_reactComponents/PanelHeaderComponents/Action
 import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import { effectivePermissions } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 
@@ -25,17 +44,14 @@ export default function SelectedActivity() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const {canEditContent} = useRecoilValue(effectivePermissions(courseId));
-  const {
-    label: recoilLabel,
-    content
-  } = useRecoilValue(itemByDoenetId(doenetId));
-  const {
-    renameItem,
-    create,
-    compileActivity,
-    deleteItem
-  } = useCourse(courseId);
+  const { canEditContent } = useRecoilValue(
+    effectivePermissionsByCourseId(courseId),
+  );
+  const { label: recoilLabel, content } = useRecoilValue(
+    itemByDoenetId(doenetId),
+  );
+  const { renameItem, create, compileActivity, deleteItem } =
+    useCourse(courseId);
 
   const [itemTextFieldLabel, setItemTextFieldLabel] = useState(recoilLabel);
   const addToast = useToast();
@@ -44,7 +60,6 @@ export default function SelectedActivity() {
     setItemTextFieldLabel(recoilLabel);
   }, [recoilLabel]);
 
-  
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
     if (itemTextFieldLabel === '') {
@@ -52,7 +67,7 @@ export default function SelectedActivity() {
       if (recoilLabel === '') {
         effectiveItemLabel = 'Untitled';
       }
-      
+
       setItemTextFieldLabel(effectiveItemLabel);
       addToast('Every item must have a label.');
     }
@@ -61,15 +76,15 @@ export default function SelectedActivity() {
       renameItem(doenetId, effectiveItemLabel);
     }
   };
-  
+
   // useDebounce(handelLabelModfication, 500, [itemTextFieldLabel]);
-  
+
   if (doenetId == undefined) {
     return null;
   }
-  
+
   let firstPageDoenetId = findFirstPageOfActivity(content);
-  
+
   let heading = (
     <h2 data-cy="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
       <FontAwesomeIcon icon={faFileCode} /> {recoilLabel}
@@ -139,9 +154,9 @@ export default function SelectedActivity() {
           />
         </ActionButtonGroup>
         <br />
-  
+
         <AssignUnassignActivity doenetId={doenetId} courseId={courseId} />
-    
+
         <Textfield
           label="Label"
           vertical
@@ -167,7 +182,7 @@ export default function SelectedActivity() {
           />
         </ButtonGroup>
         <br />
-        
+
         <AssignmentSettings doenetId={doenetId} courseId={courseId} />
         <Button
           width="menu"
@@ -176,14 +191,14 @@ export default function SelectedActivity() {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-  
+
             deleteItem({ doenetId });
           }}
         />
       </>
     );
   }
-  
+
   return (
     <>
       {heading}
@@ -201,52 +216,64 @@ export default function SelectedActivity() {
           });
         }}
       />
-      <AssignmentSettings doenetId={doenetId} courseId={courseId}/>
+      <AssignmentSettings doenetId={doenetId} courseId={courseId} />
     </>
   );
-  
 }
 
 //TODO: Emilio
 const temporaryRestrictToAtom = atom({
-  key:"temporaryRestrictToAtom",
-  default:[]
-})
-
-
+  key: 'temporaryRestrictToAtom',
+  default: [],
+});
 
 //For item we just need label and doenetId
 export function AssignmentSettings({ doenetId, courseId }) {
-  const {canModifyActivitySettings, canViewActivitySettings} = useRecoilValue(effectivePermissions(courseId))
-  const {value: {numberOfAttemptsAllowed, timeLimit, assignedDate, dueDate, totalPointsOrPercent}} = useActivity(courseId, doenetId);
-  
-  const sharedProps = {courseId, doenetId, editable: canModifyActivitySettings ?? '0' };
+  const { canModifyActivitySettings, canViewActivitySettings } = useRecoilValue(
+    effectivePermissionsByCourseId(courseId),
+  );
+  const {
+    value: {
+      numberOfAttemptsAllowed,
+      timeLimit,
+      assignedDate,
+      dueDate,
+      totalPointsOrPercent,
+    },
+  } = useActivity(courseId, doenetId);
+
+  const sharedProps = {
+    courseId,
+    doenetId,
+    editable: canModifyActivitySettings ?? '0',
+  };
   if (canViewActivitySettings === '1') {
     return (
-    <>
-      <AssignTo {...sharedProps} />
-      <br />
-      <AssignedDate {...sharedProps}/>
-      <DueDate {...sharedProps}/>
-      <TimeLimit {...sharedProps}/>
-      <AttempLimit {...sharedProps}/>
-      <AttemptAggregation {...sharedProps}/>
-      <TotalPointsOrPercent {...sharedProps}/>
-      <GradeCategory {...sharedProps}/>
-      <div style={{ margin: '16px 0' }}>
-        <Individualize {...sharedProps}/>
-        <ShowSolution {...sharedProps}/>
-        <ShowSolutionInGradebook {...sharedProps}/>
-        <ShowFeedback {...sharedProps}/>
-        <ShowHints {...sharedProps}/>
-        <ShowCorrectness {...sharedProps}/>
-        <ShowCreditAchieved {...sharedProps}/>
-        <ProctorMakesAvailable {...sharedProps}/>
-        <MakePublic {...sharedProps}/>
-        <ShowDoenetMLSource {...sharedProps}/>
-      </div>
-      <PinAssignment {...sharedProps}/>
-    </>);
+      <>
+        <AssignTo {...sharedProps} />
+        <br />
+        <AssignedDate {...sharedProps} />
+        <DueDate {...sharedProps} />
+        <TimeLimit {...sharedProps} />
+        <AttempLimit {...sharedProps} />
+        <AttemptAggregation {...sharedProps} />
+        <TotalPointsOrPercent {...sharedProps} />
+        <GradeCategory {...sharedProps} />
+        <div style={{ margin: '16px 0' }}>
+          <Individualize {...sharedProps} />
+          <ShowSolution {...sharedProps} />
+          <ShowSolutionInGradebook {...sharedProps} />
+          <ShowFeedback {...sharedProps} />
+          <ShowHints {...sharedProps} />
+          <ShowCorrectness {...sharedProps} />
+          <ShowCreditAchieved {...sharedProps} />
+          <ProctorMakesAvailable {...sharedProps} />
+          <MakePublic {...sharedProps} />
+          <ShowDoenetMLSource {...sharedProps} />
+        </div>
+        <PinAssignment {...sharedProps} />
+      </>
+    );
   }
 
   //default JSX
@@ -278,5 +305,3 @@ export function AssignmentSettings({ doenetId, courseId }) {
     </>
   );
 }
-
-

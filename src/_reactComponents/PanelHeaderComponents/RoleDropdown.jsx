@@ -16,76 +16,32 @@ import DropdownMenu from './DropdownMenu';
 
 export const courseRoles = atomFamily({
   key: 'courseRoles',
-  effects: courseId => [
-    ({trigger, setSelf}) => {
+  effects: (courseId) => [
+    ({ trigger, setSelf }) => {
       if (trigger === 'get') {
-        axios.get('/api/')
+        axios.get('api/loadCourseRoles');
+        //filter to roles avaible
       }
-    }
-  ]
-})
+    },
+  ],
+});
 
-export const effectivePermissions = selectorFamily({
+export const effectivePermissionsByCourseId = selectorFamily({
   key: 'effectivePermissons',
-  get: courseId => ({get}) => {
-    return get(coursePermissionsAndSettingsByCourseId(courseId));
-  }
-})
-
-export const effectiveRoleAtom = atom({
-  key: 'effectiveRoleAtom',
-  default: '',
-});
-
-const permittedRoleAtom = atom({
-  key: 'permittedRoleAtom',
-  default: '',
-});
-
-const permsForDriveIdAtom = atom({
-  key: 'permsForDriveIdAtom',
-  default: '',
+  get:
+    (courseId) =>
+    ({ get }) => {
+      return get(coursePermissionsAndSettingsByCourseId(courseId));
+    },
 });
 
 //TODO: EMILIO how does this higherarchy change? Mabye if modify roles is active? All see student?
 export function RoleDropdown() {
   const { tool } = useRecoilValue(pageToolViewAtom);
-  const [effectiveRole, setEffectiveRole] = useRecoilState(effectiveRoleAtom);
-  const [permittedRole, setPermittedRole] = useRecoilState(permittedRoleAtom);
   const courseId = useRecoilValue(searchParamAtomFamily('courseId')) ?? '';
-  const recoilDriveId = useRecoilValue(permsForDriveIdAtom);
-
-  const initilizeEffectiveRole = useRecoilCallback(
-    ({ set, snapshot }) =>
-      async (driveId) => {
-        let role = 'instructor';
-
-        //If driveId then test if intructor is available
-        if (driveId !== '') {
-          let permissionsAndSettings = await snapshot.getPromise(coursePermissionsAndSettingsByCourseId(driveId));
-          if (permissionsAndSettings?.roleLabels?.[0] == 'Student'){
-            role = 'student';
-          }
-        }
-
-        set(effectiveRoleAtom, role);
-        set(permsForDriveIdAtom, driveId);
-        setPermittedRole(role);
-      },
-    [setPermittedRole],
-  );
-
-  if (effectiveRole === '' || (recoilDriveId !== courseId && courseId !== '')) {
-    //first time through so initialize
-    initilizeEffectiveRole(courseId);
-    return null;
-  }
+  const effectivePermissions = useRecoilValue(effectivePermissionsByCourseId(courseId));
 
   if (tool === 'enrollment') {
-    return null;
-  }
-
-  if (permittedRole === 'student') {
     return null;
   }
 
@@ -95,12 +51,12 @@ export function RoleDropdown() {
   ];
 
   let defaultIndex = 0;
-  for (let [i, item] of Object.entries(items)) {
-    if (item[0] === effectiveRole) {
-      defaultIndex = Number(i) + 1;
-      break;
-    }
-  }
+  // for (let [i, item] of Object.entries(items)) {
+  //   if (item[0] === effectiveRole) {
+  //     defaultIndex = Number(i) + 1;
+  //     break;
+  //   }
+  // }
 
   return (
     <>
@@ -111,7 +67,7 @@ export function RoleDropdown() {
         items={items}
         title="Role"
         defaultIndex={defaultIndex}
-        onChange={({ value }) => setEffectiveRole(value)}
+        // onChange={({ value }) => setEffectiveRole(value)}
       />
     </>
   );

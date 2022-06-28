@@ -33,10 +33,10 @@ if ($permissions['canViewUsers'] != '1') {
 
 if ($success) {
     $sql = "SELECT 
-      cu.userId AS userId
+      cu.userId AS userId,
       cr.label as roleLabel,
       u.email AS email,
-      u.screenName AS screenName,
+      u.screenName AS screenName
       FROM course_user AS cu
       LEFT JOIN course_role AS cr
       ON cu.roleId = cr.roleId
