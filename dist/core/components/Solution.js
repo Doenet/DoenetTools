@@ -55,7 +55,9 @@ export default class Solution extends BlockComponent {
 
     stateVariableDefinitions.hide = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
       hasEssential: true,
@@ -113,7 +115,9 @@ export default class Solution extends BlockComponent {
 
     stateVariableDefinitions.open = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
       hasEssential: true,
@@ -175,7 +179,9 @@ export default class Solution extends BlockComponent {
 
     stateVariableDefinitions.message = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       defaultValue: "",
       hasEssential: true,

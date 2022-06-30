@@ -226,14 +226,14 @@ export default class BooleanComponent extends InlineComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+        attributeComponentsToShadow: ["fixed"]
+      },
       forRenderer: true,
       hasEssential: true,
       defaultValue: false,
       set: Boolean,
-      stateVariablesPrescribingAdditionalAttributes: {
-        fixed: "fixed",
-      },
       returnDependencies: () => ({
         symbolicEquality: {
           dependencyType: "stateVariable",
@@ -402,7 +402,9 @@ export default class BooleanComponent extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {

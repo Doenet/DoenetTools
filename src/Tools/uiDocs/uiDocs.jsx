@@ -15,7 +15,7 @@ import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.js
 import TextArea from '../../_reactComponents/PanelHeaderComponents/TextArea.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faFish } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
@@ -25,6 +25,8 @@ import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
+import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox.jsx';
+
 
 
 // === HOW TO ADD TO UI DOCS ===
@@ -346,6 +348,45 @@ export default function attempt() {
         },
       ],
     },
+    {
+        name: 'Checkbox',
+        id: 'checkbox', 
+        code: Checkbox, 
+        codePreview: '<Checkbox/>',
+        req_props: null,
+        req_children: null,
+        use: 'Shows state of item',
+        props: [
+            {name: 'Checked',
+            propPreview: '<Checkbox checked></Checkbox>',
+            propCode: {checked: 'true'},
+            description: 'Sets state of checkbox'},
+            {name: 'Checked Icon',
+            propPreview: '<Checkbox checked checkedIcon={icon: <FontAwesomeIcon icon={faCode} />}></Checkbox>',
+            propCode: {checkedIcon: <FontAwesomeIcon icon={faCode} />, checked: 'true'},
+            description: 'Sets icon when checked'},
+            {name: 'Unchecked Icon',
+            propPreview: '<Checkbox uncheckedIcon={icon: <FontAwesomeIcon icon={faFish} />}></Checkbox>',
+            propCode: {uncheckedIcon: <FontAwesomeIcon icon={faFish} />},
+            description: 'Sets icon when unchecked'},
+            {
+              name: 'Label',
+              propPreview: '<Checkbox label="What: "/>',
+              propCode: { label: 'What: ' },
+              description: 'Adds label to button',
+            },
+            {
+              name: 'Vertical Label',
+              propPreview: '<Checkbox label="What: " vertical/>',
+              propCode: { label: 'What: ', vertical },
+              description: 'Adds label to component on top',
+            },
+            {name: 'Disabled',
+            propPreview: '<Checkbox disabled></Checkbox>',
+            propCode: {disabled: 'true'},
+            description: 'Sets to disabled'},
+        ]
+      },
     {
       name: 'CollapseSection',
       id: 'collapsesection',
@@ -1261,7 +1302,7 @@ export default function attempt() {
           propPreview: '<ToggleButton onClick={(data) => console.log(data)} />',
           propCode: { onClick: (data) => console.log(data) },
           description:
-            'Function called when toggle button is clicked. Returns true when untoggled/unclicked? and clicked(white) and true when already toggled and clicked(blue)',
+            'Function called when toggle button is clicked. Use with isSelected to change state on click',
         },
         {
           name: 'Disabled',

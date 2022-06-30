@@ -46,7 +46,7 @@ export default class SubsetOfReals extends MathComponent {
       newName: "unnormalizedValuePreliminary"
     });
 
-    stateVariableDefinitions.value.componentType = "math";
+    stateVariableDefinitions.value.shadowingInstructions.createComponentOfType = "math";
 
     stateVariableDefinitions.haveSingleSubsetChild = {
       returnDependencies: () => ({

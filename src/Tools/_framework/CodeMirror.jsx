@@ -68,10 +68,6 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         }
        
       })
-      const myHighlightStyle = HighlightStyle.define([
-        {tag: t.keyword, color: "orange"},
-        {tag: t.comment, color: "blue", fontStyle: "italic"}
-      ])
       
 
     let editorConfig = useRecoilValue(editorConfigStateAtom);
@@ -124,7 +120,6 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onB
         basicSetup,
         doenet(doenetSchema),
         EditorView.lineWrapping,
-        myHighlightStyle,
         colorTheme,
         tabExtension,
         cutExtension,

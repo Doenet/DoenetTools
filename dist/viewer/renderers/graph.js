@@ -10,24 +10,24 @@ export default React.memo(function Graph(props) {
   const xaxis = useRef(null);
   const yaxis = useRef(null);
   const settingBoundingBox = useRef(false);
-  const resizingBoard = useRef(false);
   const boardJustInitialized = useRef(false);
   useEffect(() => {
     let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
     previousBoundingbox.current = boundingbox;
     JXG.Options.layer.numlayers = 100;
+    JXG.Options.navbar.highlightFillColor = "var(--canvastext)";
+    JXG.Options.navbar.strokeColor = "var(--canvastext)";
     let board2 = window.JXG.JSXGraph.initBoard(name, {
       boundingbox,
       axis: false,
       showCopyright: false,
       showNavigation: SVs.showNavigation && !SVs.fixAxes,
-      keepAspectRatio: SVs.identicalAxisScales,
       zoom: {wheel: !SVs.fixAxes},
       pan: {enabled: !SVs.fixAxes}
     });
     board2.itemsRenderedLowQuality = {};
     board2.on("boundingbox", () => {
-      if (!(settingBoundingBox.current || resizingBoard.current)) {
+      if (!settingBoundingBox.current) {
         let newBoundingbox = board2.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = newBoundingbox;
         let xscale = Math.abs(xmax - xmin);
@@ -45,7 +45,7 @@ export default React.memo(function Graph(props) {
     setBoard(board2);
     previousDimensions.current = {
       width: parseFloat(sizeToCSS(SVs.width)),
-      height: parseFloat(sizeToCSS(SVs.height))
+      aspectRatio: SVs.aspectRatio
     };
     if (SVs.displayXAxis) {
       let xaxisOptions = {};
@@ -63,18 +63,23 @@ export default React.memo(function Graph(props) {
         xaxisOptions.label = {
           position,
           offset,
-          anchorx
+          anchorx,
+          strokeColor: "var(--canvastext)"
         };
       }
       xaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
-          offset: [-5, -15]
+          offset: [-5, -15],
+          layer: 2
         },
         minorTicks: 4,
         precision: 4,
+        strokeColor: "var(--canvastext)",
         drawLabels: SVs.displayXAxisTickLabels
       };
+      xaxisOptions.strokeColor = "var(--canvastext)";
+      xaxisOptions.highlight = false;
       if (SVs.grid === "dense") {
         xaxisOptions.ticks.majorHeight = -1;
         xaxisOptions.ticks.minorHeight = -1;
@@ -109,16 +114,21 @@ export default React.memo(function Graph(props) {
         yaxisOptions.label = {
           position,
           offset,
-          anchorx
+          anchorx,
+          strokeColor: "var(--canvastext)"
         };
       }
+      yaxisOptions.strokeColor = "var(--canvastext)";
+      yaxisOptions.highlight = false;
       yaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
-          offset: [12, -2]
+          offset: [12, -2],
+          layer: 2
         },
         minorTicks: 4,
         precision: 4,
+        strokeColor: "var(--canvastext)",
         drawLabels: SVs.displayYAxisTickLabels
       };
       if (SVs.grid === "dense") {
@@ -143,13 +153,16 @@ export default React.memo(function Graph(props) {
   }, []);
   const divStyle = {
     width: sizeToCSS(SVs.width),
-    height: sizeToCSS(SVs.height)
+    aspectRatio: String(SVs.aspectRatio),
+    maxWidth: "100%"
   };
   if (SVs.hidden) {
     divStyle.display = "none";
   }
-  divStyle.border = "2px solid black";
+  divStyle.border = "2px solid var(--canvastext)";
   divStyle.margin = "12px";
+  divStyle.backgroundColor = "var(--canvas)";
+  divStyle.color = "var(--canvastext)";
   if (!board) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
       name
@@ -233,12 +246,9 @@ export default React.memo(function Graph(props) {
     }
     let currentDimensions = {
       width: parseFloat(sizeToCSS(SVs.width)),
-      height: parseFloat(sizeToCSS(SVs.height))
+      aspectRatio: SVs.aspectRatio
     };
-    if ((currentDimensions.width !== previousDimensions.current.width || currentDimensions.height !== previousDimensions.current.height) && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.height)) {
-      resizingBoard.current = true;
-      board.resizeContainer(currentDimensions.width, currentDimensions.height);
-      resizingBoard.current = false;
+    if ((currentDimensions.width !== previousDimensions.current.width || currentDimensions.aspectRatio !== previousDimensions.current.aspectRatio) && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.aspectRatio)) {
       previousDimensions.current = currentDimensions;
     }
     let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];

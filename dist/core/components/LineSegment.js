@@ -42,7 +42,9 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -51,28 +53,48 @@ export default class LineSegment extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let lineDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          lineDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          lineDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          lineDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          lineDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColorWord;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
 
-        return { setValue: { styleDescription: lineDescription } };
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { styleDescription } };
       }
     }
 
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " line segment";
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         endpointsAttr: {
           dependencyType: "attributeComponent",
@@ -102,23 +124,25 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.endpoints = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "endpointX") {
+            return [];
+          } else {
+            // endpoint or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["endpointX", "endpoint"],
       hasEssential: true,
       set: convertValueToMathExpression,
       defaultValueByArrayKey: (arrayKey) => me.fromAst(arrayKey === "0,0" ? 1 : 0),
-      returnWrappingComponents(prefix) {
-        if (prefix === "endpointX") {
-          return [];
-        } else {
-          // endpoint or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "endpointX") {
           // pointX1_2 is the 2nd component of the first point
@@ -423,7 +447,9 @@ export default class LineSegment extends GraphicalComponent {
 
     stateVariableDefinitions.slope = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         numericalEndpoints: {
           dependencyType: "stateVariable",
@@ -443,6 +469,32 @@ export default class LineSegment extends GraphicalComponent {
         let slope = (ps[1][1] - ps[0][1]) / (ps[1][0] - ps[0][0]);
 
         return { setValue: { slope } }
+      }
+    }
+
+    stateVariableDefinitions.length = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
+      returnDependencies: () => ({
+        numericalEndpoints: {
+          dependencyType: "stateVariable",
+          variableName: "numericalEndpoints"
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        }
+      }),
+      definition({ dependencyValues }) {
+        let ps = dependencyValues.numericalEndpoints;
+        let length2 = 0;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          length2 += (ps[1][dim] - ps[0][dim]) ** 2;
+        }
+
+        return { setValue: { length: Math.sqrt(length2) } }
       }
     }
 

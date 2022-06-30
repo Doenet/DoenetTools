@@ -157,6 +157,8 @@ import OrbitalDiagram from './components/OrbitalDiagram.js';
 import DataFrame from './components/DataFrame.js';
 import SummaryStatistics from './components/SummaryStatistics.js';
 import Chart from './components/Chart.js';
+import Legend from './components/Legend.js';
+import Label from './components/Label.js';
 
 
 //Extended
@@ -176,6 +178,7 @@ import FunctionBaseOperator from './components/abstract/FunctionBaseOperator.js'
 import SectioningComponent from './components/abstract/SectioningComponent.js';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren.js';
 import TextOrInline from './components/abstract/TextOrInline.js';
+import TextOrLatexFromInline from './components/abstract/TextOrLatexFromInline.js';
 import SingleCharacterInline from './components/abstract/SingleCharacterInline.js';
 
 const componentTypeArray = [
@@ -312,6 +315,8 @@ const componentTypeArray = [
   DataFrame,
   SummaryStatistics,
   Chart,
+  Legend,
+  Label,
 
   BaseComponent,
   InlineComponent,
@@ -332,6 +337,7 @@ const componentTypeArray = [
   SectioningComponent,
   InlineRenderInlineChildren,
   TextOrInline,
+  TextOrLatexFromInline,
   SingleCharacterInline,
 ];
 

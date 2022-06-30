@@ -3301,4 +3301,74 @@ describe('LineSegment Tag Tests', function () {
     })
   });
 
+  it('lineSegment length', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="A">(3,4)</point>
+      <point name="B">(7,-2)</point>
+      <linesegment name="l" endpoints="$A $B" />
+    </graph>
+    <copy prop="length" target="l" assignNames="length" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 3, t1y = 4;
+    let t2x = 7, t2y = -2;
+    let len = Math.sqrt((t1y - t2y) ** 2 + (t1x - t2x) ** 2);
+
+    cy.get('#\\/length').should('contain.text', String(Math.round(len*10**9)/10**9))
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.length).eq(len);
+    })
+
+    cy.window().then(async (win) => {
+
+      t1x = 7;
+      t1y = 3;
+      len = Math.sqrt((t1y - t2y) ** 2 + (t1x - t2x) ** 2);
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: t1x, y: t1y }
+      })
+
+      cy.get('#\\/length').should('contain.text', String(len))
+
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(Math.abs(stateVariables['/l'].stateValues.length)).eq(len);
+    })
+
+
+    cy.window().then(async (win) => {
+
+      t2x = -9;
+      t2y = 5;
+      len = Math.sqrt((t1y - t2y) ** 2 + (t1x - t2x) ** 2);
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: t2x, y: t2y }
+      })
+
+      cy.get('#\\/length').should('contain.text', String(Math.round(len*10**8)/10**8))
+
+    })
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/l'].stateValues.length).eq(len);
+    })
+  });
+
 });

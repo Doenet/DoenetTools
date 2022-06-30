@@ -1,7 +1,8 @@
-import { g as global_1, f as functionUncurryThis, K as stringRepeat, k as fails, _ as _export, L as thisNumberValue, C as toIntegerOrInfinity, M as correctIsRegexpLogic, H as objectGetOwnPropertyDescriptor, v as toString_1, s as requireObjectCoercible, N as notARegexp, z as toLength } from './es.string.starts-with-a75d39b5.js';
+import { f as functionUncurryThis, h as fails, _ as _export, s as toIntegerOrInfinity, y as objectGetOwnPropertyDescriptor, t as toString_1, r as requireObjectCoercible, o as toLength } from './es.function.name-3b0da0e4.js';
+import { s as stringRepeat, d as thisNumberValue, e as correctIsRegexpLogic, n as notARegexp } from './es.string.starts-with-96c3abce.js';
 
-var RangeError = global_1.RangeError;
-var String$1 = global_1.String;
+var $RangeError = RangeError;
+var $String = String;
 var floor = Math.floor;
 var repeat = functionUncurryThis(stringRepeat);
 var stringSlice = functionUncurryThis(''.slice);
@@ -49,7 +50,7 @@ var dataToString = function (data) {
   var s = '';
   while (--index >= 0) {
     if (s !== '' || index === 0 || data[index] !== 0) {
-      var t = String$1(data[index]);
+      var t = $String(data[index]);
       s = s === '' ? t : s + repeat('0', 7 - t.length) + t;
     }
   } return s;
@@ -77,10 +78,10 @@ _export({ target: 'Number', proto: true, forced: FORCED }, {
     var e, z, j, k;
 
     // TODO: ES2018 increased the maximum number of fraction digits to 100, need to improve the implementation
-    if (fractDigits < 0 || fractDigits > 20) throw RangeError('Incorrect fraction digits');
+    if (fractDigits < 0 || fractDigits > 20) throw $RangeError('Incorrect fraction digits');
     // eslint-disable-next-line no-self-compare -- NaN check
     if (number != number) return 'NaN';
-    if (number <= -1e21 || number >= 1e21) return String$1(number);
+    if (number <= -1e21 || number >= 1e21) return $String(number);
     if (number < 0) {
       sign = '-';
       number = -number;

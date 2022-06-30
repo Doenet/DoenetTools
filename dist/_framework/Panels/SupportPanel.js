@@ -3,7 +3,7 @@ import styled from "../../_snowpack/pkg/styled-components.js";
 const SupportWapper = styled.div`
   overflow: auto;
   grid-area: supportPanel;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
   height: 100%;
   border-radius: 0 0 4px 4px;
 `;
@@ -12,7 +12,7 @@ const ControlsWrapper = styled.div`
   grid-area: supportControls;
   display: flex;
   gap: 4px;
-  background-color: hsl(0, 0%, 89%);
+  background-color: var(--mainGray);
   border-radius: 4px 4px 0 0;
 `;
 export default function SupportPanel({children, responsiveControls}) {

@@ -1,8 +1,10 @@
 import { r as react } from '../common/index-61623f21.js';
 import { r as reactDom } from '../common/index-eaf9e997.js';
-import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-ccf2a8c4.js';
+import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-6fcd7426.js';
 import '../common/_commonjsHelpers-f5d70792.js';
-import '../common/es.string.starts-with-a75d39b5.js';
+import '../common/es.string.starts-with-96c3abce.js';
+import '../common/es.function.name-3b0da0e4.js';
+import '../common/registry-09f449b9.js';
 import '../common/moment-640234e6.js';
 
 _register(TextCellType);

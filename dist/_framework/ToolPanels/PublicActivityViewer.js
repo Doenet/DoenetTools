@@ -12,6 +12,7 @@ export default function Public(props) {
   const [cid, setCid] = useState(null);
   const [errMsg, setErrMsg] = useState(null);
   useEffect(async () => {
+    const prevTitle = document.title;
     let resp = await axios.get(`/api/getCidForAssignment.php`, {params: {doenetId, latestAttemptOverrides: false, publicOnly: true}});
     if (!resp.data.success || !resp.data.cid) {
       setCid(null);
@@ -23,7 +24,11 @@ export default function Public(props) {
     } else {
       setCid(resp.data.cid);
       setErrMsg(null);
+      document.title = `${resp.data.label} - Doenet`;
     }
+    return () => {
+      document.title = prevTitle;
+    };
   }, doenetId);
   if (errMsg) {
     return /* @__PURE__ */ React.createElement("h1", null, errMsg);

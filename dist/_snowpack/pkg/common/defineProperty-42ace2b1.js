@@ -23,7 +23,7 @@ var _objectWithoutPropertiesLoose = /*@__PURE__*/getDefaultExportFromCjs(objectW
 
 var _extends_1 = createCommonjsModule(function (module) {
 function _extends() {
-  module.exports = _extends = Object.assign || function (target) {
+  module.exports = _extends = Object.assign ? Object.assign.bind() : function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
 

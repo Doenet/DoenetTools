@@ -108,7 +108,7 @@ export default React.memo(function BooleanInput(props) {
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkStyle.backgroundColor = "var(--mainRed)";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
             id: name + "_incorrect",
             style: checkWorkStyle

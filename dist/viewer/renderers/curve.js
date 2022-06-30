@@ -4,7 +4,6 @@ import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 export default React.memo(function Curve(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
-  console.log({name, SVs});
   Curve.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let curveJXG = useRef(null);
@@ -21,7 +20,7 @@ export default React.memo(function Curve(props) {
   let throughPointHoverVisible = useRef(null);
   let controlPointAttributes = useRef(null);
   let previousNumberOfPoints = useRef(null);
-  let segmentsJXG = useRef(null);
+  let segmentsJXG = useRef([]);
   let vectorControlsVisible = useRef(null);
   let hitObject = useRef(null);
   let vectorControlDirections = useRef(null);
@@ -44,16 +43,21 @@ export default React.memo(function Curve(props) {
     if (SVs.curveType === "bezier" && SVs.numericalThroughPoints.length < 2) {
       return null;
     }
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
     var curveAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
-      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       strokeWidth: SVs.selectedStyle.lineWidth,
-      dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed)
+      dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
+      highlight: false
     };
     if (SVs.showLabel && SVs.label !== "") {
       let anchorx, offset, position;
@@ -95,10 +99,17 @@ export default React.memo(function Curve(props) {
         position,
         anchorx
       };
+      if (SVs.labelIsLatex) {
+        curveAttributes.label.useMathJax = true;
+      }
       if (SVs.applyStyleToLabel) {
         curveAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
       } else {
         curveAttributes.label.strokeColor = "#000000";
+      }
+    } else {
+      if (SVs.labelIsLatex) {
+        curveAttributes.label = {useMathJax: true};
       }
     }
     let newCurveJXG;
@@ -153,8 +164,8 @@ export default React.memo(function Curve(props) {
         visible: false,
         withLabel: false,
         fixed: true,
-        strokeColor: "lightgray",
-        highlightStrokeColor: "lightgray",
+        strokeColor: "var(--mainGray)",
+        highlightStrokeColor: "var(--mainGray)",
         layer: 10 * SVs.layer + 7,
         strokeWidth: 1,
         highlightStrokeWidth: 1
@@ -165,16 +176,16 @@ export default React.memo(function Curve(props) {
         fixed: false,
         fillColor: "none",
         strokeColor: "none",
-        highlightFillColor: "lightgray",
-        highlightStrokeColor: "lightgray",
+        highlightFillColor: "var(--mainGray)",
+        highlightStrokeColor: "var(--mainGray)",
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + 7,
         size: 3
       };
       throughPointAlwaysVisible.current = {
-        fillcolor: "lightgray",
-        strokecolor: "lightgray"
+        fillcolor: "var(--mainGray)",
+        strokecolor: "var(--mainGray)"
       };
       throughPointHoverVisible.current = {
         fillcolor: "none",
@@ -184,10 +195,10 @@ export default React.memo(function Curve(props) {
         visible: false,
         withLabel: false,
         fixed: false,
-        fillColor: "gray",
-        strokeColor: "gray",
-        highlightFillColor: "gray",
-        highlightStrokeColor: "gray",
+        fillColor: "var(--mainGray)",
+        strokeColor: "var(--mainGray)",
+        highlightFillColor: "var(--mainGray)",
+        highlightStrokeColor: "var(--mainGray)",
         strokeWidth: 1,
         highlightStrokeWidth: 1,
         layer: 10 * SVs.layer + 8,
@@ -245,7 +256,7 @@ export default React.memo(function Curve(props) {
     vectorControlsVisible.current = [];
   }
   function deleteControls() {
-    if (segmentsJXG.current) {
+    if (segmentsJXG.current.length > 0) {
       segmentsJXG.current.forEach((x) => x.forEach((y) => {
         if (y) {
           y.off("down");
@@ -452,12 +463,27 @@ export default React.memo(function Curve(props) {
       }
       updateSinceDown.current = true;
       let visible = !SVs.hidden;
-      curveJXG.current.name = SVs.label;
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      curveJXG.current.name = label;
       curveJXG.current.visProp["visible"] = visible;
       curveJXG.current.visPropCalc["visible"] = visible;
+      let curveLayer = 10 * SVs.layer + 5;
+      let layerChanged = curveJXG.current.visProp.layer !== curveLayer;
+      if (layerChanged) {
+        curveJXG.current.setAttribute({layer: curveLayer});
+        segmentAttributes.current.layer = curveLayer + 2;
+        throughPointAttributes.current.layer = curveLayer + 2;
+        controlPointAttributes.current.layer = curveLayer + 3;
+      }
       if (curveJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         curveJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         curveJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (curveJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        curveJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
       }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (curveJXG.current.visProp.dash !== newDash) {
@@ -518,7 +544,7 @@ export default React.memo(function Curve(props) {
         }));
       }
       if (!SVs.draggable || SVs.fixed) {
-        if (segmentsJXG.current) {
+        if (segmentsJXG.current.length > 0) {
           deleteControls();
         }
         board.updateRenderer();
@@ -526,7 +552,7 @@ export default React.memo(function Curve(props) {
           name
         }));
       }
-      if (!segmentsJXG.current) {
+      if (segmentsJXG.current.length === 0) {
         createControls();
         previousNumberOfPoints.current = SVs.numericalThroughPoints.length;
         previousVectorControlDirections.current = [...SVs.vectorControlDirections];
@@ -600,6 +626,13 @@ export default React.memo(function Curve(props) {
       for (let i = 0; i < nOld; i++) {
         if (previousVectorControlDirections.current[i] !== SVs.vectorControlDirections[i] && vectorControlsVisible.current[i]) {
           makeVectorControlVisible(i);
+        }
+        if (layerChanged) {
+          throughPointsJXG.current[i].setAttribute({layer: curveLayer + 2});
+          segmentsJXG.current[i][0].setAttribute({layer: curveLayer + 2});
+          controlPointsJXG.current[i][0].setAttribute({layer: curveLayer + 3});
+          segmentsJXG.current[i][1].setAttribute({layer: curveLayer + 2});
+          controlPointsJXG.current[i][1].setAttribute({layer: curveLayer + 3});
         }
         throughPointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalThroughPoints[i]]);
         throughPointsJXG.current[i].needsUpdate = true;

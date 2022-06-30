@@ -373,6 +373,7 @@ export default function ToolRoot() {
         id="keyboard"
         isInitOpen={toolRootMenusAndPanels.footer.open}
         height={toolRootMenusAndPanels.footer.height}
+        aria-label="keyboard"
       >
         <Suspense
           key={footerKey}

@@ -24,12 +24,28 @@ export default class SectioningComponent extends BlockComponent {
       defaultValue: 1,
       public: true,
     };
+
     attributes.sectionWideCheckWork = {
       createComponentOfType: "boolean",
       createStateVariable: "sectionWideCheckWork",
       defaultValue: false,
       public: true,
     };
+    attributes.submitLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabel",
+      defaultValue: "Check Work",
+      public: true,
+      forRenderer: true,
+    }
+    attributes.submitLabelNoCorrectness = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabelNoCorrectness",
+      defaultValue: "Submit Response",
+      public: true,
+      forRenderer: true,
+    }
+
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
     attributes.boxed = {
@@ -125,7 +141,9 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       shadowVariable: true,
       returnDependencies: () => ({
@@ -280,22 +298,30 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.creditAchieved = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForCreditAchieved",
+          }
+        },
+      },
       forRenderer: true,
       defaultValue: 0,
       hasEssential: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigitsForCreditAchieved",
-      },
       additionalStateVariablesDefined: [{
         variableName: "percentCreditAchieved",
         public: true,
-        componentType: "number",
+        shadowingInstructions: {
+          createComponentOfType: "number",
+          addAttributeComponentsShadowingStateVariables: {
+            displayDigits: {
+              stateVariableToShadow: "displayDigitsForCreditAchieved",
+            }
+          },
+        },
         defaultValue: 0,
         hasEssential: true,
-        stateVariablesPrescribingAdditionalAttributes: {
-          displayDigits: "displayDigitsForCreditAchieved",
-        }
       }],
       stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
       returnDependencies({ stateValues }) {
@@ -480,7 +506,6 @@ export default class SectioningComponent extends BlockComponent {
     }
 
     stateVariableDefinitions.collapsible = {
-      componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({}),
       definition() {
@@ -490,7 +515,9 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.open = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: true,
       hasEssential: true,

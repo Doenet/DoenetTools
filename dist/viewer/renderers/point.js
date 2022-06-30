@@ -32,9 +32,13 @@ export default React.memo(function Point(props) {
     };
   }, []);
   function createPointJXG() {
-    let fillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+    let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
     let jsxPointAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,
@@ -84,10 +88,17 @@ export default React.memo(function Point(props) {
         anchorx,
         anchory
       };
+      if (SVs.labelIsLatex) {
+        jsxPointAttributes.label.useMathJax = true;
+      }
       if (SVs.applyStyleToLabel) {
         jsxPointAttributes.label.strokeColor = SVs.selectedStyle.markerColor;
       } else {
         jsxPointAttributes.label.strokeColor = "#000000";
+      }
+    } else {
+      if (SVs.labelIsLatex) {
+        jsxPointAttributes.label = {useMathJax: true};
       }
     }
     if (SVs.draggable && !SVs.fixed) {
@@ -165,7 +176,7 @@ export default React.memo(function Point(props) {
     if (pointJXG.current === null) {
       createPointJXG();
     } else {
-      let newFillColor = SVs.open ? "white" : SVs.selectedStyle.markerColor;
+      let newFillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
       if (pointJXG.current.visProp.fillcolor !== newFillColor) {
         pointJXG.current.visProp.fillcolor = newFillColor;
       }
@@ -191,6 +202,11 @@ export default React.memo(function Point(props) {
         pointJXG.current.visPropCalc["visible"] = false;
         shadowPointJXG.current.visProp["visible"] = false;
         shadowPointJXG.current.visPropCalc["visible"] = false;
+      }
+      let layer = 10 * SVs.layer + 9;
+      let layerChanged = pointJXG.current.visProp.layer !== layer;
+      if (layerChanged) {
+        pointJXG.current.setAttribute({layer});
       }
       if (pointJXG.current.visProp.strokecolor !== SVs.selectedStyle.markerColor) {
         pointJXG.current.visProp.strokecolor = SVs.selectedStyle.markerColor;
@@ -223,7 +239,11 @@ export default React.memo(function Point(props) {
       if (sourceOfUpdate.sourceInformation && name in sourceOfUpdate.sourceInformation) {
         board.updateInfobox(pointJXG.current);
       }
-      pointJXG.current.name = SVs.label;
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      pointJXG.current.name = label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
         pointJXG.current.setAttribute({withlabel});
@@ -293,7 +313,7 @@ export default React.memo(function Point(props) {
   if (SVs.hidden) {
     return null;
   }
-  let mathJaxify = "\\(" + me.fromAst(SVs.coordsForDisplay).toLatex() + "\\)";
+  let mathJaxify = "\\(" + SVs.coordsLatex + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {

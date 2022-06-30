@@ -2184,7 +2184,7 @@ describe('Answer Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
-      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F','\uFF3F']);
+      expect(stateVariables['/_answer1'].stateValues.currentResponses).eqls(['\uFF3F', '\uFF3F']);
       expect(stateVariables['/_answer1'].stateValues.submittedResponses).eqls([]);
       expect(stateVariables[mathinput1Name].stateValues.value).eq('\uFF3F');
       expect(stateVariables[mathinput2Name].stateValues.value).eq('\uFF3F');
@@ -14406,6 +14406,207 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputIncorrectAnchor).should('not.exist');
 
     })
+  });
+
+  it('submit label', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer name="ans1" forceFullCheckworkButton>x</answer></p>
+  <p><answer name="ans2" forceFullCheckworkButton submitLabel="Hit it!">x</answer></p>
+  <p><answer name="ans3" forceFullCheckworkButton submitLabelNoCorrectness="Guess">x</answer></p>
+  <p><answer name="ans4" forceFullCheckworkButton submitLabel="Hit it!" submitLabelNoCorrectness="Guess">x</answer></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let mathinput1Name = stateVariables['/ans1'].stateValues.inputChildren[0].componentName
+      let mathinput1Anchor = cesc('#' + mathinput1Name) + " textarea";
+
+      let mathinput2Name = stateVariables['/ans2'].stateValues.inputChildren[0].componentName
+      let mathinput2Anchor = cesc('#' + mathinput2Name) + " textarea";
+
+      let mathinput3Name = stateVariables['/ans3'].stateValues.inputChildren[0].componentName
+      let mathinput3Anchor = cesc('#' + mathinput3Name) + " textarea";
+
+      let mathinput4Name = stateVariables['/ans4'].stateValues.inputChildren[0].componentName
+      let mathinput4Anchor = cesc('#' + mathinput4Name) + " textarea";
+
+      cy.get('#\\/ans1_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Check Work')
+      })
+      cy.get('#\\/ans2_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Hit it!')
+      })
+      cy.get('#\\/ans3_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Check Work')
+      })
+      cy.get('#\\/ans4_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Hit it!')
+      })
+
+      cy.get(mathinput1Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput2Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput3Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput4Anchor).type("x{enter}", { force: true })
+
+      cy.get("#\\/ans1_submit").click();
+      cy.get("#\\/ans2_submit").click();
+      cy.get("#\\/ans3_submit").click();
+      cy.get("#\\/ans4_submit").click();
+
+      cy.get("#\\/ans1_correct").should('contain.text', 'Correct')
+      cy.get("#\\/ans2_correct").should('contain.text', 'Correct')
+      cy.get("#\\/ans3_correct").should('contain.text', 'Correct')
+      cy.get("#\\/ans4_correct").should('contain.text', 'Correct')
+
+      cy.get('#testRunner_toggleControls').click();
+      cy.get('#testRunner_showCorrectness').click()
+      cy.wait(100)
+      cy.get('#testRunner_toggleControls').click();
+
+      cy.get("#\\/ans1_submit").should('contain.text', 'Submit Response')
+      cy.get("#\\/ans2_submit").should('contain.text', 'Submit Response')
+      cy.get("#\\/ans3_submit").should('contain.text', 'Guess')
+      cy.get("#\\/ans4_submit").should('contain.text', 'Guess')
+
+      cy.get('#\\/ans1_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Submit Response')
+      })
+      cy.get('#\\/ans2_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Submit Response')
+      })
+      cy.get('#\\/ans3_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Guess')
+      })
+      cy.get('#\\/ans4_submit').invoke('text').then((text) => {
+        expect(text.trim()).equal('Guess')
+      })
+
+      cy.get(mathinput1Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput2Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput3Anchor).type("x{enter}", { force: true })
+      cy.get(mathinput4Anchor).type("x{enter}", { force: true })
+
+      cy.get("#\\/ans1_submit").click();
+      cy.get("#\\/ans2_submit").click();
+      cy.get("#\\/ans3_submit").click();
+      cy.get("#\\/ans4_submit").click();
+
+      cy.get("#\\/ans1_saved").should('contain.text', 'Response Saved')
+      cy.get("#\\/ans2_saved").should('contain.text', 'Response Saved')
+      cy.get("#\\/ans3_saved").should('contain.text', 'Response Saved')
+      cy.get("#\\/ans4_saved").should('contain.text', 'Response Saved')
+
+    })
+  });
+
+  it('submit label, choiceinput', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><answer name="ans1">
+    <choiceinput>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  <p><answer name="ans2" submitLabel="Hit it!">
+    <choiceinput>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  <p><answer name="ans3" submitLabelNoCorrectness="Guess">
+    <choiceinput>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  <p><answer name="ans4" submitLabel="Hit it!" submitLabelNoCorrectness="Guess">
+    <choiceinput>
+      <choice credit="1">yes</choice>
+      <choice>no</choice>
+    </choiceinput>
+  </answer></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+      expect(text.trim()).equal('Check Work')
+    })
+    cy.get('#\\/_choiceinput2_submit').invoke('text').then((text) => {
+      expect(text.trim()).equal('Hit it!')
+    })
+    cy.get('#\\/_choiceinput3_submit').invoke('text').then((text) => {
+      expect(text.trim()).equal('Check Work')
+    })
+    cy.get('#\\/_choiceinput4_submit').invoke('text').then((text) => {
+      expect(text.trim()).equal('Hit it!')
+    })
+
+    cy.get('#\\/_choiceinput1').contains(`yes`).click({ force: true });
+    cy.get('#\\/_choiceinput2').contains(`yes`).click({ force: true });
+    cy.get('#\\/_choiceinput3').contains(`yes`).click({ force: true });
+    cy.get('#\\/_choiceinput4').contains(`yes`).click({ force: true });
+
+    cy.get("#\\/_choiceinput1_submit").click();
+    cy.get("#\\/_choiceinput2_submit").click();
+    cy.get("#\\/_choiceinput3_submit").click();
+    cy.get("#\\/_choiceinput4_submit").click();
+
+    cy.get("#\\/_choiceinput1_correct").should('contain.text', 'Correct')
+    cy.get("#\\/_choiceinput2_correct").should('contain.text', 'Correct')
+    cy.get("#\\/_choiceinput3_correct").should('contain.text', 'Correct')
+    cy.get("#\\/_choiceinput4_correct").should('contain.text', 'Correct')
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_showCorrectness').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.get("#\\/_choiceinput1_submit").should('contain.text', 'Submit Response')
+    cy.get("#\\/_choiceinput2_submit").should('contain.text', 'Submit Response')
+    cy.get("#\\/_choiceinput3_submit").should('contain.text', 'Guess')
+    cy.get("#\\/_choiceinput4_submit").should('contain.text', 'Guess')
+
+    cy.get('#\\/_choiceinput1_submit').invoke('text').then((text) => {
+      expect(text.trim()).equal('Submit Response')
+    })
+    cy.get('#\\/_choiceinput2_submit').invoke('text').then((text) => {
+      expect(text.trim()).equal('Submit Response')
+    })
+    cy.get('#\\/_choiceinput3_submit').invoke('text').then((text) => {
+      expect(text.trim()).equal('Guess')
+    })
+    cy.get('#\\/_choiceinput4_submit').invoke('text').then((text) => {
+      expect(text.trim()).equal('Guess')
+    })
+
+    cy.get('#\\/_choiceinput1').contains(`yes`).click({ force: true });
+    cy.get('#\\/_choiceinput2').contains(`yes`).click({ force: true });
+    cy.get('#\\/_choiceinput3').contains(`yes`).click({ force: true });
+    cy.get('#\\/_choiceinput4').contains(`yes`).click({ force: true });
+
+    cy.get("#\\/_choiceinput1_submit").click();
+    cy.get("#\\/_choiceinput2_submit").click();
+    cy.get("#\\/_choiceinput3_submit").click();
+    cy.get("#\\/_choiceinput4_submit").click();
+
+    cy.get("#\\/_choiceinput1_saved").should('contain.text', 'Response Saved')
+    cy.get("#\\/_choiceinput2_saved").should('contain.text', 'Response Saved')
+    cy.get("#\\/_choiceinput3_saved").should('contain.text', 'Response Saved')
+    cy.get("#\\/_choiceinput4_saved").should('contain.text', 'Response Saved')
+
   });
 
 })

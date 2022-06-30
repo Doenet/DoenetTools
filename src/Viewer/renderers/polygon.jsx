@@ -43,12 +43,14 @@ export default React.memo(function Polygon(props) {
       return null;
     }
 
+    let fixed = !SVs.draggable || SVs.fixed;
+
     jsxPointAttributes.current = {
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
-      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"), 
-      visible: SVs.draggable && !SVs.fixed && !SVs.hidden,
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
+      visible: !fixed && !SVs.hidden,
       withLabel: false,
       layer: 10 * SVs.layer + 9,
     };
@@ -56,39 +58,55 @@ export default React.memo(function Polygon(props) {
     let jsxBorderAttributes = {
       highlight: false,
       visible: !SVs.hidden,
-      layer: 10 * SVs.layer + 6,
-      fixed: !SVs.draggable || SVs.fixed,
+      layer: 10 * SVs.layer + 8,
+      fixed: true,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
     };
 
 
+    let label = SVs.label;
+    if (SVs.labelIsLatex) {
+      label = "\\(" + label + "\\)";
+    }
+
     let jsxPolygonAttributes = {
-      name: SVs.label,
+      name: label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed,
       layer: 10 * SVs.layer + 7,
 
       //specific to polygon
-      fillColor: 'none',
-      highlight: false,
+      fillColor: SVs.selectedStyle.fillColor,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
+      highlightFillColor: SVs.selectedStyle.fillColor,
+      highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
+      highlight: !fixed,
       vertices: jsxPointAttributes.current,
       borders: jsxBorderAttributes,
     };
 
-    jsxPolygonAttributes.label = {};
+
+    if (SVs.labelIsLatex) {
+      jsxPolygonAttributes.label = { useMathJax: true };
+    } else {
+      jsxPolygonAttributes.label = {};
+    }
+
     if (SVs.applyStyleToLabel) {
       jsxPolygonAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
     } else {
       jsxPolygonAttributes.label.strokeColor = "#000000";
     }
 
-    if (SVs.selectedStyle.fillColor !== "none") {
-      jsxPolygonAttributes.fillColor = SVs.selectedStyle.fillColor;
+    if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
+      jsxPolygonAttributes.hasInnerPoints = true;
     }
 
 
@@ -96,7 +114,7 @@ export default React.memo(function Polygon(props) {
 
     let pts = [];
 
-    for(let p of SVs.numericalVertices) {
+    for (let p of SVs.numericalVertices) {
       pts.push(
         board.create('point', [...p], jsxPointAttributes.current)
       )
@@ -271,8 +289,8 @@ export default React.memo(function Polygon(props) {
         initializePoints(polygonJXG.current);
       }
 
-
-      let verticesVisible = SVs.draggable && !SVs.fixed && !SVs.hidden;
+      let fixed = !SVs.draggable || SVs.fixed;
+      let verticesVisible = !fixed && !SVs.hidden;
 
       for (let i = 0; i < SVs.nVertices; i++) {
         polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalVertices[i]]);
@@ -300,14 +318,26 @@ export default React.memo(function Polygon(props) {
         visibleNow = false;
       }
 
-      polygonJXG.current.visProp.fixed = !SVs.draggable || SVs.fixed;
+      polygonJXG.current.visProp.fixed = fixed;
+      polygonJXG.current.visProp.highlight = !fixed;
 
       polygonJXG.current.visProp["visible"] = visibleNow;
       polygonJXG.current.visPropCalc["visible"] = visibleNow;
       // polygonJXG.current.setAttribute({visible: visibleNow})
 
+      let polygonLayer = 10 * SVs.layer + 7;
+      let layerChanged = polygonJXG.current.visProp.layer !== polygonLayer;
 
-      polygonJXG.current.name = SVs.label;
+      if (layerChanged) {
+        polygonJXG.current.setAttribute({ layer: polygonLayer });
+      }
+
+
+      let label = SVs.label;
+      if (SVs.labelIsLatex) {
+        label = "\\(" + label + "\\)";
+      }
+      polygonJXG.current.name = label;
 
       if (polygonJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
@@ -319,6 +349,17 @@ export default React.memo(function Polygon(props) {
         polygonJXG.current.label.update();
       }
 
+      if (polygonJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
+        polygonJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
+        polygonJXG.current.visProp.highlightfillcolor = SVs.selectedStyle.fillColor;
+        polygonJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
+      }
+
+      if (polygonJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        polygonJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+        polygonJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
+      }
+
       polygonJXG.current.needsUpdate = true;
 
       polygonJXG.current.update().updateVisibility();
@@ -326,22 +367,39 @@ export default React.memo(function Polygon(props) {
         let border = polygonJXG.current.borders[i];
         border.visProp.visible = visibleNow;
         border.visPropCalc.visible = visibleNow;
-        border.visProp.fixed = !SVs.draggable || SVs.fixed;
+
+        if (layerChanged) {
+          border.setAttribute({ layer: polygonLayer + 1 });
+        }
 
         if (border.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
           border.visProp.strokecolor = SVs.selectedStyle.lineColor;
           border.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
         }
-        let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+        if (border.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+          border.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+          border.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+        }
+        let newDash = styleToDash(SVs.selectedStyle.lineStyle);
         if (border.visProp.dash !== newDash) {
           border.visProp.dash = newDash;
         }
         if (border.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
           border.visProp.strokewidth = SVs.selectedStyle.lineWidth
+          border.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
         }
 
         border.needsUpdate = true;
         border.update();
+      }
+
+      if (layerChanged) {
+        jsxPointAttributes.current.layer = polygonLayer + 2;
+        for (let vertex of polygonJXG.current.vertices) {
+          vertex.setAttribute({ layer: polygonLayer + 2 });
+          vertex.needsUpdate = true;
+          vertex.update();
+        }
       }
 
       previousNVertices.current = SVs.nVertices;

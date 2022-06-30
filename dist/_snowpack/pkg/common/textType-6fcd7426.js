@@ -1,4 +1,6 @@
-import { f as functionUncurryThis, a as arrayMethodIsStrict, _ as _export, b as arrayIncludes, g as global_1, e as engineUserAgent, i as isCallable, c as arraySlice, d as functionApply, h as engineIsNode, j as functionBindContext, k as fails, l as documentCreateElement, m as html$2, n as hasOwnProperty_1, o as internalMetadata, p as isObject$1, q as freezing, r as fixRegexpWellKnownSymbolLogic, s as requireObjectCoercible, t as getMethod, u as functionCall, v as toString_1, w as anObject, x as regexpExecAbstract, y as advanceStringIndex, z as toLength, A as toIndexedObject, B as lengthOfArrayLike, C as toIntegerOrInfinity, D as objectSetPrototypeOf, E as ownKeys$8, F as createProperty, G as descriptors, H as objectGetOwnPropertyDescriptor } from './es.string.starts-with-a75d39b5.js';
+import { a as arrayMethodIsStrict, v as validateArgumentsLength, t as task, f as fixRegexpWellKnownSymbolLogic, r as regexpExecAbstract, b as advanceStringIndex } from './es.string.starts-with-96c3abce.js';
+import { f as functionUncurryThis, _ as _export, a as arrayIncludes, e as engineUserAgent, g as global_1, i as isCallable, b as arraySlice, c as functionApply, d as internalMetadata, h as fails, j as isObject$1, k as freezing, r as requireObjectCoercible, l as getMethod, m as functionCall, t as toString_1, n as anObject, o as toLength, p as toIndexedObject, q as lengthOfArrayLike, s as toIntegerOrInfinity, u as objectSetPrototypeOf, v as ownKeys$8, w as createProperty, x as descriptors, y as objectGetOwnPropertyDescriptor } from './es.function.name-3b0da0e4.js';
+import { s as staticRegister, _ as _register$3, a as _getItem$2 } from './registry-09f449b9.js';
 import { h as hooks } from './moment-640234e6.js';
 
 /* eslint-disable es-x/no-array-prototype-indexof -- required for testing */
@@ -23,13 +25,6 @@ _export({ target: 'Array', proto: true, forced: NEGATIVE_ZERO || !STRICT_METHOD 
       : $IndexOf(this, searchElement, fromIndex);
   }
 });
-
-var TypeError$1 = global_1.TypeError;
-
-var validateArgumentsLength = function (passed, required) {
-  if (passed < required) throw TypeError$1('Not enough arguments');
-  return passed;
-};
 
 var MSIE = /MSIE .\./.test(engineUserAgent); // <- dirty ie9- check
 var Function$1 = global_1.Function;
@@ -71,112 +66,6 @@ var setTimeout$1 = schedulersFix.setTimeout;
 _export({ global: true, bind: true, forced: global_1.setTimeout !== setTimeout$1 }, {
   setTimeout: setTimeout$1
 });
-
-var engineIsIos = /(?:ipad|iphone|ipod).*applewebkit/i.test(engineUserAgent);
-
-var set = global_1.setImmediate;
-var clear = global_1.clearImmediate;
-var process = global_1.process;
-var Dispatch = global_1.Dispatch;
-var Function$2 = global_1.Function;
-var MessageChannel = global_1.MessageChannel;
-var String$1 = global_1.String;
-var counter = 0;
-var queue = {};
-var ONREADYSTATECHANGE = 'onreadystatechange';
-var location$1, defer, channel, port;
-
-try {
-  // Deno throws a ReferenceError on `location` access without `--location` flag
-  location$1 = global_1.location;
-} catch (error) { /* empty */ }
-
-var run = function (id) {
-  if (hasOwnProperty_1(queue, id)) {
-    var fn = queue[id];
-    delete queue[id];
-    fn();
-  }
-};
-
-var runner = function (id) {
-  return function () {
-    run(id);
-  };
-};
-
-var listener = function (event) {
-  run(event.data);
-};
-
-var post = function (id) {
-  // old engines have not location.origin
-  global_1.postMessage(String$1(id), location$1.protocol + '//' + location$1.host);
-};
-
-// Node.js 0.9+ & IE10+ has setImmediate, otherwise:
-if (!set || !clear) {
-  set = function setImmediate(handler) {
-    validateArgumentsLength(arguments.length, 1);
-    var fn = isCallable(handler) ? handler : Function$2(handler);
-    var args = arraySlice(arguments, 1);
-    queue[++counter] = function () {
-      functionApply(fn, undefined, args);
-    };
-    defer(counter);
-    return counter;
-  };
-  clear = function clearImmediate(id) {
-    delete queue[id];
-  };
-  // Node.js 0.8-
-  if (engineIsNode) {
-    defer = function (id) {
-      process.nextTick(runner(id));
-    };
-  // Sphere (JS game engine) Dispatch API
-  } else if (Dispatch && Dispatch.now) {
-    defer = function (id) {
-      Dispatch.now(runner(id));
-    };
-  // Browsers with MessageChannel, includes WebWorkers
-  // except iOS - https://github.com/zloirock/core-js/issues/624
-  } else if (MessageChannel && !engineIsIos) {
-    channel = new MessageChannel();
-    port = channel.port2;
-    channel.port1.onmessage = listener;
-    defer = functionBindContext(port.postMessage, port);
-  // Browsers with postMessage, skip WebWorkers
-  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
-  } else if (
-    global_1.addEventListener &&
-    isCallable(global_1.postMessage) &&
-    !global_1.importScripts &&
-    location$1 && location$1.protocol !== 'file:' &&
-    !fails(post)
-  ) {
-    defer = post;
-    global_1.addEventListener('message', listener, false);
-  // IE8-
-  } else if (ONREADYSTATECHANGE in documentCreateElement('script')) {
-    defer = function (id) {
-      html$2.appendChild(documentCreateElement('script'))[ONREADYSTATECHANGE] = function () {
-        html$2.removeChild(this);
-        run(id);
-      };
-    };
-  // Rest old browsers
-  } else {
-    defer = function (id) {
-      setTimeout(runner(id), 0);
-    };
-  }
-}
-
-var task = {
-  set: set,
-  clear: clear
-};
 
 var clearImmediate$1 = task.clear;
 
@@ -3846,72 +3735,6 @@ function getGlobalSingleton() {
   return globalSingleton;
 }
 
-function _toConsumableArray$2(arr) {
-  return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _unsupportedIterableToArray$2(arr) || _nonIterableSpread$2();
-}
-function _nonIterableSpread$2() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$2(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$2(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$2(o, minLen);
-}
-function _iterableToArray$2(iter) {
-  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
-    return Array.from(iter);
-}
-function _arrayWithoutHoles$2(arr) {
-  if (Array.isArray(arr))
-    return _arrayLikeToArray$2(arr);
-}
-function _arrayLikeToArray$2(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
-var collection = new Map();
-function staticRegister() {
-  var namespace = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : "common";
-  if (!collection.has(namespace)) {
-    collection.set(namespace, new Map());
-  }
-  var subCollection = collection.get(namespace);
-  function register(name, item) {
-    subCollection.set(name, item);
-  }
-  function getItem(name) {
-    return subCollection.get(name);
-  }
-  function hasItem(name) {
-    return subCollection.has(name);
-  }
-  function getNames() {
-    return _toConsumableArray$2(subCollection.keys());
-  }
-  function getValues() {
-    return _toConsumableArray$2(subCollection.values());
-  }
-  return {
-    register,
-    getItem,
-    hasItem,
-    getNames,
-    getValues
-  };
-}
-
 var registeredEditorClasses = new WeakMap();
 var _staticRegister = staticRegister("editors"), register = _staticRegister.register, getItem = _staticRegister.getItem, hasItem = _staticRegister.hasItem;
 function RegisteredEditor(editorClass) {
@@ -4122,25 +3945,25 @@ function extendEvent(event) {
 }
 
 function _slicedToArray(arr, i) {
-  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray$3(arr, i) || _nonIterableRest();
+  return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray$2(arr, i) || _nonIterableRest();
 }
 function _nonIterableRest() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$3(o, minLen) {
+function _unsupportedIterableToArray$2(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$3(o, minLen);
+    return _arrayLikeToArray$2(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$3(o, minLen);
+    return _arrayLikeToArray$2(o, minLen);
 }
-function _arrayLikeToArray$3(arr, len) {
+function _arrayLikeToArray$2(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -4549,34 +4372,34 @@ _export({ target: 'Array', proto: true, forced: arrayLastIndexOf !== [].lastInde
   lastIndexOf: arrayLastIndexOf
 });
 
-function _toConsumableArray$3(arr) {
-  return _arrayWithoutHoles$3(arr) || _iterableToArray$3(arr) || _unsupportedIterableToArray$4(arr) || _nonIterableSpread$3();
+function _toConsumableArray$2(arr) {
+  return _arrayWithoutHoles$2(arr) || _iterableToArray$2(arr) || _unsupportedIterableToArray$3(arr) || _nonIterableSpread$2();
 }
-function _nonIterableSpread$3() {
+function _nonIterableSpread$2() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$4(o, minLen) {
+function _unsupportedIterableToArray$3(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$4(o, minLen);
+    return _arrayLikeToArray$3(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$4(o, minLen);
+    return _arrayLikeToArray$3(o, minLen);
 }
-function _iterableToArray$3(iter) {
+function _iterableToArray$2(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$3(arr) {
+function _arrayWithoutHoles$2(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$4(arr);
+    return _arrayLikeToArray$3(arr);
 }
-function _arrayLikeToArray$4(arr, len) {
+function _arrayLikeToArray$3(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -4746,10 +4569,10 @@ function htmlToGridSettings(element) {
   if (fixedRowsBottom.length) {
     settingsObj.fixedRowsBottom = fixedRowsBottom.length;
   }
-  var dataRows = [].concat(fixedRowsTop, _toConsumableArray$3(Array.from(checkElement.tBodies).reduce(function(sections, section) {
-    sections.push.apply(sections, _toConsumableArray$3(Array.from(section.rows)));
+  var dataRows = [].concat(fixedRowsTop, _toConsumableArray$2(Array.from(checkElement.tBodies).reduce(function(sections, section) {
+    sections.push.apply(sections, _toConsumableArray$2(Array.from(section.rows)));
     return sections;
-  }, [])), _toConsumableArray$3(fixedRowsBottom));
+  }, [])), _toConsumableArray$2(fixedRowsBottom));
   countRows = dataRows.length;
   var dataArr = new Array(countRows);
   for (var r = 0; r < countRows; r++) {
@@ -4813,34 +4636,34 @@ function htmlToGridSettings(element) {
   return settingsObj;
 }
 
-function _toConsumableArray$4(arr) {
-  return _arrayWithoutHoles$4(arr) || _iterableToArray$4(arr) || _unsupportedIterableToArray$5(arr) || _nonIterableSpread$4();
+function _toConsumableArray$3(arr) {
+  return _arrayWithoutHoles$3(arr) || _iterableToArray$3(arr) || _unsupportedIterableToArray$4(arr) || _nonIterableSpread$3();
 }
-function _nonIterableSpread$4() {
+function _nonIterableSpread$3() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$5(o, minLen) {
+function _unsupportedIterableToArray$4(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$5(o, minLen);
+    return _arrayLikeToArray$4(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$5(o, minLen);
+    return _arrayLikeToArray$4(o, minLen);
 }
-function _iterableToArray$4(iter) {
+function _iterableToArray$3(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$4(arr) {
+function _arrayWithoutHoles$3(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$5(arr);
+    return _arrayLikeToArray$4(arr);
 }
-function _arrayLikeToArray$5(arr, len) {
+function _arrayLikeToArray$4(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -4867,7 +4690,7 @@ function isNumeric(value) {
     } else if (value.length === 1) {
       return /\d/.test(value);
     }
-    var delimiter = Array.from(new Set(["."].concat(_toConsumableArray$4(additionalDelimiters)))).map(function(d) {
+    var delimiter = Array.from(new Set(["."].concat(_toConsumableArray$3(additionalDelimiters)))).map(function(d) {
       return "\\".concat(d);
     }).join("|");
     return new RegExp("^[+-]?\\s*(((".concat(delimiter, ")?\\d+((").concat(delimiter, ")\\d+)?(e[+-]?\\d+)?)|(0x[a-f\\d]+))$"), "i").test(value.trim());
@@ -4911,40 +4734,40 @@ function valueAccordingPercent(value, percent) {
   return parseInt(value * percent / 100, 10);
 }
 
-function _toConsumableArray$5(arr) {
-  return _arrayWithoutHoles$5(arr) || _iterableToArray$5(arr) || _unsupportedIterableToArray$6(arr) || _nonIterableSpread$5();
+function _toConsumableArray$4(arr) {
+  return _arrayWithoutHoles$4(arr) || _iterableToArray$4(arr) || _unsupportedIterableToArray$5(arr) || _nonIterableSpread$4();
 }
-function _nonIterableSpread$5() {
+function _nonIterableSpread$4() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArray$5(iter) {
+function _iterableToArray$4(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$5(arr) {
+function _arrayWithoutHoles$4(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$6(arr);
+    return _arrayLikeToArray$5(arr);
 }
 function _slicedToArray$1(arr, i) {
-  return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _unsupportedIterableToArray$6(arr, i) || _nonIterableRest$1();
+  return _arrayWithHoles$1(arr) || _iterableToArrayLimit$1(arr, i) || _unsupportedIterableToArray$5(arr, i) || _nonIterableRest$1();
 }
 function _nonIterableRest$1() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$6(o, minLen) {
+function _unsupportedIterableToArray$5(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$6(o, minLen);
+    return _arrayLikeToArray$5(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$6(o, minLen);
+    return _arrayLikeToArray$5(o, minLen);
 }
-function _arrayLikeToArray$6(arr, len) {
+function _arrayLikeToArray$5(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -5010,7 +4833,7 @@ function createPriorityMap() {
   function getItems() {
     var order = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : ASC;
     var _ref2 = ORDER_MAP.get(order) || ORDER_MAP.get(ASC), _ref3 = _slicedToArray$1(_ref2, 2), left = _ref3[0], right = _ref3[1];
-    return _toConsumableArray$5(priorityMap).sort(function(a, b) {
+    return _toConsumableArray$4(priorityMap).sort(function(a, b) {
       return a[0] < b[0] ? left : right;
     }).map(function(item) {
       return item[1];
@@ -5022,40 +4845,40 @@ function createPriorityMap() {
   };
 }
 
-function _toConsumableArray$6(arr) {
-  return _arrayWithoutHoles$6(arr) || _iterableToArray$6(arr) || _unsupportedIterableToArray$7(arr) || _nonIterableSpread$6();
+function _toConsumableArray$5(arr) {
+  return _arrayWithoutHoles$5(arr) || _iterableToArray$5(arr) || _unsupportedIterableToArray$6(arr) || _nonIterableSpread$5();
 }
-function _nonIterableSpread$6() {
+function _nonIterableSpread$5() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArray$6(iter) {
+function _iterableToArray$5(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$6(arr) {
+function _arrayWithoutHoles$5(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$7(arr);
+    return _arrayLikeToArray$6(arr);
 }
 function _slicedToArray$2(arr, i) {
-  return _arrayWithHoles$2(arr) || _iterableToArrayLimit$2(arr, i) || _unsupportedIterableToArray$7(arr, i) || _nonIterableRest$2();
+  return _arrayWithHoles$2(arr) || _iterableToArrayLimit$2(arr, i) || _unsupportedIterableToArray$6(arr, i) || _nonIterableRest$2();
 }
 function _nonIterableRest$2() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$7(o, minLen) {
+function _unsupportedIterableToArray$6(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$7(o, minLen);
+    return _arrayLikeToArray$6(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$7(o, minLen);
+    return _arrayLikeToArray$6(o, minLen);
 }
-function _arrayLikeToArray$7(arr, len) {
+function _arrayLikeToArray$6(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -5128,7 +4951,7 @@ function createUniqueMap() {
     return uniqueMap.get(id);
   }
   function getItems() {
-    return _toConsumableArray$6(uniqueMap);
+    return _toConsumableArray$5(uniqueMap);
   }
   function hasItem(id) {
     return uniqueMap.has(id);
@@ -5144,34 +4967,34 @@ function createUniqueMap() {
   };
 }
 
-function _toConsumableArray$7(arr) {
-  return _arrayWithoutHoles$7(arr) || _iterableToArray$7(arr) || _unsupportedIterableToArray$8(arr) || _nonIterableSpread$7();
+function _toConsumableArray$6(arr) {
+  return _arrayWithoutHoles$6(arr) || _iterableToArray$6(arr) || _unsupportedIterableToArray$7(arr) || _nonIterableSpread$6();
 }
-function _nonIterableSpread$7() {
+function _nonIterableSpread$6() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$8(o, minLen) {
+function _unsupportedIterableToArray$7(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$8(o, minLen);
+    return _arrayLikeToArray$7(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$8(o, minLen);
+    return _arrayLikeToArray$7(o, minLen);
 }
-function _iterableToArray$7(iter) {
+function _iterableToArray$6(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$7(arr) {
+function _arrayWithoutHoles$6(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$8(arr);
+    return _arrayLikeToArray$7(arr);
 }
-function _arrayLikeToArray$8(arr, len) {
+function _arrayLikeToArray$7(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -5193,7 +5016,7 @@ function createUniqueSet() {
     uniqueSet.add(item);
   }
   function getItems() {
-    return _toConsumableArray$7(uniqueSet);
+    return _toConsumableArray$6(uniqueSet);
   }
   function clear() {
     uniqueSet.clear();
@@ -5206,7 +5029,7 @@ function createUniqueSet() {
 }
 
 function _slicedToArray$3(arr, i) {
-  return _arrayWithHoles$3(arr) || _iterableToArrayLimit$3(arr, i) || _unsupportedIterableToArray$9(arr, i) || _nonIterableRest$3();
+  return _arrayWithHoles$3(arr) || _iterableToArrayLimit$3(arr, i) || _unsupportedIterableToArray$8(arr, i) || _nonIterableRest$3();
 }
 function _nonIterableRest$3() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
@@ -5243,34 +5066,34 @@ function _arrayWithHoles$3(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _toConsumableArray$8(arr) {
-  return _arrayWithoutHoles$8(arr) || _iterableToArray$8(arr) || _unsupportedIterableToArray$9(arr) || _nonIterableSpread$8();
+function _toConsumableArray$7(arr) {
+  return _arrayWithoutHoles$7(arr) || _iterableToArray$7(arr) || _unsupportedIterableToArray$8(arr) || _nonIterableSpread$7();
 }
-function _nonIterableSpread$8() {
+function _nonIterableSpread$7() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$9(o, minLen) {
+function _unsupportedIterableToArray$8(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$9(o, minLen);
+    return _arrayLikeToArray$8(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$9(o, minLen);
+    return _arrayLikeToArray$8(o, minLen);
 }
-function _iterableToArray$8(iter) {
+function _iterableToArray$7(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$8(arr) {
+function _arrayWithoutHoles$7(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$9(arr);
+    return _arrayLikeToArray$8(arr);
 }
-function _arrayLikeToArray$9(arr, len) {
+function _arrayLikeToArray$8(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -5298,7 +5121,7 @@ var uniquePluginsList = createUniqueMap({
   errorIdExists: ERROR_PLUGIN_REGISTERED
 });
 function getPluginsNames() {
-  return [].concat(_toConsumableArray$8(priorityPluginsQueue.getItems()), _toConsumableArray$8(uniquePluginsQueue.getItems()));
+  return [].concat(_toConsumableArray$7(priorityPluginsQueue.getItems()), _toConsumableArray$7(uniquePluginsQueue.getItems()));
 }
 function getPlugin(pluginName) {
   var unifiedPluginName = toUpperCaseFirst(pluginName);
@@ -5338,40 +5161,22 @@ function unifyPluginArguments(pluginName, pluginClass, priority) {
   return [pluginName, pluginClass, priority];
 }
 
-var _staticRegister$1 = staticRegister("renderers"), register$1 = _staticRegister$1.register, getItem$1 = _staticRegister$1.getItem, hasItem$1 = _staticRegister$1.hasItem;
+var _staticRegister$1 = staticRegister("validators"), register$1 = _staticRegister$1.register, getItem$1 = _staticRegister$1.getItem, hasItem$1 = _staticRegister$1.hasItem;
 function _getItem(name) {
   if (typeof name === "function") {
     return name;
   }
   if (!hasItem$1(name)) {
-    throw Error('No registered renderer found under "'.concat(name, '" name'));
+    throw Error('No registered validator found under "'.concat(name, '" name'));
   }
   return getItem$1(name);
 }
-function _register$1(name, renderer) {
-  if (typeof name !== "string") {
-    renderer = name;
-    name = renderer.RENDERER_TYPE;
-  }
-  register$1(name, renderer);
-}
-
-var _staticRegister$2 = staticRegister("validators"), register$2 = _staticRegister$2.register, getItem$2 = _staticRegister$2.getItem, hasItem$2 = _staticRegister$2.hasItem;
-function _getItem$1(name) {
-  if (typeof name === "function") {
-    return name;
-  }
-  if (!hasItem$2(name)) {
-    throw Error('No registered validator found under "'.concat(name, '" name'));
-  }
-  return getItem$2(name);
-}
-function _register$2(name, validator) {
+function _register$1(name, validator) {
   if (typeof name !== "string") {
     validator = name;
     name = validator.VALIDATOR_TYPE;
   }
-  register$2(name, validator);
+  register$1(name, validator);
 }
 
 var RENDER_TYPE = 1;
@@ -8339,40 +8144,40 @@ var RowUtils = /* @__PURE__ */ function() {
   return RowUtils2;
 }();
 
-function _toConsumableArray$9(arr) {
-  return _arrayWithoutHoles$9(arr) || _iterableToArray$9(arr) || _unsupportedIterableToArray$a(arr) || _nonIterableSpread$9();
+function _toConsumableArray$8(arr) {
+  return _arrayWithoutHoles$8(arr) || _iterableToArray$8(arr) || _unsupportedIterableToArray$9(arr) || _nonIterableSpread$8();
 }
-function _nonIterableSpread$9() {
+function _nonIterableSpread$8() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArray$9(iter) {
+function _iterableToArray$8(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$9(arr) {
+function _arrayWithoutHoles$8(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$a(arr);
+    return _arrayLikeToArray$9(arr);
 }
 function _slicedToArray$4(arr, i) {
-  return _arrayWithHoles$4(arr) || _iterableToArrayLimit$4(arr, i) || _unsupportedIterableToArray$a(arr, i) || _nonIterableRest$4();
+  return _arrayWithHoles$4(arr) || _iterableToArrayLimit$4(arr, i) || _unsupportedIterableToArray$9(arr, i) || _nonIterableRest$4();
 }
 function _nonIterableRest$4() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$a(o, minLen) {
+function _unsupportedIterableToArray$9(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$a(o, minLen);
+    return _arrayLikeToArray$9(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$a(o, minLen);
+    return _arrayLikeToArray$9(o, minLen);
 }
-function _arrayLikeToArray$a(arr, len) {
+function _arrayLikeToArray$9(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -9104,7 +8909,7 @@ var Table = /* @__PURE__ */ function() {
     value: function _modifyRowHeaderWidth(rowHeaderWidthFactory) {
       var widths = isFunction(rowHeaderWidthFactory) ? rowHeaderWidthFactory() : null;
       if (Array.isArray(widths)) {
-        widths = _toConsumableArray$9(widths);
+        widths = _toConsumableArray$8(widths);
         widths[widths.length - 1] = this._correctRowHeaderWidth(widths[widths.length - 1]);
       } else {
         widths = this._correctRowHeaderWidth(widths);
@@ -13690,25 +13495,25 @@ var WalkontableFacade = /* @__PURE__ */ function() {
 }();
 
 function _slicedToArray$5(arr, i) {
-  return _arrayWithHoles$5(arr) || _iterableToArrayLimit$5(arr, i) || _unsupportedIterableToArray$b(arr, i) || _nonIterableRest$5();
+  return _arrayWithHoles$5(arr) || _iterableToArrayLimit$5(arr, i) || _unsupportedIterableToArray$a(arr, i) || _nonIterableRest$5();
 }
 function _nonIterableRest$5() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$b(o, minLen) {
+function _unsupportedIterableToArray$a(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$b(o, minLen);
+    return _arrayLikeToArray$a(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$b(o, minLen);
+    return _arrayLikeToArray$a(o, minLen);
 }
-function _arrayLikeToArray$b(arr, len) {
+function _arrayLikeToArray$a(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -14326,25 +14131,25 @@ var Border = /* @__PURE__ */ function() {
 }();
 
 function _slicedToArray$6(arr, i) {
-  return _arrayWithHoles$6(arr) || _iterableToArrayLimit$6(arr, i) || _unsupportedIterableToArray$c(arr, i) || _nonIterableRest$6();
+  return _arrayWithHoles$6(arr) || _iterableToArrayLimit$6(arr, i) || _unsupportedIterableToArray$b(arr, i) || _nonIterableRest$6();
 }
 function _nonIterableRest$6() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$c(o, minLen) {
+function _unsupportedIterableToArray$b(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$c(o, minLen);
+    return _arrayLikeToArray$b(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$c(o, minLen);
+    return _arrayLikeToArray$b(o, minLen);
 }
-function _arrayLikeToArray$c(arr, len) {
+function _arrayLikeToArray$b(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -14719,7 +14524,7 @@ function isRootInstance(object) {
 }
 
 function _slicedToArray$7(arr, i) {
-  return _arrayWithHoles$7(arr) || _iterableToArrayLimit$7(arr, i) || _unsupportedIterableToArray$d(arr, i) || _nonIterableRest$7();
+  return _arrayWithHoles$7(arr) || _iterableToArrayLimit$7(arr, i) || _unsupportedIterableToArray$c(arr, i) || _nonIterableRest$7();
 }
 function _nonIterableRest$7() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
@@ -14756,34 +14561,34 @@ function _arrayWithHoles$7(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _toConsumableArray$a(arr) {
-  return _arrayWithoutHoles$a(arr) || _iterableToArray$a(arr) || _unsupportedIterableToArray$d(arr) || _nonIterableSpread$a();
+function _toConsumableArray$9(arr) {
+  return _arrayWithoutHoles$9(arr) || _iterableToArray$9(arr) || _unsupportedIterableToArray$c(arr) || _nonIterableSpread$9();
 }
-function _nonIterableSpread$a() {
+function _nonIterableSpread$9() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$d(o, minLen) {
+function _unsupportedIterableToArray$c(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$d(o, minLen);
+    return _arrayLikeToArray$c(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$d(o, minLen);
+    return _arrayLikeToArray$c(o, minLen);
 }
-function _iterableToArray$a(iter) {
+function _iterableToArray$9(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$a(arr) {
+function _arrayWithoutHoles$9(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$d(arr);
+    return _arrayLikeToArray$c(arr);
 }
-function _arrayLikeToArray$d(arr, len) {
+function _arrayLikeToArray$c(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -15008,7 +14813,7 @@ var TableView = /* @__PURE__ */ function() {
     value: function translateFromRenderableToVisualCoords(_ref) {
       var _this$instance3;
       var row = _ref.row, col = _ref.col;
-      return (_this$instance3 = this.instance)._createCellCoords.apply(_this$instance3, _toConsumableArray$a(this.translateFromRenderableToVisualIndex(row, col)));
+      return (_this$instance3 = this.instance)._createCellCoords.apply(_this$instance3, _toConsumableArray$9(this.translateFromRenderableToVisualIndex(row, col)));
     }
   }, {
     key: "translateFromRenderableToVisualIndex",
@@ -15123,7 +14928,7 @@ var TableView = /* @__PURE__ */ function() {
         },
         data: function data(renderableRow, renderableColumn) {
           var _this2$instance;
-          return (_this2$instance = _this2.instance).getDataAtCell.apply(_this2$instance, _toConsumableArray$a(_this2.translateFromRenderableToVisualIndex(renderableRow, renderableColumn)));
+          return (_this2$instance = _this2.instance).getDataAtCell.apply(_this2$instance, _toConsumableArray$9(_this2.translateFromRenderableToVisualIndex(renderableRow, renderableColumn)));
         },
         totalRows: function totalRows() {
           return _this2.countRenderableRows();
@@ -15612,14 +15417,14 @@ var TableView = /* @__PURE__ */ function() {
   return TableView2;
 }();
 
-var _staticRegister$3 = staticRegister("cellTypes"), register$3 = _staticRegister$3.register, getItem$3 = _staticRegister$3.getItem, hasItem$3 = _staticRegister$3.hasItem;
-function _getItem$2(name) {
-  if (!hasItem$3(name)) {
+var _staticRegister$2 = staticRegister("cellTypes"), register$2 = _staticRegister$2.register, getItem$2 = _staticRegister$2.getItem, hasItem$2 = _staticRegister$2.hasItem;
+function _getItem$1(name) {
+  if (!hasItem$2(name)) {
     throw Error('You declared cell type "'.concat(name, '" as a string that is not mapped to a known object.\n                 Cell type must be an object or a string mapped to an object registered by\n                 "Handsontable.cellTypes.registerCellType" method'));
   }
-  return getItem$3(name);
+  return getItem$2(name);
 }
-function _register$3(name, type) {
+function _register$2(name, type) {
   if (typeof name !== "string") {
     type = name;
     name = type.CELL_TYPE;
@@ -15629,12 +15434,12 @@ function _register$3(name, type) {
     _register(name, editor);
   }
   if (renderer) {
-    _register$1(name, renderer);
+    _register$3(name, renderer);
   }
   if (validator) {
-    _register$2(name, validator);
+    _register$1(name, validator);
   }
-  register$3(name, type);
+  register$2(name, type);
 }
 
 function _typeof$p(obj) {
@@ -15671,7 +15476,7 @@ function cellMethodLookupFactory(methodName, allowUndefined) {
         if (typeof properties.type !== "string") {
           throw new Error('Cell "type" must be a string');
         }
-        var type = _getItem$2(properties.type);
+        var type = _getItem$1(properties.type);
         if (hasOwnProperty(type, methodName)) {
           return type[methodName];
         } else if (isUndefinedAllowed) {
@@ -16085,34 +15890,34 @@ var IndexMap = /* @__PURE__ */ function() {
 }();
 mixin(IndexMap, localHooks);
 
-function _toConsumableArray$b(arr) {
-  return _arrayWithoutHoles$b(arr) || _iterableToArray$b(arr) || _unsupportedIterableToArray$e(arr) || _nonIterableSpread$b();
+function _toConsumableArray$a(arr) {
+  return _arrayWithoutHoles$a(arr) || _iterableToArray$a(arr) || _unsupportedIterableToArray$d(arr) || _nonIterableSpread$a();
 }
-function _nonIterableSpread$b() {
+function _nonIterableSpread$a() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$e(o, minLen) {
+function _unsupportedIterableToArray$d(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$e(o, minLen);
+    return _arrayLikeToArray$d(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$e(o, minLen);
+    return _arrayLikeToArray$d(o, minLen);
 }
-function _iterableToArray$b(iter) {
+function _iterableToArray$a(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$b(arr) {
+function _arrayWithoutHoles$a(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$e(arr);
+    return _arrayLikeToArray$d(arr);
 }
-function _arrayLikeToArray$e(arr, len) {
+function _arrayLikeToArray$d(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -16122,12 +15927,12 @@ function _arrayLikeToArray$e(arr, len) {
 }
 function getListWithInsertedItems(indexedValues, insertionIndex, insertedIndexes, insertedValuesMapping) {
   var firstInsertedIndex = insertedIndexes.length ? insertedIndexes[0] : void 0;
-  return [].concat(_toConsumableArray$b(indexedValues.slice(0, firstInsertedIndex)), _toConsumableArray$b(insertedIndexes.map(function(insertedIndex, ordinalNumber) {
+  return [].concat(_toConsumableArray$a(indexedValues.slice(0, firstInsertedIndex)), _toConsumableArray$a(insertedIndexes.map(function(insertedIndex, ordinalNumber) {
     if (isFunction(insertedValuesMapping)) {
       return insertedValuesMapping(insertedIndex, ordinalNumber);
     }
     return insertedValuesMapping;
-  })), _toConsumableArray$b(firstInsertedIndex === void 0 ? [] : indexedValues.slice(firstInsertedIndex)));
+  })), _toConsumableArray$a(firstInsertedIndex === void 0 ? [] : indexedValues.slice(firstInsertedIndex)));
 }
 function getListWithRemovedItems(indexedValues, removedIndexes) {
   return arrayFilter(indexedValues, function(_, index) {
@@ -16395,34 +16200,34 @@ var HidingMap = /* @__PURE__ */ function(_PhysicalIndexToValue) {
   return HidingMap2;
 }(PhysicalIndexToValueMap);
 
-function _toConsumableArray$c(arr) {
-  return _arrayWithoutHoles$c(arr) || _iterableToArray$c(arr) || _unsupportedIterableToArray$f(arr) || _nonIterableSpread$c();
+function _toConsumableArray$b(arr) {
+  return _arrayWithoutHoles$b(arr) || _iterableToArray$b(arr) || _unsupportedIterableToArray$e(arr) || _nonIterableSpread$b();
 }
-function _nonIterableSpread$c() {
+function _nonIterableSpread$b() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$f(o, minLen) {
+function _unsupportedIterableToArray$e(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$f(o, minLen);
+    return _arrayLikeToArray$e(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$f(o, minLen);
+    return _arrayLikeToArray$e(o, minLen);
 }
-function _iterableToArray$c(iter) {
+function _iterableToArray$b(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$c(arr) {
+function _arrayWithoutHoles$b(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$f(arr);
+    return _arrayLikeToArray$e(arr);
 }
-function _arrayLikeToArray$f(arr, len) {
+function _arrayLikeToArray$e(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -16431,7 +16236,7 @@ function _arrayLikeToArray$f(arr, len) {
   return arr2;
 }
 function getListWithInsertedItems$1(indexedValues, insertionIndex, insertedIndexes) {
-  return [].concat(_toConsumableArray$c(indexedValues.slice(0, insertionIndex)), _toConsumableArray$c(insertedIndexes), _toConsumableArray$c(indexedValues.slice(insertionIndex)));
+  return [].concat(_toConsumableArray$b(indexedValues.slice(0, insertionIndex)), _toConsumableArray$b(insertedIndexes), _toConsumableArray$b(indexedValues.slice(insertionIndex)));
 }
 function getListWithRemovedItems$1(indexedValues, removedIndexes) {
   return arrayFilter(indexedValues, function(index) {
@@ -16465,34 +16270,34 @@ function _typeof$s(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$s(obj);
 }
-function _toConsumableArray$d(arr) {
-  return _arrayWithoutHoles$d(arr) || _iterableToArray$d(arr) || _unsupportedIterableToArray$g(arr) || _nonIterableSpread$d();
+function _toConsumableArray$c(arr) {
+  return _arrayWithoutHoles$c(arr) || _iterableToArray$c(arr) || _unsupportedIterableToArray$f(arr) || _nonIterableSpread$c();
 }
-function _nonIterableSpread$d() {
+function _nonIterableSpread$c() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$g(o, minLen) {
+function _unsupportedIterableToArray$f(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$g(o, minLen);
+    return _arrayLikeToArray$f(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$g(o, minLen);
+    return _arrayLikeToArray$f(o, minLen);
 }
-function _iterableToArray$d(iter) {
+function _iterableToArray$c(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$d(arr) {
+function _arrayWithoutHoles$c(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$g(arr);
+    return _arrayLikeToArray$f(arr);
 }
-function _arrayLikeToArray$g(arr, len) {
+function _arrayLikeToArray$f(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -16644,7 +16449,7 @@ var LinkedPhysicalIndexToValueMap = /* @__PURE__ */ function(_IndexMap) {
   }, {
     key: "setValues",
     value: function setValues(values) {
-      this.orderOfIndexes = _toConsumableArray$d(Array(values.length).keys());
+      this.orderOfIndexes = _toConsumableArray$c(Array(values.length).keys());
       _get$1(_getPrototypeOf$l(LinkedPhysicalIndexToValueMap2.prototype), "setValues", this).call(this, values);
     }
   }, {
@@ -17494,34 +17299,34 @@ var ChangesObservable = /* @__PURE__ */ function() {
   return ChangesObservable2;
 }();
 
-function _toConsumableArray$e(arr) {
-  return _arrayWithoutHoles$e(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$h(arr) || _nonIterableSpread$e();
+function _toConsumableArray$d(arr) {
+  return _arrayWithoutHoles$d(arr) || _iterableToArray$d(arr) || _unsupportedIterableToArray$g(arr) || _nonIterableSpread$d();
 }
-function _nonIterableSpread$e() {
+function _nonIterableSpread$d() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$h(o, minLen) {
+function _unsupportedIterableToArray$g(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$h(o, minLen);
+    return _arrayLikeToArray$g(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$h(o, minLen);
+    return _arrayLikeToArray$g(o, minLen);
 }
-function _iterableToArray$e(iter) {
+function _iterableToArray$d(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$e(arr) {
+function _arrayWithoutHoles$d(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$h(arr);
+    return _arrayLikeToArray$g(arr);
 }
-function _arrayLikeToArray$h(arr, len) {
+function _arrayLikeToArray$g(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -17718,8 +17523,8 @@ var IndexMapper = /* @__PURE__ */ function() {
     key: "initToLength",
     value: function initToLength() {
       var length = arguments.length > 0 && arguments[0] !== void 0 ? arguments[0] : this.getNumberOfIndexes();
-      this.notTrimmedIndexesCache = _toConsumableArray$e(new Array(length).keys());
-      this.notHiddenIndexesCache = _toConsumableArray$e(new Array(length).keys());
+      this.notTrimmedIndexesCache = _toConsumableArray$d(new Array(length).keys());
+      this.notHiddenIndexesCache = _toConsumableArray$d(new Array(length).keys());
       this.suspendOperations();
       this.indexesSequence.init(length);
       this.trimmingMapsCollection.initEvery(length);
@@ -17735,7 +17540,7 @@ var IndexMapper = /* @__PURE__ */ function() {
     value: function fitToLength(length) {
       var currentIndexCount = this.getNumberOfIndexes();
       if (length < currentIndexCount) {
-        var indexesToBeRemoved = _toConsumableArray$e(Array(this.getNumberOfIndexes() - length).keys()).map(function(i) {
+        var indexesToBeRemoved = _toConsumableArray$d(Array(this.getNumberOfIndexes() - length).keys()).map(function(i) {
           return i + length;
         });
         this.removeIndexes(indexesToBeRemoved);
@@ -17959,14 +17764,14 @@ function pluralize(phrasePropositions, pluralForm) {
   return phrasePropositions;
 }
 
-var _staticRegister$4 = staticRegister("phraseFormatters"), registerGloballyPhraseFormatter = _staticRegister$4.register, getGlobalPhraseFormatters = _staticRegister$4.getValues;
-function register$4(name, formatterFn) {
+var _staticRegister$3 = staticRegister("phraseFormatters"), registerGloballyPhraseFormatter = _staticRegister$3.register, getGlobalPhraseFormatters = _staticRegister$3.getValues;
+function register$3(name, formatterFn) {
   registerGloballyPhraseFormatter(name, formatterFn);
 }
 function getAll() {
   return getGlobalPhraseFormatters();
 }
-register$4("pluralize", pluralize);
+register$3("pluralize", pluralize);
 
 var CONTEXT_MENU_ITEMS_NAMESPACE = "ContextMenu:items";
 var CONTEXTMENU_ITEMS_NO_ITEMS = "".concat(CONTEXT_MENU_ITEMS_NAMESPACE, ".noItems");
@@ -18141,7 +17946,7 @@ var dictionary = (_dictionary = {
 }, _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_NO_ITEMS, "No available options"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ROW_ABOVE, "Insert row above"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ROW_BELOW, "Insert row below"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_INSERT_LEFT, "Insert column left"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_INSERT_RIGHT, "Insert column right"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_REMOVE_ROW, ["Remove row", "Remove rows"]), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_REMOVE_COLUMN, ["Remove column", "Remove columns"]), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_UNDO, "Undo"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_REDO, "Redo"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_READ_ONLY, "Read only"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_CLEAR_COLUMN, "Clear column"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ALIGNMENT, "Alignment"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ALIGNMENT_LEFT, "Left"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ALIGNMENT_CENTER, "Center"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT, "Right"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY, "Justify"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ALIGNMENT_TOP, "Top"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE, "Middle"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM, "Bottom"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_FREEZE_COLUMN, "Freeze column"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_UNFREEZE_COLUMN, "Unfreeze column"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_BORDERS, "Borders"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_BORDERS_TOP, "Top"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_BORDERS_RIGHT, "Right"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_BORDERS_BOTTOM, "Bottom"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_BORDERS_LEFT, "Left"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_REMOVE_BORDERS, "Remove border(s)"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_ADD_COMMENT, "Add comment"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_EDIT_COMMENT, "Edit comment"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_REMOVE_COMMENT, "Delete comment"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_READ_ONLY_COMMENT, "Read-only comment"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_MERGE_CELLS, "Merge cells"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_UNMERGE_CELLS, "Unmerge cells"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_COPY, "Copy"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_CUT, "Cut"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD, "Insert child row"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD, "Detach from parent"), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_HIDE_COLUMN, ["Hide column", "Hide columns"]), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_SHOW_COLUMN, ["Show column", "Show columns"]), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_HIDE_ROW, ["Hide row", "Hide rows"]), _defineProperty$e(_dictionary, CONTEXTMENU_ITEMS_SHOW_ROW, ["Show row", "Show rows"]), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_NONE, "None"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_EMPTY, "Is empty"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_NOT_EMPTY, "Is not empty"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_EQUAL, "Is equal to"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_NOT_EQUAL, "Is not equal to"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_BEGINS_WITH, "Begins with"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_ENDS_WITH, "Ends with"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_CONTAINS, "Contains"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_NOT_CONTAIN, "Does not contain"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_GREATER_THAN, "Greater than"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL, "Greater than or equal to"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_LESS_THAN, "Less than"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL, "Less than or equal to"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_BETWEEN, "Is between"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_NOT_BETWEEN, "Is not between"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_AFTER, "After"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_BEFORE, "Before"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_TODAY, "Today"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_TOMORROW, "Tomorrow"), _defineProperty$e(_dictionary, FILTERS_CONDITIONS_YESTERDAY, "Yesterday"), _defineProperty$e(_dictionary, FILTERS_VALUES_BLANK_CELLS, "Blank cells"), _defineProperty$e(_dictionary, FILTERS_DIVS_FILTER_BY_CONDITION, "Filter by condition"), _defineProperty$e(_dictionary, FILTERS_DIVS_FILTER_BY_VALUE, "Filter by value"), _defineProperty$e(_dictionary, FILTERS_LABELS_CONJUNCTION, "And"), _defineProperty$e(_dictionary, FILTERS_LABELS_DISJUNCTION, "Or"), _defineProperty$e(_dictionary, FILTERS_BUTTONS_SELECT_ALL, "Select all"), _defineProperty$e(_dictionary, FILTERS_BUTTONS_CLEAR, "Clear"), _defineProperty$e(_dictionary, FILTERS_BUTTONS_OK, "OK"), _defineProperty$e(_dictionary, FILTERS_BUTTONS_CANCEL, "Cancel"), _defineProperty$e(_dictionary, FILTERS_BUTTONS_PLACEHOLDER_SEARCH, "Search"), _defineProperty$e(_dictionary, FILTERS_BUTTONS_PLACEHOLDER_VALUE, "Value"), _defineProperty$e(_dictionary, FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE, "Second value"), _dictionary);
 
 var DEFAULT_LANGUAGE_CODE = dictionary.languageCode;
-var _staticRegister$5 = staticRegister("languagesDictionaries"), registerGloballyLanguageDictionary = _staticRegister$5.register, getGlobalLanguageDictionary = _staticRegister$5.getItem, hasGlobalLanguageDictionary = _staticRegister$5.hasItem, getGlobalLanguagesDictionaries = _staticRegister$5.getValues;
+var _staticRegister$4 = staticRegister("languagesDictionaries"), registerGloballyLanguageDictionary = _staticRegister$4.register, getGlobalLanguageDictionary = _staticRegister$4.getItem, hasGlobalLanguageDictionary = _staticRegister$4.hasItem, getGlobalLanguagesDictionaries = _staticRegister$4.getValues;
 registerLanguageDictionary(dictionary);
 function registerLanguageDictionary(languageCodeOrDictionary, dictionary) {
   var languageCode = languageCodeOrDictionary;
@@ -18236,25 +18041,25 @@ function _typeof$w(obj) {
   }, _typeof$w(obj);
 }
 function _slicedToArray$8(arr, i) {
-  return _arrayWithHoles$8(arr) || _iterableToArrayLimit$8(arr, i) || _unsupportedIterableToArray$i(arr, i) || _nonIterableRest$8();
+  return _arrayWithHoles$8(arr) || _iterableToArrayLimit$8(arr, i) || _unsupportedIterableToArray$h(arr, i) || _nonIterableRest$8();
 }
 function _nonIterableRest$8() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$i(o, minLen) {
+function _unsupportedIterableToArray$h(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$i(o, minLen);
+    return _arrayLikeToArray$h(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$i(o, minLen);
+    return _arrayLikeToArray$h(o, minLen);
 }
-function _arrayLikeToArray$i(arr, len) {
+function _arrayLikeToArray$h(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -19022,47 +18827,47 @@ function _defineProperty$l(obj, key, value) {
   }
   return obj;
 }
-var _staticRegister$6 = staticRegister("highlight/types"), register$5 = _staticRegister$6.register, getItem$4 = _staticRegister$6.getItem;
-register$5(ACTIVE_HEADER_TYPE, createHighlight);
-register$5(AREA_TYPE, createHighlight$1);
-register$5(CELL_TYPE, createHighlight$2);
-register$5(CUSTOM_SELECTION_TYPE, createHighlight$3);
-register$5(FILL_TYPE, createHighlight$4);
-register$5(HEADER_TYPE, createHighlight$5);
+var _staticRegister$5 = staticRegister("highlight/types"), register$4 = _staticRegister$5.register, getItem$3 = _staticRegister$5.getItem;
+register$4(ACTIVE_HEADER_TYPE, createHighlight);
+register$4(AREA_TYPE, createHighlight$1);
+register$4(CELL_TYPE, createHighlight$2);
+register$4(CUSTOM_SELECTION_TYPE, createHighlight$3);
+register$4(FILL_TYPE, createHighlight$4);
+register$4(HEADER_TYPE, createHighlight$5);
 function createHighlight$6(highlightType, options) {
-  return getItem$4(highlightType)(_objectSpread$6({
+  return getItem$3(highlightType)(_objectSpread$6({
     type: highlightType
   }, options));
 }
 
-function _toConsumableArray$f(arr) {
-  return _arrayWithoutHoles$f(arr) || _iterableToArray$f(arr) || _unsupportedIterableToArray$j(arr) || _nonIterableSpread$f();
+function _toConsumableArray$e(arr) {
+  return _arrayWithoutHoles$e(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$i(arr) || _nonIterableSpread$e();
 }
-function _nonIterableSpread$f() {
+function _nonIterableSpread$e() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$j(o, minLen) {
+function _unsupportedIterableToArray$i(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$j(o, minLen);
+    return _arrayLikeToArray$i(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$j(o, minLen);
+    return _arrayLikeToArray$i(o, minLen);
 }
-function _iterableToArray$f(iter) {
+function _iterableToArray$e(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$f(arr) {
+function _arrayWithoutHoles$e(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$j(arr);
+    return _arrayLikeToArray$i(arr);
 }
-function _arrayLikeToArray$j(arr, len) {
+function _arrayLikeToArray$i(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -19182,7 +18987,7 @@ var Highlight = /* @__PURE__ */ function(_Symbol$iterator) {
   }, {
     key: "getAreas",
     value: function getAreas() {
-      return _toConsumableArray$f(this.areas.values());
+      return _toConsumableArray$e(this.areas.values());
     }
   }, {
     key: "createOrGetHeader",
@@ -19200,7 +19005,7 @@ var Highlight = /* @__PURE__ */ function(_Symbol$iterator) {
   }, {
     key: "getHeaders",
     value: function getHeaders() {
-      return _toConsumableArray$f(this.headers.values());
+      return _toConsumableArray$e(this.headers.values());
     }
   }, {
     key: "createOrGetActiveHeader",
@@ -19218,12 +19023,12 @@ var Highlight = /* @__PURE__ */ function(_Symbol$iterator) {
   }, {
     key: "getActiveHeaders",
     value: function getActiveHeaders() {
-      return _toConsumableArray$f(this.activeHeaders.values());
+      return _toConsumableArray$e(this.activeHeaders.values());
     }
   }, {
     key: "getCustomSelections",
     value: function getCustomSelections() {
-      return _toConsumableArray$f(this.customSelections.values());
+      return _toConsumableArray$e(this.customSelections.values());
     }
   }, {
     key: "addCustomSelection",
@@ -19248,7 +19053,7 @@ var Highlight = /* @__PURE__ */ function(_Symbol$iterator) {
   }, {
     key: _Symbol$iterator,
     value: function value() {
-      return [this.cell, this.fill].concat(_toConsumableArray$f(this.areas.values()), _toConsumableArray$f(this.headers.values()), _toConsumableArray$f(this.activeHeaders.values()), _toConsumableArray$f(this.customSelections))[Symbol.iterator]();
+      return [this.cell, this.fill].concat(_toConsumableArray$e(this.areas.values()), _toConsumableArray$e(this.headers.values()), _toConsumableArray$e(this.activeHeaders.values()), _toConsumableArray$e(this.customSelections))[Symbol.iterator]();
     }
   }]);
   return Highlight2;
@@ -19491,25 +19296,25 @@ var Transformation = /* @__PURE__ */ function() {
 mixin(Transformation, localHooks);
 
 function _slicedToArray$9(arr, i) {
-  return _arrayWithHoles$9(arr) || _iterableToArrayLimit$9(arr, i) || _unsupportedIterableToArray$k(arr, i) || _nonIterableRest$9();
+  return _arrayWithHoles$9(arr) || _iterableToArrayLimit$9(arr, i) || _unsupportedIterableToArray$j(arr, i) || _nonIterableRest$9();
 }
 function _nonIterableRest$9() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$k(o, minLen) {
+function _unsupportedIterableToArray$j(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$k(o, minLen);
+    return _arrayLikeToArray$j(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$k(o, minLen);
+    return _arrayLikeToArray$j(o, minLen);
 }
-function _arrayLikeToArray$k(arr, len) {
+function _arrayLikeToArray$j(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -19701,25 +19506,25 @@ function isValidCoord(coord) {
 
 var _templateObject$4;
 function _slicedToArray$a(arr, i) {
-  return _arrayWithHoles$a(arr) || _iterableToArrayLimit$a(arr, i) || _unsupportedIterableToArray$l(arr, i) || _nonIterableRest$a();
+  return _arrayWithHoles$a(arr) || _iterableToArrayLimit$a(arr, i) || _unsupportedIterableToArray$k(arr, i) || _nonIterableRest$a();
 }
 function _nonIterableRest$a() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$l(o, minLen) {
+function _unsupportedIterableToArray$k(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$l(o, minLen);
+    return _arrayLikeToArray$k(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$l(o, minLen);
+    return _arrayLikeToArray$k(o, minLen);
 }
-function _arrayLikeToArray$l(arr, len) {
+function _arrayLikeToArray$k(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -20936,7 +20741,7 @@ var DataMap = /* @__PURE__ */ function() {
 }();
 
 function expandMetaType(type, metaObject) {
-  var validType = typeof type === "string" ? _getItem$2(type) : type;
+  var validType = typeof type === "string" ? _getItem$1(type) : type;
   if (!isObject(validType)) {
     return;
   }
@@ -21472,34 +21277,34 @@ var ColumnMeta = /* @__PURE__ */ function() {
   return ColumnMeta2;
 }();
 
-function _toConsumableArray$g(arr) {
-  return _arrayWithoutHoles$g(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$m(arr) || _nonIterableSpread$g();
+function _toConsumableArray$f(arr) {
+  return _arrayWithoutHoles$f(arr) || _iterableToArray$f(arr) || _unsupportedIterableToArray$l(arr) || _nonIterableSpread$f();
 }
-function _nonIterableSpread$g() {
+function _nonIterableSpread$f() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$m(o, minLen) {
+function _unsupportedIterableToArray$l(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$m(o, minLen);
+    return _arrayLikeToArray$l(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$m(o, minLen);
+    return _arrayLikeToArray$l(o, minLen);
 }
-function _iterableToArray$g(iter) {
+function _iterableToArray$f(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$g(arr) {
+function _arrayWithoutHoles$f(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$m(arr);
+    return _arrayLikeToArray$l(arr);
 }
-function _arrayLikeToArray$m(arr, len) {
+function _arrayLikeToArray$l(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -21597,7 +21402,7 @@ var CellMeta = /* @__PURE__ */ function() {
       var metas = [];
       var rows = Array.from(this.metas.values());
       for (var row = 0; row < rows.length; row++) {
-        metas.push.apply(metas, _toConsumableArray$g(rows[row].values()));
+        metas.push.apply(metas, _toConsumableArray$f(rows[row].values()));
       }
       return metas;
     }
@@ -22060,40 +21865,40 @@ var normalizeEventKey = function normalizeEventKey2(key) {
 };
 
 var _templateObject$5;
-function _toConsumableArray$h(arr) {
-  return _arrayWithoutHoles$h(arr) || _iterableToArray$h(arr) || _unsupportedIterableToArray$n(arr) || _nonIterableSpread$h();
+function _toConsumableArray$g(arr) {
+  return _arrayWithoutHoles$g(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$m(arr) || _nonIterableSpread$g();
 }
-function _nonIterableSpread$h() {
+function _nonIterableSpread$g() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArray$h(iter) {
+function _iterableToArray$g(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$h(arr) {
+function _arrayWithoutHoles$g(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$n(arr);
+    return _arrayLikeToArray$m(arr);
 }
 function _slicedToArray$b(arr, i) {
-  return _arrayWithHoles$b(arr) || _iterableToArrayLimit$b(arr, i) || _unsupportedIterableToArray$n(arr, i) || _nonIterableRest$b();
+  return _arrayWithHoles$b(arr) || _iterableToArrayLimit$b(arr, i) || _unsupportedIterableToArray$m(arr, i) || _nonIterableRest$b();
 }
 function _nonIterableRest$b() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$n(o, minLen) {
+function _unsupportedIterableToArray$m(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$n(o, minLen);
+    return _arrayLikeToArray$m(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$n(o, minLen);
+    return _arrayLikeToArray$m(o, minLen);
 }
-function _arrayLikeToArray$n(arr, len) {
+function _arrayLikeToArray$m(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -22220,7 +22025,7 @@ var createContext = function createContext2(name) {
         removeShortcutsByKeys(getKeysList(normalizedKeys));
       } else {
         shortcutOptions.length = 0;
-        shortcutOptions.push.apply(shortcutOptions, _toConsumableArray$h(leftOptions));
+        shortcutOptions.push.apply(shortcutOptions, _toConsumableArray$g(leftOptions));
       }
     });
   };
@@ -22417,7 +22222,7 @@ function _typeof$B(obj) {
   }, _typeof$B(obj);
 }
 function _slicedToArray$c(arr, i) {
-  return _arrayWithHoles$c(arr) || _iterableToArrayLimit$c(arr, i) || _unsupportedIterableToArray$o(arr, i) || _nonIterableRest$c();
+  return _arrayWithHoles$c(arr) || _iterableToArrayLimit$c(arr, i) || _unsupportedIterableToArray$n(arr, i) || _nonIterableRest$c();
 }
 function _nonIterableRest$c() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
@@ -22454,34 +22259,34 @@ function _arrayWithHoles$c(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _toConsumableArray$i(arr) {
-  return _arrayWithoutHoles$i(arr) || _iterableToArray$i(arr) || _unsupportedIterableToArray$o(arr) || _nonIterableSpread$i();
+function _toConsumableArray$h(arr) {
+  return _arrayWithoutHoles$h(arr) || _iterableToArray$h(arr) || _unsupportedIterableToArray$n(arr) || _nonIterableSpread$h();
 }
-function _nonIterableSpread$i() {
+function _nonIterableSpread$h() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$o(o, minLen) {
+function _unsupportedIterableToArray$n(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$o(o, minLen);
+    return _arrayLikeToArray$n(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$o(o, minLen);
+    return _arrayLikeToArray$n(o, minLen);
 }
-function _iterableToArray$i(iter) {
+function _iterableToArray$h(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
     return Array.from(iter);
 }
-function _arrayWithoutHoles$i(arr) {
+function _arrayWithoutHoles$h(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$o(arr);
+    return _arrayLikeToArray$n(arr);
 }
-function _arrayLikeToArray$o(arr, len) {
+function _arrayLikeToArray$n(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -22697,7 +22502,7 @@ function Core(rootElement, userSettings) {
         if (indexes.length === 0) {
           return [];
         }
-        var sortedIndexes = _toConsumableArray$i(indexes);
+        var sortedIndexes = _toConsumableArray$h(indexes);
         sortedIndexes.sort(function(_ref2, _ref3) {
           var _ref4 = _slicedToArray$c(_ref2, 1), indexA = _ref4[0];
           var _ref5 = _slicedToArray$c(_ref3, 1), indexB = _ref5[0];
@@ -22995,7 +22800,7 @@ function Core(rootElement, userSettings) {
                 }
               } else {
                 var _input$r;
-                (_input$r = input[r]).push.apply(_input$r, _toConsumableArray$i(new Array(pushedRightDataByRows[0].length).fill(null)));
+                (_input$r = input[r]).push.apply(_input$r, _toConsumableArray$h(new Array(pushedRightDataByRows[0].length).fill(null)));
               }
             } else {
               input.push(input[r % rlen].slice(0, numberOfRowsToPopulate).concat(pushedRightDataByRows[r]));
@@ -23870,12 +23675,12 @@ function Core(rootElement, userSettings) {
   };
   this.getDataAtCol = function(column) {
     var _ref13;
-    return (_ref13 = []).concat.apply(_ref13, _toConsumableArray$i(datamap.getRange(instance._createCellCoords(0, column), instance._createCellCoords(tableMeta.data.length - 1, column), datamap.DESTINATION_RENDERER)));
+    return (_ref13 = []).concat.apply(_ref13, _toConsumableArray$h(datamap.getRange(instance._createCellCoords(0, column), instance._createCellCoords(tableMeta.data.length - 1, column), datamap.DESTINATION_RENDERER)));
   };
   this.getDataAtProp = function(prop) {
     var _ref14;
     var range = datamap.getRange(instance._createCellCoords(0, datamap.propToCol(prop)), instance._createCellCoords(tableMeta.data.length - 1, datamap.propToCol(prop)), datamap.DESTINATION_RENDERER);
-    return (_ref14 = []).concat.apply(_ref14, _toConsumableArray$i(range));
+    return (_ref14 = []).concat.apply(_ref14, _toConsumableArray$h(range));
   };
   this.getSourceData = function(row, column, row2, column2) {
     var data;
@@ -24048,14 +23853,14 @@ function Core(rootElement, userSettings) {
   };
   var rendererLookup = cellMethodLookupFactory("renderer");
   this.getCellRenderer = function(row, column) {
-    return _getItem(rendererLookup.call(this, row, column));
+    return _getItem$2(rendererLookup.call(this, row, column));
   };
   this.getCellEditor = cellMethodLookupFactory("editor");
   var validatorLookup = cellMethodLookupFactory("validator");
   this.getCellValidator = function(row, column) {
     var validator = validatorLookup.call(this, row, column);
     if (typeof validator === "string") {
-      validator = _getItem$1(validator);
+      validator = _getItem(validator);
     }
     return validator;
   };
@@ -24634,7 +24439,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$columnIndex;
       var row = instance.getSelectedRangeLast().highlight.row;
-      var column = (_instance$columnIndex = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex, _toConsumableArray$i(instance.isRtl() ? [instance.countCols() - 1, -1] : [0, 1]));
+      var column = (_instance$columnIndex = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex, _toConsumableArray$h(instance.isRtl() ? [instance.countCols() - 1, -1] : [0, 1]));
       selection.setRangeStart(instance._createCellCoords(row, column));
     }
   }, {
@@ -24648,7 +24453,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$columnIndex2;
       var _instance$getSelected3 = instance.getSelectedRangeLast(), from = _instance$getSelected3.from, to = _instance$getSelected3.to;
-      var column = (_instance$columnIndex2 = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex2, _toConsumableArray$i(instance.isRtl() ? [instance.countCols() - 1, -1] : [0, 1]));
+      var column = (_instance$columnIndex2 = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex2, _toConsumableArray$h(instance.isRtl() ? [instance.countCols() - 1, -1] : [0, 1]));
       selection.setRangeStart(from.clone());
       selection.setRangeEnd(instance._createCellCoords(to.row, column));
     },
@@ -24666,7 +24471,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$columnIndex3;
       var row = instance.getSelectedRangeLast().highlight.row;
-      var column = (_instance$columnIndex3 = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex3, _toConsumableArray$i(instance.isRtl() ? [0, 1] : [instance.countCols() - 1, -1]));
+      var column = (_instance$columnIndex3 = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex3, _toConsumableArray$h(instance.isRtl() ? [0, 1] : [instance.countCols() - 1, -1]));
       selection.setRangeStart(instance._createCellCoords(row, column));
     }
   }, {
@@ -24680,7 +24485,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$columnIndex4;
       var _instance$getSelected4 = instance.getSelectedRangeLast(), from = _instance$getSelected4.from, to = _instance$getSelected4.to;
-      var column = (_instance$columnIndex4 = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex4, _toConsumableArray$i(instance.isRtl() ? [0, 1] : [instance.countCols() - 1, -1]));
+      var column = (_instance$columnIndex4 = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex4, _toConsumableArray$h(instance.isRtl() ? [0, 1] : [instance.countCols() - 1, -1]));
       selection.setRangeStart(from.clone());
       selection.setRangeEnd(instance._createCellCoords(to.row, column));
     },
@@ -24840,25 +24645,25 @@ function _typeof$C(obj) {
   }, _typeof$C(obj);
 }
 function _slicedToArray$d(arr, i) {
-  return _arrayWithHoles$d(arr) || _iterableToArrayLimit$d(arr, i) || _unsupportedIterableToArray$p(arr, i) || _nonIterableRest$d();
+  return _arrayWithHoles$d(arr) || _iterableToArrayLimit$d(arr, i) || _unsupportedIterableToArray$o(arr, i) || _nonIterableRest$d();
 }
 function _nonIterableRest$d() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$p(o, minLen) {
+function _unsupportedIterableToArray$o(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$p(o, minLen);
+    return _arrayLikeToArray$o(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$p(o, minLen);
+    return _arrayLikeToArray$o(o, minLen);
 }
-function _arrayLikeToArray$p(arr, len) {
+function _arrayLikeToArray$o(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -25559,25 +25364,25 @@ function _typeof$D(obj) {
   }, _typeof$D(obj);
 }
 function _slicedToArray$e(arr, i) {
-  return _arrayWithHoles$e(arr) || _iterableToArrayLimit$e(arr, i) || _unsupportedIterableToArray$q(arr, i) || _nonIterableRest$e();
+  return _arrayWithHoles$e(arr) || _iterableToArrayLimit$e(arr, i) || _unsupportedIterableToArray$p(arr, i) || _nonIterableRest$e();
 }
 function _nonIterableRest$e() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$q(o, minLen) {
+function _unsupportedIterableToArray$p(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$q(o, minLen);
+    return _arrayLikeToArray$p(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$q(o, minLen);
+    return _arrayLikeToArray$p(o, minLen);
 }
-function _arrayLikeToArray$q(arr, len) {
+function _arrayLikeToArray$p(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -26155,4 +25960,4 @@ var TextCellType = {
   renderer: textRenderer
 };
 
-export { _getEditorInstance as $, getTrimmingContainer as A, BaseEditor as B, Core as C, arrayMap as D, stripTags as E, isPrintableChar as F, hasClass as G, Hooks as H, EventManager as I, isFunctionKey as J, KEY_CODES as K, deepExtend as L, empty as M, removeClass as N, objectEach as O, fastInnerHTML as P, EDITOR_STATE as Q, _register as R, SHORTCUTS_GROUP_NAVIGATION as S, TextCellType as T, baseRenderer as U, isEmpty as V, SHORTCUTS_GROUP_EDITOR as W, isNumeric as X, rangeEach as Y, _register$1 as Z, _register$3 as _, getLanguagesDictionaries as a, CONTEXTMENU_ITEMS_UNDO as a$, _register$2 as a0, defineGetter as a1, getPluginsNames as a2, arrayEach as a3, hasPlugin as a4, hasItem$3 as a5, hasItem as a6, hasItem$1 as a7, hasItem$2 as a8, isObject as a9, closest as aA, deepClone as aB, isChildOf as aC, CONTEXTMENU_ITEMS_EDIT_COMMENT as aD, CONTEXTMENU_ITEMS_ADD_COMMENT as aE, CONTEXTMENU_ITEMS_REMOVE_COMMENT as aF, CONTEXTMENU_ITEMS_READ_ONLY_COMMENT as aG, CONTEXTMENU_ITEMS_ALIGNMENT as aH, CONTEXTMENU_ITEMS_ALIGNMENT_LEFT as aI, CONTEXTMENU_ITEMS_ALIGNMENT_CENTER as aJ, CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT as aK, CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY as aL, CONTEXTMENU_ITEMS_ALIGNMENT_TOP as aM, CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE as aN, CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM as aO, CONTEXTMENU_ITEMS_CLEAR_COLUMN as aP, CONTEXTMENU_ITEMS_INSERT_LEFT as aQ, CONTEXTMENU_ITEMS_INSERT_RIGHT as aR, CONTEXTMENU_ITEMS_READ_ONLY as aS, CONTEXTMENU_ITEMS_REDO as aT, CONTEXTMENU_ITEMS_REMOVE_COLUMN as aU, transformSelectionToColumnDistance as aV, CONTEXTMENU_ITEMS_REMOVE_ROW as aW, transformSelectionToRowDistance as aX, CONTEXTMENU_ITEMS_ROW_ABOVE as aY, CONTEXTMENU_ITEMS_ROW_BELOW as aZ, CONTEXTMENU_ITEMS_NO_ITEMS as a_, PhysicalIndexToValueMap as aa, hasOwnProperty as ab, isPercentValue as ac, valueAccordingPercent as ad, ViewportColumnsCalculator as ae, arrayReduce as af, arrayFilter as ag, cancelAnimationFrame as ah, requestAnimationFrame as ai, isVisible as aj, getIncreasedIndexes as ak, getDecreasedIndexes as al, IndexMap as am, warn as an, arrayUnique as ao, fastInnerText as ap, LinkedPhysicalIndexToValueMap as aq, isRightClick as ar, staticRegister as as, IndexesSequence as at, isUndefined as au, isFunction as av, toSingleLine as aw, mixin as ax, localHooks as ay, debounce as az, registerLanguageDictionary as b, TrimmingMap as b$, getWindowScrollTop as b0, getWindowScrollLeft as b1, getParentWindow as b2, isWindowsOS as b3, isMobileBrowser as b4, isIpadOS as b5, isInput as b6, CONTEXTMENU_ITEMS_COPY as b7, CONTEXTMENU_ITEMS_CUT as b8, selectElementIfAllowed as b9, FILTERS_CONDITIONS_BEFORE as bA, FILTERS_CONDITIONS_BETWEEN as bB, FILTERS_CONDITIONS_NOT_BETWEEN as bC, FILTERS_CONDITIONS_BEGINS_WITH as bD, FILTERS_CONDITIONS_ENDS_WITH as bE, FILTERS_CONDITIONS_CONTAINS as bF, FILTERS_CONDITIONS_NOT_CONTAIN as bG, FILTERS_CONDITIONS_TOMORROW as bH, FILTERS_CONDITIONS_TODAY as bI, FILTERS_CONDITIONS_YESTERDAY as bJ, getComparisonFunction as bK, FILTERS_LABELS_CONJUNCTION as bL, FILTERS_LABELS_DISJUNCTION as bM, FILTERS_NAMESPACE as bN, FILTERS_BUTTONS_PLACEHOLDER_VALUE as bO, FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE as bP, FILTERS_CONDITIONS_NAMESPACE as bQ, isKey as bR, FILTERS_BUTTONS_PLACEHOLDER_SEARCH as bS, FILTERS_BUTTONS_SELECT_ALL as bT, FILTERS_BUTTONS_CLEAR as bU, partial as bV, dataRowToChangesArray as bW, FILTERS_VALUES_BLANK_CELLS as bX, FILTERS_BUTTONS_OK as bY, FILTERS_BUTTONS_CANCEL as bZ, curry as b_, stringify$1 as ba, _dataToHTML as bb, sanitize as bc, htmlToGridSettings as bd, parse as be, getSelectionText as bf, CONTEXTMENU_ITEMS_BORDERS_BOTTOM as bg, CONTEXTMENU_ITEMS_BORDERS_LEFT as bh, CONTEXTMENU_ITEMS_REMOVE_BORDERS as bi, CONTEXTMENU_ITEMS_BORDERS_RIGHT as bj, CONTEXTMENU_ITEMS_BORDERS_TOP as bk, detectSelectionType as bl, normalizeSelectionFactory as bm, CONTEXTMENU_ITEMS_BORDERS as bn, clone as bo, substitute as bp, FILTERS_CONDITIONS_NONE as bq, FILTERS_CONDITIONS_EMPTY as br, FILTERS_CONDITIONS_NOT_EMPTY as bs, FILTERS_CONDITIONS_EQUAL as bt, FILTERS_CONDITIONS_NOT_EQUAL as bu, FILTERS_CONDITIONS_GREATER_THAN as bv, FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL as bw, FILTERS_CONDITIONS_LESS_THAN as bx, FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL as by, FILTERS_CONDITIONS_AFTER as bz, getTranslatedPhrase as c, FILTERS_DIVS_FILTER_BY_CONDITION as c0, FILTERS_DIVS_FILTER_BY_VALUE as c1, isArrayOfArrays as c2, error as c3, toUpperCaseFirst as c4, CONTEXTMENU_ITEMS_HIDE_COLUMN as c5, CONTEXTMENU_ITEMS_SHOW_COLUMN as c6, HidingMap as c7, CONTEXTMENU_ITEMS_HIDE_ROW as c8, CONTEXTMENU_ITEMS_SHOW_ROW as c9, CONTEXTMENU_ITEMS_FREEZE_COLUMN as ca, CONTEXTMENU_ITEMS_UNFREEZE_COLUMN as cb, isDetached as cc, ViewportRowsCalculator as cd, rangeEachReverse as ce, CONTEXTMENU_ITEMS_UNMERGE_CELLS as cf, CONTEXTMENU_ITEMS_MERGE_CELLS as cg, HEADER_TYPE as ch, ACTIVE_HEADER_TYPE as ci, isLeftClick as cj, CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD as ck, CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD as cl, isArrayOfObjects as cm, isTouchSupported as cn, inherit as co, registerPlugin as cp, dictionaryKeys as d, getListWithInsertedItems$1 as e, getListWithRemovedItems$1 as f, getLanguageDictionary as g, getListWithInsertedItems as h, getListWithRemovedItems as i, extend as j, TextEditor as k, stopImmediatePropagation as l, metaSchemaFactory as m, isDefined as n, addClass as o, getScrollbarWidth as p, outerWidth as q, rootInstanceSymbol as r, setCaretPosition as s, textRenderer as t, stringify as u, getCaretPosition as v, getSelectionEndPosition as w, pivot as x, offset as y, outerHeight as z };
+export { _register$1 as $, getTrimmingContainer as A, BaseEditor as B, Core as C, arrayMap as D, stripTags as E, isPrintableChar as F, hasClass as G, Hooks as H, EventManager as I, isFunctionKey as J, KEY_CODES as K, deepExtend as L, empty as M, removeClass as N, objectEach as O, fastInnerHTML as P, EDITOR_STATE as Q, _register as R, SHORTCUTS_GROUP_NAVIGATION as S, TextCellType as T, baseRenderer as U, isEmpty as V, SHORTCUTS_GROUP_EDITOR as W, isNumeric as X, rangeEach as Y, _getEditorInstance as Z, _register$2 as _, getLanguagesDictionaries as a, getParentWindow as a$, defineGetter as a0, getPluginsNames as a1, arrayEach as a2, hasPlugin as a3, hasItem$2 as a4, hasItem as a5, hasItem$1 as a6, isObject as a7, PhysicalIndexToValueMap as a8, hasOwnProperty as a9, CONTEXTMENU_ITEMS_EDIT_COMMENT as aA, CONTEXTMENU_ITEMS_ADD_COMMENT as aB, CONTEXTMENU_ITEMS_REMOVE_COMMENT as aC, CONTEXTMENU_ITEMS_READ_ONLY_COMMENT as aD, CONTEXTMENU_ITEMS_ALIGNMENT as aE, CONTEXTMENU_ITEMS_ALIGNMENT_LEFT as aF, CONTEXTMENU_ITEMS_ALIGNMENT_CENTER as aG, CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT as aH, CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY as aI, CONTEXTMENU_ITEMS_ALIGNMENT_TOP as aJ, CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE as aK, CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM as aL, CONTEXTMENU_ITEMS_CLEAR_COLUMN as aM, CONTEXTMENU_ITEMS_INSERT_LEFT as aN, CONTEXTMENU_ITEMS_INSERT_RIGHT as aO, CONTEXTMENU_ITEMS_READ_ONLY as aP, CONTEXTMENU_ITEMS_REDO as aQ, CONTEXTMENU_ITEMS_REMOVE_COLUMN as aR, transformSelectionToColumnDistance as aS, CONTEXTMENU_ITEMS_REMOVE_ROW as aT, transformSelectionToRowDistance as aU, CONTEXTMENU_ITEMS_ROW_ABOVE as aV, CONTEXTMENU_ITEMS_ROW_BELOW as aW, CONTEXTMENU_ITEMS_NO_ITEMS as aX, CONTEXTMENU_ITEMS_UNDO as aY, getWindowScrollTop as aZ, getWindowScrollLeft as a_, isPercentValue as aa, valueAccordingPercent as ab, ViewportColumnsCalculator as ac, arrayReduce as ad, arrayFilter as ae, cancelAnimationFrame as af, requestAnimationFrame as ag, isVisible as ah, getIncreasedIndexes as ai, getDecreasedIndexes as aj, IndexMap as ak, warn as al, arrayUnique as am, fastInnerText as an, LinkedPhysicalIndexToValueMap as ao, isRightClick as ap, IndexesSequence as aq, isUndefined as ar, isFunction as as, toSingleLine as at, mixin as au, localHooks as av, debounce as aw, closest as ax, deepClone as ay, isChildOf as az, registerLanguageDictionary as b, isArrayOfArrays as b$, isWindowsOS as b0, isMobileBrowser as b1, isIpadOS as b2, isInput as b3, CONTEXTMENU_ITEMS_COPY as b4, CONTEXTMENU_ITEMS_CUT as b5, selectElementIfAllowed as b6, stringify$1 as b7, _dataToHTML as b8, sanitize as b9, FILTERS_CONDITIONS_BEGINS_WITH as bA, FILTERS_CONDITIONS_ENDS_WITH as bB, FILTERS_CONDITIONS_CONTAINS as bC, FILTERS_CONDITIONS_NOT_CONTAIN as bD, FILTERS_CONDITIONS_TOMORROW as bE, FILTERS_CONDITIONS_TODAY as bF, FILTERS_CONDITIONS_YESTERDAY as bG, getComparisonFunction as bH, FILTERS_LABELS_CONJUNCTION as bI, FILTERS_LABELS_DISJUNCTION as bJ, FILTERS_NAMESPACE as bK, FILTERS_BUTTONS_PLACEHOLDER_VALUE as bL, FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE as bM, FILTERS_CONDITIONS_NAMESPACE as bN, isKey as bO, FILTERS_BUTTONS_PLACEHOLDER_SEARCH as bP, FILTERS_BUTTONS_SELECT_ALL as bQ, FILTERS_BUTTONS_CLEAR as bR, partial as bS, dataRowToChangesArray as bT, FILTERS_VALUES_BLANK_CELLS as bU, FILTERS_BUTTONS_OK as bV, FILTERS_BUTTONS_CANCEL as bW, curry as bX, TrimmingMap as bY, FILTERS_DIVS_FILTER_BY_CONDITION as bZ, FILTERS_DIVS_FILTER_BY_VALUE as b_, htmlToGridSettings as ba, parse as bb, getSelectionText as bc, CONTEXTMENU_ITEMS_BORDERS_BOTTOM as bd, CONTEXTMENU_ITEMS_BORDERS_LEFT as be, CONTEXTMENU_ITEMS_REMOVE_BORDERS as bf, CONTEXTMENU_ITEMS_BORDERS_RIGHT as bg, CONTEXTMENU_ITEMS_BORDERS_TOP as bh, detectSelectionType as bi, normalizeSelectionFactory as bj, CONTEXTMENU_ITEMS_BORDERS as bk, clone as bl, substitute as bm, FILTERS_CONDITIONS_NONE as bn, FILTERS_CONDITIONS_EMPTY as bo, FILTERS_CONDITIONS_NOT_EMPTY as bp, FILTERS_CONDITIONS_EQUAL as bq, FILTERS_CONDITIONS_NOT_EQUAL as br, FILTERS_CONDITIONS_GREATER_THAN as bs, FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL as bt, FILTERS_CONDITIONS_LESS_THAN as bu, FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL as bv, FILTERS_CONDITIONS_AFTER as bw, FILTERS_CONDITIONS_BEFORE as bx, FILTERS_CONDITIONS_BETWEEN as by, FILTERS_CONDITIONS_NOT_BETWEEN as bz, getTranslatedPhrase as c, error as c0, toUpperCaseFirst as c1, CONTEXTMENU_ITEMS_HIDE_COLUMN as c2, CONTEXTMENU_ITEMS_SHOW_COLUMN as c3, HidingMap as c4, CONTEXTMENU_ITEMS_HIDE_ROW as c5, CONTEXTMENU_ITEMS_SHOW_ROW as c6, CONTEXTMENU_ITEMS_FREEZE_COLUMN as c7, CONTEXTMENU_ITEMS_UNFREEZE_COLUMN as c8, isDetached as c9, ViewportRowsCalculator as ca, rangeEachReverse as cb, CONTEXTMENU_ITEMS_UNMERGE_CELLS as cc, CONTEXTMENU_ITEMS_MERGE_CELLS as cd, HEADER_TYPE as ce, ACTIVE_HEADER_TYPE as cf, isLeftClick as cg, CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD as ch, CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD as ci, isArrayOfObjects as cj, isTouchSupported as ck, inherit as cl, registerPlugin as cm, dictionaryKeys as d, getListWithInsertedItems$1 as e, getListWithRemovedItems$1 as f, getLanguageDictionary as g, getListWithInsertedItems as h, getListWithRemovedItems as i, extend as j, TextEditor as k, stopImmediatePropagation as l, metaSchemaFactory as m, isDefined as n, addClass as o, getScrollbarWidth as p, outerWidth as q, rootInstanceSymbol as r, setCaretPosition as s, textRenderer as t, stringify as u, getCaretPosition as v, getSelectionEndPosition as w, pivot as x, offset as y, outerHeight as z };

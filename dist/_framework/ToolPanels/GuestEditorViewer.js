@@ -27,6 +27,7 @@ export default function EditorViewer() {
   const [pageCid, setPageCid] = useState(null);
   const [errMsg, setErrMsg] = useState(null);
   useEffect(async () => {
+    const prevTitle = document.title;
     let resp = await axios.get(`/api/getCidForAssignment.php`, {params: {doenetId, latestAttemptOverrides: false, publicOnly: true, userCanViewSourceOnly: true}});
     let activityCid;
     if (!resp.data.success || !resp.data.cid) {
@@ -56,6 +57,10 @@ export default function EditorViewer() {
     if (errMsg) {
       setErrMsg(null);
     }
+    document.title = `${resp.data.label} - Doenet`;
+    return () => {
+      document.title = prevTitle;
+    };
   }, [doenetId]);
   let initDoenetML = useRecoilCallback(({snapshot, set}) => async (pageCid2) => {
     const doenetML = await retrieveTextFileForCid(pageCid2, "doenet");
@@ -124,7 +129,7 @@ function findFirstPageCidFromCompiledActivity(orderObj) {
     if (item.type === "page") {
       return item.cid;
     } else {
-      let nextOrderResponse = findFirstPageOfActivity(item);
+      let nextOrderResponse = findFirstPageOfActivity(item.content);
       if (nextOrderResponse) {
         return nextOrderResponse;
       }

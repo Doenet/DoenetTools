@@ -194,22 +194,40 @@ export default class Curve extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-
-        let curveDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          curveDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          curveDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          curveDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          curveDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        curveDescription += dependencyValues.selectedStyle.lineColorWord;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
 
-        return { setValue: { styleDescription: curveDescription } };
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " curve";
+
+        return { setValue: { styleDescriptionWithNoun } };
       }
     }
 
@@ -3199,6 +3217,10 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
 
     let x1 = variables.x1?.evaluate_to_constant();
     let x2 = variables.x2?.evaluate_to_constant();
+
+    // Note: if x1 and and x2 are not numbers,
+    // the below algorithm may yield values calculated at parMin or parMax
+
 
     let xscale = scales[0];
     let yscale = scales[1];

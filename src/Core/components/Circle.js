@@ -6,6 +6,7 @@ import me from 'math-expressions';
 export default class Circle extends Curve {
   static componentType = "circle";
   static rendererType = "circle";
+  static representsClosedPath = true;
 
   actions = {
     moveCircle: this.moveCircle.bind(this),
@@ -43,9 +44,142 @@ export default class Circle extends Curve {
 
     let stateVariableDefinitions = GraphicalComponent.returnStateVariableDefinitions(args);
 
-    let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
+    stateVariableDefinitions.styleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
 
-    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescription = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord;
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " border";
+          } else {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescriptionWithNoun;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescriptionWithNoun = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+            + " circle";
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " circle with a " + borderDescription + " border";
+          } else {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " circle with a " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+
+    stateVariableDefinitions.borderStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderStyleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderStyleDescription) {
+            borderStyleDescription += " ";
+          }
+          borderStyleDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        if (borderStyleDescription) {
+          borderStyleDescription += " ";
+        }
+        
+        borderStyleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { borderStyleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.fillStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let fillStyleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          fillStyleDescription = "unfilled";
+        } else {
+          fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;
+        }
+
+        return { setValue: { fillStyleDescription } };
+      }
+    }
 
 
     stateVariableDefinitions.curveType = {

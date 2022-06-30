@@ -157,6 +157,8 @@ import OrbitalDiagram from './components/OrbitalDiagram';
 import DataFrame from './components/DataFrame';
 import SummaryStatistics from './components/SummaryStatistics';
 import Chart from './components/Chart';
+import Legend from './components/Legend';
+import Label from './components/Label';
 
 
 //Extended
@@ -176,6 +178,7 @@ import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
 import SectioningComponent from './components/abstract/SectioningComponent';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
 import TextOrInline from './components/abstract/TextOrInline';
+import TextOrLatexFromInline from './components/abstract/TextOrLatexFromInline';
 import SingleCharacterInline from './components/abstract/SingleCharacterInline';
 
 const componentTypeArray = [
@@ -312,6 +315,8 @@ const componentTypeArray = [
   DataFrame,
   SummaryStatistics,
   Chart,
+  Legend,
+  Label,
 
   BaseComponent,
   InlineComponent,
@@ -332,6 +337,7 @@ const componentTypeArray = [
   SectioningComponent,
   InlineRenderInlineChildren,
   TextOrInline,
+  TextOrLatexFromInline,
   SingleCharacterInline,
 ];
 

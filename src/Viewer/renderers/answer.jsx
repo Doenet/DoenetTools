@@ -78,9 +78,9 @@ export default React.memo(function Answer(props) {
       checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
     }
 
-    let checkWorkText = "Check Work";
+    let checkWorkText = SVs.submitLabel;
     if (!SVs.showCorrectness) {
-      checkWorkText = "Submit Response";
+      checkWorkText = SVs.submitLabelNoCorrectness;
     }
     let checkworkComponent = (
       <Button id={name + "_submit"}
