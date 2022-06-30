@@ -42,8 +42,7 @@ if ($doenetId == "") {
 
 
 if ($success) {
-    $sql = "
-        SELECT cu.timeLimitMultiplier AS timeLimitMultiplier
+    $sql = "SELECT cu.timeLimitMultiplier AS timeLimitMultiplier
         FROM course_user AS cu
         LEFT JOIN course_content AS cc
         ON cu.courseId = cc.courseId
