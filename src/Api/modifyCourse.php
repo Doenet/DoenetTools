@@ -22,27 +22,40 @@ if (array_key_exists('courseId', $_POST)) {
         $userId,
         $courseId
     );
-    $allowed = $permissons['canModifyCourseSettings']; //TODO Emilio deal with undefined (for a 401?)
+    $allowed = $permissons['canModifyCourseSettings'] == '1';
+
+    if (array_key_exists('defaultRole', $_POST)) {
+        $allowed = $allowed && $permissons['canManageUsers'];
+    }
 
     if ($allowed) {
-        //TODO: should check for db success from result object
-        //TODO: join the two updates
-        if (array_key_exists('image', $_POST)) {
-            $image = mysqli_real_escape_string($conn, $_POST['image']);
-            $sql = "UPDATE course SET image='$image' WHERE courseId ='$courseId'";
-            $result = $conn->query($sql);
+        $settings = ['image', 'color', 'label', 'defaultRoleId'];
+        $segments = [];
+        foreach ($settings as $setting) {
+            if (array_key_exists($setting, $_POST)) {
+                $sanitizedNewValue = mysqli_real_escape_string(
+                    $conn,
+                    $_POST[$setting]
+                );
+                array_push($segments, "$setting = '$sanitizedNewValue'");
+            }
         }
-        if (array_key_exists('color', $_POST)) {
-            $color = mysqli_real_escape_string($conn, $_POST['color']);
-            $sql = "UPDATE course SET color='$color' WHERE courseId ='$courseId'";
-            $result = $conn->query($sql);
+        $updates = implode(',', $segments);
+
+        $sql = "UPDATE course 
+            SET
+            $updates
+            WHERE 
+            courseId ='$courseId'
+        ";
+
+        $result = $conn->query($sql);
+
+        if ($result == true) {
+            http_response_code(202);
+        } else {
+            http_response_code(500);
         }
-        if (array_key_exists('label', $_POST)) {
-            $label = mysqli_real_escape_string($conn, $_POST['label']);
-            $sql = "UPDATE course SET label='$label' WHERE courseId ='$courseId'";
-            $result = $conn->query($sql);
-        }
-        http_response_code(202);
     } else {
         http_response_code(403); //User if forbidden from operation
     }
