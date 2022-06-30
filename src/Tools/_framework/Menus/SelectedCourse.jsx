@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useCallback, useLayoutEffect } from 'react';
-import { useRecoilValue, useRecoilValueLoadable, useSetRecoilState } from 'recoil';
-import {
-  faChalkboard,
-} from '@fortawesome/free-solid-svg-icons';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+} from 'react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { faChalkboard } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
@@ -10,16 +13,21 @@ import { useToast, toastType } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ColorImagePicker from '../../../_reactComponents/PanelHeaderComponents/ColorImagePicker';
-import { coursePermissionsAndSettingsByCourseId, courseUsersByCourseId, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import {
+  courseUsersAndRolesByCourseId,
+  useCourse,
+} from '../../../_reactComponents/Course/CourseActions';
 import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
+import Form from '../../../_reactComponents/PanelHeaderComponents/Form';
 import axios from 'axios';
+import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
 
-  if (selection.length === 1 && (selection[0]?.isOwner || selection[0]?.canModifyCourseSettings)) {
+  if (selection.length === 1 && selection[0]?.canModifyCourseSettings === '1') {
     return (
       <CourseInfoPanel
         key={`CourseInfoPanel${selection[0].courseId}`}
@@ -34,7 +42,8 @@ export default function SelectedCourse() {
         </h2>
       </>
     );
-  } else if (selection.length > 1 && selection[0]?.isOwner) { //should be aware of all course permissons
+  } else if (selection.length > 1 && selection[0]?.isOwner) {
+    //should be aware of all course permissons
     return (
       <>
         <h2> {selection.length} Courses Selected</h2>
@@ -71,6 +80,8 @@ export default function SelectedCourse() {
 const CourseInfoPanel = function ({ courseId }) {
   const { deleteCourse, modifyCourse, label, color, image } =
     useCourse(courseId);
+  const { canViewUsers, canManageUsers, canModifyRoles, isOwner } =
+    useRecoilValue(effectivePermissionsByCourseId(courseId));
   const [driveLabel, setDriveLabel] = useState(label);
   const [panelDriveLabel, setPanelDriveLabel] = useState(label);
   // const [driveUsers, setDriveUsers] = useRecoilStateLoadable(
@@ -124,137 +135,205 @@ const CourseInfoPanel = function ({ courseId }) {
         }}
       />
       <br />
-      <ManageRoles courseId={courseId}/>
+      {canViewUsers === '1' && (
+        <ManageUsers courseId={courseId} editable={canManageUsers === '1'} />
+      )}
       <br />
-      <ButtonGroup vertical>
-        <Button
-          width="menu"
-          value="Delete Course"
-          alert
-          onClick={handelDelete}
-          onKeyDown={(e) => {
-            if (e.keyCode === 13) {
-              handelDelete();
-            }
-          }}
-        />
-      </ButtonGroup>
+      {canModifyRoles === '1' && <MangeRoles courseId={courseId} />}
+      <br />
+      {isOwner === '1' && (
+        <ButtonGroup vertical>
+          <Button
+            width="menu"
+            value="Delete Course"
+            alert
+            onClick={handelDelete}
+            onKeyDown={(e) => {
+              if (e.keyCode === 13) {
+                handelDelete();
+              }
+            }}
+          />
+        </ButtonGroup>
+      )}
     </>
   );
 };
 
-function ManageRoles({courseId}) {
-  const {canModifyRoles} = useRecoilValueLoadable(coursePermissionsAndSettingsByCourseId(courseId)).getValue();
-  const courseUsersRecoil = useRecoilValueLoadable(courseUsersByCourseId(courseId)).getValue();
+function AddUser({ courseId }) {
+  const setCourseUsers = useSetRecoilState(
+    courseUsersAndRolesByCourseId(courseId),
+  );
 
-  const [emailInput, setEmailInput] = useState('')
+  const [emailInput, setEmailInput] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
-  const [userEmails, setUserEmails] = useState(courseUsersRecoil.map(({email, screenName}) => (<option value={email} key={email}>{screenName} ({email})</option>)));
-  const [selectedEmail, setSelectedEmail] = useState(null);
-  const [selectedEmailRole, setSelectedEmailRole] = useState(null);
-  
-  const roles = ["Owner", "Admin", "View Only"];
+  useLayoutEffect(() => {
+    setIsEmailValid(validateEmail(emailInput));
+  }, [emailInput]);
 
   const handleEmailChange = async () => {
     if (isEmailValid) {
       //Add user permission (admin only for now), then cb on success. php will add new user if they dont exisit.
-      const {data: {success}} = await axios.post('/api/updateUserRole.php', { roleLabels: selectedEmailRole});
-      setUserEmails((prev) => [...prev, <option value={emailInput} key={emailInput}>({emailInput})</option>]);
+      const {
+        data: { success },
+      } = await axios.post('/api/updateUserRole.php', {
+        // roleLabels: selectedEmailRole,
+      });
+      //TODO: better defaults
+      setCourseUsers((prev) => [
+        ...prev,
+        {
+          email: emailInput,
+          isUser: true,
+          roleId: '',
+          roleLabel: '',
+          screenName: '',
+        },
+      ]);
       setEmailInput('');
-    };
-  }
-
-  const handleRoleChange = () => {
-    //TODO: write a php for changing role. or find one for perms updating ks
-
-  }
-
-  useLayoutEffect(() => {
-    setIsEmailValid(validateEmail(emailInput));
-  }, [emailInput])
-
-  const getRole = useCallback((email) => {
-    return courseUsersRecoil.find(({email: userEmail}) => (userEmail === email))?.roles[0] ?? null;
-  }, [courseUsersRecoil])
-
-  useEffect(() => {
-    //get the role assciation from somehere
-    setSelectedEmailRole(getRole(selectedEmail));
-  }, [getRole, selectedEmail]);
-
-  useLayoutEffect(() => {
-    setUserEmails(courseUsersRecoil.map(
-      ({email, screenName}) => (
-        <option value={email} key={email}>{screenName} ({email})</option>
-      )
-    ));
-  }, [courseUsersRecoil])
-  //TODO csv add
-  if (canModifyRoles !== '1') return null;
+    }
+  };
 
   return (
     <>
-      <RelatedItems
-        width="menu" 
-        label="Select User:"
-        options={userEmails} 
+      <Textfield
+        width="menu"
+        label="Add User:"
+        placeholder="email"
+        value={emailInput}
         onChange={(e) => {
-          setSelectedEmail(e.target.value);
+          setEmailInput(e.target.value);
+        }}
+        onKeyDown={(e) => {
+          if (e.code === 'Enter') handleEmailChange();
+        }}
+        alert={emailInput !== '' && !isEmailValid}
+        vertical
+      />
+      <Button
+        width="menu"
+        value="Add User"
+        onClick={handleEmailChange}
+        disabled={!isEmailValid}
+      />
+    </>
+  );
+}
+
+function ManageUsers({ courseId, editable = false }) {
+  const addToast = useToast();
+  const { users: courseUsersRecoil, roles: courseRolesRecoil } = useRecoilValue(
+    courseUsersAndRolesByCourseId(courseId),
+  );
+
+  console.log({ users: courseUsersRecoil, roles: courseRolesRecoil });
+
+  const [selectedUserData, setSelectedUserData] = useState(null);
+  const [selectedUserPermissons, setSelectedUserPermissons] = useState(null);
+
+  const handleRoleChange = async () => {
+    const {
+      data: { success, message },
+    } = await axios.post('api/updateUserRole.php', {
+      courseId,
+      userEmail: selectedUserData?.email,
+      roleId: selectedUserPermissons?.roleId,
+    });
+    if (success) {
+      addToast(
+        `${selectedUserData.screenName} is now a ${selectedUserPermissons.roleLabel}`,
+      );
+    } else {
+      addToast(message, toastType.ERROR);
+      setSelectedUserPermissons(selectedUserData.permissons);
+    }
+  };
+
+  //TODO EMILIO csv add
+  return (
+    <>
+      <RelatedItems
+        width="menu"
+        label="Select User:"
+        options={
+          courseUsersRecoil?.map((user, idx) => (
+            <option value={idx} key={user.email}>
+              {user.screenName} ({user.email})
+            </option>
+          )) ?? []
+        }
+        onChange={({ target: { value: idx } }) => {
+          let user = courseUsersRecoil[idx];
+          let permissons =
+            courseRolesRecoil?.find(({ roleId }) => roleId === user.roleId) ??
+            {};
+          setSelectedUserData({ ...user, permissons });
+          setSelectedUserPermissons(permissons);
         }}
         vertical
       />
       <br />
       <DropdownMenu
-        label="User"
+        label="Role:"
         title=""
-        items={roles.map((value, idx) => ([idx, value]))}
-        onChange={({value}) =>{ setSelectedEmailRole(value)}}
-        valueIndex={roles.indexOf(selectedEmailRole) + 1}
-        disabled={selectedEmailRole === 'Owner' || selectedEmailRole === null}
-      />
-      <Button
-        width="menu"
-        value="Assign Role"
-        onClick={handleRoleChange}
-        disabled={selectedEmailRole === 'Owner' || selectedEmailRole === null}
-      />
-      <Textfield
-        width="menu" 
-        label="Add User:" 
-        placeholder="email" 
-        value={emailInput}
-        onChange={(e) => {setEmailInput(e.target.value)}} 
-        onKeyDown={(e) => {if(e.code === 'Enter') handleEmailChange()}} 
-        alert={emailInput !== '' && !isEmailValid}
+        items={
+          courseRolesRecoil?.map(({ roleLabel, roleId }) => [
+            roleId,
+            roleLabel,
+          ]) ?? []
+        }
+        onChange={({ value: selectedRoleId }) => {
+          setSelectedUserPermissons(
+            courseRolesRecoil?.find(
+              ({ roleId }) => roleId === selectedRoleId,
+            ) ?? null,
+          );
+        }}
+        valueIndex={
+          courseRolesRecoil.findIndex(
+            ({ roleId }) => roleId == selectedUserPermissons?.roleId,
+          ) + 1
+        }
+        disabled={selectedUserData?.permissons?.isOwner === '1' || !editable}
         vertical
       />
-      <Button
-        width="menu" 
-        value="Add User" 
-        onClick={handleEmailChange} 
-        disabled={!isEmailValid}
-      />
+      {editable && (
+        <Button
+          width="menu"
+          value="Assign Role"
+          onClick={handleRoleChange}
+          disabled={selectedUserData?.permissons?.isOwner === '1' || !editable}
+        />
+      )}
+      {editable && <AddUser courseId={courseId} />}
     </>
-  )
+  );
+}
+
+function MangeRoles({ courseId }) {
+  return <div>Coming soon!</div>;
 }
 
 function NewUser(props) {
   const [email, setEmail] = useState('');
   const addToast = useToast();
 
-  const addUserCB = useCallback((resp) => {
-    if (resp.success) {
-      props.setDriveUsers({
-        driveId: props.driveId,
-        type: `${props.type} step 2`,
-        email,
-        screenName: resp.screenName,
-        userId: resp.userId,
-      });
-    } else {
-      addToast(resp.message);
-    }
-  },[addToast, email, props])
+  const addUserCB = useCallback(
+    (resp) => {
+      if (resp.success) {
+        props.setDriveUsers({
+          driveId: props.driveId,
+          type: `${props.type} step 2`,
+          email,
+          screenName: resp.screenName,
+          userId: resp.userId,
+        });
+      } else {
+        addToast(resp.message);
+      }
+    },
+    [addToast, email, props],
+  );
 
   function addUser() {
     if (email) {
@@ -270,8 +349,6 @@ function NewUser(props) {
       } else {
         addToast(`Not Added: Invalid email ${email}`);
       }
-
-      
     }
   }
   return (
