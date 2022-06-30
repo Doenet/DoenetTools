@@ -28,45 +28,59 @@ if ($success) {
     //Random courseId
     $courseId = include 'randomId.php';
     $courseId = '_' . $courseId;
+    $defaultRoleId = include 'randomId.php';
+    $ownerRoleId = include 'randomId.php';
 
     $sql = "INSERT INTO course
-      (courseId,image)
-      VALUES
-      ('$courseId','$course_pic')
+      SET 
+      courseId = '$courseId',
+      image = '$course_pic',
+      defaultRoleId = '$defaultRoleId'
       ";
 
     $result = $conn->query($sql);
 
-    $roleId = include 'randomId.php';
+    $sql = "INSERT INTO course_role
+      SET
+      courseId = '$courseId',
+      roleId = '$ownerRoleId',
+      label = 'Owner',
+      canViewCourse = '1',
+      isIncludedInGradebook = '0',
+      canViewContentSource = '1',
+      canEditContent = '1',
+      canPublishContent = '1',
+      canViewUnassignedContent = '1',
+      canProctor = '1',
+      canViewAndModifyGrades = '1',
+      canViewActivitySettings = '1',
+      canModifyActivitySettings = '1',
+      canModifyCourseSettings = '1',
+      canViewUsers = '1',
+      canManageUsers = '1',
+      canModifyRoles = '1',
+      dataAccessPermisson = 'Identified',
+      isOwner = '1'
+      ";
+    $result = $conn->query($sql);
 
     $sql = "INSERT INTO course_role
-      (courseId, roleId, label, canViewCourse, isIncludedInGradebook, canViewContentSource,canEditContent,
-      canPublishContent,canViewUnassignedContent,canProctor,canViewAndModifyGrades,
-      canViewActivitySettings,canModifyCourseSettings,canViewUsers,canManageUsers,
-      canModifyRoles,isOwner)
-      VALUES
-      ('$courseId','$roleId','Owner','1','0','1','1','1','1','1','1','1','1','1','1','1','1')
+      SET
+      courseId= '$courseId', 
+      roleId= '$defaultRoleId', 
+      label= 'Student', 
+      canViewCourse = '1', 
+      isIncludedInGradebook = '1'
       ";
+
     $result = $conn->query($sql);
 
     $sql = "INSERT INTO course_user
-      (courseId,userId,roleId)
-      VALUES 
-      ('$courseId','$userId','$roleId')
+      SET
+      courseId ='$courseId',
+      userId ='$userId',
+      roleId ='$ownerRoleId'
       ";
-
-    $result = $conn->query($sql);
-
-    $roleId = include 'randomId.php';
-    $sql = "INSERT INTO course_role
-      (courseId, roleId, label, canViewCourse, isIncludedInGradebook, iscanViewContentSource,canEditContent,
-      canPublishContent,canViewUnassignedContent,canProctor,canViewAndModifyGrades,
-      canViewActivitySettings,canModifyCourseSettings,canViewUsers,canManageUsers,
-      canModifyRoles,isOwner)
-      VALUES
-      ('$courseId','$roleId','Student','1', '1')
-      ";
-
     $result = $conn->query($sql);
 }
 
