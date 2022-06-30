@@ -612,7 +612,7 @@ function findContentsChildIds(content){
 }
 
 export const useCourse = (courseId) => {
-  const { label, color, image } = useRecoilValue(
+  const { label, color, image, defaultRoleId } = useRecoilValue(
     coursePermissionsAndSettingsByCourseId(courseId),
   );
   const addToast = useToast();
@@ -2479,7 +2479,8 @@ export const useCourse = (courseId) => {
     modifyCourse, 
     label, 
     color, 
-    image, 
+    image,
+    defaultRoleId,
     renameItem, 
     compileActivity, 
     updateAssignItem,
