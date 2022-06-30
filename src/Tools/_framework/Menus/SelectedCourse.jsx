@@ -19,7 +19,6 @@ import {
 } from '../../../_reactComponents/Course/CourseActions';
 import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-import Form from '../../../_reactComponents/PanelHeaderComponents/Form';
 import axios from 'axios';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
@@ -84,9 +83,7 @@ const CourseInfoPanel = function ({ courseId }) {
     useRecoilValue(effectivePermissionsByCourseId(courseId));
   const [driveLabel, setDriveLabel] = useState(label);
   const [panelDriveLabel, setPanelDriveLabel] = useState(label);
-  // const [driveUsers, setDriveUsers] = useRecoilStateLoadable(
-  //   fetchDriveUsers(driveId),
-  // );
+
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
   const addToast = useToast();
 
@@ -134,6 +131,8 @@ const CourseInfoPanel = function ({ courseId }) {
           modifyCourse({ color: newColor });
         }}
       />
+      <br />
+      {canManageUsers === '1' && <AddUser courseId={courseId} />}
       <br />
       {canViewUsers === '1' && (
         <ManageUsers courseId={courseId} editable={canManageUsers === '1'} />
@@ -277,6 +276,7 @@ function ManageUsers({ courseId, editable = false }) {
         label="Role:"
         title=""
         items={
+          //TODO reduce to hide roles as needed
           courseRolesRecoil?.map(({ roleLabel, roleId }) => [
             roleId,
             roleLabel,
@@ -302,10 +302,9 @@ function ManageUsers({ courseId, editable = false }) {
           width="menu"
           value="Assign Role"
           onClick={handleRoleChange}
-          disabled={selectedUserData?.permissons?.isOwner === '1' || !editable}
+          disabled={selectedUserData?.permissons?.isOwner === '1'}
         />
       )}
-      {editable && <AddUser courseId={courseId} />}
     </>
   );
 }
