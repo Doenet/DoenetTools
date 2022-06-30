@@ -26,20 +26,13 @@ export default function SelectedCourse() {
   const selection = useRecoilValue(drivecardSelectedNodesAtom);
   const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
 
-  if (selection.length === 1 && selection[0]?.canModifyCourseSettings === '1') {
+  //DO WE Need view perm check? selection[0]?.canViewCourse
+  if (selection.length === 1) {
     return (
       <CourseInfoPanel
         key={`CourseInfoPanel${selection[0].courseId}`}
         courseId={selection[0].courseId}
       />
-    );
-  } else if (selection.length === 1 && selection[0]?.canViewCourse) {
-    return (
-      <>
-        <h2>
-          <FontAwesomeIcon icon={faChalkboard} /> {selection[0].label}
-        </h2>
-      </>
     );
   } else if (selection.length > 1 && selection[0]?.isOwner) {
     //should be aware of all course permissons
@@ -77,15 +70,46 @@ export default function SelectedCourse() {
 }
 
 const CourseInfoPanel = function ({ courseId }) {
-  const { deleteCourse, modifyCourse, label, color, image } =
-    useCourse(courseId);
-  const { canViewUsers, canManageUsers, canModifyRoles, isOwner } =
-    useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const { label } = useCourse(courseId);
+  const {
+    canViewUsers,
+    canManageUsers,
+    canModifyRoles,
+    canModifyCourseSettings,
+    isOwner,
+  } = useRecoilValue(effectivePermissionsByCourseId(courseId));
+
+  return (
+    <>
+      <h2 data-cy="infoPanelItemLabel">
+        <FontAwesomeIcon icon={faChalkboard} /> {label}
+      </h2>
+      {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}
+      {canModifyCourseSettings === '1' && (
+        <EditImageAndColor courseId={courseId} />
+      )}
+      <br />
+      {canModifyRoles === '1' && <DefaultRole courseId={courseId} />}
+      <br />
+      {canManageUsers === '1' && <AddUser courseId={courseId} />}
+      <br />
+      {canViewUsers === '1' && (
+        <ManageUsers courseId={courseId} editable={canManageUsers === '1'} />
+      )}
+      <br />
+      {canModifyRoles === '1' && <MangeRoles courseId={courseId} />}
+      <br />
+      {isOwner === '1' && <DeleteCourse courseId={courseId} />}
+    </>
+  );
+};
+
+function EditLabel({ courseId }) {
+  const { modifyCourse, label } = useCourse(courseId);
+  const addToast = useToast();
+
   const [driveLabel, setDriveLabel] = useState(label);
   const [panelDriveLabel, setPanelDriveLabel] = useState(label);
-
-  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
-  const addToast = useToast();
 
   const handelLabelModfication = () => {
     let effectiveDriveLabel = driveLabel;
@@ -97,72 +121,71 @@ const CourseInfoPanel = function ({ courseId }) {
     setPanelDriveLabel(effectiveDriveLabel);
     modifyCourse({ label: effectiveDriveLabel });
   };
+  return (
+    <Textfield
+      label="Label"
+      vertical
+      width="menu"
+      value={driveLabel}
+      onChange={(e) => setDriveLabel(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.keyCode === 13) handelLabelModfication();
+      }}
+      onBlur={handelLabelModfication}
+    />
+  );
+}
 
-  const handelDelete = () => {
-    deleteCourse(() => {
-      setDrivecardSelection([]);
-      addToast(`${label} deleted`, toastType.SUCCESS);
-    });
-  };
+function EditImageAndColor({ courseId }) {
+  const { modifyCourse, color, image } = useCourse(courseId);
+  return (
+    <ColorImagePicker
+      initialImage={image}
+      initialColor={color}
+      imageCallback={(newImage) => {
+        modifyCourse({ image: newImage, color: 'none' });
+      }}
+      colorCallback={(newColor) => {
+        modifyCourse({ color: newColor, image: 'none' });
+      }}
+    />
+  );
+}
+
+function DefaultRole({ courseId }) {
+  const { modifyCourse, defaultRoleId } = useCourse(courseId);
+  const { roles: courseRolesRecoil } = useRecoilValue(
+    courseUsersAndRolesByCourseId(courseId),
+  );
 
   return (
-    <>
-      <h2 data-cy="infoPanelItemLabel">
-        <FontAwesomeIcon icon={faChalkboard} /> {panelDriveLabel}
-      </h2>
-      <Textfield
-        label="Label"
-        vertical
-        width="menu"
-        value={driveLabel}
-        onChange={(e) => setDriveLabel(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.keyCode === 13) handelLabelModfication();
-        }}
-        onBlur={handelLabelModfication}
-      />
-      <ColorImagePicker
-        initialImage={image}
-        initialColor={color}
-        imageCallback={(newImage) => {
-          modifyCourse({ image: newImage });
-        }}
-        colorCallback={(newColor) => {
-          modifyCourse({ color: newColor });
-        }}
-      />
-      <br />
-      {canManageUsers === '1' && <AddUser courseId={courseId} />}
-      <br />
-      {canViewUsers === '1' && (
-        <ManageUsers courseId={courseId} editable={canManageUsers === '1'} />
-      )}
-      <br />
-      {canModifyRoles === '1' && <MangeRoles courseId={courseId} />}
-      <br />
-      {isOwner === '1' && (
-        <ButtonGroup vertical>
-          <Button
-            width="menu"
-            value="Delete Course"
-            alert
-            onClick={handelDelete}
-            onKeyDown={(e) => {
-              if (e.keyCode === 13) {
-                handelDelete();
-              }
-            }}
-          />
-        </ButtonGroup>
-      )}
-    </>
+    <DropdownMenu
+      label="Default Role:"
+      title=""
+      items={
+        //TODO reduce to hide roles as needed
+        courseRolesRecoil?.map(({ roleLabel, roleId }) => [
+          roleId,
+          roleLabel,
+        ]) ?? []
+      }
+      onChange={({ value: selectedRoleId }) =>
+        modifyCourse({ defaultRoleId: selectedRoleId })
+      }
+      valueIndex={
+        courseRolesRecoil.findIndex(({ roleId }) => roleId == defaultRoleId) + 1
+      }
+      vertical
+    />
   );
-};
+}
 
 function AddUser({ courseId }) {
+  const { defaultRoleId } = useCourse(courseId);
   const setCourseUsers = useSetRecoilState(
     courseUsersAndRolesByCourseId(courseId),
   );
+  const addToast = useToast();
 
   const [emailInput, setEmailInput] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
@@ -175,7 +198,7 @@ function AddUser({ courseId }) {
       //Add user permission (admin only for now), then cb on success. php will add new user if they dont exisit.
       const {
         data: { success },
-      } = await axios.post('/api/updateUserRole.php', {
+      } = await axios.post('/api/addUser.php', {
         // roleLabels: selectedEmailRole,
       });
       //TODO: better defaults
@@ -184,7 +207,7 @@ function AddUser({ courseId }) {
         {
           email: emailInput,
           isUser: true,
-          roleId: '',
+          roleId: defaultRoleId,
           roleLabel: '',
           screenName: '',
         },
@@ -225,8 +248,6 @@ function ManageUsers({ courseId, editable = false }) {
     courseUsersAndRolesByCourseId(courseId),
   );
 
-  console.log({ users: courseUsersRecoil, roles: courseRolesRecoil });
-
   const [selectedUserData, setSelectedUserData] = useState(null);
   const [selectedUserPermissons, setSelectedUserPermissons] = useState(null);
 
@@ -242,6 +263,13 @@ function ManageUsers({ courseId, editable = false }) {
       addToast(
         `${selectedUserData.screenName} is now a ${selectedUserPermissons.roleLabel}`,
       );
+      //TODO set call for courseUsers
+      setSelectedUserData((prev) => ({
+        ...prev,
+        roleId: selectedUserPermissons.roleId,
+        roleLabel: selectedUserPermissons.roleLabel,
+        permissions: selectedUserPermissons,
+      }));
     } else {
       addToast(message, toastType.ERROR);
       setSelectedUserPermissons(selectedUserData.permissons);
@@ -313,91 +341,32 @@ function MangeRoles({ courseId }) {
   return <div>Coming soon!</div>;
 }
 
-function NewUser(props) {
-  const [email, setEmail] = useState('');
+function DeleteCourse({ courseId }) {
   const addToast = useToast();
+  const { deleteCourse, label } = useCourse(courseId);
+  const setCourseCardsSelection = useSetRecoilState(drivecardSelectedNodesAtom);
 
-  const addUserCB = useCallback(
-    (resp) => {
-      if (resp.success) {
-        props.setDriveUsers({
-          driveId: props.driveId,
-          type: `${props.type} step 2`,
-          email,
-          screenName: resp.screenName,
-          userId: resp.userId,
-        });
-      } else {
-        addToast(resp.message);
-      }
-    },
-    [addToast, email, props],
-  );
+  const handelDelete = () => {
+    deleteCourse(() => {
+      setCourseCardsSelection([]);
+      addToast(`${label} deleted`, toastType.SUCCESS);
+    });
+  };
 
-  function addUser() {
-    if (email) {
-      if (validateEmail(email)) {
-        props.setDriveUsers({
-          driveId: props.driveId,
-          type: props.type,
-          email,
-          callback: addUserCB,
-        });
-        setEmail('');
-        addToast(`Added: email ${email}`);
-      } else {
-        addToast(`Not Added: Invalid email ${email}`);
-      }
-    }
-  }
   return (
-    <>
-      <div>
-        <label>
-          User&#39;s Email Address
-          <br />
-          <input
-            type="text"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.keyCode === 13) {
-                addUser();
-              }
-            }}
-            onBlur={() => {
-              addUser();
-            }}
-          />
-        </label>
-      </div>
-      <Button value={`${props.type}`} onClick={() => addUser()} />
-    </>
-
-    // <Form submitButton={`${props.type}`}
-    //   type="text"
-    //   label="Add user:" vertical
-    //   height="24px"
-    //   width="menu"
-    //   value={email}
-    //   onChange={(e) => {
-    //     setEmail(e);
-    //   }}
-    //   clearInput={() => {
-    //     setEmail("");
-    //   }}
-    //   onKeyDown={(e) => {
-    //     if (e.keyCode === 13) {
-    //       addUser();
-    //     }
-    //   }}
-    //   onBlur={() => {
-    //     addUser();
-    //   }}
-    // >
-    // </Form>
+    <ButtonGroup vertical>
+      <Button
+        width="menu"
+        value="Delete Course"
+        alert
+        onClick={handelDelete}
+        onKeyDown={(e) => {
+          if (e.keyCode === 13) {
+            handelDelete();
+          }
+        }}
+      />
+    </ButtonGroup>
   );
 }
 
