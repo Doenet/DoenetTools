@@ -126,10 +126,10 @@ if ($success) {
     }
 
     if (
-        // $requestorPermissions['isOwner'] == '1' &&
-        // $requestorPermissions['canModifyRoles'] == '1' &&
+        // ($requestorPermissions['isOwner'] != '1' ||
+        $requestorPermissions['canModifyRoles'] != '1' &&
         $targetUserPermissions['canModifyRoles'] == '1' &&
-        $newPermisson != '1'
+        $newPermisson == '0'
     ) {
         $success = false;
         $message =
@@ -151,7 +151,10 @@ if ($success) {
     $result = $conn->query(
         "UPDATE course_user
         SET
-        roleId = '$roleId'"
+        roleId = '$roleId'
+        WHERE courseId = '$courseId'
+        AND userId = '$targetUserId'
+        "
     );
 
     if ($result == false) {
