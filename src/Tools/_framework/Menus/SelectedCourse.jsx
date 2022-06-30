@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useLayoutEffect,
-} from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import React, { useState, useLayoutEffect } from 'react';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { faChalkboard } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
@@ -23,22 +18,26 @@ import axios from 'axios';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 export default function SelectedCourse() {
-  const selection = useRecoilValue(drivecardSelectedNodesAtom);
-  const setDrivecardSelection = useSetRecoilState(drivecardSelectedNodesAtom);
+  const [courseCardsSelection, setCourseCardsSelection] = useRecoilState(
+    drivecardSelectedNodesAtom,
+  );
 
   //DO WE Need view perm check? selection[0]?.canViewCourse
-  if (selection.length === 1) {
+  if (courseCardsSelection.length === 1) {
     return (
       <CourseInfoPanel
-        key={`CourseInfoPanel${selection[0].courseId}`}
-        courseId={selection[0].courseId}
+        key={`CourseInfoPanel${courseCardsSelection[0].courseId}`}
+        courseId={courseCardsSelection[0].courseId}
       />
     );
-  } else if (selection.length > 1 && selection[0]?.isOwner) {
+  } else if (
+    courseCardsSelection.length > 1 &&
+    courseCardsSelection[0]?.isOwner
+  ) {
     //should be aware of all course permissons
     return (
       <>
-        <h2> {selection.length} Courses Selected</h2>
+        <h2> {courseCardsSelection.length} Courses Selected</h2>
         <ButtonGroup vertical>
           <Button
             width="menu"
@@ -47,7 +46,7 @@ export default function SelectedCourse() {
               e.preventDefault();
               e.stopPropagation();
               console.log('>>>This will Duplicate courses');
-              setDrivecardSelection([]);
+              setCourseCardsSelection([]);
             }}
           />
           <Button
@@ -58,15 +57,14 @@ export default function SelectedCourse() {
               e.preventDefault();
               e.stopPropagation();
               console.log('>>>This will Delete multiple courses');
-              setDrivecardSelection([]);
+              setCourseCardsSelection([]);
             }}
           />
         </ButtonGroup>
       </>
     );
-  } else {
-    return '';
   }
+  return null;
 }
 
 const CourseInfoPanel = function ({ courseId }) {
@@ -89,10 +87,8 @@ const CourseInfoPanel = function ({ courseId }) {
         <EditImageAndColor courseId={courseId} />
       )}
       <br />
-      {canModifyRoles === '1' && <DefaultRole courseId={courseId} />}
-      <br />
+      {canModifyRoles === '1' && <EditDefaultRole courseId={courseId} />}
       {canManageUsers === '1' && <AddUser courseId={courseId} />}
-      <br />
       {canViewUsers === '1' && (
         <ManageUsers courseId={courseId} editable={canManageUsers === '1'} />
       )}
@@ -152,7 +148,7 @@ function EditImageAndColor({ courseId }) {
   );
 }
 
-function DefaultRole({ courseId }) {
+function EditDefaultRole({ courseId }) {
   const { modifyCourse, defaultRoleId } = useCourse(courseId);
   const { roles: courseRolesRecoil } = useRecoilValue(
     courseUsersAndRolesByCourseId(courseId),
@@ -299,7 +295,6 @@ function ManageUsers({ courseId, editable = false }) {
         }}
         vertical
       />
-      <br />
       <DropdownMenu
         label="Role:"
         title=""
@@ -370,7 +365,7 @@ function DeleteCourse({ courseId }) {
   );
 }
 
-function validateEmail(email) {
+export function validateEmail(email) {
   const re =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
