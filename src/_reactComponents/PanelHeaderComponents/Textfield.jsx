@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 export default function Textfield(props) {
   const labelVisible = props.label ? 'static' : 'none';
-  const align = props.vertical ? 'static' : 'flex';
+  const align = props.vertical ? 'initial' : 'flex';
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
   const inputRef = useRef(null);
