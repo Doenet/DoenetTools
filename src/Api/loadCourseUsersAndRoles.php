@@ -35,6 +35,7 @@ if ($success) {
     $sql = "SELECT 
       cu.userId AS userId,
       cr.label as roleLabel,
+      cr.roleId,
       u.email AS email,
       u.screenName AS screenName
       FROM course_user AS cu
@@ -49,7 +50,7 @@ if ($success) {
     $users = [];
     if ($result == false) {
         $success = false;
-        $message = 'server error';
+        $message = 'server error while retrieving users';
     } elseif ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
             array_push($users, [
@@ -57,7 +58,42 @@ if ($success) {
                 'screenName' => $row['screenName'],
                 'isUser' => $row['userId'] == $userId,
                 'roleLabel' => $row['roleLabel'],
+                'roleId' => $row['roleId']
             ]);
+        }
+    }
+
+    $sql = "SELECT 
+        cr.roleId,
+        cr.label as roleLabel,
+        cr.canViewCourse,
+        cr.isIncludedInGradebook,
+        cr.canViewContentSource,
+        cr.canEditContent,
+        cr.canPublishContent,
+        cr.canViewUnassignedContent,
+        cr.canProctor,
+        cr.canViewAndModifyGrades,
+        cr.canViewActivitySettings,
+        cr.canModifyActivitySettings,
+        cr.canModifyCourseSettings,
+        cr.canViewUsers,
+        cr.canManageUsers,
+        cr.canModifyRoles,
+        cr.dataAccessPermisson,
+        cr.isOwner
+        FROM course_role AS cr
+        WHERE cr.courseId = '$courseId' 
+    ";
+    $result = $conn->query($sql);
+
+    $roles = [];
+    if ($result == false) {
+        $success = false;
+        $message = 'server error while retrieving roles';
+    } elseif ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            array_push($roles, $row);
         }
     }
 }
@@ -65,6 +101,7 @@ if ($success) {
 $response_arr = [
     'success' => $success,
     'users' => $users,
+    'roles' => $roles,
     'message' => $message,
 ];
 
