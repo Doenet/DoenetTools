@@ -431,6 +431,33 @@ export default class MathList extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      returnDependencies: () => ({
+        maths: {
+          dependencyType: "stateVariable",
+          variableName: "maths"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let math;
+        if (dependencyValues.maths.length === 0) {
+          math = me.fromAst("\uff3f");
+        } else if (dependencyValues.maths.length === 1) {
+          math = dependencyValues.maths[0]
+        } else {
+          math = me.fromAst(["list", ...dependencyValues.maths.map(x => x.tree)]);
+        }
+
+        return { setValue: { math } }
+
+      }
+    }
+
     stateVariableDefinitions.nValues = {
       isAlias: true,
       targetVariableName: "nComponents"
@@ -714,5 +741,13 @@ export default class MathList extends InlineComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "math",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+    },
+    "text"
+  ];
 
 }

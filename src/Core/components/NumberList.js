@@ -1,10 +1,10 @@
 import { roundForDisplay } from '../utils/math';
 import InlineComponent from './abstract/InlineComponent';
 import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
+import me from 'math-expressions';
 
 export default class NumberList extends InlineComponent {
   static componentType = "numberList";
-  static rendererType = "asList";
   static renderChildren = true;
 
   static includeBlankStringChildren = true;
@@ -325,8 +325,37 @@ export default class NumberList extends InlineComponent {
       targetVariableName: "numbers"
     };
 
+
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      returnDependencies: () => ({
+        numbers: {
+          dependencyType: "stateVariable",
+          variableName: "numbers"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let math;
+        if (dependencyValues.numbers.length === 0) {
+          math = me.fromAst("\uff3f");
+        } else if (dependencyValues.numbers.length === 1) {
+          math = me.fromAst(dependencyValues.numbers[0])
+        } else {
+          math = me.fromAst(["list", ...dependencyValues.numbers]);
+        }
+
+        return { setValue: { math } }
+
+      }
+    }
+
     stateVariableDefinitions.text = {
       public: true,
+      forRenderer: true,
       shadowingInstructions: {
         createComponentOfType: "text",
       },
@@ -520,5 +549,13 @@ export default class NumberList extends InlineComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "math",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+    },
+    "text"
+  ];
 
 }

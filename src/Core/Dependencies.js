@@ -5925,9 +5925,9 @@ class AdapterSourceDependency extends Dependency {
 
     this.returnSingleVariableValue = true;
 
-    // for source composite state variable
+    // for adaptor source state variable
     // always make variables optional so that don't get error
-    // depending on source composite (which a component can't control)
+    // depending on adaptor source (which a component can't control)
     this.variablesOptional = true;
 
   }
