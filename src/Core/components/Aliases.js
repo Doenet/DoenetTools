@@ -12,7 +12,7 @@ export class Columns extends TextComponent {
 
 export class Title extends TextOrInline {
   static componentType = "title";
-  static rendererType = "textOrInline";
+  static rendererType = "containerInline";
 }
 
 export class RightHandSide extends MathComponent {

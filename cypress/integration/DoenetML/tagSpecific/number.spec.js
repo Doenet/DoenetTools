@@ -746,7 +746,7 @@ describe('Number Tag Tests', function () {
   </p>
 
   <p>
-    <mathinput name="mi3" bindValueTo="$n3" />
+    <mathinput name="mi3" bindValueTo="$n3" hideNaN="false" />
     <number name="n3" />
   </p>
 
@@ -840,7 +840,7 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/n2a').should('have.text', '3');
 
     cy.get(`#\\/mi3a .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
     cy.get('#\\/n3a').should('have.text', 'NaN');
 
@@ -988,7 +988,7 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/n2a').should('have.text', '3');
 
     cy.get(`#\\/mi3a .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('NaN')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
     })
     cy.get('#\\/n3a').should('have.text', 'NaN');
 

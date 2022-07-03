@@ -118,7 +118,7 @@ describe('Integer Tag Tests', function () {
         doenetML: `
       <text>a</text>
       <integer name="n">5</integer>
-      <mathinput bindValueTo="$n" />
+      <mathinput bindValueTo="$n" hideNaN="false" />
       ` }, "*");
     })
 

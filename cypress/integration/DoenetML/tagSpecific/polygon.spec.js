@@ -989,6 +989,8 @@ describe('Polygon Tag Tests', function () {
       expect((stateVariables['/parallelogram'].stateValues.vertices)[3]).eqls(D);
     })
 
+    cy.get('#\\/p1 .mjx-mrow').should("contain.text", `(${nInDOM(A[0])},${nInDOM(A[1])})`);
+
     cy.log('move first vertex')
     cy.window().then(async (win) => {
       A = [-4, -1];

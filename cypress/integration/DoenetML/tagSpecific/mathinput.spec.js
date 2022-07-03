@@ -1329,7 +1329,7 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}xy`, { force: true, delay: 50 });
+    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}xy`, { force: true, delay: 100 });
 
     cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'xy')
     cy.get(`#\\/immediate2 .mjx-mrow`).should('contain.text', 'xy')
@@ -1572,7 +1572,7 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log('type new values')
-    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}xy{enter}`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{ctrl+home}{shift+end}{backspace}xy{enter}`, { force: true, delay: 100 });
 
     cy.get(`#\\/_math1 .mjx-mrow`).should('contain.text', 'xy')
     cy.get(`#\\/value1 .mjx-mrow`).should('contain.text', 'xy')
@@ -1970,6 +1970,8 @@ describe('MathInput Tag Tests', function () {
     // or MathJax consistently didn't correctly update the second immediate value.
     // (At least when delay core's response by 1 second)
     // Not sure what is going on here.
+
+    cy.wait(1000)
     cy.get('#\\/mi1 textarea').type(`{end}{backspace}y`, { force: true, delay: 100 });
 
     cy.get(`#\\/immediate1 .mjx-mrow`).should('contain.text', 'y')
@@ -2566,6 +2568,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'Enter vector');
 
+    cy.wait(1000)
+
     cy.get('#\\/a textarea').type('(1,2,3){enter}', { force: true });
     cy.get('#\\/b .mjx-mrow').should('contain.text', '(1,2,3)')
     cy.get('#\\/b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -2592,6 +2596,14 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    cy.get('#\\/a2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/b2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
 
     cy.get('#\\/a textarea').type('f(x){enter}', { force: true });
     cy.get('#\\/b textarea').type('f(x){enter}', { force: true });
@@ -4501,7 +4513,9 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('use periods, no commas')
-    cy.get('#\\/mi textarea').type("...x,y,z...{enter}", { force: true })
+    // for some reason, need a significant delay in between keystrokes
+    // or MathJax doesn't render immediate value correctly.
+    cy.get('#\\/mi textarea').type("...x,y,z...{enter}", { force: true, delay: 100 })
 
     cy.get('#\\/m .mjx-mrow').should('contain.text', '…,x,y,z,…')
     cy.get('#\\/m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -5126,6 +5140,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '\uff3f')
+
     cy.log('equalities with or')
     cy.get('#\\/mi textarea').type("x=1 or u=x{enter}", { force: true })
 
@@ -5239,6 +5255,8 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m .mjx-mrow').should('contain.text', '\uff3f')
 
     cy.log('A U C without unionFromU')
     cy.get('#\\/mi textarea').type("A U C{enter}", { force: true })
@@ -5537,6 +5555,9 @@ describe('MathInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');
 
+    cy.get('#\\/c2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x");
+    })
 
     cy.get('#\\/c textarea').type('{end}y{enter}', { force: true });
     cy.get('#\\/d textarea').focus();
@@ -5638,7 +5659,7 @@ describe('MathInput Tag Tests', function () {
     cy.log('type pi')
     // for some reason, need a significant delay in between keystrokes
     // or MathJax doesn't render immediate value correctly.
-    cy.get('#\\/mi textarea').type('{end}{backspace}pi', { force: true, delay: 50 })
+    cy.get('#\\/mi textarea').type('{end}{backspace}pi', { force: true, delay: 100 })
 
     cy.get('#\\/miv .mjx-mrow').should('contain.text', 'π')
 
@@ -5777,8 +5798,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/mi"].stateValues.value).eqls(2/3)
-      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(2/3)
+      expect(stateVariables["/mi"].stateValues.value).eqls(2 / 3)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(2 / 3)
     });
 
 
@@ -5818,7 +5839,8 @@ describe('MathInput Tag Tests', function () {
     cy.log('type a number')
     // for some reason, need a significant delay in between keystrokes
     // or MathJax doesn't render immediate value correctly.
-    cy.get('#\\/mi textarea').type('{ctrl+home}{shift+ctrl+end}{backspace}5', { force: true, delay: 100 })
+    cy.wait(1000)
+    cy.get('#\\/mi textarea').type('{ctrl+home}{shift+ctrl+end}{backspace}5', { force: true, delay: 200 })
 
     cy.get('#\\/miv .mjx-mrow').should('contain.text', '5')
 
@@ -6008,8 +6030,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/mi"].stateValues.value).eqls(2/3)
-      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(2/3)
+      expect(stateVariables["/mi"].stateValues.value).eqls(2 / 3)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(2 / 3)
     });
 
 
@@ -6049,7 +6071,8 @@ describe('MathInput Tag Tests', function () {
     cy.log('type a number')
     // for some reason, need a significant delay in between keystrokes
     // or MathJax doesn't render immediate value correctly.
-    cy.get('#\\/mi textarea').type('{end}{backspace}5', { force: true, delay: 100 })
+    cy.wait(1000)
+    cy.get('#\\/mi textarea').type('{end}{backspace}5', { force: true, delay: 200 })
 
     cy.get('#\\/miv .mjx-mrow').should('contain.text', '5')
 
@@ -6239,8 +6262,8 @@ describe('MathInput Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/mi"].stateValues.value).eqls(2/3)
-      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(2/3)
+      expect(stateVariables["/mi"].stateValues.value).eqls(2 / 3)
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(2 / 3)
     });
 
 
