@@ -83,7 +83,9 @@ export default class Intersection extends CompositeComponent {
     // intersection of one object is the object itself
     if (numberLineChildren === 1) {
       let childName = lineChildren[0].componentName;
-      let serializedChild = await components[childName].serialize();
+      let serializedChild = await components[childName].serialize({
+        targetAttributesToIgnoreRecursively: ["isResponse"]
+      });
       if (!serializedChild.state) {
         serializedChild.state = {};
       }
@@ -151,7 +153,9 @@ export default class Intersection extends CompositeComponent {
 
         // two identical lines, return first line
         let childName = lineChildren[0].componentName;
-        let serializedChild = await components[childName].serialize();
+        let serializedChild = await components[childName].serialize({
+          targetAttributesToIgnoreRecursively: ["isResponse"]
+        });
         if (!serializedChild.state) {
           serializedChild.state = {};
         }

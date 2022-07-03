@@ -2128,5 +2128,44 @@ describe('MathList Tag Tests', function () {
 
   })
 
+  it('mathlist adapts to math and text', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathlist><math>a</math> <math>b</math><math>c</math></mathlist>
+
+    <p>Math list as math: <math>$_mathlist1</math></p>
+    <p>Math list as text: <text>$_mathlist1</text></p>
+
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('a')
+    })
+    cy.get('#\\/_math2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('b')
+    })
+    cy.get('#\\/_math3 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('c')
+    })
+    cy.get('#\\/_math4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('a,b,c')
+    })
+    cy.get("#\\/_text2").should('have.text', 'a, b, c')
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math4'].stateValues.value).eqls(["list", "a", "b", "c"]);
+      expect(stateVariables['/_text2'].stateValues.value).eq("a, b, c");
+
+    })
+
+  })
 
 })

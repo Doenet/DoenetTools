@@ -1020,4 +1020,38 @@ describe('Numberlist Tag Tests', function () {
 
   })
 
+  it('numberlist adapts to math and text', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <numberlist><number>1</number> <number>2</number><number>3</number></numberlist>
+
+    <p>number list as math: <math>$_numberlist1</math></p>
+    <p>number list as text: <text>$_numberlist1</text></p>
+
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/_number1').should('have.text', '1');
+    cy.get('#\\/_number2').should('have.text', '2');
+    cy.get('#\\/_number3').should('have.text', '3');
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1,2,3')
+    })
+    cy.get("#\\/_text2").should('have.text', '1, 2, 3')
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_math1'].stateValues.value).eqls(["list", 1, 2, 3]);
+      expect(stateVariables['/_text2'].stateValues.value).eq("1, 2, 3");
+
+    })
+
+  })
+  
 })

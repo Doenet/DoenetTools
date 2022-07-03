@@ -825,7 +825,7 @@ export default class Graph extends BlockComponent {
       public: true,
       shadowingInstructions: {
         hasVariableComponentType: true,
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["gridAttrCompChildren"],

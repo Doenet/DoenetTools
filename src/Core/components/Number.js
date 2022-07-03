@@ -679,7 +679,7 @@ export default class NumberComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: [
+        attributesToShadow: [
           "displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros",
         ],
         // the reason we create a attribute component from the state variable,
@@ -1134,7 +1134,7 @@ export default class NumberComponent extends InlineComponent {
       isPublic: true
     });
 
-    stateVariableDefinitions.math.shadowingInstructions.attributeComponentsToShadow
+    stateVariableDefinitions.math.shadowingInstructions.attributesToShadow
       = ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"];
 
     stateVariableDefinitions.latex = {

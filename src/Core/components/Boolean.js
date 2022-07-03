@@ -228,7 +228,7 @@ export default class BooleanComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "boolean",
-        attributeComponentsToShadow: ["fixed"]
+        attributesToShadow: ["fixed"]
       },
       forRenderer: true,
       hasEssential: true,

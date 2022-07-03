@@ -196,7 +196,7 @@ export default class NumberList extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       isArray: true,
       entryPrefixes: ["number"],
@@ -330,7 +330,7 @@ export default class NumberList extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       returnDependencies: () => ({
         numbers: {
