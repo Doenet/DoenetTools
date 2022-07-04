@@ -207,14 +207,18 @@ export default class Point extends GraphicalComponent {
   }
 
   static returnChildGroups() {
+    
+    let childGroups = super.returnChildGroups();
 
-    return [{
+    childGroups.push(...[{
       group: "points",
       componentTypes: ["point"]
     }, {
       group: "constraints",
       componentTypes: ["constraints"]
-    }]
+    }])
+
+    return childGroups;
 
   }
 

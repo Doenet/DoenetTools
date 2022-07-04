@@ -88,15 +88,59 @@ export default class Angle extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let stringAndMacrosToRadiansAttribute = function ({ matchedChildren }) {
+    let stringAndMacrosToRadiansAttribute = function ({ matchedChildren, componentInfoObjects }) {
 
-      // only apply if all children are strings or macros
+      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: cType,
+        baseComponentType: "label"
+      });
+
+      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.props?.componentType)
+
+      // only apply if all children are strings, macros, or labels
       if (matchedChildren.length === 0 ||
         !matchedChildren.every(child =>
           typeof child === "string" ||
-          child.doenetAttributes && child.doenetAttributes.createdFromMacro
+          child.doenetAttributes?.createdFromMacro ||
+          componentIsLabel(child)
         )
       ) {
+        return { success: false }
+      }
+
+
+      // find first non-label children for radians
+
+      let childIsLabel = matchedChildren.map(componentIsLabel);
+
+      let childrenForRadians = [], otherChildren = []
+
+      if (childIsLabel.filter(x => x).length === 0) {
+        childrenForRadians = matchedChildren
+      } else {
+        if (childIsLabel[0]) {
+          // started with label, find first non-label child
+          let firstNonLabelInd = childIsLabel.indexOf(false);
+          if (firstNonLabelInd !== -1) {
+            otherChildren.push(...matchedChildren.slice(0, firstNonLabelInd));
+            matchedChildren = matchedChildren.slice(firstNonLabelInd);
+            childIsLabel = childIsLabel.slice(firstNonLabelInd)
+          }
+        }
+
+        // now we don't have label at the beginning
+        // find first label ind
+        let firstLabelInd = childIsLabel.indexOf(true);
+        if (firstLabelInd === -1) {
+          childrenForRadians = matchedChildren;
+        } else {
+          childrenForRadians = matchedChildren.slice(0, firstLabelInd);
+          otherChildren.push(...matchedChildren.slice(firstLabelInd));
+        }
+
+      }
+
+      if (childrenForRadians.length === 0) {
         return { success: false }
       }
 
@@ -106,7 +150,7 @@ export default class Angle extends GraphicalComponent {
           radians: {
             component: {
               componentType: "math",
-              children: matchedChildren
+              children: childrenForRadians
             }
           }
         }

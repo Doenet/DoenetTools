@@ -178,7 +178,6 @@ import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
 import SectioningComponent from './components/abstract/SectioningComponent';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
 import TextOrInline from './components/abstract/TextOrInline';
-import TextOrLatexFromInline from './components/abstract/TextOrLatexFromInline';
 import SingleCharacterInline from './components/abstract/SingleCharacterInline';
 
 const componentTypeArray = [
@@ -337,7 +336,6 @@ const componentTypeArray = [
   SectioningComponent,
   InlineRenderInlineChildren,
   TextOrInline,
-  TextOrLatexFromInline,
   SingleCharacterInline,
 ];
 

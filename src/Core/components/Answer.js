@@ -720,7 +720,7 @@ export default class Answer extends InlineComponent {
           } else if (ct === "textList") {
             ct = "text";
           } else if (ct === "booleanList") {
-            ct = "booelan;"
+            ct = "boolean";
           }
 
           if (Array.isArray(component.stateValues.values)) {
