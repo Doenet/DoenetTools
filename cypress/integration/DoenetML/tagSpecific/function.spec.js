@@ -3639,6 +3639,8 @@ describe('Function Tag Tests', function () {
     cy.get('#\\/_p1').should('have.text', 'NaN')
     cy.get('#\\/_p2').should('have.text', 'NaN')
 
+    cy.get('#\\/_function1').should('contain.text', '＿x3+1')
+
     cy.get('#\\/_mathinput1 textarea').type('1{enter}', { force: true })
     cy.get('#\\/_mathinput2 textarea').type('2{enter}', { force: true })
 

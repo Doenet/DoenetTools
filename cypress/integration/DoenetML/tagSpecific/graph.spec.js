@@ -1170,6 +1170,87 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('fixed grids', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g1" grid="1 pi/2" displayDigits="4">
+    </graph>
+    <p>Graph 1 has grid: <copy prop="grid" target="g1" assignNames="sg1" /></p>
+
+    <p>grid x: <mathinput name="g2x" /></p>
+    <p>grid y: <mathinput name="g2y" /></p>
+    <graph name="g2" grid="$g2x $g2y">
+    </graph>
+    <p>Graph 2 has grid: <copy prop="grid" target="g2" assignNames="sg2" /></p>
+
+    <p>grid x: <mathinput name="g3x" /> <number name="g3xa" hide>$g3x</number></p>
+    <p>grid y: <mathinput name="g3y" /> <number name="g3ya" hide>$g3y</number></p>
+    <graph name="g3" grid="$g3xa $g3ya">
+    </graph>
+    <p>Graph 3 has grid: <copy prop="grid" target="g3" assignNames="sg3" /></p>
+
+    <p>grid x: <mathinput name="g4x" prefill="1" /></p>
+    <p>grid y: <mathinput name="g4y" prefill="1" /></p>
+    <graph name="g4" grid="2$g4x 3$g4y" displayDecimals="2">
+    </graph>
+    <p>Graph 4 has grid: <copy prop="grid" target="g4" assignNames="sg4" /></p>
+
+    <p>grid x: <mathinput name="g5x" prefill="1" /> <number name="g5xa">$g5x</number></p>
+    <p>grid y: <mathinput name="g5y" prefill="1" /> <number name="g5ya">$g5y</number></p>
+    <graph name="g5" grid="2$g5xa 3$g5ya" displayDecimals="2">
+    </graph>
+    <p>Graph 5 has grid: <copy prop="grid" target="g5" assignNames="sg5" /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/sg1').should('have.text', '1, 1.571')
+    cy.get('#\\/sg2').should('have.text', 'none')
+    cy.get('#\\/sg3').should('have.text', 'none')
+    cy.get('#\\/sg4').should('have.text', '2, 3')
+    cy.get('#\\/sg5').should('have.text', '2, 3')
+
+    cy.get("#\\/g2x textarea").type("3", { force: true })
+    cy.get("#\\/g2y textarea").type("1.5", { force: true }).blur();
+    cy.get('#\\/sg2').should('have.text', '3, 1.5')
+
+    cy.get("#\\/g3x textarea").type("3", { force: true })
+    cy.get("#\\/g3y textarea").type("1.5", { force: true }).blur();
+    cy.get('#\\/sg3').should('have.text', '3, 1.5')
+
+    cy.get("#\\/g4x textarea").type("{end}{backspace}3", { force: true })
+    cy.get("#\\/g4y textarea").type("{end}.5", { force: true }).blur();
+    cy.get('#\\/sg4').should('have.text', '6, 4.5')
+
+    cy.get("#\\/g5x textarea").type("{end}{backspace}3", { force: true })
+    cy.get("#\\/g5y textarea").type("{end}.5", { force: true }).blur();
+    cy.get('#\\/sg5').should('have.text', '6, 4.5')
+
+
+    cy.get("#\\/g2x textarea").type("{end}e/2", { force: true })
+    cy.get("#\\/g2y textarea").type("{end}pi", { force: true }).blur();
+    cy.get('#\\/sg2').should('have.text', '4.077422743, 4.71238898')
+
+    cy.get("#\\/g3x textarea").type("{end}e/2", { force: true })
+    cy.get("#\\/g3y textarea").type("{end}pi", { force: true }).blur();
+    cy.get('#\\/sg3').should('have.text', '4.077422743, 4.71238898')
+
+    cy.get("#\\/g4x textarea").type("{end}pi/5", { force: true })
+    cy.get("#\\/g4y textarea").type("{end}e/6", { force: true }).blur();
+    cy.get('#\\/sg4').should('have.text', '3.77, 2.04')
+
+    cy.get("#\\/g5x textarea").type("{end}pi/5", { force: true })
+    cy.get("#\\/g5y textarea").type("{end}e/6", { force: true }).blur();
+    cy.get('#\\/sg5').should('have.text', '3.77, 2.04')
+
+
+  });
+
   // check for bug in placeholder adapter
   it('graph with label as submitted response, createComponentOfType specified', () => {
     cy.window().then(async (win) => {
@@ -1369,7 +1450,7 @@ describe('Graph Tag Tests', function () {
 
     // Note: these are brittle tests and could start failing if internals of jsxgraph changes
 
-       
+
     cy.get('#\\/none').should('not.contain.text', 'π')
     cy.get('#\\/none').should('not.contain.text', 'e')
     cy.get('#\\/none').should('contain.text', '68')

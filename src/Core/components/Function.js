@@ -1,7 +1,7 @@
 import InlineComponent from './abstract/InlineComponent';
+import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
 import { normalizeMathExpression, returnNVariables, roundForDisplay } from '../utils/math';
-import { returnSelectedStyleStateVariableDefinition } from '../utils/style';
 import { returnInterpolatedFunction, returnNumericalFunctionFromFormula, returnReturnDerivativesOfInterpolatedFunction, returnSymbolicFunctionFromFormula } from '../utils/function';
 
 export default class Function extends InlineComponent {
@@ -54,11 +54,7 @@ export default class Function extends InlineComponent {
     // for case when function is adapted into a curve
 
     attributes.label = {
-      createComponentOfType: "_textOrLatexFromInline",
-      createStateVariable: "label",
-      defaultValue: "",
-      public: true,
-      forRenderer: true
+      createComponentOfType: "label",
     };
     attributes.showLabel = {
       createComponentOfType: "boolean",
@@ -142,7 +138,7 @@ export default class Function extends InlineComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let wrapStringOrMultipleChildrenWithMath = function ({ matchedChildren }) {
+    let wrapStringOrMultipleNonLabelChildrenWithMath = function ({ matchedChildren, componentInfoObjects }) {
 
       // apply if have a single string or multiple children
       if (matchedChildren.length === 1 && typeof matchedChildren[0] !== "string"
@@ -151,18 +147,63 @@ export default class Function extends InlineComponent {
         return { success: false }
       }
 
+      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: cType,
+        baseComponentType: "label"
+      });
+
+
+      // wrap first group of non-label children in <math>
+
+      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.props?.componentType));
+
+      let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
+
+      if (childIsLabel.filter(x => x).length === 0) {
+        childrenToWrap = matchedChildren
+      } else {
+        if (childIsLabel[0]) {
+          // started with label, find first non-label child
+          let firstNonLabelInd = childIsLabel.indexOf(false);
+          if (firstNonLabelInd !== -1) {
+            childrenToNotWrapBegin = matchedChildren.slice(0, firstNonLabelInd);
+            matchedChildren = matchedChildren.slice(firstNonLabelInd);
+            childIsLabel = childIsLabel.slice(firstNonLabelInd)
+          }
+        }
+
+        // now we don't have label at the beginning
+        // find first label ind
+        let firstLabelInd = childIsLabel.indexOf(true);
+        if (firstLabelInd === -1) {
+          childrenToWrap = matchedChildren;
+        } else {
+          childrenToWrap = matchedChildren.slice(0, firstLabelInd);
+          childrenToNotWrapEnd = matchedChildren.slice(firstLabelInd);
+        }
+
+      }
+
+      if (childrenToWrap.length === 0) {
+        return { success: false }
+      }
+
       return {
         success: true,
-        newChildren: [{
-          componentType: "math",
-          children: matchedChildren
-        }],
+        newChildren: [
+          ...childrenToNotWrapBegin,
+          {
+            componentType: "math",
+            children: childrenToWrap
+          },
+          ...childrenToNotWrapEnd
+        ],
       }
 
     }
 
     sugarInstructions.push({
-      replacementFunction: wrapStringOrMultipleChildrenWithMath
+      replacementFunction: wrapStringOrMultipleNonLabelChildrenWithMath
     });
 
     return sugarInstructions;
@@ -178,6 +219,9 @@ export default class Function extends InlineComponent {
     }, {
       group: "functions",
       componentTypes: ["function"]
+    }, {
+      group: "labels",
+      componentTypes: ["label"]
     }]
 
   }
@@ -185,11 +229,7 @@ export default class Function extends InlineComponent {
 
   static returnStateVariableDefinitions({ numerics }) {
 
-    let stateVariableDefinitions = super.returnStateVariableDefinitions();
-
-    let selectedStyleDefinition = returnSelectedStyleStateVariableDefinition();
-
-    Object.assign(stateVariableDefinitions, selectedStyleDefinition);
+    let stateVariableDefinitions = GraphicalComponent.returnStateVariableDefinitions();
 
     stateVariableDefinitions.styleDescription = {
       public: true,
@@ -238,20 +278,6 @@ export default class Function extends InlineComponent {
         let styleDescriptionWithNoun = dependencyValues.styleDescription + " function";
 
         return { setValue: { styleDescriptionWithNoun } };
-      }
-    }
-
-    stateVariableDefinitions.labelIsLatex = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        labelAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "label",
-          variableNames: ["isLatex"]
-        }
-      }),
-      definition({ dependencyValues }) {
-        return { setValue: { labelIsLatex: dependencyValues.labelAttr?.stateValues.isLatex === true } }
       }
     }
 
@@ -881,7 +907,7 @@ export default class Function extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       defaultValue: me.fromAst(0),
       hasEssential: true,
@@ -3230,7 +3256,7 @@ export default class Function extends InlineComponent {
   static adapters = [{
     stateVariable: "numericalf",
     componentType: "curve",
-    stateVariablesToShadow: ["labelIsLatex"]
+    stateVariablesToShadow: ["label", "labelHasLatex"]
   },
   {
     stateVariable: "formula",

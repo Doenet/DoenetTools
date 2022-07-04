@@ -179,22 +179,22 @@ describe('Copy Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/x'].stateValues.modifyIndirectly).eq(false);
-      expect(stateVariables['/x'].stateValues.hide).eq(true);
+      expect(stateVariables['/x'].stateValues.hidden).eq(true);
       // modifyIndirectly attribute is copied (as it has propagateToProps=true)
       expect(stateVariables['/mr'].stateValues.modifyIndirectly).eq(false);
       // hide attribute is not copied (default behavior)
-      expect(stateVariables['/mr'].stateValues.hide).eq(false);
+      expect(stateVariables['/mr'].stateValues.hidden).eq(false);
       expect(stateVariables['/mr'].stateValues.value).eq(false);
 
       // modifyIndirectly is overwritten
       expect(stateVariables['/mr2'].stateValues.modifyIndirectly).eq(true);
-      expect(stateVariables['/mr2'].stateValues.hide).eq(false);
+      expect(stateVariables['/mr2'].stateValues.hidden).eq(false);
       expect(stateVariables['/mr2'].stateValues.value).eq(false);
 
       // modifyIndirectly attribute is copied (as it has propagateToProps=true)
       expect(stateVariables['/frmt'].stateValues.modifyIndirectly).eq(false);
       // hide attribute is not copied (default behavior)
-      expect(stateVariables['/frmt'].stateValues.hide).eq(false);
+      expect(stateVariables['/frmt'].stateValues.hidden).eq(false);
       expect(stateVariables['/frmt'].stateValues.value).eq("text");
 
       expect(stateVariables['/frmt2'].stateValues.modifyIndirectly).eq(false);
@@ -4291,5 +4291,118 @@ describe('Copy Tag Tests', function () {
     })
 
   })
+
+  it('target attributes to ignore, component and primitive attributes', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p newNamespace name="p1" hide fixed>Hidden text: <text name="hidden" hide fixed newNamespace>secret <text name="pw">password</text></text></p>
+
+    <p name="p2">Text revealed by default: <copy target="p1/hidden" name="c1" assignNames="notHidden" /></p>
+    <p name="p3">Because target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c1" obtainPropFromComposite /></p>
+    <p name="p4">Check attributes: <copy prop="hidden" target="notHidden" /> <copy prop="fixed" target="notHidden" /> <copy prop="newNamespace" target="notHidden" /></p>
+    <p name="p5">Check if new namespace copied: <copy target="notHidden/pw"/></p>
+
+    <p>Text but not paragraph stays hidden by default:</p>
+    <copy target="p1" name="c2" assignNames="p6" />
+    <p name="p7">Because target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c2" obtainPropFromComposite /></p>
+    <p name="p8">Check attributes: <copy prop="hidden" target="p6" /> <copy prop="fixed" target="p6" /> <copy prop="newNamespace" target="p6" /> <copy prop="hidden" target="p6/hidden" /> <copy prop="fixed" target="p6/hidden" /> <copy prop="newNamespace" target="p6/hidden" /></p>
+    <p name="p9">Check if inner new namespace copied: <copy target="p6/hidden/pw"/></p>
+
+
+    <p name="p10">Now text stays hidden: <copy target="p1/hidden" name="c3" assignNames="stillHidden" targetAttributesToIgnore="newNamespace fixed" /></p>
+    <p name="p11">Because target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c3" obtainPropFromComposite /></p>
+    <p name="p12">Check attributes: <copy prop="hidden" target="stillHidden" /> <copy prop="fixed" target="stillHidden" /> <copy prop="newNamespace" target="stillHidden" /></p>
+    <p name="p13">Check that new namespace not copied: <copy target="stillHidden/pw" /></p>
+
+    <p>Now paragraph stay hidden:</p>
+    <copy target="p1" name="c4" assignNames="p14" targetAttributesToIgnore="newNamespace fixed" />
+    <p name="p15">Because target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c4" obtainPropFromComposite /></p>
+    <p name="p16">Check attributes: <copy prop="hidden" target="p14" /> <copy prop="fixed" target="p14" /> <copy prop="newNamespace" target="p14" /></p>
+    <p name="p17">Check that outer new namespace not copied: <copy target="p14/hidden"/></p>
+
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/p1').should('not.exist');
+
+    cy.get('#\\/p2').should('have.text', 'Text revealed by default: secret password');
+    cy.get('#\\/p3').should('have.text', 'Because target attributes to ignore are: hide');
+    cy.get('#\\/p4').should('have.text', 'Check attributes: false true true');
+    cy.get('#\\/p5').should('have.text', 'Check if new namespace copied: password')
+
+    cy.get('#\\/p6').should('have.text', 'Hidden text: ')
+    cy.get('#\\/p7').should('have.text', 'Because target attributes to ignore are: hide')
+    cy.get('#\\/p8').should('have.text', 'Check attributes: false true true true true true');
+    cy.get('#\\/p9').should('have.text', 'Check if inner new namespace copied: password')
+
+    cy.get('#\\/p10').should('have.text', 'Now text stays hidden: ');
+    cy.get('#\\/p11').should('have.text', 'Because target attributes to ignore are: newNamespace, fixed');
+    cy.get('#\\/p12').should('have.text', 'Check attributes: true false false');
+    cy.get('#\\/p13').should('have.text', 'Check that new namespace not copied: ')
+
+    cy.get('#\\/p14').should('not.exist');
+    cy.get('#\\/p15').should('have.text', 'Because target attributes to ignore are: newNamespace, fixed');
+    cy.get('#\\/p16').should('have.text', 'Check attributes: true false false');
+    cy.get('#\\/p17').should('have.text', 'Check that outer new namespace not copied: ')
+
+    // TODO: is there a way to check that inner new namespace was maintained?
+
+  });
+
+  it('target attributes to ignore recursively', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p name="p1" hide newNamespace fixed isResponse>The text: <text name="hidden" hide fixed isResponse>secret</text></p>
+
+    <p>Text but not paragraph stays hidden by default:</p>
+    <copy target="p1" name="c1" assignNames="p2" />
+    <p name="p3">Because target attributes to ignore recursively are: <copy prop="targetAttributesToIgnoreRecursively" target="c1" obtainPropFromComposite /></p>
+    <p name="p4">Check attributes: <copy prop="hidden" target="p2" /> <copy prop="fixed" target="p2" /> <copy prop="isResponse" target="p2" /> <copy prop="hidden" target="p2/hidden" /> <copy prop="fixed" target="p2/hidden" /> <copy prop="isResponse" target="p2/hidden" /></p>
+
+    <p>Now all is revealed:</p>
+    <copy target="p1" name="c2" assignNames="p5" targetAttributesToIgnoreRecursively="hide fixed" />
+    <p name="p6">Because target attributes to ignore recursively are: <copy prop="targetAttributesToIgnoreRecursively" target="c2" obtainPropFromComposite /></p>
+    <p name="p7">Check attributes: <copy prop="hidden" target="p5" /> <copy prop="fixed" target="p5" /> <copy prop="isResponse" target="p5" /> <copy prop="hidden" target="p5/hidden" /> <copy prop="fixed" target="p5/hidden" /> <copy prop="isResponse" target="p5/hidden" /></p>
+
+
+    <p>All is still revealed:</p>
+    <copy target="p1" name="c3" assignNames="p8" targetAttributesToIgnoreRecursively="hide" targetAttributesToIgnore="fixed isResponse" />
+    <p name="p9">Because target attributes to ignore recursively are: <copy prop="targetAttributesToIgnoreRecursively" target="c3" obtainPropFromComposite /></p>
+    <p name="p10">And target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c3" obtainPropFromComposite /></p>
+    <p name="p11">Check attributes: <copy prop="hidden" target="p8" /> <copy prop="fixed" target="p8" /> <copy prop="isResponse" target="p8" /> <copy prop="hidden" target="p8/hidden" /> <copy prop="fixed" target="p8/hidden" /> <copy prop="isResponse" target="p8/hidden" /></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get('#\\/p1').should('not.exist');
+
+    cy.get('#\\/p2').should('have.text', 'The text: ');
+    cy.get('#\\/p3').should('have.text', 'Because target attributes to ignore recursively are: isResponse');
+    cy.get('#\\/p4').should('have.text', 'Check attributes: false true false true true false');
+
+    cy.get('#\\/p5').should('have.text', 'The text: secret');
+    cy.get('#\\/p6').should('have.text', 'Because target attributes to ignore recursively are: hide, fixed');
+    cy.get('#\\/p7').should('have.text', 'Check attributes: false false true false false true');
+
+    cy.get('#\\/p8').should('have.text', 'The text: secret');
+    cy.get('#\\/p9').should('have.text', 'Because target attributes to ignore recursively are: hide');
+    cy.get('#\\/p10').should('have.text', 'And target attributes to ignore are: fixed, isResponse');
+    cy.get('#\\/p11').should('have.text', 'Check attributes: false false false false true true');
+
+  });
+
 
 });

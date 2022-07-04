@@ -228,8 +228,6 @@ export class PaginatorControls extends BlockComponent {
       defaultValue: null,
     }
 
-    attributes.disabledIgnoresParentReadOnly.defaultValue = true;
-
     return attributes;
 
   }

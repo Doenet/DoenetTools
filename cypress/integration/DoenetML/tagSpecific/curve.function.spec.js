@@ -320,7 +320,7 @@ describe('Function curve Tag Tests', function () {
       expect(f(3)).eq(27 - 3);
     })
 
-    cy.get("#\\/a textarea").type("{end}{backspace}-2{enter}", { force: true });
+    cy.get("#\\/a textarea").type("{end}{backspace}-2{enter}", { force: true, delay: 100 });
     cy.get('#\\/a2').should("contain.text", "−2")
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

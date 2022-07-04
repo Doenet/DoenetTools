@@ -7,11 +7,7 @@ export default class GraphicalComponent extends BaseComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.label = {
-      createComponentOfType: "_textOrLatexFromInline",
-      createStateVariable: "label",
-      defaultValue: "",
-      public: true,
-      forRenderer: true
+      createComponentOfType: "label",
     };
     attributes.showLabel = {
       createComponentOfType: "boolean",
@@ -39,6 +35,15 @@ export default class GraphicalComponent extends BaseComponent {
   }
 
 
+  static returnChildGroups() {
+
+    return [{
+      group: "labels",
+      componentTypes: ["label"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -47,17 +52,51 @@ export default class GraphicalComponent extends BaseComponent {
 
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
 
-    stateVariableDefinitions.labelIsLatex = {
+    stateVariableDefinitions.label = {
       forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "label",
+      },
+      hasEssential: true,
+      defaultValue: "",
+      additionalStateVariablesDefined: [{
+        variableName: "labelHasLatex",
+        forRenderer: true,
+      }],
       returnDependencies: () => ({
         labelAttr: {
           dependencyType: "attributeComponent",
           attributeName: "label",
-          variableNames: ["isLatex"]
+          variableNames: ["value", "hasLatex"]
+        },
+        labelChild: {
+          dependencyType: "child",
+          childGroups: ["labels"],
+          variableNames: ["value", "hasLatex"]
         }
       }),
       definition({ dependencyValues }) {
-        return { setValue: { labelIsLatex: dependencyValues.labelAttr?.stateValues.isLatex === true } }
+        if (dependencyValues.labelChild.length > 0) {
+          return {
+            setValue: {
+              label: dependencyValues.labelChild[0].stateValues.value,
+              labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.labelAttr) {
+          return {
+            setValue: {
+              label: dependencyValues.labelAttr.stateValues.value,
+              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { label: true },
+            setValue: { labelHasLatex: false }
+          }
+        }
       }
     }
 

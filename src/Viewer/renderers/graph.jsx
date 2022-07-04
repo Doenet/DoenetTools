@@ -30,6 +30,14 @@ export default React.memo(function Graph(props) {
     JXG.Options.navbar.highlightFillColor = "var(--canvastext)";
     JXG.Options.navbar.strokeColor = "var(--canvastext)";
 
+    // check if have grid with specified width
+    let haveFixedGrid = false;
+    if (Array.isArray(SVs.grid)) {
+      haveFixedGrid = true;
+      JXG.Options.grid.gridX = SVs.grid[0];
+      JXG.Options.grid.gridY = SVs.grid[1];
+    }
+
     let board = window.JXG.JSXGraph.initBoard(name,
       {
         boundingbox,
@@ -39,6 +47,7 @@ export default React.memo(function Graph(props) {
         // keepAspectRatio: SVs.identicalAxisScales,
         zoom: { wheel: !SVs.fixAxes },
         pan: { enabled: !SVs.fixAxes },
+        grid: haveFixedGrid
 
       });
 
@@ -99,15 +108,15 @@ export default React.memo(function Graph(props) {
           offset: [-5, -15],
           layer: 2,
         },
-        minorTicks: 4,
+        // minorTicks: 4,
         precision: 4,
         strokeColor: 'var(--canvastext)',
         drawLabels: SVs.displayXAxisTickLabels
       }
-      if(SVs.xTickScaleFactor !== null) {
+      if (SVs.xTickScaleFactor !== null) {
         let xTickScaleFactor = me.fromAst(SVs.xTickScaleFactor);
         let scale = xTickScaleFactor.evaluate_to_constant();
-        if(scale > 0) {
+        if (scale > 0) {
           let scaleSymbol = xTickScaleFactor.toString();
           xaxisOptions.ticks.scale = scale;
           xaxisOptions.ticks.scaleSymbol = scaleSymbol;
@@ -133,12 +142,14 @@ export default React.memo(function Graph(props) {
 
       xaxis.current = board.create('axis', [[0, 0], [1, 0]], xaxisOptions)
 
+      // change default ticks function to decreasing starting tick size
       xaxis.current.defaultTicks.ticksFunction = function () {
         var delta, b, dist;
 
         b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
         dist = b.upper - b.lower;
 
+        // only change from JSXgraph: 0.6 * dist became 0.2 * dist
         delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
         if (dist <= 6 * delta) {
           delta *= 0.5;
@@ -146,6 +157,81 @@ export default React.memo(function Graph(props) {
         return delta;
 
       };
+
+      // hack JSXgraph tick function so that
+      // if major tick is 2*10^n for some integer n, then have 3 minor ticks,
+      // otherwise have 4 minor ticks
+      // (Other changes are simply to account for fact that
+      // don't have access to Mat and Type)
+      xaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
+        var tickPosition,
+          eps2 = 1E-6,
+          deltas,
+          // Distance between two major ticks in user coordinates
+          ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta),
+          ev_it = true,
+          ev_mt = 4;
+        this.visProp.minorticks = 4;
+
+        // Calculate X and Y distance between two major ticks
+        deltas = this.getXandYdeltas();
+
+        // adjust ticks distance
+        ticksDelta *= this.visProp.scale;
+        if (ev_it && this.minTicksDistance > 1E-6) {
+          ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
+
+          // Only change from JSXgraph function:
+          // check if ticksDelta is 2*10^n for some integer n
+          let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
+          if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
+            ev_mt = 3;
+            this.visProp.minorticks = 3
+          }
+          ticksDelta /= (ev_mt + 1);
+        } else if (!ev_it) {
+          ticksDelta /= (ev_mt + 1);
+        }
+        this.ticksDelta = ticksDelta;
+
+        if (ticksDelta < 1E-6) {
+          return;
+        }
+
+        // Position ticks from zero to the positive side while not reaching the upper boundary
+        tickPosition = 0;
+        // if (!Type.evaluate(this.visProp.drawzero)) {
+        tickPosition = ticksDelta;
+        // }
+        while (tickPosition <= bounds.upper + eps2) {
+          // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
+          if (tickPosition >= bounds.lower - eps2) {
+            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          }
+          tickPosition += ticksDelta;
+
+          // Emergency out
+          if ((bounds.upper - tickPosition) > ticksDelta * 10000) {
+            break;
+          }
+        }
+
+        // Position ticks from zero (not inclusive) to the negative side while not reaching the lower boundary
+        tickPosition = -ticksDelta;
+        while (tickPosition >= bounds.lower - eps2) {
+          // Only draw ticks when we are within bounds, ignore case where lower < upper < tickPosition
+          if (tickPosition <= bounds.upper + eps2) {
+            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          }
+          tickPosition -= ticksDelta;
+
+          // Emergency out
+          if ((tickPosition - bounds.lower) > ticksDelta * 10000) {
+            break;
+          }
+        }
+      }
+
     }
 
     if (SVs.displayYAxis) {
@@ -181,15 +267,15 @@ export default React.memo(function Graph(props) {
           offset: [12, -2],
           layer: 2
         },
-        minorTicks: 4,
+        // minorTicks: 4,
         precision: 4,
         strokeColor: "var(--canvastext)",
         drawLabels: SVs.displayYAxisTickLabels
       }
-      if(SVs.yTickScaleFactor !== null) {
+      if (SVs.yTickScaleFactor !== null) {
         let yTickScaleFactor = me.fromAst(SVs.yTickScaleFactor);
         let scale = yTickScaleFactor.evaluate_to_constant();
-        if(scale > 0) {
+        if (scale > 0) {
           let scaleSymbol = yTickScaleFactor.toString();
           yaxisOptions.ticks.scale = scale;
           yaxisOptions.ticks.scaleSymbol = scaleSymbol;
@@ -212,12 +298,15 @@ export default React.memo(function Graph(props) {
 
       yaxis.current = board.create('axis', [[0, 0], [0, 1]], yaxisOptions)
 
+
+      // change default ticks function to decreasing starting tick size
       yaxis.current.defaultTicks.ticksFunction = function () {
         var delta, b, dist;
 
         b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
         dist = b.upper - b.lower;
 
+        // only change from JSXgraph: 0.6 * dist became 0.2 * dist
         delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
         if (dist <= 6 * delta) {
           delta *= 0.5;
@@ -225,6 +314,82 @@ export default React.memo(function Graph(props) {
         return delta;
 
       };
+
+      // hack JSXgraph tick function so that
+      // if major tick is 2*10^n for some integer n, then have 3 minor ticks,
+      // otherwise have 4 minor ticks
+      // (Other changes are simply to account for fact that
+      // don't have access to Mat and Type)
+      yaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
+        var tickPosition,
+          eps2 = 1E-6,
+          deltas,
+          // Distance between two major ticks in user coordinates
+          ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta),
+          ev_it = true,
+          ev_mt = 4;
+        this.visProp.minorticks = 4;
+
+        // Calculate X and Y distance between two major ticks
+        deltas = this.getXandYdeltas();
+
+        // adjust ticks distance
+        ticksDelta *= this.visProp.scale;
+        if (ev_it && this.minTicksDistance > 1E-6) {
+          ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
+
+          // Only change from JSXgraph function:
+          // check if ticksDelta is 2*10^n for some integer n
+          let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
+          if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
+            ev_mt = 3;
+            this.visProp.minorticks = 3
+          }
+          ticksDelta /= (ev_mt + 1);
+        } else if (!ev_it) {
+          ticksDelta /= (ev_mt + 1);
+        }
+        this.ticksDelta = ticksDelta;
+
+        if (ticksDelta < 1E-6) {
+          return;
+        }
+
+        // Position ticks from zero to the positive side while not reaching the upper boundary
+        tickPosition = 0;
+        // if (!Type.evaluate(this.visProp.drawzero)) {
+        tickPosition = ticksDelta;
+        // }
+        while (tickPosition <= bounds.upper + eps2) {
+          // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
+          if (tickPosition >= bounds.lower - eps2) {
+            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          }
+          tickPosition += ticksDelta;
+
+          // Emergency out
+          if ((bounds.upper - tickPosition) > ticksDelta * 10000) {
+            break;
+          }
+        }
+
+        // Position ticks from zero (not inclusive) to the negative side while not reaching the lower boundary
+        tickPosition = -ticksDelta;
+        while (tickPosition >= bounds.lower - eps2) {
+          // Only draw ticks when we are within bounds, ignore case where lower < upper < tickPosition
+          if (tickPosition <= bounds.upper + eps2) {
+            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          }
+          tickPosition -= ticksDelta;
+
+          // Emergency out
+          if ((tickPosition - bounds.lower) > ticksDelta * 10000) {
+            break;
+          }
+        }
+      }
+
+
     }
 
     boardJustInitialized.current = true;
@@ -265,6 +430,28 @@ export default React.memo(function Graph(props) {
     // skip the update logic the first time after just created the board
     boardJustInitialized.current = false;
   } else {
+
+    // check if have grid with specified width
+    if (Array.isArray(SVs.grid)) {
+      let gridParamsChanged = JXG.Options.grid.gridX !== SVs.grid[0] || JXG.Options.grid.gridY !== SVs.grid[1];
+      if (gridParamsChanged) {
+        JXG.Options.grid.gridX = SVs.grid[0];
+        JXG.Options.grid.gridY = SVs.grid[1];
+        if (board.grids.length > 0) {
+          board.removeObject(board.grids[0]);
+          board.grids = [];
+        }
+      }
+      if (board.grids.length === 0) {
+        board.create("grid", [], { gridX: SVs.grid[0], gridY: SVs.grid[1] })
+      }
+    } else {
+      if (board.grids.length > 0) {
+        board.removeObject(board.grids[0]);
+        board.grids = [];
+      }
+    }
+
 
     if (SVs.grid === "dense") {
       if (xaxis.current) {

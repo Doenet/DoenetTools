@@ -30,7 +30,7 @@ export default class Atom extends InlineComponent {
       returnDependencies: () => ({
         fileContents: {
           dependencyType: "file",
-          cid: "bafkreifow4gfnfdgxu44ahkx565dt7rb75vhollgt3nbcdfwwksyzw53ry",
+          cid: "bafkreibilal4glrbpo7p7oodtwtnzkfhiylfoqa2td4ij6h6iqva57kzcy",
           fileType: "csv"
         },
         symbolAttr: {
@@ -83,7 +83,7 @@ export default class Atom extends InlineComponent {
 
         let numColumns = columnNames.length;
 
-        let columnTypes = ["number", "string", "string", "number", "number", "string", "number", "number", "number", "number", "number", "number", "number", "string"];
+        let columnTypes = ["number", "string", "string", "number", "number", "string",  "number", "string", "string", "number", "number", "number", "number", "number", "number", "number", "string"];
 
 
         let dataForAtom = {};
@@ -92,7 +92,12 @@ export default class Atom extends InlineComponent {
           let prescribedType = columnTypes[colInd];
           let value;
           if (prescribedType === "number") {
-            value = Number(rowData[colInd]);
+            value = rowData[colInd];
+            if(value === "") {
+              value = NaN;
+            } else {
+              value = Number(value);
+            }
           } else {
             value = rowData[colInd];
             if ([`"`, `'`].includes(value[0]) && value[value.length - 1] === value[0]) {
@@ -262,6 +267,85 @@ export default class Atom extends InlineComponent {
       }
     }
 
+
+
+    stateVariableDefinitions.chargeOfCommonIon = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      returnDependencies: () => ({
+        dataForAtom: {
+          dependencyType: "stateVariable",
+          variableName: "dataForAtom",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let chargeOfCommonIon;
+
+        if (dependencyValues.dataForAtom) {
+          chargeOfCommonIon = dependencyValues.dataForAtom["Charge of Common Ion"];
+          console.log('chargeOfCommonIon', chargeOfCommonIon)
+        } else {
+          chargeOfCommonIon = null;
+        }
+
+        return { setValue: { chargeOfCommonIon } }
+
+      }
+    }
+
+
+    stateVariableDefinitions.metalCategory = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        dataForAtom: {
+          dependencyType: "stateVariable",
+          variableName: "dataForAtom",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let metalCategory;
+
+        if (dependencyValues.dataForAtom) {
+          metalCategory = dependencyValues.dataForAtom["Metal/Nonmetal/Metalloid"];
+        } else {
+          metalCategory = null;
+        }
+
+        return { setValue: { metalCategory } }
+
+      }
+    }
+
+
+    stateVariableDefinitions.groupName = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        dataForAtom: {
+          dependencyType: "stateVariable",
+          variableName: "dataForAtom",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let groupName;
+
+        if (dependencyValues.dataForAtom) {
+          groupName = dependencyValues.dataForAtom["Group Name"];
+        } else {
+          groupName = null;
+        }
+
+        return { setValue: { groupName } }
+
+      }
+    }
 
     stateVariableDefinitions.period = {
       public: true,

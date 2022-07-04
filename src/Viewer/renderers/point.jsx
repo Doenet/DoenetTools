@@ -49,16 +49,11 @@ export default React.memo(function Point(props) {
     let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
     let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     let fixed = !SVs.draggable || SVs.fixed;
 
     //things to be passed to JSXGraph as attributes
     let jsxPointAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,
@@ -114,9 +109,10 @@ export default React.memo(function Point(props) {
         offset,
         anchorx,
         anchory,
+        highlight: false,
       };
 
-      if (SVs.labelIsLatex) {
+      if (SVs.labelHasLatex) {
         jsxPointAttributes.label.useMathJax = true;
       }
 
@@ -126,8 +122,11 @@ export default React.memo(function Point(props) {
         jsxPointAttributes.label.strokeColor = "#000000";
       }
     } else {
-      if (SVs.labelIsLatex) {
-        jsxPointAttributes.label = { useMathJax: true };
+      jsxPointAttributes.label = {
+        highlight: false
+      }
+      if (SVs.labelHasLatex) {
+        jsxPointAttributes.label.useMathJax = true
       }
     }
 
@@ -343,11 +342,7 @@ export default React.memo(function Point(props) {
         board.updateInfobox(pointJXG.current);
       }
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      pointJXG.current.name = label;
+      pointJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {

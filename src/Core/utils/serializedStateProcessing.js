@@ -459,6 +459,10 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
       newPrimitive = Number(value.rawString);
     } else if (attrObj.createPrimitiveOfType === "integer") {
       newPrimitive = Math.round(Number(value.rawString));
+    } else if (attrObj.createPrimitiveOfType === "stringArray") {
+      newPrimitive = value.rawString.trim().split(/\s+/);
+    } else if (attrObj.createPrimitiveOfType === "numberArray") {
+      newPrimitive = value.rawString.split(/\s+/).map(Number);
     } else {
       // else assume string
       newPrimitive = value.rawString;
@@ -1930,7 +1934,7 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
       })
 
       // if have 100 or fewer unique variants, set to unique
-      if(result.success && result.numberOfVariantsPreIgnore <= 100) {
+      if (result.success && result.numberOfVariantsPreIgnore <= 100) {
         numberOfVariantsPreIgnore = result.numberOfVariantsPreIgnore;
         numberOfVariants = result.numberOfVariants;
         serializedComponent.variants.uniqueVariants = true;
