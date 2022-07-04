@@ -105,7 +105,7 @@ export default function HomePage(props) {
 
   return <div style = {props.style}>
     <DoenetLogo>
-      <DoenetImage src={'/media/Doenet_Logo_Frontpage.png'} />
+      <DoenetImage alt="Doenet logo showing donut in front of a cloud" src={'/media/Doenet_Logo_Frontpage.png'} />
     </DoenetLogo>
     <CloudColorSection>
       <SectionText>
@@ -131,9 +131,11 @@ export default function HomePage(props) {
 
         </Paragraph>
 
-        <Paragraph>
+        <Paragraph id="MMA-DUE-Point-article-heading">
           For more background and information on the Doenet project, see{' '}
           <a
+            id="MMA-DUE-Point-article"
+            aria-labelledby="MMA-DUE-Point-article-heading MMA-DUE-Point-article"
             style={{ color: 'var(--whiteBlankLink)' }}
             href="https://www.mathvalues.org/masterblog/reimagining-online-mathematics"
           >
@@ -167,13 +169,13 @@ export default function HomePage(props) {
 
         <Paragraph>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <a href="/public?tool=editor&doenetId=_qyPDhmvsuwjwNGM9OPy3Q" style={{textDecoration: "none"}}><DoenetDriveCard image="RandomlyGeneratedGraph.jpg" label="Randomly-Generated Graphs" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-labelledby="Randomly-Generated-Graphs" href="/public?tool=editor&doenetId=_qyPDhmvsuwjwNGM9OPy3Q" style={{textDecoration: "none"}}><DoenetDriveCard id="Randomly-Generated-Graphs" image="RandomlyGeneratedGraph.jpg" label="Randomly-Generated Graphs" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_T-cgqOlqTxAJbicaXqtKg" style={{textDecoration: "none"}}><DoenetDriveCard image="Cobwebbing.jpg" label="Hands-On Activities" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-label="" href="/public?tool=editor&doenetId=_T-cgqOlqTxAJbicaXqtKg" style={{textDecoration: "none"}}><DoenetDriveCard image="Cobwebbing.jpg" label="Hands-On Activities" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_JXTxrd8XXjfEy9GuFPcy6" style={{textDecoration: "none"}}><DoenetDriveCard image="DynamicContentInteractions.jpg" label="Dynamic Content Interactions" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-label="" href="/public?tool=editor&doenetId=_JXTxrd8XXjfEy9GuFPcy6" style={{textDecoration: "none"}}><DoenetDriveCard image="DynamicContentInteractions.jpg" label="Dynamic Content Interactions" width="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
 
-            <a href="/public?tool=editor&doenetId=_UdDWyNkqfF21O6Ew-Qh4O" style={{textDecoration: "none"}}><DoenetDriveCard image="BasicAnswerValidation.jpg" label="Basics of Answer Validation" wwidth="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
+            <a aria-label="" href="/public?tool=editor&doenetId=_UdDWyNkqfF21O6Ew-Qh4O" style={{textDecoration: "none"}}><DoenetDriveCard image="BasicAnswerValidation.jpg" label="Basics of Answer Validation" wwidth="175px" height="150px" textAlign="center" lineHeight="15px" whiteSpace="normal" /></a>
           </div>
         </Paragraph>
 
