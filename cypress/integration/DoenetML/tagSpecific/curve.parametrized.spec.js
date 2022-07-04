@@ -523,6 +523,7 @@ describe('Parameterized Curve Tag Tests', function () {
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+    cy.get("#\\/m1").should('contain.text', "2")
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();

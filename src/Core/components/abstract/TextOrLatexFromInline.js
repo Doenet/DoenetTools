@@ -3,6 +3,7 @@ import InlineComponent from './InlineComponent';
 export default class TextOrLatexFromInline extends InlineComponent {
   static componentType = "_textOrLatexFromInline";
   static renderChildren = true;
+  static rendererType ="containerInline";
 
   static includeBlankStringChildren = true;
 

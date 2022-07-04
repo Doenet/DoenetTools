@@ -10,8 +10,8 @@ export default React.memo(function MathList(props) {
     return null;
   }
 
-  if (children.length === 0 && SVs.latex) {
-    return <React.Fragment key={name}><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{"\\(" + SVs.latex + "\\)"}</MathJax></span></React.Fragment>;
+  if (children.length === 0 && SVs.text) {
+    return <React.Fragment key={name}><a name={name} /><span id={name}>{SVs.text}</span></React.Fragment>;
   }
 
   if (children.length === 0) {

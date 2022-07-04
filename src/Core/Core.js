@@ -2010,9 +2010,17 @@ export default class Core {
     // we'll copy the replacements of the shadowed composite
     // and make those be the replacements of the shadowing composite
     let serializedReplacements = [];
+    let targetAttributesToIgnore = await component.stateValues.targetAttributesToIgnore;
+    let targetAttributesToIgnoreRecursively = await component.stateValues.targetAttributesToIgnoreRecursively;
+
     for (let repl of shadowedComposite.replacements) {
       if (typeof repl === "object") {
-        serializedReplacements.push(await repl.serialize())
+        serializedReplacements.push(await repl.serialize(
+          {
+            targetAttributesToIgnore,
+            targetAttributesToIgnoreRecursively
+          }
+        ))
       } else {
         serializedReplacements.push(repl)
       }
@@ -2040,7 +2048,7 @@ export default class Core {
     // TODO: is isResponse the only attribute to convert?
     if (component.attributes.isResponse) {
 
-      let compositeAttributesObj = component.constructor.createAttributesObject({ flags: this.flags });
+      let compositeAttributesObj = component.constructor.createAttributesObject();
 
       for (let repl of serializedReplacements) {
         if (typeof repl !== "object") {
@@ -2484,7 +2492,7 @@ export default class Core {
 
   createAttributeStateVariableDefinitions({ componentClass, stateVariableDefinitions }) {
 
-    let attributes = componentClass.createAttributesObject({ flags: this.flags });
+    let attributes = componentClass.createAttributesObject();
 
     for (let attrName in attributes) {
       let attributeSpecification = attributes[attrName];
@@ -2508,6 +2516,10 @@ export default class Core {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
           if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
             stateVarDef.shadowingInstructions.createComponentOfType = "text";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "stringArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "textList";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "numberArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "numberList";
           }
         } else {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
@@ -2663,7 +2675,7 @@ export default class Core {
     // attributes depend on adapterTarget (if attribute exists in adapterTarget)
     let adapterTargetComponent = this._components[redefineDependencies.adapterTargetIdentity.componentName];
 
-    let attributes = componentClass.createAttributesObject({ flags: this.flags });
+    let attributes = componentClass.createAttributesObject();
 
     for (let attrName in attributes) {
       let attributeSpecification = attributes[attrName];
@@ -2687,6 +2699,10 @@ export default class Core {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
           if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
             stateVarDef.shadowingInstructions.createComponentOfType = "text";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "stringArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "textList";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "numberArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "numberList";
           }
         } else {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
@@ -2815,7 +2831,6 @@ export default class Core {
 
   async createReferenceShadowStateVariableDefinitions({ redefineDependencies, stateVariableDefinitions, componentClass }) {
 
-    let compositeComponent = this._components[redefineDependencies.compositeName];
     let targetComponent = this._components[redefineDependencies.targetName];
 
     if (redefineDependencies.propVariable) {
@@ -2839,15 +2854,14 @@ export default class Core {
     // - first on attributes from component attribute components, if they exist
     // - then on targetComponent (if not copying a prop and attribute exists in targetComponent)
 
-    let attributes = componentClass.createAttributesObject({ flags: this.flags });
+    let attributes = componentClass.createAttributesObject();
 
     for (let attrName in attributes) {
       let attributeSpecification = attributes[attrName];
-      if (!attributeSpecification.createStateVariable) {
+      let varName = attributeSpecification.createStateVariable;
+      if (!varName) {
         continue;
       }
-
-      let varName = attributeSpecification.createStateVariable;
 
       let stateVarDef = stateVariableDefinitions[varName] = {
         isAttribute: true,
@@ -2863,6 +2877,10 @@ export default class Core {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createPrimitiveOfType;
           if (stateVarDef.shadowingInstructions.createComponentOfType === "string") {
             stateVarDef.shadowingInstructions.createComponentOfType = "text";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "stringArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "textList";
+          } else if (stateVarDef.shadowingInstructions.createComponentOfType === "numberArray") {
+            stateVarDef.shadowingInstructions.createComponentOfType = "numberList";
           }
         } else {
           stateVarDef.shadowingInstructions.createComponentOfType = attributeSpecification.createComponentOfType;
@@ -2900,36 +2918,7 @@ export default class Core {
           dependencyType: "attributeComponent",
           attributeName: attrName,
           variableNames: [stateVariableForAttributeValue],
-          fallBackToAttributeFromShadowTarget: false,
         }
-      }
-
-
-      if ((!redefineDependencies.propVariable || attributeSpecification.propagateToProps)
-        && (varName in targetComponent.state)
-      ) {
-        thisDependencies.targetVariable = {
-          dependencyType: "stateVariable",
-          componentName: targetComponent.componentName,
-          variableName: varName,
-        };
-        if ("targetAttributesToIgnore" in compositeComponent.state &&
-          redefineDependencies.firstLevelReplacement
-        ) {
-          thisDependencies.targetAttributesToIgnore = {
-            dependencyType: "stateVariable",
-            componentName: compositeComponent.componentName,
-            variableName: "targetAttributesToIgnore",
-          };
-        }
-      }
-
-      if ("targetAttributesToIgnoreRecursively" in compositeComponent.state) {
-        thisDependencies.targetAttributesToIgnoreRecursively = {
-          dependencyType: "stateVariable",
-          componentName: compositeComponent.componentName,
-          variableName: "targetAttributesToIgnoreRecursively",
-        };
       }
 
       if (attributeSpecification.fallBackToParentStateVariable) {
@@ -2950,37 +2939,21 @@ export default class Core {
           attributeValue = dependencyValues.attributePrimitive;
         } else {
 
-          let targetAttributesToIgnore = [];
-          if (dependencyValues.targetAttributesToIgnore) {
-            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
-          }
-          if (dependencyValues.targetAttributesToIgnoreRecursively) {
-            targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnoreRecursively);
-          }
-
-          if (dependencyValues.targetVariable !== undefined
-            && !targetAttributesToIgnore.includes(attrName)
-            && !usedDefault.targetVariable) {
-            // if don't have attribute component or primitive
-            // and target has attribute, use that value
-            return { setValue: { [varName]: dependencyValues.targetVariable } };
+          // parentValue would be undefined if fallBackToParentStateVariable wasn't specified
+          // parentValue would be null if the parentValue state variables
+          // did not exist or its value was null 
+          let haveParentValue = dependencyValues.parentValue !== undefined
+            && dependencyValues.parentValue !== null;
+          if (haveParentValue && !usedDefault.parentValue) {
+            return { setValue: { [varName]: dependencyValues.parentValue } }
           } else {
-
-            // parentValue would be undefined if fallBackToParentStateVariable wasn't specified
-            // parentValue would be null if the parentValue state variables
-            // did not exist or its value was null 
-            let haveParentValue = dependencyValues.parentValue !== undefined
-              && dependencyValues.parentValue !== null;
-            if (haveParentValue && !usedDefault.parentValue) {
-              return { setValue: { [varName]: dependencyValues.parentValue } }
-            } else {
-              return {
-                useEssentialOrDefaultValue: {
-                  [varName]: true
-                }
+            return {
+              useEssentialOrDefaultValue: {
+                [varName]: true
               }
             }
           }
+
         }
 
         attributeValue = validateAttributeValue({
@@ -3002,50 +2975,28 @@ export default class Core {
               return { success: false }
             }
 
-            let targetAttributesToIgnore = [];
-            if (dependencyValues.targetAttributesToIgnore) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnore)
-            }
-            if (dependencyValues.targetAttributesToIgnoreRecursively) {
-              targetAttributesToIgnore.push(...dependencyValues.targetAttributesToIgnoreRecursively);
-            }
-
-            if (dependencyValues.targetVariable !== undefined
-              && !targetAttributesToIgnore.includes(attrName)
-            ) {
-              //  if target has attribute, set that value
+            let haveParentValue = dependencyValues.parentValue !== undefined
+              && dependencyValues.parentValue !== null;
+            if (haveParentValue && !usedDefault.parentValue) {
+              // value from parent was used, so propagate back to parent
               return {
                 success: true,
                 instructions: [{
-                  setDependency: "targetVariable",
+                  setDependency: "parentValue",
                   desiredValue: desiredStateVariableValues[varName],
                 }]
               };
             } else {
-
-              let haveParentValue = dependencyValues.parentValue !== undefined
-                && dependencyValues.parentValue !== null;
-              if (haveParentValue && !usedDefault.parentValue) {
-                // value from parent was used, so propagate back to parent
-                return {
-                  success: true,
-                  instructions: [{
-                    setDependency: "parentValue",
-                    desiredValue: desiredStateVariableValues[varName],
-                  }]
-                };
-              } else {
-                // no component or primitive, so value is essential and give it the desired value
-                return {
-                  success: true,
-                  instructions: [{
-                    setEssentialValue: varName,
-                    value: desiredStateVariableValues[varName]
-                  }]
-                };
-              }
-
+              // no component or primitive, so value is essential and give it the desired value
+              return {
+                success: true,
+                instructions: [{
+                  setEssentialValue: varName,
+                  value: desiredStateVariableValues[varName]
+                }]
+              };
             }
+
           }
           // attribute based on child
 
@@ -3737,9 +3688,9 @@ export default class Core {
 
       stateVarObj.wrappingComponents = arrayStateVarObj.shadowingInstructions.returnWrappingComponents(arrayEntryPrefix);
 
-      if (arrayStateVarObj.shadowingInstructions.attributeComponentsToShadow) {
-        stateVarObj.shadowingInstructions.attributeComponentsToShadow
-          = arrayStateVarObj.shadowingInstructions.attributeComponentsToShadow;
+      if (arrayStateVarObj.shadowingInstructions.attributesToShadow) {
+        stateVarObj.shadowingInstructions.attributesToShadow
+          = arrayStateVarObj.shadowingInstructions.attributesToShadow;
       }
 
       if (arrayStateVarObj.shadowingInstructions.createComponentOfType) {
@@ -6675,9 +6626,22 @@ export default class Core {
           continue;
         }
 
+        let composite = this._components[shadowingParent.shadows.compositeName];
+        let targetAttributesToIgnore = await composite.stateValues.targetAttributesToIgnore;
+        let targetAttributesToIgnoreRecursively = await composite.stateValues.targetAttributesToIgnoreRecursively;
+
         let shadowingSerializeChildren = [];
         for (let child of newChildren) {
-          shadowingSerializeChildren.push(await child.serialize())
+          if (typeof child === "object") {
+            shadowingSerializeChildren.push(await child.serialize(
+              {
+                targetAttributesToIgnore,
+                targetAttributesToIgnoreRecursively
+              }
+            ))
+          } else {
+            shadowingSerializeChildren.push(child);
+          }
         }
         shadowingSerializeChildren = postProcessCopy({
           serializedComponents: shadowingSerializeChildren,
@@ -7569,9 +7533,19 @@ export default class Core {
         // TODO: not using uniqueIdentifiers used here
         // is this a problem?
         let newSerializedReplacements = [];
+
+        let compositeCreatingShadow = this._components[shadowingComponent.shadows.compositeName];
+        let targetAttributesToIgnore = await compositeCreatingShadow.stateValues.targetAttributesToIgnore;
+        let targetAttributesToIgnoreRecursively = await compositeCreatingShadow.stateValues.targetAttributesToIgnoreRecursively;
+
         for (let repl of replacementsToShadow) {
           if (typeof repl === "object") {
-            newSerializedReplacements.push(await repl.serialize());
+            newSerializedReplacements.push(await repl.serialize(
+              {
+                targetAttributesToIgnore,
+                targetAttributesToIgnoreRecursively
+              }
+            ));
           } else {
             newSerializedReplacements.push(repl);
           }
@@ -7585,7 +7559,7 @@ export default class Core {
 
         // TODO: is isResponse the only attribute to convert?
         if (shadowingComponent.attributes.isResponse) {
-          let compositeAttributesObj = shadowingComponent.constructor.createAttributesObject({ flags: this.flags });
+          let compositeAttributesObj = shadowingComponent.constructor.createAttributesObject();
 
           for (let repl of newSerializedReplacements) {
             if (typeof repl !== "object") {
