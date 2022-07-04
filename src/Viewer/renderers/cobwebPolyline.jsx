@@ -86,14 +86,9 @@ export default React.memo(function CobwebPolyline(props) {
       }
     }
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     //things to be passed to JSXGraph as attributes
     let jsxPolylineAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,
@@ -105,8 +100,11 @@ export default React.memo(function CobwebPolyline(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle),
     };
 
-    if (SVs.labelIsLatex) {
-      jsxPolylineAttributes.label = { useMathJax: true };
+    jsxPolylineAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxPolylineAttributes.label.useMathJax = true 
     }
 
     jsxPointAttributes.current = {

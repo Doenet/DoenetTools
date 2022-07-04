@@ -9,29 +9,79 @@ export default class FunctionOperator extends Function {
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    let wrapStringsAndMacros = function ({ matchedChildren }) {
+    let wrapStringsAndMacros = function ({ matchedChildren, componentInfoObjects }) {
 
-      // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
+
+      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: cType,
+        baseComponentType: "label"
+      });
+
+      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.props?.componentType)
+
+      // only apply if all children are strings, macros, or labels
+      if (matchedChildren.length === 0 || !matchedChildren.every(child =>
         typeof child === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+        child.doenetAttributes?.createdFromMacro ||
+        componentIsLabel(child)
       )) {
         return { success: false }
       }
 
+
+      // wrap first group of non-label children in <math>
+
+      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.props?.componentType));
+
+      let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
+
+      if (childIsLabel.filter(x => x).length === 0) {
+        childrenToWrap = matchedChildren
+      } else {
+        if (childIsLabel[0]) {
+          // started with label, find first non-label child
+          let firstNonLabelInd = childIsLabel.indexOf(false);
+          if (firstNonLabelInd !== -1) {
+            childrenToNotWrapBegin = matchedChildren.slice(0, firstNonLabelInd);
+            matchedChildren = matchedChildren.slice(firstNonLabelInd);
+            childIsLabel = childIsLabel.slice(firstNonLabelInd)
+          }
+        }
+
+        // now we don't have label at the beginning
+        // find first label ind
+        let firstLabelInd = childIsLabel.indexOf(true);
+        if (firstLabelInd === -1) {
+          childrenToWrap = matchedChildren;
+        } else {
+          childrenToWrap = matchedChildren.slice(0, firstLabelInd);
+          childrenToNotWrapEnd = matchedChildren.slice(firstLabelInd);
+        }
+
+      }
+
+      if (childrenToWrap.length === 0) {
+        return { success: false }
+      }
+
+
       // don't apply to a single macro
-      if (matchedChildren.length === 1 &&
-        typeof matchedChildren[0] !== "string"
+      if (childrenToWrap.length === 1 &&
+        typeof childrenToWrap[0] !== "string"
       ) {
         return { success: false }
       }
 
       return {
         success: true,
-        newChildren: [{
-          componentType: "math",
-          children: matchedChildren
-        }],
+        newChildren: [
+          ...childrenToNotWrapBegin,
+          {
+            componentType: "math",
+            children: childrenToWrap
+          },
+          ...childrenToNotWrapEnd
+        ],
       }
 
     }
@@ -41,18 +91,6 @@ export default class FunctionOperator extends Function {
     });
 
     return sugarInstructions;
-  }
-
-  static returnChildGroups() {
-
-    return [{
-      group: "maths",
-      componentTypes: ["math"]
-    }, {
-      group: "functions",
-      componentTypes: ["function"]
-    }]
-
   }
 
 

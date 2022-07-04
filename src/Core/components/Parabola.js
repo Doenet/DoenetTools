@@ -26,9 +26,7 @@ export default class Parabola extends Curve {
 
 
   static returnChildGroups() {
-
-    return []
-
+    return GraphicalComponent.returnChildGroups();
   }
 
   static returnStateVariableDefinitions(args) {

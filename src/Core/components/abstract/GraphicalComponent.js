@@ -56,7 +56,7 @@ export default class GraphicalComponent extends BaseComponent {
       forRenderer: true,
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "text",
+        createComponentOfType: "label",
       },
       hasEssential: true,
       defaultValue: "",

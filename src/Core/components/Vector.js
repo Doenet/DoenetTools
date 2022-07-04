@@ -154,13 +154,17 @@ export default class Vector extends GraphicalComponent {
 
   static returnChildGroups() {
 
-    return [{
+    let childGroups = super.returnChildGroups();
+
+    childGroups.push(...[{
       group: "points",
       componentTypes: ["point"]
     }, {
       group: "vectors",
       componentTypes: ["vector"]
-    }]
+    }])
+
+    return childGroups;
 
   }
 

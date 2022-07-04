@@ -34,9 +34,7 @@ export default class Circle extends Curve {
   }
 
   static returnChildGroups() {
-
-    return []
-
+    return GraphicalComponent.returnChildGroups();
   }
 
 

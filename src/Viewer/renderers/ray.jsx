@@ -49,14 +49,9 @@ export default React.memo(function Ray(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     //things to be passed to JSXGraph as attributes
     var jsxRayAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       layer: 10 * SVs.layer + 7,
@@ -73,10 +68,11 @@ export default React.memo(function Ray(props) {
     };
 
 
-    if (SVs.labelIsLatex) {
-      jsxRayAttributes.label = { useMathJax: true };
-    } else {
-      jsxRayAttributes.label = {};
+    jsxRayAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxRayAttributes.label.useMathJax = true 
     }
 
     if (SVs.applyStyleToLabel) {
@@ -246,11 +242,7 @@ export default React.memo(function Ray(props) {
       }
 
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      rayJXG.current.name = label;
+      rayJXG.current.name = SVs.label;
       // rayJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
       let withlabel = SVs.showLabel && SVs.label !== "";

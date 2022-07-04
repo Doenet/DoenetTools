@@ -48,14 +48,9 @@ export default React.memo(function Circle(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -79,10 +74,11 @@ export default React.memo(function Circle(props) {
       jsxCircleAttributes.hasInnerPoints = true;
     }
 
-    if (SVs.labelIsLatex) {
-      jsxCircleAttributes.label = { useMathJax: true };
-    } else {
-      jsxCircleAttributes.label = {};
+    jsxCircleAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxCircleAttributes.label.useMathJax = true 
     }
 
     if (SVs.showLabel && SVs.label !== "") {
@@ -258,11 +254,7 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
       }
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      circleJXG.current.name = label;
+      circleJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
