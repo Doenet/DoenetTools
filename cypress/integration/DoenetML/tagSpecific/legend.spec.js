@@ -401,18 +401,18 @@ describe('Legend Tag Tests', function () {
     <p>display closed swatches: <booleaninput name="closedSwatches" /></p>
 
     <graph>
-      <function styleNumber="3">(x+5)^2</function>
+      <lineSegment styleNumber="3" />
       <point styleNumber="1" displayDigits="2" name="A">(-3,2)</point>
       <circle styleNumber="3" center="(5,-8)" />
       <vector styleNumber="2" head="(-3,1)" tail="(2,2)" />
       <point styleNumber="1" displayDigits="2" name="B">(-5,6)</point>
       <point styleNumber="2" name="C">(0,-6)</point>
-      <lineSegment styleNumber="2" name="ls" />
+      <function styleNumber="2" name="f">(x+5)^2</function>
       <rectangle styleNumber="2" />
       <curve through="(-9,-9) (-8, -8) (-7, -9)" styleNumber="4" />
 
       <legend displayClosedSwatches="$closedSwatches">
-        <label forTarget="ls">targeted line segment</label>
+        <label forTarget="f">targeted function</label>
         <label>first one</label>
         <label>second one <m>x^2</m></label>
         <label forTarget="B">targeted point <m>B</m></label>
@@ -435,7 +435,7 @@ describe('Legend Tag Tests', function () {
       expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(5);
 
       expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("targeted line segment")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("targeted function")
       expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
       expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineStyle).eq("dashed");
       expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineColor).eq("blue");
@@ -479,7 +479,7 @@ describe('Legend Tag Tests', function () {
 
     });
 
-    cy.log('change displayClosedSwatche to trus')
+    cy.log('change displayClosedSwatches to true')
     cy.get("#\\/closedSwatches_input").click();
 
 
@@ -491,7 +491,7 @@ describe('Legend Tag Tests', function () {
       expect(stateVariables['/_legend1'].stateValues.legendElements.length).eq(6);
 
       expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("line")
-      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("targeted line segment")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("targeted function")
       expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.hasLatex).eq(false);
       expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineStyle).eq("dashed");
       expect(stateVariables['/_legend1'].stateValues.legendElements[0].lineColor).eq("blue");

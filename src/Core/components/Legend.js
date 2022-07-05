@@ -40,36 +40,89 @@ export default class Legend extends GraphicalComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-
-    stateVariableDefinitions.legendElements = {
-      forRenderer: true,
+    stateVariableDefinitions.graphicalElementNames = {
       returnDependencies: () => ({
         graphAncestor: {
           dependencyType: "ancestor",
           componentType: "graph",
           variableNames: ["graphicalDescendants"]
         },
-        labelChildren: {
-          dependencyType: "child",
-          childGroups: ["labels"],
-          variableNames: ["value", "hasLatex", "forTargetComponentName"]
-        },
-        displayClosedSwatches: {
-          dependencyType: "stateVariable",
-          variableName: "displayClosedSwatches"
-        }
       }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.graphAncestor) {
+          return {
+            setValue: {
+              graphicalElementNames: dependencyValues.graphAncestor.stateValues.graphicalDescendants
+                .map(x => x.componentName)
+            }
+          }
+        } else {
+          return { setValue: { graphicalElementNames: null } }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.legendElements = {
+      forRenderer: true,
+      stateVariablesDeterminingDependencies: ["graphicalElementNames"],
+      returnDependencies: ({ stateValues }) => {
+
+        let dependencies = {
+          labelChildren: {
+            dependencyType: "child",
+            childGroups: ["labels"],
+            variableNames: ["value", "hasLatex", "forTargetComponentName"]
+          },
+          displayClosedSwatches: {
+            dependencyType: "stateVariable",
+            variableName: "displayClosedSwatches"
+          }
+        }
+
+        if (stateValues.graphicalElementNames) {
+          dependencies.numGraphicalElements = {
+            dependencyType: "value",
+            value: stateValues.graphicalElementNames.length
+          }
+          for (let [ind, cName] of stateValues.graphicalElementNames.entries()) {
+            dependencies[`graphicalElement${ind}`] = {
+              dependencyType: "multipleStateVariables",
+              componentName: cName,
+              variableNames: ["selectedStyle", "styleNumber"],
+            }
+            dependencies[`graphicalElement${ind}AdapterSource`] = {
+              dependencyType: "adapterSource",
+              componentName: cName,
+            }
+          }
+        }
+
+        return dependencies;
+      },
       definition({ dependencyValues, componentInfoObjects }) {
 
         let legendElements = [];
 
-        if (dependencyValues.graphAncestor) {
+        if (dependencyValues.numGraphicalElements > 0) {
 
           let pointStyleNumbersFound = [];
           let closedPathStyleNumbersFound = [];
           let otherStyleNumbersFound = [];
 
-          let graphicalDescendantsLeft = [...dependencyValues.graphAncestor.stateValues.graphicalDescendants]
+          let graphicalDescendantsLeft = [];
+          for (let ind = 0; ind < dependencyValues.numGraphicalElements; ind++) {
+            let graphicalElement = dependencyValues[`graphicalElement${ind}`];
+            let adapter = dependencyValues[`graphicalElement${ind}AdapterSource`];
+            if (adapter) {
+              // if have adapter, use that componentName instead,
+              // since that would be the name used in forTargetComponentName
+              graphicalElement = { ...graphicalElement };
+              graphicalElement.componentName = adapter.componentName;
+            }
+            graphicalDescendantsLeft.push(graphicalElement);
+          }
+
           let graphicalDescendantComponentNamesLeft = graphicalDescendantsLeft.map(x => x.componentName);
 
 
