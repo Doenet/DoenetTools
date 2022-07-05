@@ -2982,12 +2982,12 @@ class Dependency {
 
           } else {
             value = null;
-            changes.valuesChanged = {};
+            changes = {};
             usedDefault = false;
           }
         } else {
           value = null;
-          changes.valuesChanged = {};
+          changes = {};
           usedDefault = false;
         }
       } else if (this.returnSingleComponent) {

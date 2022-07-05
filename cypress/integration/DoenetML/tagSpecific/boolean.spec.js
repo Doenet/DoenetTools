@@ -201,6 +201,9 @@ describe('Boolean Tag Tests', function () {
     <boolean name="t16"><mathlist>1</mathlist> = <number>1</number></boolean>
     <boolean name="t17"><numberlist>1</numberlist> = <math>1</math></boolean>
     <boolean name="t18"><numberlist>1</numberlist> = <number>1</number></boolean>
+    <boolean name="t19"><text>a, b</text> = <textlist>a b</textlist></boolean>
+    <boolean name="t20"><text>a, b</text> = <textlist unordered>b a</textlist></boolean>
+    <boolean name="t21"><text>a,b</text> = <textlist>a b</textlist></boolean>
 
     <boolean name="f1"><math>1,2</math> = <mathlist>2 1</mathlist></boolean>
     <boolean name="f2"><mathlist>1 2</mathlist> = <mathlist>2 1</mathlist></boolean>
@@ -220,6 +223,7 @@ describe('Boolean Tag Tests', function () {
     <boolean name="f16"><mathlist></mathlist> = <math></math></boolean>
     <boolean name="f17"><numberlist></numberlist> = <number></number></boolean>
     <boolean name="f18"><textlist></textlist> = <text></text></boolean>
+    <boolean name="f19"><text>a, b</text> = <textlist>b a</textlist></boolean>
 
     `}, "*");
     });
@@ -242,6 +246,9 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/t16').should('have.text', "true")
     cy.get('#\\/t17').should('have.text', "true")
     cy.get('#\\/t18').should('have.text', "true")
+    cy.get('#\\/t19').should('have.text', "true")
+    cy.get('#\\/t20').should('have.text', "true")
+    cy.get('#\\/t21').should('have.text', "true")
 
     cy.get('#\\/f1').should('have.text', "false")
     cy.get('#\\/f2').should('have.text', "false")
@@ -261,6 +268,7 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/f16').should('have.text', "false")
     cy.get('#\\/f17').should('have.text', "false")
     cy.get('#\\/f18').should('have.text', "false")
+    cy.get('#\\/f19').should('have.text', "false")
 
   })
 
@@ -274,12 +282,18 @@ describe('Boolean Tag Tests', function () {
     <boolean name="t4"><text>hello there</text> = <text>hello</text><text>there</text></boolean>
     <boolean name="t5"><text>hellothere</text> = <text><text>hello</text><text>there</text></text></boolean>
     <boolean name="t6"><textlist>hello</textlist> = hello</boolean>
+    <boolean name="t7"><text>hello  there</text> = hello there</boolean>
+    <boolean name="t8"><text>hello  there</text> = hello  there</boolean>
+    <boolean name="t9"><textlist>hello there</textlist> = <text>hello,there</text></boolean>
+    <boolean name="t10"><textlist>hello there</textlist> = <text>hello, there</text></boolean>
+    <boolean name="t11"><textlist>hello there</textlist> = <text> hello ,   there   </text></boolean>
 
 
-    <boolean name="f1"><text>hello  there</text> = hello there</boolean>
-    <boolean name="f2"><text>hello  there</text> = hello  there</boolean>
+    <boolean name="f1"><text>hello there</text> = hellothere</boolean>
+    <boolean name="f2"><text>hello there</text> = <text>hellothere</text></boolean>
     <boolean name="f3"><text>hello there</text> = <text><text>hello</text><text>there</text></text></boolean>
     <boolean name="f4"><textlist>hello there</textlist> = hello there</boolean>
+    <boolean name="f5"><textlist>hello there</textlist> = hello, there</boolean>
 
 
     `}, "*");
@@ -291,11 +305,18 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/t4').should('have.text', "true")
     cy.get('#\\/t5').should('have.text', "true")
     cy.get('#\\/t5').should('have.text', "true")
+    cy.get('#\\/t6').should('have.text', "true")
+    cy.get('#\\/t7').should('have.text', "true")
+    cy.get('#\\/t8').should('have.text', "true")
+    cy.get('#\\/t9').should('have.text', "true")
+    cy.get('#\\/t10').should('have.text', "true")
+    cy.get('#\\/t11').should('have.text', "true")
 
     cy.get('#\\/f1').should('have.text', "false")
     cy.get('#\\/f2').should('have.text', "false")
-    cy.get('#\\/t5').should('have.text', "true")
+    cy.get('#\\/f3').should('have.text', "false")
     cy.get('#\\/f4').should('have.text', "false")
+    cy.get('#\\/f5').should('have.text', "false")
 
   })
 

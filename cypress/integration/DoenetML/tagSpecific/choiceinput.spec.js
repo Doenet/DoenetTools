@@ -1814,5 +1814,55 @@ describe('ChoiceInput Tag Tests', function () {
 
   })
 
+  // verify fixed bug where shuffle order was recalculated
+  // causing a copy with no link to have a different shuffle order
+  it('shuffleOrder is not recalculated when copy with no link', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <variantControl uniqueVariants="false" />
+
+    <group name="g" newNamespace>
+      <choiceinput shuffleOrder name="ci">
+        <choice>a</choice>
+        <choice>b</choice>
+        <choice>c</choice>
+        <choice>d</choice>
+        <choice>e</choice>
+      </choiceinput>
+    </group>
+    
+    <copy target="g" assignNames="g2" link="false" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    let choices = ["a", "b", "c", "d", "e"];
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let choiceOrder = stateVariables["/g/ci"].stateValues.choiceOrder;
+      let choiceOrder2 = stateVariables["/g2/ci"].stateValues.choiceOrder;
+
+      expect(choiceOrder2).eqls(choiceOrder);
+
+      cy.get(`label[for=${cesc("/g/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
+      cy.get(`label[for=${cesc("/g/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
+      cy.get(`label[for=${cesc("/g/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
+      cy.get(`label[for=${cesc("/g/ci_choice4_input")}]`).should('have.text', choices[choiceOrder[3] - 1]);
+      cy.get(`label[for=${cesc("/g/ci_choice5_input")}]`).should('have.text', choices[choiceOrder[4] - 1]);
+      cy.get(`label[for=${cesc("/g2/ci_choice1_input")}]`).should('have.text', choices[choiceOrder[0] - 1]);
+      cy.get(`label[for=${cesc("/g2/ci_choice2_input")}]`).should('have.text', choices[choiceOrder[1] - 1]);
+      cy.get(`label[for=${cesc("/g2/ci_choice3_input")}]`).should('have.text', choices[choiceOrder[2] - 1]);
+      cy.get(`label[for=${cesc("/g2/ci_choice4_input")}]`).should('have.text', choices[choiceOrder[3] - 1]);
+      cy.get(`label[for=${cesc("/g2/ci_choice5_input")}]`).should('have.text', choices[choiceOrder[4] - 1]);
+
+
+    })
+  })
+
 
 });
