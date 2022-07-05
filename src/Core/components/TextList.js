@@ -433,4 +433,6 @@ export default class TextList extends InlineComponent {
     return stateVariableDefinitions;
   }
 
+  static adapters = ["text"];
+
 }
