@@ -49,6 +49,7 @@ export default class Choiceinput extends Input {
       defaultValue: false,
       public: true,
       forRenderer: true,
+      fallBackToParentStateVariable: "selectMultiple",
     };
     attributes.matchPartial = {
       createComponentOfType: "boolean",
@@ -65,6 +66,7 @@ export default class Choiceinput extends Input {
       createStateVariable: "shuffleOrder",
       defaultValue: false,
       public: true,
+      fallBackToParentStateVariable: "shuffleOrder",
     };
 
     attributes.preselectChoice = {

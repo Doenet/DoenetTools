@@ -405,14 +405,14 @@ export function evaluateLogic({ logicTree,
       if (typeof tree === "string") {
         let child = dependencyValues.textChildrenByCode[tree];
         if (child !== undefined) {
-          return child.stateValues.value.trim();
+          return child.stateValues.value.trim().replace(/\s+/, ' ');
         }
         child = dependencyValues.textListChildrenByCode[tree];
         if (child !== undefined) {
           if (child.stateValues.unordered) {
             foundUnorderedList = true;
           }
-          return child.stateValues.texts.map(x => x.trim());
+          return child.stateValues.texts.map(x => x.trim().replace(/\s+/, ' '));
         }
         return tree.trim();
       }
