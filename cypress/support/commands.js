@@ -26,6 +26,7 @@
 
 import 'cypress-wait-until';
 
+
 Cypress.Commands.add("clearIndexedDB", () => {
   return new Promise((resolve, reject) => {
     const request = window.indexedDB.deleteDatabase("keyval-store");
@@ -36,3 +37,4 @@ Cypress.Commands.add("clearIndexedDB", () => {
 
   })
 });
+
