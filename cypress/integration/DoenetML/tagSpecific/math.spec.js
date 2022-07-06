@@ -2732,6 +2732,26 @@ describe('Math Tag Tests', function () {
     })
   });
 
+  it('can get negative infinity from reciprocal when simplify', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <math simplify>1/((0)(-1))</math>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).should('have.text', '−∞');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_math1"].stateValues.value).eq(-Infinity)
+    })
+  });
+
 
 })
 
