@@ -91,6 +91,17 @@ export default class Core {
     this.requestedVariantIndex = requestedVariantIndex;
     this.requestedVariant = requestedVariant;
 
+    this.visibilityInfo = {
+      componentsCurrentlyVisible: {},
+      infoToSend: {},
+      timeLastSent: new Date(),
+      saveDelay: 60000 / 10,
+      saveTimerId: null,
+      suspendDelay: 3 * 60000 / 10,
+      suspendTimerId: null,
+      suspended: false
+    }
+
     // console.time('serialize doenetML');
 
     this.parameterStack = new ParameterStack();
@@ -302,6 +313,7 @@ export default class Core {
 
     this.resolveInitialized();
 
+    setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
 
   }
 
@@ -7813,8 +7825,8 @@ export default class Core {
 
         // TODO: if skip an update, presumably we should call reject???
 
-      } else if (nextUpdateInfo.type === "recordEvent") {
-        result = await this.performRecordEvent(nextUpdateInfo);
+      } else if (nextUpdateInfo.type === "recordEvents") {
+        result = await this.performRecordEvents(nextUpdateInfo);
       } else {
         throw Error(`Unrecognized process type: ${nextUpdateInfo.type}`)
       }
@@ -8301,10 +8313,28 @@ export default class Core {
   }
 
   requestRecordEvent(event) {
+
+    if (this.visibilityInfo.suspended) {
+      console.log('restart visibility measuring')
+
+      // restart visibility measuring
+      this.visibilityInfo.suspended = false;
+      this.visibilityInfo.timeLastSent = new Date();
+      this.visibilityInfo.saveTimerId = setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
+    } else {
+      clearTimeout(this.visibilityInfo.suspendTimerId);
+    }
+
+    this.visibilityInfo.suspendTimerId = setTimeout(this.suspendVisibilityMeasuring.bind(this), this.visibilityInfo.suspendDelay);
+
+    if (event.verb === "visibilityChanged") {
+      return this.processVisibilityChangedEvent(event);
+    }
+
     return new Promise((resolve, reject) => {
 
       this.processQueue.push({
-        type: "recordEvent", event, resolve, reject
+        type: "recordEvents", events: [event], resolve, reject
       })
 
       if (!this.processing) {
@@ -8315,19 +8345,29 @@ export default class Core {
     })
   }
 
-  performRecordEvent({ event }) {
+  performRecordEvents({ events }) {
 
     if (!this.flags.allowSaveEvents) {
       return;
     }
 
-    event.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    let timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
 
-    if (!event.result) {
-      event.result = {};
+    let verbs = [], objects = [], results = [], contexts = [];
+
+    for (let event of events) {
+      verbs.push(event.verb);
+      objects.push(JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer));
+      if (event.result) {
+        results.push(JSON.stringify(removeFunctionsMathExpressionClass(event.result, serializeFunctions.serializedComponentsReplacer)))
+      } else {
+        results.push("{}")
     }
-    if (!event.context) {
-      event.context = {};
+      if (event.context) {
+        contexts.push(JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer))
+      } else {
+        contexts.push("{}")
+      }
     }
 
     const payload = {
@@ -8337,20 +8377,20 @@ export default class Core {
       pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
       variantIndex: this.requestedVariant.index,
-      verb: event.verb,
-      object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
-      result: JSON.stringify(removeFunctionsMathExpressionClass(event.result), serializeFunctions.serializedComponentsReplacer),
-      context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
-      timestamp: event.timestamp,
-      version: "0.1.0",
+      verbs: JSON.stringify(verbs),
+      objects: JSON.stringify(objects),
+      results: JSON.stringify(results),
+      contexts: JSON.stringify(contexts),
+      timestamp,
+      version: "0.1.1",
     }
 
-    axios.post('/api/recordEvent.php', payload)
+    axios.post('/api/recordEvents.php', payload)
       .then(resp => {
         // console.log(">>>>resp",resp.data)
       })
       .catch(e => {
-        console.error(`Error saving event: ${e.message}`);
+        console.error(`Error saving events: ${e.message}`);
         // postMessage({
         //   messageType: "sendToast",
         //   args: {
@@ -8362,6 +8402,109 @@ export default class Core {
 
 
     return Promise.resolve();
+  }
+
+  processVisibilityChangedEvent(event) {
+
+    let componentName = event.object.componentName;
+    let isVisible = event.result.isVisible;
+
+    if (isVisible) {
+      if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
+        this.visibilityInfo.componentsCurrentlyVisible[componentName] = {
+          begin: new Date(),
+          object: event.object,
+        }
+      }
+    } else {
+      let info = this.visibilityInfo.componentsCurrentlyVisible[componentName]
+      if (info) {
+        delete this.visibilityInfo.componentsCurrentlyVisible[componentName];
+
+        let timeInSeconds = (new Date() - Math.max(info.begin, this.visibilityInfo.timeLastSent)) / 1000;
+
+        if (this.visibilityInfo.infoToSend[componentName]) {
+          this.visibilityInfo.infoToSend[componentName].time += timeInSeconds;
+        } else {
+          this.visibilityInfo.infoToSend[componentName] = {
+            time: timeInSeconds,
+            object: info.object
+          }
+        }
+
+      }
+    }
+
+  }
+
+  sendVisibilityChangedEvents() {
+    let infoToSend = { ...this.visibilityInfo.infoToSend };
+    this.visibilityInfo.infoToSend = {};
+    let timeLastSent = this.visibilityInfo.timeLastSent;
+    this.visibilityInfo.timeLastSent = new Date();
+    let currentVisible = { ...this.visibilityInfo.componentsCurrentlyVisible };
+
+    for (let componentName in currentVisible) {
+      let timeInSeconds = (this.visibilityInfo.timeLastSent - Math.max(timeLastSent, currentVisible[componentName].begin)) / 1000;
+      if (infoToSend[componentName]) {
+        infoToSend[componentName].time += timeInSeconds;
+      } else {
+        infoToSend[componentName] = {
+          time: timeInSeconds,
+          object: currentVisible[componentName].object
+        }
+      }
+    }
+
+    for (let componentName in infoToSend) {
+      infoToSend[componentName].time = Math.round(infoToSend[componentName].time)
+      if (!infoToSend[componentName].time) {
+        // delete if rounded down to zero
+        delete infoToSend[componentName];
+      }
+    }
+
+    if (Object.keys(infoToSend).length > 0) {
+      let events = [];
+      for (let componentName in infoToSend) {
+        let info = infoToSend[componentName];
+
+        let event = {
+          object: info.object,
+          verb: "isVisible",
+          result: { time: info.time }
+        }
+        events.push(event)
+      }
+      console.log('sending isVisible events', events)
+
+      // create promise since queue expects promise
+      new Promise((resolve, reject) => {
+
+        this.processQueue.push({
+          type: "recordEvents", events, resolve, reject
+        })
+
+        if (!this.processing) {
+          this.processing = true;
+          this.executeProcesses();
+
+        }
+      })
+    }
+
+    if (!this.visibilityInfo.suspended) {
+      this.visibilityInfo.saveTimerId = setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
+    }
+
+  }
+
+  suspendVisibilityMeasuring() {
+    console.log('suspend visibility measuring')
+    clearTimeout(this.visibilityInfo.saveTimerId);
+    this.visibilityInfo.suspended = true;
+    this.sendVisibilityChangedEvents();
+
   }
 
   async executeUpdateStateVariables(newStateVariableValues) {

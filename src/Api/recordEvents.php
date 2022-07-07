@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
-//header('Content-Type: application/json');
+header('Content-Type: application/json');
 
 
 include "db_connection.php";
@@ -21,10 +21,10 @@ $activityCid =  mysqli_real_escape_string($conn,$_POST["activityCid"]);
 $pageCid =  mysqli_real_escape_string($conn,$_POST["pageCid"]);
 $pageNumber =  mysqli_real_escape_string($conn,$_POST["pageNumber"]);
 $attemptNumber =  mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
-$verb =  mysqli_real_escape_string($conn,$_POST["verb"]);
-$object =  mysqli_real_escape_string($conn,$_POST["object"]);
-$result =  mysqli_real_escape_string($conn,$_POST["result"]);
-$context =  mysqli_real_escape_string($conn,$_POST["context"]);
+$verbs =  mysqli_real_escape_string($conn,$_POST["verbs"]);
+$objects =  mysqli_real_escape_string($conn,$_POST["objects"]);
+$results =  mysqli_real_escape_string($conn,$_POST["results"]);
+$contexts =  mysqli_real_escape_string($conn,$_POST["contexts"]);
 $version =  mysqli_real_escape_string($conn,$_POST["version"]);
 $variantIndex =  mysqli_real_escape_string($conn,$_POST["variantIndex"]);
 $timestamp =  mysqli_real_escape_string($conn,$_POST["timestamp"]);
@@ -38,18 +38,18 @@ if ($doenetId == ""){
 }elseif ($attemptNumber == ""){
   $success = FALSE;
   $message = 'Internal Error: missing attemptNumber';
-}elseif ($verb == ""){
+}elseif ($verbs == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing verb';
-}elseif ($object == ""){
+  $message = 'Internal Error: missing verbs';
+}elseif ($objects == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing object';
-}elseif ($result == ""){
+  $message = 'Internal Error: missing objects';
+}elseif ($results == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing result';
-}elseif ($context == ""){
+  $message = 'Internal Error: missing results';
+}elseif ($contexts == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing context';
+  $message = 'Internal Error: missing contexts';
 }elseif ($version == ""){
   $success = FALSE;
   $message = 'Internal Error: missing version';
@@ -92,9 +92,35 @@ if ($pageNumber == ""){
   $pageNumber = 'NULL';
 }
 
+
 if ($success){
+
+
   $sql = "INSERT INTO event (userId,deviceName,doenetId,activityCid,pageCid,pageNumber,attemptNumber,variantIndex,verb,object,result,context,version,timestamp,timestored)
-  VALUES ('$userId','$device','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$variantIndex,'$verb','$object','$result','$context','$version','$timestamp',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
+  VALUES ";
+  $iterator = new MultipleIterator;
+  $iterator->attachIterator(new ArrayIterator(json_decode($_POST["verbs"])));
+  $iterator->attachIterator(new ArrayIterator(json_decode($_POST["objects"])));
+  $iterator->attachIterator(new ArrayIterator(json_decode($_POST["results"])));
+  $iterator->attachIterator(new ArrayIterator(json_decode($_POST["contexts"])));
+
+  $repeated = FALSE;
+  foreach ($iterator as $values) {
+    if($repeated) {
+      $sql = "$sql,";
+    }
+    $repeated= TRUE;
+    $verb = $values[0];
+    $object = $values[1];
+    $result = $values[2];
+    $context = $values[3];
+    $sql = "$sql('$userId','$device','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$variantIndex,'$verb','$object','$result','$context','$version','$timestamp',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
+  }
+
+  // foreach (array_map(null, $verbs, $objects, $results, $contexts) as list($verb, $object, $result, $context)) {
+  //   $sql = $sql + "('$userId','$device','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$variantIndex,'$verb','$object','$result','$context','$version','$timestamp',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
+  // }
+
   $result = $conn->query($sql);
 }
 

@@ -1,7 +1,7 @@
-import BaseComponent from './abstract/BaseComponent';
+import BlockComponent from './abstract/BlockComponent';
 
 
-export default class OrbitalDiagram extends BaseComponent {
+export default class OrbitalDiagram extends BlockComponent {
 
   static componentType = "orbitalDiagram";
 
@@ -148,6 +148,22 @@ export default class OrbitalDiagram extends BaseComponent {
 
     return stateVariableDefinitions;
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

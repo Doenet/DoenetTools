@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import useDoenetRenderer from './useDoenetRenderer';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
-export default React.memo(function Pre(props){
+export default React.memo(function Container(props){
   let {name, SVs, children, actions, callAction} = useDoenetRenderer(props);
 
   let onChangeVisibility = isVisible => {
@@ -21,13 +21,9 @@ export default React.memo(function Pre(props){
     }
   }, [])
 
-  if (SVs.hidden) return null
-  return (
-    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <pre id={name} style={{ margin: "12px 0"}}>
-      <a name={name} />
-      {children}
-    </pre>
-    </VisibilitySensor>
-  )
+  if (SVs.hidden) {
+    return null;
+  }
+
+  return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><div id={name}><a name={name} />{children}</div></VisibilitySensor>
 })

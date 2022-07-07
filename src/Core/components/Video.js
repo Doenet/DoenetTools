@@ -91,7 +91,6 @@ export default class Video extends BlockComponent {
         }
       }),
       definition: ({ dependencyValues }) => {
-        console.log("dependencyValues", dependencyValues)
 
         if (dependencyValues.widthAttr) {
           let width = dependencyValues.widthAttr.stateValues.componentSize;
@@ -200,13 +199,6 @@ export default class Video extends BlockComponent {
   }
 
 
-  actions = {
-    recordVideoStarted: this.recordVideoStarted.bind(this),
-    recordVideoWatched: this.recordVideoWatched.bind(this),
-    recordVideoPaused: this.recordVideoPaused.bind(this),
-    recordVideoSkipped: this.recordVideoSkipped.bind(this),
-    recordVideoCompleted: this.recordVideoCompleted.bind(this),
-  }
 
   recordVideoStarted({ beginTime, duration, rate }) {
     this.coreFunctions.requestRecordEvent({
@@ -277,6 +269,27 @@ export default class Video extends BlockComponent {
         duration: duration
       },
     })
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVideoStarted: this.recordVideoStarted.bind(this),
+    recordVideoWatched: this.recordVideoWatched.bind(this),
+    recordVideoPaused: this.recordVideoPaused.bind(this),
+    recordVideoSkipped: this.recordVideoSkipped.bind(this),
+    recordVideoCompleted: this.recordVideoCompleted.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

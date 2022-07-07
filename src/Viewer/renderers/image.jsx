@@ -2,10 +2,27 @@ import React, {useEffect, useState} from 'react';
 import { retrieveMediaForCid } from '../../Core/utils/retrieveMedia';
 import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Image(props) {
-  let { name, SVs } = useDoenetRender(props,false);
+  let { name, SVs, actions, callAction } = useDoenetRender(props,false);
   let [url, setUrl] = useState(null)
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   useEffect(()=>{
     if (SVs.cid){
@@ -23,6 +40,7 @@ export default React.memo(function Image(props) {
   if (SVs.hidden) return null;
 
   return (
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
     <div style={{ margin: "12px 0" }}>
       <a name={name} />
       {
@@ -57,6 +75,7 @@ export default React.memo(function Image(props) {
         </div>
       }
     </div>
+    </VisibilitySensor>
   )
 
 

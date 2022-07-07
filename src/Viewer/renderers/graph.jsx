@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, createContext } from 'react';
 import { sizeToCSS } from './utils/css';
 import useDoenetRender from './useDoenetRenderer';
 import me from 'math-expressions';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export const BoardContext = createContext();
 
@@ -19,7 +20,21 @@ export default React.memo(function Graph(props) {
   // const resizingBoard = useRef(false);
   const boardJustInitialized = useRef(false);
 
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
 
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   //Draw Board after mounting component
   useEffect(() => {
@@ -51,6 +66,7 @@ export default React.memo(function Graph(props) {
 
       });
 
+      console.log('created board', board)
     board.itemsRenderedLowQuality = {};
 
     board.on('boundingbox', () => {
@@ -563,11 +579,15 @@ export default React.memo(function Graph(props) {
 
 
 
-  return <>
-    <a name={name} />
-    <div id={name} className="jxgbox" style={divStyle} />
-    <BoardContext.Provider value={board}>
-      {children}
-    </BoardContext.Provider>
-  </>;
+  return (
+    // <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+      <>
+        <a name={name} />
+        <div id={name} className="jxgbox" style={divStyle} />
+        <BoardContext.Provider value={board}>
+          {children}
+        </BoardContext.Provider>
+      </>
+    //  </VisibilitySensor>
+  );
 })
