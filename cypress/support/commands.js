@@ -26,6 +26,41 @@
 
 import 'cypress-wait-until';
 
+Cypress.Commands.add("signin", ({userId}) => {
+  cy.request(`/cyapi/cypressAutoSignin.php?userId=${userId}`)
+    // .then((resp)=>{
+    //   cy.log("signin",resp.body)
+    // })
+});
+
+Cypress.Commands.add("clearAllOfAUsersCoursesAndItems", ({userId}) => {
+  cy.request(`/cyapi/cypressAllOfAUsersCoursesAndItems.php?userId=${userId}`)
+    // .then((resp)=>{
+    //   cy.log(resp.body)
+    // })
+});
+
+Cypress.Commands.add("clearAllOfAUsersActivities", ({userId}) => {
+  cy.request(`/cyapi/clearAllOfAUsersActivities.php?userId=${userId}`)
+    // .then((resp)=>{
+    //   cy.log(resp.body)
+    // })
+});
+
+Cypress.Commands.add("createCourse", ({userId,courseId}) => {
+  cy.request(`/cyapi/cypressCreateCourse.php?userId=${userId}&courseId=${courseId}`)
+    // .then((resp)=>{
+    //   cy.log(resp.body)
+    // })
+});
+
+Cypress.Commands.add("createActivity", ({courseId,doenetId,parentDoenetId,pageDoenetId}) => {
+  // cy.log(courseId,doenetId,parentDoenetId,pageDoenetId)
+  cy.request(`/cyapi/cypressCreateActivity.php?courseId=${courseId}&doenetId=${doenetId}&parentDoenetId=${parentDoenetId}&pageDoenetId=${pageDoenetId}`)
+    // .then((resp)=>{
+    //   cy.log(resp.body)
+    // })
+});
 
 Cypress.Commands.add("clearIndexedDB", () => {
   return new Promise((resolve, reject) => {

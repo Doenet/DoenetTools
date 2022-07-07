@@ -2,15 +2,24 @@
 
 
 describe('doenetEditor test', function () {
-  // signIn();
+  const userId = "cyuserId";
+  // const userId = "devuserId";
+  const courseId = "courseid1";
+  const doenetId = "activity1id";
+  const pageDoenetId = "_page1id";
 
-  /*
-  1. check if publish indication works properly with title changed or just or content
-  2. check if document title is changed based on the title input
-  */
-  beforeEach(() => {
-    // cy.visit('/editor/?doenetId=_v6f_8r8-stZd14gT7vkB')
+  before(()=>{
+    // cy.clearAllOfAUsersActivities({userId})
+    cy.signin({userId});
+    cy.clearAllOfAUsersCoursesAndItems({userId});
+    cy.createCourse({userId,courseId});
   })
+  beforeEach(() => {
+    cy.clearAllOfAUsersActivities({userId})
+    cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId});
+    cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
+  })
+
 
   Cypress.on('uncaught:exception', (err, runnable) => {
     // returning false here prevents Cypress from
@@ -18,19 +27,23 @@ describe('doenetEditor test', function () {
     return false
 })
 
-it('try the reset task',()=>{
-  cy.log("here")
-  // cy.visit('http://localhost/')
-  // cy.get('[data-cy=signinEmailInput]')
-  // .type('devuser@example.com').blur()
-  // cy.get('[data-cy=sendEmailButton]').click()
-  // cy.visit('http://localhost/course')
-  // cy.request('http://localhost/api/getCoursePermissionsAndSettings.php')
-  
-})
+it('basic test of update button',()=>{
+  const doenetMLString = 'test code'
+  cy.log('test 1');
+  cy.get('.cm-activeLine').type(doenetMLString)
+  cy.wait(1000);
+  cy.get('[data-test="Viewer Update Button"]').click();
+  cy.wait(1000);
+  cy.get('.sc-iBkjds > div').contains(doenetMLString);
 
-  // it('publish button test', function() {
-  //   //cy.get('[data-cy=_v6f_8r8-stZd14gT7vkB]').click();
+})
+// it('test 2',()=>{
+//   cy.log('test 2');
+// })
+
+
+// it('publish button test', function() {
+    //   //cy.get('[data-cy=_v6f_8r8-stZd14gT7vkB]').click();
   //   cy.get('[class=ace_content]').get('[class=ace_text-input]').type("4k8ecd8z",{force:true});
   //   cy.get('[data-cy=editorPublishButton]').should('not.be.disabled').click({force:true}).should('be.disabled')
     
