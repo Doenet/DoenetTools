@@ -1,6 +1,7 @@
 import BaseComponent from './abstract/BaseComponent';
 import me from 'math-expressions';
 import { evaluateLogic } from '../utils/booleanLogic';
+import { getNamespaceFromName } from '../utils/naming';
 
 export default class Award extends BaseComponent {
   static componentType = "award";
@@ -119,11 +120,37 @@ export default class Award extends BaseComponent {
 
   }
 
-  static preprocessSerializedChildren({serializedChildren, attributes}) {
+  static preprocessSerializedChildren({ serializedChildren, attributes, componentName }) {
     if (attributes.targetsAreResponses) {
       let targetNames = attributes.targetsAreResponses.primitive.split(/\s+/).filter(s => s);
+      let nameSpace;
+      if (attributes.newNamespace?.primitive) {
+        nameSpace = componentName + "/";
+      } else {
+        nameSpace = getNamespaceFromName(componentName);
+      }
       for (let target of targetNames) {
-        addResponsesToDescendantsWithTarget(serializedChildren, target);
+        let absoluteTarget;
+        if (target[0] === "/") {
+          absoluteTarget = target;
+        } else if (target.slice(0, 3) === "../") {
+          let adjustedNameSpace = getNamespaceFromName(nameSpace.slice(0, nameSpace.length - 1))
+          let adjustedTarget = target.slice(3);
+          while (adjustedTarget.slice(0, 3) === "../") {
+            if (adjustedNameSpace === "/") {
+              absoluteTarget = null;
+              break;
+            }
+            adjustedNameSpace = getNamespaceFromName(adjustedNameSpace.slice(0, adjustedNameSpace.length - 1))
+            adjustedTarget = adjustedTarget.slice(3);
+          }
+          if (absoluteTarget !== null) {
+            absoluteTarget = adjustedNameSpace + adjustedTarget;
+          }
+        } else {
+          absoluteTarget = nameSpace + target;
+        }
+        addResponsesToDescendantsWithTarget(serializedChildren, target, absoluteTarget);
       }
 
     }
@@ -732,7 +759,7 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
 }
 
-function addResponsesToDescendantsWithTarget(components, target) {
+function addResponsesToDescendantsWithTarget(components, target, absoluteTarget) {
 
   for (let component of components) {
     let propsOrDAttrs = component.props;
@@ -741,7 +768,11 @@ function addResponsesToDescendantsWithTarget(components, target) {
     }
     if (propsOrDAttrs) {
       for (let prop in propsOrDAttrs) {
-        if (prop.toLowerCase() === "target" && propsOrDAttrs[prop] === target) {
+        if (
+          (prop.toLowerCase() === "target" && propsOrDAttrs[prop] === target)
+          ||
+          (prop.toLowerCase() === "targetcomponentname" && propsOrDAttrs[prop] === absoluteTarget)
+        ) {
           if (!component.attributes) {
             component.attributes = {};
           }
@@ -755,7 +786,7 @@ function addResponsesToDescendantsWithTarget(components, target) {
     }
 
     if (component.children) {
-      addResponsesToDescendantsWithTarget(component.children, target)
+      addResponsesToDescendantsWithTarget(component.children, target, absoluteTarget)
     }
   }
 

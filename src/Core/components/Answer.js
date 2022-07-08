@@ -190,7 +190,9 @@ export default class Answer extends InlineComponent {
       for (let child of matchedChildren) {
         if (typeof child !== "object") {
           childIsWrappable.push(true);
-          mayNeedInput = true;
+          if(child.trim()) {
+            mayNeedInput = true;
+          }
         } else if (componentIsSpecifiedType(child, "math")
           || componentIsSpecifiedType(child, "number")
           || componentIsSpecifiedType(child, "mathList")
@@ -222,7 +224,9 @@ export default class Answer extends InlineComponent {
           if (child.children?.length > 0) {
             for (let grandChild of child.children) {
               if (typeof grandChild !== "object") {
-                mayNeedInput = true;
+                if(grandChild.trim()) {
+                  mayNeedInput = true;
+                }
               } else if (componentIsSpecifiedType(grandChild, "when")) {
                 // have to test for when before boolean, sincd when is derived from boolean!
 

@@ -6,8 +6,11 @@ export default class GraphicalComponent extends BaseComponent {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.label = {
-      createComponentOfType: "label",
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
     };
     attributes.showLabel = {
       createComponentOfType: "boolean",
@@ -65,18 +68,17 @@ export default class GraphicalComponent extends BaseComponent {
         forRenderer: true,
       }],
       returnDependencies: () => ({
-        labelAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "label",
-          variableNames: ["value", "hasLatex"]
-        },
         labelChild: {
           dependencyType: "child",
           childGroups: ["labels"],
           variableNames: ["value", "hasLatex"]
+        },
+        labelIsName: {
+          dependencyType: "stateVariable",
+          variableName: "labelIsName"
         }
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
         if (dependencyValues.labelChild.length > 0) {
           return {
             setValue: {
@@ -84,11 +86,14 @@ export default class GraphicalComponent extends BaseComponent {
               labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
             }
           }
-        } else if (dependencyValues.labelAttr) {
+        } else if (dependencyValues.labelIsName) {
+          let lastSlash = componentName.lastIndexOf('/');
+          // &#95; is HTML entity for underscore, so JSXgraph won't replace it with subscript
+          let label = componentName.substring(lastSlash + 1).replaceAll("_", "&#95;");
           return {
             setValue: {
-              label: dependencyValues.labelAttr.stateValues.value,
-              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
+              label,
+              labelHasLatex: false
             }
           }
         } else {

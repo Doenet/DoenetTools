@@ -19332,7 +19332,7 @@ describe('Answer Tag Tests', function () {
   <mathinput name="mi" />
   <answer name="an">
     <award name="aw" targetsAreResponses="mi"><when>$mi=1.1</when></award>
-    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" />
+    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" componentType="award" targetsAreResponses="" />
   </answer></p>
   <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
   <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>

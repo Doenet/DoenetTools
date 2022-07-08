@@ -1101,5 +1101,154 @@ describe('Module Tag Tests', function () {
 
   })
 
+  it('copy targetsAreResponses with parent namespace target', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <setup>
+      <module name="mod" newNamespace>
+        <setup>
+          <customAttribute componentType="text" attribute="title" defaultValue="Find point" assignNames="title" />
+          <customAttribute componentType="math" attribute="initialx" defaultValue="0" assignNames="initialx" />
+          <customAttribute componentType="math" attribute="initialy" defaultValue="0" assignNames="initialy" />
+          <customAttribute componentType="math" attribute="goalx" defaultValue="3" assignNames="goalx" />
+          <customAttribute componentType="math" attribute="goaly" defaultValue="4" assignNames="goaly" />
+          <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
+          <customAttribute componentType="number" attribute="aspectRatio" defaultValue="1" assignNames="aspectRatio" />
+        </setup>
+      
+        <problem name="prob"><title>$title</title>
+      
+          <p>Move the point to <m>($goalx, $goaly)</m>.</p>
+          <graph width="$width" aspectRatio="$aspectRatio">
+            <point x="$(initialx{link='false'})" y="$(initialy{link='false'})" name="P">
+              <constraints>
+                <attractTo><point x="$goalx" y="$goaly" ></point></attractTo>
+              </constraints>
+            </point>
+          </graph>
+      
+          <answer name="ans" newNamespace>
+            <award targetsAreResponses="../P">
+              <when>
+                $(../P) = ($(../goalx), $(../goaly))
+              </when>
+            </award>
+          </answer>
+        </problem>
+      </module>
+    </setup>
+
+
+    <section><title>First one</title>
+    <copy target="mod" assignNames="m1" />
+
+    <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" target="m1/ans" /></math></p>
+    <p>Credit for problem 1: <copy prop="creditAchieved" target="m1/prob" assignNames="ca1" /></p>
+    </section>
+
+    <section><title>Second one</title>
+
+    <p>Now, let's use initial point <m name="coordsa">(<math name="xa">-3</math>, <math name="ya">3</math>)</m> and the goal point <m name="coordsb">(<math name="xb">7</math>, <math name="yb">-5</math>)</m> </p>
+
+    
+    <copy target="mod" title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" width="200px" aspectRatio="1" assignNames="m2" />
+    <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" target="m2/ans" /></math></p>
+    <p>Credit for problem 2: <copy prop="creditAchieved" target="m2/prob" assignNames="ca2" /></p>
+    </section>
+
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get(cesc(`#/m1/_m1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(3,4)')
+    })
+    cy.get(`#\\/coordsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(-3,3)')
+    })
+    cy.get(`#\\/coordsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(7,-5)')
+    })
+    cy.get(cesc(`#/m2/_m1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(7,-5)')
+    })
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('＿')
+    })
+    cy.get('#\\/ca1').should('have.text', '0');
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('＿')
+    })
+    cy.get('#\\/ca2').should('have.text', '0');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables["/m1/P"].stateValues.xs)).eqls([0, 0]);
+      expect((stateVariables["/m2/P"].stateValues.xs)).eqls([-3, 3]);
+    });
+
+    cy.log('submit answers')
+
+    cy.get(cesc('#/m1/ans_submit')).click();
+    cy.get(cesc('#/m2/ans_submit')).click();
+    cy.get('#\\/sr2').should('contain.text', '(−3,3)')
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(0,0)')
+    })
+    cy.get('#\\/ca1').should('have.text', '0');
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(-3,3)')
+    })
+    cy.get('#\\/ca2').should('have.text', '0');
+
+
+    cy.log('move near correct answers')
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/m1/P",
+        args: { x: 3.2, y: 3.9 }
+      });
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/m2/P",
+        args: { x: 7.2, y: -4.9 }
+      });
+    });
+
+
+    cy.get(cesc(`#/m1/_m1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(3,4)')
+    })
+    cy.get(`#\\/coordsa`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(-3,3)')
+    })
+    cy.get(`#\\/coordsb`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(7,-5)')
+    })
+    cy.get(cesc(`#/m2/_m1`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(7,-5)')
+    })
+
+
+    cy.log('submit answers')
+
+    cy.get(cesc('#/m1/ans_submit')).click();
+    cy.get(cesc('#/m2/ans_submit')).click();
+    cy.get('#\\/sr2').should('contain.text', '(7,−5)')
+    cy.get('#\\/sr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(3,4)')
+    })
+    cy.get('#\\/ca1').should('have.text', '1');
+    cy.get('#\\/sr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('(7,-5)')
+    })
+    cy.get('#\\/ca2').should('have.text', '1');
+
+
+  })
 
 })
