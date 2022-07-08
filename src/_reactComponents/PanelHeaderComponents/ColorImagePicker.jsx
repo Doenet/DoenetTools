@@ -18,7 +18,7 @@ const Menu = styled.div`
     border: var(--mainBorder);
     border-radius: var(--mainBorderRadius);
     background-color: var(--canvas);
-    height: 246px;
+    height: 352px;
     width: 220px;
     display: none;
     position: relative;
@@ -42,9 +42,9 @@ const ColorSection = styled.div`
 const ImageSection = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 54px);
-    grid-template-rows: repeat(5, 54px);
+    grid-template-rows: repeat(7, 54px);
     width: 224px;
-    height: 100px;
+    height: 140px;
     padding-bottom: 6px;
 `;
 
