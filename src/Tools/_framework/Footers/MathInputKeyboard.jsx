@@ -453,47 +453,50 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('write \\alpha')}>
           <MathJax dynamic>\(\alpha\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\epsilon')}>
-          <MathJax dynamic>\(\epsilon\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\kappa')}>
-          <MathJax dynamic>\(\kappa\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\xi')}>
-          <MathJax dynamic>\(\xi\)</MathJax>
-        </Button>
         <Button onClick={() => callback('write \\beta')}>
           <MathJax dynamic>\(\beta\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\zeta')}>
-          <MathJax dynamic>\(\zeta\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\lambda')}>
-          <MathJax dynamic>\(\lambda\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\pi')}>
-          <MathJax dynamic>\(\pi\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\gamma')}>
           <MathJax dynamic>\(\gamma\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\eta')}>
-          <MathJax dynamic>\(\eta\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\mu')}>
-          <MathJax dynamic>\(\mu\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\rho')}>
-          <MathJax dynamic>\(\rho\)</MathJax>
-        </Button>
         <Button onClick={() => callback('write \\delta')}>
           <MathJax dynamic>\(\delta\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\epsilon')}>
+          <MathJax dynamic>\(\epsilon\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\zeta')}>
+          <MathJax dynamic>\(\zeta\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\eta')}>
+          <MathJax dynamic>\(\eta\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\theta')}>
           <MathJax dynamic>\(\theta\)</MathJax>
         </Button>
+
+        <Button onClick={() => callback('write \\kappa')}>
+          <MathJax dynamic>\(\kappa\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\lambda')}>
+          <MathJax dynamic>\(\lambda\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\mu')}>
+          <MathJax dynamic>\(\mu\)</MathJax>
+        </Button>
         <Button onClick={() => callback('write \\nu')}>
           <MathJax dynamic>\(\nu\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\xi')}>
+          <MathJax dynamic>\(\xi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\pi')}>
+          <MathJax dynamic>\(\pi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\rho')}>
+          <MathJax dynamic>\(\rho\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\sigma')}>
           <MathJax dynamic>\(\sigma\)</MathJax>
@@ -505,44 +508,48 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('write \\tau')}>
           <MathJax dynamic>\(\tau\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\Lambda')}>
-          <MathJax dynamic>\(\Lambda\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Upsilon')}>
-          <MathJax dynamic>\(\Upsilon\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Gamma')}>
-          <MathJax dynamic>\(\Gamma\)</MathJax>
-        </Button>
         <Button onClick={() => callback('write \\phi')}>
           <MathJax dynamic>\(\phi\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Xi')}>
-          <MathJax dynamic>\(\Xi\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Phi')}>
-          <MathJax dynamic>\(\Phi\)</MathJax>
-        </Button>
-        <Button onClick={() => callback('write \\Delta')}>
-          <MathJax dynamic>\(\Delta\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\psi')}>
           <MathJax dynamic>\(\psi\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\Pi')}>
-          <MathJax dynamic>\(\Pi\)</MathJax>
+        <Button onClick={() => callback('write \\omega')}>
+          <MathJax dynamic>\(\omega\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\Psi')}>
-          <MathJax dynamic>\(\Psi\)</MathJax>
+
+
+        <Button onClick={() => callback('write \\Gamma')}>
+          <MathJax dynamic>\(\Gamma\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Delta')}>
+          <MathJax dynamic>\(\Delta\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\Theta')}>
           <MathJax dynamic>\(\Theta\)</MathJax>
         </Button>
-        <Button onClick={() => callback('write \\omega')}>
-          <MathJax dynamic>\(\omega\)</MathJax>
+        <Button onClick={() => callback('write \\Lambda')}>
+          <MathJax dynamic>\(\Lambda\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\Xi')}>
+          <MathJax dynamic>\(\Xi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Pi')}>
+          <MathJax dynamic>\(\Pi\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\Sigma')}>
           <MathJax dynamic>\(\Sigma\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Phi')}>
+          <MathJax dynamic>\(\Phi\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\Psi')}>
+          <MathJax dynamic>\(\Psi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Upsilon')}>
+          <MathJax dynamic>\(\Upsilon\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\Omega')}>
           <MathJax dynamic>\(\Omega\)</MathJax>
@@ -594,11 +601,11 @@ export default function VirtualKeyboard() {
         <Button onClick={() => callback('type sqrt')}>
           <MathJax dynamic>{`\\(\\sqrt{}\\)`}</MathJax>
         </Button>
-        <Button onClick={() => callback('type theta')}>
-          <MathJax dynamic>\(\theta\)</MathJax>
+        <Button onClick={() => callback('write \\infty')}>
+          <MathJax dynamic>\(\infty\)</MathJax>
         </Button>
-        <Button onClick={() => callback('type pi')}>
-          <MathJax dynamic>\(\pi\)</MathJax>
+        <Button onClick={() => callback('cmd _')}>
+          <MathJax dynamic>\(a_b\)</MathJax>
         </Button>
       </Section>
     );
