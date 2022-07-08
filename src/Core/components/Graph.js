@@ -1122,10 +1122,23 @@ export default class Graph extends BlockComponent {
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     changeAxisLimits: this.changeAxisLimits.bind(this),
     addChildren: this.addChildren.bind(this),
-    deleteChildren: this.deleteChildren.bind(this)
+    deleteChildren: this.deleteChildren.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 }

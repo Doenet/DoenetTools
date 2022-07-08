@@ -2,7 +2,7 @@ import BlockComponent from './abstract/BlockComponent';
 
 export class Paginator extends BlockComponent {
   static componentType = "paginator";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
   static createAttributesObject() {
@@ -166,8 +166,21 @@ export class Paginator extends BlockComponent {
   }
 
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     setPage: this.setPage.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 }

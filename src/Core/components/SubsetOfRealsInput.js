@@ -6,17 +6,6 @@ import subsets, { buildSubsetFromMathExpression } from '../utils/subset-of-reals
 export default class SubsetOfRealsInput extends BlockComponent {
   static componentType = "subsetOfRealsInput";
 
-  actions = {
-    addPoint: this.addPoint.bind(this),
-    deletePoint: this.deletePoint.bind(this),
-    movePoint: this.movePoint.bind(this),
-    togglePoint: this.togglePoint.bind(this),
-    toggleInterval: this.toggleInterval.bind(this),
-    clear: this.clear.bind(this),
-    setToR: this.setToR.bind(this)
-  };
-
-
   static variableForPlainMacro = "subsetValue";
 
   static createAttributesObject() {
@@ -1366,6 +1355,28 @@ export default class SubsetOfRealsInput extends BlockComponent {
     });
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    addPoint: this.addPoint.bind(this),
+    deletePoint: this.deletePoint.bind(this),
+    movePoint: this.movePoint.bind(this),
+    togglePoint: this.togglePoint.bind(this),
+    toggleInterval: this.toggleInterval.bind(this),
+    clear: this.clear.bind(this),
+    setToR: this.setToR.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  };
 
 }
 

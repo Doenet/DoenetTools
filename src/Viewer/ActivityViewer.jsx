@@ -884,9 +884,9 @@ export default function ActivityViewer(props) {
       doenetId: props.doenetId,
       activityCid: cid,
       attemptNumber,
-      variantIndex,
+      activityVariantIndex: variantIndex,
       timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
-      version: "0.1.0",
+      version: "0.1.1",
       verb: event.verb,
       object: JSON.stringify(event.object),
       result: JSON.stringify(event.result),
@@ -1027,6 +1027,7 @@ export default function ActivityViewer(props) {
           itemNumber={itemNumber}
           attemptNumber={attemptNumber}
           flags={flags}
+          activityVariantIndex={variantIndex}
           requestedVariantIndex={variantsByPage[ind]}
           unbundledCore={props.unbundledCore}
           updateCreditAchievedCallback={props.updateCreditAchievedCallback}

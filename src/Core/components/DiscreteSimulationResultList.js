@@ -326,10 +326,22 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     onChange: this.onChange.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
-
 
 
 }

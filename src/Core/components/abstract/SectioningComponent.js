@@ -601,6 +601,7 @@ export default class SectioningComponent extends BlockComponent {
     submitAllAnswers: this.submitAllAnswers.bind(this),
     revealSection: this.revealSection.bind(this),
     closeSection: this.closeSection.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this)
   }
 
   async submitAllAnswers({ actionId }) {
@@ -667,6 +668,18 @@ export default class SectioningComponent extends BlockComponent {
         },
       }
     })
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
   }
 
   static async setUpVariant({

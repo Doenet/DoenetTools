@@ -272,10 +272,22 @@ export default class Solution extends BlockComponent {
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
 
   actions = {
     revealSolution: this.revealSolution.bind(this),
     closeSolution: this.closeSolution.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

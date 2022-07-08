@@ -2,7 +2,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Column extends BaseComponent {
   static componentType = "column";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
   static createAttributesObject() {

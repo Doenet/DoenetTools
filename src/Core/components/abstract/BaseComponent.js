@@ -1029,12 +1029,14 @@ export default class BaseComponent {
       return { success: true, numberOfVariants };
     }
 
-    let descendantVariantComponents = gatherVariantComponents({
-      serializedComponents: serializedComponent.children,
-      componentInfoObjects
-    });
+    let descendantVariantComponents = [];
 
-
+    if (serializedComponent.children) {
+      descendantVariantComponents = gatherVariantComponents({
+        serializedComponents: serializedComponent.children,
+        componentInfoObjects
+      });
+    }
 
     if (serializedComponent.variants === undefined) {
       serializedComponent.variants = {};

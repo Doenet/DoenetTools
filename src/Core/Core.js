@@ -26,6 +26,7 @@ import axios from 'axios';
 export default class Core {
   constructor({ doenetML, doenetId, activityCid, pageNumber, attemptNumber = 1, itemNumber = 1,
     serverSaveId,
+    activityVariantIndex,
     requestedVariant, requestedVariantIndex,
     flags = {},
     stateVariableChanges = {},
@@ -39,6 +40,7 @@ export default class Core {
     this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
     this.itemNumber = itemNumber;
+    this.activityVariantIndex = activityVariantIndex;
 
     this.serverSaveId = serverSaveId;
     this.updateDataOnContentChange = updateDataOnContentChange;
@@ -90,6 +92,17 @@ export default class Core {
 
     this.requestedVariantIndex = requestedVariantIndex;
     this.requestedVariant = requestedVariant;
+
+    this.visibilityInfo = {
+      componentsCurrentlyVisible: {},
+      infoToSend: {},
+      timeLastSent: new Date(),
+      saveDelay: 60000,
+      saveTimerId: null,
+      suspendDelay: 3 * 60000,
+      suspendTimerId: null,
+      suspended: false
+    }
 
     // console.time('serialize doenetML');
 
@@ -302,6 +315,7 @@ export default class Core {
 
     this.resolveInitialized();
 
+    setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
 
   }
 
@@ -8191,20 +8205,28 @@ export default class Core {
 
     if (recordItemSubmissions.length > 0) {
 
-      let subitemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
+      let itemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
+      let pageCreditAchieved = await this.document.stateValues.creditAchieved;
+      let itemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
 
       if (event) {
         if (!event.context) {
           event.context = {};
         }
-        if (!event.context.subitemCreditAchieved) {
-          event.context.subitemCreditAchieved = {};
+        event.context.item = itemsSubmitted[0];
+        event.context.itemCreditAchieved = itemCreditAchieved[itemsSubmitted[0] - 1];
+
+        // Just in case the code gets changed to that more than item can be submitted at once
+        // record credit achieved for any additional items
+        if (itemsSubmitted.length > 1) {
+          event.context.additionalItemCreditAchieved = {};
+          for (let itemNumber of itemsSubmitted) {
+            event.context.additionalItemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
         }
-        event.context.itemCreditAchieved = await this.document.stateValues.creditAchieved;
+        }
+        event.context.pageCreditAchieved = await this.document.stateValues.creditAchieved;
       }
 
-      let itemCreditAchieved = await this.document.stateValues.creditAchieved;
-      let subitemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
 
       let componentsSubmitted = [];
       for (let itemSubmission of recordItemSubmissions) {
@@ -8217,17 +8239,12 @@ export default class Core {
         });
       }
 
-      if (event) {
-        for (let subitemNumber of subitemsSubmitted) {
-          event.context.subitemCreditAchieved[subitemNumber] = subitemCreditAchieved[subitemNumber - 1]
-        }
-      }
 
       // if itemNumber is zero, it means this document wasn't given any weight,
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ itemCreditAchieved, componentsSubmitted });
+        this.saveSubmissions({ pageCreditAchieved, componentsSubmitted });
       }
 
     }
@@ -8301,6 +8318,13 @@ export default class Core {
   }
 
   requestRecordEvent(event) {
+
+    this.resumeVisibilityMeasuring();
+
+    if (event.verb === "visibilityChanged") {
+      return this.processVisibilityChangedEvent(event);
+    }
+
     return new Promise((resolve, reject) => {
 
       this.processQueue.push({
@@ -8321,8 +8345,6 @@ export default class Core {
       return;
     }
 
-    event.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
     if (!event.result) {
       event.result = {};
     }
@@ -8336,13 +8358,14 @@ export default class Core {
       pageCid: this.cid,
       pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
-      variantIndex: this.requestedVariant.index,
+      activityVariantIndex: this.activityVariantIndex,
+      pageVariantIndex: this.requestedVariant.index,
       verb: event.verb,
       object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
       result: JSON.stringify(removeFunctionsMathExpressionClass(event.result), serializeFunctions.serializedComponentsReplacer),
       context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
-      timestamp: event.timestamp,
-      version: "0.1.0",
+      timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      version: "0.1.1",
     }
 
     axios.post('/api/recordEvent.php', payload)
@@ -8362,6 +8385,112 @@ export default class Core {
 
 
     return Promise.resolve();
+  }
+
+  processVisibilityChangedEvent(event) {
+
+    let componentName = event.object.componentName;
+    let isVisible = event.result.isVisible;
+
+    if (isVisible) {
+      if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
+        this.visibilityInfo.componentsCurrentlyVisible[componentName] = new Date();
+      }
+    } else {
+      let begin = this.visibilityInfo.componentsCurrentlyVisible[componentName]
+      if (begin) {
+        delete this.visibilityInfo.componentsCurrentlyVisible[componentName];
+
+        let timeInSeconds = (new Date() - Math.max(begin, this.visibilityInfo.timeLastSent)) / 1000;
+
+        if (this.visibilityInfo.infoToSend[componentName]) {
+          this.visibilityInfo.infoToSend[componentName] += timeInSeconds;
+        } else {
+          this.visibilityInfo.infoToSend[componentName] = timeInSeconds;
+        }
+
+      }
+    }
+
+  }
+
+  sendVisibilityChangedEvents() {
+    let infoToSend = { ...this.visibilityInfo.infoToSend };
+    this.visibilityInfo.infoToSend = {};
+    let timeLastSent = this.visibilityInfo.timeLastSent;
+    this.visibilityInfo.timeLastSent = new Date();
+    let currentVisible = { ...this.visibilityInfo.componentsCurrentlyVisible };
+
+    for (let componentName in currentVisible) {
+      let timeInSeconds = (this.visibilityInfo.timeLastSent - Math.max(timeLastSent, currentVisible[componentName])) / 1000;
+      if (infoToSend[componentName]) {
+        infoToSend[componentName] += timeInSeconds;
+      } else {
+        infoToSend[componentName] = timeInSeconds;
+      }
+    }
+
+    for (let componentName in infoToSend) {
+      infoToSend[componentName] = Math.round(infoToSend[componentName])
+      if (!infoToSend[componentName]) {
+        // delete if rounded down to zero
+        delete infoToSend[componentName];
+      }
+    }
+
+    let promise;
+
+    if (Object.keys(infoToSend).length > 0) {
+        let event = {
+        object: { componentName: this.documentName, componentType: "document" },
+          verb: "isVisible",
+        result: infoToSend
+        }
+
+      promise = new Promise((resolve, reject) => {
+
+        this.processQueue.push({
+          type: "recordEvent", event, resolve, reject
+        })
+
+        if (!this.processing) {
+          this.processing = true;
+          this.executeProcesses();
+
+        }
+      })
+    }
+
+    if (!this.visibilityInfo.suspended) {
+      clearTimeout(this.visibilityInfo.saveTimerId);
+      this.visibilityInfo.saveTimerId = setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
+    }
+
+    return promise;
+
+  }
+
+  async suspendVisibilityMeasuring() {
+    clearTimeout(this.visibilityInfo.saveTimerId);
+    clearTimeout(this.visibilityInfo.suspendTimerId);
+    if (!this.visibilityInfo.suspended) {
+    this.visibilityInfo.suspended = true;
+      await this.sendVisibilityChangedEvents();
+    }
+  }
+
+  resumeVisibilityMeasuring() {
+    if (this.visibilityInfo.suspended) {
+      // restart visibility measuring
+      this.visibilityInfo.suspended = false;
+      this.visibilityInfo.timeLastSent = new Date();
+      clearTimeout(this.visibilityInfo.saveTimerId);
+      this.visibilityInfo.saveTimerId = setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay);
+    }
+
+    clearTimeout(this.visibilityInfo.suspendTimerId);
+    this.visibilityInfo.suspendTimerId = setTimeout(this.suspendVisibilityMeasuring.bind(this), this.visibilityInfo.suspendDelay);
+
   }
 
   async executeUpdateStateVariables(newStateVariableValues) {
@@ -9523,7 +9652,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ itemCreditAchieved, componentsSubmitted }) {
+  saveSubmissions({ pageCreditAchieved, componentsSubmitted }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -9532,7 +9661,7 @@ export default class Core {
     const payload = {
       doenetId: this.doenetId,
       attemptNumber: this.attemptNumber,
-      credit: itemCreditAchieved,
+      credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
       componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
     }
@@ -9807,6 +9936,21 @@ export default class Core {
       args
     });
   }
+
+
+  handleVisibilityChange({ visible }) {
+    if (visible) {
+      this.resumeVisibilityMeasuring();
+    } else {
+      this.suspendVisibilityMeasuring();
+    }
+  }
+
+  async terminate() {
+    // suspend visibility measuring so that remaining times collected are saved
+    await this.suspendVisibilityMeasuring();
+  }
+
 }
 
 
