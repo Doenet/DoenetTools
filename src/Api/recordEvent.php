@@ -3,7 +3,7 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: access");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Credentials: true");
-header('Content-Type: application/json');
+//header('Content-Type: application/json');
 
 
 include "db_connection.php";
@@ -13,16 +13,19 @@ $userId = $jwtArray['userId'];
 $examUserId = array_key_exists("examineeUserId",$jwtArray) ? $jwtArray['examineeUserId'] : "";
 $examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] : "";
 
-$device = $jwtArray['deviceName'];
-
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $activityCid =  mysqli_real_escape_string($conn,$_POST["activityCid"]);
 $pageCid =  mysqli_real_escape_string($conn,$_POST["pageCid"]);
 $pageNumber =  mysqli_real_escape_string($conn,$_POST["pageNumber"]);
 $attemptNumber =  mysqli_real_escape_string($conn,$_POST["attemptNumber"]);
+$verb =  mysqli_real_escape_string($conn,$_POST["verb"]);
+$object =  mysqli_real_escape_string($conn,$_POST["object"]);
+$result =  mysqli_real_escape_string($conn,$_POST["result"]);
+$context =  mysqli_real_escape_string($conn,$_POST["context"]);
 $version =  mysqli_real_escape_string($conn,$_POST["version"]);
-$variantIndex =  mysqli_real_escape_string($conn,$_POST["variantIndex"]);
+$activityVariantIndex =  mysqli_real_escape_string($conn,$_POST["activityVariantIndex"]);
+$pageVariantIndex =  mysqli_real_escape_string($conn,$_POST["pageVariantIndex"]);
 $timestamp =  mysqli_real_escape_string($conn,$_POST["timestamp"]);
 
 $success = TRUE;
@@ -34,24 +37,21 @@ if ($doenetId == ""){
 }elseif ($attemptNumber == ""){
   $success = FALSE;
   $message = 'Internal Error: missing attemptNumber';
-}elseif (!array_key_exists('verbs', $_POST)) {
+}elseif ($verb == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing verbs';
-}elseif (!array_key_exists('objects', $_POST)) {
+  $message = 'Internal Error: missing verb';
+}elseif ($object == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing objects';
-}elseif (!array_key_exists('results', $_POST)) {
+  $message = 'Internal Error: missing object';
+}elseif ($result == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing results';
-}elseif (!array_key_exists('contexts', $_POST)) {
+  $message = 'Internal Error: missing result';
+}elseif ($context == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing contexts';
+  $message = 'Internal Error: missing context';
 }elseif ($version == ""){
   $success = FALSE;
   $message = 'Internal Error: missing version';
-}elseif ($variantIndex == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing variantIndex';
 }elseif ($timestamp == ""){
   $success = FALSE;
   $message = 'Internal Error: missing timestamp';
@@ -84,45 +84,25 @@ if ($activityCid == ""){
   $activityCid = "'$activityCid'";
 }
 
+if ($pageVariantIndex == ""){
+  $pageVariantIndex = 'NULL';
+} else {
+  $pageVariantIndex = "'$pageVariantIndex'";
+}
+
+if ($activityVariantIndex == ""){
+  $activityVariantIndex = 'NULL';
+} else {
+  $activityVariantIndex = "'$activityVariantIndex'";
+}
+
 if ($pageNumber == ""){
   $pageNumber = 'NULL';
 }
 
-
 if ($success){
-
-  $verbs = array_map(function($item) use($conn) {
-    return mysqli_real_escape_string($conn, $item);
-  }, $_POST['verbs']);
-  $objects = array_map(function($item) use($conn) {
-    return mysqli_real_escape_string($conn, $item);
-  }, $_POST['objects']);
-  $results = array_map(function($item) use($conn) {
-    return mysqli_real_escape_string($conn, $item);
-  }, $_POST['results']);
-  $contexts = array_map(function($item) use($conn) {
-    return mysqli_real_escape_string($conn, $item);
-  }, $_POST['contexts']);
-
-  $sql = "INSERT INTO event (userId,deviceName,doenetId,activityCid,pageCid,pageNumber,attemptNumber,variantIndex,verb,object,result,context,version,timestamp,timestored)
-  VALUES ";
-
-  for($i=0; $i < count($verbs); $i++) {
-
-    if($i>0) {
-      $sql = "$sql,";
-    }
-    $repeated= TRUE;
-    $verb = $verbs[$i];
-    $object = $objects[$i];
-    $result = $results[$i];
-    $context = $contexts[$i];
-    $sql = "$sql('$userId','$device','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$variantIndex,'$verb','$object','$result','$context','$version','$timestamp',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
-  }
-
-
-  echo $sql;
-
+  $sql = "INSERT INTO event (userId,doenetId,activityCid,pageCid,pageNumber,attemptNumber,activityVariantIndex,pageVariantIndex,verb,object,result,context,version,timestamp)
+  VALUES ('$userId','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$activityVariantIndex,$pageVariantIndex,'$verb','$object','$result','$context','$version','$timestamp')";
   $result = $conn->query($sql);
 }
 

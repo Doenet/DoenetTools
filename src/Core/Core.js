@@ -26,6 +26,7 @@ import axios from 'axios';
 export default class Core {
   constructor({ doenetML, doenetId, activityCid, pageNumber, attemptNumber = 1, itemNumber = 1,
     serverSaveId,
+    activityVariantIndex,
     requestedVariant, requestedVariantIndex,
     flags = {},
     stateVariableChanges = {},
@@ -39,6 +40,7 @@ export default class Core {
     this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
     this.itemNumber = itemNumber;
+    this.activityVariantIndex = activityVariantIndex;
 
     this.serverSaveId = serverSaveId;
     this.updateDataOnContentChange = updateDataOnContentChange;
@@ -7825,8 +7827,8 @@ export default class Core {
 
         // TODO: if skip an update, presumably we should call reject???
 
-      } else if (nextUpdateInfo.type === "recordEvents") {
-        result = await this.performRecordEvents(nextUpdateInfo);
+      } else if (nextUpdateInfo.type === "recordEvent") {
+        result = await this.performRecordEvent(nextUpdateInfo);
       } else {
         throw Error(`Unrecognized process type: ${nextUpdateInfo.type}`)
       }
@@ -8334,7 +8336,7 @@ export default class Core {
     return new Promise((resolve, reject) => {
 
       this.processQueue.push({
-        type: "recordEvents", events: [event], resolve, reject
+        type: "recordEvent", event, resolve, reject
       })
 
       if (!this.processing) {
@@ -8345,29 +8347,17 @@ export default class Core {
     })
   }
 
-  performRecordEvents({ events }) {
+  performRecordEvent({ event }) {
 
     if (!this.flags.allowSaveEvents) {
       return;
     }
 
-    let timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
-    let verbs = [], objects = [], results = [], contexts = [];
-
-    for (let event of events) {
-      verbs.push(event.verb);
-      objects.push(JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer));
-      if (event.result) {
-        results.push(JSON.stringify(removeFunctionsMathExpressionClass(event.result, serializeFunctions.serializedComponentsReplacer)))
-      } else {
-        results.push("{}")
+    if (!event.result) {
+      event.result = {};
     }
-      if (event.context) {
-        contexts.push(JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer))
-      } else {
-        contexts.push("{}")
-      }
+    if (!event.context) {
+      event.context = {};
     }
 
     const payload = {
@@ -8376,21 +8366,24 @@ export default class Core {
       pageCid: this.cid,
       pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
-      variantIndex: this.requestedVariant.index,
-      verbs: JSON.stringify(verbs),
-      objects: JSON.stringify(objects),
-      results: JSON.stringify(results),
-      contexts: JSON.stringify(contexts),
-      timestamp,
+      activityVariantIndex: this.activityVariantIndex,
+      pageVariantIndex: this.requestedVariant.index,
+      verb: event.verb,
+      object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
+      result: JSON.stringify(removeFunctionsMathExpressionClass(event.result), serializeFunctions.serializedComponentsReplacer),
+      context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
+      timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
       version: "0.1.1",
     }
 
-    axios.post('/api/recordEvents.php', payload)
+    console.log({payload})
+
+    axios.post('/api/recordEvent.php', payload)
       .then(resp => {
         // console.log(">>>>resp",resp.data)
       })
       .catch(e => {
-        console.error(`Error saving events: ${e.message}`);
+        console.error(`Error saving event: ${e.message}`);
         // postMessage({
         //   messageType: "sendToast",
         //   args: {
@@ -8411,25 +8404,19 @@ export default class Core {
 
     if (isVisible) {
       if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
-        this.visibilityInfo.componentsCurrentlyVisible[componentName] = {
-          begin: new Date(),
-          object: event.object,
-        }
+        this.visibilityInfo.componentsCurrentlyVisible[componentName] = new Date();
       }
     } else {
-      let info = this.visibilityInfo.componentsCurrentlyVisible[componentName]
-      if (info) {
+      let begin = this.visibilityInfo.componentsCurrentlyVisible[componentName]
+      if (begin) {
         delete this.visibilityInfo.componentsCurrentlyVisible[componentName];
 
-        let timeInSeconds = (new Date() - Math.max(info.begin, this.visibilityInfo.timeLastSent)) / 1000;
+        let timeInSeconds = (new Date() - Math.max(begin, this.visibilityInfo.timeLastSent)) / 1000;
 
         if (this.visibilityInfo.infoToSend[componentName]) {
-          this.visibilityInfo.infoToSend[componentName].time += timeInSeconds;
+          this.visibilityInfo.infoToSend[componentName] += timeInSeconds;
         } else {
-          this.visibilityInfo.infoToSend[componentName] = {
-            time: timeInSeconds,
-            object: info.object
-          }
+          this.visibilityInfo.infoToSend[componentName] = timeInSeconds;
         }
 
       }
@@ -8445,44 +8432,35 @@ export default class Core {
     let currentVisible = { ...this.visibilityInfo.componentsCurrentlyVisible };
 
     for (let componentName in currentVisible) {
-      let timeInSeconds = (this.visibilityInfo.timeLastSent - Math.max(timeLastSent, currentVisible[componentName].begin)) / 1000;
+      let timeInSeconds = (this.visibilityInfo.timeLastSent - Math.max(timeLastSent, currentVisible[componentName])) / 1000;
       if (infoToSend[componentName]) {
-        infoToSend[componentName].time += timeInSeconds;
+        infoToSend[componentName] += timeInSeconds;
       } else {
-        infoToSend[componentName] = {
-          time: timeInSeconds,
-          object: currentVisible[componentName].object
-        }
+        infoToSend[componentName] = timeInSeconds;
       }
     }
 
     for (let componentName in infoToSend) {
-      infoToSend[componentName].time = Math.round(infoToSend[componentName].time)
-      if (!infoToSend[componentName].time) {
+      infoToSend[componentName] = Math.round(infoToSend[componentName])
+      if (!infoToSend[componentName]) {
         // delete if rounded down to zero
         delete infoToSend[componentName];
       }
     }
 
     if (Object.keys(infoToSend).length > 0) {
-      let events = [];
-      for (let componentName in infoToSend) {
-        let info = infoToSend[componentName];
-
         let event = {
-          object: info.object,
+        object: { componentName: this.documentName, componentType: "document"},
           verb: "isVisible",
-          result: { time: info.time }
+        result: infoToSend
         }
-        events.push(event)
-      }
-      console.log('sending isVisible events', events)
+      console.log('sending isVisible event', event)
 
       // create promise since queue expects promise
       new Promise((resolve, reject) => {
 
         this.processQueue.push({
-          type: "recordEvents", events, resolve, reject
+          type: "recordEvent", event, resolve, reject
         })
 
         if (!this.processing) {

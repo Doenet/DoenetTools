@@ -661,6 +661,7 @@ export default function PageViewer(props) {
         itemNumber: props.itemNumber,
         updateDataOnContentChange: props.updateDataOnContentChange,
         serverSaveId: initialCoreData.current.serverSaveId,
+        activityVariantIndex: props.activityVariantIndex,
         requestedVariant: initialCoreData.current.requestedVariant,
         stateVariableChanges: initialCoreData.current.coreState ? initialCoreData.current.coreState : undefined
       }
