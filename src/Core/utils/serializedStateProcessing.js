@@ -689,49 +689,10 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
       }
     }
 
-    if (component.componentType === "award" && component.children) {
-      if (component.attributes.targetsAreResponses) {
-        let targetNames = component.attributes.targetsAreResponses.primitive.split(/\s+/).filter(s => s);
-        for (let target of targetNames) {
-          addResponsesToDescendantsWithTarget(component.children, target);
-        }
-
-      }
-
-    }
-
   }
 
 }
 
-function addResponsesToDescendantsWithTarget(components, target) {
-
-  for (let component of components) {
-    let propsOrDAttrs = component.props;
-    if (!propsOrDAttrs) {
-      propsOrDAttrs = component.doenetAttributes;
-    }
-    if (propsOrDAttrs) {
-      for (let prop in propsOrDAttrs) {
-        if (prop.toLowerCase() === "target" && propsOrDAttrs[prop] === target) {
-          if (!component.attributes) {
-            component.attributes = {};
-          }
-          let foundIsResponse = Object.keys(component.attributes).map(x => x.toLowerCase()).includes("isresponse");
-          if (!foundIsResponse) {
-            component.attributes.isResponse = true;
-          }
-        }
-      }
-
-    }
-
-    if (component.children) {
-      addResponsesToDescendantsWithTarget(component.children, target)
-    }
-  }
-
-}
 
 function findFirstFullMacroInString(str) {
 

@@ -219,7 +219,7 @@ export default class Answer extends InlineComponent {
           nChoicesFound++;
         } else if (componentIsSpecifiedType(child, "award")) {
           childIsWrappable.push(false);
-          if (child.children) {
+          if (child.children?.length > 0) {
             for (let grandChild of child.children) {
               if (typeof grandChild !== "object") {
                 mayNeedInput = true;
@@ -256,6 +256,9 @@ export default class Answer extends InlineComponent {
                 // could be a when or some other comparable types (like oribitalDiagram)
               }
             }
+          } else {
+            // if copied in award, it won't have children
+            mayNeedInput = true;
           }
         } else if (componentIsSpecifiedType(child, "mathInput")) {
           childIsWrappable.push(false);

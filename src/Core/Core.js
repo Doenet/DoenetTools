@@ -1116,6 +1116,13 @@ export default class Core {
 
     if (serializedChildren !== undefined) {
 
+      if (componentClass.preprocessSerializedChildren) {
+        componentClass.preprocessSerializedChildren({
+          serializedChildren,
+          attributes: serializedComponent.attributes
+        });
+      }
+
       if (componentClass.setUpVariant) {
 
         let variantControlInd;

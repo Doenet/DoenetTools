@@ -208,7 +208,7 @@ describe('Code Editor Tag Tests', function () {
 
       cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
       cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
-      cy.get(contentAnchor).should('contain.text', 'Hello!2')
+      cy.get(contentAnchor).should('contain.text', 'Hello!\n2')
       cy.get(contentAnchor + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("2");
       })
@@ -218,13 +218,13 @@ describe('Code Editor Tag Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_codeeditor1"].stateValues.immediateValue).eq("<p>Hello!</p>\n<p><math simplify>1+1</math></p>");
         expect(stateVariables["/_codeeditor1"].stateValues.value).eq("<p>Hello!</p>\n<p><math simplify>1+1</math></p>");
-        expect(stateVariables[viewerName].activeChildren.length).eq(2);
+        expect(stateVariables[viewerName].activeChildren.length).eq(3);
         expect(stateVariables[viewerName].activeChildren[0].componentType).eq("p");
         let p1Name = stateVariables[viewerName].activeChildren[0].componentName;
         expect(stateVariables[p1Name].stateValues.text).eq("Hello!");
-        expect(stateVariables[viewerName].activeChildren.length).eq(2);
-        expect(stateVariables[viewerName].activeChildren[1].componentType).eq("p");
-        let p2Name = stateVariables[viewerName].activeChildren[1].componentName;
+        expect(stateVariables[viewerName].activeChildren[1]).eq("\n");
+        expect(stateVariables[viewerName].activeChildren[2].componentType).eq("p");
+        let p2Name = stateVariables[viewerName].activeChildren[2].componentName;
         expect(stateVariables[p2Name].stateValues.text).eq("2");
         expect(stateVariables[p2Name].activeChildren.length).eq(1);
         let mathName = stateVariables[p2Name].activeChildren[0].componentName;
@@ -384,7 +384,7 @@ describe('Code Editor Tag Tests', function () {
       cy.get('#\\/_p1').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
       cy.get('#\\/_p2').should('have.text', '<p>Hello!</p>\n<p><math simplify>1+1</math></p>')
       cy.get('#\\/_p3').should('contain.text', 'The value of the entered math is 2')
-      cy.get(contentAnchor).should('contain.text', 'Hello!2')
+      cy.get(contentAnchor).should('contain.text', 'Hello!\n2')
       cy.get(contentAnchor + ' .mjx-mrow').eq(0).invoke('text').then(text => {
         expect(text).eq("2");
       })
@@ -397,10 +397,11 @@ describe('Code Editor Tag Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables["/_codeeditor1"].stateValues.immediateValue).eq("<p>Hello!</p>\n<p><math simplify>1+1</math></p>");
         expect(stateVariables["/_codeeditor1"].stateValues.value).eq("<p>Hello!</p>\n<p><math simplify>1+1</math></p>");
-        expect(stateVariables[viewerName].activeChildren.length).eq(2);
+        expect(stateVariables[viewerName].activeChildren.length).eq(3);
         expect(stateVariables[viewerName].activeChildren[0].componentName).eq('/result/_p1')
         expect(stateVariables['/result/_p1'].stateValues.text).eq("Hello!");
-        expect(stateVariables[viewerName].activeChildren[1].componentName).eq('/result/_p2')
+        expect(stateVariables[viewerName].activeChildren[1]).eq('\n')
+        expect(stateVariables[viewerName].activeChildren[2].componentName).eq('/result/_p2')
         expect(stateVariables['/result/_p2'].stateValues.text).eq("2");
         expect(stateVariables['/result/_p2'].activeChildren.length).eq(1);
         expect(stateVariables['/result/_p2'].activeChildren[0].componentName).eq('/result/_math1');
