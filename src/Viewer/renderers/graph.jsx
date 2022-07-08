@@ -66,7 +66,6 @@ export default React.memo(function Graph(props) {
 
       });
 
-      console.log('created board', board)
     board.itemsRenderedLowQuality = {};
 
     board.on('boundingbox', () => {
@@ -581,13 +580,13 @@ export default React.memo(function Graph(props) {
 
   return (
     // <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <>
-        <a name={name} />
-        <div id={name} className="jxgbox" style={divStyle} />
-        <BoardContext.Provider value={board}>
-          {children}
-        </BoardContext.Provider>
-      </>
+    <>
+      <a name={name} />
+      <div id={name} className="jxgbox" style={divStyle} />
+      <BoardContext.Provider value={board}>
+        {children}
+      </BoardContext.Provider>
+    </>
     //  </VisibilitySensor>
   );
 })
