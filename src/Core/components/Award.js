@@ -119,6 +119,15 @@ export default class Award extends BaseComponent {
 
   }
 
+  static preprocessSerializedChildren({serializedChildren, attributes}) {
+    if (attributes.targetsAreResponses) {
+      let targetNames = attributes.targetsAreResponses.primitive.split(/\s+/).filter(s => s);
+      for (let target of targetNames) {
+        addResponsesToDescendantsWithTarget(serializedChildren, target);
+      }
+
+    }
+  }
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
@@ -723,3 +732,31 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
 }
 
+function addResponsesToDescendantsWithTarget(components, target) {
+
+  for (let component of components) {
+    let propsOrDAttrs = component.props;
+    if (!propsOrDAttrs || Object.keys(propsOrDAttrs).length === 0) {
+      propsOrDAttrs = component.doenetAttributes;
+    }
+    if (propsOrDAttrs) {
+      for (let prop in propsOrDAttrs) {
+        if (prop.toLowerCase() === "target" && propsOrDAttrs[prop] === target) {
+          if (!component.attributes) {
+            component.attributes = {};
+          }
+          let foundIsResponse = Object.keys(component.attributes).map(x => x.toLowerCase()).includes("isresponse");
+          if (!foundIsResponse) {
+            component.attributes.isResponse = true;
+          }
+        }
+      }
+
+    }
+
+    if (component.children) {
+      addResponsesToDescendantsWithTarget(component.children, target)
+    }
+  }
+
+}
