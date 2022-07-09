@@ -1131,5 +1131,31 @@ describe('TriggerSet Tag Tests', function () {
     })
   })
 
+  it('triggerSet with math in label', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Boolean to swap: <boolean name="b" /></p>
+
+    <triggerSet name="tset">
+      <label>It is <math>∂f/∂x</math></label>
+      <updateValue name="flip" target="b" newValue="not$b" type="boolean" />
+    </triggerSet>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/tset').should('contain.text', 'It is ∂f∂x')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/tset'].stateValues.label).eq("It is \\(\\frac{ \\partial f }{ \\partial x }\\)");
+    });
+
+
+  })
+
 
 });

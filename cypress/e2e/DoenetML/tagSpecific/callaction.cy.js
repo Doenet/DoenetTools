@@ -1542,4 +1542,25 @@ describe('CallAction Tag Tests', function () {
 
   })
 
+  it('math in label', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p><callAction target="s" actionName="resample" name="rs" ><label>Hi <m>\\sum_{i=1}^5x_i</m></label></callAction></p>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/rs').should('contain.text', 'Hi ∑5i=1xi')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/rs'].stateValues.label).eq("Hi \\(\\sum_{i=1}^5x_i\\)");
+    });
+
+  })
+
 });
