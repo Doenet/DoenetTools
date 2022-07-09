@@ -2737,18 +2737,58 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <math simplify>1/((0)(-1))</math>
+  <math name="ninf1" simplify>1/((0)(-1))</math>
+  <math name="ninf2" simplify>1/((-1)(0))</math>
+  <math name="ninf3" simplify>1/(-0)</math>
+  <math name="ninf4" simplify>1/(-1(0))</math>
+  <math name="ninf5" simplify>-1/0</math>
+  <math name="ninf6" simplify>-1/((-1)(-0))</math>
+
+  <math name="pinf1" simplify>1/((-0)(-1))</math>
+  <math name="pinf2" simplify>1/((-1)(-0))</math>
+  <math name="pinf3" simplify>-1/(-0)</math>
+  <math name="pinf4" simplify>1/(-1(-0))</math>
+  <math name="pinf5" simplify>1/0</math>
+  <math name="pinf6" simplify>-1/((0)(-1))</math>
+  <math name="pinf7" simplify>-1/((-1)(0))</math>
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
-    cy.get('#\\/_math1 .mjx-mrow').eq(0).should('have.text', '−∞');
+    cy.get('#\\/ninf1 .mjx-mrow').eq(0).should('have.text', '−∞');
+    cy.get('#\\/ninf2 .mjx-mrow').eq(0).should('have.text', '−∞');
+    cy.get('#\\/ninf3 .mjx-mrow').eq(0).should('have.text', '−∞');
+    cy.get('#\\/ninf4 .mjx-mrow').eq(0).should('have.text', '−∞');
+    cy.get('#\\/ninf5 .mjx-mrow').eq(0).should('have.text', '−∞');
+    cy.get('#\\/ninf6 .mjx-mrow').eq(0).should('have.text', '−∞');
+
+    cy.get('#\\/pinf1 .mjx-mrow').eq(0).should('have.text', '∞');
+    cy.get('#\\/pinf2 .mjx-mrow').eq(0).should('have.text', '∞');
+    cy.get('#\\/pinf3 .mjx-mrow').eq(0).should('have.text', '∞');
+    cy.get('#\\/pinf4 .mjx-mrow').eq(0).should('have.text', '∞');
+    cy.get('#\\/pinf5 .mjx-mrow').eq(0).should('have.text', '∞');
+    cy.get('#\\/pinf6 .mjx-mrow').eq(0).should('have.text', '∞');
+    cy.get('#\\/pinf7 .mjx-mrow').eq(0).should('have.text', '∞');
 
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_math1"].stateValues.value).eq(-Infinity)
+      expect(stateVariables["/ninf1"].stateValues.value).eq(-Infinity)
+      expect(stateVariables["/ninf2"].stateValues.value).eq(-Infinity)
+      expect(stateVariables["/ninf3"].stateValues.value).eq(-Infinity)
+      expect(stateVariables["/ninf4"].stateValues.value).eq(-Infinity)
+      expect(stateVariables["/ninf5"].stateValues.value).eq(-Infinity)
+      expect(stateVariables["/ninf6"].stateValues.value).eq(-Infinity)
+
+      expect(stateVariables["/pinf1"].stateValues.value).eq(Infinity)
+      expect(stateVariables["/pinf2"].stateValues.value).eq(Infinity)
+      expect(stateVariables["/pinf3"].stateValues.value).eq(Infinity)
+      expect(stateVariables["/pinf4"].stateValues.value).eq(Infinity)
+      expect(stateVariables["/pinf5"].stateValues.value).eq(Infinity)
+      expect(stateVariables["/pinf6"].stateValues.value).eq(Infinity)
+      expect(stateVariables["/pinf7"].stateValues.value).eq(Infinity)
+
     })
   });
 

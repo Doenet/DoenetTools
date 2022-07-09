@@ -56,6 +56,12 @@ export default class Function extends InlineComponent {
     attributes.label = {
       createComponentOfType: "label",
     };
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
+    };
     attributes.showLabel = {
       createComponentOfType: "boolean",
       createStateVariable: "showLabel",
