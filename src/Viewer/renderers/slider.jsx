@@ -7,6 +7,7 @@ import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionBut
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
 import { useSetRecoilState } from 'recoil';
 import { rendererState } from './useDoenetRenderer';
+import { MathJax } from "better-react-mathjax";
 
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
 
@@ -386,10 +387,14 @@ export default React.memo(function Slider(props) {
     // Conditional label and showValue attributes
     let myLabel = null;
     if (SVs.label) {
+      let label = SVs.label;
+      if(SVs.labelHasLatex) {
+        label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+      }
       if (SVs.showValue) {
-        myLabel = <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel>
+        myLabel = <StyledValueLabel>{label}{' = ' + SVs.valueForDisplay}</StyledValueLabel>
       } else {
-        myLabel = <StyledValueLabel>{SVs.label}</StyledValueLabel>
+        myLabel = <StyledValueLabel>{label}</StyledValueLabel>
       }
     } else if (!SVs.label && SVs.showValue) {
       myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
@@ -403,12 +408,12 @@ export default React.memo(function Slider(props) {
         noTicked={SVs.showTicks === false}
         ref={containerRef}
       >
-        <div style={{ height: SVs.label || SVs.showValue ? '20px' : '0px' }}>
+        <div id={`${name}-label`} style={{ height: SVs.label || SVs.showValue ? '20px' : '0px' }}>
           {myLabel}
         </div>
         <SubContainer2>
-          <StyledSlider width={`${SVs.width.size}px`}>
-            <StyledThumb disabled style={{ left: `${thumbXPos - 4}px` }} />
+          <StyledSlider width={`${SVs.width.size}px`} id={name}>
+            <StyledThumb disabled style={{ left: `${thumbXPos - 4}px` }} id={`${name}-handle`} />
             {ticksAndLabels}
           </StyledSlider>
         </SubContainer2>
@@ -670,12 +675,12 @@ export default React.memo(function Slider(props) {
       <ActionButton
         value="Prev"
         onClick={(e) => handlePrevious(e)}
-        data-cy={`${name}-prevbutton`}
+        id={`${name}-prevbutton`}
       ></ActionButton>
       <ActionButton
         value="Next"
         onClick={(e) => handleNext(e)}
-        data-cy={`${name}-nextbutton`}
+        id={`${name}-nextbutton`}
       ></ActionButton>
     </ActionButtonGroup>
   } else {
@@ -690,10 +695,14 @@ export default React.memo(function Slider(props) {
   // Conditional label and showValue attributes
   let myLabel = null;
   if (SVs.label) {
+    let label = SVs.label;
+    if(SVs.labelHasLatex) {
+      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+    }
     if (SVs.showValue) {
-      myLabel = <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel>
+      myLabel = <StyledValueLabel>{label}{' = ' + SVs.valueForDisplay}</StyledValueLabel>
     } else {
-      myLabel = <StyledValueLabel>{SVs.label}</StyledValueLabel>
+      myLabel = <StyledValueLabel>{label}</StyledValueLabel>
     }
   } else if (!SVs.label && SVs.showValue) {
     myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
@@ -703,14 +712,14 @@ export default React.memo(function Slider(props) {
 
   return (
     <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
-      <div style={{ height: (SVs.label)  || (SVs.showValue) ? "20px" : "0px" }}>
+      <div id={`${name}-label`} style={{ height: (SVs.label)  || (SVs.showValue) ? "20px" : "0px" }}>
         {myLabel}
       </div>
       <SubContainer2 onMouseDown={handleDragEnter}>
-        <StyledSlider width={(`${SVs.width.size}px`)} data-cy={`${name}`}>
+        <StyledSlider width={(`${SVs.width.size}px`)} id={name}>
           {/* {valueDisplay} */}
           <StyledThumb style={{ left: `${thumbXPos - 4}px` }}
-            data-cy={`${name}-handle`} />
+            id={`${name}-handle`} />
           {ticksAndLabels}
         </StyledSlider>
       </SubContainer2>

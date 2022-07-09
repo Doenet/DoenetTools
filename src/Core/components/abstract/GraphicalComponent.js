@@ -6,6 +6,9 @@ export default class GraphicalComponent extends BaseComponent {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
+    attributes.label = {
+      createComponentOfType: "label",
+    };
     attributes.labelIsName = {
       createComponentOfType: "boolean",
       createStateVariable: "labelIsName",
@@ -68,6 +71,11 @@ export default class GraphicalComponent extends BaseComponent {
         forRenderer: true,
       }],
       returnDependencies: () => ({
+        labelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "label",
+          variableNames: ["value", "hasLatex"]
+        },
         labelChild: {
           dependencyType: "child",
           childGroups: ["labels"],
@@ -84,6 +92,13 @@ export default class GraphicalComponent extends BaseComponent {
             setValue: {
               label: dependencyValues.labelChild[0].stateValues.value,
               labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.labelAttr) {
+          return {
+            setValue: {
+              label: dependencyValues.labelAttr.stateValues.value,
+              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
             }
           }
         } else if (dependencyValues.labelIsName) {
