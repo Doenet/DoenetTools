@@ -179,7 +179,7 @@ export default class Answer extends InlineComponent {
 
       let componentIsSpecifiedType = (comp, specifiedCType) =>
         componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
-        || componentTypeIsSpecifiedType(comp.props?.componentType, specifiedCType)
+        || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
 
 
       let foundMath = false, foundText = false, foundBoolean = false;

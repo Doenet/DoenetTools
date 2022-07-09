@@ -1356,13 +1356,13 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer sugar from one copy with text componentType', () => {
+  it('answer sugar from one copy with createComponentOfType text', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <text name='h'>hello there</text>
-  <p><answer><copy target="h" componentType="text" /></answer></p>
+  <p><answer><copy target="h" createComponentOfType="text" /></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
   <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
@@ -1507,13 +1507,13 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer sugar from one macro with text componentType', () => {
+  it('answer sugar from one macro with createComponentOfType text', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <text name='h'>hello there</text>
-  <p><answer>$(h{componentType="text"})</answer></p>
+  <p><answer>$(h{createComponentOfType="text"})</answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
   <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType='text' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
@@ -3512,13 +3512,13 @@ describe('Answer Tag Tests', function () {
     })
   });
 
-  it('answer with copied award, componentType specified', () => {
+  it('answer with copied award, createComponentOfType specified', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <setup><math name="x">x</math><award name="aw">$x+<math>y</math></award></setup>
-  <p><answer><copy target="aw" componentType="award" /></answer></p>
+  <p><answer><copy target="aw" createComponentOfType="award" /></answer></p>
   <p>Current response: <copy prop="currentResponse" target="_answer1" assignNames="cr1" /></p>
   <p>Submitted response: <copy prop="submittedResponse" target="_answer1" createComponentOfType="math" assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="_answer1" assignNames="ca1" /></p>
@@ -8983,8 +8983,8 @@ describe('Answer Tag Tests', function () {
   <p>Enter values that sum to <m>3x</m>: 
   <mathinput /> <mathinput/>
   <answer>
-    <copy target="aw1" componentType="award" />
-    <copy target="aw2" componentType="award" />
+    <copy target="aw1" createComponentOfType="award" />
+    <copy target="aw2" createComponentOfType="award" />
   </answer></p>
   <p>First current response: <copy assignNames="cr" prop="currentResponse" target="_answer1" /></p>
   <p>First current response again: <copy assignNames="cr1" prop="currentResponse1" target="_answer1" /></p>
@@ -19332,7 +19332,7 @@ describe('Answer Tag Tests', function () {
   <mathinput name="mi" />
   <answer name="an">
     <award name="aw" targetsAreResponses="mi"><when>$mi=1.1</when></award>
-    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" componentType="award" targetsAreResponses="" />
+    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" createComponentOfType="award" targetsAreResponses="" />
   </answer></p>
   <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
   <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>

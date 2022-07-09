@@ -17,7 +17,7 @@ export default class FunctionOperator extends Function {
         baseComponentType: "label"
       });
 
-      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.props?.componentType)
+      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.attributes?.createComponentOfType?.primitive)
 
       // only apply if all children are strings, macros, or labels
       if (matchedChildren.length === 0 || !matchedChildren.every(child =>
@@ -31,7 +31,7 @@ export default class FunctionOperator extends Function {
 
       // wrap first group of non-label children in <math>
 
-      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.props?.componentType));
+      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.attributes?.createComponentOfType?.primitive));
 
       let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
 

@@ -29,7 +29,7 @@ export default class ConditionalContent extends CompositeComponent {
 
     let componentIsSpecifiedType = (comp, specifiedCType) =>
       componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
-      || componentTypeIsSpecifiedType(comp.props?.componentType, specifiedCType)
+      || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
 
     let keepSerializedInds = [];
     for (let [ind, child] of serializedComponent.children.entries()) {

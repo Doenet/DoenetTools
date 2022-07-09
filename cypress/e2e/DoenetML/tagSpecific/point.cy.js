@@ -226,7 +226,7 @@ describe('Point Tag Tests', function () {
 
   })
 
-  it.only('labelIsName in newNamespace', () => {
+  it('labelIsName in newNamespace', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `

@@ -71,6 +71,41 @@ describe('Parameterized Curve Tag Tests', function () {
 
   });
 
+  it('sugar a parameterization in terms of x, with strings and macros, label with math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve>
+      ($b x^$a, $a x^$b)
+      <label><m>($b x^$a, $a x^$b)</m></label>
+    </curve>
+    </graph>
+    <number name="a">3</number>
+    <math name="b">5</math>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.variableForChild).eq("x");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
+      expect(stateVariables['/_curve1'].stateValues.label).eq("\\((5 x^3, 3 x^5)\\)");
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(-2)).eq(-5 * 8);
+      expect(f1(3)).eq(5 * 27);
+      expect(f2(-2)).eq(-3 * 32);
+      expect(f2(3)).eq(3 * 243);
+    })
+
+  });
+
   it('sugar a parameterization in terms of t', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -379,6 +414,40 @@ describe('Parameterized Curve Tag Tests', function () {
       expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
       expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
       expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
+      let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
+      expect(f1(-2)).eq(-5 * 8);
+      expect(f1(3)).eq(5 * 27);
+      expect(f2(-2)).eq(-3 * 32);
+      expect(f2(3)).eq(3 * 243);
+    })
+
+  });
+
+  it('a parameterization, no sugar, label with math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve>
+    <function variables="q">5q^3</function>
+    <function variables="u">3u^5</function>
+    <label><m>(5t^3,3t^5)</m></label>
+    </curve>
+    </graph>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("parameterization");
+      expect(stateVariables['/_curve1'].stateValues.parMin).eq(-10);
+      expect(stateVariables['/_curve1'].stateValues.parMax).eq(10);
+      expect(stateVariables['/_curve1'].stateValues.label).eq("\\((5t^3,3t^5)\\)");
       let f1 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
       let f2 = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[1])
       expect(f1(-2)).eq(-5 * 8);

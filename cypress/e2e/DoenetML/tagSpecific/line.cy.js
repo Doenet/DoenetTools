@@ -145,13 +145,13 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it('through = string of points', () => {
+  it('through = string of points, label child', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <line label='l' through="(1,2) (4,7)" />
+    <line through="(1,2) (4,7)" ><label>l</label></line>
   </graph>
   <copy prop="point1" target="_line1" assignNames="p1" />
   <copy prop="point2" target="_line1" assignNames="p2" />
@@ -177,7 +177,7 @@ describe('Line Tag Tests', function () {
     })
   })
 
-  it('through = points from strings and maths', () => {
+  it('through = points from strings and maths, labelIsName', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -185,10 +185,10 @@ describe('Line Tag Tests', function () {
   <math>1</math>
   <math>2</math>
   <graph>
-    <line label='l' through="($_math1, $_math2) (4,7) " />
+    <line name='l' labelIsName through="($_math1, $_math2) (4,7) " />
   </graph>
-  <copy prop="point1" target="_line1" assignNames="p1" />
-  <copy prop="point2" target="_line1" assignNames="p2" />
+  <copy prop="point1" target="l" assignNames="p1" />
+  <copy prop="point2" target="l" assignNames="p2" />
     `}, "*");
     });
 
@@ -204,8 +204,8 @@ describe('Line Tag Tests', function () {
       expect((stateVariables["/p2"].stateValues.xs)[1]).eq(7)
       expect((stateVariables["/p2"].stateValues.coords)).eqls(['vector', 4, 7])
 
-      expect(stateVariables['/_line1'].stateValues.label).eq('l')
-      expect((stateVariables['/_line1'].stateValues.slope)).eqls(['/', 5, 3])
+      expect(stateVariables['/l'].stateValues.label).eq('l')
+      expect((stateVariables['/l'].stateValues.slope)).eqls(['/', 5, 3])
 
     })
   })
@@ -286,6 +286,85 @@ describe('Line Tag Tests', function () {
 
   });
 
+  it('line from sugared equation, single string, label as math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <line>
+      5x-2y=3
+      <label>slope = <copy prop="slope" target="_line1" /></label>
+    </line>
+  </graph>
+  <copy prop="point1" target="_line1" assignNames="p1" />
+  <copy prop="point2" target="_line1" assignNames="p2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    cy.log('equation is what it should be')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      // have to create unproxied version of equation for equals to work
+      let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
+      expect(unproxiedEquation.equals(me.fromText('5x-2y=3'))).to.be.true;
+      expect(stateVariables["/_line1"].stateValues.label).eq("slope = \\(\\frac{5}{2}\\)")
+    })
+
+    cy.log("Move line right 1 and down 3");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let point1coords = [
+        (stateVariables['/_line1'].stateValues.points)[0][0],
+        (stateVariables['/_line1'].stateValues.points)[0][1],
+      ];
+      let point2coords = [
+        (stateVariables['/_line1'].stateValues.points)[1][0],
+        (stateVariables['/_line1'].stateValues.points)[1][1],
+      ];
+
+      let moveX = 1;
+      let moveY = -3;
+
+      point1coords[0] = me.fromAst(point1coords[0]).add(moveX).simplify().tree;
+      point1coords[1] = me.fromAst(point1coords[1]).add(moveY).simplify().tree;
+      point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
+      point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/_line1",
+        args: {
+          point1coords: point1coords,
+          point2coords: point2coords
+        }
+      })
+
+      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+        let newEquation = me.fromText("5x-2y=3").substitute({
+          'x': ['+', 'x', -moveX],
+          'y': ['+', 'y', -moveY],
+        });
+
+        // have to create unproxied version of equation for equals to work
+        let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
+        expect(unproxiedEquation.equals(newEquation)).to.be.true;
+        expect(stateVariables["/_line1"].stateValues.label).eq("slope = \\(\\frac{5}{2}\\)")
+      })
+    })
+
+  });
+
   it('line from sugared equation, strings and macros', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -312,6 +391,40 @@ describe('Line Tag Tests', function () {
       // have to create unproxied version of equation for equals to work
       let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
       expect(unproxiedEquation.equals(me.fromText('5x-2y=3'))).to.be.true;
+    })
+
+    // Note: not yet able to move a line with equation depending on copies
+
+  });
+
+  it('line from sugared equation, strings and macros, label as math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <line>
+      <label>slope = <copy prop="slope" target="_line1" /></label>
+      $a x + $b y=$c
+    </line>
+  </graph>
+  <math name="a">5</math>
+  <number name="b">-2</number>
+  <number name="c">3</number>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+
+    cy.log('equation is what it should be')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      // have to create unproxied version of equation for equals to work
+      let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
+      expect(unproxiedEquation.equals(me.fromText('5x-2y=3'))).to.be.true;
+      expect(stateVariables["/_line1"].stateValues.label).eq("slope = \\(\\frac{5}{2}\\)")
     })
 
     // Note: not yet able to move a line with equation depending on copies
@@ -421,6 +534,89 @@ describe('Line Tag Tests', function () {
         // have to create unproxied version of equation for equals to work
         let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
         expect(unproxiedEquation.equals(newEquation)).to.be.true;
+      })
+    })
+
+  });
+
+  it('line from unsugared equation, single string, label as math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <math>1</math>
+  <graph>
+    <line equation="5x-2y=3" >
+      <label>slope = <copy prop="slope" target="_line1" /></label>
+    </line>
+  </graph>
+  <copy prop="point1" target="_line1" assignNames="p1" />
+  <copy prop="point2" target="_line1" assignNames="p2" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/_math1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+
+    cy.log('equation is what it should be')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      // have to create unproxied version of equation for equals to work
+      let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
+      expect(unproxiedEquation.equals(me.fromText('5x-2y=3'))).to.be.true;
+      expect(stateVariables["/_line1"].stateValues.label).eq("slope = \\(\\frac{5}{2}\\)")
+    })
+
+    cy.log("Move line right 1 and down 3");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let point1coords = [
+        (stateVariables['/_line1'].stateValues.points)[0][0],
+        (stateVariables['/_line1'].stateValues.points)[0][1],
+      ];
+      let point2coords = [
+        (stateVariables['/_line1'].stateValues.points)[1][0],
+        (stateVariables['/_line1'].stateValues.points)[1][1],
+      ];
+
+      let moveX = 1;
+      let moveY = -3;
+
+      point1coords[0] = me.fromAst(point1coords[0]).add(moveX).simplify().tree;
+      point1coords[1] = me.fromAst(point1coords[1]).add(moveY).simplify().tree;
+      point2coords[0] = me.fromAst(point2coords[0]).add(moveX).simplify().tree;
+      point2coords[1] = me.fromAst(point2coords[1]).add(moveY).simplify().tree;
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/_line1",
+        args: {
+          point1coords: point1coords,
+          point2coords: point2coords
+        }
+      })
+
+      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `(${nInDOM(point1coords[0]).substring(0, 4)}`)
+      cy.get("#\\/p1 .mjx-mrow").should('contain.text', `,${nInDOM(point1coords[1]).substring(0, 4)}`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+
+
+        let newEquation = me.fromText("5x-2y=3").substitute({
+          'x': ['+', 'x', -moveX],
+          'y': ['+', 'y', -moveY],
+        });
+
+        // have to create unproxied version of equation for equals to work
+        let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
+        expect(unproxiedEquation.equals(newEquation)).to.be.true;
+        expect(stateVariables["/_line1"].stateValues.label).eq("slope = \\(\\frac{5}{2}\\)")
       })
     })
 
@@ -547,6 +743,54 @@ describe('Line Tag Tests', function () {
         let unproxiedEquation = me.fromAst(stateVariables['/_line1'].stateValues.equation);
         expect(unproxiedEquation.equals(newEquation)).to.be.true;
       })
+    })
+
+  });
+
+  it('lines with bad equation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <line>/2</line>
+    <line>$invalid</line>
+    <line equation="" />
+    <line equation="/2" />
+    <line equation="$invalid" />
+  </graph>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables['/_line1'].stateValues.equation).eq("\uff3f");
+      expect(stateVariables['/_line1'].stateValues.coeff0).eq("\uff3f");
+      expect(stateVariables['/_line1'].stateValues.coeffvar1).eq("\uff3f");
+      expect(stateVariables['/_line1'].stateValues.coeffvar2).eq("\uff3f");
+
+      expect(stateVariables['/_line2'].stateValues.equation).eq("\uff3f");
+      expect(stateVariables['/_line2'].stateValues.coeff0).eq("\uff3f");
+      expect(stateVariables['/_line2'].stateValues.coeffvar1).eq("\uff3f");
+      expect(stateVariables['/_line2'].stateValues.coeffvar2).eq("\uff3f");
+
+      expect(stateVariables['/_line3'].stateValues.equation).eq("\uff3f");
+      expect(stateVariables['/_line3'].stateValues.coeff0).eq("\uff3f");
+      expect(stateVariables['/_line3'].stateValues.coeffvar1).eq("\uff3f");
+      expect(stateVariables['/_line3'].stateValues.coeffvar2).eq("\uff3f");
+
+      expect(stateVariables['/_line4'].stateValues.equation).eq("\uff3f");
+      expect(stateVariables['/_line4'].stateValues.coeff0).eq("\uff3f");
+      expect(stateVariables['/_line4'].stateValues.coeffvar1).eq("\uff3f");
+      expect(stateVariables['/_line4'].stateValues.coeffvar2).eq("\uff3f");
+
+      expect(stateVariables['/_line5'].stateValues.equation).eq("\uff3f");
+      expect(stateVariables['/_line5'].stateValues.coeff0).eq("\uff3f");
+      expect(stateVariables['/_line5'].stateValues.coeffvar1).eq("\uff3f");
+      expect(stateVariables['/_line5'].stateValues.coeffvar2).eq("\uff3f");
     })
 
   });
@@ -9577,22 +9821,22 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
     cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-  
-    cy.get('#\\/n textarea').type("1{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
-    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", {force: true});
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
-  
-    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", {force: true});
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('not.exist');
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
-  
+
 
   });
 

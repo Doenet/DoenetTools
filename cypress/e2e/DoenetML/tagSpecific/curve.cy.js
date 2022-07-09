@@ -54,6 +54,56 @@ describe('Curve Tag Tests', function () {
 
   });
 
+  it('spline through four points, as string with copy, label with math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput prefill="-2"/>
+    <graph>
+    <curve through="(-1,2) (2, $_mathinput1) (2$_mathinput1, -4) (5,6)" >
+      <label>Hi <m>(-1,2), (2, $_mathinput1), (2($_mathinput1), -4), (5,6)</m></label>
+    </curve>
+    </graph>
+    <copy prop="value" target="_mathinput1" assignNames="m1" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  //wait for window to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.8);
+      expect(stateVariables['/_curve1'].stateValues.label).eq("Hi \\((-1,2), (2, -2), (2(-2), -4), (5,6)\\)");
+      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      expect(fs[0](1)).eq(2);
+      expect(fs[1](1)).eq(-2);
+      expect(fs[0](2)).eq(-4);
+      expect(fs[1](2)).eq(-4);
+    })
+
+    cy.get("#\\/_mathinput1 textarea").type("{end}{backspace}{backspace}4{enter}", { force: true });
+    cy.get("#\\/m1").should('contain.text', "4")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("bezier");
+      expect(stateVariables['/_curve1'].stateValues.nThroughPoints).eq(4);
+      expect(stateVariables['/_curve1'].stateValues.splineForm).eq("centripetal");
+      expect(stateVariables['/_curve1'].stateValues.splineTension).eq(0.8);
+      expect(stateVariables['/_curve1'].stateValues.label).eq("Hi \\((-1,2), (2, 4), (2(4), -4), (5,6)\\)");
+      let fs = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      expect(fs[0](1)).eq(2);
+      expect(fs[1](1)).eq(4);
+      expect(fs[0](2)).eq(8);
+      expect(fs[1](2)).eq(-4);
+    })
+
+  });
+
   it('spline through four points, as copied points', () => {
     cy.window().then(async (win) => {
       win.postMessage({

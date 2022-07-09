@@ -2140,4 +2140,34 @@ describe('Angle Tag Tests', function () {
 
   })
 
+  it('angle with label and number sugar', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <angle name="a">
+      <label><m>\\alpha^2</m></label>
+    </angle>
+    <angle name="b" through="(5,7)">
+      <label>This is <math>m/2</math></label>
+    </angle>
+  </graph>
+
+  `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/a'].stateValues.label).eq("\\(\\alpha^2\\)")
+      expect(stateVariables['/b'].stateValues.label).eq("This is \\(\\frac{m}{2}\\)")
+    })
+
+
+
+  })
+
 });

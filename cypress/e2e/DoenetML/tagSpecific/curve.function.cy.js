@@ -1354,5 +1354,36 @@ describe('Function curve Tag Tests', function () {
 
   });
 
+  it('function with label as math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve>
+      <function>
+        x^3-x
+      </function>
+      <label>hello <m>x^3-x</m></label>
+      </curve>
+    </graph>
+    `}, "*");
+    });
+
+    //to wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("function");
+      expect(stateVariables['/_curve1'].stateValues.flipFunction).eq(false);
+      expect(stateVariables['/_curve1'].stateValues.label).eq('hello \\(x^3-x\\)');
+
+      let f = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      expect(f(-2)).eq(-8 + 2);
+      expect(f(3)).eq(27 - 3);
+    })
+
+  });
 
 });
