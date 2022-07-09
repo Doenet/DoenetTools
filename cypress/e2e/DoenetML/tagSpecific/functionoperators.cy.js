@@ -134,6 +134,100 @@ describe('Function Operator Tag Tests', function () {
     })
   })
 
+  it('clamp function, labeled', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function name="original">x^3<label>orig</label></function>
+    <clampfunction name="clamp01"><copy target="original" /><label>clamp 1</label></clampfunction>
+    <clampfunction name="clampn35" lowervalue="-3" uppervalue="5"><copy target="original" /><label>clamp 2</label></clampfunction>
+
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../original)($x)</template>
+      <sources alias="x"><sequence step="1" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace><evaluate function="$(../clamp01)" input="$x" /></template>
+      <sources alias="x"><sequence step="1" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    <p><aslist>
+    <map>
+      <template newNamespace>$$(../clampn35)($x)</template>
+      <sources alias="x"><sequence step="1" from="-2" to="2" /></sources>
+    </map>
+    </aslist></p>
+    `}, "*");
+    });
+
+    cy.get(cesc('#/_text1')).should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/original"].stateValues.label).eq("orig")
+      expect(stateVariables["/clamp01"].stateValues.label).eq("clamp 1")
+      expect(stateVariables["/clampn35"].stateValues.label).eq("clamp 2")
+
+      let map1Replacements = stateVariables["/_map1"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map1ReplacementAnchors = map1Replacements.map(x => cesc('#' + x.componentName))
+      let map2Replacements = stateVariables["/_map2"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map2ReplacementAnchors = map2Replacements.map(x => cesc('#' + x.componentName))
+      let map3Replacements = stateVariables["/_map3"].replacements.reduce((a, c) => [...a, ...stateVariables[c.componentName].replacements], []);
+      let map3ReplacementAnchors = map3Replacements.map(x => cesc('#' + x.componentName))
+
+      let clamp01 = x => Math.min(1, Math.max(0, x));
+      let clampn35 = x => Math.min(5, Math.max(-3, x));
+      let indToVal = ind => me.math.round(((ind - 3)) ** 3, 8);
+
+      cy.log('Check values in DOM')
+      for (let i = 1; i <= 5; i++) {
+        cy.get(map1ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(indToVal(i).toString())
+        });
+
+        cy.get(map2ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clamp01(indToVal(i)).toString())
+        });
+
+        cy.get(map3ReplacementAnchors[i - 1]).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+          expect(text.trim().replace(/−/g, '-')).equal(clampn35(indToVal(i)).toString())
+        });
+
+      }
+
+
+      cy.log('check mapped state values')
+      cy.window().then(async (win) => {
+        for (let i = 1; i <= 5; i++) {
+          expect(stateVariables[map1Replacements[i - 1].componentName].stateValues.value).closeTo(indToVal(i), 1E-10);
+          expect(stateVariables[map2Replacements[i - 1].componentName].stateValues.value).closeTo(clamp01(indToVal(i)), 1E-10);
+          expect(stateVariables[map3Replacements[i - 1].componentName].stateValues.value).closeTo(clampn35(indToVal(i)), 1E-10);
+        }
+      })
+
+      cy.log('check functions created from fDefinition')
+      cy.window().then(async (win) => {
+
+        let f01 = createFunctionFromDefinition(stateVariables['/clamp01'].stateValues.fDefinition);
+        let fn35 = createFunctionFromDefinition(stateVariables['/clampn35'].stateValues.fDefinition);
+
+        for (let i = 1; i <= 5; i++) {
+
+          let x = (i - 3);
+          expect(f01(x)).closeTo(clamp01(indToVal(i)), 1E-10);
+          expect(fn35(x)).closeTo(clampn35(indToVal(i)), 1E-10);
+
+        }
+
+      })
+    })
+  })
+
   it('wrap function', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -494,6 +588,124 @@ describe('Function Operator Tag Tests', function () {
       for (let i = 1; i <= 21; i++) {
 
         let x = 0.2 * (i - 11);
+        expect(d1(x)).closeTo(2 * x, 1E-10);
+        expect(d2(x)).closeTo(2 * x, 1E-10);
+        expect(d2b(x)).closeTo(2 * x, 1E-10);
+        expect(d2c(x)).closeTo(2 * x, 1E-10);
+        expect(d5(x)).closeTo(Math.cos(x), 1E-10);
+        expect(d5b(x)).closeTo(Math.cos(x), 1E-10);
+        expect(d6(x)).closeTo(2 * Math.exp(2 * x), 1E-10);
+        expect(d6b(x)).closeTo(2 * Math.exp(2 * x), 1E-10);
+        expect(d9(x)).closeTo(0, 1E-10);
+        expect(d10(x)).closeTo(0, 1E-10);
+        expect(d11(x)).closeTo(0, 1E-10);
+        expect(d12(x)).closeTo(0, 1E-10);
+
+      }
+
+    })
+  })
+
+  it('derivative 2, labeled', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <text>a</text>
+      <function name="f1">sin(x)</function>
+      <function name="f2" variables="y">e^(2y)</function>
+      <function name="f3">xyz</function>
+      <function name="f4" variables="z">xyz</function>
+      <derivative name="d1"><function>x^2</function><label>d1</label></derivative>
+      <derivative name="d2"><label>d2</label><math name="x2">x^2</math></derivative>
+      <derivative name="d2b">$x2<label>d2b</label></derivative>
+      <derivative name="d2c"><label>d2c</label><copy target="x2" /></derivative>
+      <derivative name="d3"><function>x^2sin(z)</function><label>d3</label></derivative>
+      <derivative name="d4" variables="z"><label>d4</label>x^2sin(z)</derivative>
+      <math name='var'>z</math><number name="a">2</number>
+      <derivative name="d4b" variables="$var">x^$a sin($var)<label>d4b</label></derivative>
+      <derivative name="d5"><label>d5</label><copy target="f1" /></derivative>
+      <derivative name="d5b">$f1<label>d5b</label></derivative>
+      <derivative name="d6"><copy target="f2" /><label>d6</label></derivative>
+      <derivative name="d6b"><label>d6b</label>$f2</derivative>
+      <derivative name="d7"><copy target="f3" /><label>d7</label></derivative>
+      <derivative name="d7b"><label>d7b</label>$f3</derivative>
+      <derivative name="d8"><label>d8</label><copy target="f4" /></derivative>
+      <derivative name="d8b">$f4<label>d8b</label></derivative>
+      <derivative variables="q" name="d9"><label>d9</label><copy target="f1" /></derivative>
+      <derivative variables="q" name="d10"><copy target="f2" /><label>d10</label></derivative>
+      <derivative variables="q" name="d11"><label>d11</label><copy target="f3" /></derivative>
+      <derivative variables="q" name="d12"><copy target="f4" /><label>d12</label></derivative>
+      <derivative variables="y" name="d13"><label>d13</label><copy target="f3" /></derivative>
+      <derivative variables="y" name="d14"><copy target="f4" /><label>d14</label></derivative>
+      `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/d1"].stateValues.label).eq("d1");
+      expect(stateVariables["/d2"].stateValues.label).eq("d2");
+      expect(stateVariables["/d2b"].stateValues.label).eq("d2b");
+      expect(stateVariables["/d2c"].stateValues.label).eq("d2c");
+      expect(stateVariables["/d3"].stateValues.label).eq("d3");
+      expect(stateVariables["/d4"].stateValues.label).eq("d4");
+      expect(stateVariables["/d4b"].stateValues.label).eq("d4b");
+      expect(stateVariables["/d5"].stateValues.label).eq("d5");
+      expect(stateVariables["/d5b"].stateValues.label).eq("d5b");
+      expect(stateVariables["/d6"].stateValues.label).eq("d6");
+      expect(stateVariables["/d6b"].stateValues.label).eq("d6b");
+      expect(stateVariables["/d7"].stateValues.label).eq("d7");
+      expect(stateVariables["/d7b"].stateValues.label).eq("d7b");
+      expect(stateVariables["/d8"].stateValues.label).eq("d8");
+      expect(stateVariables["/d8b"].stateValues.label).eq("d8b");
+      expect(stateVariables["/d9"].stateValues.label).eq("d9");
+      expect(stateVariables["/d10"].stateValues.label).eq("d10");
+      expect(stateVariables["/d11"].stateValues.label).eq("d11");
+      expect(stateVariables["/d12"].stateValues.label).eq("d12");
+      expect(stateVariables["/d13"].stateValues.label).eq("d13");
+      expect(stateVariables["/d14"].stateValues.label).eq("d14");
+
+      expect(me.fromAst(stateVariables['/d1'].stateValues.formula).equals(me.fromText("2x"))).eq(true);
+      expect(me.fromAst(stateVariables['/d2'].stateValues.formula).equals(me.fromText("2x"))).eq(true);
+      expect(me.fromAst(stateVariables['/d2b'].stateValues.formula).equals(me.fromText("2x"))).eq(true);
+      expect(me.fromAst(stateVariables['/d2c'].stateValues.formula).equals(me.fromText("2x"))).eq(true);
+      expect(me.fromAst(stateVariables['/d3'].stateValues.formula).equals(me.fromText("2x sin(z)"))).eq(true);
+      expect(me.fromAst(stateVariables['/d4'].stateValues.formula).equals(me.fromText("x^2cos(z)"))).eq(true);
+      expect(me.fromAst(stateVariables['/d4b'].stateValues.formula).equals(me.fromText("x^2cos(z)"))).eq(true);
+      expect(me.fromAst(stateVariables['/d5'].stateValues.formula).equals(me.fromText("cos(x)"))).eq(true);
+      expect(me.fromAst(stateVariables['/d5b'].stateValues.formula).equals(me.fromText("cos(x)"))).eq(true);
+      expect(me.fromAst(stateVariables['/d6'].stateValues.formula).equals(me.fromText("2e^(2y)"))).eq(true);
+      expect(me.fromAst(stateVariables['/d6b'].stateValues.formula).equals(me.fromText("2e^(2y)"))).eq(true);
+      expect(me.fromAst(stateVariables['/d7'].stateValues.formula).equals(me.fromText("yz"))).eq(true);
+      expect(me.fromAst(stateVariables['/d7b'].stateValues.formula).equals(me.fromText("yz"))).eq(true);
+      expect(me.fromAst(stateVariables['/d8'].stateValues.formula).equals(me.fromText("xy"))).eq(true);
+      expect(me.fromAst(stateVariables['/d8b'].stateValues.formula).equals(me.fromText("xy"))).eq(true);
+      expect(me.fromAst(stateVariables['/d9'].stateValues.formula).equals(me.fromText("0"))).eq(true);
+      expect(me.fromAst(stateVariables['/d10'].stateValues.formula).equals(me.fromText("0"))).eq(true);
+      expect(me.fromAst(stateVariables['/d11'].stateValues.formula).equals(me.fromText("0"))).eq(true);
+      expect(me.fromAst(stateVariables['/d12'].stateValues.formula).equals(me.fromText("0"))).eq(true);
+      expect(me.fromAst(stateVariables['/d13'].stateValues.formula).equals(me.fromText("xz"))).eq(true);
+      expect(me.fromAst(stateVariables['/d14'].stateValues.formula).equals(me.fromText("xz"))).eq(true);
+
+      let d1 = createFunctionFromDefinition(stateVariables['/d1'].stateValues.fDefinition);
+      let d2 = createFunctionFromDefinition(stateVariables['/d2'].stateValues.fDefinition);
+      let d2b = createFunctionFromDefinition(stateVariables['/d2b'].stateValues.fDefinition);
+      let d2c = createFunctionFromDefinition(stateVariables['/d2c'].stateValues.fDefinition);
+      let d5 = createFunctionFromDefinition(stateVariables['/d5'].stateValues.fDefinition);
+      let d5b = createFunctionFromDefinition(stateVariables['/d5b'].stateValues.fDefinition);
+      let d6 = createFunctionFromDefinition(stateVariables['/d6'].stateValues.fDefinition);
+      let d6b = createFunctionFromDefinition(stateVariables['/d6b'].stateValues.fDefinition);
+      let d9 = createFunctionFromDefinition(stateVariables['/d9'].stateValues.fDefinition);
+      let d10 = createFunctionFromDefinition(stateVariables['/d10'].stateValues.fDefinition);
+      let d11 = createFunctionFromDefinition(stateVariables['/d11'].stateValues.fDefinition);
+      let d12 = createFunctionFromDefinition(stateVariables['/d12'].stateValues.fDefinition);
+
+      for (let i = 1; i <= 5; i++) {
+
+        let x = (i - 3);
         expect(d1(x)).closeTo(2 * x, 1E-10);
         expect(d2(x)).closeTo(2 * x, 1E-10);
         expect(d2b(x)).closeTo(2 * x, 1E-10);

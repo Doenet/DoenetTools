@@ -1119,6 +1119,43 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('function through three points, label with math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function through="(0,2) (2,1) (3,2)" >
+      <label><m>\\int f</m></label>
+    </function>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+      expect(f(0)).closeTo(2, 1E-12);
+      expect(f(2)).closeTo(1, 1E-12);
+      expect(f(3)).closeTo(2, 1E-12);
+      // extrapolate linearly
+      let slope = f(4) - f(3)
+      expect(f(5)).closeTo(2 + slope * 2, 1E-12);
+      expect(f(6)).closeTo(2 + slope * 3, 1E-12);
+      expect(f(7)).closeTo(2 + slope * 4, 1E-12);
+      slope = f(0) - f(-1)
+      expect(f(-2)).closeTo(2 - slope * 2, 1E-12);
+      expect(f(-3)).closeTo(2 - slope * 3, 1E-12);
+      expect(f(-4)).closeTo(2 - slope * 4, 1E-12);
+
+      expect(stateVariables["/_function1"].stateValues.label).eq("\\(\\int f\\)")
+
+    })
+  });
+
   it('function through three points with slopes', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1601,6 +1638,37 @@ describe('Function Tag Tests', function () {
     })
   });
 
+  it('function determined by formula via sugar, label with math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function>
+    3/(1+e^(-x/2))
+    <label>Hello <copy prop="formula" target="_function1" /></label>
+    </function>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
+
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+
+      expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+
+      expect(stateVariables["/_function1"].stateValues.label).eq("Hello \\(\\frac{3}{1 + e^{-\\frac{x}{2}}}\\)")
+
+    })
+  });
+
   it('function determined by formula via sugar, with strings and macros', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1739,6 +1807,37 @@ describe('Function Tag Tests', function () {
       // expect(symbolicf(-5).equals(me.fromText('3/(1+e^(5/2))'))).eq(true)
       // expect(symbolicf(1).equals(me.fromText('3/(1+e^(-1/2))'))).eq(true)
       // expect(symbolicf('z').equals(me.fromText('3/(1+e^(-z/2))'))).eq(true)
+
+    })
+  });
+
+  it('function determined by math formula, label with math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <function>
+      <label>Hello <copy prop="formula" target="_function1" /></label>
+      <math>3/(1+e^(-x/2))</math>
+    </function>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_function1'].stateValues.nInputs).eq(1);
+
+      let f = createFunctionFromDefinition(stateVariables['/_function1'].stateValues.fDefinition);
+
+      expect(f(-5)).closeTo(3 / (1 + Math.exp(5 / 2)), 1E-12);
+      expect(f(1)).closeTo(3 / (1 + Math.exp(-1 / 2)), 1E-12);
+
+      expect(stateVariables["/_function1"].stateValues.label).eq("Hello \\(\\frac{3}{1 + e^{-\\frac{x}{2}}}\\)")
 
     })
   });
@@ -2052,6 +2151,37 @@ describe('Function Tag Tests', function () {
       // expect(symbolicf(-5).equals(me.fromText('(-5)^2sin(pi(-5)/2)/100'))).eq(true)
       // expect(symbolicf(3).equals(me.fromText('(3)^2sin(pi(3)/2)/100'))).eq(true)
       // expect(symbolicf('p').equals(me.fromText('p^2sin(pi p/2)/100'))).eq(true)
+
+
+    })
+  });
+
+  it('function determined by function, label with math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <function variables="q"><math>q^2 sin(pi q/2)/100</math></function>
+    <graph>
+      <function>
+        $_function1
+        <label><copy prop="formula" target="_function2" /></label>
+      </function>
+    </graph>
+    `}, "*");
+    });
+
+    //wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let f = createFunctionFromDefinition(stateVariables['/_function2'].stateValues.fDefinition);
+
+      expect(f(-5)).closeTo(25 * Math.sin(0.5 * Math.PI * (-5)) / 100, 1E-12);
+      expect(f(3)).closeTo(9 * Math.sin(0.5 * Math.PI * (3)) / 100, 1E-12);
+
+      expect(stateVariables["/_function2"].stateValues.label.replaceAll("\\,", "").replaceAll(" ", "")).eq("\\(\\frac{q^{2}\\sin\\left(\\frac{\\piq}{2}\\right)}{100}\\)")
 
 
     })

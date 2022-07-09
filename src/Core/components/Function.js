@@ -146,12 +146,6 @@ export default class Function extends InlineComponent {
 
     let wrapStringOrMultipleNonLabelChildrenWithMath = function ({ matchedChildren, componentInfoObjects }) {
 
-      // apply if have a single string or multiple children
-      if (matchedChildren.length === 1 && typeof matchedChildren[0] !== "string"
-        || matchedChildren.length === 0
-      ) {
-        return { success: false }
-      }
 
       let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: cType,
@@ -161,7 +155,7 @@ export default class Function extends InlineComponent {
 
       // wrap first group of non-label children in <math>
 
-      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.props?.componentType));
+      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.attributes?.createComponentOfType?.primitive));
 
       let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
 
@@ -190,7 +184,10 @@ export default class Function extends InlineComponent {
 
       }
 
-      if (childrenToWrap.length === 0) {
+      // apply if have a single string or multiple children to wrap
+      if (childrenToWrap.length === 1 && typeof childrenToWrap[0] !== "string"
+        || childrenToWrap.length === 0
+      ) {
         return { success: false }
       }
 
