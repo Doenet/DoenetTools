@@ -33,37 +33,6 @@ if ($permissions['canViewUsers'] != '1') {
 
 if ($success) {
     $sql = "SELECT 
-      cu.userId AS userId,
-      cr.label as roleLabel,
-      cr.roleId,
-      u.email AS email,
-      u.screenName AS screenName
-      FROM course_user AS cu
-      LEFT JOIN course_role AS cr
-      ON cu.roleId = cr.roleId
-      LEFT JOIN user AS u
-      ON cu.userId = u.userId
-      WHERE cu.courseId = '$courseId' 
-    ";
-    $result = $conn->query($sql);
-
-    $users = [];
-    if ($result == false) {
-        $success = false;
-        $message = 'server error while retrieving users';
-    } elseif ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            array_push($users, [
-                'email' => $row['email'],
-                'screenName' => $row['screenName'],
-                'isUser' => $row['userId'] == $userId,
-                'roleLabel' => $row['roleLabel'],
-                'roleId' => $row['roleId']
-            ]);
-        }
-    }
-
-    $sql = "SELECT 
         cr.roleId,
         cr.label as roleLabel,
         cr.canViewCourse,
@@ -100,7 +69,6 @@ if ($success) {
 
 $response_arr = [
     'success' => $success,
-    'users' => $users,
     'roles' => $roles,
     'message' => $message,
 ];
