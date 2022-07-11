@@ -816,7 +816,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph ymax="120" ymin="-45" xmin="-1" xmax="5.5">
       <curve name="c">
-        <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
+        <function name='g' variables='t' domain="[0,5]">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
       </curve>
       <point x="1.5" y="2" name="A">
         <constraints baseOnGraph="_graph1">
@@ -862,7 +862,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph xmax="120" xmin="-45" ymin="-1" ymax="5.5">
       <curve name="c">
-        <function name='g' variables='t' domain="(-20,100)">sin(t/10)+t/50+2</function>
+        <function name='g' variables='t' domain="[-20,100]">sin(t/10)+t/50+2</function>
       </curve>
       <point x="1.5" y="2" name="A">
         <constraints baseOnGraph="_graph1">
@@ -1228,7 +1228,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph xmax="120" xmin="-45" ymin="-1" ymax="5.5">
       <curve name="c" flipFunction>
-        <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
+        <function name='g' variables='t' domain="[0,5]">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
       </curve>
       <point y="1.5" x="2" name="A">
         <constraints baseOnGraph="_graph1">
@@ -1274,7 +1274,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph ymax="120" ymin="-45" xmin="-1" xmax="5.5">
       <curve name="c" flipFunction>
-        <function name='g' variables='t' domain="(-20,100)">sin(t/10)+t/50+2</function>
+        <function name='g' variables='t' domain="[-20,100]">sin(t/10)+t/50+2</function>
       </curve>
       <point y="1.5" x="2" name="A">
         <constraints baseOnGraph="_graph1">

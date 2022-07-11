@@ -3961,9 +3961,9 @@ describe('Function Tag Tests', function () {
     <p><copy prop="extrema" target="f4" assignNames="f4e1 f4e2 f4e3 f4e4" /></p>
 
     <graph>
-      <function name="f1a" domain="[-pi+1E-5,2pi-1E-5]" displayDecimals="5" displaySmallAsZero="10^-6">cos(x)</function>
-      <function name="f3a" domain="[-3pi/2+1E-5,3pi/2]" displayDecimals="5" displaySmallAsZero="10^-6">sin(x)+2</function>
-      <function name="f4a" domain="[-3pi/2,3pi/2-1E-5]" displayDecimals="5" displaySmallAsZero="10^-6">sin(x)+3</function>
+      <function name="f1a" domain="[-pi+1E-6,2pi-1E-6]" displayDecimals="5" displaySmallAsZero="10^-6">cos(x)</function>
+      <function name="f3a" domain="[-3pi/2+1E-6,3pi/2]" displayDecimals="5" displaySmallAsZero="10^-6">sin(x)+2</function>
+      <function name="f4a" domain="[-3pi/2,3pi/2-1E-6]" displayDecimals="5" displaySmallAsZero="10^-6">sin(x)+3</function>
     </graph>
     <p><copy prop="extrema" target="f1a" assignNames="f1ae1 f1ae2 f1ae3" /></p>
     <p><copy prop="extrema" target="f3a" assignNames="f3ae1 f3ae2 f3ae3 f3ae4" /></p>

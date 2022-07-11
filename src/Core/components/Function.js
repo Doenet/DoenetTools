@@ -2123,7 +2123,7 @@ export default class Function extends InlineComponent {
           let nIntervals = 1000;
           let dx = (maxx - minx) / nIntervals;
 
-          let buffer = 1E-6 * Math.max(Math.abs(minx), Math.abs(maxx));
+          let buffer = 1E-10 * Math.max(Math.abs(minx), Math.abs(maxx));
 
           let minimaList = [];
           let minimumAtPreviousRight = false;
@@ -2145,7 +2145,15 @@ export default class Function extends InlineComponent {
             let foundFromDeriv = false;
 
             if (haveDerivative && dleft * dright <= 0) {
-              let x = numerics.fzero(derivative, [xleft, xright]);
+              let x;
+              
+              if(dleft === 0) {
+                x = xleft;
+              } else if(dright === 0) {
+                x = xright;
+              } else {
+                x = numerics.fzero(derivative, [xleft, xright]);
+              }
 
               // calculate tolerance used in fzero:
               let eps = 1E-6;
@@ -2711,7 +2719,7 @@ export default class Function extends InlineComponent {
           let nIntervals = 1000;
           let dx = (maxx - minx) / nIntervals;
 
-          let buffer = 1E-6 * Math.max(Math.abs(minx), Math.abs(maxx));
+          let buffer = 1E-10 * Math.max(Math.abs(minx), Math.abs(maxx));
 
           let maximaList = [];
           let maximumAtPreviousRight = false;
@@ -2734,7 +2742,16 @@ export default class Function extends InlineComponent {
             let foundFromDeriv = false;
 
             if (haveDerivative && dleft * dright <= 0) {
-              let x = numerics.fzero(derivative, [xleft, xright]);
+
+              let x;
+
+              if(dleft === 0) {
+                x = xleft;
+              } else if(dright === 0) {
+                x = xright;
+              } else {
+                x = numerics.fzero(derivative, [xleft, xright]);
+              }
 
               // calculate tolerance used in fzero:
               let eps = 1E-6;
