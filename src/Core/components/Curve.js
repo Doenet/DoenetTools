@@ -443,7 +443,7 @@ export default class Curve extends GraphicalComponent {
           if (domain !== null) {
             domain = domain[0];
             try {
-              parMax = domain[1].evaluate_to_constant();
+              parMax = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
               if (!Number.isFinite(parMax) && parMax !== Infinity) {
                 parMax = NaN;
               }
@@ -552,7 +552,7 @@ export default class Curve extends GraphicalComponent {
           if (domain !== null) {
             domain = domain[0];
             try {
-              parMin = domain[0].evaluate_to_constant();
+              parMin = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
               if (!Number.isFinite(parMin) && parMin !== -Infinity) {
                 parMin = NaN;
               }
@@ -3284,12 +3284,23 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let x1AtLeftEndpoint, x2AtLeftEndpoint;
     if (parMin !== -Infinity) {
 
+      x1AtLeftEndpoint = parMin;
+      x2AtLeftEndpoint = f(parMin);
+
+      if (!Number.isFinite(x2AtLeftEndpoint)) {
+        // in case function was defined on an open interval
+        // check a point just to the right
+        let parMinAdjust = parMin * 0.99999 + parMax * 0.00001;
+        let x2AtLeftEndpointAdjust = f(parMinAdjust);
+        if (Number.isFinite(x2AtLeftEndpointAdjust)) {
+          x1AtLeftEndpoint = parMinAdjust;
+          x2AtLeftEndpoint = x2AtLeftEndpointAdjust;
+        }
+      }
       if (flipFunction) {
-        x1AtLeftEndpoint = f(parMin);
-        x2AtLeftEndpoint = parMin;
-      } else {
-        x1AtLeftEndpoint = parMin;
-        x2AtLeftEndpoint = f(parMin);
+        let temp = x1AtLeftEndpoint;
+        x1AtLeftEndpoint = x2AtLeftEndpoint;
+        x2AtLeftEndpoint = temp;
       }
 
     }
@@ -3297,12 +3308,24 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let x1AtRightEndpoint, x2AtRightEndpoint;
     if (parMax !== Infinity) {
 
+      x1AtRightEndpoint = parMax;
+      x2AtRightEndpoint = f(parMax);
+
+      if (!Number.isFinite(x2AtRightEndpoint)) {
+        // in case function was defined on an open interval
+        // check a point just to the left
+        let parMaxAdjust = parMin * 0.00001 + parMax * 0.99999;
+        let x2AtRightEndpointAdjust = f(parMaxAdjust);
+        if (Number.isFinite(x2AtRightEndpointAdjust)) {
+          x1AtRightEndpoint = parMaxAdjust;
+          x2AtRightEndpoint = x2AtRightEndpointAdjust;
+        }
+      }
+
       if (flipFunction) {
-        x1AtRightEndpoint = f(parMax);
-        x2AtRightEndpoint = parMax;
-      } else {
-        x1AtRightEndpoint = parMax;
-        x2AtRightEndpoint = f(parMax);
+        let temp = x1AtRightEndpoint;
+        x1AtRightEndpoint = x2AtRightEndpoint;
+        x2AtRightEndpoint = temp;
       }
     }
 

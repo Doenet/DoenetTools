@@ -2740,6 +2740,263 @@ describe('Evaluate Tag Tests', function () {
 
   })
 
+  it('evaluate at infinity', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>f1: <function name="f1">1/x</function></p>
+  <p>f2: <function name="f2">1/(-x)</function></p>
+  <p>f3: <function name="f3">x^3</function></p>
+  <p>f4: <function name="f4">(-x)^3</function></p>
+  <p>f5: <function name="f5">sin(x)</function></p>
+
+  <p><evaluate function="$f1" input="Infinity" name="f1pn" /></p>
+  <p><evaluate function="$f1" input="Infinity" name="f1ps" forceSymbolic simplify /></p>
+  <p><evaluate function="$f1" input="-Infinity" name="f1mn" /></p>
+  <p><evaluate function="$f1" input="-Infinity" name="f1ms" forceSymbolic simplify /></p>
+
+  <p><evaluate function="$f2" input="Infinity" name="f2pn" /></p>
+  <p><evaluate function="$f2" input="Infinity" name="f2ps" forceSymbolic simplify /></p>
+  <p><evaluate function="$f2" input="-Infinity" name="f2mn" /></p>
+  <p><evaluate function="$f2" input="-Infinity" name="f2ms" forceSymbolic simplify /></p>
+
+  <p><evaluate function="$f3" input="Infinity" name="f3pn" /></p>
+  <p><evaluate function="$f3" input="Infinity" name="f3ps" forceSymbolic simplify /></p>
+  <p><evaluate function="$f3" input="-Infinity" name="f3mn" /></p>
+  <p><evaluate function="$f3" input="-Infinity" name="f3ms" forceSymbolic simplify /></p>
+
+  <p><evaluate function="$f4" input="Infinity" name="f4pn" /></p>
+  <p><evaluate function="$f4" input="Infinity" name="f4ps" forceSymbolic simplify /></p>
+  <p><evaluate function="$f4" input="-Infinity" name="f4mn" /></p>
+  <p><evaluate function="$f4" input="-Infinity" name="f4ms" forceSymbolic simplify /></p>
+
+  <p><evaluate function="$f5" input="Infinity" name="f5pn" /></p>
+  <p><evaluate function="$f5" input="Infinity" name="f5ps" forceSymbolic simplify /></p>
+  <p><evaluate function="$f5" input="-Infinity" name="f5mn" /></p>
+  <p><evaluate function="$f5" input="-Infinity" name="f5ms" forceSymbolic simplify /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f1pn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f1ps').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f1mn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f1ms').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/f2pn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f2ps').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f2mn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f2ms').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/f3pn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('∞')
+    })
+    cy.get('#\\/f3ps').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('∞')
+    })
+    cy.get('#\\/f3mn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−∞')
+    })
+    cy.get('#\\/f3ms').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−∞')
+    })
+
+    cy.get('#\\/f4pn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−∞')
+    })
+    cy.get('#\\/f4ps').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−∞')
+    })
+    cy.get('#\\/f4mn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('∞')
+    })
+    cy.get('#\\/f4ms').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('∞')
+    })
+
+    cy.get('#\\/f5pn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f5ps').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(∞)')
+    })
+    cy.get('#\\/f5mn').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f5ms').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('sin(−∞)')
+    })
+
+
+
+  })
+
+  it('evaluate at domain boundary', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>f1: <function name="f1" domain="(-pi,pi)" displaySmallAsZero>sin(x)</function></p>
+  <p>f2: <function name="f2" domain="(-pi,pi]" displaySmallAsZero>sin(x)</function></p>
+  <p>f3: <function name="f3" domain="[-pi,pi]" displaySmallAsZero>sin(x)</function></p>
+  <p>f4: <function name="f4" domain="[-pi,pi)" displaySmallAsZero>sin(x)</function></p>
+
+  <p><evaluate function="$f1" input="-pi" name="f1l" /></p>
+  <p><evaluate function="$f1" input="pi" name="f1r" /></p>
+  <p><evaluate function="$f1" input="0" name="f1m" /></p>
+
+  <p><evaluate function="$f2" input="-pi" name="f2l" /></p>
+  <p><evaluate function="$f2" input="pi" name="f2r" /></p>
+  <p><evaluate function="$f2" input="0" name="f2m" /></p>
+
+  <p><evaluate function="$f3" input="-pi" name="f3l" /></p>
+  <p><evaluate function="$f3" input="pi" name="f3r" /></p>
+  <p><evaluate function="$f3" input="0" name="f3m" /></p>
+
+  <p><evaluate function="$f4" input="-pi" name="f4l" /></p>
+  <p><evaluate function="$f4" input="pi" name="f4r" /></p>
+  <p><evaluate function="$f4" input="0" name="f4m" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f1l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/f2l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f2r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/f3l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+    cy.get('#\\/f4l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+    cy.get('#\\/f4r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('0')
+    })
+
+  })
+
+  it('evaluate interpolated at domain boundary', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>f1: <function name="f1" domain="(-4, 3)" through="(-4,1) (-3,5) (3,-1)" /></p>
+  <p>f2: <function name="f2" domain="(-4, 3]" through="(-4,1) (-3,5) (3,-1)" /></p>
+  <p>f3: <function name="f3" domain="[-4, 3]" through="(-4,1) (-3,5) (3,-1)" /></p>
+  <p>f4: <function name="f4" domain="[-4, 3)" through="(-4,1) (-3,5) (3,-1)" /></p>
+
+  <p><evaluate function="$f1" input="-4" name="f1l" /></p>
+  <p><evaluate function="$f1" input="3" name="f1r" /></p>
+  <p><evaluate function="$f1" input="-3" name="f1m" /></p>
+
+  <p><evaluate function="$f2" input="-4" name="f2l" /></p>
+  <p><evaluate function="$f2" input="3" name="f2r" /></p>
+  <p><evaluate function="$f2" input="-3" name="f2m" /></p>
+
+  <p><evaluate function="$f3" input="-4" name="f3l" /></p>
+  <p><evaluate function="$f3" input="3" name="f3r" /></p>
+  <p><evaluate function="$f3" input="-3" name="f3m" /></p>
+
+  <p><evaluate function="$f4" input="-4" name="f4l" /></p>
+  <p><evaluate function="$f4" input="3" name="f4r" /></p>
+  <p><evaluate function="$f4" input="-3" name="f4m" /></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    cy.get('#\\/f1l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f1m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+
+    cy.get('#\\/f2l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f2r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−1')
+    })
+    cy.get('#\\/f2m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+
+    cy.get('#\\/f3l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/f3r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('−1')
+    })
+    cy.get('#\\/f3m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+
+    cy.get('#\\/f4l').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('1')
+    })
+    cy.get('#\\/f4r').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('NaN')
+    })
+    cy.get('#\\/f4m').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('5')
+    })
+
+  })
+
+
 
 })
 
