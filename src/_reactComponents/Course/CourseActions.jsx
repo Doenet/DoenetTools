@@ -519,18 +519,40 @@ export const coursePermissionsAndSettingsByCourseId = selectorFamily({
 });
 
 //Could use pattern above
-export const courseUsersAndRolesByCourseId = atomFamily({
+export const courseUsersByCourseId = atomFamily({
   key: 'courseUsersByCourseId',
   effects: courseId => [
     async ({ setSelf, trigger }) => {
       if (trigger === 'get') {
-        const { data } = await axios.get(
-          '/api/loadCourseUsersAndRoles.php', { params:{ courseId } }
+        const { data: {users} } = await axios.get(
+          '/api/loadCourseUsers.php', { params:{ courseId } }
         );
-        setSelf({users: data.users, roles: data.roles});
+        setSelf(users);
       }
     },
   ]
+})
+
+
+export const courseRolesByCourseId = atomFamily({
+  key: 'courseRolesByCourseId',
+  effects: courseId => [
+    async ({ setSelf, trigger }) => {
+      if (trigger === 'get') {
+        const { data: {roles} } = await axios.get(
+          '/api/loadCourseRoles.php', { params:{ courseId } }
+        );
+        setSelf(roles);
+      }
+    },
+  ]
+})
+
+export const courseRolePermissonsByCourseIdRoleId = selectorFamily({
+  key: 'courseRoleByCourseIdRoleId',
+  get: ({courseId, roleId}) => ({get}) => {
+    return get(courseRolesByCourseId(courseId))?.find(({roleId: candidateRoleId}) => candidateRoleId === roleId) ?? {};
+  }
 })
 
 
@@ -1261,6 +1283,31 @@ export const useCourse = (courseId) => {
         }
       },
   );
+
+  const modifyRolePermissions = useRecoilCallback(({set}) => 
+    async (roleId, newPermissions, successCallback, failureCallback = defaultFailure) =>
+    {
+      try {
+        const {data: {success, message}} = await axios.post('/api/updateRolePermissons.php', {courseId, roleId, permissions: newPermissions})
+        if(success) {
+          set(
+            courseRolesByCourseId(courseId), (prev => {
+              const idx = prev.findIndex(({roleId: candidateRoleId}) => candidateRoleId === roleId);
+              const next = [...prev];
+              next.splice(idx, 1, {...prev[idx], ...newPermissions})
+              return next;
+            })
+          )
+          successCallback();
+        } else {
+          throw new Error(message);
+        }
+      } catch (err) {
+        failureCallback(err);
+      }
+    }, 
+    [courseId, defaultFailure]
+    );
 
   const deleteCourse = useRecoilCallback(
     ({ set }) =>
@@ -2473,14 +2520,16 @@ export const useCourse = (courseId) => {
       })
 
 
-  return { create, 
-    deleteItem, 
-    deleteCourse, 
-    modifyCourse, 
+  return { 
     label, 
     color, 
     image,
     defaultRoleId,
+    create, 
+    deleteItem, 
+    deleteCourse, 
+    modifyCourse, 
+    modifyRolePermissions,
     renameItem, 
     compileActivity, 
     updateAssignItem,
