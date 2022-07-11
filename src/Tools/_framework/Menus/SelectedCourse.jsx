@@ -1,5 +1,16 @@
-import React, { useState, useLayoutEffect } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import React, {
+  useState,
+  useLayoutEffect,
+  useEffect,
+  Suspense,
+  useCallback,
+} from 'react';
+import {
+  useRecoilState,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil';
 import { faChalkboard } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
@@ -9,13 +20,18 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import ColorImagePicker from '../../../_reactComponents/PanelHeaderComponents/ColorImagePicker';
 import {
-  courseUsersAndRolesByCourseId,
+  courseRolePermissonsByCourseIdRoleId,
+  courseRolesByCourseId,
+  courseUsersByCourseId,
   useCourse,
 } from '../../../_reactComponents/Course/CourseActions';
 import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
+import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
+
 import axios from 'axios';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import styled from 'styled-components';
 
 export default function SelectedCourse() {
   const [courseCardsSelection, setCourseCardsSelection] = useRecoilState(
@@ -83,6 +99,7 @@ const CourseInfoPanel = function ({ courseId }) {
         <FontAwesomeIcon icon={faChalkboard} /> {label}
       </h2>
       {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}
+      {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}
       {canModifyCourseSettings === '1' && (
         <EditImageAndColor courseId={courseId} />
       )}
@@ -100,34 +117,52 @@ const CourseInfoPanel = function ({ courseId }) {
   );
 };
 
-function EditLabel({ courseId }) {
-  const { modifyCourse, label } = useCourse(courseId);
+const useSyncedTextfeildState = (syncCB, remoteValue = '') => {
   const addToast = useToast();
+  const [localValue, setLocalValue] = useState(remoteValue);
 
-  const [driveLabel, setDriveLabel] = useState(label);
-  const [panelDriveLabel, setPanelDriveLabel] = useState(label);
-
-  const handelLabelModfication = () => {
-    let effectiveDriveLabel = driveLabel;
-    if (driveLabel === '') {
-      effectiveDriveLabel = 'Untitled';
-      setDriveLabel(effectiveDriveLabel);
+  useEffect(() => {
+    setLocalValue(remoteValue);
+  }, [remoteValue]);
+  //TODO upgrade to a recoil-refine validator coming in from props
+  const sync = () => {
+    let effectiveLabel = localValue;
+    if (localValue === '') {
+      effectiveLabel = remoteValue;
+      if (remoteValue === '') {
+        effectiveLabel = 'Untitled Course';
+      }
+      setLocalValue(effectiveLabel);
       addToast('A Course must have a label.');
     }
-    setPanelDriveLabel(effectiveDriveLabel);
-    modifyCourse({ label: effectiveDriveLabel });
+
+    if (remoteValue !== effectiveLabel) {
+      syncCB(effectiveLabel);
+    }
   };
+  return [localValue, setLocalValue, sync];
+};
+
+function EditLabel({ courseId }) {
+  const { modifyCourse, label: recoilLabel } = useCourse(courseId);
+  const [localLabel, setLocalLabel, sync] = useSyncedTextfeildState(
+    (newLabel) => {
+      modifyCourse({ label: newLabel });
+    },
+    recoilLabel,
+  );
+
   return (
     <Textfield
       label="Label"
       vertical
       width="menu"
-      value={driveLabel}
-      onChange={(e) => setDriveLabel(e.target.value)}
+      value={localLabel}
+      onChange={(e) => setLocalLabel(e.target.value)}
       onKeyDown={(e) => {
-        if (e.keyCode === 13) handelLabelModfication();
+        if (e.keyCode === 13) sync();
       }}
-      onBlur={handelLabelModfication}
+      onBlur={sync}
     />
   );
 }
@@ -150,9 +185,7 @@ function EditImageAndColor({ courseId }) {
 
 function EditDefaultRole({ courseId }) {
   const { modifyCourse, defaultRoleId } = useCourse(courseId);
-  const { roles: courseRolesRecoil } = useRecoilValue(
-    courseUsersAndRolesByCourseId(courseId),
-  );
+  const courseRolesRecoil = useRecoilValue(courseRolesByCourseId(courseId));
 
   return (
     <DropdownMenu
@@ -177,10 +210,7 @@ function EditDefaultRole({ courseId }) {
 }
 
 function AddUser({ courseId }) {
-  const { defaultRoleId } = useCourse(courseId);
-  const setCourseUsers = useSetRecoilState(
-    courseUsersAndRolesByCourseId(courseId),
-  );
+  const setCourseUsers = useSetRecoilState(courseUsersByCourseId(courseId));
   const addToast = useToast();
 
   const [emailInput, setEmailInput] = useState('');
@@ -191,23 +221,16 @@ function AddUser({ courseId }) {
 
   const handleEmailChange = async () => {
     if (isEmailValid) {
-      //Add user permission (admin only for now), then cb on success. php will add new user if they dont exisit.
       const {
-        data: { success },
+        data: { success, message, userData },
       } = await axios.post('/api/addUser.php', {
-        // roleLabels: selectedEmailRole,
+        email: emailInput,
       });
-      //TODO: better defaults
-      setCourseUsers((prev) => [
-        ...prev,
-        {
-          email: emailInput,
-          isUser: true,
-          roleId: defaultRoleId,
-          roleLabel: '',
-          screenName: '',
-        },
-      ]);
+      if (success) {
+        setCourseUsers((prev) => [...prev, { ...userData }]);
+      } else {
+        addToast(message, toastType.ERROR);
+      }
       setEmailInput('');
     }
   };
@@ -240,9 +263,8 @@ function AddUser({ courseId }) {
 
 function ManageUsers({ courseId, editable = false }) {
   const addToast = useToast();
-  const { users: courseUsersRecoil, roles: courseRolesRecoil } = useRecoilValue(
-    courseUsersAndRolesByCourseId(courseId),
-  );
+  const courseUsersRecoil = useRecoilValue(courseUsersByCourseId(courseId));
+  const courseRolesRecoil = useRecoilValue(courseRolesByCourseId(courseId));
 
   const [selectedUserData, setSelectedUserData] = useState(null);
   const [selectedUserPermissons, setSelectedUserPermissons] = useState(null);
@@ -332,8 +354,307 @@ function ManageUsers({ courseId, editable = false }) {
   );
 }
 
+const InputWrapper = styled.div`
+  margin: 0 5px 10px 5px;
+  display: ${(props) => (props.flex ? 'flex' : 'block')};
+  align-items: ${(props) => props.flex && 'center'};
+`;
+const CheckboxLabelText = styled.span`
+  font-size: 15px;
+  line-height: 1.1;
+`;
+
+const useRolePermissionCheckbox = ({
+  recoilKey,
+  destructureFunction,
+  checkedConditional,
+  disabledConditional,
+  onClick,
+}) => {
+  const recoilValue = useRecoilValueLoadable(
+    courseRolePermissonsByCourseIdRoleId(recoilKey),
+  ).getValue();
+
+  const [checked, setChecked] = useState(false);
+  const reset = useCallback(() => {
+    setChecked(checkedConditional(destructureFunction(recoilValue)));
+  }, [checkedConditional, destructureFunction, recoilValue]);
+  useEffect(() => {
+    reset();
+  }, [reset]);
+
+  const [disabled, setDisabled] = useState(false);
+  const disable = useCallback(() => {
+    setDisabled(disabledConditional(destructureFunction(recoilValue)));
+  }, [destructureFunction, disabledConditional, recoilValue]);
+  useEffect(() => {
+    disable();
+  }, [disable]);
+
+  const clickFunction = () => {
+    onClick({
+      value: checked,
+      set: setChecked,
+      ...destructureFunction(recoilValue),
+    });
+  };
+  return { checked, disabled, onClick: clickFunction }, reset;
+};
+
+function RolePermissonCheckbox({
+  courseId,
+  roleId,
+  permissonKey,
+  onClick,
+  parentPermissonKey = '',
+}) {
+  const {
+    [permissonKey]: recoilValue,
+    [parentPermissonKey]: overrideRecoilValue,
+    isOwner,
+  } = useRecoilValueLoadable(
+    courseRolePermissonsByCourseIdRoleId({ courseId, roleId }),
+  ).getValue();
+  const [localValue, setLocalValue] = useState('0');
+
+  useEffect(() => {
+    setLocalValue(
+      isOwner === '1'
+        ? isOwner
+        : overrideRecoilValue === '1'
+        ? overrideRecoilValue
+        : recoilValue,
+    );
+  }, [isOwner, overrideRecoilValue, recoilValue]);
+
+  return (
+    <InputWrapper flex>
+      <Checkbox
+        style={{ marginRight: '5px' }}
+        checked={localValue === '1'}
+        onClick={(e) => {
+          onClick({
+            value: localValue,
+            set: setLocalValue,
+            event: e,
+            permissonKey,
+          });
+          // let value = false;
+          // if (!localValue) {
+          //   valueDescription = invert ? 'False' : 'True';
+          //   value = true;
+          // }
+          // setLocalValue(value);
+          // updateAssignmentSettings({
+          //   keyToUpdate,
+          //   value,
+          //   description,
+          //   valueDescription,
+          // });
+        }}
+        disabled={overrideRecoilValue === '1' || isOwner === '1'}
+      />
+      <CheckboxLabelText>{permissonKey}</CheckboxLabelText>
+    </InputWrapper>
+  );
+}
+
 function MangeRoles({ courseId }) {
-  return <div>Coming soon!</div>;
+  const addToast = useToast();
+  const { modifyRolePermissions } = useCourse(courseId);
+  const courseRolesRecoil = useRecoilValue(courseRolesByCourseId(courseId));
+  const [selectedRolePermissons, setSelectedRolePermissons] = useState(
+    courseRolesRecoil[0],
+  );
+  const [permissonEdits, setPermissonEdits] = useState({});
+  const [edited, setEdited] = useState(false);
+
+  const [canViewContnetSourceProps, resetCanViewContnetSource] =
+    useRolePermissionCheckbox({
+      courseId,
+      roleId: selectedRolePermissons.roleId,
+      destructureFunction: ({
+        ['canViewContentSource']: recoilValue,
+        ['canEditContent']: overrideRecoilValue,
+        isOwner,
+      }) => ({ recoilValue, overrideRecoilValue, isOwner }),
+      checkedConditional: ({ recoilValue, overrideRecoilValue, isOwner }) =>
+        isOwner === '1' || overrideRecoilValue === '1' || recoilValue === '1',
+      disabledConditional: ({ overrideRecoilValue, isOwner }) =>
+        overrideRecoilValue === '1' || isOwner === '1',
+      onClick: handleCheckboxClick,
+    });
+
+  const handleSave = () => {
+    modifyRolePermissions(
+      selectedRolePermissons.roleId,
+      permissonEdits,
+      () => {
+        setEdited(false);
+        addToast(
+          `Permissions for ${selectedRolePermissons.roleLabel} updated successfully`,
+        );
+      },
+      (error) => {
+        //TODO reset state
+        setSelectedRolePermissons(selectedRolePermissons);
+        addToast(error.message, toastType.ERROR);
+      },
+    );
+  };
+
+  const handleCheckboxClick = ({ value, set, permissonKey }) => {
+    let newValue = '0';
+    if (value === '0') {
+      newValue = '1';
+    }
+    setPermissonEdits((prev) => ({ ...prev, [permissonKey]: newValue }));
+    set(newValue);
+    if (!edited) {
+      setEdited(true);
+    }
+  };
+
+  return (
+    <Suspense fallback={<div>Loading roles...</div>}>
+      <DropdownMenu
+        label="Role:"
+        title=""
+        items={
+          //TODO reduce to hide roles as needed
+          courseRolesRecoil?.map(({ roleLabel, roleId }) => [
+            roleId,
+            roleLabel,
+          ]) ?? []
+        }
+        onChange={({ value: selectedRoleId }) => {
+          setSelectedRolePermissons(
+            courseRolesRecoil?.find(
+              ({ roleId }) => roleId === selectedRoleId,
+            ) ?? null,
+          );
+        }}
+        valueIndex={
+          courseRolesRecoil.findIndex(
+            ({ roleId }) => roleId == selectedRolePermissons?.roleId,
+          ) + 1
+        }
+        vertical
+      />
+      <br />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canViewContentSource'}
+        parentPermissonKey={'canEditContent'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canViewUnassignedContent'}
+        parentPermissonKey={'canEditContent'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canEditContent'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canPublishContent'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canProctor'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canViewAndModifyGrades'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canViewActivitySettings'}
+        parentPermissonKey={'canModifyActivitySettings'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canModifyActivitySettings'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canModifyCourseSettings'}
+      />
+      {/* data access permison */}
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canViewUsers'}
+        parentPermissonKey={'canManageUsers'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canManageUsers'}
+        parentPermissonKey={'canModifyRoles'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'canModifyRoles'}
+      />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'isOwner'}
+      />
+      {edited && (
+        <ButtonGroup vertical>
+          {/* <Button
+            width="menu"
+            value="Reset Changes"
+            onClick={() => {
+              setEdited(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.keyCode === 13) {
+                setEdited(false);
+              }
+            }}
+          /> */}
+          <Button
+            width="menu"
+            value="Save Role"
+            alert
+            onClick={handleSave}
+            onKeyDown={(e) => {
+              if (e.keyCode === 13) {
+                handleSave();
+              }
+            }}
+          />
+        </ButtonGroup>
+      )}
+    </Suspense>
+  );
 }
 
 function DeleteCourse({ courseId }) {
