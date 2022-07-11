@@ -8,7 +8,7 @@ describe('Slider Tag Tests', function () {
   })
 
 
-  it('move default two number slider', () => {
+  it('move two number slider', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -32,7 +32,7 @@ describe('Slider Tag Tests', function () {
     })
 
     cy.log('move handle less than half way, stays at 1');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: 145, clientY: 0 })
       .trigger('mouseup')
@@ -46,7 +46,7 @@ describe('Slider Tag Tests', function () {
     })
 
     cy.log('move handle past halfway, goes to 2')
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: 180, clientY: 0 })
       .trigger('mouseup')
@@ -60,7 +60,7 @@ describe('Slider Tag Tests', function () {
     })
 
     cy.log('clicking at left of sliders moves it to 1')
-    cy.get('[data-cy=\\/s]')
+    cy.get('#\\/s')
       .click('left');
 
     cy.get('#\\/sv').should('have.text', '1')
@@ -109,7 +109,7 @@ describe('Slider Tag Tests', function () {
 
 
     cy.log('drag handle to 1');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(1), clientY: 0 })
       .trigger('mouseup')
@@ -128,7 +128,7 @@ describe('Slider Tag Tests', function () {
 
 
     cy.log('drag handle to 9');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(9), clientY: 0 })
       .trigger('mouseup')
@@ -300,7 +300,7 @@ describe('Slider Tag Tests', function () {
 
 
     cy.log('move handle to 1');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(1), clientY: 0 })
       .trigger('mouseup')
@@ -320,7 +320,7 @@ describe('Slider Tag Tests', function () {
 
 
     cy.log('move handle to 9.4');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(9.4), clientY: 0 })
       .trigger('mouseup')
@@ -389,7 +389,7 @@ describe('Slider Tag Tests', function () {
 
 
     cy.log('move handle to 137');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(137), clientY: 0 })
       .trigger('mouseup')
@@ -409,7 +409,7 @@ describe('Slider Tag Tests', function () {
 
 
     cy.log('move handle to 199');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(199), clientY: 0 })
       .trigger('mouseup')
@@ -514,7 +514,7 @@ describe('Slider Tag Tests', function () {
 
 
     cy.log('move handle to 1');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(1), clientY: 0 })
       .trigger('mouseup')
@@ -586,7 +586,7 @@ describe('Slider Tag Tests', function () {
 
 
     cy.log('move handle to 1');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(1), clientY: 0 })
       .trigger('mouseup')
@@ -673,7 +673,7 @@ describe('Slider Tag Tests', function () {
 
 
     cy.log('move handle to 5');
-    cy.get('[data-cy=\\/s-handle]')
+    cy.get('#\\/s-handle')
       .trigger('mousedown')
       .trigger('mousemove', { clientX: numberToPx(5), clientY: 0 })
       .trigger('mouseup')
@@ -714,6 +714,63 @@ describe('Slider Tag Tests', function () {
       expect(stateVariables['/mi0'].stateValues.value).eq(999)
       expect(stateVariables['/mi'].stateValues.value).eq(10)
     })
+
+
+  })
+
+  it('label with math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <slider name="s"><label>Hello <m>x^2</m></label></slider>
+  <p>Value: <number name="sv">$s</number></p>
+  <p>
+    <booleaninput name="bi"/>
+    <copy prop="value" target="bi" assignNames="b" />
+  </p>
+    `}, "*");
+    });
+
+    let numberToPx = x => 27 + 30 * x;
+    let numberToPx2 = x => 30 * x;
+
+    cy.get('#\\/_text1').should('have.text', 'a')  // to wait for page to load
+
+    cy.get('#\\/sv').should('have.text', '0')
+
+    cy.get('#\\/s-label').should('contain.text', 'Hello x2')
+    cy.get('#\\/s-label').should('contain.text', 'x^2 = 0')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(0)
+      expect(stateVariables['/s'].stateValues.label).eq('Hello \\(x^2\\)')
+      expect(stateVariables['/sv'].stateValues.value).eq(0)
+    })
+
+
+
+    cy.log('drag handle to 1');
+    cy.get('#\\/s-handle')
+      .trigger('mousedown')
+      .trigger('mousemove', { clientX: numberToPx(1), clientY: 0 })
+      .trigger('mouseup')
+
+    cy.get('#\\/sv').should('have.text', '1')
+
+    cy.get('#\\/s-label').should('contain.text', 'Hello x2')
+    cy.get('#\\/s-label').should('contain.text', 'x^2 = 1')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/s'].stateValues.value).eq(1)
+      expect(stateVariables['/s'].stateValues.label).eq('Hello \\(x^2\\)')
+      expect(stateVariables['/sv'].stateValues.value).eq(1)
+    })
+
 
 
   })

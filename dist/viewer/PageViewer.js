@@ -122,6 +122,8 @@ export default function PageViewer(props) {
           setErrMsg(e.data.args.errMsg);
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
+        } else if (e.data.messageType === "terminated") {
+          coreWorker.current.terminate();
         }
       };
     }
@@ -129,7 +131,9 @@ export default function PageViewer(props) {
   useEffect(() => {
     return () => {
       if (coreWorker.current) {
-        coreWorker.current.terminate();
+        coreWorker.current.postMessage({
+          messageType: "terminate"
+        });
       }
     };
   }, []);
@@ -160,6 +164,18 @@ export default function PageViewer(props) {
       animationInfo.current = {};
     };
   }, []);
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      if (coreWorker.current) {
+        coreWorker.current.postMessage({
+          messageType: "visibilityChange",
+          args: {
+            visible: document.visibilityState === "visible"
+          }
+        });
+      }
+    });
+  });
   async function callAction({action, args, baseVariableValue, componentName, rendererType}) {
     if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
       let actionId = nanoid();
@@ -453,6 +469,7 @@ export default function PageViewer(props) {
         itemNumber: props.itemNumber,
         updateDataOnContentChange: props.updateDataOnContentChange,
         serverSaveId: initialCoreData.current.serverSaveId,
+        activityVariantIndex: props.activityVariantIndex,
         requestedVariant: initialCoreData.current.requestedVariant,
         stateVariableChanges: initialCoreData.current.coreState ? initialCoreData.current.coreState : void 0
       }

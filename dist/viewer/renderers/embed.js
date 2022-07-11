@@ -2,8 +2,23 @@ import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import cssesc from "../../_snowpack/pkg/cssesc.js";
 import {sizeToCSS} from "./utils/css.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Figure(props) {
-  let {name, SVs} = useDoenetRender(props);
+  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   useEffect(() => {
     if (SVs.encodedGeogebraContent) {
       let doenetSvData = SVs;
@@ -50,7 +65,10 @@ export default React.memo(function Figure(props) {
   let width = sizeToCSS(SVs.width);
   let height = sizeToCSS(SVs.height);
   if (SVs.geogebra) {
-    return /* @__PURE__ */ React.createElement("div", {
+    return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+      partialVisibility: true,
+      onChange: onChangeVisibility
+    }, /* @__PURE__ */ React.createElement("div", {
       className: "geogebra",
       id: name
     }, /* @__PURE__ */ React.createElement("a", {
@@ -62,16 +80,19 @@ export default React.memo(function Figure(props) {
       width,
       height,
       style: {border: "0px"}
-    }, " "));
+    }, " ")));
   } else if (SVs.encodedGeogebraContent) {
-    return /* @__PURE__ */ React.createElement("div", {
+    return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+      partialVisibility: true,
+      onChange: onChangeVisibility
+    }, /* @__PURE__ */ React.createElement("div", {
       className: "javascriptapplet",
       id: cssesc(name)
     }, /* @__PURE__ */ React.createElement("div", {
       className: "geogebrawebapplet",
       id: "container_" + cssesc(name),
       style: {minWidth: width, minHeight: height}
-    }));
+    })));
   }
   console.warn("Nothing specified to embed");
   return null;

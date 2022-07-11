@@ -660,6 +660,18 @@ export default class OrbitalDiagramInput extends BlockComponent {
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     addRow: this.addRow.bind(this),
     removeRow: this.removeRow.bind(this),
@@ -671,6 +683,7 @@ export default class OrbitalDiagramInput extends BlockComponent {
     updateRowText: this.updateRowText.bind(this),
     selectRow: this.selectRow.bind(this),
     selectBox: this.selectBox.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 

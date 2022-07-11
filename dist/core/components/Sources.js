@@ -2,7 +2,7 @@ import BaseComponent from './abstract/BaseComponent.js';
 
 export default class Sources extends BaseComponent {
   static componentType = "sources";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
 

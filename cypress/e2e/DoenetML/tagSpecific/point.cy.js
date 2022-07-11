@@ -173,6 +173,85 @@ describe('Point Tag Tests', function () {
 
   })
 
+  it('label uses a copy 3', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point label="P">(5,6)</point>
+    <point label="$(_point1{prop='label'})'">
+      (1,3)
+    </point>
+  </graph>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`Labels are P and P'`)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_point1'].stateValues.label).eq('P')
+      expect(stateVariables['/_point2'].stateValues.label).eq(`P'`)
+
+    })
+
+  })
+
+  it('labelIsName', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="P" labelIsName>(5,6)</point>
+    <point labelIsName>
+      (1,3)
+    </point>
+  </graph>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`Labels are P and P'`)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/P'].stateValues.label).eq('P')
+      expect(stateVariables['/_point2'].stateValues.label).eq(`&#95;point2`)
+    })
+
+  })
+
+  it('labelIsName in newNamespace', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph name="g" newNamespace>
+    <point name="P" labelIsName>(5,6)</point>
+    <point labelIsName>
+      (1,3)
+    </point>
+  </graph>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`Labels are P and P'`)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/g/P'].stateValues.label).eq('P')
+      expect(stateVariables['/g/_point2'].stateValues.label).eq(`&#95;point2`)
+    })
+
+  })
+
   it('point sugar from single macro', () => {
     cy.window().then(async (win) => {
       win.postMessage({

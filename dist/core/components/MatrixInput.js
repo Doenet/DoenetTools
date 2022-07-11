@@ -1535,7 +1535,7 @@ export class MatrixInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         componentValues: {
@@ -1650,7 +1650,7 @@ export class MatrixInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         componentImmediateValues: {
@@ -2402,7 +2402,7 @@ export default class MatrixComponentInput extends BaseComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       stateVariablesDeterminingDependencies: ["rowInd", "colInd"],
       returnDependencies: ({ stateValues }) => {

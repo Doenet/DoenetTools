@@ -816,7 +816,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph ymax="120" ymin="-45" xmin="-1" xmax="5.5">
       <curve name="c">
-        <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
+        <function name='g' variables='t' domain="[0,5]">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
       </curve>
       <point x="1.5" y="2" name="A">
         <constraints baseOnGraph="_graph1">
@@ -862,7 +862,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph xmax="120" xmin="-45" ymin="-1" ymax="5.5">
       <curve name="c">
-        <function name='g' variables='t' domain="(-20,100)">sin(t/10)+t/50+2</function>
+        <function name='g' variables='t' domain="[-20,100]">sin(t/10)+t/50+2</function>
       </curve>
       <point x="1.5" y="2" name="A">
         <constraints baseOnGraph="_graph1">
@@ -1228,7 +1228,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph xmax="120" xmin="-45" ymin="-1" ymax="5.5">
       <curve name="c" flipFunction>
-        <function name='g' variables='t' domain="(0,5)">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
+        <function name='g' variables='t' domain="[0,5]">(60 t - 106 t^2 + 59*t^3 - 13 t^4 + t^5)4</function>
       </curve>
       <point y="1.5" x="2" name="A">
         <constraints baseOnGraph="_graph1">
@@ -1274,7 +1274,7 @@ describe('Function curve Tag Tests', function () {
     <text>a</text>
     <graph ymax="120" ymin="-45" xmin="-1" xmax="5.5">
       <curve name="c" flipFunction>
-        <function name='g' variables='t' domain="(-20,100)">sin(t/10)+t/50+2</function>
+        <function name='g' variables='t' domain="[-20,100]">sin(t/10)+t/50+2</function>
       </curve>
       <point y="1.5" x="2" name="A">
         <constraints baseOnGraph="_graph1">
@@ -1354,5 +1354,36 @@ describe('Function curve Tag Tests', function () {
 
   });
 
+  it('function with label as math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <curve>
+      <function>
+        x^3-x
+      </function>
+      <label>hello <m>x^3-x</m></label>
+      </curve>
+    </graph>
+    `}, "*");
+    });
+
+    //to wait for window to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_curve1'].stateValues.curveType).eq("function");
+      expect(stateVariables['/_curve1'].stateValues.flipFunction).eq(false);
+      expect(stateVariables['/_curve1'].stateValues.label).eq('hello \\(x^3-x\\)');
+
+      let f = createFunctionFromDefinition(stateVariables['/_curve1'].stateValues.fDefinitions[0])
+      expect(f(-2)).eq(-8 + 2);
+      expect(f(3)).eq(27 - 3);
+    })
+
+  });
 
 });

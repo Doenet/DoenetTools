@@ -146,7 +146,7 @@ export default class MathInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"],
       },
       hasEssential: true,
       shadowVariable: true,
@@ -225,7 +225,7 @@ export default class MathInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       hasEssential: true,
       shadowVariable: true,

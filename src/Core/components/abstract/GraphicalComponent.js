@@ -9,6 +9,12 @@ export default class GraphicalComponent extends BaseComponent {
     attributes.label = {
       createComponentOfType: "label",
     };
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
+    };
     attributes.showLabel = {
       createComponentOfType: "boolean",
       createStateVariable: "showLabel",
@@ -74,9 +80,13 @@ export default class GraphicalComponent extends BaseComponent {
           dependencyType: "child",
           childGroups: ["labels"],
           variableNames: ["value", "hasLatex"]
+        },
+        labelIsName: {
+          dependencyType: "stateVariable",
+          variableName: "labelIsName"
         }
       }),
-      definition({ dependencyValues }) {
+      definition({ dependencyValues, componentName }) {
         if (dependencyValues.labelChild.length > 0) {
           return {
             setValue: {
@@ -89,6 +99,16 @@ export default class GraphicalComponent extends BaseComponent {
             setValue: {
               label: dependencyValues.labelAttr.stateValues.value,
               labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.labelIsName) {
+          let lastSlash = componentName.lastIndexOf('/');
+          // &#95; is HTML entity for underscore, so JSXgraph won't replace it with subscript
+          let label = componentName.substring(lastSlash + 1).replaceAll("_", "&#95;");
+          return {
+            setValue: {
+              label,
+              labelHasLatex: false
             }
           }
         } else {

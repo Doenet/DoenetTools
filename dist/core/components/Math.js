@@ -894,7 +894,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: this.componentType,
-        attributeComponentsToShadow: [
+        attributesToShadow: [
           "unordered", "displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros",
           "simplify", "expand"
         ],
@@ -961,7 +961,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       returnDependencies: () => ({
         value: {
@@ -1349,7 +1349,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       isArray: true,
       entryPrefixes: ["x"],

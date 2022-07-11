@@ -155,7 +155,7 @@ export default class Sort extends CompositeComponent {
             } else {
               compValue = component.stateValues[`tailX${dependencyValues.sortByComponent}`];
             }
-            if(compValue) {
+            if (compValue) {
               numericalValue = compValue.evaluate_to_constant();
               if (numericalValue === null) {
                 numericalValue = NaN;
@@ -217,7 +217,9 @@ export default class Sort extends CompositeComponent {
 
         componentsCopied.push(replacementSource.componentName);
 
-        replacements.push(await replacementSource.serialize())
+        replacements.push(await replacementSource.serialize({
+          targetAttributesToIgnoreRecursively: ["isResponse"]
+        }))
       }
     }
 

@@ -1119,7 +1119,8 @@ export default class Core {
       if (componentClass.preprocessSerializedChildren) {
         componentClass.preprocessSerializedChildren({
           serializedChildren,
-          attributes: serializedComponent.attributes
+          attributes: serializedComponent.attributes,
+          componentName,
         });
       }
 

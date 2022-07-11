@@ -179,7 +179,7 @@ export default class Answer extends InlineComponent {
 
       let componentIsSpecifiedType = (comp, specifiedCType) =>
         componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
-        || componentTypeIsSpecifiedType(comp.props?.componentType, specifiedCType)
+        || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
 
 
       let foundMath = false, foundText = false, foundBoolean = false;
@@ -190,7 +190,9 @@ export default class Answer extends InlineComponent {
       for (let child of matchedChildren) {
         if (typeof child !== "object") {
           childIsWrappable.push(true);
-          mayNeedInput = true;
+          if (child.trim()) {
+            mayNeedInput = true;
+          }
         } else if (componentIsSpecifiedType(child, "math")
           || componentIsSpecifiedType(child, "number")
           || componentIsSpecifiedType(child, "mathList")
@@ -222,7 +224,9 @@ export default class Answer extends InlineComponent {
           if (child.children?.length > 0) {
             for (let grandChild of child.children) {
               if (typeof grandChild !== "object") {
-                mayNeedInput = true;
+                if (grandChild.trim()) {
+                  mayNeedInput = true;
+                }
               } else if (componentIsSpecifiedType(grandChild, "when")) {
                 // have to test for when before boolean, sincd when is derived from boolean!
 
@@ -252,8 +256,11 @@ export default class Answer extends InlineComponent {
                 && !grandChild.props?.componentType
               ) {
                 mayNeedInput = true;
+              } else if (componentIsSpecifiedType(grandChild, "orbitalDiagram")) {
+                // Note: should add componentTypes as create more comparable types in award
               } else {
-                // could be a when or some other comparable types (like oribitalDiagram)
+                // could be a component that could adapt into a math/text/boolean
+                mayNeedInput = true;
               }
             }
           } else {
@@ -290,7 +297,7 @@ export default class Answer extends InlineComponent {
 
       if (nChoicesFound > 0) {
         // remove blank string children
-        matchedChildren = matchedChildren.filter(x=> typeof x !== "string" || x.trim() !== "");
+        matchedChildren = matchedChildren.filter(x => typeof x !== "string" || x.trim() !== "");
         if (matchedChildren.length !== nChoicesFound) {
           return { success: false }
         } else {
@@ -333,7 +340,7 @@ export default class Answer extends InlineComponent {
       }
 
       // remove any blank string children from beginning or end of children to wrap
-      while(typeof childrenToWrap[0] === "string" && childrenToWrap[0].trim() === "") {
+      while (typeof childrenToWrap[0] === "string" && childrenToWrap[0].trim() === "") {
         childrenToWrap = childrenToWrap.slice(1);
       }
       let nWrap = childrenToWrap.length;

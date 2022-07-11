@@ -1,6 +1,6 @@
 import { g as getDefaultExportFromCjs, c as createCommonjsModule } from './common/_commonjsHelpers-f5d70792.js';
 import { r as react } from './common/index-61623f21.js';
-import { h as hooks } from './common/moment-640234e6.js';
+import { h as hooks } from './common/moment-82250e2c.js';
 import { r as reactDom } from './common/index-eaf9e997.js';
 
 var reactDatetime_cjs = createCommonjsModule(function (module) {

@@ -56,7 +56,7 @@ export default class Line extends GraphicalComponent {
 
       // wrap first group of non-label children becomes equation
 
-      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.props?.componentType));
+      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.attributes?.createComponentOfType?.primitive));
 
       let childrenToWrap = [], childrenToNotWrap = [];
 
@@ -1539,6 +1539,10 @@ function calculateCoeffsFromEquation({ equation, variables }) {
   let var2String = var2.toString();
 
   equation = equation.expand().simplify();
+
+  if (!(Array.isArray(equation.tree) && equation.tree[0] === "=" && equation.tree.length === 3)) {
+    return { success: false }
+  }
 
   let rhs = me.fromAst(['+', equation.tree[2], ['-', equation.tree[1]]]).expand().simplify();
   // divide rhs into terms

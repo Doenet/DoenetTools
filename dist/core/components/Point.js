@@ -207,14 +207,18 @@ export default class Point extends GraphicalComponent {
   }
 
   static returnChildGroups() {
+    
+    let childGroups = super.returnChildGroups();
 
-    return [{
+    childGroups.push(...[{
       group: "points",
       componentTypes: ["point"]
     }, {
       group: "constraints",
       componentTypes: ["constraints"]
-    }]
+    }])
+
+    return childGroups;
 
   }
 
@@ -673,7 +677,7 @@ export default class Point extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       isArray: true,
       entryPrefixes: ["x"],
@@ -797,7 +801,7 @@ export default class Point extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "coords",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       returnDependencies: () => ({
         xs: {

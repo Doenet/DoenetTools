@@ -2,6 +2,7 @@ import Polyline from './Polyline.js';
 
 export default class Polygon extends Polyline {
   static componentType = "polygon";
+  static representsClosedPath = true;
 
   actions = {
     movePolygon: this.movePolygon.bind(this),
