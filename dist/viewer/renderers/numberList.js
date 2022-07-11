@@ -6,18 +6,14 @@ export default React.memo(function MathList(props) {
   if (SVs.hidden) {
     return null;
   }
-  if (children.length === 0 && SVs.latex) {
+  if (children.length === 0 && SVs.text) {
     return /* @__PURE__ */ React.createElement(React.Fragment, {
       key: name
     }, /* @__PURE__ */ React.createElement("a", {
       name
     }), /* @__PURE__ */ React.createElement("span", {
       id: name
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      hideUntilTypeset: "first",
-      inline: true,
-      dynamic: true
-    }, "\\(" + SVs.latex + "\\)")));
+    }, SVs.text));
   }
   if (children.length === 0) {
     return /* @__PURE__ */ React.createElement(React.Fragment, {

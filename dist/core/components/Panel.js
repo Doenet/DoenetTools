@@ -1,8 +1,8 @@
 import InlineComponent from './abstract/InlineComponent.js';
 
-export default class panel extends InlineComponent {
+export default class Panel extends InlineComponent {
   static componentType = "panel";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
   static createAttributesObject() {

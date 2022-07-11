@@ -1,7 +1,7 @@
 import { a as arrayMethodIsStrict, v as validateArgumentsLength, t as task, f as fixRegexpWellKnownSymbolLogic, r as regexpExecAbstract, b as advanceStringIndex } from './es.string.starts-with-96c3abce.js';
 import { f as functionUncurryThis, _ as _export, a as arrayIncludes, e as engineUserAgent, g as global_1, i as isCallable, b as arraySlice, c as functionApply, d as internalMetadata, h as fails, j as isObject$1, k as freezing, r as requireObjectCoercible, l as getMethod, m as functionCall, t as toString_1, n as anObject, o as toLength, p as toIndexedObject, q as lengthOfArrayLike, s as toIntegerOrInfinity, u as objectSetPrototypeOf, v as ownKeys$8, w as createProperty, x as descriptors, y as objectGetOwnPropertyDescriptor } from './es.function.name-3b0da0e4.js';
 import { s as staticRegister, _ as _register$3, a as _getItem$2 } from './registry-09f449b9.js';
-import { h as hooks } from './moment-640234e6.js';
+import { h as hooks } from './moment-82250e2c.js';
 
 /* eslint-disable es-x/no-array-prototype-indexof -- required for testing */
 
@@ -2418,7 +2418,7 @@ var domMessages = {
 function _injectProductInfo(key, element) {
   var hasValidType = !isEmpty(key);
   var isNonCommercial = typeof key === "string" && key.toLowerCase() === "non-commercial-and-evaluation";
-  var hotVersion = "12.0.1";
+  var hotVersion = "12.1.2";
   var keyValidityDate;
   var consoleMessageState = "invalid";
   var domMessageState = "invalid";
@@ -2426,7 +2426,7 @@ function _injectProductInfo(key, element) {
   var schemaValidity = _checkKeySchema(key);
   if (hasValidType || isNonCommercial || schemaValidity) {
     if (schemaValidity) {
-      var releaseDate = hooks("16/05/2022", "DD/MM/YYYY");
+      var releaseDate = hooks("08/07/2022", "DD/MM/YYYY");
       var releaseDays = Math.floor(releaseDate.toDate().getTime() / 864e5);
       var keyValidityDays = _extractTime(key);
       keyValidityDate = hooks((keyValidityDays + 1) * 864e5, "x").format("MMMM DD, YYYY");
@@ -3461,8 +3461,12 @@ var REGISTERED_HOOKS = [
   "afterCopy",
   "beforePaste",
   "afterPaste",
+  "beforeColumnFreeze",
+  "afterColumnFreeze",
   "beforeColumnMove",
   "afterColumnMove",
+  "beforeColumnUnfreeze",
+  "afterColumnUnfreeze",
   "beforeRowMove",
   "afterRowMove",
   "beforeColumnResize",
@@ -6912,7 +6916,7 @@ function _inherits(subClass, superClass) {
     _setPrototypeOf$1(subClass, superClass);
 }
 function _setPrototypeOf$1(o, p) {
-  _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -6961,7 +6965,7 @@ function _isNativeReflectConstruct$1() {
   }
 }
 function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf(o);
@@ -7126,7 +7130,7 @@ function _inherits$1(subClass, superClass) {
     _setPrototypeOf$2(subClass, superClass);
 }
 function _setPrototypeOf$2(o, p) {
-  _setPrototypeOf$2 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$2 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -7175,7 +7179,7 @@ function _isNativeReflectConstruct$2() {
   }
 }
 function _getPrototypeOf$1(o) {
-  _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$1(o);
@@ -7272,7 +7276,7 @@ function _inherits$2(subClass, superClass) {
     _setPrototypeOf$3(subClass, superClass);
 }
 function _setPrototypeOf$3(o, p) {
-  _setPrototypeOf$3 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$3 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -7321,7 +7325,7 @@ function _isNativeReflectConstruct$3() {
   }
 }
 function _getPrototypeOf$2(o) {
-  _getPrototypeOf$2 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$2 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$2(o);
@@ -7428,7 +7432,7 @@ function _inherits$3(subClass, superClass) {
     _setPrototypeOf$4(subClass, superClass);
 }
 function _setPrototypeOf$4(o, p) {
-  _setPrototypeOf$4 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$4 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -7477,7 +7481,7 @@ function _isNativeReflectConstruct$4() {
   }
 }
 function _getPrototypeOf$3(o) {
-  _getPrototypeOf$3 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$3 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$3(o);
@@ -7575,7 +7579,7 @@ function _inherits$4(subClass, superClass) {
     _setPrototypeOf$5(subClass, superClass);
 }
 function _setPrototypeOf$5(o, p) {
-  _setPrototypeOf$5 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$5 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -7624,7 +7628,7 @@ function _isNativeReflectConstruct$5() {
   }
 }
 function _getPrototypeOf$4(o) {
-  _getPrototypeOf$4 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$4 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$4(o);
@@ -7706,7 +7710,7 @@ function _inherits$5(subClass, superClass) {
     _setPrototypeOf$6(subClass, superClass);
 }
 function _setPrototypeOf$6(o, p) {
-  _setPrototypeOf$6 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$6 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -7755,7 +7759,7 @@ function _isNativeReflectConstruct$6() {
   }
 }
 function _getPrototypeOf$5(o) {
-  _getPrototypeOf$5 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$5 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$5(o);
@@ -9040,7 +9044,7 @@ function _inherits$6(subClass, superClass) {
     _setPrototypeOf$7(subClass, superClass);
 }
 function _setPrototypeOf$7(o, p) {
-  _setPrototypeOf$7 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$7 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -9089,7 +9093,7 @@ function _isNativeReflectConstruct$7() {
   }
 }
 function _getPrototypeOf$6(o) {
-  _getPrototypeOf$6 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$6 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$6(o);
@@ -9149,14 +9153,13 @@ var Scroll = /* @__PURE__ */ function() {
   function Scroll2(dataAccessObject) {
     _classCallCheck$r(this, Scroll2);
     _defineProperty$4(this, "dataAccessObject", void 0);
+    _defineProperty$4(this, "lastScrolledColumnPos", -1);
+    _defineProperty$4(this, "lastScrolledRowPos", -1);
     this.dataAccessObject = dataAccessObject;
   }
   _createClass$r(Scroll2, [{
     key: "scrollViewport",
     value: function scrollViewport(coords, snapToTop, snapToRight, snapToBottom, snapToLeft) {
-      if (coords.col < 0 || coords.row < 0) {
-        return false;
-      }
       var scrolledHorizontally = this.scrollViewportHorizontally(coords.col, snapToRight, snapToLeft);
       var scrolledVertically = this.scrollViewportVertically(coords.row, snapToTop, snapToBottom);
       return scrolledHorizontally || scrolledVertically;
@@ -9164,45 +9167,57 @@ var Scroll = /* @__PURE__ */ function() {
   }, {
     key: "scrollViewportHorizontally",
     value: function scrollViewportHorizontally(column, snapToRight, snapToLeft) {
-      if (!this.dataAccessObject.drawn) {
+      var _this$dataAccessObjec = this.dataAccessObject, drawn = _this$dataAccessObjec.drawn, totalColumns = _this$dataAccessObjec.totalColumns;
+      if (!drawn || !Number.isInteger(column) || column < 0 || column > totalColumns) {
         return false;
       }
-      var _this$dataAccessObjec = this.dataAccessObject, fixedColumnsStart = _this$dataAccessObjec.fixedColumnsStart, inlineStartOverlay = _this$dataAccessObjec.inlineStartOverlay, totalColumns = _this$dataAccessObjec.totalColumns;
+      var firstVisibleColumn = this.getFirstVisibleColumn();
+      var lastVisibleColumn = this.getLastVisibleColumn();
+      var autoSnapping = snapToRight === void 0 && snapToLeft === void 0;
+      var _this$dataAccessObjec2 = this.dataAccessObject, fixedColumnsStart = _this$dataAccessObjec2.fixedColumnsStart, inlineStartOverlay = _this$dataAccessObjec2.inlineStartOverlay;
+      if (autoSnapping && column < fixedColumnsStart) {
+        return false;
+      }
       var result = false;
-      if (column >= 0 && column <= Math.max(totalColumns - 1, 0)) {
-        var firstVisibleColumn = this.getFirstVisibleColumn();
-        var lastVisibleColumn = this.getLastVisibleColumn();
-        if (column >= fixedColumnsStart && firstVisibleColumn > -1 && (column < firstVisibleColumn || snapToLeft)) {
-          result = inlineStartOverlay.scrollTo(column);
-        } else if (lastVisibleColumn === -1 || lastVisibleColumn > -1 && (column > lastVisibleColumn || snapToRight)) {
-          result = inlineStartOverlay.scrollTo(column, true);
-        }
+      if (firstVisibleColumn === -1) {
+        result = inlineStartOverlay.scrollTo(column, autoSnapping ? column > this.lastScrolledColumnPos : snapToRight);
+      } else if (autoSnapping && (column < firstVisibleColumn || column > lastVisibleColumn) || !autoSnapping) {
+        result = inlineStartOverlay.scrollTo(column, autoSnapping ? column > lastVisibleColumn : snapToRight);
+      }
+      if (result) {
+        this.lastScrolledColumnPos = column;
       }
       return result;
     }
   }, {
     key: "scrollViewportVertically",
     value: function scrollViewportVertically(row, snapToTop, snapToBottom) {
-      if (!this.dataAccessObject.drawn) {
+      var _this$dataAccessObjec3 = this.dataAccessObject, drawn = _this$dataAccessObjec3.drawn, totalRows = _this$dataAccessObjec3.totalRows;
+      if (!drawn || !Number.isInteger(row) || row < 0 || row > totalRows) {
         return false;
       }
-      var _this$dataAccessObjec2 = this.dataAccessObject, fixedRowsBottom = _this$dataAccessObjec2.fixedRowsBottom, fixedRowsTop = _this$dataAccessObjec2.fixedRowsTop, topOverlay = _this$dataAccessObjec2.topOverlay, totalRows = _this$dataAccessObjec2.totalRows;
+      var firstVisibleRow = this.getFirstVisibleRow();
+      var lastVisibleRow = this.getLastVisibleRow();
+      var autoSnapping = snapToTop === void 0 && snapToBottom === void 0;
+      var _this$dataAccessObjec4 = this.dataAccessObject, fixedRowsBottom = _this$dataAccessObjec4.fixedRowsBottom, fixedRowsTop = _this$dataAccessObjec4.fixedRowsTop, topOverlay = _this$dataAccessObjec4.topOverlay;
+      if (autoSnapping && (row < fixedRowsTop || row > totalRows - fixedRowsBottom - 1)) {
+        return false;
+      }
       var result = false;
-      if (row >= 0 && row <= Math.max(totalRows - 1, 0)) {
-        var firstVisibleRow = this.getFirstVisibleRow();
-        var lastVisibleRow = this.getLastVisibleRow();
-        if (row >= fixedRowsTop && firstVisibleRow > -1 && (row < firstVisibleRow || snapToTop)) {
-          result = topOverlay.scrollTo(row);
-        } else if (lastVisibleRow === -1 || lastVisibleRow > -1 && (row > lastVisibleRow && row < totalRows - fixedRowsBottom || snapToBottom)) {
-          result = topOverlay.scrollTo(row, true);
-        }
+      if (firstVisibleRow === -1) {
+        result = topOverlay.scrollTo(row, autoSnapping ? row > this.lastScrolledRowPos : snapToBottom);
+      } else if (autoSnapping && (row < firstVisibleRow || row > lastVisibleRow) || !autoSnapping) {
+        result = topOverlay.scrollTo(row, autoSnapping ? row > lastVisibleRow : snapToBottom);
+      }
+      if (result) {
+        this.lastScrolledRowPos = row;
       }
       return result;
     }
   }, {
     key: "getFirstVisibleRow",
     value: function getFirstVisibleRow() {
-      var _this$dataAccessObjec3 = this.dataAccessObject, topOverlay = _this$dataAccessObjec3.topOverlay, wtTable = _this$dataAccessObjec3.wtTable, wtViewport = _this$dataAccessObjec3.wtViewport, totalRows = _this$dataAccessObjec3.totalRows, fixedRowsTop = _this$dataAccessObjec3.fixedRowsTop, rootWindow = _this$dataAccessObjec3.rootWindow;
+      var _this$dataAccessObjec5 = this.dataAccessObject, topOverlay = _this$dataAccessObjec5.topOverlay, wtTable = _this$dataAccessObjec5.wtTable, wtViewport = _this$dataAccessObjec5.wtViewport, totalRows = _this$dataAccessObjec5.totalRows, fixedRowsTop = _this$dataAccessObjec5.fixedRowsTop, rootWindow = _this$dataAccessObjec5.rootWindow;
       var firstVisibleRow = wtTable.getFirstVisibleRow();
       if (topOverlay.mainTableScrollableElement === rootWindow) {
         var rootElementOffset = offset(wtTable.wtRootElement);
@@ -9226,7 +9241,7 @@ var Scroll = /* @__PURE__ */ function() {
   }, {
     key: "getLastVisibleRow",
     value: function getLastVisibleRow() {
-      var _this$dataAccessObjec4 = this.dataAccessObject, topOverlay = _this$dataAccessObjec4.topOverlay, wtTable = _this$dataAccessObjec4.wtTable, wtViewport = _this$dataAccessObjec4.wtViewport, totalRows = _this$dataAccessObjec4.totalRows, rootWindow = _this$dataAccessObjec4.rootWindow;
+      var _this$dataAccessObjec6 = this.dataAccessObject, topOverlay = _this$dataAccessObjec6.topOverlay, wtTable = _this$dataAccessObjec6.wtTable, wtViewport = _this$dataAccessObjec6.wtViewport, totalRows = _this$dataAccessObjec6.totalRows, rootWindow = _this$dataAccessObjec6.rootWindow;
       var lastVisibleRow = wtTable.getLastVisibleRow();
       if (topOverlay.mainTableScrollableElement === rootWindow) {
         var rootElementOffset = offset(wtTable.wtRootElement);
@@ -9248,7 +9263,7 @@ var Scroll = /* @__PURE__ */ function() {
   }, {
     key: "getFirstVisibleColumn",
     value: function getFirstVisibleColumn() {
-      var _this$dataAccessObjec5 = this.dataAccessObject, inlineStartOverlay = _this$dataAccessObjec5.inlineStartOverlay, wtTable = _this$dataAccessObjec5.wtTable, wtViewport = _this$dataAccessObjec5.wtViewport, totalColumns = _this$dataAccessObjec5.totalColumns, rootWindow = _this$dataAccessObjec5.rootWindow;
+      var _this$dataAccessObjec7 = this.dataAccessObject, inlineStartOverlay = _this$dataAccessObjec7.inlineStartOverlay, wtTable = _this$dataAccessObjec7.wtTable, wtViewport = _this$dataAccessObjec7.wtViewport, totalColumns = _this$dataAccessObjec7.totalColumns, rootWindow = _this$dataAccessObjec7.rootWindow;
       var firstVisibleColumn = wtTable.getFirstVisibleColumn();
       if (inlineStartOverlay.mainTableScrollableElement === rootWindow) {
         var rootElementOffset = offset(wtTable.wtRootElement);
@@ -9271,7 +9286,7 @@ var Scroll = /* @__PURE__ */ function() {
   }, {
     key: "getLastVisibleColumn",
     value: function getLastVisibleColumn() {
-      var _this$dataAccessObjec6 = this.dataAccessObject, inlineStartOverlay = _this$dataAccessObjec6.inlineStartOverlay, wtTable = _this$dataAccessObjec6.wtTable, wtViewport = _this$dataAccessObjec6.wtViewport, totalColumns = _this$dataAccessObjec6.totalColumns, rootWindow = _this$dataAccessObjec6.rootWindow;
+      var _this$dataAccessObjec8 = this.dataAccessObject, inlineStartOverlay = _this$dataAccessObjec8.inlineStartOverlay, wtTable = _this$dataAccessObjec8.wtTable, wtViewport = _this$dataAccessObjec8.wtViewport, totalColumns = _this$dataAccessObjec8.totalColumns, rootWindow = _this$dataAccessObjec8.rootWindow;
       var lastVisibleColumn = wtTable.getLastVisibleColumn();
       if (inlineStartOverlay.mainTableScrollableElement === rootWindow) {
         var rootElementOffset = offset(wtTable.wtRootElement);
@@ -9610,7 +9625,7 @@ function _inherits$7(subClass, superClass) {
     _setPrototypeOf$8(subClass, superClass);
 }
 function _setPrototypeOf$8(o, p) {
-  _setPrototypeOf$8 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$8 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -9659,7 +9674,7 @@ function _isNativeReflectConstruct$8() {
   }
 }
 function _getPrototypeOf$7(o) {
-  _getPrototypeOf$7 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$7 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$7(o);
@@ -9953,7 +9968,7 @@ function _typeof$d(obj) {
 }
 function _construct$1(Parent, args, Class) {
   if (_isNativeReflectConstruct$9()) {
-    _construct$1 = Reflect.construct;
+    _construct$1 = Reflect.construct.bind();
   } else {
     _construct$1 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
@@ -10000,7 +10015,7 @@ function _inherits$8(subClass, superClass) {
     _setPrototypeOf$9(subClass, superClass);
 }
 function _setPrototypeOf$9(o, p) {
-  _setPrototypeOf$9 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$9 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -10049,7 +10064,7 @@ function _isNativeReflectConstruct$9() {
   }
 }
 function _getPrototypeOf$8(o) {
-  _getPrototypeOf$8 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$8 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$8(o);
@@ -10109,14 +10124,17 @@ var BottomInlineStartCornerOverlay = /* @__PURE__ */ function(_Overlay) {
   }, {
     key: "repositionOverlay",
     value: function repositionOverlay() {
-      var wtTable = this.wot.wtTable;
+      var _this$wot = this.wot, wtTable = _this$wot.wtTable, wtViewport = _this$wot.wtViewport;
       var rootDocument = this.domBindings.rootDocument;
       var cloneRoot = this.clone.wtTable.holder.parentNode;
-      var scrollbarWidth = getScrollbarWidth(rootDocument);
-      if (wtTable.holder.clientHeight === wtTable.holder.offsetHeight) {
-        scrollbarWidth = 0;
+      var bottomOffset = 0;
+      if (!wtViewport.hasVerticalScroll()) {
+        bottomOffset += wtViewport.getWorkspaceHeight() - wtTable.getTotalHeight();
       }
-      cloneRoot.style.bottom = "".concat(scrollbarWidth, "px");
+      if (wtViewport.hasVerticalScroll() && wtViewport.hasHorizontalScroll()) {
+        bottomOffset += getScrollbarWidth(rootDocument);
+      }
+      cloneRoot.style.bottom = "".concat(bottomOffset, "px");
     }
   }]);
   return BottomInlineStartCornerOverlay2;
@@ -10205,7 +10223,7 @@ function _inherits$9(subClass, superClass) {
     _setPrototypeOf$a(subClass, superClass);
 }
 function _setPrototypeOf$a(o, p) {
-  _setPrototypeOf$a = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$a = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -10254,7 +10272,7 @@ function _isNativeReflectConstruct$a() {
   }
 }
 function _getPrototypeOf$9(o) {
-  _getPrototypeOf$9 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$9 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$9(o);
@@ -10281,7 +10299,7 @@ function _typeof$f(obj) {
 }
 function _construct$2(Parent, args, Class) {
   if (_isNativeReflectConstruct$b()) {
-    _construct$2 = Reflect.construct;
+    _construct$2 = Reflect.construct.bind();
   } else {
     _construct$2 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
@@ -10328,7 +10346,7 @@ function _inherits$a(subClass, superClass) {
     _setPrototypeOf$b(subClass, superClass);
 }
 function _setPrototypeOf$b(o, p) {
-  _setPrototypeOf$b = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$b = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -10377,7 +10395,7 @@ function _isNativeReflectConstruct$b() {
   }
 }
 function _getPrototypeOf$a(o) {
-  _getPrototypeOf$a = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$a = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$a(o);
@@ -10439,14 +10457,17 @@ var BottomOverlay = /* @__PURE__ */ function(_Overlay) {
   }, {
     key: "repositionOverlay",
     value: function repositionOverlay() {
-      var wtTable = this.wot.wtTable;
+      var _this$wot = this.wot, wtTable = _this$wot.wtTable, wtViewport = _this$wot.wtViewport;
       var rootDocument = this.domBindings.rootDocument;
       var cloneRoot = this.clone.wtTable.holder.parentNode;
-      var scrollbarWidth = getScrollbarWidth(rootDocument);
-      if (wtTable.holder.clientHeight === wtTable.holder.offsetHeight) {
-        scrollbarWidth = 0;
+      var bottomOffset = 0;
+      if (!wtViewport.hasVerticalScroll()) {
+        bottomOffset += wtViewport.getWorkspaceHeight() - wtTable.getTotalHeight();
       }
-      cloneRoot.style.bottom = "".concat(scrollbarWidth, "px");
+      if (wtViewport.hasVerticalScroll() && wtViewport.hasHorizontalScroll()) {
+        bottomOffset += getScrollbarWidth(rootDocument);
+      }
+      cloneRoot.style.bottom = "".concat(bottomOffset, "px");
     }
   }, {
     key: "setScrollPosition",
@@ -10470,7 +10491,7 @@ var BottomOverlay = /* @__PURE__ */ function(_Overlay) {
   }, {
     key: "sumCellSizes",
     value: function sumCellSizes(from, to) {
-      var _this$wot = this.wot, wtTable = _this$wot.wtTable, wtSettings = _this$wot.wtSettings;
+      var _this$wot2 = this.wot, wtTable = _this$wot2.wtTable, wtSettings = _this$wot2.wtSettings;
       var defaultRowHeight = wtSettings.getSetting("defaultRowHeight");
       var row = from;
       var sum = 0;
@@ -10494,7 +10515,7 @@ var BottomOverlay = /* @__PURE__ */ function(_Overlay) {
   }, {
     key: "adjustRootElementSize",
     value: function adjustRootElementSize() {
-      var _this$wot2 = this.wot, wtTable = _this$wot2.wtTable, wtViewport = _this$wot2.wtViewport;
+      var _this$wot3 = this.wot, wtTable = _this$wot3.wtTable, wtViewport = _this$wot3.wtViewport;
       var _this$domBindings = this.domBindings, rootDocument = _this$domBindings.rootDocument, rootWindow = _this$domBindings.rootWindow;
       var scrollbarWidth = getScrollbarWidth(rootDocument);
       var overlayRoot = this.clone.wtTable.holder.parentNode;
@@ -10711,7 +10732,7 @@ function _inherits$b(subClass, superClass) {
     _setPrototypeOf$c(subClass, superClass);
 }
 function _setPrototypeOf$c(o, p) {
-  _setPrototypeOf$c = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$c = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -10760,7 +10781,7 @@ function _isNativeReflectConstruct$c() {
   }
 }
 function _getPrototypeOf$b(o) {
-  _getPrototypeOf$b = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$b = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$b(o);
@@ -10787,7 +10808,7 @@ function _typeof$h(obj) {
 }
 function _construct$3(Parent, args, Class) {
   if (_isNativeReflectConstruct$d()) {
-    _construct$3 = Reflect.construct;
+    _construct$3 = Reflect.construct.bind();
   } else {
     _construct$3 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
@@ -10834,7 +10855,7 @@ function _inherits$c(subClass, superClass) {
     _setPrototypeOf$d(subClass, superClass);
 }
 function _setPrototypeOf$d(o, p) {
-  _setPrototypeOf$d = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$d = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -10883,7 +10904,7 @@ function _isNativeReflectConstruct$d() {
   }
 }
 function _getPrototypeOf$c(o) {
-  _getPrototypeOf$c = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$c = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$c(o);
@@ -11046,6 +11067,13 @@ var InlineStartOverlay = /* @__PURE__ */ function(_Overlay) {
       var sourceInstance = this.wot.cloneSource ? this.wot.cloneSource : this.wot;
       var mainHolder = sourceInstance.wtTable.holder;
       var scrollbarCompensation = 0;
+      if (beyondRendered) {
+        var columnWidth = this.wot.wtTable.getColumnWidth(sourceCol);
+        var viewportWidth = this.wot.wtViewport.getViewportWidth();
+        if (columnWidth > viewportWidth) {
+          beyondRendered = false;
+        }
+      }
       if (beyondRendered && mainHolder.offsetWidth !== mainHolder.clientWidth) {
         scrollbarCompensation = getScrollbarWidth(this.domBindings.rootDocument);
       }
@@ -11197,7 +11225,7 @@ function _inherits$d(subClass, superClass) {
     _setPrototypeOf$e(subClass, superClass);
 }
 function _setPrototypeOf$e(o, p) {
-  _setPrototypeOf$e = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$e = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -11246,7 +11274,7 @@ function _isNativeReflectConstruct$e() {
   }
 }
 function _getPrototypeOf$d(o) {
-  _getPrototypeOf$d = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$d = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$d(o);
@@ -11273,7 +11301,7 @@ function _typeof$j(obj) {
 }
 function _construct$4(Parent, args, Class) {
   if (_isNativeReflectConstruct$f()) {
-    _construct$4 = Reflect.construct;
+    _construct$4 = Reflect.construct.bind();
   } else {
     _construct$4 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
@@ -11320,7 +11348,7 @@ function _inherits$e(subClass, superClass) {
     _setPrototypeOf$f(subClass, superClass);
 }
 function _setPrototypeOf$f(o, p) {
-  _setPrototypeOf$f = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$f = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -11369,7 +11397,7 @@ function _isNativeReflectConstruct$f() {
   }
 }
 function _getPrototypeOf$e(o) {
-  _getPrototypeOf$e = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$e = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$e(o);
@@ -11477,7 +11505,7 @@ function _inherits$f(subClass, superClass) {
     _setPrototypeOf$g(subClass, superClass);
 }
 function _setPrototypeOf$g(o, p) {
-  _setPrototypeOf$g = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$g = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -11526,7 +11554,7 @@ function _isNativeReflectConstruct$g() {
   }
 }
 function _getPrototypeOf$f(o) {
-  _getPrototypeOf$f = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$f = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$f(o);
@@ -11553,7 +11581,7 @@ function _typeof$l(obj) {
 }
 function _construct$5(Parent, args, Class) {
   if (_isNativeReflectConstruct$h()) {
-    _construct$5 = Reflect.construct;
+    _construct$5 = Reflect.construct.bind();
   } else {
     _construct$5 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
@@ -11600,7 +11628,7 @@ function _inherits$g(subClass, superClass) {
     _setPrototypeOf$h(subClass, superClass);
 }
 function _setPrototypeOf$h(o, p) {
-  _setPrototypeOf$h = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$h = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -11649,7 +11677,7 @@ function _isNativeReflectConstruct$h() {
   }
 }
 function _getPrototypeOf$g(o) {
-  _getPrototypeOf$g = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$g = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$g(o);
@@ -11828,6 +11856,13 @@ var TopOverlay = /* @__PURE__ */ function(_Overlay) {
       var mainHolder = sourceInstance.wtTable.holder;
       var newY = this.getTableParentOffset();
       var scrollbarCompensation = 0;
+      if (bottomEdge) {
+        var rowHeight = this.wot.wtTable.getRowHeight(sourceRow);
+        var viewportHeight = this.wot.wtViewport.getViewportHeight();
+        if (rowHeight > viewportHeight) {
+          bottomEdge = false;
+        }
+      }
       if (bottomEdge && mainHolder.offsetHeight !== mainHolder.clientHeight) {
         scrollbarCompensation = getScrollbarWidth(this.domBindings.rootDocument);
       }
@@ -11909,7 +11944,7 @@ var TopOverlay = /* @__PURE__ */ function(_Overlay) {
 
 function _construct$6(Parent, args, Class) {
   if (_isNativeReflectConstruct$i()) {
-    _construct$6 = Reflect.construct;
+    _construct$6 = Reflect.construct.bind();
   } else {
     _construct$6 = function _construct2(Parent2, args2, Class2) {
       var a = [null];
@@ -11939,7 +11974,7 @@ function _isNativeReflectConstruct$i() {
   }
 }
 function _setPrototypeOf$i(o, p) {
-  _setPrototypeOf$i = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$i = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -12587,7 +12622,7 @@ function _inherits$h(subClass, superClass) {
     _setPrototypeOf$j(subClass, superClass);
 }
 function _setPrototypeOf$j(o, p) {
-  _setPrototypeOf$j = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$j = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -12636,7 +12671,7 @@ function _isNativeReflectConstruct$j() {
   }
 }
 function _getPrototypeOf$h(o) {
-  _getPrototypeOf$h = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$h = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$h(o);
@@ -12818,12 +12853,12 @@ var Viewport = /* @__PURE__ */ function() {
   }, {
     key: "hasVerticalScroll",
     value: function hasVerticalScroll() {
-      return this.getWorkspaceActualHeight() > this.getWorkspaceHeight();
+      return this.wtTable.hider.offsetHeight > this.getWorkspaceHeight();
     }
   }, {
     key: "hasHorizontalScroll",
     value: function hasHorizontalScroll() {
-      return this.getWorkspaceActualWidth() > this.getWorkspaceWidth();
+      return this.wtTable.hider.offsetWidth > this.getWorkspaceWidth();
     }
   }, {
     key: "sumColumnWidths",
@@ -12856,16 +12891,6 @@ var Viewport = /* @__PURE__ */ function() {
     key: "getWorkspaceOffset",
     value: function getWorkspaceOffset() {
       return offset(this.wtTable.TABLE);
-    }
-  }, {
-    key: "getWorkspaceActualHeight",
-    value: function getWorkspaceActualHeight() {
-      return outerHeight(this.wtTable.TABLE);
-    }
-  }, {
-    key: "getWorkspaceActualWidth",
-    value: function getWorkspaceActualWidth() {
-      return outerWidth(this.wtTable.TABLE) || outerWidth(this.wtTable.TBODY) || outerWidth(this.wtTable.THEAD);
     }
   }, {
     key: "getColumnHeaderHeight",
@@ -13049,6 +13074,9 @@ var Viewport = /* @__PURE__ */ function() {
         return false;
       }
       var startRow = proposedRowsVisibleCalculator.startRow, endRow = proposedRowsVisibleCalculator.endRow;
+      if (startRow === null && endRow === null) {
+        return false;
+      }
       var _this$rowsRenderCalcu = this.rowsRenderCalculator, renderedStartRow = _this$rowsRenderCalcu.startRow, renderedEndRow = _this$rowsRenderCalcu.endRow;
       if (startRow < renderedStartRow || startRow === renderedStartRow && startRow > 0) {
         return false;
@@ -13064,6 +13092,9 @@ var Viewport = /* @__PURE__ */ function() {
         return false;
       }
       var startColumn = proposedColumnsVisibleCalculator.startColumn, endColumn = proposedColumnsVisibleCalculator.endColumn;
+      if (startColumn === null && endColumn === null) {
+        return false;
+      }
       var _this$columnsRenderCa = this.columnsRenderCalculator, renderedStartColumn = _this$columnsRenderCa.startColumn, renderedEndColumn = _this$columnsRenderCa.endColumn;
       if (startColumn < renderedStartColumn || startColumn === renderedStartColumn && startColumn > 0) {
         return false;
@@ -13124,7 +13155,7 @@ function _inherits$i(subClass, superClass) {
     _setPrototypeOf$k(subClass, superClass);
 }
 function _setPrototypeOf$k(o, p) {
-  _setPrototypeOf$k = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$k = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -13173,7 +13204,7 @@ function _isNativeReflectConstruct$k() {
   }
 }
 function _getPrototypeOf$i(o) {
-  _getPrototypeOf$i = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$i = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$i(o);
@@ -14832,7 +14863,7 @@ var TableView = /* @__PURE__ */ function() {
     key: "countRenderableIndexes",
     value: function countRenderableIndexes(indexMapper, maxElements) {
       var consideredElements = Math.min(indexMapper.getNotTrimmedIndexesLength(), maxElements);
-      var firstNotHiddenIndex = indexMapper.getFirstNotHiddenIndex(consideredElements - 1, -1);
+      var firstNotHiddenIndex = indexMapper.getNearestNotHiddenIndex(consideredElements - 1, -1);
       if (firstNotHiddenIndex === null) {
         return 0;
       }
@@ -14864,7 +14895,7 @@ var TableView = /* @__PURE__ */ function() {
       if (isNaN(visualIndex) || visualIndex < 0) {
         return 0;
       }
-      var firstVisibleIndex = indexMapper.getFirstNotHiddenIndex(visualIndex, incrementBy);
+      var firstVisibleIndex = indexMapper.getNearestNotHiddenIndex(visualIndex, incrementBy);
       var renderableIndex = indexMapper.getRenderableFromVisualIndex(firstVisibleIndex);
       if (!Number.isInteger(renderableIndex)) {
         return 0;
@@ -15129,13 +15160,13 @@ var TableView = /* @__PURE__ */ function() {
           var rowMapper = _this2.instance.rowIndexMapper;
           var visualRow = rowMapper.getVisualFromRenderableIndex(renderableRow);
           var newVisualRow = _this2.instance.runHooks("beforeHighlightingRowHeader", visualRow, headerLevel, highlightMeta);
-          return rowMapper.getRenderableFromVisualIndex(rowMapper.getFirstNotHiddenIndex(newVisualRow, 1));
+          return rowMapper.getRenderableFromVisualIndex(rowMapper.getNearestNotHiddenIndex(newVisualRow, 1));
         },
         onBeforeHighlightingColumnHeader: function onBeforeHighlightingColumnHeader(renderableColumn, headerLevel, highlightMeta) {
           var columnMapper = _this2.instance.columnIndexMapper;
           var visualColumn = columnMapper.getVisualFromRenderableIndex(renderableColumn);
           var newVisualColumn = _this2.instance.runHooks("beforeHighlightingColumnHeader", visualColumn, headerLevel, highlightMeta);
-          return columnMapper.getRenderableFromVisualIndex(columnMapper.getFirstNotHiddenIndex(newVisualColumn, 1));
+          return columnMapper.getRenderableFromVisualIndex(columnMapper.getNearestNotHiddenIndex(newVisualColumn, 1));
         },
         onAfterDrawSelection: function onAfterDrawSelection(currentRow, currentColumn, layerLevel) {
           var cornersOfSelection;
@@ -15175,7 +15206,7 @@ var TableView = /* @__PURE__ */ function() {
           var visualIndexes = _this2.instance.runHooks("modifyGetCellCoords", visualRowIndex, visualColumnIndex, topmost);
           if (Array.isArray(visualIndexes)) {
             var _visualIndexes = _slicedToArray$7(visualIndexes, 4), visualRowFrom = _visualIndexes[0], visualColumnFrom = _visualIndexes[1], visualRowTo = _visualIndexes[2], visualColumnTo = _visualIndexes[3];
-            return [visualRowFrom >= 0 ? rowMapper.getRenderableFromVisualIndex(rowMapper.getFirstNotHiddenIndex(visualRowFrom, 1)) : visualRowFrom, visualColumnFrom >= 0 ? columnMapper.getRenderableFromVisualIndex(columnMapper.getFirstNotHiddenIndex(visualColumnFrom, 1)) : visualColumnFrom, visualRowTo >= 0 ? rowMapper.getRenderableFromVisualIndex(rowMapper.getFirstNotHiddenIndex(visualRowTo, -1)) : visualRowTo, visualColumnTo >= 0 ? columnMapper.getRenderableFromVisualIndex(columnMapper.getFirstNotHiddenIndex(visualColumnTo, -1)) : visualColumnTo];
+            return [visualRowFrom >= 0 ? rowMapper.getRenderableFromVisualIndex(rowMapper.getNearestNotHiddenIndex(visualRowFrom, 1)) : visualRowFrom, visualColumnFrom >= 0 ? columnMapper.getRenderableFromVisualIndex(columnMapper.getNearestNotHiddenIndex(visualColumnFrom, 1)) : visualColumnFrom, visualRowTo >= 0 ? rowMapper.getRenderableFromVisualIndex(rowMapper.getNearestNotHiddenIndex(visualRowTo, -1)) : visualRowTo, visualColumnTo >= 0 ? columnMapper.getRenderableFromVisualIndex(columnMapper.getNearestNotHiddenIndex(visualColumnTo, -1)) : visualColumnTo];
           }
         },
         viewportRowCalculatorOverride: function viewportRowCalculatorOverride(calc) {
@@ -15406,6 +15437,16 @@ var TableView = /* @__PURE__ */ function() {
     key: "getLastFullyVisibleRow",
     value: function getLastFullyVisibleRow() {
       return this.instance.rowIndexMapper.getVisualFromRenderableIndex(this.instance.view._wt.wtScroll.getLastVisibleRow());
+    }
+  }, {
+    key: "getFirstFullyVisibleColumn",
+    value: function getFirstFullyVisibleColumn() {
+      return this.instance.columnIndexMapper.getVisualFromRenderableIndex(this.instance.view._wt.wtScroll.getFirstVisibleColumn());
+    }
+  }, {
+    key: "getLastFullyVisibleColumn",
+    value: function getLastFullyVisibleColumn() {
+      return this.instance.columnIndexMapper.getVisualFromRenderableIndex(this.instance.view._wt.wtScroll.getLastVisibleColumn());
     }
   }, {
     key: "destroy",
@@ -15973,7 +16014,7 @@ function _createClass$P(Constructor, protoProps, staticProps) {
 }
 function _get() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get = Reflect.get;
+    _get = Reflect.get.bind();
   } else {
     _get = function _get2(target, property, receiver) {
       var base = _superPropBase(target, property);
@@ -16006,7 +16047,7 @@ function _inherits$j(subClass, superClass) {
     _setPrototypeOf$l(subClass, superClass);
 }
 function _setPrototypeOf$l(o, p) {
-  _setPrototypeOf$l = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$l = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -16055,7 +16096,7 @@ function _isNativeReflectConstruct$l() {
   }
 }
 function _getPrototypeOf$j(o) {
-  _getPrototypeOf$j = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$j = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$j(o);
@@ -16124,7 +16165,7 @@ function _inherits$k(subClass, superClass) {
     _setPrototypeOf$m(subClass, superClass);
 }
 function _setPrototypeOf$m(o, p) {
-  _setPrototypeOf$m = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$m = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -16173,7 +16214,7 @@ function _isNativeReflectConstruct$m() {
   }
 }
 function _getPrototypeOf$k(o) {
-  _getPrototypeOf$k = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$k = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$k(o);
@@ -16330,7 +16371,7 @@ function _createClass$R(Constructor, protoProps, staticProps) {
 }
 function _get$1() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$1 = Reflect.get;
+    _get$1 = Reflect.get.bind();
   } else {
     _get$1 = function _get2(target, property, receiver) {
       var base = _superPropBase$1(target, property);
@@ -16363,7 +16404,7 @@ function _inherits$l(subClass, superClass) {
     _setPrototypeOf$n(subClass, superClass);
 }
 function _setPrototypeOf$n(o, p) {
-  _setPrototypeOf$n = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$n = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -16412,7 +16453,7 @@ function _isNativeReflectConstruct$n() {
   }
 }
 function _getPrototypeOf$l(o) {
-  _getPrototypeOf$l = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$l = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$l(o);
@@ -16556,7 +16597,7 @@ function _inherits$m(subClass, superClass) {
     _setPrototypeOf$o(subClass, superClass);
 }
 function _setPrototypeOf$o(o, p) {
-  _setPrototypeOf$o = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$o = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -16605,7 +16646,7 @@ function _isNativeReflectConstruct$o() {
   }
 }
 function _getPrototypeOf$m(o) {
-  _getPrototypeOf$m = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$m = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$m(o);
@@ -16665,7 +16706,7 @@ function _createClass$T(Constructor, protoProps, staticProps) {
 }
 function _get$2() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$2 = Reflect.get;
+    _get$2 = Reflect.get.bind();
   } else {
     _get$2 = function _get2(target, property, receiver) {
       var base = _superPropBase$2(target, property);
@@ -16698,7 +16739,7 @@ function _inherits$n(subClass, superClass) {
     _setPrototypeOf$p(subClass, superClass);
 }
 function _setPrototypeOf$p(o, p) {
-  _setPrototypeOf$p = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$p = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -16747,7 +16788,7 @@ function _isNativeReflectConstruct$p() {
   }
 }
 function _getPrototypeOf$n(o) {
-  _getPrototypeOf$n = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$n = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$n(o);
@@ -16926,7 +16967,7 @@ function _inherits$o(subClass, superClass) {
     _setPrototypeOf$q(subClass, superClass);
 }
 function _setPrototypeOf$q(o, p) {
-  _setPrototypeOf$q = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$q = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -16975,7 +17016,7 @@ function _isNativeReflectConstruct$q() {
   }
 }
 function _getPrototypeOf$o(o) {
-  _getPrototypeOf$o = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$o = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$o(o);
@@ -17299,6 +17340,7 @@ var ChangesObservable = /* @__PURE__ */ function() {
   return ChangesObservable2;
 }();
 
+var _templateObject$3;
 function _toConsumableArray$d(arr) {
   return _arrayWithoutHoles$d(arr) || _iterableToArray$d(arr) || _unsupportedIterableToArray$g(arr) || _nonIterableSpread$d();
 }
@@ -17334,6 +17376,12 @@ function _arrayLikeToArray$g(arr, len) {
   }
   return arr2;
 }
+function _taggedTemplateLiteral$3(strings, raw) {
+  if (!raw) {
+    raw = strings.slice(0);
+  }
+  return Object.freeze(Object.defineProperties(strings, {raw: {value: Object.freeze(raw)}}));
+}
 function _classCallCheck$Y(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -17357,6 +17405,7 @@ function _createClass$Y(Constructor, protoProps, staticProps) {
   Object.defineProperty(Constructor, "prototype", {writable: false});
   return Constructor;
 }
+var deprecationWarns = new Set(["getFirstNotHiddenIndex"]);
 var IndexMapper = /* @__PURE__ */ function() {
   function IndexMapper2() {
     var _this = this;
@@ -17507,6 +17556,10 @@ var IndexMapper = /* @__PURE__ */ function() {
     value: function getFirstNotHiddenIndex(fromVisualIndex, incrementBy) {
       var searchAlsoOtherWayAround = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
       var indexForNextSearch = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : fromVisualIndex - incrementBy;
+      if (deprecationWarns.has("getFirstNotHiddenIndex")) {
+        deprecationWarns.delete("getFirstNotHiddenIndex");
+        warn(toSingleLine(_templateObject$3 || (_templateObject$3 = _taggedTemplateLiteral$3(['The method "getFirstNotHiddenIndex" is deprecated and will be removed in the next \n                        major release. Please use "getNearestNotHiddenIndex" instead.'], ['The method "getFirstNotHiddenIndex" is deprecated and will be removed in the next\\x20\n                        major release. Please use "getNearestNotHiddenIndex" instead.']))));
+      }
       var physicalIndex = this.getPhysicalFromVisualIndex(fromVisualIndex);
       if (physicalIndex === null) {
         if (searchAlsoOtherWayAround === true && indexForNextSearch !== fromVisualIndex - incrementBy) {
@@ -17518,6 +17571,36 @@ var IndexMapper = /* @__PURE__ */ function() {
         return fromVisualIndex;
       }
       return this.getFirstNotHiddenIndex(fromVisualIndex + incrementBy, incrementBy, searchAlsoOtherWayAround, indexForNextSearch);
+    }
+  }, {
+    key: "getNearestNotHiddenIndex",
+    value: function getNearestNotHiddenIndex(fromVisualIndex, searchDirection) {
+      var searchAlsoOtherWayAround = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
+      var physicalIndex = this.getPhysicalFromVisualIndex(fromVisualIndex);
+      if (physicalIndex === null) {
+        return null;
+      }
+      if (this.fromVisualToRenderableIndexesCache.has(fromVisualIndex)) {
+        return fromVisualIndex;
+      }
+      var visibleIndexes = Array.from(this.fromVisualToRenderableIndexesCache.keys());
+      var index = -1;
+      if (searchDirection > 0) {
+        index = visibleIndexes.findIndex(function(visualIndex) {
+          return visualIndex > fromVisualIndex;
+        });
+      } else {
+        index = visibleIndexes.reverse().findIndex(function(visualIndex) {
+          return visualIndex < fromVisualIndex;
+        });
+      }
+      if (index === -1) {
+        if (searchAlsoOtherWayAround) {
+          return this.getNearestNotHiddenIndex(fromVisualIndex, -searchDirection, false);
+        }
+        return null;
+      }
+      return visibleIndexes[index];
     }
   }, {
     key: "initToLength",
@@ -17687,7 +17770,7 @@ var IndexMapper = /* @__PURE__ */ function() {
         this.notHiddenIndexesCache = this.getNotHiddenIndexes(false);
         this.renderablePhysicalIndexesCache = this.getRenderableIndexes(false);
         this.cacheFromPhysicalToVisualIndexes();
-        this.cacheFromVisualToRenderabIendexes();
+        this.cacheFromVisualToRenderableIndexes();
         if (this.hiddenIndexesChanged) {
           this.hidingChangesObservable.emit(this.hidingMapsCollection.getMergedValues());
         }
@@ -17712,8 +17795,8 @@ var IndexMapper = /* @__PURE__ */ function() {
       }
     }
   }, {
-    key: "cacheFromVisualToRenderabIendexes",
-    value: function cacheFromVisualToRenderabIendexes() {
+    key: "cacheFromVisualToRenderableIndexes",
+    value: function cacheFromVisualToRenderableIndexes() {
       var nrOfRenderableIndexes = this.getRenderableIndexesLength();
       this.fromVisualToRenderableIndexesCache.clear();
       for (var renderableIndex = 0; renderableIndex < nrOfRenderableIndexes; renderableIndex += 1) {
@@ -17727,8 +17810,8 @@ var IndexMapper = /* @__PURE__ */ function() {
 }();
 mixin(IndexMapper, localHooks);
 
-var _templateObject$3;
-function _taggedTemplateLiteral$3(strings, raw) {
+var _templateObject$4;
+function _taggedTemplateLiteral$4(strings, raw) {
   if (!raw) {
     raw = strings.slice(0);
   }
@@ -17752,7 +17835,7 @@ function normalizeLanguageCode(languageCode) {
 }
 function warnUserAboutLanguageRegistration(languageCode) {
   if (isDefined(languageCode)) {
-    error(toSingleLine(_templateObject$3 || (_templateObject$3 = _taggedTemplateLiteral$3(['Language with code "', '" was not found. You should register particular language \n    before using it. Read more about this issue at: https://docs.handsontable.com/i18n/missing-language-code.'], ['Language with code "', '" was not found. You should register particular language\\x20\n    before using it. Read more about this issue at: https://docs.handsontable.com/i18n/missing-language-code.'])), languageCode));
+    error(toSingleLine(_templateObject$4 || (_templateObject$4 = _taggedTemplateLiteral$4(['Language with code "', '" was not found. You should register particular language \n    before using it. Read more about this issue at: https://docs.handsontable.com/i18n/missing-language-code.'], ['Language with code "', '" was not found. You should register particular language\\x20\n    before using it. Read more about this issue at: https://docs.handsontable.com/i18n/missing-language-code.'])), languageCode));
   }
 }
 
@@ -18040,65 +18123,6 @@ function _typeof$w(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$w(obj);
 }
-function _slicedToArray$8(arr, i) {
-  return _arrayWithHoles$8(arr) || _iterableToArrayLimit$8(arr, i) || _unsupportedIterableToArray$h(arr, i) || _nonIterableRest$8();
-}
-function _nonIterableRest$8() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-function _unsupportedIterableToArray$h(o, minLen) {
-  if (!o)
-    return;
-  if (typeof o === "string")
-    return _arrayLikeToArray$h(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor)
-    n = o.constructor.name;
-  if (n === "Map" || n === "Set")
-    return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$h(o, minLen);
-}
-function _arrayLikeToArray$h(arr, len) {
-  if (len == null || len > arr.length)
-    len = arr.length;
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-  return arr2;
-}
-function _iterableToArrayLimit$8(arr, i) {
-  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-  if (_i == null)
-    return;
-  var _arr = [];
-  var _n = true;
-  var _d = false;
-  var _s, _e;
-  try {
-    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
-      _arr.push(_s.value);
-      if (i && _arr.length === i)
-        break;
-    }
-  } catch (err) {
-    _d = true;
-    _e = err;
-  } finally {
-    try {
-      if (!_n && _i["return"] != null)
-        _i["return"]();
-    } finally {
-      if (_d)
-        throw _e;
-    }
-  }
-  return _arr;
-}
-function _arrayWithHoles$8(arr) {
-  if (Array.isArray(arr))
-    return arr;
-}
 function _classCallCheck$Z(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -18124,7 +18148,7 @@ function _createClass$Z(Constructor, protoProps, staticProps) {
 }
 function _get$3() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$3 = Reflect.get;
+    _get$3 = Reflect.get.bind();
   } else {
     _get$3 = function _get2(target, property, receiver) {
       var base = _superPropBase$3(target, property);
@@ -18157,7 +18181,7 @@ function _inherits$p(subClass, superClass) {
     _setPrototypeOf$r(subClass, superClass);
 }
 function _setPrototypeOf$r(o, p) {
-  _setPrototypeOf$r = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$r = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -18206,10 +18230,18 @@ function _isNativeReflectConstruct$r() {
   }
 }
 function _getPrototypeOf$p(o) {
-  _getPrototypeOf$p = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$p = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$p(o);
+}
+function _defineProperty$f(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
+  } else {
+    obj[key] = value;
+  }
+  return obj;
 }
 var VisualSelection = /* @__PURE__ */ function(_Selection) {
   _inherits$p(VisualSelection2, _Selection);
@@ -18218,6 +18250,7 @@ var VisualSelection = /* @__PURE__ */ function(_Selection) {
     var _this;
     _classCallCheck$Z(this, VisualSelection2);
     _this = _super.call(this, settings, null);
+    _defineProperty$f(_assertThisInitialized$p(_this), "visualCellRange", null);
     _this.visualCellRange = visualCellRange || null;
     _this.commit();
     return _this;
@@ -18239,60 +18272,50 @@ var VisualSelection = /* @__PURE__ */ function(_Selection) {
       return _get$3(_getPrototypeOf$p(VisualSelection2.prototype), "clear", this).call(this);
     }
   }, {
-    key: "findVisibleCoordsInRange",
-    value: function findVisibleCoordsInRange(startCoords, endCoords, incrementByRow) {
-      var incrementByColumn = arguments.length > 3 && arguments[3] !== void 0 ? arguments[3] : incrementByRow;
-      var nextVisibleRow = this.findVisibleCoordsInRowsRange(startCoords.row, endCoords.row, incrementByRow);
+    key: "trimToVisibleCellsRangeOnly",
+    value: function trimToVisibleCellsRangeOnly(_ref) {
+      var from = _ref.from, to = _ref.to;
+      var visibleFromCoords = this.getNearestNotHiddenCoords(from, 1);
+      var visibleToCoords = this.getNearestNotHiddenCoords(to, -1);
+      if (visibleFromCoords === null || visibleToCoords === null) {
+        return null;
+      }
+      if (visibleFromCoords.row > visibleToCoords.row || visibleFromCoords.col > visibleToCoords.col) {
+        var isHeaderTypeSelection = this.settings.type === "header" || this.settings.type === "active-header";
+        if (!isHeaderTypeSelection) {
+          return null;
+        }
+        visibleFromCoords = from;
+        visibleToCoords = to;
+      }
+      return this.settings.createCellRange(visibleFromCoords, visibleFromCoords, visibleToCoords);
+    }
+  }, {
+    key: "getNearestNotHiddenCoords",
+    value: function getNearestNotHiddenCoords(coords, rowSearchDirection) {
+      var columnSearchDirection = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : rowSearchDirection;
+      var nextVisibleRow = this.getNearestNotHiddenIndex(this.settings.rowIndexMapper(), coords.row, rowSearchDirection);
       if (nextVisibleRow === null) {
         return null;
       }
-      var nextVisibleColumn = this.findVisibleCoordsInColumnsRange(startCoords.col, endCoords.col, incrementByColumn);
+      var nextVisibleColumn = this.getNearestNotHiddenIndex(this.settings.columnIndexMapper(), coords.col, columnSearchDirection);
       if (nextVisibleColumn === null) {
         return null;
       }
       return this.settings.createCellCoords(nextVisibleRow, nextVisibleColumn);
     }
   }, {
-    key: "findVisibleCoordsInRowsRange",
-    value: function findVisibleCoordsInRowsRange(startVisibleRow, endVisibleRow, incrementBy) {
-      var _this$settings$visual = this.settings.visualToRenderableCoords({
-        row: startVisibleRow,
-        col: -1
-      }), startRowRenderable = _this$settings$visual.row;
-      if (endVisibleRow === startVisibleRow && startRowRenderable === null) {
-        return null;
+    key: "getNearestNotHiddenIndex",
+    value: function getNearestNotHiddenIndex(indexMapper, visualIndex, searchDirection) {
+      if (visualIndex < 0) {
+        return visualIndex;
       }
-      if (startRowRenderable === null) {
-        return this.findVisibleCoordsInRowsRange(startVisibleRow + incrementBy, endVisibleRow, incrementBy);
+      var nearestVisualIndex = indexMapper.getNearestNotHiddenIndex(visualIndex, searchDirection);
+      var isHeaderSelectionType = this.settings.type === "header" || this.settings.type === "active-header";
+      if (isHeaderSelectionType && nearestVisualIndex === null) {
+        return -1;
       }
-      return startVisibleRow;
-    }
-  }, {
-    key: "findVisibleCoordsInColumnsRange",
-    value: function findVisibleCoordsInColumnsRange(startVisibleColumn, endVisibleColumn, incrementBy) {
-      var _this$settings$visual2 = this.settings.visualToRenderableCoords({
-        row: -1,
-        col: startVisibleColumn
-      }), startColumnRenderable = _this$settings$visual2.col;
-      if (endVisibleColumn === startVisibleColumn && startColumnRenderable === null) {
-        return null;
-      }
-      if (startColumnRenderable === null) {
-        return this.findVisibleCoordsInColumnsRange(startVisibleColumn + incrementBy, endVisibleColumn, incrementBy);
-      }
-      return startVisibleColumn;
-    }
-  }, {
-    key: "findVisibleHeaderRange",
-    value: function findVisibleHeaderRange(visualFromCoords, visualToCoords, incrementByRow, incrementByColumn) {
-      var fromRangeVisualRow = this.findVisibleCoordsInRowsRange(visualFromCoords.row, visualToCoords.row, incrementByRow);
-      var toRangeVisualRow = this.findVisibleCoordsInRowsRange(visualToCoords.row, visualFromCoords.row, -incrementByRow);
-      var fromRangeVisualColumn = this.findVisibleCoordsInColumnsRange(visualFromCoords.col, visualToCoords.col, incrementByColumn);
-      var toRangeVisualColumn = this.findVisibleCoordsInColumnsRange(visualToCoords.col, visualFromCoords.col, -incrementByColumn);
-      if (fromRangeVisualRow === null && toRangeVisualRow === null && fromRangeVisualColumn === null && toRangeVisualColumn === null) {
-        return null;
-      }
-      return [this.settings.createCellCoords(fromRangeVisualRow, fromRangeVisualColumn), this.settings.createCellCoords(toRangeVisualRow, toRangeVisualColumn)];
+      return nearestVisualIndex;
     }
   }, {
     key: "commit",
@@ -18300,33 +18323,21 @@ var VisualSelection = /* @__PURE__ */ function(_Selection) {
       if (this.visualCellRange === null) {
         return this;
       }
-      var _this$visualCellRange = this.visualCellRange, visualFromCoords = _this$visualCellRange.from, visualToCoords = _this$visualCellRange.to;
-      var incrementByRow = this.getRowSearchDirection(this.visualCellRange);
-      var incrementByColumn = this.getColumnSearchDirection(this.visualCellRange);
-      var fromRangeVisual = this.findVisibleCoordsInRange(visualFromCoords, visualToCoords, incrementByRow, incrementByColumn);
-      var toRangeVisual = this.findVisibleCoordsInRange(visualToCoords, visualFromCoords, -incrementByRow, -incrementByColumn);
-      if (fromRangeVisual === null || toRangeVisual === null) {
-        var isHeaderSelectionType = this.settings.type === "header";
-        var cellRange = null;
-        if (isHeaderSelectionType) {
-          var _this$findVisibleHead = this.findVisibleHeaderRange(visualFromCoords, visualToCoords, incrementByRow, incrementByColumn), _this$findVisibleHead2 = _slicedToArray$8(_this$findVisibleHead, 2), fromRangeVisualHeader = _this$findVisibleHead2[0], toRangeVisualHeader = _this$findVisibleHead2[1];
-          cellRange = this.createRenderableCellRange(fromRangeVisualHeader, toRangeVisualHeader);
-        }
-        this.cellRange = cellRange;
+      var trimmedCellRange = this.trimToVisibleCellsRangeOnly(this.visualCellRange);
+      if (trimmedCellRange === null) {
+        this.cellRange = null;
       } else {
-        this.cellRange = this.createRenderableCellRange(fromRangeVisual, toRangeVisual);
+        this.cellRange = this.createRenderableCellRange(trimmedCellRange.from, trimmedCellRange.to);
       }
       return this;
     }
   }, {
-    key: "adjustCoordinates",
-    value: function adjustCoordinates(broaderCellRange) {
-      var incrementByRow = this.getRowSearchDirection(broaderCellRange);
-      var incrementByColumn = this.getColumnSearchDirection(broaderCellRange);
-      var normFromCoords = broaderCellRange.from.clone().normalize();
-      var normToCoords = broaderCellRange.to.clone().normalize();
-      var singleCellRangeVisual = this.findVisibleCoordsInRange(normFromCoords, normToCoords, incrementByRow, incrementByColumn);
-      if (singleCellRangeVisual !== null) {
+    key: "syncWith",
+    value: function syncWith(broaderCellRange) {
+      var rowDirection = broaderCellRange.getVerticalDirection() === "N-S" ? 1 : -1;
+      var columnDirection = broaderCellRange.getHorizontalDirection() === "W-E" ? 1 : -1;
+      var singleCellRangeVisual = this.getNearestNotHiddenCoords(broaderCellRange.from.clone().normalize(), rowDirection, columnDirection);
+      if (singleCellRangeVisual !== null && broaderCellRange.overlaps(singleCellRangeVisual)) {
         if (this.cellRange === null) {
           var singleCellRangeRenderable = this.settings.visualToRenderableCoords(singleCellRangeVisual);
           this.cellRange = this.settings.createCellRange(singleCellRangeRenderable);
@@ -18361,22 +18372,6 @@ var VisualSelection = /* @__PURE__ */ function(_Selection) {
       var renderableToCoords = this.settings.visualToRenderableCoords(visualToCoords);
       return this.settings.createCellRange(renderableFromCoords, renderableFromCoords, renderableToCoords);
     }
-  }, {
-    key: "getRowSearchDirection",
-    value: function getRowSearchDirection(cellRange) {
-      if (cellRange.from.row < cellRange.to.row) {
-        return 1;
-      }
-      return -1;
-    }
-  }, {
-    key: "getColumnSearchDirection",
-    value: function getColumnSearchDirection(cellRange) {
-      if (cellRange.from.col < cellRange.to.col) {
-        return 1;
-      }
-      return -1;
-    }
   }]);
   return VisualSelection2;
 }(Selection);
@@ -18396,14 +18391,14 @@ function _objectSpread(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
     i % 2 ? ownKeys(Object(source), true).forEach(function(key) {
-      _defineProperty$f(target, key, source[key]);
+      _defineProperty$g(target, key, source[key]);
     }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$f(obj, key, value) {
+function _defineProperty$g(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -18468,14 +18463,14 @@ function _objectSpread$1(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
     i % 2 ? ownKeys$1(Object(source), true).forEach(function(key) {
-      _defineProperty$g(target, key, source[key]);
+      _defineProperty$h(target, key, source[key]);
     }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$1(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$g(obj, key, value) {
+function _defineProperty$h(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -18547,14 +18542,14 @@ function _objectSpread$2(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
     i % 2 ? ownKeys$2(Object(source), true).forEach(function(key) {
-      _defineProperty$h(target, key, source[key]);
+      _defineProperty$i(target, key, source[key]);
     }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$2(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$h(obj, key, value) {
+function _defineProperty$i(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -18624,14 +18619,14 @@ function _objectSpread$3(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
     i % 2 ? ownKeys$3(Object(source), true).forEach(function(key) {
-      _defineProperty$i(target, key, source[key]);
+      _defineProperty$j(target, key, source[key]);
     }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$3(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$i(obj, key, value) {
+function _defineProperty$j(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -18693,14 +18688,14 @@ function _objectSpread$4(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
     i % 2 ? ownKeys$4(Object(source), true).forEach(function(key) {
-      _defineProperty$j(target, key, source[key]);
+      _defineProperty$k(target, key, source[key]);
     }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$4(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$j(obj, key, value) {
+function _defineProperty$k(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -18737,14 +18732,14 @@ function _objectSpread$5(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
     i % 2 ? ownKeys$5(Object(source), true).forEach(function(key) {
-      _defineProperty$k(target, key, source[key]);
+      _defineProperty$l(target, key, source[key]);
     }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$5(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$k(obj, key, value) {
+function _defineProperty$l(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -18812,14 +18807,14 @@ function _objectSpread$6(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
     i % 2 ? ownKeys$6(Object(source), true).forEach(function(key) {
-      _defineProperty$l(target, key, source[key]);
+      _defineProperty$m(target, key, source[key]);
     }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$6(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$l(obj, key, value) {
+function _defineProperty$m(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -18841,23 +18836,23 @@ function createHighlight$6(highlightType, options) {
 }
 
 function _toConsumableArray$e(arr) {
-  return _arrayWithoutHoles$e(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$i(arr) || _nonIterableSpread$e();
+  return _arrayWithoutHoles$e(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$h(arr) || _nonIterableSpread$e();
 }
 function _nonIterableSpread$e() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$i(o, minLen) {
+function _unsupportedIterableToArray$h(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$i(o, minLen);
+    return _arrayLikeToArray$h(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$i(o, minLen);
+    return _arrayLikeToArray$h(o, minLen);
 }
 function _iterableToArray$e(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
@@ -18865,9 +18860,9 @@ function _iterableToArray$e(iter) {
 }
 function _arrayWithoutHoles$e(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$i(arr);
+    return _arrayLikeToArray$h(arr);
 }
-function _arrayLikeToArray$i(arr, len) {
+function _arrayLikeToArray$h(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -18889,14 +18884,14 @@ function _objectSpread$7(target) {
   for (var i = 1; i < arguments.length; i++) {
     var source = arguments[i] != null ? arguments[i] : {};
     i % 2 ? ownKeys$7(Object(source), true).forEach(function(key) {
-      _defineProperty$m(target, key, source[key]);
+      _defineProperty$n(target, key, source[key]);
     }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys$7(Object(source)).forEach(function(key) {
       Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key));
     });
   }
   return target;
 }
-function _defineProperty$m(obj, key, value) {
+function _defineProperty$n(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {value, enumerable: true, configurable: true, writable: true});
   } else {
@@ -19295,26 +19290,26 @@ var Transformation = /* @__PURE__ */ function() {
 }();
 mixin(Transformation, localHooks);
 
-function _slicedToArray$9(arr, i) {
-  return _arrayWithHoles$9(arr) || _iterableToArrayLimit$9(arr, i) || _unsupportedIterableToArray$j(arr, i) || _nonIterableRest$9();
+function _slicedToArray$8(arr, i) {
+  return _arrayWithHoles$8(arr) || _iterableToArrayLimit$8(arr, i) || _unsupportedIterableToArray$i(arr, i) || _nonIterableRest$8();
 }
-function _nonIterableRest$9() {
+function _nonIterableRest$8() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$j(o, minLen) {
+function _unsupportedIterableToArray$i(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$j(o, minLen);
+    return _arrayLikeToArray$i(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$j(o, minLen);
+    return _arrayLikeToArray$i(o, minLen);
 }
-function _arrayLikeToArray$j(arr, len) {
+function _arrayLikeToArray$i(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -19322,7 +19317,7 @@ function _arrayLikeToArray$j(arr, len) {
   }
   return arr2;
 }
-function _iterableToArrayLimit$9(arr, i) {
+function _iterableToArrayLimit$8(arr, i) {
   var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
@@ -19350,7 +19345,7 @@ function _iterableToArrayLimit$9(arr, i) {
   }
   return _arr;
 }
-function _arrayWithHoles$9(arr) {
+function _arrayWithHoles$8(arr) {
   if (Array.isArray(arr))
     return arr;
 }
@@ -19443,7 +19438,7 @@ function transformSelectionToColumnDistance(selectionRanges) {
   var selectionSchemaNormalizer = normalizeSelectionFactory(selectionType);
   var unorderedIndexes = new Set();
   arrayEach(selectionRanges, function(selection) {
-    var _selectionSchemaNorma = selectionSchemaNormalizer(selection), _selectionSchemaNorma2 = _slicedToArray$9(_selectionSchemaNorma, 4), columnStart = _selectionSchemaNorma2[1], columnEnd = _selectionSchemaNorma2[3];
+    var _selectionSchemaNorma = selectionSchemaNormalizer(selection), _selectionSchemaNorma2 = _slicedToArray$8(_selectionSchemaNorma, 4), columnStart = _selectionSchemaNorma2[1], columnEnd = _selectionSchemaNorma2[3];
     var columnNonHeaderStart = Math.max(columnStart, 0);
     var amount = columnEnd - columnNonHeaderStart + 1;
     arrayEach(Array.from(new Array(amount), function(_, i) {
@@ -19475,7 +19470,7 @@ function transformSelectionToRowDistance(selectionRanges) {
   var selectionSchemaNormalizer = normalizeSelectionFactory(selectionType);
   var unorderedIndexes = new Set();
   arrayEach(selectionRanges, function(selection) {
-    var _selectionSchemaNorma3 = selectionSchemaNormalizer(selection), _selectionSchemaNorma4 = _slicedToArray$9(_selectionSchemaNorma3, 3), rowStart = _selectionSchemaNorma4[0], rowEnd = _selectionSchemaNorma4[2];
+    var _selectionSchemaNorma3 = selectionSchemaNormalizer(selection), _selectionSchemaNorma4 = _slicedToArray$8(_selectionSchemaNorma3, 3), rowStart = _selectionSchemaNorma4[0], rowEnd = _selectionSchemaNorma4[2];
     var rowNonHeaderStart = Math.max(rowStart, 0);
     var amount = rowEnd - rowNonHeaderStart + 1;
     arrayEach(Array.from(new Array(amount), function(_, i) {
@@ -19504,27 +19499,27 @@ function isValidCoord(coord) {
   return typeof coord === "number" && coord >= 0 && coord < maxTableItemsCount;
 }
 
-var _templateObject$4;
-function _slicedToArray$a(arr, i) {
-  return _arrayWithHoles$a(arr) || _iterableToArrayLimit$a(arr, i) || _unsupportedIterableToArray$k(arr, i) || _nonIterableRest$a();
+var _templateObject$5;
+function _slicedToArray$9(arr, i) {
+  return _arrayWithHoles$9(arr) || _iterableToArrayLimit$9(arr, i) || _unsupportedIterableToArray$j(arr, i) || _nonIterableRest$9();
 }
-function _nonIterableRest$a() {
+function _nonIterableRest$9() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$k(o, minLen) {
+function _unsupportedIterableToArray$j(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$k(o, minLen);
+    return _arrayLikeToArray$j(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$k(o, minLen);
+    return _arrayLikeToArray$j(o, minLen);
 }
-function _arrayLikeToArray$k(arr, len) {
+function _arrayLikeToArray$j(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -19532,7 +19527,7 @@ function _arrayLikeToArray$k(arr, len) {
   }
   return arr2;
 }
-function _iterableToArrayLimit$a(arr, i) {
+function _iterableToArrayLimit$9(arr, i) {
   var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
@@ -19560,11 +19555,11 @@ function _iterableToArrayLimit$a(arr, i) {
   }
   return _arr;
 }
-function _arrayWithHoles$a(arr) {
+function _arrayWithHoles$9(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _taggedTemplateLiteral$4(strings, raw) {
+function _taggedTemplateLiteral$5(strings, raw) {
   if (!raw) {
     raw = strings.slice(0);
   }
@@ -19631,6 +19626,12 @@ var Selection$1 = /* @__PURE__ */ function() {
       },
       createCellRange: function createCellRange(highlight, from, to) {
         return _this.tableProps.createCellRange(highlight, from, to);
+      },
+      rowIndexMapper: function rowIndexMapper() {
+        return _this.tableProps.rowIndexMapper();
+      },
+      columnIndexMapper: function columnIndexMapper() {
+        return _this.tableProps.columnIndexMapper();
       }
     });
     this.transformation = new Transformation(this.selectedRange, {
@@ -19773,7 +19774,7 @@ var Selection$1 = /* @__PURE__ */ function() {
       }
       this.highlight.getCell().clear();
       if (this.highlight.isEnabledFor(CELL_TYPE, cellRange.highlight)) {
-        this.highlight.getCell().add(this.selectedRange.current().highlight).commit().adjustCoordinates(cellRange);
+        this.highlight.getCell().add(this.selectedRange.current().highlight).commit().syncWith(cellRange);
       }
       var layerLevel = this.getLayerLevel();
       if (layerLevel < this.highlight.layerLevel) {
@@ -19798,7 +19799,7 @@ var Selection$1 = /* @__PURE__ */ function() {
         areaHighlight.add(cellRange.from).add(cellRange.to).commit();
         if (layerLevel === 1) {
           var previousRange = this.selectedRange.previous();
-          this.highlight.useLayerLevel(layerLevel - 1).createOrGetArea().add(previousRange.from).commit().adjustCoordinates(previousRange);
+          this.highlight.useLayerLevel(layerLevel - 1).createOrGetArea().add(previousRange.from).commit().syncWith(previousRange);
           this.highlight.useLayerLevel(layerLevel);
         }
       }
@@ -19960,7 +19961,7 @@ var Selection$1 = /* @__PURE__ */ function() {
       if (selectionType === SELECTION_TYPE_EMPTY) {
         return false;
       } else if (selectionType === SELECTION_TYPE_UNRECOGNIZED) {
-        throw new Error(toSingleLine(_templateObject$4 || (_templateObject$4 = _taggedTemplateLiteral$4(["Unsupported format of the selection ranges was passed. To select cells pass \n        the coordinates as an array of arrays ([[rowStart, columnStart/columnPropStart, rowEnd, \n        columnEnd/columnPropEnd]]) or as an array of CellRange objects."], ["Unsupported format of the selection ranges was passed. To select cells pass\\x20\n        the coordinates as an array of arrays ([[rowStart, columnStart/columnPropStart, rowEnd,\\x20\n        columnEnd/columnPropEnd]]) or as an array of CellRange objects."]))));
+        throw new Error(toSingleLine(_templateObject$5 || (_templateObject$5 = _taggedTemplateLiteral$5(["Unsupported format of the selection ranges was passed. To select cells pass \n        the coordinates as an array of arrays ([[rowStart, columnStart/columnPropStart, rowEnd, \n        columnEnd/columnPropEnd]]) or as an array of CellRange objects."], ["Unsupported format of the selection ranges was passed. To select cells pass\\x20\n        the coordinates as an array of arrays ([[rowStart, columnStart/columnPropStart, rowEnd,\\x20\n        columnEnd/columnPropEnd]]) or as an array of CellRange objects."]))));
       }
       var selectionSchemaNormalizer = normalizeSelectionFactory(selectionType, {
         propToCol: function propToCol(prop) {
@@ -19971,14 +19972,14 @@ var Selection$1 = /* @__PURE__ */ function() {
       var nrOfRows = this.tableProps.countRows();
       var nrOfColumns = this.tableProps.countCols();
       var isValid = !selectionRanges.some(function(selection) {
-        var _selectionSchemaNorma = selectionSchemaNormalizer(selection), _selectionSchemaNorma2 = _slicedToArray$a(_selectionSchemaNorma, 4), rowStart = _selectionSchemaNorma2[0], columnStart = _selectionSchemaNorma2[1], rowEnd = _selectionSchemaNorma2[2], columnEnd = _selectionSchemaNorma2[3];
+        var _selectionSchemaNorma = selectionSchemaNormalizer(selection), _selectionSchemaNorma2 = _slicedToArray$9(_selectionSchemaNorma, 4), rowStart = _selectionSchemaNorma2[0], columnStart = _selectionSchemaNorma2[1], rowEnd = _selectionSchemaNorma2[2], columnEnd = _selectionSchemaNorma2[3];
         var _isValid = isValidCoord(rowStart, nrOfRows) && isValidCoord(columnStart, nrOfColumns) && isValidCoord(rowEnd, nrOfRows) && isValidCoord(columnEnd, nrOfColumns);
         return !_isValid;
       });
       if (isValid) {
         this.clear();
         arrayEach(selectionRanges, function(selection) {
-          var _selectionSchemaNorma3 = selectionSchemaNormalizer(selection), _selectionSchemaNorma4 = _slicedToArray$a(_selectionSchemaNorma3, 4), rowStart = _selectionSchemaNorma4[0], columnStart = _selectionSchemaNorma4[1], rowEnd = _selectionSchemaNorma4[2], columnEnd = _selectionSchemaNorma4[3];
+          var _selectionSchemaNorma3 = selectionSchemaNormalizer(selection), _selectionSchemaNorma4 = _slicedToArray$9(_selectionSchemaNorma3, 4), rowStart = _selectionSchemaNorma4[0], columnStart = _selectionSchemaNorma4[1], rowEnd = _selectionSchemaNorma4[2], columnEnd = _selectionSchemaNorma4[3];
           _this2.setRangeStartOnly(_this2.tableProps.createCellCoords(rowStart, columnStart), false);
           _this2.setRangeEnd(_this2.tableProps.createCellCoords(rowEnd, columnEnd));
           _this2.finish();
@@ -20030,7 +20031,7 @@ var Selection$1 = /* @__PURE__ */ function() {
       }
       var cellHighlight = this.highlight.getCell();
       var currentLayer = this.getLayerLevel();
-      cellHighlight.commit().adjustCoordinates(this.selectedRange.current());
+      cellHighlight.commit().syncWith(this.selectedRange.current());
       for (var layerLevel = 0; layerLevel < this.selectedRange.size(); layerLevel += 1) {
         this.highlight.useLayerLevel(layerLevel);
         var areaHighlight = this.highlight.createOrGetArea();
@@ -21278,23 +21279,23 @@ var ColumnMeta = /* @__PURE__ */ function() {
 }();
 
 function _toConsumableArray$f(arr) {
-  return _arrayWithoutHoles$f(arr) || _iterableToArray$f(arr) || _unsupportedIterableToArray$l(arr) || _nonIterableSpread$f();
+  return _arrayWithoutHoles$f(arr) || _iterableToArray$f(arr) || _unsupportedIterableToArray$k(arr) || _nonIterableSpread$f();
 }
 function _nonIterableSpread$f() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$l(o, minLen) {
+function _unsupportedIterableToArray$k(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$l(o, minLen);
+    return _arrayLikeToArray$k(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$l(o, minLen);
+    return _arrayLikeToArray$k(o, minLen);
 }
 function _iterableToArray$f(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
@@ -21302,9 +21303,9 @@ function _iterableToArray$f(iter) {
 }
 function _arrayWithoutHoles$f(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$l(arr);
+    return _arrayLikeToArray$k(arr);
 }
-function _arrayLikeToArray$l(arr, len) {
+function _arrayLikeToArray$k(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -21864,9 +21865,9 @@ var normalizeEventKey = function normalizeEventKey2(key) {
   return key.toLowerCase();
 };
 
-var _templateObject$5;
+var _templateObject$6;
 function _toConsumableArray$g(arr) {
-  return _arrayWithoutHoles$g(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$m(arr) || _nonIterableSpread$g();
+  return _arrayWithoutHoles$g(arr) || _iterableToArray$g(arr) || _unsupportedIterableToArray$l(arr) || _nonIterableSpread$g();
 }
 function _nonIterableSpread$g() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
@@ -21877,28 +21878,28 @@ function _iterableToArray$g(iter) {
 }
 function _arrayWithoutHoles$g(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$m(arr);
+    return _arrayLikeToArray$l(arr);
 }
-function _slicedToArray$b(arr, i) {
-  return _arrayWithHoles$b(arr) || _iterableToArrayLimit$b(arr, i) || _unsupportedIterableToArray$m(arr, i) || _nonIterableRest$b();
+function _slicedToArray$a(arr, i) {
+  return _arrayWithHoles$a(arr) || _iterableToArrayLimit$a(arr, i) || _unsupportedIterableToArray$l(arr, i) || _nonIterableRest$a();
 }
-function _nonIterableRest$b() {
+function _nonIterableRest$a() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$m(o, minLen) {
+function _unsupportedIterableToArray$l(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$m(o, minLen);
+    return _arrayLikeToArray$l(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$m(o, minLen);
+    return _arrayLikeToArray$l(o, minLen);
 }
-function _arrayLikeToArray$m(arr, len) {
+function _arrayLikeToArray$l(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -21906,7 +21907,7 @@ function _arrayLikeToArray$m(arr, len) {
   }
   return arr2;
 }
-function _iterableToArrayLimit$b(arr, i) {
+function _iterableToArrayLimit$a(arr, i) {
   var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
@@ -21934,11 +21935,11 @@ function _iterableToArrayLimit$b(arr, i) {
   }
   return _arr;
 }
-function _arrayWithHoles$b(arr) {
+function _arrayWithHoles$a(arr) {
   if (Array.isArray(arr))
     return arr;
 }
-function _taggedTemplateLiteral$5(strings, raw) {
+function _taggedTemplateLiteral$6(strings, raw) {
   if (!raw) {
     raw = strings.slice(0);
   }
@@ -21961,7 +21962,7 @@ var createContext = function createContext2(name) {
       throw new Error("The shortcut's callback needs to be a function.");
     }
     if (Array.isArray(keys) === false) {
-      throw new Error(toSingleLine(_templateObject$5 || (_templateObject$5 = _taggedTemplateLiteral$5(["Pass the shortcut's keys as an array of arrays, \n      using the KeyboardEvent.key properties: \n      https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values."], ["Pass the shortcut\\'s keys as an array of arrays,\\x20\n      using the KeyboardEvent.key properties:\\x20\n      https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values."]))));
+      throw new Error(toSingleLine(_templateObject$6 || (_templateObject$6 = _taggedTemplateLiteral$6(["Pass the shortcut's keys as an array of arrays, \n      using the KeyboardEvent.key properties: \n      https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values."], ["Pass the shortcut\\'s keys as an array of arrays,\\x20\n      using the KeyboardEvent.key properties:\\x20\n      https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values."]))));
     }
     var newShortcut = {
       callback,
@@ -22017,7 +22018,7 @@ var createContext = function createContext2(name) {
   var removeShortcutsByGroup = function removeShortcutsByGroup2(group) {
     var shortcuts = SHORTCUTS.getItems();
     shortcuts.forEach(function(_ref3) {
-      var _ref4 = _slicedToArray$b(_ref3, 2), normalizedKeys = _ref4[0], shortcutOptions = _ref4[1];
+      var _ref4 = _slicedToArray$a(_ref3, 2), normalizedKeys = _ref4[0], shortcutOptions = _ref4[1];
       var leftOptions = shortcutOptions.filter(function(option) {
         return option.group !== group;
       });
@@ -22068,7 +22069,7 @@ function createKeysObserver() {
 
 var MODIFIER_KEYS = ["meta", "alt", "shift", "control"];
 var modifierKeysObserver = createKeysObserver();
-function useRecorder(ownerWindow, beforeKeyDown, afterKeyDown, callback) {
+function useRecorder(ownerWindow, handleEvent, beforeKeyDown, afterKeyDown, callback) {
   var isModifierKey = function isModifierKey2(pressedKey) {
     return MODIFIER_KEYS.includes(pressedKey);
   };
@@ -22094,6 +22095,9 @@ function useRecorder(ownerWindow, beforeKeyDown, afterKeyDown, callback) {
     return pressedModifierKeys;
   };
   var onkeydown = function onkeydown2(event) {
+    if (handleEvent(event) === false) {
+      return;
+    }
     var result = beforeKeyDown(event);
     if (result === false || isImmediatePropagationStopped(event)) {
       return;
@@ -22113,6 +22117,9 @@ function useRecorder(ownerWindow, beforeKeyDown, afterKeyDown, callback) {
     afterKeyDown(event);
   };
   var onkeyup = function onkeyup2(event) {
+    if (handleEvent(event) === false) {
+      return;
+    }
     var pressedKey = normalizeEventKey(event.key);
     if (isModifierKey(pressedKey) === false) {
       return;
@@ -22150,7 +22157,7 @@ function useRecorder(ownerWindow, beforeKeyDown, afterKeyDown, callback) {
 }
 
 var createShortcutManager = function createShortcutManager2(_ref) {
-  var ownerWindow = _ref.ownerWindow, beforeKeyDown = _ref.beforeKeyDown, afterKeyDown = _ref.afterKeyDown;
+  var ownerWindow = _ref.ownerWindow, handleEvent = _ref.handleEvent, beforeKeyDown = _ref.beforeKeyDown, afterKeyDown = _ref.afterKeyDown;
   var CONTEXTS = createUniqueMap({
     errorIdExists: function errorIdExists(keys) {
       return 'The "'.concat(keys, '" context name is already registered.');
@@ -22172,7 +22179,7 @@ var createShortcutManager = function createShortcutManager2(_ref) {
     activeContextName = contextName;
   };
   var isCtrlKeySilenced = false;
-  var keyRecorder = useRecorder(ownerWindow, beforeKeyDown, afterKeyDown, function(event, keys) {
+  var keyRecorder = useRecorder(ownerWindow, handleEvent, beforeKeyDown, afterKeyDown, function(event, keys) {
     var activeContext = getContext(getActiveContextName());
     var isExecutionCancelled = false;
     if (!activeContext.hasShortcut(keys)) {
@@ -22221,13 +22228,13 @@ function _typeof$B(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$B(obj);
 }
-function _slicedToArray$c(arr, i) {
-  return _arrayWithHoles$c(arr) || _iterableToArrayLimit$c(arr, i) || _unsupportedIterableToArray$n(arr, i) || _nonIterableRest$c();
+function _slicedToArray$b(arr, i) {
+  return _arrayWithHoles$b(arr) || _iterableToArrayLimit$b(arr, i) || _unsupportedIterableToArray$m(arr, i) || _nonIterableRest$b();
 }
-function _nonIterableRest$c() {
+function _nonIterableRest$b() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _iterableToArrayLimit$c(arr, i) {
+function _iterableToArrayLimit$b(arr, i) {
   var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
@@ -22255,28 +22262,28 @@ function _iterableToArrayLimit$c(arr, i) {
   }
   return _arr;
 }
-function _arrayWithHoles$c(arr) {
+function _arrayWithHoles$b(arr) {
   if (Array.isArray(arr))
     return arr;
 }
 function _toConsumableArray$h(arr) {
-  return _arrayWithoutHoles$h(arr) || _iterableToArray$h(arr) || _unsupportedIterableToArray$n(arr) || _nonIterableSpread$h();
+  return _arrayWithoutHoles$h(arr) || _iterableToArray$h(arr) || _unsupportedIterableToArray$m(arr) || _nonIterableSpread$h();
 }
 function _nonIterableSpread$h() {
   throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$n(o, minLen) {
+function _unsupportedIterableToArray$m(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$n(o, minLen);
+    return _arrayLikeToArray$m(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$n(o, minLen);
+    return _arrayLikeToArray$m(o, minLen);
 }
 function _iterableToArray$h(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null)
@@ -22284,9 +22291,9 @@ function _iterableToArray$h(iter) {
 }
 function _arrayWithoutHoles$h(arr) {
   if (Array.isArray(arr))
-    return _arrayLikeToArray$n(arr);
+    return _arrayLikeToArray$m(arr);
 }
-function _arrayLikeToArray$n(arr, len) {
+function _arrayLikeToArray$m(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -22355,6 +22362,12 @@ function Core(rootElement, userSettings) {
     return instance._createCellCoords(renderableRow >= 0 ? instance.rowIndexMapper.getVisualFromRenderableIndex(renderableRow) : renderableRow, renderableColumn >= 0 ? instance.columnIndexMapper.getVisualFromRenderableIndex(renderableColumn) : renderableColumn);
   };
   var selection = new Selection$1(tableMeta, {
+    rowIndexMapper: function rowIndexMapper() {
+      return instance.rowIndexMapper;
+    },
+    columnIndexMapper: function columnIndexMapper() {
+      return instance.columnIndexMapper;
+    },
     countCols: function countCols() {
       return instance.countCols();
     },
@@ -22504,17 +22517,17 @@ function Core(rootElement, userSettings) {
         }
         var sortedIndexes = _toConsumableArray$h(indexes);
         sortedIndexes.sort(function(_ref2, _ref3) {
-          var _ref4 = _slicedToArray$c(_ref2, 1), indexA = _ref4[0];
-          var _ref5 = _slicedToArray$c(_ref3, 1), indexB = _ref5[0];
+          var _ref4 = _slicedToArray$b(_ref2, 1), indexA = _ref4[0];
+          var _ref5 = _slicedToArray$b(_ref3, 1), indexB = _ref5[0];
           if (indexA === indexB) {
             return 0;
           }
           return indexA > indexB ? 1 : -1;
         });
         var normalizedIndexes = arrayReduce(sortedIndexes, function(acc, _ref6) {
-          var _ref7 = _slicedToArray$c(_ref6, 2), groupIndex = _ref7[0], groupAmount = _ref7[1];
+          var _ref7 = _slicedToArray$b(_ref6, 2), groupIndex = _ref7[0], groupAmount = _ref7[1];
           var previousItem = acc[acc.length - 1];
-          var _previousItem = _slicedToArray$c(previousItem, 2), prevIndex = _previousItem[0], prevAmount = _previousItem[1];
+          var _previousItem = _slicedToArray$b(previousItem, 2), prevIndex = _previousItem[0], prevAmount = _previousItem[1];
           var prevLastIndex = prevIndex + prevAmount;
           if (groupIndex <= prevLastIndex) {
             var amountToAdd = Math.max(groupAmount - (prevLastIndex - groupIndex), 0);
@@ -22583,7 +22596,7 @@ function Core(rootElement, userSettings) {
           var removeRow = function removeRow2(indexes) {
             var offset = 0;
             arrayEach(indexes, function(_ref8) {
-              var _ref9 = _slicedToArray$c(_ref8, 2), groupIndex = _ref9[0], groupAmount = _ref9[1];
+              var _ref9 = _slicedToArray$b(_ref8, 2), groupIndex = _ref9[0], groupAmount = _ref9[1];
               var calcIndex = isEmpty(groupIndex) ? instance.countRows() - 1 : Math.max(groupIndex - offset, 0);
               if (Number.isInteger(groupIndex)) {
                 groupIndex = Math.max(groupIndex - offset, 0);
@@ -22617,7 +22630,7 @@ function Core(rootElement, userSettings) {
           var removeCol = function removeCol2(indexes) {
             var offset = 0;
             arrayEach(indexes, function(_ref10) {
-              var _ref11 = _slicedToArray$c(_ref10, 2), groupIndex = _ref11[0], groupAmount = _ref11[1];
+              var _ref11 = _slicedToArray$b(_ref10, 2), groupIndex = _ref11[0], groupAmount = _ref11[1];
               var calcIndex = isEmpty(groupIndex) ? instance.countCols() - 1 : Math.max(groupIndex - offset, 0);
               var physicalColumnIndex = instance.toPhysicalColumn(calcIndex);
               if (Number.isInteger(groupIndex)) {
@@ -23020,7 +23033,7 @@ function Core(rootElement, userSettings) {
       if (changes[i] === null) {
         changes.splice(i, 1);
       } else {
-        var _changes$i = _slicedToArray$c(changes[i], 4), row = _changes$i[0], prop = _changes$i[1], newValue = _changes$i[3];
+        var _changes$i = _slicedToArray$b(changes[i], 4), row = _changes$i[0], prop = _changes$i[1], newValue = _changes$i[3];
         var col = datamap.propToCol(prop);
         var cellProperties = instance.getCellMeta(row, col);
         if (cellProperties.type === "numeric" && typeof newValue === "string" && isNumericLike(newValue)) {
@@ -23709,7 +23722,7 @@ function Core(rootElement, userSettings) {
     var changesForHook = [];
     if (isThereAnySetSourceListener) {
       arrayEach(input, function(_ref15) {
-        var _ref16 = _slicedToArray$c(_ref15, 3), changeRow = _ref16[0], changeProp = _ref16[1], changeValue = _ref16[2];
+        var _ref16 = _slicedToArray$b(_ref15, 3), changeRow = _ref16[0], changeProp = _ref16[1], changeValue = _ref16[2];
         changesForHook.push([
           changeRow,
           changeProp,
@@ -23719,7 +23732,7 @@ function Core(rootElement, userSettings) {
       });
     }
     arrayEach(input, function(_ref17) {
-      var _ref18 = _slicedToArray$c(_ref17, 3), changeRow = _ref18[0], changeProp = _ref18[1], changeValue = _ref18[2];
+      var _ref18 = _slicedToArray$b(_ref17, 3), changeRow = _ref18[0], changeProp = _ref18[1], changeValue = _ref18[2];
       dataSource.setAtCell(changeRow, changeProp, changeValue);
     });
     if (isThereAnySetSourceListener) {
@@ -24141,7 +24154,7 @@ function Core(rootElement, userSettings) {
     preventScrollingToCell = false;
   };
   var getIndexToScroll = function getIndexToScroll2(indexMapper, visualIndex) {
-    return indexMapper.getFirstNotHiddenIndex(visualIndex, 1, true);
+    return indexMapper.getNearestNotHiddenIndex(visualIndex, 1, true);
   };
   this.scrollViewportTo = function(row, column) {
     var snapToBottom = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
@@ -24202,7 +24215,7 @@ function Core(rootElement, userSettings) {
       instance.rowIndexMapper.unregisterAll();
       instance.columnIndexMapper.unregisterAll();
       pluginsRegistry.getItems().forEach(function(_ref20) {
-        var _ref21 = _slicedToArray$c(_ref20, 2), plugin = _ref21[1];
+        var _ref21 = _slicedToArray$b(_ref20, 2), plugin = _ref21[1];
         plugin.destroy();
       });
       pluginsRegistry.clear();
@@ -24320,10 +24333,12 @@ function Core(rootElement, userSettings) {
     return instance.isLtr() ? 1 : -1;
   };
   var shortcutManager = createShortcutManager({
+    handleEvent: function handleEvent(event) {
+      var isListening = instance.isListening();
+      var isKeyboardEventWithKey = (event === null || event === void 0 ? void 0 : event.key) !== void 0;
+      return isListening && isKeyboardEventWithKey;
+    },
     beforeKeyDown: function beforeKeyDown(event) {
-      if (_this.isListening() === false) {
-        return false;
-      }
       return _this.runHooks("beforeKeyDown", event);
     },
     afterKeyDown: function afterKeyDown(event) {
@@ -24381,7 +24396,7 @@ function Core(rootElement, userSettings) {
     keys: [["ArrowUp", "Control/Meta"]],
     captureCtrl: true,
     callback: function callback() {
-      selection.setRangeStart(instance._createCellCoords(instance.rowIndexMapper.getFirstNotHiddenIndex(0, 1), instance.getSelectedRangeLast().highlight.col));
+      selection.setRangeStart(instance._createCellCoords(instance.rowIndexMapper.getNearestNotHiddenIndex(0, 1), instance.getSelectedRangeLast().highlight.col));
     }
   }, {
     keys: [["ArrowUp", "Shift"]],
@@ -24393,7 +24408,7 @@ function Core(rootElement, userSettings) {
     captureCtrl: true,
     callback: function callback() {
       var _instance$getSelected = instance.getSelectedRangeLast(), from = _instance$getSelected.from, to = _instance$getSelected.to;
-      var row = instance.rowIndexMapper.getFirstNotHiddenIndex(0, 1);
+      var row = instance.rowIndexMapper.getNearestNotHiddenIndex(0, 1);
       selection.setRangeStart(from.clone());
       selection.setRangeEnd(instance._createCellCoords(row, to.col));
     },
@@ -24409,7 +24424,7 @@ function Core(rootElement, userSettings) {
     keys: [["ArrowDown", "Control/Meta"]],
     captureCtrl: true,
     callback: function callback() {
-      selection.setRangeStart(instance._createCellCoords(instance.rowIndexMapper.getFirstNotHiddenIndex(instance.countRows() - 1, -1), instance.getSelectedRangeLast().highlight.col));
+      selection.setRangeStart(instance._createCellCoords(instance.rowIndexMapper.getNearestNotHiddenIndex(instance.countRows() - 1, -1), instance.getSelectedRangeLast().highlight.col));
     }
   }, {
     keys: [["ArrowDown", "Shift"]],
@@ -24421,7 +24436,7 @@ function Core(rootElement, userSettings) {
     captureCtrl: true,
     callback: function callback() {
       var _instance$getSelected2 = instance.getSelectedRangeLast(), from = _instance$getSelected2.from, to = _instance$getSelected2.to;
-      var row = instance.rowIndexMapper.getFirstNotHiddenIndex(instance.countRows() - 1, -1);
+      var row = instance.rowIndexMapper.getNearestNotHiddenIndex(instance.countRows() - 1, -1);
       selection.setRangeStart(from.clone());
       selection.setRangeEnd(instance._createCellCoords(row, to.col));
     },
@@ -24439,7 +24454,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$columnIndex;
       var row = instance.getSelectedRangeLast().highlight.row;
-      var column = (_instance$columnIndex = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex, _toConsumableArray$h(instance.isRtl() ? [instance.countCols() - 1, -1] : [0, 1]));
+      var column = (_instance$columnIndex = instance.columnIndexMapper).getNearestNotHiddenIndex.apply(_instance$columnIndex, _toConsumableArray$h(instance.isRtl() ? [instance.countCols() - 1, -1] : [0, 1]));
       selection.setRangeStart(instance._createCellCoords(row, column));
     }
   }, {
@@ -24453,7 +24468,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$columnIndex2;
       var _instance$getSelected3 = instance.getSelectedRangeLast(), from = _instance$getSelected3.from, to = _instance$getSelected3.to;
-      var column = (_instance$columnIndex2 = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex2, _toConsumableArray$h(instance.isRtl() ? [instance.countCols() - 1, -1] : [0, 1]));
+      var column = (_instance$columnIndex2 = instance.columnIndexMapper).getNearestNotHiddenIndex.apply(_instance$columnIndex2, _toConsumableArray$h(instance.isRtl() ? [instance.countCols() - 1, -1] : [0, 1]));
       selection.setRangeStart(from.clone());
       selection.setRangeEnd(instance._createCellCoords(to.row, column));
     },
@@ -24471,7 +24486,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$columnIndex3;
       var row = instance.getSelectedRangeLast().highlight.row;
-      var column = (_instance$columnIndex3 = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex3, _toConsumableArray$h(instance.isRtl() ? [0, 1] : [instance.countCols() - 1, -1]));
+      var column = (_instance$columnIndex3 = instance.columnIndexMapper).getNearestNotHiddenIndex.apply(_instance$columnIndex3, _toConsumableArray$h(instance.isRtl() ? [0, 1] : [instance.countCols() - 1, -1]));
       selection.setRangeStart(instance._createCellCoords(row, column));
     }
   }, {
@@ -24485,7 +24500,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$columnIndex4;
       var _instance$getSelected4 = instance.getSelectedRangeLast(), from = _instance$getSelected4.from, to = _instance$getSelected4.to;
-      var column = (_instance$columnIndex4 = instance.columnIndexMapper).getFirstNotHiddenIndex.apply(_instance$columnIndex4, _toConsumableArray$h(instance.isRtl() ? [0, 1] : [instance.countCols() - 1, -1]));
+      var column = (_instance$columnIndex4 = instance.columnIndexMapper).getNearestNotHiddenIndex.apply(_instance$columnIndex4, _toConsumableArray$h(instance.isRtl() ? [0, 1] : [instance.countCols() - 1, -1]));
       selection.setRangeStart(from.clone());
       selection.setRangeEnd(instance._createCellCoords(to.row, column));
     },
@@ -24498,7 +24513,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var fixedColumns = parseInt(instance.getSettings().fixedColumnsStart, 10);
       var row = instance.getSelectedRangeLast().highlight.row;
-      var column = instance.columnIndexMapper.getFirstNotHiddenIndex(fixedColumns, 1);
+      var column = instance.columnIndexMapper.getNearestNotHiddenIndex(fixedColumns, 1);
       selection.setRangeStart(instance._createCellCoords(row, column));
     },
     runOnlyIf: function runOnlyIf() {
@@ -24507,7 +24522,7 @@ function Core(rootElement, userSettings) {
   }, {
     keys: [["Home", "Shift"]],
     callback: function callback() {
-      selection.setRangeEnd(instance._createCellCoords(selection.selectedRange.current().from.row, instance.columnIndexMapper.getFirstNotHiddenIndex(0, 1)));
+      selection.setRangeEnd(instance._createCellCoords(selection.selectedRange.current().from.row, instance.columnIndexMapper.getNearestNotHiddenIndex(0, 1)));
     }
   }, {
     keys: [["Home", "Control/Meta"]],
@@ -24515,8 +24530,8 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var fixedRows = parseInt(instance.getSettings().fixedRowsTop, 10);
       var fixedColumns = parseInt(instance.getSettings().fixedColumnsStart, 10);
-      var row = instance.rowIndexMapper.getFirstNotHiddenIndex(fixedRows, 1);
-      var column = instance.columnIndexMapper.getFirstNotHiddenIndex(fixedColumns, 1);
+      var row = instance.rowIndexMapper.getNearestNotHiddenIndex(fixedRows, 1);
+      var column = instance.columnIndexMapper.getNearestNotHiddenIndex(fixedColumns, 1);
       selection.setRangeStart(instance._createCellCoords(row, column));
     },
     runOnlyIf: function runOnlyIf() {
@@ -24526,7 +24541,7 @@ function Core(rootElement, userSettings) {
     keys: [["End"]],
     captureCtrl: true,
     callback: function callback() {
-      selection.setRangeStart(instance._createCellCoords(instance.getSelectedRangeLast().highlight.row, instance.columnIndexMapper.getFirstNotHiddenIndex(instance.countCols() - 1, -1)));
+      selection.setRangeStart(instance._createCellCoords(instance.getSelectedRangeLast().highlight.row, instance.columnIndexMapper.getNearestNotHiddenIndex(instance.countCols() - 1, -1)));
     },
     runOnlyIf: function runOnlyIf() {
       return instance.view.isMainTableNotFullyCoveredByOverlays();
@@ -24534,15 +24549,15 @@ function Core(rootElement, userSettings) {
   }, {
     keys: [["End", "Shift"]],
     callback: function callback() {
-      selection.setRangeEnd(instance._createCellCoords(selection.selectedRange.current().from.row, instance.columnIndexMapper.getFirstNotHiddenIndex(instance.countCols() - 1, -1)));
+      selection.setRangeEnd(instance._createCellCoords(selection.selectedRange.current().from.row, instance.columnIndexMapper.getNearestNotHiddenIndex(instance.countCols() - 1, -1)));
     }
   }, {
     keys: [["End", "Control/Meta"]],
     captureCtrl: true,
     callback: function callback() {
       var fixedRows = parseInt(instance.getSettings().fixedRowsBottom, 10);
-      var row = instance.rowIndexMapper.getFirstNotHiddenIndex(instance.countRows() - fixedRows - 1, -1);
-      var column = instance.columnIndexMapper.getFirstNotHiddenIndex(instance.countCols() - 1, -1);
+      var row = instance.rowIndexMapper.getNearestNotHiddenIndex(instance.countRows() - fixedRows - 1, -1);
+      var column = instance.columnIndexMapper.getNearestNotHiddenIndex(instance.countCols() - 1, -1);
       selection.setRangeStart(instance._createCellCoords(row, column));
     },
     runOnlyIf: function runOnlyIf() {
@@ -24558,7 +24573,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$getSelected5 = instance.getSelectedRangeLast(), to = _instance$getSelected5.to;
       var nextRowIndexToSelect = Math.max(to.row - instance.countVisibleRows(), 0);
-      var row = instance.rowIndexMapper.getFirstNotHiddenIndex(nextRowIndexToSelect, 1);
+      var row = instance.rowIndexMapper.getNearestNotHiddenIndex(nextRowIndexToSelect, 1);
       if (row !== null) {
         var coords = instance._createCellCoords(row, to.col);
         var scrollPadding = to.row - instance.view.getFirstFullyVisibleRow();
@@ -24577,7 +24592,7 @@ function Core(rootElement, userSettings) {
     callback: function callback() {
       var _instance$getSelected6 = instance.getSelectedRangeLast(), to = _instance$getSelected6.to;
       var nextRowIndexToSelect = Math.min(to.row + instance.countVisibleRows(), instance.countRows() - 1);
-      var row = instance.rowIndexMapper.getFirstNotHiddenIndex(nextRowIndexToSelect, -1);
+      var row = instance.rowIndexMapper.getNearestNotHiddenIndex(nextRowIndexToSelect, -1);
       if (row !== null) {
         var coords = instance._createCellCoords(row, to.col);
         var scrollPadding = to.row - instance.view.getFirstFullyVisibleRow();
@@ -24644,26 +24659,26 @@ function _typeof$C(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$C(obj);
 }
-function _slicedToArray$d(arr, i) {
-  return _arrayWithHoles$d(arr) || _iterableToArrayLimit$d(arr, i) || _unsupportedIterableToArray$o(arr, i) || _nonIterableRest$d();
+function _slicedToArray$c(arr, i) {
+  return _arrayWithHoles$c(arr) || _iterableToArrayLimit$c(arr, i) || _unsupportedIterableToArray$n(arr, i) || _nonIterableRest$c();
 }
-function _nonIterableRest$d() {
+function _nonIterableRest$c() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$o(o, minLen) {
+function _unsupportedIterableToArray$n(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$o(o, minLen);
+    return _arrayLikeToArray$n(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$o(o, minLen);
+    return _arrayLikeToArray$n(o, minLen);
 }
-function _arrayLikeToArray$o(arr, len) {
+function _arrayLikeToArray$n(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -24671,7 +24686,7 @@ function _arrayLikeToArray$o(arr, len) {
   }
   return arr2;
 }
-function _iterableToArrayLimit$d(arr, i) {
+function _iterableToArrayLimit$c(arr, i) {
   var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
@@ -24699,7 +24714,7 @@ function _iterableToArrayLimit$d(arr, i) {
   }
   return _arr;
 }
-function _arrayWithHoles$d(arr) {
+function _arrayWithHoles$c(arr) {
   if (Array.isArray(arr))
     return arr;
 }
@@ -24713,7 +24728,7 @@ function _inherits$q(subClass, superClass) {
     _setPrototypeOf$s(subClass, superClass);
 }
 function _setPrototypeOf$s(o, p) {
-  _setPrototypeOf$s = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$s = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -24762,7 +24777,7 @@ function _isNativeReflectConstruct$s() {
   }
 }
 function _getPrototypeOf$q(o) {
-  _getPrototypeOf$q = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$q = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$q(o);
@@ -24894,7 +24909,7 @@ var BaseEditor = /* @__PURE__ */ function() {
       }
       var modifiedCellCoords = this.hot.runHooks("modifyGetCellCoords", visualRowFrom, visualColumnFrom);
       if (Array.isArray(modifiedCellCoords)) {
-        var _modifiedCellCoords = _slicedToArray$d(modifiedCellCoords, 2);
+        var _modifiedCellCoords = _slicedToArray$c(modifiedCellCoords, 2);
         visualRowFrom = _modifiedCellCoords[0];
         visualColumnFrom = _modifiedCellCoords[1];
       }
@@ -25363,26 +25378,26 @@ function _typeof$D(obj) {
     return obj2 && typeof Symbol == "function" && obj2.constructor === Symbol && obj2 !== Symbol.prototype ? "symbol" : typeof obj2;
   }, _typeof$D(obj);
 }
-function _slicedToArray$e(arr, i) {
-  return _arrayWithHoles$e(arr) || _iterableToArrayLimit$e(arr, i) || _unsupportedIterableToArray$p(arr, i) || _nonIterableRest$e();
+function _slicedToArray$d(arr, i) {
+  return _arrayWithHoles$d(arr) || _iterableToArrayLimit$d(arr, i) || _unsupportedIterableToArray$o(arr, i) || _nonIterableRest$d();
 }
-function _nonIterableRest$e() {
+function _nonIterableRest$d() {
   throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
-function _unsupportedIterableToArray$p(o, minLen) {
+function _unsupportedIterableToArray$o(o, minLen) {
   if (!o)
     return;
   if (typeof o === "string")
-    return _arrayLikeToArray$p(o, minLen);
+    return _arrayLikeToArray$o(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor)
     n = o.constructor.name;
   if (n === "Map" || n === "Set")
     return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n))
-    return _arrayLikeToArray$p(o, minLen);
+    return _arrayLikeToArray$o(o, minLen);
 }
-function _arrayLikeToArray$p(arr, len) {
+function _arrayLikeToArray$o(arr, len) {
   if (len == null || len > arr.length)
     len = arr.length;
   for (var i = 0, arr2 = new Array(len); i < len; i++) {
@@ -25390,7 +25405,7 @@ function _arrayLikeToArray$p(arr, len) {
   }
   return arr2;
 }
-function _iterableToArrayLimit$e(arr, i) {
+function _iterableToArrayLimit$d(arr, i) {
   var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
   if (_i == null)
     return;
@@ -25418,7 +25433,7 @@ function _iterableToArrayLimit$e(arr, i) {
   }
   return _arr;
 }
-function _arrayWithHoles$e(arr) {
+function _arrayWithHoles$d(arr) {
   if (Array.isArray(arr))
     return arr;
 }
@@ -25447,7 +25462,7 @@ function _createClass$1c(Constructor, protoProps, staticProps) {
 }
 function _get$4() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$4 = Reflect.get;
+    _get$4 = Reflect.get.bind();
   } else {
     _get$4 = function _get2(target, property, receiver) {
       var base = _superPropBase$4(target, property);
@@ -25480,7 +25495,7 @@ function _inherits$r(subClass, superClass) {
     _setPrototypeOf$t(subClass, superClass);
 }
 function _setPrototypeOf$t(o, p) {
-  _setPrototypeOf$t = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$t = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -25529,7 +25544,7 @@ function _isNativeReflectConstruct$t() {
   }
 }
 function _getPrototypeOf$r(o) {
-  _getPrototypeOf$r = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$r = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$r(o);
@@ -25849,13 +25864,13 @@ var TextEditor = /* @__PURE__ */ function(_BaseEditor) {
       }, {
         keys: [["Home"]],
         callback: function callback(event, _ref) {
-          var _ref2 = _slicedToArray$e(_ref, 1), keyName = _ref2[0];
+          var _ref2 = _slicedToArray$d(_ref, 1), keyName = _ref2[0];
           updateCaretPosition(keyName, _this4.TEXTAREA);
         }
       }, {
         keys: [["End"]],
         callback: function callback(event, _ref3) {
-          var _ref4 = _slicedToArray$e(_ref3, 1), keyName = _ref4[0];
+          var _ref4 = _slicedToArray$d(_ref3, 1), keyName = _ref4[0];
           updateCaretPosition(keyName, _this4.TEXTAREA);
         }
       }, {
@@ -25960,4 +25975,4 @@ var TextCellType = {
   renderer: textRenderer
 };
 
-export { _register$1 as $, getTrimmingContainer as A, BaseEditor as B, Core as C, arrayMap as D, stripTags as E, isPrintableChar as F, hasClass as G, Hooks as H, EventManager as I, isFunctionKey as J, KEY_CODES as K, deepExtend as L, empty as M, removeClass as N, objectEach as O, fastInnerHTML as P, EDITOR_STATE as Q, _register as R, SHORTCUTS_GROUP_NAVIGATION as S, TextCellType as T, baseRenderer as U, isEmpty as V, SHORTCUTS_GROUP_EDITOR as W, isNumeric as X, rangeEach as Y, _getEditorInstance as Z, _register$2 as _, getLanguagesDictionaries as a, getParentWindow as a$, defineGetter as a0, getPluginsNames as a1, arrayEach as a2, hasPlugin as a3, hasItem$2 as a4, hasItem as a5, hasItem$1 as a6, isObject as a7, PhysicalIndexToValueMap as a8, hasOwnProperty as a9, CONTEXTMENU_ITEMS_EDIT_COMMENT as aA, CONTEXTMENU_ITEMS_ADD_COMMENT as aB, CONTEXTMENU_ITEMS_REMOVE_COMMENT as aC, CONTEXTMENU_ITEMS_READ_ONLY_COMMENT as aD, CONTEXTMENU_ITEMS_ALIGNMENT as aE, CONTEXTMENU_ITEMS_ALIGNMENT_LEFT as aF, CONTEXTMENU_ITEMS_ALIGNMENT_CENTER as aG, CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT as aH, CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY as aI, CONTEXTMENU_ITEMS_ALIGNMENT_TOP as aJ, CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE as aK, CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM as aL, CONTEXTMENU_ITEMS_CLEAR_COLUMN as aM, CONTEXTMENU_ITEMS_INSERT_LEFT as aN, CONTEXTMENU_ITEMS_INSERT_RIGHT as aO, CONTEXTMENU_ITEMS_READ_ONLY as aP, CONTEXTMENU_ITEMS_REDO as aQ, CONTEXTMENU_ITEMS_REMOVE_COLUMN as aR, transformSelectionToColumnDistance as aS, CONTEXTMENU_ITEMS_REMOVE_ROW as aT, transformSelectionToRowDistance as aU, CONTEXTMENU_ITEMS_ROW_ABOVE as aV, CONTEXTMENU_ITEMS_ROW_BELOW as aW, CONTEXTMENU_ITEMS_NO_ITEMS as aX, CONTEXTMENU_ITEMS_UNDO as aY, getWindowScrollTop as aZ, getWindowScrollLeft as a_, isPercentValue as aa, valueAccordingPercent as ab, ViewportColumnsCalculator as ac, arrayReduce as ad, arrayFilter as ae, cancelAnimationFrame as af, requestAnimationFrame as ag, isVisible as ah, getIncreasedIndexes as ai, getDecreasedIndexes as aj, IndexMap as ak, warn as al, arrayUnique as am, fastInnerText as an, LinkedPhysicalIndexToValueMap as ao, isRightClick as ap, IndexesSequence as aq, isUndefined as ar, isFunction as as, toSingleLine as at, mixin as au, localHooks as av, debounce as aw, closest as ax, deepClone as ay, isChildOf as az, registerLanguageDictionary as b, isArrayOfArrays as b$, isWindowsOS as b0, isMobileBrowser as b1, isIpadOS as b2, isInput as b3, CONTEXTMENU_ITEMS_COPY as b4, CONTEXTMENU_ITEMS_CUT as b5, selectElementIfAllowed as b6, stringify$1 as b7, _dataToHTML as b8, sanitize as b9, FILTERS_CONDITIONS_BEGINS_WITH as bA, FILTERS_CONDITIONS_ENDS_WITH as bB, FILTERS_CONDITIONS_CONTAINS as bC, FILTERS_CONDITIONS_NOT_CONTAIN as bD, FILTERS_CONDITIONS_TOMORROW as bE, FILTERS_CONDITIONS_TODAY as bF, FILTERS_CONDITIONS_YESTERDAY as bG, getComparisonFunction as bH, FILTERS_LABELS_CONJUNCTION as bI, FILTERS_LABELS_DISJUNCTION as bJ, FILTERS_NAMESPACE as bK, FILTERS_BUTTONS_PLACEHOLDER_VALUE as bL, FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE as bM, FILTERS_CONDITIONS_NAMESPACE as bN, isKey as bO, FILTERS_BUTTONS_PLACEHOLDER_SEARCH as bP, FILTERS_BUTTONS_SELECT_ALL as bQ, FILTERS_BUTTONS_CLEAR as bR, partial as bS, dataRowToChangesArray as bT, FILTERS_VALUES_BLANK_CELLS as bU, FILTERS_BUTTONS_OK as bV, FILTERS_BUTTONS_CANCEL as bW, curry as bX, TrimmingMap as bY, FILTERS_DIVS_FILTER_BY_CONDITION as bZ, FILTERS_DIVS_FILTER_BY_VALUE as b_, htmlToGridSettings as ba, parse as bb, getSelectionText as bc, CONTEXTMENU_ITEMS_BORDERS_BOTTOM as bd, CONTEXTMENU_ITEMS_BORDERS_LEFT as be, CONTEXTMENU_ITEMS_REMOVE_BORDERS as bf, CONTEXTMENU_ITEMS_BORDERS_RIGHT as bg, CONTEXTMENU_ITEMS_BORDERS_TOP as bh, detectSelectionType as bi, normalizeSelectionFactory as bj, CONTEXTMENU_ITEMS_BORDERS as bk, clone as bl, substitute as bm, FILTERS_CONDITIONS_NONE as bn, FILTERS_CONDITIONS_EMPTY as bo, FILTERS_CONDITIONS_NOT_EMPTY as bp, FILTERS_CONDITIONS_EQUAL as bq, FILTERS_CONDITIONS_NOT_EQUAL as br, FILTERS_CONDITIONS_GREATER_THAN as bs, FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL as bt, FILTERS_CONDITIONS_LESS_THAN as bu, FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL as bv, FILTERS_CONDITIONS_AFTER as bw, FILTERS_CONDITIONS_BEFORE as bx, FILTERS_CONDITIONS_BETWEEN as by, FILTERS_CONDITIONS_NOT_BETWEEN as bz, getTranslatedPhrase as c, error as c0, toUpperCaseFirst as c1, CONTEXTMENU_ITEMS_HIDE_COLUMN as c2, CONTEXTMENU_ITEMS_SHOW_COLUMN as c3, HidingMap as c4, CONTEXTMENU_ITEMS_HIDE_ROW as c5, CONTEXTMENU_ITEMS_SHOW_ROW as c6, CONTEXTMENU_ITEMS_FREEZE_COLUMN as c7, CONTEXTMENU_ITEMS_UNFREEZE_COLUMN as c8, isDetached as c9, ViewportRowsCalculator as ca, rangeEachReverse as cb, CONTEXTMENU_ITEMS_UNMERGE_CELLS as cc, CONTEXTMENU_ITEMS_MERGE_CELLS as cd, HEADER_TYPE as ce, ACTIVE_HEADER_TYPE as cf, isLeftClick as cg, CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD as ch, CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD as ci, isArrayOfObjects as cj, isTouchSupported as ck, inherit as cl, registerPlugin as cm, dictionaryKeys as d, getListWithInsertedItems$1 as e, getListWithRemovedItems$1 as f, getLanguageDictionary as g, getListWithInsertedItems as h, getListWithRemovedItems as i, extend as j, TextEditor as k, stopImmediatePropagation as l, metaSchemaFactory as m, isDefined as n, addClass as o, getScrollbarWidth as p, outerWidth as q, rootInstanceSymbol as r, setCaretPosition as s, textRenderer as t, stringify as u, getCaretPosition as v, getSelectionEndPosition as w, pivot as x, offset as y, outerHeight as z };
+export { _register$1 as $, outerHeight as A, BaseEditor as B, Core as C, arrayMap as D, stripTags as E, isPrintableChar as F, hasClass as G, Hooks as H, EventManager as I, isFunctionKey as J, KEY_CODES as K, deepExtend as L, empty as M, removeClass as N, objectEach as O, fastInnerHTML as P, EDITOR_STATE as Q, _register as R, SHORTCUTS_GROUP_NAVIGATION as S, TextCellType as T, baseRenderer as U, isEmpty as V, SHORTCUTS_GROUP_EDITOR as W, isNumeric as X, rangeEach as Y, _getEditorInstance as Z, _register$2 as _, getLanguagesDictionaries as a, getParentWindow as a$, defineGetter as a0, getPluginsNames as a1, arrayEach as a2, hasPlugin as a3, hasItem$2 as a4, hasItem as a5, hasItem$1 as a6, isObject as a7, PhysicalIndexToValueMap as a8, hasOwnProperty as a9, CONTEXTMENU_ITEMS_EDIT_COMMENT as aA, CONTEXTMENU_ITEMS_ADD_COMMENT as aB, CONTEXTMENU_ITEMS_REMOVE_COMMENT as aC, CONTEXTMENU_ITEMS_READ_ONLY_COMMENT as aD, CONTEXTMENU_ITEMS_ALIGNMENT as aE, CONTEXTMENU_ITEMS_ALIGNMENT_LEFT as aF, CONTEXTMENU_ITEMS_ALIGNMENT_CENTER as aG, CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT as aH, CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY as aI, CONTEXTMENU_ITEMS_ALIGNMENT_TOP as aJ, CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE as aK, CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM as aL, CONTEXTMENU_ITEMS_CLEAR_COLUMN as aM, CONTEXTMENU_ITEMS_INSERT_LEFT as aN, CONTEXTMENU_ITEMS_INSERT_RIGHT as aO, CONTEXTMENU_ITEMS_READ_ONLY as aP, CONTEXTMENU_ITEMS_REDO as aQ, CONTEXTMENU_ITEMS_REMOVE_COLUMN as aR, transformSelectionToColumnDistance as aS, CONTEXTMENU_ITEMS_REMOVE_ROW as aT, transformSelectionToRowDistance as aU, CONTEXTMENU_ITEMS_ROW_ABOVE as aV, CONTEXTMENU_ITEMS_ROW_BELOW as aW, CONTEXTMENU_ITEMS_NO_ITEMS as aX, CONTEXTMENU_ITEMS_UNDO as aY, getWindowScrollTop as aZ, getWindowScrollLeft as a_, isPercentValue as aa, valueAccordingPercent as ab, ViewportColumnsCalculator as ac, arrayReduce as ad, arrayFilter as ae, cancelAnimationFrame as af, requestAnimationFrame as ag, isVisible as ah, getIncreasedIndexes as ai, getDecreasedIndexes as aj, IndexMap as ak, warn as al, arrayUnique as am, fastInnerText as an, LinkedPhysicalIndexToValueMap as ao, isRightClick as ap, IndexesSequence as aq, isUndefined as ar, isFunction as as, toSingleLine as at, mixin as au, localHooks as av, debounce as aw, closest as ax, deepClone as ay, isChildOf as az, registerLanguageDictionary as b, isArrayOfArrays as b$, isWindowsOS as b0, isMobileBrowser as b1, isIpadOS as b2, isInput as b3, CONTEXTMENU_ITEMS_COPY as b4, CONTEXTMENU_ITEMS_CUT as b5, selectElementIfAllowed as b6, stringify$1 as b7, _dataToHTML as b8, sanitize as b9, FILTERS_CONDITIONS_BEGINS_WITH as bA, FILTERS_CONDITIONS_ENDS_WITH as bB, FILTERS_CONDITIONS_CONTAINS as bC, FILTERS_CONDITIONS_NOT_CONTAIN as bD, FILTERS_CONDITIONS_TOMORROW as bE, FILTERS_CONDITIONS_TODAY as bF, FILTERS_CONDITIONS_YESTERDAY as bG, getComparisonFunction as bH, FILTERS_LABELS_CONJUNCTION as bI, FILTERS_LABELS_DISJUNCTION as bJ, FILTERS_NAMESPACE as bK, FILTERS_BUTTONS_PLACEHOLDER_VALUE as bL, FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE as bM, FILTERS_CONDITIONS_NAMESPACE as bN, isKey as bO, FILTERS_BUTTONS_PLACEHOLDER_SEARCH as bP, FILTERS_BUTTONS_SELECT_ALL as bQ, FILTERS_BUTTONS_CLEAR as bR, partial as bS, dataRowToChangesArray as bT, FILTERS_VALUES_BLANK_CELLS as bU, FILTERS_BUTTONS_OK as bV, FILTERS_BUTTONS_CANCEL as bW, curry as bX, TrimmingMap as bY, FILTERS_DIVS_FILTER_BY_CONDITION as bZ, FILTERS_DIVS_FILTER_BY_VALUE as b_, htmlToGridSettings as ba, parse as bb, getSelectionText as bc, CONTEXTMENU_ITEMS_BORDERS_BOTTOM as bd, CONTEXTMENU_ITEMS_BORDERS_LEFT as be, CONTEXTMENU_ITEMS_REMOVE_BORDERS as bf, CONTEXTMENU_ITEMS_BORDERS_RIGHT as bg, CONTEXTMENU_ITEMS_BORDERS_TOP as bh, detectSelectionType as bi, normalizeSelectionFactory as bj, CONTEXTMENU_ITEMS_BORDERS as bk, clone as bl, substitute as bm, FILTERS_CONDITIONS_NONE as bn, FILTERS_CONDITIONS_EMPTY as bo, FILTERS_CONDITIONS_NOT_EMPTY as bp, FILTERS_CONDITIONS_EQUAL as bq, FILTERS_CONDITIONS_NOT_EQUAL as br, FILTERS_CONDITIONS_GREATER_THAN as bs, FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL as bt, FILTERS_CONDITIONS_LESS_THAN as bu, FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL as bv, FILTERS_CONDITIONS_AFTER as bw, FILTERS_CONDITIONS_BEFORE as bx, FILTERS_CONDITIONS_BETWEEN as by, FILTERS_CONDITIONS_NOT_BETWEEN as bz, getTranslatedPhrase as c, error as c0, toUpperCaseFirst as c1, CONTEXTMENU_ITEMS_HIDE_COLUMN as c2, CONTEXTMENU_ITEMS_SHOW_COLUMN as c3, HidingMap as c4, CONTEXTMENU_ITEMS_HIDE_ROW as c5, CONTEXTMENU_ITEMS_SHOW_ROW as c6, CONTEXTMENU_ITEMS_FREEZE_COLUMN as c7, CONTEXTMENU_ITEMS_UNFREEZE_COLUMN as c8, isDetached as c9, ViewportRowsCalculator as ca, rangeEachReverse as cb, CONTEXTMENU_ITEMS_UNMERGE_CELLS as cc, CONTEXTMENU_ITEMS_MERGE_CELLS as cd, HEADER_TYPE as ce, ACTIVE_HEADER_TYPE as cf, isLeftClick as cg, CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD as ch, CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD as ci, isArrayOfObjects as cj, isTouchSupported as ck, inherit as cl, registerPlugin as cm, dictionaryKeys as d, getListWithInsertedItems$1 as e, getListWithRemovedItems$1 as f, getLanguageDictionary as g, getListWithInsertedItems as h, getListWithRemovedItems as i, extend as j, TextEditor as k, stopImmediatePropagation as l, metaSchemaFactory as m, isDefined as n, addClass as o, getScrollbarWidth as p, outerWidth as q, rootInstanceSymbol as r, setCaretPosition as s, textRenderer as t, stringify as u, getCaretPosition as v, getSelectionEndPosition as w, pivot as x, getTrimmingContainer as y, offset as z };

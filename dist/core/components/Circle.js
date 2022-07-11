@@ -6,6 +6,7 @@ import me from '../../_snowpack/pkg/math-expressions.js';
 export default class Circle extends Curve {
   static componentType = "circle";
   static rendererType = "circle";
+  static representsClosedPath = true;
 
   actions = {
     moveCircle: this.moveCircle.bind(this),
@@ -33,9 +34,7 @@ export default class Circle extends Curve {
   }
 
   static returnChildGroups() {
-
-    return []
-
+    return GraphicalComponent.returnChildGroups();
   }
 
 

@@ -168,7 +168,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -190,7 +190,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -212,7 +212,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -234,7 +234,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -256,7 +256,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         stdev: {
@@ -282,7 +282,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -303,7 +303,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -324,7 +324,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -345,7 +345,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -366,7 +366,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         dataColumn: {
@@ -387,7 +387,7 @@ export default class SummaryStatistics extends BlockComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         minimum: {
@@ -594,5 +594,21 @@ export default class SummaryStatistics extends BlockComponent {
 
   }
 
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
 
 }

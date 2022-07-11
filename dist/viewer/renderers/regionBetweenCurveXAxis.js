@@ -35,6 +35,9 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       curveLeft: {visible: false},
       curveRight: {visible: false}
     };
+    jsxAttributes.label = {
+      highlight: false
+    };
     let f = createFunctionFromDefinition(SVs.fDefinition);
     curveJXG.current = board.create("functiongraph", f, {visible: false});
     return board.create("integral", [SVs.boundaryValues, curveJXG.current], jsxAttributes);

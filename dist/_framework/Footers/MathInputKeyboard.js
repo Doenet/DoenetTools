@@ -498,62 +498,62 @@ export default function VirtualKeyboard() {
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\alpha\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\epsilon")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\epsilon\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\kappa")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\kappa\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\xi")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\xi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\beta")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\beta\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\zeta")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\zeta\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\lambda")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\lambda\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\pi")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\pi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\gamma")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\gamma\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\eta")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\eta\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\mu")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\mu\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\rho")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\rho\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\delta")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\delta\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\epsilon")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\epsilon\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\zeta")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\zeta\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\eta")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\eta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\theta")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\theta\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\kappa")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\kappa\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\lambda")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\lambda\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\mu")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\mu\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\nu")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\nu\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\xi")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\xi\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\pi")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\pi\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\rho")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\rho\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\sigma")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
@@ -563,58 +563,58 @@ export default function VirtualKeyboard() {
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\tau\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\Lambda")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\Lambda\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\Upsilon")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\Upsilon\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\Gamma")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\Gamma\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\phi")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\phi\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\Xi")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\Xi\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\Phi")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\Phi\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\Delta")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\Delta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\psi")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\psi\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\Pi")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\Pi\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\Psi")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\Psi\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("write \\Theta")
-    }, /* @__PURE__ */ React.createElement(MathJax, {
-      dynamic: true
-    }, "\\(\\Theta\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\omega")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\omega\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\Gamma")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Gamma\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\Delta")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Delta\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\Theta")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Theta\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\Lambda")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Lambda\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\Xi")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Xi\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\Pi")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Pi\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Sigma")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, "\\(\\Sigma\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\Phi")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Phi\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\Psi")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Psi\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("write \\Upsilon")
+    }, /* @__PURE__ */ React.createElement(MathJax, {
+      dynamic: true
+    }, "\\(\\Upsilon\\)")), /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write \\Omega")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
@@ -676,14 +676,14 @@ export default function VirtualKeyboard() {
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
     }, `\\(\\sqrt{}\\)`)), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("type theta")
+      onClick: () => callback("write \\infty")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
-    }, "\\(\\theta\\)")), /* @__PURE__ */ React.createElement(Button, {
-      onClick: () => callback("type pi")
+    }, "\\(\\infty\\)")), /* @__PURE__ */ React.createElement(Button, {
+      onClick: () => callback("cmd _")
     }, /* @__PURE__ */ React.createElement(MathJax, {
       dynamic: true
-    }, "\\(\\pi\\)")));
+    }, "\\(a_b\\)")));
     let section123 = /* @__PURE__ */ React.createElement(Section, null, /* @__PURE__ */ React.createElement(Button, {
       onClick: () => callback("write 7")
     }, /* @__PURE__ */ React.createElement(MathJax, {

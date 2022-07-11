@@ -42,17 +42,51 @@ export default class Line extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let stringAndMacrosToEquationAttribute = function ({ matchedChildren }) {
+    let nonLabelToEquationAttribute = function ({ matchedChildren, componentInfoObjects }) {
 
       if (matchedChildren.length === 0) {
         return { success: false };
       }
 
-      // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
-        typeof child === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
-      )) {
+      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: cType,
+        baseComponentType: "label"
+      });
+
+
+      // wrap first group of non-label children becomes equation
+
+      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.attributes?.createComponentOfType?.primitive));
+
+      let childrenToWrap = [], childrenToNotWrap = [];
+
+      if (childIsLabel.filter(x => x).length === 0) {
+        childrenToWrap = matchedChildren
+      } else {
+        if (childIsLabel[0]) {
+          // started with label, find first non-label child
+          let firstNonLabelInd = childIsLabel.indexOf(false);
+          if (firstNonLabelInd !== -1) {
+            childrenToNotWrap.push(...matchedChildren.slice(0, firstNonLabelInd));
+            matchedChildren = matchedChildren.slice(firstNonLabelInd);
+            childIsLabel = childIsLabel.slice(firstNonLabelInd)
+          }
+        }
+
+        // now we don't have label at the beginning
+        // find first label ind
+        let firstLabelInd = childIsLabel.indexOf(true);
+        if (firstLabelInd === -1) {
+          childrenToWrap = matchedChildren;
+        } else {
+          childrenToWrap = matchedChildren.slice(0, firstLabelInd);
+          childrenToNotWrap.push(...matchedChildren.slice(firstLabelInd));
+        }
+
+
+      }
+
+      if (childrenToWrap.length === 0) {
         return { success: false }
       }
 
@@ -62,16 +96,17 @@ export default class Line extends GraphicalComponent {
           equation: {
             component: {
               componentType: "math",
-              children: matchedChildren
+              children: childrenToWrap
             }
           }
-        }
+        },
+        newChildren: childrenToNotWrap
       }
 
     }
 
     sugarInstructions.push({
-      replacementFunction: stringAndMacrosToEquationAttribute
+      replacementFunction: nonLabelToEquationAttribute
     });
 
     return sugarInstructions;
@@ -1389,7 +1424,7 @@ export default class Line extends GraphicalComponent {
 
         return {
           setValue: {
-            nearestPoint: function ({ variables, scales }) {
+            nearestPoint: function ({ variables, scales = [1, 1] }) {
 
               if (skip) {
                 return {};
@@ -1504,6 +1539,10 @@ function calculateCoeffsFromEquation({ equation, variables }) {
   let var2String = var2.toString();
 
   equation = equation.expand().simplify();
+
+  if (!(Array.isArray(equation.tree) && equation.tree[0] === "=" && equation.tree.length === 3)) {
+    return { success: false }
+  }
 
   let rhs = me.fromAst(['+', equation.tree[2], ['-', equation.tree[1]]]).expand().simplify();
   // divide rhs into terms

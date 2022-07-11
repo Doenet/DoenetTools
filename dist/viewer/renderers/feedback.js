@@ -1,16 +1,34 @@
-import React from "../../_snowpack/pkg/react.js";
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faComment as thoughtBubble} from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Feedback(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
   let icon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: thoughtBubble
   });
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
     style: {
       display: "block",
       margin: "12px 4px 0px 4px",
@@ -33,5 +51,5 @@ export default React.memo(function Feedback(props) {
     }
   }, /* @__PURE__ */ React.createElement("a", {
     name
-  }), SVs.feedbackText, children));
+  }), SVs.feedbackText, children)));
 });

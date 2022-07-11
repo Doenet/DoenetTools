@@ -28,12 +28,8 @@ export default React.memo(function Ray(props) {
       return;
     }
     let fixed = !SVs.draggable || SVs.fixed;
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
     var jsxRayAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       layer: 10 * SVs.layer + 7,
@@ -48,10 +44,11 @@ export default React.memo(function Ray(props) {
       highlight: !fixed,
       straightFirst: false
     };
-    if (SVs.labelIsLatex) {
-      jsxRayAttributes.label = {useMathJax: true};
-    } else {
-      jsxRayAttributes.label = {};
+    jsxRayAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxRayAttributes.label.useMathJax = true;
     }
     if (SVs.applyStyleToLabel) {
       jsxRayAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
@@ -166,15 +163,11 @@ export default React.memo(function Ray(props) {
         rayJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
         rayJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (rayJXG.current.visProp.dash !== newDash) {
         rayJXG.current.visProp.dash = newDash;
       }
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      rayJXG.current.name = label;
+      rayJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
         rayJXG.current.setAttribute({withlabel});

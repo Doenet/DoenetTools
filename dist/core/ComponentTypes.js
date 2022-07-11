@@ -54,6 +54,7 @@ import Curve from './components/Curve.js';
 import BezierControls from './components/BezierControls.js';
 import ControlVectors from './components/ControlVectors.js';
 import PointListComponent from './components/abstract/PointListComponent.js';
+import IntervalListComponent from './components/abstract/IntervalListComponent.js';
 import LineListComponent from './components/abstract/LineListComponent.js';
 import VectorListComponent from './components/abstract/VectorListComponent.js';
 import AngleListComponent from './components/abstract/AngleListComponent.js';
@@ -73,6 +74,7 @@ import Graph from './components/Graph.js';
 import Variables from './components/Variables.js';
 import Variable from './components/Variable.js';
 import Function from './components/Function.js';
+import Interval from './components/Interval.js';
 import Template from './components/Template.js';
 import Option from './components/Option.js';
 import Sequence from './components/Sequence.js';
@@ -178,7 +180,6 @@ import FunctionBaseOperator from './components/abstract/FunctionBaseOperator.js'
 import SectioningComponent from './components/abstract/SectioningComponent.js';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren.js';
 import TextOrInline from './components/abstract/TextOrInline.js';
-import TextOrLatexFromInline from './components/abstract/TextOrLatexFromInline.js';
 import SingleCharacterInline from './components/abstract/SingleCharacterInline.js';
 
 const componentTypeArray = [
@@ -238,6 +239,7 @@ const componentTypeArray = [
   Variables,
   Variable,
   Function,
+  Interval,
   Template, Option,
   Sequence,
   Slider,
@@ -326,6 +328,7 @@ const componentTypeArray = [
   Input,
   CompositeComponent,
   PointListComponent,
+  IntervalListComponent,
   LineListComponent,
   VectorListComponent,
   AngleListComponent,
@@ -337,7 +340,6 @@ const componentTypeArray = [
   SectioningComponent,
   InlineRenderInlineChildren,
   TextOrInline,
-  TextOrLatexFromInline,
   SingleCharacterInline,
 ];
 

@@ -1,12 +1,27 @@
-import React from "../../_snowpack/pkg/react.js";
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faLightbulb as lightOff} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faLightbulb as lightOn} from "../../_snowpack/pkg/@fortawesome/free-regular-svg-icons.js";
 import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Hint(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (!SVs.showHints) {
     return null;
   }
@@ -55,7 +70,10 @@ export default React.memo(function Hint(props) {
       });
     };
   }
-  return /* @__PURE__ */ React.createElement("aside", {
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("aside", {
     id: name,
     key: name
   }, /* @__PURE__ */ React.createElement("a", {
@@ -76,5 +94,5 @@ export default React.memo(function Hint(props) {
     onClick: onClickFunction
   }, twirlIcon, " ", icon, " ", title, " (click to ", openCloseText, ")"), /* @__PURE__ */ React.createElement("span", {
     style: infoBlockStyle
-  }, info));
+  }, info)));
 });

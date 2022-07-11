@@ -1,9 +1,24 @@
-import React from "../../_snowpack/pkg/react.js";
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faPuzzlePiece as puzzle} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Solution(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
@@ -50,7 +65,10 @@ export default React.memo(function Solution(props) {
       });
     };
   }
-  return /* @__PURE__ */ React.createElement("aside", {
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("aside", {
     id: name,
     style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
@@ -72,5 +90,5 @@ export default React.memo(function Solution(props) {
     onClick: onClickFunction
   }, icon, " Solution ", SVs.message), /* @__PURE__ */ React.createElement("span", {
     style: infoBlockStyle
-  }, childrenToRender));
+  }, childrenToRender)));
 });
