@@ -2,9 +2,24 @@ import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {retrieveMediaForCid} from "../../core/utils/retrieveMedia.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Image(props) {
-  let {name, SVs} = useDoenetRender(props, false);
+  let {name, SVs, actions, callAction} = useDoenetRender(props, false);
   let [url, setUrl] = useState(null);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   useEffect(() => {
     if (SVs.cid) {
       retrieveMediaForCid(SVs.cid, SVs.mimeType).then((result) => {
@@ -15,7 +30,10 @@ export default React.memo(function Image(props) {
   }, []);
   if (SVs.hidden)
     return null;
-  return /* @__PURE__ */ React.createElement("div", {
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("div", {
     style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
@@ -42,5 +60,5 @@ export default React.memo(function Image(props) {
       height: sizeToCSS(SVs.height),
       border: "var(--mainBorder)"
     }
-  }, SVs.description));
+  }, SVs.description)));
 });

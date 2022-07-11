@@ -5,6 +5,7 @@ import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionBut
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.js";
 import ToggleButtonGroup from "../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 const TextNoSelect = styled.text`
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -17,6 +18,20 @@ export default React.memo(function subsetOfReals(props) {
   let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
   let pointGrabbed = useRef(null);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
@@ -249,7 +264,10 @@ export default React.memo(function subsetOfReals(props) {
       }
     }
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("div", {
     ref: bounds,
@@ -282,5 +300,5 @@ export default React.memo(function subsetOfReals(props) {
     x2: "780",
     y2: "40",
     style: {stroke: "black", strokeWidth: "2"}
-  }), storedPoints, labels));
+  }), storedPoints, labels)));
 });

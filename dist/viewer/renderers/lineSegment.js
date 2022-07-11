@@ -30,12 +30,8 @@ export default React.memo(function LineSegment(props) {
       return;
     }
     let fixed = !SVs.draggable || SVs.fixed;
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
     var jsxSegmentAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -49,10 +45,11 @@ export default React.memo(function LineSegment(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle),
       highlight: !fixed
     };
-    if (SVs.labelIsLatex) {
-      jsxSegmentAttributes.label = {useMathJax: true};
-    } else {
-      jsxSegmentAttributes.label = {};
+    jsxSegmentAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxSegmentAttributes.label.useMathJax = true;
     }
     if (SVs.applyStyleToLabel) {
       jsxSegmentAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
@@ -241,15 +238,11 @@ export default React.memo(function LineSegment(props) {
         lineSegmentJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
         lineSegmentJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (lineSegmentJXG.current.visProp.dash !== newDash) {
         lineSegmentJXG.current.visProp.dash = newDash;
       }
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      lineSegmentJXG.current.name = label;
+      lineSegmentJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
         lineSegmentJXG.current.setAttribute({withlabel});

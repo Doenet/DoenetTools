@@ -35,12 +35,8 @@ export default React.memo(function Vector(props) {
     }
     let layer = 10 * SVs.layer + 7;
     let fixed = !SVs.draggable || SVs.fixed;
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
     var jsxVectorAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -81,10 +77,11 @@ export default React.memo(function Vector(props) {
       headPointAttributes.visible = false;
     }
     let newPoint2JXG = board.create("point", endpoints[1], headPointAttributes);
-    if (SVs.labelIsLatex) {
-      jsxVectorAttributes.label = {useMathJax: true};
-    } else {
-      jsxVectorAttributes.label = {};
+    jsxVectorAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxVectorAttributes.label.useMathJax = true;
     }
     if (SVs.applyStyleToLabel) {
       jsxVectorAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
@@ -299,15 +296,11 @@ export default React.memo(function Vector(props) {
         vectorJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
         vectorJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (vectorJXG.current.visProp.dash !== newDash) {
         vectorJXG.current.visProp.dash = newDash;
       }
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      vectorJXG.current.name = label;
+      vectorJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
         vectorJXG.current.setAttribute({withlabel});

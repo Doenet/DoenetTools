@@ -1,10 +1,10 @@
 import { roundForDisplay } from '../utils/math.js';
 import InlineComponent from './abstract/InlineComponent.js';
 import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists.js';
+import me from '../../_snowpack/pkg/math-expressions.js';
 
 export default class NumberList extends InlineComponent {
   static componentType = "numberList";
-  static rendererType = "asList";
   static renderChildren = true;
 
   static includeBlankStringChildren = true;
@@ -196,7 +196,7 @@ export default class NumberList extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       isArray: true,
       entryPrefixes: ["number"],
@@ -325,8 +325,37 @@ export default class NumberList extends InlineComponent {
       targetVariableName: "numbers"
     };
 
+
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      returnDependencies: () => ({
+        numbers: {
+          dependencyType: "stateVariable",
+          variableName: "numbers"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let math;
+        if (dependencyValues.numbers.length === 0) {
+          math = me.fromAst("\uff3f");
+        } else if (dependencyValues.numbers.length === 1) {
+          math = me.fromAst(dependencyValues.numbers[0])
+        } else {
+          math = me.fromAst(["list", ...dependencyValues.numbers]);
+        }
+
+        return { setValue: { math } }
+
+      }
+    }
+
     stateVariableDefinitions.text = {
       public: true,
+      forRenderer: true,
       shadowingInstructions: {
         createComponentOfType: "text",
       },
@@ -520,5 +549,13 @@ export default class NumberList extends InlineComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "math",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+    },
+    "text"
+  ];
 
 }

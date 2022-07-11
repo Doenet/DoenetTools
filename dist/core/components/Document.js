@@ -607,6 +607,7 @@ export default class Document extends BaseComponent {
 
   actions = {
     submitAllAnswers: this.submitAllAnswers.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this)
   }
 
   async submitAllAnswers({ actionId }) {
@@ -631,6 +632,18 @@ export default class Document extends BaseComponent {
 
     this.coreFunctions.resolveAction({ actionId });
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
   }
 
   static async setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,

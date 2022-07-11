@@ -48,12 +48,8 @@ export default React.memo(function Polygon(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle)
     };
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
     let jsxPolygonAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -66,10 +62,11 @@ export default React.memo(function Polygon(props) {
       vertices: jsxPointAttributes.current,
       borders: jsxBorderAttributes
     };
-    if (SVs.labelIsLatex) {
-      jsxPolygonAttributes.label = {useMathJax: true};
-    } else {
-      jsxPolygonAttributes.label = {};
+    jsxPolygonAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxPolygonAttributes.label.useMathJax = true;
     }
     if (SVs.applyStyleToLabel) {
       jsxPolygonAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
@@ -240,11 +237,7 @@ export default React.memo(function Polygon(props) {
       if (layerChanged) {
         polygonJXG.current.setAttribute({layer: polygonLayer});
       }
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      polygonJXG.current.name = label;
+      polygonJXG.current.name = SVs.label;
       if (polygonJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
           polygonJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
@@ -280,7 +273,7 @@ export default React.memo(function Polygon(props) {
           border.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
           border.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
         }
-        let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+        let newDash = styleToDash(SVs.selectedStyle.lineStyle);
         if (border.visProp.dash !== newDash) {
           border.visProp.dash = newDash;
         }
