@@ -1,29 +1,22 @@
-import axios from 'axios';
 import React from 'react';
 import {
-  atom,
   atomFamily,
   selectorFamily,
-  useRecoilCallback,
-  useRecoilState,
   useRecoilValue,
+  useSetRecoilState,
 } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
-// import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
-import { coursePermissionsAndSettingsByCourseId } from '../Course/CourseActions';
+import {
+  coursePermissionsAndSettingsByCourseId,
+  courseRolePermissonsByCourseIdRoleId,
+  courseRolesByCourseId,
+} from '../Course/CourseActions';
 import DropdownMenu from './DropdownMenu';
 
-export const courseRoles = atomFamily({
-  key: 'courseRoles',
-  effects: (courseId) => [
-    ({ trigger, setSelf }) => {
-      if (trigger === 'get') {
-        axios.get('api/loadCourseRoles');
-        //filter to roles avaible
-      }
-    },
-  ],
+export const effectiveRoleIdByCourseId = atomFamily({
+  key: 'effectiveRoleId',
+  default: null,
 });
 
 export const effectivePermissionsByCourseId = selectorFamily({
@@ -31,43 +24,36 @@ export const effectivePermissionsByCourseId = selectorFamily({
   get:
     (courseId) =>
     ({ get }) => {
+      const roleId = get(effectiveRoleIdByCourseId(courseId));
+      if (roleId !== null) {
+        return get(courseRolePermissonsByCourseIdRoleId({ courseId, roleId }));
+      }
       return get(coursePermissionsAndSettingsByCourseId(courseId));
     },
 });
 
-//TODO: EMILIO how does this higherarchy change? Mabye if modify roles is active? All see student?
 export function RoleDropdown() {
   const { tool } = useRecoilValue(pageToolViewAtom);
   const courseId = useRecoilValue(searchParamAtomFamily('courseId')) ?? '';
-  const effectivePermissions = useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const setEffectiveRoleId = useSetRecoilState(
+    effectiveRoleIdByCourseId(courseId),
+  );
+  const roles = useRecoilValue(courseRolesByCourseId(courseId));
 
   if (tool === 'enrollment') {
     return null;
   }
-
-  let items = [
-    ['instructor', 'Instructor'],
-    ['student', 'Student'],
-  ];
-
-  let defaultIndex = 0;
-  // for (let [i, item] of Object.entries(items)) {
-  //   if (item[0] === effectiveRole) {
-  //     defaultIndex = Number(i) + 1;
-  //     break;
-  //   }
-  // }
 
   return (
     <>
       Role
       <DropdownMenu
         width="menu"
-        // maxMenuHeight="200px"
-        items={items}
+        maxMenuHeight="200px"
+        items={roles.map(({ roleLabel, roleId }) => [roleId, roleLabel])}
         title="Role"
-        defaultIndex={defaultIndex}
-        // onChange={({ value }) => setEffectiveRole(value)}
+        defaultIndex={1}
+        onChange={({ value: roleId }) => setEffectiveRoleId(roleId)}
       />
     </>
   );

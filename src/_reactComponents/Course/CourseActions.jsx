@@ -545,6 +545,24 @@ export const courseRolesByCourseId = atomFamily({
         setSelf(roles);
       }
     },
+    async ({ getPromise, onSet,  setSelf}) => {
+      const permissonsAndSettings = await getPromise(coursePermissionsAndSettingsByCourseId(courseId));
+      onSet((newValue) => {
+        if (permissonsAndSettings['isOwner'] !== '1') {
+          let filteredRoles = newValue?.slice(0);
+
+          for(const key in permissonsAndSettings) {
+            //TODO: how to deal with temp permisson of isIncludedInGradebook.
+            if(permissonsAndSettings[key] === '0' && key != 'isIncludedInGradebook') {
+              filteredRoles = filteredRoles.filter(({[key]: permisson}) => ((permisson ?? '0') ===  '0'));
+              console.log('filtered', key, filteredRoles);
+            }
+            if (filteredRoles.length <= 1) break;
+          }
+          setSelf(filteredRoles);
+        }
+      })
+    }
   ]
 })
 
