@@ -50,7 +50,7 @@ export default React.memo(function sideBySide(props) {
       thisMarginLeft += SVs.gapWidth/2;
     }
     if(i < nCols-1) {
-      thisMarginRight += SVs.gapWidth/2;
+      thisMarginRight += SVs.gapWidth/2 + 1;
     }
 
     styledChildren.push(<span 
@@ -66,7 +66,7 @@ export default React.memo(function sideBySide(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <div id={name} style={{display:"flex",maxWidth:"800px", margin: "12px 0"}}>
+    <div id={name} style={{display:"flex",maxWidth:"850px", margin: "12px 0"}}>
       <a name={name} />
       {styledChildren}
     </div>
