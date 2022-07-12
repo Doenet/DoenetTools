@@ -3029,7 +3029,7 @@ describe('Math Operator Tag Tests', function () {
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
       let replacement2Anchor = cesc('#' + replacement2Name);
 
-      let theVariance = me.math.var([3, 17, 1]);
+      let theVariance = me.math.variance([3, 17, 1]);
       let theVarianceString = theVariance.toString();
 
       cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3060,7 +3060,7 @@ describe('Math Operator Tag Tests', function () {
         expect(text.trim()).equal(theVarianceString)
       });
       cy.get('#\\/withNumberVariance').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(me.math.var([3, me.math.var([17, 1])]).toString())
+        expect(text.trim()).equal(me.math.variance([3, me.math.variance([17, 1])]).toString())
       });
       cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)232')
@@ -3105,7 +3105,7 @@ describe('Math Operator Tag Tests', function () {
         expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(theVariance);
         expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
         expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberVariance'].stateValues.value).eq(me.math.var([3, me.math.var([17, 1])]));
+        expect(stateVariables['/withNumberVariance'].stateValues.value).eq(me.math.variance([3, me.math.variance([17, 1])]));
         expect(stateVariables['/withNumberVariance'].stateValues.isNumericOperator).eq(true);
         expect(stateVariables['/withNumberVariance'].stateValues.isNumber).eq(true);
         // expect(stateVariables['/vars'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
@@ -3161,7 +3161,7 @@ describe('Math Operator Tag Tests', function () {
       `}, "*");
     });
 
-    let theVariance = me.math.var([3, 17, 1]);
+    let theVariance = me.math.variance([3, 17, 1]);
     let theVarianceString = theVariance.toString();
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
@@ -3367,9 +3367,9 @@ describe('Math Operator Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
 
-    let theVariance = me.math.var([3, 17, 1]);
+    let theVariance = me.math.variance([3, 17, 1]);
     let theVarianceString = theVariance.toString();
-    let theVariance2 = me.math.var([3, 17, 1, 3, 17, 13]);
+    let theVariance2 = me.math.variance([3, 17, 1, 3, 17, 13]);
     let theVariance2String = theVariance2.toString();
 
     cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3512,8 +3512,8 @@ describe('Math Operator Tag Tests', function () {
       let variance5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
       let variance6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
 
-      let variancePrimes = me.math.var(2, 3, 5, 7);
-      let variance100 = me.math.var(Array.from({ length: 100 }, (_, i) => i + 1))
+      let variancePrimes = me.math.variance(2, 3, 5, 7);
+      let variance100 = me.math.variance(Array.from({ length: 100 }, (_, i) => i + 1))
 
       cy.log('Test value displayed in browser')
 
@@ -3581,7 +3581,7 @@ describe('Math Operator Tag Tests', function () {
       let replacement2Name = stateVariables['/_copy2'].replacements[0].componentName;
       let replacement2Anchor = cesc('#' + replacement2Name);
 
-      let theVariance = me.math.var([4, 16, 1], 'uncorrected');
+      let theVariance = me.math.variance([4, 16, 1], 'uncorrected');
       let theVarianceString = theVariance.toString();
 
       cy.get('#\\/numbers').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -3612,7 +3612,7 @@ describe('Math Operator Tag Tests', function () {
         expect(text.trim()).equal(theVarianceString)
       });
       cy.get('#\\/withNumberVariance').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-        expect(text.trim()).equal(me.math.var([4, me.math.var([17, 1], 'uncorrected')], 'uncorrected').toString())
+        expect(text.trim()).equal(me.math.variance([4, me.math.variance([17, 1], 'uncorrected')], 'uncorrected').toString())
       });
       cy.get('#\\/vars').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
         expect(text.trim()).equal('x2+(x+y)2+(x+y+z)2−(x+x+y+x+y+z)233')
@@ -3657,7 +3657,7 @@ describe('Math Operator Tag Tests', function () {
         expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.value).eq(theVariance);
         expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumericOperator).eq(true);
         expect(stateVariables['/numbersWithNumericMathForceNumeric'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/withNumberVariance'].stateValues.value).eq(me.math.var([4, me.math.var([17, 1], 'uncorrected')], 'uncorrected'));
+        expect(stateVariables['/withNumberVariance'].stateValues.value).eq(me.math.variance([4, me.math.variance([17, 1], 'uncorrected')], 'uncorrected'));
         expect(stateVariables['/withNumberVariance'].stateValues.isNumericOperator).eq(true);
         expect(stateVariables['/withNumberVariance'].stateValues.isNumber).eq(true);
         // expect(stateVariables['/vars'].stateValues.value).eqls(['/', ['+', 'x', 'x', 'y', 'x', 'y', 'z'], 3]);
@@ -3703,8 +3703,8 @@ describe('Math Operator Tag Tests', function () {
       let variance5Anchor = cesc('#' + stateVariables['/_copy3'].replacements[0].componentName);
       let variance6Anchor = cesc('#' + stateVariables['/_copy4'].replacements[0].componentName);
 
-      let variancePrimes = me.math.var([2, 3, 5, 7], 'uncorrected');
-      let variance100 = me.math.var(Array.from({ length: 100 }, (_, i) => i + 1), 'uncorrected')
+      let variancePrimes = me.math.variance([2, 3, 5, 7], 'uncorrected');
+      let variance100 = me.math.variance(Array.from({ length: 100 }, (_, i) => i + 1), 'uncorrected')
 
       cy.log('Test value displayed in browser')
 
