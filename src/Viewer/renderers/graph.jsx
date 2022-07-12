@@ -428,7 +428,8 @@ export default React.memo(function Graph(props) {
     divStyle.display = "none";
   }
   divStyle.border = "2px solid var(--canvastext)";
-  divStyle.margin = "12px";
+  divStyle.marginBottom = "12px";
+  divStyle.marginTop = "12px";
   divStyle.backgroundColor = "var(--canvas)";
   divStyle.color = "var(--canvastext)";
 
