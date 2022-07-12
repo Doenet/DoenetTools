@@ -44,7 +44,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(0.5, 0.05);
       expect(varX).closeTo(1 / 12, 0.01)
@@ -99,7 +99,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(4, 0.5);
       expect(varX).closeTo(8 ** 2 / 12, 0.8)
@@ -153,10 +153,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(-4.5, 0.05);
-      expect(varX).closeTo(1 / 12, 0.01)
+      expect(varX).closeTo(1 / 12, 0.015)
 
       let firstSample = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
       expect(firstSample.stateValues.mean).closeTo(-4.5, 1E-10)
@@ -207,7 +207,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(-3, 0.5);
       expect(varX).closeTo(2 ** 2 / 12, 0.5)
@@ -261,7 +261,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(-3, 0.5);
       expect(varX).closeTo(2 ** 2 / 12, 0.5)
@@ -310,9 +310,9 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(samples.length).eq(400);
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
-      expect(meanX).closeTo(0, 0.1);
+      expect(meanX).closeTo(0, 0.15);
       expect(varX).closeTo(1, 0.2)
 
       let firstSample = stateVariables[stateVariables[stateVariables["/_map1"].replacements[0].componentName].replacements[0].componentName]
@@ -359,7 +359,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(samples.length).eq(400);
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(0, 2);
       expect(varX).closeTo(100, 20)
@@ -408,7 +408,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(samples.length).eq(400);
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(-50, 0.2);
       expect(varX).closeTo(1, 0.3)
@@ -457,7 +457,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(samples.length).eq(400);
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(100, 2);
       expect(varX).closeTo(100, 30)
@@ -506,7 +506,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       expect(samples.length).eq(400);
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(-3, 0.1);
       expect(varX).closeTo(0.01, 0.002)
@@ -559,7 +559,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(0.5, 0.1);
       expect(varX).closeTo((2 ** 2 - 1) / 12, 0.1)
@@ -612,7 +612,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(3, 0.3);
       expect(varX).closeTo((6 ** 2 - 1) / 12, 0.5)
@@ -665,7 +665,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(9, 0.1);
       expect(varX).closeTo((2 ** 2 - 1) / 12, 0.05)
@@ -719,7 +719,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(1, 0.5);
       expect(varX).closeTo((9 ** 2 - 1) / 12, 1)
@@ -811,7 +811,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       let meanX = me.math.mean(samples);
-      let varX = me.math.var(samples, 'uncorrected');
+      let varX = me.math.variance(samples, 'uncorrected');
 
       expect(meanX).closeTo(1, 0.5);
       expect(varX).closeTo((5 ** 2 - 1) * 2 ** 2 / 12, 1)
@@ -874,10 +874,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       expect(me.math.mean(sample1numbers)).closeTo(5, 2)
-      expect(me.math.var(sample1numbers, 'uncorrected')).closeTo(10 ** 2 / 12, 2)
+      expect(me.math.variance(sample1numbers, 'uncorrected')).closeTo(10 ** 2 / 12, 2)
 
       expect(me.math.mean(sample2numbers)).closeTo(0, 1)
-      expect(me.math.var(sample2numbers, 'uncorrected')).closeTo(16, 4)
+      expect(me.math.variance(sample2numbers, 'uncorrected')).closeTo(16, 4)
 
     });
 
@@ -899,10 +899,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
       }
 
       expect(me.math.mean(sample1numbersb)).closeTo(5, 2)
-      expect(me.math.var(sample1numbersb, 'uncorrected')).closeTo(10 ** 2 / 12, 4)
+      expect(me.math.variance(sample1numbersb, 'uncorrected')).closeTo(10 ** 2 / 12, 4)
 
       expect(me.math.mean(sample2numbersb)).closeTo(0, 1)
-      expect(me.math.var(sample2numbersb, 'uncorrected')).closeTo(16, 6)
+      expect(me.math.variance(sample2numbersb, 'uncorrected')).closeTo(16, 6)
 
       for (let ind = 0; ind < 10; ind++) {
         expect(sample1numbersb[ind]).not.eq(sample1numbers[ind])
@@ -930,10 +930,10 @@ describe('SampleRandomNumbers Tag Tests', function () {
         expect(num).lt(4)
       }
       expect(me.math.mean(sample1numbersc)).closeTo(2, 1)
-      expect(me.math.var(sample1numbersc, 'uncorrected')).closeTo(4 ** 2 / 12, 1)
+      expect(me.math.variance(sample1numbersc, 'uncorrected')).closeTo(4 ** 2 / 12, 1)
 
       expect(me.math.mean(sample2numbersc)).closeTo(0, 6)
-      expect(me.math.var(sample2numbersc, 'uncorrected')).closeTo(18 ** 2, 100)
+      expect(me.math.variance(sample2numbersc, 'uncorrected')).closeTo(18 ** 2, 100)
 
       for (let ind = 0; ind < 10; ind++) {
         expect(sample1numbersc[ind]).not.eq(sample1numbersb[ind])
@@ -1559,7 +1559,7 @@ describe('SampleRandomNumbers Tag Tests', function () {
       })
 
       let resultingMean = me.math.mean(samples);
-      let resultingVariance = me.math.var(samples);
+      let resultingVariance = me.math.variance(samples);
       let resultingStandardDeviation = Math.sqrt(resultingVariance);
 
       cy.get(`#\\/resultingMean .mjx-mrow`).invoke('text').then(text => {
