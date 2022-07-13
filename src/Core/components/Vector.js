@@ -8,6 +8,7 @@ export default class Vector extends GraphicalComponent {
 
   actions = {
     moveVector: this.moveVector.bind(this),
+    vectorClicked: this.vectorClicked.bind(this),
   }
 
   static primaryStateVariableForDefinition = "displacementShadow";
@@ -1937,6 +1938,17 @@ export default class Vector extends GraphicalComponent {
         }
       });
     }
+
+  }
+
+  async vectorClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

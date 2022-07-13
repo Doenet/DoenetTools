@@ -78,7 +78,7 @@ export default React.memo(function Circle(props) {
       highlight: false
     }
     if (SVs.labelHasLatex) {
-      jsxCircleAttributes.label.useMathJax = true 
+      jsxCircleAttributes.label.useMathJax = true
     }
 
     if (SVs.showLabel && SVs.label !== "") {
@@ -96,7 +96,11 @@ export default React.memo(function Circle(props) {
 
 
     newCircleJXG.on('drag', function (e) {
-      dragged.current = true;
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+        dragged.current = true;
+      }
 
       centerCoords.current = calculateCenterPosition(e);
       callAction({
@@ -124,6 +128,10 @@ export default React.memo(function Circle(props) {
             throughAngles: throughAnglesAtDown.current,
           }
         })
+      } else {
+        callAction({
+          action: actions.circleClicked
+        });
       }
     });
 
