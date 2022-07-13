@@ -3557,32 +3557,32 @@ export default class Core {
 
       if (stateVarObj.chainActionOnActionOfStateVariableTargets) {
         let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTargets;
-        let targetNames = await stateVarObj.value;
+        let targetIds = await stateVarObj.value;
 
         let originObj = this.originsOfActionsChangedToActions[component.componentName];
 
-        let previousNames;
+        let previousIds;
         if (originObj) {
-          previousNames = originObj[varName];
+          previousIds = originObj[varName];
         }
 
-        if (!previousNames) {
-          previousNames = [];
+        if (!previousIds) {
+          previousIds = [];
         }
 
-        let newNames = [];
+        let newTargets = [];
 
-        if (Array.isArray(targetNames)) {
-          newNames = [...new Set(targetNames)];
-          for (let target of newNames) {
+        if (Array.isArray(targetIds)) {
+          newTargets = [...targetIds];
+          for (let id of newTargets) {
 
-            let indPrev = previousNames.indexOf(target);
+            let indPrev = previousIds.indexOf(id);
 
             if (indPrev === -1) {
-              // found a component that wasn't previously chained
-              let componentActionsChained = this.actionsChangedToActions[target];
+              // found a component/action that wasn't previously chained
+              let componentActionsChained = this.actionsChangedToActions[id];
               if (!componentActionsChained) {
-                componentActionsChained = this.actionsChangedToActions[target] = [];
+                componentActionsChained = this.actionsChangedToActions[id] = [];
               }
 
               componentActionsChained.push({
@@ -3594,17 +3594,17 @@ export default class Core {
             } else {
               // target was already chained
               // remove from previous names to indicate it should still be chained
-              previousNames.splice(indPrev, 1);
+              previousIds.splice(indPrev, 1);
             }
           }
 
 
         }
 
-        // if any names are left in previousNames,
+        // if any ids are left in previousIds,
         // then they should no longer be chained
-        for (let nameToNoLongerChain of previousNames) {
-          let componentActionsChained = this.actionsChangedToActions[nameToNoLongerChain];
+        for (let idToNoLongerChain of previousIds) {
+          let componentActionsChained = this.actionsChangedToActions[idToNoLongerChain];
           if (componentActionsChained) {
             let newComponentActionsChained = [];
 
@@ -3616,16 +3616,16 @@ export default class Core {
               }
             }
 
-            this.actionsChangedToActions[nameToNoLongerChain] = newComponentActionsChained;
+            this.actionsChangedToActions[idToNoLongerChain] = newComponentActionsChained;
 
           }
         }
 
-        if (newNames.length > 0) {
+        if (newTargets.length > 0) {
           if (!originObj) {
             originObj = this.originsOfActionsChangedToActions[component.componentName] = {};
           }
-          originObj[varName] = newNames;
+          originObj[varName] = newTargets;
         } else if (originObj) {
           delete originObj[varName];
 
@@ -7966,7 +7966,7 @@ export default class Core {
     }
   }
 
-  async triggerChainedActions({ componentName }) {
+  async triggerChainedActions({ componentName, triggeringAction }) {
 
     for (let cName in this.updateInfo.componentsToUpdateActionChaining) {
       await this.checkForActionChaining({
@@ -7977,9 +7977,13 @@ export default class Core {
 
     this.updateInfo.componentsToUpdateActionChaining = {};
 
+    let id = componentName;
+    if(triggeringAction) {
+      id += "|" + triggeringAction
+    }
 
-    if (this.actionsChangedToActions[componentName]) {
-      for (let chainedActionInstructions of this.actionsChangedToActions[componentName]) {
+    if (this.actionsChangedToActions[id]) {
+      for (let chainedActionInstructions of this.actionsChangedToActions[id]) {
         await this.performAction(chainedActionInstructions);
       }
     }

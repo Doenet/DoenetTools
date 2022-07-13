@@ -7,7 +7,8 @@ export default class Line extends GraphicalComponent {
 
   actions = {
     moveLine: this.moveLine.bind(this),
-    switchLine: this.switchLine.bind(this)
+    switchLine: this.switchLine.bind(this),
+    lineClicked: this.lineClicked.bind(this)
   };
 
 
@@ -1522,6 +1523,17 @@ export default class Line extends GraphicalComponent {
 
 
   switchLine() {
+
+  }
+
+  async lineClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 
