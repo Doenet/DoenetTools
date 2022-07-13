@@ -29,11 +29,10 @@ export default class Graph extends BlockComponent {
     };
     attributes.width = {
       createComponentOfType: "_componentSize",
-      createStateVariable: "width",
-      defaultValue: { size: 300, isAbsolute: true },
-      public: true,
-      forRenderer: true,
     };
+    attributes.size = {
+      createComponentOfType: "text",
+    }
     attributes.aspectRatio = {
       createComponentOfType: "number",
     };
@@ -223,6 +222,129 @@ export default class Graph extends BlockComponent {
           }]
         }
       }
+    }
+
+    stateVariableDefinitions.size = {
+      public: true,
+      defaultValue: "medium",
+      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
+      },
+      returnDependencies: () => ({
+        sizeAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "size",
+          variableNames: ["value"],
+        },
+        widthAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "width",
+          variableNames: ["componentSize"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        const defaultSize = 'medium';
+        const possibleSizesArray = [
+          ['tiny', 70, 8],
+          ['small', 212, 25],
+          ['medium', 425, 50],
+          ['large', 638, 75],
+          ['full', 850, 100]
+        ];
+        let possibleSizes = possibleSizesArray.map(obj => obj[0])
+ 
+        if (dependencyValues.sizeAttr) {
+          let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
+          
+          if (!possibleSizes.includes(size)){
+            size = defaultSize;
+          }
+          return {
+            setValue: { size }
+          }
+        } else if (dependencyValues.widthAttr) {
+          let componentSize = dependencyValues.widthAttr.stateValues.componentSize;
+          if (componentSize === null){
+
+            return {
+              setValue: { size:defaultSize }
+            }
+          }
+          let {isAbsolute, size:widthSize} = componentSize;
+          let size;
+
+          if (isAbsolute){
+            for(let [word,pixels] of possibleSizesArray){
+              if (widthSize <= pixels){
+                size = word;
+                break
+              }
+            }
+            if (!size){
+              if (Number.isFinite(widthSize)){
+                size = 'full'
+              }else{
+                size = defaultSize
+              }
+            }
+          }else{
+            for(let [word,_,percent] of possibleSizesArray){
+              if (widthSize <= percent){
+                size = word;
+                break
+              }
+            }
+            if (!size){
+              if (Number.isFinite(widthSize)){
+                size = 'full'
+              }else{
+                size = defaultSize
+              }
+            }
+          }
+          return {
+            setValue: { size }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { size: true }
+          }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.width = {
+      public: true,
+      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize"
+      },
+      returnDependencies: () => ({
+        size: {
+          dependencyType: "stateVariable",
+          variableName: "size",
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        const possibleSizesObj = {
+          tiny: 70,
+          small: 212,
+          medium: 425,
+          large: 638, 
+          full: 850, 
+        }
+          let width = {isAbsolute:true, size:possibleSizesObj[dependencyValues.size]}
+       
+          return {
+            setValue: { width }
+          }
+        
+        
+      }
+
     }
 
     stateVariableDefinitions.aspectRatioFromAxisScales = {
