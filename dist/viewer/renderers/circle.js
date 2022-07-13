@@ -66,7 +66,9 @@ export default React.memo(function Circle(props) {
     }
     let newCircleJXG = board.create("circle", [[...SVs.numericalCenter], SVs.numericalRadius], jsxCircleAttributes);
     newCircleJXG.on("drag", function(e) {
-      dragged.current = true;
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
+      }
       centerCoords.current = calculateCenterPosition(e);
       callAction({
         action: actions.moveCircle,
@@ -89,6 +91,10 @@ export default React.memo(function Circle(props) {
             radius: radiusAtDown.current,
             throughAngles: throughAnglesAtDown.current
           }
+        });
+      } else {
+        callAction({
+          action: actions.circleClicked
         });
       }
     });

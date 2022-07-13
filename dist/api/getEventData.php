@@ -58,14 +58,13 @@ if ($success){
 	pageCid,
 	pageNumber,
 	attemptNumber,
-	variantIndex,
+	pageVariantIndex,
+	activityVariantIndex,
 	object,
 	context,
 	result,
 	timestamp,
-	version,
-	deviceName,
-	valid
+	version
 	FROM event
 	WHERE doenetId IN ($sql_doenetIds)
 	";
@@ -81,14 +80,13 @@ if ($success){
 					"pageCid"=>$row['pageCid'],
 					"pageNumber"=>$row['pageNumber'],
 					"attemptNumber"=>$row['attemptNumber'],
-					"variantIndex"=>$row['variantIndex'],
+					"pageVariantIndex"=>$row['pageVariantIndex'],
+					"activityVariantIndex"=>$row['activityVariantIndex'],
 					"object"=>$row['object'],
 					"context"=>$row['context'],
 					"result"=>$row['result'],
 					"timestamp"=>$row['timestamp'],
 					"version"=>$row['version'],
-					"deviceName"=>$row['deviceName'],
-					"valid"=>$row['valid'],
 				));
 			}
 		}

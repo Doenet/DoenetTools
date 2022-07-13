@@ -60,7 +60,9 @@ export default React.memo(function Line(props) {
     ];
     let newLineJXG = board.create("line", through, jsxLineAttributes);
     newLineJXG.on("drag", function(e) {
-      dragged.current = true;
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
+      }
       calculatePointPositions(e);
       callAction({
         action: actions.moveLine,
@@ -86,6 +88,13 @@ export default React.memo(function Line(props) {
       } else if (SVs.switchable && !SVs.fixed) {
         callAction({
           action: actions.switchLine
+        });
+        callAction({
+          action: actions.lineClicked
+        });
+      } else {
+        callAction({
+          action: actions.lineClicked
         });
       }
     });

@@ -6,11 +6,17 @@ export default class Polygon extends Polyline {
 
   actions = {
     movePolygon: this.movePolygon.bind(this),
+    polygonClicked: this.polygonClicked.bind(this)
   };
 
   get movePolygon() {
     return this.movePolyline;
   }
+
+  get polygonClicked() {
+    return this.polylineClicked;
+  }
+
 
   static returnStateVariableDefinitions() {
 
@@ -121,7 +127,7 @@ export default class Polygon extends Polyline {
         if (borderStyleDescription) {
           borderStyleDescription += " ";
         }
-        
+
         borderStyleDescription += dependencyValues.selectedStyle.lineColorWord
 
         return { setValue: { borderStyleDescription } };

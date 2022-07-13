@@ -15,7 +15,8 @@ export default class Curve extends GraphicalComponent {
     moveControlVector: this.moveControlVector.bind(this),
     moveThroughPoint: this.moveThroughPoint.bind(this),
     changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
-    switchCurve: this.switchCurve.bind(this)
+    switchCurve: this.switchCurve.bind(this),
+    curveClicked: this.curveClicked.bind(this)
   };
 
   static primaryStateVariableForDefinition = "fShadow";
@@ -3256,6 +3257,16 @@ export default class Curve extends GraphicalComponent {
 
   }
 
+  async curveClicked({ actionId, name }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 
 }
 

@@ -9,6 +9,7 @@ export default React.memo(function Polyline(props) {
   let pointsJXG = useRef(null);
   let pointCoords = useRef(null);
   let draggedPoint = useRef(null);
+  let downOnPoint = useRef(null);
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
   let previousNVertices = useRef(null);
@@ -86,9 +87,13 @@ export default React.memo(function Polyline(props) {
     });
     let newPolylineJXG = board.create("curve", [x, y], jsxPolylineAttributes);
     for (let i = 0; i < SVs.nVertices; i++) {
-      pointsJXG.current[i].on("drag", () => dragHandler(i));
+      pointsJXG.current[i].on("drag", (e) => dragHandler(i, e));
       pointsJXG.current[i].on("up", () => upHandler(i));
-      pointsJXG.current[i].on("down", () => draggedPoint.current = null);
+      pointsJXG.current[i].on("down", (e) => {
+        draggedPoint.current = null;
+        pointerAtDown.current = [e.x, e.y];
+        downOnPoint.current = i;
+      });
     }
     newPolylineJXG.on("drag", (e) => dragHandler(-1, e));
     newPolylineJXG.on("up", () => upHandler(-1));
@@ -115,60 +120,68 @@ export default React.memo(function Polyline(props) {
     }
   }
   function dragHandler(i, e) {
-    draggedPoint.current = i;
-    if (i === -1) {
-      pointCoords.current = calculatePointPositions(e);
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true
+    if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+      draggedPoint.current = i;
+      if (i === -1) {
+        pointCoords.current = calculatePointPositions(e);
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true
+          }
+        });
+        polylineJXG.current.updateTransformMatrix();
+        let shiftX = polylineJXG.current.transformMat[1][0];
+        let shiftY = polylineJXG.current.transformMat[2][0];
+        for (let j = 0; j < SVs.nVertices; j++) {
+          pointsJXG.current[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
+          polylineJXG.current.dataX[j] = lastPositionsFromCore.current[j][0] - shiftX;
+          polylineJXG.current.dataY[j] = lastPositionsFromCore.current[j][1] - shiftY;
         }
-      });
-      polylineJXG.current.updateTransformMatrix();
-      let shiftX = polylineJXG.current.transformMat[1][0];
-      let shiftY = polylineJXG.current.transformMat[2][0];
-      for (let j = 0; j < SVs.nVertices; j++) {
-        pointsJXG.current[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
-        polylineJXG.current.dataX[j] = lastPositionsFromCore.current[j][0] - shiftX;
-        polylineJXG.current.dataY[j] = lastPositionsFromCore.current[j][1] - shiftY;
+      } else {
+        pointCoords.current = {};
+        pointCoords.current[i] = [pointsJXG.current[i].X(), pointsJXG.current[i].Y()];
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true,
+            sourceInformation: {vertex: i}
+          }
+        });
+        pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
+        board.updateInfobox(pointsJXG.current[i]);
       }
-    } else {
-      pointCoords.current = {};
-      pointCoords.current[i] = [pointsJXG.current[i].X(), pointsJXG.current[i].Y()];
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true,
-          sourceInformation: {vertex: i}
-        }
-      });
-      pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
-      board.updateInfobox(pointsJXG.current[i]);
     }
   }
   function upHandler(i) {
-    if (draggedPoint.current !== i) {
-      return;
+    if (draggedPoint.current === i) {
+      if (i === -1) {
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current
+          }
+        });
+      } else {
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            sourceInformation: {vertex: i}
+          }
+        });
+      }
+    } else if (draggedPoint.current === null && (downOnPoint.current === null || i !== -1)) {
+      callAction({
+        action: actions.polylineClicked
+      });
     }
-    if (i === -1) {
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current
-        }
-      });
-    } else {
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-          sourceInformation: {vertex: i}
-        }
-      });
+    if (i !== -1) {
+      downOnPoint.current = null;
     }
   }
   function calculatePointPositions(e) {
