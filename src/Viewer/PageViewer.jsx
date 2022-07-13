@@ -376,7 +376,7 @@ export default function PageViewer(props) {
 
 
   function resetPage({ changedOnDevice, newCid, newAttemptNumber }) {
-    console.log('resetPage', changedOnDevice, newCid, newAttemptNumber);
+    // console.log('resetPage', changedOnDevice, newCid, newAttemptNumber);
 
 
     if (newAttemptNumber !== attemptNumber) {
@@ -403,31 +403,39 @@ export default function PageViewer(props) {
   }
 
   function calculateCidDoenetML() {
-
+    const coreIdWhenCalled = coreId.current;
     // compare with undefined as doenetML could be empty string
     if (doenetMLFromProps !== undefined) {
       if (cidFromProps) {
         // check to see if doenetML matches cid
         cidFromText(doenetMLFromProps)
           .then(calcCid => {
-            if (calcCid === cidFromProps) {
-              setDoenetML(doenetMLFromProps);
-              setCid(cidFromProps);
-              setStage('continue');
-            } else {
-              if (props.setIsInErrorState) {
-                props.setIsInErrorState(true)
+            //Guard against the possiblity that parameters changed while waiting
+      
+            if (coreIdWhenCalled === coreId.current){
+              if (calcCid === cidFromProps) {
+                setDoenetML(doenetMLFromProps);
+                setCid(cidFromProps);
+                setStage('continue');
+              } else {
+                if (props.setIsInErrorState) {
+                  props.setIsInErrorState(true)
+                }
+                setErrMsg(`doenetML did not match specified cid: ${cidFromProps}`);
               }
-              setErrMsg(`doenetML did not match specified cid: ${cidFromProps}`);
             }
           })
       } else {
         // if have doenetML and no cid, then calculate cid
         cidFromText(doenetMLFromProps)
           .then(cid => {
-            setDoenetML(doenetMLFromProps);
-            setCid(cid);
-            setStage('continue');
+      
+            //Guard against the possiblity that parameters changed while waiting
+            if (coreIdWhenCalled === coreId.current){
+              setDoenetML(doenetMLFromProps);
+              setCid(cid);
+              setStage('continue');
+            }
           })
       }
     } else {
@@ -435,22 +443,30 @@ export default function PageViewer(props) {
 
       retrieveTextFileForCid(cidFromProps, "doenet")
         .then(retrievedDoenetML => {
-          setDoenetML(retrievedDoenetML);
-          setCid(cidFromProps);
-          setStage('continue');
+          //Guard against the possiblity that parameters changed while waiting
+    
+          if (coreIdWhenCalled === coreId.current){
+            setDoenetML(retrievedDoenetML);
+            setCid(cidFromProps);
+            setStage('continue');
+          }
         })
         .catch(e => {
-          if (props.setIsInErrorState) {
-            props.setIsInErrorState(true)
+          //Guard against the possiblity that parameters changed while waiting
+    
+          if (coreIdWhenCalled === coreId.current){
+            if (props.setIsInErrorState) {
+              props.setIsInErrorState(true)
+            }
+            setErrMsg(`doenetML not found for cid: ${cidFromProps}`);
           }
-          setErrMsg(`doenetML not found for cid: ${cidFromProps}`);
         })
     }
 
   }
 
   async function loadStateAndInitialize() {
-
+    const coreIdWhenCalled = coreId.current
     let loadedState = false;
 
     if (props.flags.allowLocalState) {
@@ -535,7 +551,6 @@ export default function PageViewer(props) {
 
       try {
         let resp = await axios.get('/api/loadPageState.php', payload);
-
         if (!resp.data.success) {
           if (props.flags.allowLoadState) {
             if (props.setIsInErrorState) {
@@ -585,7 +600,10 @@ export default function PageViewer(props) {
 
     }
 
-    startCore();
+    //Guard against the possiblity that parameters changed while waiting
+    if (coreIdWhenCalled === coreId.current){
+        startCore();
+    }
 
   }
 
@@ -615,7 +633,6 @@ export default function PageViewer(props) {
       return { localInfo, cid, attemptNumber };
     }
 
-    console.log('result from saving to db', resp.data)
 
     let data = resp.data;
 
@@ -658,8 +675,12 @@ export default function PageViewer(props) {
 
   function startCore() {
 
+    //Kill the current core if it exists
+    if (coreWorker.current){
+      coreWorker.current.terminate();
+    }
     // console.log(`send message to create core ${pageNumber}`)
-
+    
     coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : '/viewer/core.js', { type: 'module' });
 
     coreWorker.current.postMessage({
@@ -709,7 +730,7 @@ export default function PageViewer(props) {
 
     let sWorker = new Worker('core/utils/initialState.js', { type: 'module' });
 
-    console.log(`Generating initial renderer states for ${nVariants} variants`);
+    // console.log(`Generating initial renderer states for ${nVariants} variants`);
 
     sWorker.postMessage({
       messageType: "saveInitialRendererStates",
@@ -797,7 +818,6 @@ export default function PageViewer(props) {
   // set state to props and record that that need a new core
 
   let changedState = false;
-
   if (doenetMLFromProps !== props.doenetML) {
     setDoenetMLFromProps(props.doenetML);
     changedState = true;
@@ -840,6 +860,7 @@ export default function PageViewer(props) {
     setRequestedVariantIndex(adjustedRequestedVariantIndex);
     changedState = true;
   }
+
 
   // Next time through will recalculate, after state variables are set
   if (changedState) {
