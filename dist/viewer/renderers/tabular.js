@@ -26,7 +26,8 @@ export default React.memo(function Tabular(props) {
     height: sizeToCSS(SVs.height),
     borderCollapse: "collapse",
     borderColor: "var(--canvastext)",
-    borderRadius: "var(--mainBorderRadius)"
+    borderRadius: "var(--mainBorderRadius)",
+    tableLayout: "fixed"
   };
   if (SVs.top !== "none") {
     tableStyle.borderTopStyle = "solid";

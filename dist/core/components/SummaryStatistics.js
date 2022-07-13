@@ -245,7 +245,7 @@ export default class SummaryStatistics extends BlockComponent {
       definition({ dependencyValues }) {
         let variance = null;
         if (dependencyValues.dataColumn) {
-          variance = me.math.var(dependencyValues.dataColumn)
+          variance = me.math.variance(dependencyValues.dataColumn)
         }
 
         return { setValue: { variance } };

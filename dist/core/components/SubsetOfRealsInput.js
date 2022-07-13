@@ -60,6 +60,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
       createComponentOfType: "variable",
       createStateVariable: "variable",
       defaultValue: me.fromAst("x"),
+      public: true,
     }
     attributes.format = {
       createComponentOfType: "text",

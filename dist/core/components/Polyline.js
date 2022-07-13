@@ -6,7 +6,8 @@ export default class Polyline extends GraphicalComponent {
 
   actions = {
     movePolyline: this.movePolyline.bind(this),
-    finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
+    finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
+    polylineClicked: this.polylineClicked.bind(this)
   };
 
   static createAttributesObject() {
@@ -579,5 +580,16 @@ export default class Polyline extends GraphicalComponent {
     });
   }
 
+
+  async polylineClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 
 }
