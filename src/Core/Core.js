@@ -138,6 +138,7 @@ export default class Core {
       .catch(e => {
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: { errMsg: e.message }
         })
       })
@@ -324,13 +325,15 @@ export default class Core {
 
     postMessage({
       messageType: "initializeRenderers",
+      coreId: this.coreId,
       args: {
         coreInfo: this.coreInfo,
       }
     });
 
     postMessage({
-      messageType: "coreCreated"
+      messageType: "coreCreated",
+      coreId: this.coreId
     });
 
   }
@@ -339,6 +342,7 @@ export default class Core {
 
     postMessage({
       messageType: "updateRenderers",
+      coreId: this.coreId,
       args,
       init
     })
@@ -7961,6 +7965,7 @@ export default class Core {
     if (actionId) {
       postMessage({
         messageType: "resolveAction",
+        coreId: this.coreId,
         args: { actionId }
       })
     }
@@ -8388,6 +8393,7 @@ export default class Core {
         console.error(`Error saving event: ${e.message}`);
         // postMessage({
         //   messageType: "sendToast",
+        //   coreId: this.coreId,
         //   args: {
         //     message: `Error saving event: ${e.message}`,
         //     toastType: toastType.ERROR
@@ -9508,7 +9514,8 @@ export default class Core {
     }
 
     postMessage({
-      messageType: "savedState"
+      messageType: "savedState",
+      coreId: this.coreId,
     })
 
     if (!this.flags.allowSaveState) {
@@ -9562,6 +9569,7 @@ export default class Core {
 
     // postMessage({
     //   messageType: "sendToast",
+    //   coreId: this.coreId,
     //   args: {
     //     message: "You're not connected to the internet. Changes are not saved. ",
     //     toastType: toastType.ERROR
@@ -9575,6 +9583,7 @@ export default class Core {
     } catch (e) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: "Error synchronizing data.  Changes not saved to the server.",
           toastType: toastType.ERROR
@@ -9588,6 +9597,7 @@ export default class Core {
     if (resp.status === null) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
           toastType: toastType.ERROR
@@ -9601,6 +9611,7 @@ export default class Core {
     if (!data.success) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: data.message,
           toastType: toastType.ERROR
@@ -9638,6 +9649,7 @@ export default class Core {
 
         postMessage({
           messageType: "resetPage",
+          coreId: this.coreId,
           args: {
             changedOnDevice: data.device,
             newCid: data.cid,
@@ -9648,6 +9660,7 @@ export default class Core {
         // if the cid changed without the attemptNumber changing, something went wrong
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: {
             errMsg: "Content changed unexpectedly!"
           }
@@ -9687,6 +9700,7 @@ export default class Core {
         if (resp.status === null) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error.  Are you connected to the internet?`,
               toastType: toastType.ERROR
@@ -9695,6 +9709,7 @@ export default class Core {
         } else if (!resp.data.success) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error: ${resp.data.message}`,
               toastType: toastType.ERROR
@@ -9706,6 +9721,7 @@ export default class Core {
 
           postMessage({
             messageType: "updateCreditAchieved",
+            coreId: this.coreId,
             args: data
           })
 
@@ -9713,6 +9729,7 @@ export default class Core {
           if (data.viewedSolution) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since solution was viewed.',
                 toastType: toastType.INFO
@@ -9722,6 +9739,7 @@ export default class Core {
           if (data.timeExpired) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the time allowed has expired.',
                 toastType: toastType.INFO
@@ -9731,6 +9749,7 @@ export default class Core {
           if (data.pastDueDate) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the due date has passed.',
                 toastType: toastType.INFO
@@ -9740,6 +9759,7 @@ export default class Core {
           if (data.exceededAttemptsAllowed) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since no more attempts are allowed.',
                 toastType: toastType.INFO
@@ -9749,6 +9769,7 @@ export default class Core {
           if (data.databaseError) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'Credit not saved due to database error.',
                 toastType: toastType.ERROR
@@ -9760,6 +9781,7 @@ export default class Core {
       .catch(e => {
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message: `Credit not saved due to error: ${e.message}`,
             toastType: toastType.ERROR
@@ -9896,6 +9918,7 @@ export default class Core {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message,
             toastType: toastType.ERROR
@@ -9917,6 +9940,7 @@ export default class Core {
 
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message,
           toastType: toastType.ERROR
@@ -9938,6 +9962,7 @@ export default class Core {
   requestAnimationFrame(args) {
     postMessage({
       messageType: "requestAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }
@@ -9945,6 +9970,7 @@ export default class Core {
   cancelAnimationFrame(args) {
     postMessage({
       messageType: "cancelAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }
