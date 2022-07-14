@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.29)
 # Database: doenet_local
-# Generation Time: 2022-05-19 20:23:31 +0000
+# Generation Time: 2022-07-12 15:32:24 +0000
 # ************************************************************
 
 
@@ -83,7 +83,7 @@ DROP TABLE IF EXISTS `class_times`;
 
 CREATE TABLE `class_times` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `driveId` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `dotwIndex` int(1) NOT NULL,
   `startTime` time NOT NULL,
   `endTime` time NOT NULL,
