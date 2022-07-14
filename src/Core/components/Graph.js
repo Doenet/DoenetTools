@@ -1,6 +1,7 @@
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import BlockComponent from './abstract/BlockComponent';
 import me from 'math-expressions';
+import { orderedPercentPossibilities, orderedSizePossibilities, sizePossibilitiesByName, sizePossibilityNames } from '../utils/size';
 export default class Graph extends BlockComponent {
   static componentType = "graph";
   static renderChildren = true;
@@ -36,9 +37,30 @@ export default class Graph extends BlockComponent {
     attributes.aspectRatio = {
       createComponentOfType: "number",
     };
+
+    // Note: height attribute is deprecated and will be removed in the future
     attributes.height = {
       createComponentOfType: "_componentSize",
     };
+
+    attributes.displayMode = {
+      createComponentOfType: "text",
+      createStateVariable: "displayMode",
+      validValues: ["inline", "block"],
+      defaultValue: "block",
+      forRenderer: true,
+      public: true,
+    }
+
+    attributes.horizontalAlign = {
+      createComponentOfType: "text",
+      createStateVariable: "horizontalAlign",
+      validValues: ["center", "left", "right"],
+      defaultValue: "center",
+      forRenderer: true,
+      public: true,
+    }
+    
     attributes.identicalAxisScales = {
       createPrimitiveOfType: "boolean",
       createStateVariable: "identicalAxisScales",
@@ -245,19 +267,11 @@ export default class Graph extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         const defaultSize = 'medium';
-        const possibleSizesArray = [
-          ['tiny', 70, 8],
-          ['small', 212, 25],
-          ['medium', 425, 50],
-          ['large', 638, 75],
-          ['full', 850, 100]
-        ];
-        let possibleSizes = possibleSizesArray.map(obj => obj[0])
- 
+
         if (dependencyValues.sizeAttr) {
           let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
-          
-          if (!possibleSizes.includes(size)){
+
+          if (!sizePossibilityNames.includes(size)) {
             size = defaultSize;
           }
           return {
@@ -265,40 +279,40 @@ export default class Graph extends BlockComponent {
           }
         } else if (dependencyValues.widthAttr) {
           let componentSize = dependencyValues.widthAttr.stateValues.componentSize;
-          if (componentSize === null){
+          if (componentSize === null) {
 
             return {
-              setValue: { size:defaultSize }
+              setValue: { size: defaultSize }
             }
           }
-          let {isAbsolute, size:widthSize} = componentSize;
+          let { isAbsolute, size: widthSize } = componentSize;
           let size;
 
-          if (isAbsolute){
-            for(let [word,pixels] of possibleSizesArray){
-              if (widthSize <= pixels){
+          if (isAbsolute) {
+            for (let [word, pixels] of orderedSizePossibilities) {
+              if (widthSize <= pixels) {
                 size = word;
                 break
               }
             }
-            if (!size){
-              if (Number.isFinite(widthSize)){
+            if (!size) {
+              if (Number.isFinite(widthSize)) {
                 size = 'full'
-              }else{
+              } else {
                 size = defaultSize
               }
             }
-          }else{
-            for(let [word,_,percent] of possibleSizesArray){
-              if (widthSize <= percent){
+          } else {
+            for (let [word, percent] of orderedPercentPossibilities) {
+              if (widthSize <= percent) {
                 size = word;
                 break
               }
             }
-            if (!size){
-              if (Number.isFinite(widthSize)){
+            if (!size) {
+              if (Number.isFinite(widthSize)) {
                 size = 'full'
-              }else{
+              } else {
                 size = defaultSize
               }
             }
@@ -329,20 +343,12 @@ export default class Graph extends BlockComponent {
       }),
       definition({ dependencyValues }) {
 
-        const possibleSizesObj = {
-          tiny: 70,
-          small: 212,
-          medium: 425,
-          large: 638, 
-          full: 850, 
+        let width = { isAbsolute: true, size: sizePossibilitiesByName[dependencyValues.size] }
+
+        return {
+          setValue: { width }
         }
-          let width = {isAbsolute:true, size:possibleSizesObj[dependencyValues.size]}
-       
-          return {
-            setValue: { width }
-          }
-        
-        
+
       }
 
     }
