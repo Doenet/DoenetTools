@@ -29,11 +29,8 @@ describe('doenetEditor test', function () {
 
 it('basic test of update button',()=>{
   const doenetMLString = 'abcdefg'
-  cy.log('test 1');
   cy.get('.cm-content').type(doenetMLString)
-  // cy.wait(1000);
   cy.get('[data-test="Viewer Update Button"]').click();
-  // cy.wait(1000);
   cy.get('.sc-iBkjds > div').contains(doenetMLString);
 
 })
