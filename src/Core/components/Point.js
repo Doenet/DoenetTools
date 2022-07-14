@@ -96,7 +96,7 @@ export default class Point extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakIntoXsByCommas = function ({ matchedChildren }) {
+    let breakIntoXsByCommas = function ({ matchedChildren, componentInfoObjects }) {
       let childrenToComponentFunction = x => ({
         componentType: "math", children: x
       });
@@ -113,20 +113,26 @@ export default class Point extends GraphicalComponent {
 
 
       if (beginInd === -1) {
-        // if have no strings but have exactly one macro child,
+        // if have no strings but have exactly one math child,
         // use that for coords
 
-        let macroChildren = matchedChildren.filter(child =>
-          child.doenetAttributes && child.doenetAttributes.createdFromMacro
+        let componentTypeIsMath = cType => componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: cType,
+          baseComponentType: "math"
+        });
+
+
+        let mathChildren = matchedChildren.filter(child =>
+          componentTypeIsMath(child.componentType) || componentTypeIsMath(child.attributes?.createComponentOfType?.primitive)
         );
 
-        if (macroChildren.length === 1) {
-          let macroChild = macroChildren[0];
-          let macroInd = matchedChildren.indexOf(macroChild);
+        if (mathChildren.length === 1) {
+          let mathChild = mathChildren[0];
+          let mathInd = matchedChildren.indexOf(mathChild);
 
           let newChildren = [
-            ...matchedChildren.slice(0, macroInd),
-            ...matchedChildren.slice(macroInd + 1)
+            ...matchedChildren.slice(0, mathInd),
+            ...matchedChildren.slice(mathInd + 1)
           ];
 
           return {
@@ -135,7 +141,7 @@ export default class Point extends GraphicalComponent {
               coords: {
                 component: {
                   componentType: "math",
-                  children: macroChildren
+                  children: mathChildren
                 }
               }
             },
@@ -143,7 +149,7 @@ export default class Point extends GraphicalComponent {
           }
 
         } else {
-          // no strings and don't have exactly one macro child
+          // no strings and don't have exactly one math child
           return { success: false }
         }
 
@@ -213,6 +219,9 @@ export default class Point extends GraphicalComponent {
     childGroups.push(...[{
       group: "points",
       componentTypes: ["point"]
+    }, {
+      group: "vectors",
+      componentTypes: ["vector"]
     }, {
       group: "constraints",
       componentTypes: ["constraints"]
@@ -331,6 +340,11 @@ export default class Point extends GraphicalComponent {
           dependencyType: "child",
           childGroups: ["points"],
           variableNames: ["nDimensions"]
+        },
+        vectorChild: {
+          dependencyType: "child",
+          childGroups: ["vectors"],
+          variableNames: ["nDimensions"]
         }
       }),
       definition: function ({ dependencyValues }) {
@@ -388,6 +402,13 @@ export default class Point extends GraphicalComponent {
             return {
               setValue: {
                 nDimensions: Math.max(dependencyValues.pointChild[0].stateValues.nDimensions, nDimensions)
+              }
+            }
+          }
+          if (dependencyValues.vectorChild.length > 0) {
+            return {
+              setValue: {
+                nDimensions: Math.max(dependencyValues.vectorChild[0].stateValues.nDimensions, nDimensions)
               }
             }
           }
@@ -460,6 +481,11 @@ export default class Point extends GraphicalComponent {
             pointChild: {
               dependencyType: "child",
               childGroups: ["points"],
+              variableNames: ["x" + varEnding]
+            },
+            vectorChild: {
+              dependencyType: "child",
+              childGroups: ["vectors"],
               variableNames: ["x" + varEnding]
             }
           }
@@ -543,6 +569,11 @@ export default class Point extends GraphicalComponent {
               let pointChild = dependencyValuesByKey[arrayKey].pointChild;
               if (pointChild.length > 0) {
                 newXs[arrayKey] = pointChild[0].stateValues["x" + varEnding]
+              } else {
+                let vectorChild = dependencyValuesByKey[arrayKey].vectorChild;
+                if (vectorChild.length > 0) {
+                  newXs[arrayKey] = vectorChild[0].stateValues["x" + varEnding]
+                }
               }
             }
           }
@@ -635,10 +666,20 @@ export default class Point extends GraphicalComponent {
                   variableIndex: 0,
                 });
               } else {
-                instructions.push({
-                  setEssentialValue: "unconstrainedXs",
-                  value: { [arrayKey]: desiredValue },
-                });
+                let vectorChild = dependencyValuesByKey[arrayKey].vectorChild;
+                if (vectorChild.length > 0) {
+                  instructions.push({
+                    setDependency: dependencyNamesByKey[arrayKey].vectorChild,
+                    desiredValue,
+                    childIndex: 0,
+                    variableIndex: 0,
+                  });
+                } else {
+                  instructions.push({
+                    setEssentialValue: "unconstrainedXs",
+                    value: { [arrayKey]: desiredValue },
+                  });
+                }
               }
             }
           }
