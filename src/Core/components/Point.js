@@ -96,7 +96,7 @@ export default class Point extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakIntoXsByCommas = function ({ matchedChildren }) {
+    let breakIntoXsByCommas = function ({ matchedChildren, componentInfoObjects }) {
       let childrenToComponentFunction = x => ({
         componentType: "math", children: x
       });
@@ -113,20 +113,26 @@ export default class Point extends GraphicalComponent {
 
 
       if (beginInd === -1) {
-        // if have no strings but have exactly one macro child,
+        // if have no strings but have exactly one math child,
         // use that for coords
 
-        let macroChildren = matchedChildren.filter(child =>
-          child.doenetAttributes && child.doenetAttributes.createdFromMacro
+        let componentTypeIsMath = cType => componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: cType,
+          baseComponentType: "math"
+        });
+  
+
+        let mathChildren = matchedChildren.filter(child =>
+          componentTypeIsMath(child.componentType) || componentTypeIsMath(child.attributes?.createComponentOfType?.primitive)
         );
 
-        if (macroChildren.length === 1) {
-          let macroChild = macroChildren[0];
-          let macroInd = matchedChildren.indexOf(macroChild);
+        if (mathChildren.length === 1) {
+          let mathChild = mathChildren[0];
+          let mathInd = matchedChildren.indexOf(mathChild);
 
           let newChildren = [
-            ...matchedChildren.slice(0, macroInd),
-            ...matchedChildren.slice(macroInd + 1)
+            ...matchedChildren.slice(0, mathInd),
+            ...matchedChildren.slice(mathInd + 1)
           ];
 
           return {
@@ -135,7 +141,7 @@ export default class Point extends GraphicalComponent {
               coords: {
                 component: {
                   componentType: "math",
-                  children: macroChildren
+                  children: mathChildren
                 }
               }
             },
@@ -143,7 +149,7 @@ export default class Point extends GraphicalComponent {
           }
 
         } else {
-          // no strings and don't have exactly one macro child
+          // no strings and don't have exactly one math child
           return { success: false }
         }
 
