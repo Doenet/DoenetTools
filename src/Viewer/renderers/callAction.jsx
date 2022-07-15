@@ -10,9 +10,15 @@ export default React.memo(function CallAction(props) {
   }
 
   return (
-    <div style={{ margin: "12px 0" , display:"inline-block"}} >
+    <div id={name} style={{ margin: "12px 0", display: "inline-block" }}>
       <a name={name} />
-      <Button id={name + "_button"} onClick={() => callAction({ action: actions.callAction })} disabled={SVs.disabled} value={SVs.label} />
+      <Button
+        id={name + "_button"}
+        onClick={() => callAction({ action: actions.callAction })}
+        disabled={SVs.disabled}
+        value={SVs.label}
+        valueHasLatex={SVs.labelHasLatex}
+      />
     </div>
   )
 })

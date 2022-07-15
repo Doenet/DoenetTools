@@ -18,13 +18,8 @@ export default React.memo(function UpdateValue(props) {
         onClick={()=>callAction({ action:actions.updateValue })} 
         disabled={SVs.disabled}
         value={SVs.label}
+        valueHasLatex={SVs.labelHasLatex}
       />
-      {/* <button 
-      id={name + "_button"} 
-      onClick={()=>callAction({ action:actions.updateValue })} 
-      disabled={SVs.disabled}
-      >{SVs.label}
-      </button> */}
     </div>
   )
 })
