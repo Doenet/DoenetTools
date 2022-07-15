@@ -201,7 +201,7 @@ export default class Video extends BlockComponent {
 
     stateVariableDefinitions.state = {
       hasEssential: true,
-      defaultValue: "stopped",
+      defaultValue: "initializing",
       forRenderer: true,
       public:true,
       shadowingInstructions: {
@@ -222,6 +222,33 @@ export default class Video extends BlockComponent {
           instructions: [{
             setEssentialValue: "state",
             value: desiredState
+          }]
+        }
+      }
+    }
+
+    stateVariableDefinitions.time = {
+      hasEssential: true,
+      defaultValue: 0,
+      forRenderer: true,
+      public:true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({}),
+      definition() {
+        return { useEssentialOrDefaultValue: { time: true } }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let desiredTime = desiredStateVariableValues.time;
+        if(!(desiredTime >= 0)) {
+          return { success: false }
+        }
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "time",
+            value: desiredTime
           }]
         }
       }
@@ -317,6 +344,14 @@ export default class Video extends BlockComponent {
         duration: duration
       },
     })
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "state",
+        value: "stopped",
+      }]
+    })
   }
 
   recordVisibilityChange({ isVisible, actionId }) {
@@ -329,6 +364,18 @@ export default class Video extends BlockComponent {
       result: { isVisible }
     })
     this.coreFunctions.resolveAction({ actionId });
+  }
+
+
+  recordVideoReady() {
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "state",
+        value: "stopped",
+      }]
+    })
   }
 
   playVideo() {
@@ -353,6 +400,17 @@ export default class Video extends BlockComponent {
     })
   }
 
+  setTime({time}) {
+    this.coreFunctions.performUpdate({
+      updateInstructions: [{
+        updateType: "updateValue",
+        componentName: this.componentName,
+        stateVariable: "time",
+        value: time,
+      }]
+    })
+  }
+
   actions = {
     recordVideoStarted: this.recordVideoStarted.bind(this),
     recordVideoWatched: this.recordVideoWatched.bind(this),
@@ -360,8 +418,10 @@ export default class Video extends BlockComponent {
     recordVideoSkipped: this.recordVideoSkipped.bind(this),
     recordVideoCompleted: this.recordVideoCompleted.bind(this),
     recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    recordVideoReady: this.recordVideoReady.bind(this),
     playVideo: this.playVideo.bind(this),
     pauseVideo: this.pauseVideo.bind(this),
+    setTime: this.setTime.bind(this),
   }
 
 }

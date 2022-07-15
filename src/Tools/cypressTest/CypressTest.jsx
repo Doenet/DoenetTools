@@ -61,7 +61,6 @@ function Test() {
 
   //For Cypress Test Use
   window.onmessage = (e) => {
-    console.log(e.data);
     if (e.data.doenetML !== undefined) {
       setActivityDefinition(null);
       setDoenetML(e.data.doenetML);
@@ -73,7 +72,7 @@ function Test() {
     if (e.data.requestedVariantIndex !== undefined) {
       requestedVariantIndex.current = e.data.requestedVariantIndex;
     }
-    setUpdateNumber(was => was + 1)
+    // setUpdateNumber(was => was + 1)
   };
 
   let controls = null;
