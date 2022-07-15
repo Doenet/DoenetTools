@@ -15,60 +15,60 @@ describe('Course Navigation Tests', function () {
 
   it('overview', function() {
     // click on navbar
-    cy.get('[data-cy=overviewNavItem]').click();
+    cy.get('[data-test=overviewNavItem]').click();
     // check if selected navbar is prepended with *
-    cy.get('[data-cy=overviewNavItem]').should('have.text', '* Overview');
+    cy.get('[data-test=overviewNavItem]').should('have.text', '* Overview');
     // check url
     cy.url().should('include', '/course/?active=overview')
     // check main section heading
-    cy.get('[data-cy=sectionTitle]').should('have.text', 'Overview');
+    cy.get('[data-test=sectionTitle]').should('have.text', 'Overview');
 
     // check if overview is still selected and rendered after page reloaded
     cy.reload();
-    cy.get('[data-cy=overviewNavItem]').should('have.text', '* Overview');
+    cy.get('[data-test=overviewNavItem]').should('have.text', '* Overview');
     cy.url().should('include', '/course/?active=overview')
-    cy.get('[data-cy=sectionTitle]').should('have.text', 'Overview');
+    cy.get('[data-test=sectionTitle]').should('have.text', 'Overview');
 
   });
 
   it('syllabus', function() {
     // click on navbar
-    cy.get('[data-cy=syllabusNavItem]').click();
+    cy.get('[data-test=syllabusNavItem]').click();
     // check if selected navbar is prepended with *
-    cy.get('[data-cy=syllabusNavItem]').should('have.text', '* Syllabus');
+    cy.get('[data-test=syllabusNavItem]').should('have.text', '* Syllabus');
     // check url
     cy.url().should('include', '/course/?active=syllabus')
     // check main section heading
-    cy.get('[data-cy=sectionTitle]').should('have.text', 'Syllabus');
+    cy.get('[data-test=sectionTitle]').should('have.text', 'Syllabus');
 
     // check if syllabus is still selected and rendered after page reloaded
     cy.reload();
-    cy.get('[data-cy=syllabusNavItem]').should('have.text', '* Syllabus');
+    cy.get('[data-test=syllabusNavItem]').should('have.text', '* Syllabus');
     cy.url().should('include', '/course/?active=syllabus')
-    cy.get('[data-cy=sectionTitle]').should('have.text', 'Syllabus');
+    cy.get('[data-test=sectionTitle]').should('have.text', 'Syllabus');
   });
 
   it('grades', function() {
     // click on navbar
-    cy.get('[data-cy=gradesNavItem]').click();
+    cy.get('[data-test=gradesNavItem]').click();
     // check if selected navbar is prepended with *
-    cy.get('[data-cy=gradesNavItem]').should('have.text', '* Grades');
+    cy.get('[data-test=gradesNavItem]').should('have.text', '* Grades');
     // check url
     cy.url().should('include', '/course/?active=grades')
     // check main section heading
-    cy.get('[data-cy=sectionTitle]').should('have.text', 'Grades');
+    cy.get('[data-test=sectionTitle]').should('have.text', 'Grades');
 
     // check if syllabus is still selected and rendered after page reloaded
     cy.reload();
-    cy.get('[data-cy=gradesNavItem]').should('have.text', '* Grades');
+    cy.get('[data-test=gradesNavItem]').should('have.text', '* Grades');
     cy.url().should('include', '/course/?active=grades')
-    cy.get('[data-cy=sectionTitle]').should('have.text', 'Grades');
+    cy.get('[data-test=sectionTitle]').should('have.text', 'Grades');
   });
 
   it('assignments onclick', function() {
     
     // click on navbar
-    cy.get('[data-cy=assignmentsAccordion]').click();
+    cy.get('[data-test=assignmentsAccordion]').click();
     cy.get('.homeLeftNav > :nth-child(4)').click();
     
     // check url
@@ -85,7 +85,7 @@ describe('Course Navigation Tests', function () {
 
   it('assignments outline type sort order', function(){
     // click on navbar
-    cy.get('[data-cy=assignmentsAccordion]').click();
+    cy.get('[data-test=assignmentsAccordion]').click();
     cy.get('.homeLeftNav > :nth-child(4)').click();
     cy.get('[style="text-align: center; background-color: grey;"] > div').click();
 

@@ -140,7 +140,7 @@ const CourseInfoPanel = function ({ courseId }) {
 
   return (
     <>
-      <h2 data-cy="infoPanelItemLabel">
+      <h2 data-test="infoPanelItemLabel">
         <FontAwesomeIcon icon={faChalkboard} /> {panelDriveLabel}
       </h2>
       <Textfield

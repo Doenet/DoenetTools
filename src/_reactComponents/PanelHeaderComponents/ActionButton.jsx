@@ -130,6 +130,7 @@ export default function ActionButton(props) {
         </Label>
         <Button
           id={props.id}
+          data-test={props['data-test']}
           style={actionButton}
           alert={alert}
           onClick={(e) => {

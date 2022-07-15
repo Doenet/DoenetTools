@@ -65,7 +65,7 @@ const DriveCard = (props) => {
 /* reduces the top margin on the h2, bottom on the p, and leaves a 0.5rem gap between the two */
 
   return (
-    <DriveCardContainer data-cy="driveCard" url={imageURL} color={props.color} width={props.width} height={props.height}>
+    <DriveCardContainer data-test="driveCard" url={imageURL} color={props.color} width={props.width} height={props.height}>
       <Image url={imageURL} color={props.color} />
       <Info
         style={{
@@ -77,7 +77,7 @@ const DriveCard = (props) => {
         style={{
           color: props.isSelected ? 'black' : 'var(--canvastext)',
         }}>
-          <b data-cy="driveCardLabel">{props.label}</b>
+          <b data-test="driveCardLabel">{props.label}</b>
         </LabelContainer>
         {props?.role?.map((item) => {
           return <LabelContainer key={item} style={{color:props.isSelected ? 'black' : 'var(--canvastext)'}}>{item}</LabelContainer>;

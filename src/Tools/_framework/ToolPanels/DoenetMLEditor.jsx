@@ -15,10 +15,42 @@ import axios from "axios";
 import { fileByPageId } from '../ToolHandlers/CourseToolHandler';
 import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
 
+export function useSaveDraft(){
+  const saveDraft = useRecoilCallback(({ snapshot, set }) => async ({pageId, courseId, backup=false}) => {
+    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+  
+    //Save in localStorage
+    // localStorage.setItem(cid,doenetML)
+  
+    try {
+      const params = {
+        doenetML,
+        pageId,
+        courseId,
+        backup,
+      }
+      const { data } = await axios.post("/api/saveDoenetML.php", params);
+      set(fileByPageId(pageId),doenetML);
+      if (!data.success) {
+      //   //TODO: Toast here
+        console.log("ERROR", data.message)
+      }
+      return {success:data.success};
+  
+    } catch (error) {
+      console.log("ERROR", error)
+      return {success:false};
+    }
+  
+  
+  }, []);
+
+  return { saveDraft }
+}
 
 
 export default function DoenetMLEditor(props) {
-  console.log(">>>===DoenetMLEditor")
+  // console.log(">>>===DoenetMLEditor")
 
   // const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
@@ -32,39 +64,16 @@ export default function DoenetMLEditor(props) {
   let timeout = useRef(null);
   let backupOldDraft = useRef(true);
 
-  const saveDraft = useRecoilCallback(({ snapshot, set }) => async (pageId, courseId) => {
-    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+  const { saveDraft } = useSaveDraft();
 
-    //Save in localStorage
-    // localStorage.setItem(cid,doenetML)
-
-    try {
-      const params = {
-        doenetML,
-        pageId,
-        courseId,
-        backup: backupOldDraft.current,
-      }
-      const { data } = await axios.post("/api/saveDoenetML.php", params);
-      set(fileByPageId(pageId),doenetML);
-      if (!data.success) {
-        //TODO: Toast here
-        console.log("ERROR", data.message)
-      } else {
-        backupOldDraft.current = false;
-      }
-    } catch (error) {
-      console.log("ERROR", error)
-    }
-
-  }, []);
+  
 
   // save draft when leave page
   useEffect(() => {
     return () => {
       if (initializedPageId !== "") {
         // save and stop timers
-        saveDraft(initializedPageId, courseId)
+        saveDraft({pageId:initializedPageId, courseId, backup:backupOldDraft.current})
         if (timeout.current !== null) {
           clearTimeout(timeout.current)
         }
@@ -77,7 +86,12 @@ export default function DoenetMLEditor(props) {
   useEffect(() => {
     if (initializedPageId !== "") {
       // save and stop timers
-      saveDraft(initializedPageId, courseId)
+      saveDraft({pageId:initializedPageId, courseId, backup:backupOldDraft.current}).then(({success})=>{
+        if (success){
+          backupOldDraft.current = false;
+        }
+      })
+      
       if (timeout.current !== null) {
         clearTimeout(timeout.current)
       }
@@ -105,7 +119,12 @@ export default function DoenetMLEditor(props) {
       clearTimeout(timeout.current);
 
       timeout.current = setTimeout(function () {
-        saveDraft(initializedPageId, courseId);
+        saveDraft({pageId:initializedPageId, courseId, backup:backupOldDraft.current}).then(({success})=>{
+          if (success){
+            backupOldDraft.current = false;
+          }
+        })
+
         timeout.current = null;
       }, 3000)//3 seconds
     }}

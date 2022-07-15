@@ -42,7 +42,7 @@ export default function SelectedOrder() {
   },[itemObj.doenetId])
 
 
-  let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
+  let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
   <FontAwesomeIcon icon={faFileExport} /> {itemObj.label} 
 </h2>)
 

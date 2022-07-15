@@ -18,7 +18,8 @@ import RelatedItems from '../PanelHeaderComponents/RelatedItems';
 import ActionButtonGroup from '../PanelHeaderComponents/ActionButtonGroup';
 import ActionButton from '../PanelHeaderComponents/ActionButton';
 import { toastType, useToast } from '@Toast';
-
+import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
+import { useSaveDraft } from '../../Tools/_framework/ToolPanels/DoenetMLEditor';
 
 
 const InputWrapper = styled.div`
@@ -43,7 +44,8 @@ const InputControl = styled.div`
 `;
 
 export const AssignUnassignActivity = ({ doenetId, courseId }) => {
-
+  const pageId = useRecoilValue(searchParamAtomFamily('pageId'))
+  const { saveDraft } = useSaveDraft();
   const {
     compileActivity,
     updateAssignItem
@@ -63,28 +65,34 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
   return (<ActionButtonGroup vertical>
   <ActionButton
   width="menu"
+  data-test="Assign Activity"
   value={assignActivityText}
-  onClick={() => {
-    compileActivity({
-      activityDoenetId: doenetId,
-      isAssigned: true,
-      courseId,
-      // successCallback: () => {
-      //   addToast('Activity Assigned.', toastType.INFO);
-      // },
-    });
-    updateAssignItem({
-      doenetId,
-      isAssigned:true,
-      successCallback: () => {
-        addToast("Activity Assigned", toastType.INFO);
-      },
-    })
+  onClick={async () => {
+    if (pageId){
+      await saveDraft({pageId, courseId});
+    }
+      compileActivity({
+        activityDoenetId: doenetId,
+        isAssigned: true,
+        courseId,
+        // successCallback: () => {
+        //   addToast('Activity Assigned.', toastType.INFO);
+        // },
+      });
+      updateAssignItem({
+        doenetId,
+        isAssigned:true,
+        successCallback: () => {
+          addToast("Activity Assigned", toastType.INFO);
+        },
+      })
+
   }}
 />
 {isAssigned ? 
 <ActionButton
   width="menu"
+  data-test="Unassign Activity"
   value="Unassign Activity"
   alert
   onClick={() => {
