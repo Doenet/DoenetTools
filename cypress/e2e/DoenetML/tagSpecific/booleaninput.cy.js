@@ -440,4 +440,62 @@ describe('BooleanInput Tag Tests', function () {
 
   })
 
+  it('boolean input with math in label', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><booleanInput name="atb" ><label>It is <m>\\int_a^b f(x)\\,dx</m></label></booleaninput></p>
+    <p><booleanInput name="bi" asToggleButton="$atb"><label>Hello <math>a/b</math></label></booleaninput></p>
+
+    <copy prop="value" target="atb" assignNames="v" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.log('Test values displayed in browser')
+
+    cy.get('#\\/atb_input').should('not.be.checked');
+    cy.get('#\\/bi_input').should('not.be.checked');
+    cy.get('#\\/v').should('have.text', "false");
+    cy.get('#\\/atb').should('contain.text', 'It is ∫baf(x)dx')
+    cy.get('#\\/bi').should('contain.text', 'Hello ab')
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/atb'].stateValues.value).eq(false);
+      expect(stateVariables['/bi'].stateValues.value).eq(false);
+      expect(stateVariables["/v"].stateValues.value).eq(false);
+      expect(stateVariables['/atb'].stateValues.label).eq("It is \\(\\int_a^b f(x)\\,dx\\)");
+      expect(stateVariables['/bi'].stateValues.label).eq("Hello \\(\\frac{a}{b}\\)");
+    });
+
+
+    cy.log('set as toggle button')
+    cy.get('#\\/atb_input').click();
+
+    cy.log('Test values displayed in browser')
+    cy.get('#\\/v').should('have.text', "true");
+    cy.get('#\\/atb_input').should('be.checked');
+    // TODO: how to check the renderer if ToggleButton is selected
+    //cy.get('#\\/bi_input').should('be.checked');
+    cy.get('#\\/atb').should('contain.text', 'It is ∫baf(x)dx')
+    cy.get('#\\/bi').should('contain.text', 'Hello ab')
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/atb'].stateValues.value).eq(true);
+      expect(stateVariables['/bi'].stateValues.value).eq(false);
+      expect(stateVariables["/v"].stateValues.value).eq(true);
+      expect(stateVariables['/atb'].stateValues.label).eq("It is \\(\\int_a^b f(x)\\,dx\\)");
+      expect(stateVariables['/bi'].stateValues.label).eq("Hello \\(\\frac{a}{b}\\)");
+    });
+
+  })
+
 });

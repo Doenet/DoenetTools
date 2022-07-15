@@ -1880,5 +1880,28 @@ describe('UpdateValue Tag Tests', function () {
 
   })
 
+  it('math in label', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="b" />
+    <updateValue target="b" newValue="not$b" type="boolean" name="update">
+      <label>we have <m>\\prod_{i=1}^3 y_i</m></label>
+    </updateValue>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/update').should('contain.text', 'we have ∏3i=1yi')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/update'].stateValues.label).eq("we have \\(\\prod_{i=1}^3 y_i\\)");
+    });
+
+  })
+
 
 });
