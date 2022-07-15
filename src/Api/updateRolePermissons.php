@@ -38,6 +38,7 @@ $permissonKeys = [
 $_POST = json_decode(file_get_contents('php://input'), true);
 $courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
 $roleId = mysqli_real_escape_string($conn, $_POST['roleId']);
+$segments = [];
 
 if ($courseId == '') {
     $success = false;
@@ -95,13 +96,82 @@ if ($success && array_key_exists('isOwner', $_POST['permissions'])) {
     }
 }
 
-//TODO: Check if a parent permisson is set and add modifcation to relevant permissons
+//TODO: MEETING
 if ($success) {
+    //isOwner gives all
+    if (array_key_exists('isOwner', $_POST['permissions'])) {
+        $newRoleisOwner = mysqli_real_escape_string(
+            $conn,
+            $_POST['permissions']['isOwner']
+        );
+        if ($newRoleisOwner == '1') {
+            foreach ($permissonKeys as $permisson) {
+                if (
+                    $permisson != 'label' &&
+                    $permisson != 'isIncludedInGradebook' &&
+                    $permisson != 'dataAccessPermisson'
+                ) {
+                    array_push($segments, "$permisson = '1'");
+                    unset($_POST['permissions'][$permisson]);
+                }
+            }
+            array_push($segments, "dataAccessPermisson = 'Identified'");
+            unset($_POST['permissions']['dataAccessPermisson']);
+        }
+    } else {
+        // editContent > viewContentSource && viewUnassignedContent
+        if (array_key_exists('canEditContent', $_POST['permissions'])) {
+            $newRoleCanEditContent = mysqli_real_escape_string(
+                $conn,
+                $_POST['permissions']['canEditContent']
+            );
+            if ($newRoleCanEditContent == '1') {
+                array_push($segments, "canViewContentSource = '1'");
+                unset($_POST['permissions']['canViewContentSource']);
+                array_push($segments, "canViewUnassignedContent = '1'");
+                unset($_POST['permissions']['canViewUnassignedContent']);
+            }
+        }
+        // modifyActivitySettings > viewActivitySettings
+        if (
+            array_key_exists('canModifyActivitySettings', $_POST['permissions'])
+        ) {
+            $newRoleCanModifyActivitySettings = mysqli_real_escape_string(
+                $conn,
+                $_POST['permissions']['canModifyActivitySettings']
+            );
+            if ($newRoleCanModifyActivitySettings == '1') {
+                array_push($segments, "canViewActivitySettings = '1'");
+                unset($_POST['permissions']['canViewActivitySettings']);
+            }
+        }
+        //modifyRoles > manageUsers > viewUsers
+        if (array_key_exists('canModifyRoles', $_POST['permissions'])) {
+            $newRoleCanModifyRoles = mysqli_real_escape_string(
+                $conn,
+                $_POST['permissions']['canModifyRoles']
+            );
+            if ($newRoleCanModifyRoles == '1') {
+                array_push($segments, "canManageUsers = '1'");
+                unset($_POST['permissions']['canManageUsers']);
+                array_push($segments, "canViewUsers = '1'");
+                unset($_POST['permissions']['canViewUsers']);
+            }
+        } elseif (array_key_exists('canManageUsers', $_POST['permissions'])) {
+            $newRoleCanManageUsers = mysqli_real_escape_string(
+                $conn,
+                $_POST['permissions']['canManageUsers']
+            );
+            if ($newRoleCanManageUsers == '1') {
+                array_push($segments, "canViewUsers = '1'");
+                unset($_POST['permissions']['canViewUsers']);
+            }
+        }
+    }
 }
 
 //Make permissons assignment
 if ($success) {
-    $segments = [];
     foreach ($permissonKeys as $permisson) {
         if (array_key_exists($permisson, $_POST['permissions'])) {
             $sanitizedNewValue = mysqli_real_escape_string(
