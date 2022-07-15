@@ -1,17 +1,12 @@
 const maxWidth = 850;
 
-export const orderedSizePossibilities = [
-  ["tiny", 70],
-  ["small", Math.floor(maxWidth * 0.3)],
-  ["medium", Math.floor(maxWidth * 0.5)],
-  ["large", Math.floor(maxWidth * 0.7)],
-  ["full", maxWidth],
-]
+export const sizePossibilities = ["tiny", "small", "medium", "large", "full"];
 
-export const orderedPercentPossibilities = orderedSizePossibilities
-  .map(obj => [obj[0], Math.round(obj[1] / maxWidth * 100)]);
+const widthFactions = [1 / 12, 0.3, 0.5, 0.7, 1];
+const fractionMidpoints = widthFactions.map((x, i) => (x + (widthFactions[i + 1] || Infinity)) / 2);
 
-export const sizePossibilitiesByName = {};
-orderedSizePossibilities.forEach(obj => sizePossibilitiesByName[obj[0]] = obj[1]);
+export const orderedWidthMidpoints = fractionMidpoints.map(x => maxWidth * x);
+export const orderedPercentWidthMidpoints = fractionMidpoints.map(x => x * 100);
 
-export const sizePossibilityNames = orderedPercentPossibilities.map(obj => obj[0]);
+export const widthsBySize = {};
+sizePossibilities.forEach((x, i) => widthsBySize[x] = Math.floor(widthFactions[i] * maxWidth));

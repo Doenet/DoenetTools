@@ -1,7 +1,7 @@
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import BlockComponent from './abstract/BlockComponent';
 import me from 'math-expressions';
-import { orderedPercentPossibilities, orderedSizePossibilities, sizePossibilitiesByName, sizePossibilityNames } from '../utils/size';
+import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities } from '../utils/size';
 export default class Graph extends BlockComponent {
   static componentType = "graph";
   static renderChildren = true;
@@ -46,7 +46,7 @@ export default class Graph extends BlockComponent {
     attributes.displayMode = {
       createComponentOfType: "text",
       createStateVariable: "displayMode",
-      validValues: ["inline", "block"],
+      validValues: ["block", "inline"],
       defaultValue: "block",
       forRenderer: true,
       public: true,
@@ -60,7 +60,7 @@ export default class Graph extends BlockComponent {
       forRenderer: true,
       public: true,
     }
-    
+
     attributes.identicalAxisScales = {
       createPrimitiveOfType: "boolean",
       createStateVariable: "identicalAxisScales",
@@ -271,7 +271,7 @@ export default class Graph extends BlockComponent {
         if (dependencyValues.sizeAttr) {
           let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
 
-          if (!sizePossibilityNames.includes(size)) {
+          if (!sizePossibilities.includes(size)) {
             size = defaultSize;
           }
           return {
@@ -289,32 +289,24 @@ export default class Graph extends BlockComponent {
           let size;
 
           if (isAbsolute) {
-            for (let [word, pixels] of orderedSizePossibilities) {
+            for (let [ind, pixels] of orderedWidthMidpoints.entries()) {
               if (widthSize <= pixels) {
-                size = word;
+                size = sizePossibilities[ind];
                 break
               }
             }
             if (!size) {
-              if (Number.isFinite(widthSize)) {
-                size = 'full'
-              } else {
-                size = defaultSize
-              }
+              size = defaultSize
             }
           } else {
-            for (let [word, percent] of orderedPercentPossibilities) {
+            for (let [ind, percent] of orderedPercentWidthMidpoints.entries()) {
               if (widthSize <= percent) {
-                size = word;
+                size = sizePossibilities[ind];
                 break
               }
             }
             if (!size) {
-              if (Number.isFinite(widthSize)) {
-                size = 'full'
-              } else {
-                size = defaultSize
-              }
+              size = defaultSize
             }
           }
           return {
@@ -343,7 +335,7 @@ export default class Graph extends BlockComponent {
       }),
       definition({ dependencyValues }) {
 
-        let width = { isAbsolute: true, size: sizePossibilitiesByName[dependencyValues.size] }
+        let width = { isAbsolute: true, size: widthsBySize[dependencyValues.size] }
 
         return {
           setValue: { width }

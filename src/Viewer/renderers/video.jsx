@@ -45,7 +45,6 @@ export default React.memo(function Video(props) {
       let cName = cssesc(name);
 
       player.current = new window.YT.Player(cName, {
-        // videoId: SVs.youtube,
         playerVars: {
           autoplay: 0,
           controls: 1,

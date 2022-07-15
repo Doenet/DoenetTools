@@ -81,48 +81,4 @@ export default React.memo(function Image(props) {
     </VisibilitySensor>
   )
 
-
-  // if (url){
-
-  //   return (
-  //   <React.Fragment>
-  //       <a name={name} />
-  //       <img 
-  //       id={name} 
-  //       src={url} 
-  //       style={{maxWidth:'850px'}}
-  //       width={sizeToCSS(SVs.width)} 
-  //       height={sizeToCSS(SVs.height)} 
-  //       alt={SVs.description} />
-  //     </React.Fragment>
-
-  // }else if (!SVs.cid && SVs.source) {
-
-  //   let src = SVs.source;
-
-  //TODO: Is this possible?
-  // if (SVs.asFileName){
-  //   src = src + `?filename=${SVs.asFileName}`;
-  // }
-
-  // }else if(SVs.height && SVs.width){
-  //   <a name={name} />
-  //   //Show preview
-  //   return <React.Fragment>
-  //   <a name={name} />
-  //   <div 
-  //   id={name} 
-  //   style={{
-  //     display:"inline-block",
-  //     maxWidth:'850px',
-  //     width:sizeToCSS(SVs.width),
-  //     height:sizeToCSS(SVs.height),
-  //     border: "solid black 1px",
-  //   }}
-  //    >{SVs.description}</div>
-  // </React.Fragment>
-  // }
-
-  // return null;
-
 })
