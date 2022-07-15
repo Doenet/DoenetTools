@@ -28,7 +28,7 @@ describe('doenetEditor test', function () {
     return false
 })
 
-it.only('basic test of update button',()=>{
+it('basic test of update button',()=>{
   const doenetMLString = 'abcdefg'
   cy.get('.cm-content').type(doenetMLString)
   cy.get('[data-test="Viewer Update Button"]').click();
