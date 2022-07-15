@@ -1,4 +1,5 @@
 import BlockComponent from './abstract/BlockComponent';
+import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities } from '../utils/size';
 
 export default class Video extends BlockComponent {
   static componentType = "video";
@@ -9,17 +10,36 @@ export default class Video extends BlockComponent {
     attributes.width = {
       createComponentOfType: "_componentSize",
     };
-    attributes.height = {
-      createComponentOfType: "_componentSize",
-      // createStateVariable: "height",
-      // defaultValue: null,
-      // public: true,
-      // forRenderer: true,
-    };
+    attributes.size = {
+      createComponentOfType: "text",
+    }
     attributes.aspectRatio = {
       createComponentOfType: "number",
-      // createStateVariable: "aspectRatio",
     };
+
+    // Note: height attribute is deprecated and will be removed in the future
+    attributes.height = {
+      createComponentOfType: "_componentSize",
+    };
+
+    attributes.displayMode = {
+      createComponentOfType: "text",
+      createStateVariable: "displayMode",
+      validValues: ["block", "inline"],
+      defaultValue: "block",
+      forRenderer: true,
+      public: true,
+    }
+
+    attributes.horizontalAlign = {
+      createComponentOfType: "text",
+      createStateVariable: "horizontalAlign",
+      validValues: ["center", "left", "right"],
+      defaultValue: "center",
+      forRenderer: true,
+      public: true,
+    }
+
     attributes.youtube = {
       createComponentOfType: "text",
       createStateVariable: "youtube",
@@ -43,157 +63,142 @@ export default class Video extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.width = {
-      defaultValue: { size: 720, isAbsolute: true },
+
+    stateVariableDefinitions.size = {
       public: true,
+      defaultValue: "full",
       hasEssential: true,
       shadowingInstructions: {
-        createComponentOfType: "_componentSize",
+        createComponentOfType: "text"
       },
-      forRenderer: true,
-      additionalStateVariablesDefined: [{
-        variableName: 'height',
-        shadowingInstructions: {
-          createComponentOfType: "_componentSize",
-        },
-        defaultValue: { size: 405, isAbsolute: true },
-        public: true,
-        forRenderer: true,
-        hasEssential: true,
-
-      },
-      {
-        variableName: 'aspectRatio',
-        shadowingInstructions: {
-          createComponentOfType: "number",
-        },
-        defaultValue: 16 / 9,
-        public: true,
-        forRenderer: true,
-        hasEssential: true,
-      }
-      ],
       returnDependencies: () => ({
+        sizeAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "size",
+          variableNames: ["value"],
+        },
         widthAttr: {
-          dependencyType: 'attributeComponent',
-          attributeName: 'width',
-          variableNames: ['componentSize'],
+          dependencyType: "attributeComponent",
+          attributeName: "width",
+          variableNames: ["componentSize"],
         },
-        heightAttr: {
-          dependencyType: 'attributeComponent',
-          attributeName: 'height',
-          variableNames: ['componentSize'],
-        },
-        aspectRatioAttr: {
-          dependencyType: 'attributeComponent',
-          attributeName: 'aspectRatio',
-          variableNames: ['value'],
-        }
       }),
-      definition: ({ dependencyValues }) => {
+      definition({ dependencyValues }) {
+        const defaultSize = 'full';
 
-        if (dependencyValues.widthAttr) {
-          let width = dependencyValues.widthAttr.stateValues.componentSize;
-          if (!width.isAbsolute) { throw Error("Have not implemented relative width for video") }
-          if (dependencyValues.heightAttr) {
-            //Have width and height so override aspectRatio even if it exists
-            let height = dependencyValues.heightAttr.stateValues.componentSize;
-            if (!height.isAbsolute) { throw Error("Have not implemented relative height for video") }
-            let aspectRatio = width.size / height.size;
+        if (dependencyValues.sizeAttr) {
+          let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
+
+          if (!sizePossibilities.includes(size)) {
+            size = defaultSize;
+          }
+          return {
+            setValue: { size }
+          }
+        } else if (dependencyValues.widthAttr) {
+          let componentSize = dependencyValues.widthAttr.stateValues.componentSize;
+          if (componentSize === null) {
+
             return {
-              setValue: {
-                width,
-                height,
-                aspectRatio
+              setValue: { size: defaultSize }
+            }
+          }
+          let { isAbsolute, size: widthSize } = componentSize;
+          let size;
+
+          if (isAbsolute) {
+            for (let [ind, pixels] of orderedWidthMidpoints.entries()) {
+              if (widthSize <= pixels) {
+                size = sizePossibilities[ind];
+                break
               }
             }
-          } else if (dependencyValues.aspectRatioAttr) {
-            //Have width and aspectRatio but not height
-            let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
-            let height = { isAbsolute: true, size: width.size / aspectRatio }
-            return {
-              setValue: {
-                width,
-                height,
-                aspectRatio
-              }
+            if (!size) {
+              size = defaultSize
             }
           } else {
-            //Have width and not height or aspectRatio
-            let height = { isAbsolute: true, size: width.size / (16 / 9) }
-            return {
-              setValue: {
-                width,
-                height
-              },
-              useEssentialOrDefaultValue: {
-                aspectRatio: true,
+            for (let [ind, percent] of orderedPercentWidthMidpoints.entries()) {
+              if (widthSize <= percent) {
+                size = sizePossibilities[ind];
+                break
               }
             }
+            if (!size) {
+              size = defaultSize
+            }
+          }
+          return {
+            setValue: { size }
           }
         } else {
-          //Don't have width
-
-          if (dependencyValues.heightAttr) {
-            let height = dependencyValues.heightAttr.stateValues.componentSize;
-            if (!height.isAbsolute) { throw Error("Have not implemented relative height for video") }
-
-            if (dependencyValues.aspectRatioAttr) {
-              //Have height and aspectRatio, No width
-              let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
-              let width = { isAbsolute: true, size: height.size * aspectRatio }
-              return {
-                setValue: {
-                  width,
-                  height,
-                  aspectRatio
-                }
-              }
-            } else {
-              //Have height, no width, no aspectRatio
-              let width = { isAbsolute: true, size: height.size * (16 / 9) }
-              return {
-                setValue: {
-                  width,
-                  height
-                },
-                useEssentialOrDefaultValue: {
-                  aspectRatio: true,
-                }
-              }
-            }
-          } else {
-
-            if (dependencyValues.aspectRatioAttr) {
-              //Have aspectRatio, No height, no width
-              let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
-              let height = { isAbsolute: true, size: 720 / aspectRatio }
-              return {
-                setValue: {
-                  aspectRatio,
-                  height
-                },
-                useEssentialOrDefaultValue: {
-                  width: true,
-                }
-              }
-            } else {
-              //No aspectRatio, No height, no width
-              return {
-                useEssentialOrDefaultValue: {
-                  width: true,
-                  height: true,
-                  aspectRatio: true,
-                }
-              }
-            }
+          return {
+            useEssentialOrDefaultValue: { size: true }
           }
-
-
         }
       }
 
     }
+
+    stateVariableDefinitions.width = {
+      public: true,
+      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize"
+      },
+      returnDependencies: () => ({
+        size: {
+          dependencyType: "stateVariable",
+          variableName: "size",
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let width = { isAbsolute: true, size: widthsBySize[dependencyValues.size] }
+
+        return {
+          setValue: { width }
+        }
+
+      }
+
+    }
+
+    stateVariableDefinitions.aspectRatio = {
+      public: true,
+      forRenderer: true,
+      defaultValue: "16 / 9",
+      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "number"
+      },
+      returnDependencies: () => ({
+        aspectRatioAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "aspectRatio",
+          variableNames: ["value"]
+        },
+        width: {
+          dependencyType: "stateVariable",
+          variableName: "width"
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.aspectRatioAttr !== null) {
+          let aspectRatio = dependencyValues.aspectRatioAttr.stateValues.value;
+          if (!Number.isFinite(aspectRatio)) {
+            aspectRatio = 1;
+          }
+          return {
+            setValue: { aspectRatio }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { aspectRatio: true }
+          }
+        }
+      }
+    }
+
 
     return stateVariableDefinitions;
   }
