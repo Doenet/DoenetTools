@@ -28,54 +28,54 @@ describe('Admin Navigation Tests', function () {
   })
   it('overview', function() {
     cy.wait(1000);
-    cy.get('[data-cy=overviewNavItem]').should('exist');
+    cy.get('[data-test=overviewNavItem]').should('exist');
     
     cy.visit('/admin');
     cy.wait(1000);
-    cy.get('[data-cy=overviewNavItem] > :nth-child(3)').click();
+    cy.get('[data-test=overviewNavItem] > :nth-child(3)').click();
     
     cy.visit('/course');
     cy.wait(1000);
-    cy.get('[data-cy=overviewNavItem]').should('not.exist');
+    cy.get('[data-test=overviewNavItem]').should('not.exist');
 
   });
   it('syllabus', function() {
     cy.wait(1000);
-    cy.get('[data-cy=syllabusNavItem]').should('exist');
+    cy.get('[data-test=syllabusNavItem]').should('exist');
     
     cy.visit('/admin');
     cy.wait(1000);
-    cy.get('[data-cy=syllabusNavItem] > :nth-child(3)').click();
+    cy.get('[data-test=syllabusNavItem] > :nth-child(3)').click();
     
     cy.visit('/course');
     cy.wait(1000);
-    cy.get('[data-cy=syllabusNavItem]').should('not.exist');
+    cy.get('[data-test=syllabusNavItem]').should('not.exist');
 
   });
   it('grade', function() {
     cy.wait(1000);
-    cy.get('[data-cy=gradesNavItem]').should('exist');
+    cy.get('[data-test=gradesNavItem]').should('exist');
     
     cy.visit('/admin');
     cy.wait(1000);
-    cy.get('[data-cy=gradesNavItem] > :nth-child(3)').click();
+    cy.get('[data-test=gradesNavItem] > :nth-child(3)').click();
     
     cy.visit('/course');
     cy.wait(1000);
-    cy.get('[data-cy=gradesNavItem]').should('not.exist');
+    cy.get('[data-test=gradesNavItem]').should('not.exist');
 
   });
   it('assignment', function() {
     cy.wait(1000);
-    cy.get('[data-cy=assignmentsNavItem]').should('exist');
+    cy.get('[data-test=assignmentsNavItem]').should('exist');
     
     cy.visit('/admin');
     cy.wait(1000);
-    cy.get('[data-cy=assignmentsNavItem] > .switch > .slider').click();
+    cy.get('[data-test=assignmentsNavItem] > .switch > .slider').click();
     
     cy.visit('/course');
     cy.wait(1000);
-    cy.get('[data-cy=assignmentsNavItem]').should('not.exist');
+    cy.get('[data-test=assignmentsNavItem]').should('not.exist');
 
   });
   it('CleanUp', function() {
@@ -85,44 +85,44 @@ describe('Admin Navigation Tests', function () {
   });
   it('addHeader', function() {
     cy.wait(1000);
-    cy.get('[data-cy=header13]').should('not.exist');
+    cy.get('[data-test=header13]').should('not.exist');
 
     cy.visit('/admin');
     cy.wait(1000);
-    cy.get('[data-cy=addHeader]').click();
+    cy.get('[data-test=addHeader]').click();
     cy.get(':nth-child(17)').click();
-    cy.get('[data-cy=modifyTree]').click();
-    cy.get('[data-cy=arrowUp13]').should('exist');
-    cy.get('[data-cy=arrowRight13]').should('exist');
+    cy.get('[data-test=modifyTree]').click();
+    cy.get('[data-test=arrowUp13]').should('exist');
+    cy.get('[data-test=arrowRight13]').should('exist');
 
     cy.visit('/course');
     cy.wait(1000);
-    cy.get('[data-cy=assignmentsNavItem]').should('exist').click();
-    cy.get('[data-cy=header13]').should('exist');
+    cy.get('[data-test=assignmentsNavItem]').should('exist').click();
+    cy.get('[data-test=header13]').should('exist');
 
   });  
   it('addAssignment', function() {
     cy.wait(1000);
-    cy.get('[data-cy=assignmentsNavItem]').should('exist').click();
-    cy.get('[data-cy=header13]').should('exist');
-    cy.get('[data-cy=assignment14]').should('not.exist');
+    cy.get('[data-test=assignmentsNavItem]').should('exist').click();
+    cy.get('[data-test=header13]').should('exist');
+    cy.get('[data-test=assignment14]').should('not.exist');
 
 
     cy.visit('/admin');
     cy.wait(1000);
-    cy.get('[data-cy=addAssignment]').click();
-    cy.get('[data-cy=arrowLeft13]').click();
+    cy.get('[data-test=addAssignment]').click();
+    cy.get('[data-test=arrowLeft13]').click();
 
     cy.visit('/course');
     cy.wait(1000);
-    cy.get('[data-cy=assignmentsNavItem]').should('exist').click();
-    cy.get('[data-cy=header13]').should('exist');
-    cy.get('[data-cy=assignment14]').should('exist');
+    cy.get('[data-test=assignmentsNavItem]').should('exist').click();
+    cy.get('[data-test=header13]').should('exist');
+    cy.get('[data-test=assignment14]').should('exist');
 
     cy.visit('/admin');
     cy.wait(1000);
-    cy.get('[data-cy=removeTree]').click();
-    cy.get('[data-cy=close13]').click();
+    cy.get('[data-test=removeTree]').click();
+    cy.get('[data-test=close13]').click();
 
   });
 

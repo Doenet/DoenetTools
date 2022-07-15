@@ -63,6 +63,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
   return (<ActionButtonGroup vertical>
   <ActionButton
   width="menu"
+  data-test="Assign Activity"
   value={assignActivityText}
   onClick={() => {
     compileActivity({
@@ -85,6 +86,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
 {isAssigned ? 
 <ActionButton
   width="menu"
+  data-test="Unassign Activity"
   value="Unassign Activity"
   alert
   onClick={() => {

@@ -46,7 +46,7 @@ export default function SelectedDataSources() {
 
 
   const addToast = useToast();
-  let heading = (<h2 data-cy="selectedDataSourcesHeading" style={{ margin: "16px 5px" }} >
+  let heading = (<h2 data-test="selectedDataSourcesHeading" style={{ margin: "16px 5px" }} >
     Event Data
   </h2>)
 

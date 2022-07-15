@@ -346,14 +346,14 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
 
   if (hasToggle){
     openCloseIndicator = isOpen ? (
-        <span data-cy="folderToggleCloseIcon" onClick={ ()=>{
+        <span data-test="folderToggleCloseIcon" onClick={ ()=>{
           if (hasToggle){
           toggleOpenClosed();
         }}} >
           <FontAwesomeIcon icon={faChevronDown} />
         </span>
       ) : (
-        <span data-cy="folderToggleOpenIcon" onClick={ ()=>{
+        <span data-test="folderToggleOpenIcon" onClick={ ()=>{
           if (hasToggle){
           toggleOpenClosed();
         }}} >
@@ -524,7 +524,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     <div 
     key={`Row${doenetId}`}
     role="button"
-    data-cy="courseItem"
+    data-test="courseItem"
     tabIndex={0}
     className="noselect nooutline"
     style={{
@@ -578,10 +578,10 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
             y="16">{numbered}</text>
   </svg>: null }
         {openCloseIndicator}
-        <span style={{marginLeft:'8px'}} data-cy="rowIcon">
+        <span style={{marginLeft:'8px'}} data-test="rowIcon">
           <FontAwesomeIcon icon={icon} />
         </span>
-        <span style={{marginLeft:'4px'}} data-cy="rowLabel">{label} </span>
+        <span style={{marginLeft:'4px'}} data-test="rowLabel">{label} </span>
       </p>
       </span>
     {numberOfVisibleColumns > 1 ? <span style={{ textAlign: 'center' }}>{columnsJSX[0]}</span> : null}
