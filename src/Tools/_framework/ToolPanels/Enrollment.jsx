@@ -7,6 +7,7 @@ import { atom, useSetRecoilState, useRecoilValue } from 'recoil';
 import { useToast, toastType } from '@Toast';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import { enrollmentByCourseId } from '../../../_reactComponents/Course/CourseActions';
+import { AddUser } from '../../../_reactComponents/Course/SettingComponents';
 
 export const enrollmentTableDataAtom = atom({
   key: 'enrollmentTableDataAtom',
@@ -33,7 +34,10 @@ export const enrolllearnerAtom = atom({
 export default function Enrollment() {
   // console.log('>>>===Enrollment');
 
-  const toast = useToast();
+  const addToast = useToast();
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const {recoilUnWithdraw,recoilWithdraw,recoilMergeData,value:enrollmentTableData} = useRecoilValue(enrollmentByCourseId(courseId));
+  let [showWithdrawn, setShowWithdrawn] = useState(false);
 
   const process = useRecoilValue(processAtom);
   // console.log("process",process)
@@ -43,11 +47,8 @@ export default function Enrollment() {
   // const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
   // const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
 
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   // const enrollmentTableData = useRecoilValue(enrollmentAtomFamily(courseId))
-  const {recoilUnWithdraw,recoilWithdraw,recoilMergeData,value:enrollmentTableData} = useRecoilValue(enrollmentByCourseId(courseId));
 
-  let [showWithdrawn, setShowWithdrawn] = useState(false);
 
   if (!courseId) {
     return null;
@@ -145,7 +146,7 @@ export default function Enrollment() {
     }
     // console.log("columnToIndex",columnToIndex)
     if (columnToIndex.email == null) {
-      toast(
+      addToast(
         'Not Imported! CSV file needs an Email column heading.',
         toastType.ERROR,
       );
@@ -307,6 +308,8 @@ export default function Enrollment() {
 
   return (
     <div style={{ padding: '8px' }}>
+      <h2>Enroll New:</h2>
+      <AddUser showOptions/>
       {enrollmentTableData.length > 0 ? (
         <div>
           Show Withdrawn{' '}

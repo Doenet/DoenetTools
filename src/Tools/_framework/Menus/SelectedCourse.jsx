@@ -84,13 +84,12 @@ const CourseInfoPanel = function ({ courseId }) {
         <FontAwesomeIcon icon={faChalkboard} /> {label}
       </h2>
       {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}
-      {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}
       {canModifyCourseSettings === '1' && (
         <EditImageAndColor courseId={courseId} />
       )}
       <br />
       {canModifyRoles === '1' && <EditDefaultRole courseId={courseId} />}
-      {canManageUsers === '1' && <AddUser courseId={courseId} />}
+      {canManageUsers === '1' && <AddUser courseId={courseId} menu />}
       {canViewUsers === '1' && (
         <ManageUsers courseId={courseId} editable={canManageUsers === '1'} />
       )}

@@ -161,7 +161,7 @@ export function AddUser({ courseId, menu = false, showOptions = false }) {
   return (
     <>
       <Textfield
-        width={menu ? "menu" : ""}
+        width={menu ? 'menu' : ''}
         label="Add User:"
         placeholder="email"
         value={emailInput}
@@ -174,7 +174,7 @@ export function AddUser({ courseId, menu = false, showOptions = false }) {
         alert={emailInput !== '' && !isEmailValid}
         vertical={menu}
       />
-      {showOptions && <Textfield label="Name:"/>}
+      {showOptions && <Textfield label="Name:" />}
       <Button
         width="menu"
         value="Add User"
@@ -320,6 +320,7 @@ function RolePermissonCheckbox({
   roleId,
   permissonKey,
   onClick,
+  invert = false,
   parentPermissonKey = '',
 }) {
   const {
@@ -333,13 +334,13 @@ function RolePermissonCheckbox({
 
   useEffect(() => {
     setLocalValue(
-      isOwner === '1'
-        ? isOwner
-        : overrideRecoilValue === '1'
-        ? overrideRecoilValue
-        : recoilValue,
+      (isOwner === '1' && !invert) ||
+        overrideRecoilValue === '1' ||
+        recoilValue === '1'
+        ? '1'
+        : '0',
     );
-  }, [isOwner, overrideRecoilValue, recoilValue]);
+  }, [isOwner, overrideRecoilValue, recoilValue, invert]);
 
   return (
     <InputWrapper flex>
@@ -366,7 +367,7 @@ function RolePermissonCheckbox({
           //   valueDescription,
           // });
         }}
-        // disabled={overrideRecoilValue === '1' || isOwner === '1'}
+        disabled={overrideRecoilValue === '1' || isOwner === '1'}
       />
       <CheckboxLabelText>{permissonKey}</CheckboxLabelText>
     </InputWrapper>
@@ -456,6 +457,13 @@ export function MangeRoles({ courseId }) {
         vertical
       />
       <br />
+      <RolePermissonCheckbox
+        courseId={courseId}
+        roleId={selectedRolePermissons.roleId}
+        onClick={handleCheckboxClick}
+        permissonKey={'isIncludedInGradebook'}
+        invert
+      />
       <RolePermissonCheckbox
         courseId={courseId}
         roleId={selectedRolePermissons.roleId}

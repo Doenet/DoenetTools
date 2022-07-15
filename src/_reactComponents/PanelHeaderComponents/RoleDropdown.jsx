@@ -32,6 +32,7 @@ export const effectivePermissionsByCourseId = selectorFamily({
     },
 });
 
+//TODO deal with unmount defult index reset
 export function RoleDropdown() {
   const { tool } = useRecoilValue(pageToolViewAtom);
   const courseId = useRecoilValue(searchParamAtomFamily('courseId')) ?? '';
