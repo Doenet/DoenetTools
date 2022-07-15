@@ -5,6 +5,7 @@ import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortaw
 import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
+import { MathJax } from "better-react-mathjax";
 
 export default React.memo(function BooleanInput(props) {
   let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
@@ -183,9 +184,14 @@ export default React.memo(function BooleanInput(props) {
         isSelected={rendererValue}
         onClick={onChangeHandler}
         value={SVs.label}
+        valueHasLatex={SVs.labelHasLatex}
         disabled={disabled}
       />;
   } else {
+    let label = SVs.label;
+    if (SVs.labelHasLatex) {
+      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+    }
     input = <label>
       <input
         type="checkbox"
@@ -195,7 +201,7 @@ export default React.memo(function BooleanInput(props) {
         onChange={onChangeHandler}
         disabled={disabled}
       />
-      {SVs.label}
+      {label}
     </label>;
   }
 
