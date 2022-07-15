@@ -336,6 +336,25 @@ export default React.memo(function Video(props) {
 
   }
 
+
+  let playerState = player.current?.getPlayerState();
+  if (SVs.state === "playing") {
+    if (
+      playerState === window.YT.PlayerState.UNSTARTED
+      || playerState === window.YT.PlayerState.PAUSED
+      || playerState === window.YT.PlayerState.CUED
+    ) {
+      player.current.playVideo();
+    }
+  } else if (SVs.state === "stopped") {
+    if (
+      playerState === window.YT.PlayerState.PLAYING
+    ) {
+      player.current.pauseVideo();
+    }
+  }
+
+
   if (SVs.hidden) return null;
 
   let outerStyle = {};
@@ -356,7 +375,7 @@ export default React.memo(function Video(props) {
   let videoTag;
 
   if (SVs.youtube) {
-    videoTag = <iframe id={name} style={videoStyle} src={"https://www.youtube.com/embed/" + SVs.youtube + "?enablejsapi=1"} />
+    videoTag = <iframe id={name} style={videoStyle} src={"https://www.youtube.com/embed/" + SVs.youtube + "?enablejsapi=1"} allow="autoplay" />
   } else if (SVs.source) {
     videoTag = <video className="video" id={name} controls style={videoStyle} >
       <source src={SVs.source} type={`video/${SVs.source.split('/').pop().split('.').pop()}`} />
