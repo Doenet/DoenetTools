@@ -1,10 +1,10 @@
-import BaseComponent from './abstract/BaseComponent.js';
+import InlineComponent from './abstract/InlineComponent.js';
 import { breakEmbeddedStringsIntoParensPieces } from './commonsugar/breakstrings.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
 
-export default class BezierControls extends BaseComponent {
+export default class BezierControls extends InlineComponent {
   static componentType = "bezierControls";
-  static rendererType = "container";
+  static rendererType = "containerInline";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

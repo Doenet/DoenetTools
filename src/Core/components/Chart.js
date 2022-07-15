@@ -725,10 +725,34 @@ export default class Chart extends BlockComponent {
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
 
   actions = {
     changeAxisLimits: this.changeAxisLimits.bind(this),
-  };
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
 
 }

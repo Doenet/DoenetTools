@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { MathJax } from "better-react-mathjax";
 
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
@@ -97,6 +98,9 @@ export default function ToggleButton(props) {
     } else if (props.icon) {
       icon = props.icon;
       toggleButton.value = '';
+    }
+    if(props.value && props.valueHasLatex) {
+      toggleButton.value = <MathJax hideUntilTypeset={"first"} inline dynamic >{toggleButton.value}</MathJax>
     }
   }
 

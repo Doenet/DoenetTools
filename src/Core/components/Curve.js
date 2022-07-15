@@ -15,7 +15,8 @@ export default class Curve extends GraphicalComponent {
     moveControlVector: this.moveControlVector.bind(this),
     moveThroughPoint: this.moveThroughPoint.bind(this),
     changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
-    switchCurve: this.switchCurve.bind(this)
+    switchCurve: this.switchCurve.bind(this),
+    curveClicked: this.curveClicked.bind(this)
   };
 
   static primaryStateVariableForDefinition = "fShadow";
@@ -118,13 +119,57 @@ export default class Curve extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let breakIntoFunctionsByCommas = function ({ matchedChildren }) {
+    let breakNonLabelIntoFunctionsByCommas = function ({ matchedChildren, componentInfoObjects }) {
 
-      // only apply if all children are strings or macros
+      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: cType,
+        baseComponentType: "label"
+      });
+
+      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.attributes?.createComponentOfType?.primitive)
+
+      // only apply if all children are strings, macros, or labels
       if (matchedChildren.length === 0 || !matchedChildren.every(child =>
         typeof child === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+        child.doenetAttributes?.createdFromMacro ||
+        componentIsLabel(child)
       )) {
+        return { success: false }
+      }
+
+
+      // find first non-label children to break
+
+      let childIsLabel = matchedChildren.map(componentIsLabel);
+
+      let childrenToBreak = [], childrenToNotBreakBegin = [], childrenToNotBreakEnd = [];
+
+      if (childIsLabel.filter(x => x).length === 0) {
+        childrenToBreak = matchedChildren
+      } else {
+        if (childIsLabel[0]) {
+          // started with label, find first non-label child
+          let firstNonLabelInd = childIsLabel.indexOf(false);
+          if (firstNonLabelInd !== -1) {
+            childrenToNotBreakBegin = matchedChildren.slice(0, firstNonLabelInd);
+            matchedChildren = matchedChildren.slice(firstNonLabelInd);
+            childIsLabel = childIsLabel.slice(firstNonLabelInd)
+          }
+        }
+
+        // now we don't have label at the beginning
+        // find first label ind
+        let firstLabelInd = childIsLabel.indexOf(true);
+        if (firstLabelInd === -1) {
+          childrenToBreak = matchedChildren;
+        } else {
+          childrenToBreak = matchedChildren.slice(0, firstLabelInd);
+          childrenToNotBreakEnd = matchedChildren.slice(firstLabelInd);
+        }
+
+      }
+
+      if (childrenToBreak.length === 0) {
         return { success: false }
       }
 
@@ -137,27 +182,33 @@ export default class Curve extends GraphicalComponent {
         mustStripOffOuterParentheses: true
       })
 
-      let result = breakFunction({ matchedChildren });
+      let result = breakFunction({ matchedChildren: childrenToBreak });
 
-      if (!result.success) {
+      let functionChildren = [];
+
+      if (result.success) {
+        functionChildren = result.newChildren
+      } else {
         // if didn't succeed,
         // then just wrap children with a function
-        return {
-          success: true,
-          newChildren: [{
-            componentType: "function",
-            children: matchedChildren
-          }]
-        }
-
+        functionChildren = [{
+          componentType: "function",
+          children: childrenToBreak
+        }]
       }
 
-      return result;
-
+      return {
+        success: true,
+        newChildren: [
+          ...childrenToNotBreakBegin,
+          ...functionChildren,
+          ...childrenToNotBreakEnd
+        ],
+      }
     };
 
     sugarInstructions.push({
-      replacementFunction: breakIntoFunctionsByCommas
+      replacementFunction: breakNonLabelIntoFunctionsByCommas
     })
 
     return sugarInstructions;
@@ -166,13 +217,17 @@ export default class Curve extends GraphicalComponent {
 
   static returnChildGroups() {
 
-    return [{
+    let childGroups = super.returnChildGroups();
+
+    childGroups.push(...[{
       group: "functions",
       componentTypes: ["function"]
     }, {
       group: "bezierControls",
       componentTypes: ["bezierControls"]
-    }]
+    }])
+
+    return childGroups;
 
   }
 
@@ -389,7 +444,7 @@ export default class Curve extends GraphicalComponent {
           if (domain !== null) {
             domain = domain[0];
             try {
-              parMax = domain[1].evaluate_to_constant();
+              parMax = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
               if (!Number.isFinite(parMax) && parMax !== Infinity) {
                 parMax = NaN;
               }
@@ -498,7 +553,7 @@ export default class Curve extends GraphicalComponent {
           if (domain !== null) {
             domain = domain[0];
             try {
-              parMin = domain[0].evaluate_to_constant();
+              parMin = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
               if (!Number.isFinite(parMin) && parMin !== -Infinity) {
                 parMin = NaN;
               }
@@ -3202,6 +3257,16 @@ export default class Curve extends GraphicalComponent {
 
   }
 
+  async curveClicked({ actionId, name }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 
 }
 
@@ -3230,12 +3295,23 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let x1AtLeftEndpoint, x2AtLeftEndpoint;
     if (parMin !== -Infinity) {
 
+      x1AtLeftEndpoint = parMin;
+      x2AtLeftEndpoint = f(parMin);
+
+      if (!Number.isFinite(x2AtLeftEndpoint)) {
+        // in case function was defined on an open interval
+        // check a point just to the right
+        let parMinAdjust = parMin * 0.99999 + parMax * 0.00001;
+        let x2AtLeftEndpointAdjust = f(parMinAdjust);
+        if (Number.isFinite(x2AtLeftEndpointAdjust)) {
+          x1AtLeftEndpoint = parMinAdjust;
+          x2AtLeftEndpoint = x2AtLeftEndpointAdjust;
+        }
+      }
       if (flipFunction) {
-        x1AtLeftEndpoint = f(parMin);
-        x2AtLeftEndpoint = parMin;
-      } else {
-        x1AtLeftEndpoint = parMin;
-        x2AtLeftEndpoint = f(parMin);
+        let temp = x1AtLeftEndpoint;
+        x1AtLeftEndpoint = x2AtLeftEndpoint;
+        x2AtLeftEndpoint = temp;
       }
 
     }
@@ -3243,12 +3319,24 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let x1AtRightEndpoint, x2AtRightEndpoint;
     if (parMax !== Infinity) {
 
+      x1AtRightEndpoint = parMax;
+      x2AtRightEndpoint = f(parMax);
+
+      if (!Number.isFinite(x2AtRightEndpoint)) {
+        // in case function was defined on an open interval
+        // check a point just to the left
+        let parMaxAdjust = parMin * 0.00001 + parMax * 0.99999;
+        let x2AtRightEndpointAdjust = f(parMaxAdjust);
+        if (Number.isFinite(x2AtRightEndpointAdjust)) {
+          x1AtRightEndpoint = parMaxAdjust;
+          x2AtRightEndpoint = x2AtRightEndpointAdjust;
+        }
+      }
+
       if (flipFunction) {
-        x1AtRightEndpoint = f(parMax);
-        x2AtRightEndpoint = parMax;
-      } else {
-        x1AtRightEndpoint = parMax;
-        x2AtRightEndpoint = f(parMax);
+        let temp = x1AtRightEndpoint;
+        x1AtRightEndpoint = x2AtRightEndpoint;
+        x2AtRightEndpoint = temp;
       }
     }
 

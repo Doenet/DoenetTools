@@ -8,6 +8,7 @@ export default class Vector extends GraphicalComponent {
 
   actions = {
     moveVector: this.moveVector.bind(this),
+    vectorClicked: this.vectorClicked.bind(this),
   }
 
   static primaryStateVariableForDefinition = "displacementShadow";
@@ -97,7 +98,7 @@ export default class Vector extends GraphicalComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
 
-    let breakIntoXsByCommas = function ({ matchedChildren }) {
+    let breakIntoXsByCommas = function ({ matchedChildren, componentInfoObjects }) {
       let childrenToComponentFunction = x => ({
         componentType: "math", children: x
       });
@@ -106,6 +107,60 @@ export default class Vector extends GraphicalComponent {
         childrenToComponentFunction,
         mustStripOffOuterParentheses: true
       })
+
+      // find index of first and last string
+      let cTypes = matchedChildren.map(x => typeof x)
+      let beginInd = cTypes.indexOf("string");
+      let lastInd = cTypes.lastIndexOf("string");
+
+      if (beginInd === -1) {
+        // if have no strings but have exactly one math child,
+        // use that for displacement
+
+        let componentTypeIsMath = cType => componentInfoObjects.isInheritedComponentType({
+          inheritedComponentType: cType,
+          baseComponentType: "math"
+        });
+  
+
+        let mathChildren = matchedChildren.filter(child =>
+          componentTypeIsMath(child.componentType) || componentTypeIsMath(child.attributes?.createComponentOfType?.primitive)
+        );
+
+        if (mathChildren.length === 1) {
+          let mathChild = mathChildren[0];
+          let mathInd = matchedChildren.indexOf(mathChild);
+
+          let newChildren = [
+            ...matchedChildren.slice(0, mathInd),
+            ...matchedChildren.slice(mathInd + 1)
+          ];
+
+          return {
+            success: true,
+            newAttributes: {
+              displacement: {
+                component: {
+                  componentType: "math",
+                  children: mathChildren
+                }
+              }
+            },
+            newChildren
+          }
+
+        } else {
+          // no strings and don't have exactly one math child
+          return { success: false }
+        }
+
+      }
+
+      let newChildren = [
+        ...matchedChildren.slice(0, beginInd),
+        ...matchedChildren.slice(lastInd + 1)
+      ]
+      matchedChildren = matchedChildren.slice(beginInd, lastInd + 1);
 
       let result = breakFunction({ matchedChildren });
 
@@ -121,30 +176,35 @@ export default class Vector extends GraphicalComponent {
                 children: matchedChildren
               }
             }
-          }
+          },
+          newChildren
         }
       }
 
       if (result.success) {
         // wrap xs around the x children
-        result.newAttributes = {
-          xs: {
-            component: {
-              componentType: "mathList",
-              children: result.newChildren,
-              skipSugar: true,
+        return {
+          success: true,
+          newAttributes: {
+            xs: {
+              component: {
+                componentType: "mathList",
+                children: result.newChildren,
+                skipSugar: true,
+              }
             }
-          }
-        },
-          delete result.newChildren;
+          },
+          newChildren
+        }
+      } else {
+        return { success: false }
       }
 
-      return result;
 
     };
 
     sugarInstructions.push({
-      childrenRegex: /s+(.*s)?/,
+      // childrenRegex: /s+(.*s)?/,
       replacementFunction: breakIntoXsByCommas
     })
 
@@ -154,13 +214,17 @@ export default class Vector extends GraphicalComponent {
 
   static returnChildGroups() {
 
-    return [{
+    let childGroups = super.returnChildGroups();
+
+    childGroups.push(...[{
       group: "points",
       componentTypes: ["point"]
     }, {
       group: "vectors",
       componentTypes: ["vector"]
-    }]
+    }])
+
+    return childGroups;
 
   }
 
@@ -849,7 +913,7 @@ export default class Vector extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
         returnWrappingComponents(prefix) {
           if (prefix === "x") {
             return [];
@@ -1177,7 +1241,7 @@ export default class Vector extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
         returnWrappingComponents(prefix) {
           if (prefix === "headX") {
             return [];
@@ -1361,7 +1425,7 @@ export default class Vector extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
         returnWrappingComponents(prefix) {
           if (prefix === "tailX") {
             return [];
@@ -1933,6 +1997,17 @@ export default class Vector extends GraphicalComponent {
         }
       });
     }
+
+  }
+
+  async vectorClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

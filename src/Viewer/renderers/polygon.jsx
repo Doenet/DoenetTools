@@ -14,6 +14,7 @@ export default React.memo(function Polygon(props) {
 
   let pointCoords = useRef(null);
   let draggedPoint = useRef(null);
+  let downOnPoint = useRef(null);
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
   let previousNVertices = useRef(null);
@@ -70,13 +71,8 @@ export default React.memo(function Polygon(props) {
     };
 
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     let jsxPolygonAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -92,11 +88,11 @@ export default React.memo(function Polygon(props) {
       borders: jsxBorderAttributes,
     };
 
-
-    if (SVs.labelIsLatex) {
-      jsxPolygonAttributes.label = { useMathJax: true };
-    } else {
-      jsxPolygonAttributes.label = {};
+    jsxPolygonAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxPolygonAttributes.label.useMathJax = true
     }
 
     if (SVs.applyStyleToLabel) {
@@ -150,11 +146,15 @@ export default React.memo(function Polygon(props) {
     for (let i = 0; i < SVs.nVertices; i++) {
       let vertex = polygon.vertices[i];
       vertex.off('drag');
-      vertex.on('drag', () => dragHandler(i));
+      vertex.on('drag', (e) => dragHandler(i, e));
       vertex.off('up');
       vertex.on('up', () => upHandler(i));
       vertex.off('down');
-      vertex.on('down', () => draggedPoint.current = null);
+      vertex.on('down', (e) => {
+        draggedPoint.current = null;
+        pointerAtDown.current = [e.x, e.y];
+        downOnPoint.current = i;
+      });
     }
   }
 
@@ -172,60 +172,72 @@ export default React.memo(function Polygon(props) {
   }
 
   function dragHandler(i, e) {
-    draggedPoint.current = i;
+    //Protect against very small unintended drags
+    if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+      Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      draggedPoint.current = i;
 
-    if (i === -1) {
-      pointCoords.current = calculatePointPositions(e);
+      if (i === -1) {
+        pointCoords.current = calculatePointPositions(e);
 
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true
+          }
+        })
+
+        for (let j = 0; j < SVs.nVertices; j++) {
+          polygonJXG.current.vertices[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
         }
-      })
-
-      for (let j = 0; j < SVs.nVertices; j++) {
-        polygonJXG.current.vertices[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
+      } else {
+        pointCoords.current = {};
+        pointCoords.current[i] = [polygonJXG.current.vertices[i].X(), polygonJXG.current.vertices[i].Y()];
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true,
+            sourceInformation: { vertex: i }
+          }
+        })
+        polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
+        board.updateInfobox(polygonJXG.current.vertices[i])
       }
-    } else {
-      pointCoords.current = {};
-      pointCoords.current[i] = [polygonJXG.current.vertices[i].X(), polygonJXG.current.vertices[i].Y()];
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true,
-          sourceInformation: { vertex: i }
-        }
-      })
-      polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
-      board.updateInfobox(polygonJXG.current.vertices[i])
     }
   }
 
   function upHandler(i) {
-    if (draggedPoint.current !== i) {
-      return;
+    if (draggedPoint.current === i) {
+      if (i === -1) {
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+          }
+        })
+      } else {
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            sourceInformation: { vertex: i }
+          }
+        })
+
+      }
+    } else if (draggedPoint.current === null && (downOnPoint.current === null || i !== -1)) {
+      // Note: counting on fact that up on polygon itself (i===-1) will trigger before up on points
+      callAction({
+        action: actions.polygonClicked
+      });
     }
 
-    if (i === -1) {
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-        }
-      })
-    } else {
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-          sourceInformation: { vertex: i }
-        }
-      })
+    if (i !== -1) {
+      downOnPoint.current = null;
     }
   }
 
@@ -333,11 +345,7 @@ export default React.memo(function Polygon(props) {
       }
 
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      polygonJXG.current.name = label;
+      polygonJXG.current.name = SVs.label;
 
       if (polygonJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {

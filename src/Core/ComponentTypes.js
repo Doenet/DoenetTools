@@ -54,6 +54,7 @@ import Curve from './components/Curve';
 import BezierControls from './components/BezierControls';
 import ControlVectors from './components/ControlVectors';
 import PointListComponent from './components/abstract/PointListComponent';
+import IntervalListComponent from './components/abstract/IntervalListComponent';
 import LineListComponent from './components/abstract/LineListComponent';
 import VectorListComponent from './components/abstract/VectorListComponent';
 import AngleListComponent from './components/abstract/AngleListComponent';
@@ -73,6 +74,7 @@ import Graph from './components/Graph';
 import Variables from './components/Variables';
 import Variable from './components/Variable';
 import Function from './components/Function';
+import Interval from './components/Interval';
 import Template from './components/Template';
 import Option from './components/Option';
 import Sequence from './components/Sequence';
@@ -178,7 +180,6 @@ import FunctionBaseOperator from './components/abstract/FunctionBaseOperator';
 import SectioningComponent from './components/abstract/SectioningComponent';
 import InlineRenderInlineChildren from './components/abstract/InlineRenderInlineChildren';
 import TextOrInline from './components/abstract/TextOrInline';
-import TextOrLatexFromInline from './components/abstract/TextOrLatexFromInline';
 import SingleCharacterInline from './components/abstract/SingleCharacterInline';
 
 const componentTypeArray = [
@@ -238,6 +239,7 @@ const componentTypeArray = [
   Variables,
   Variable,
   Function,
+  Interval,
   Template, Option,
   Sequence,
   Slider,
@@ -326,6 +328,7 @@ const componentTypeArray = [
   Input,
   CompositeComponent,
   PointListComponent,
+  IntervalListComponent,
   LineListComponent,
   VectorListComponent,
   AngleListComponent,
@@ -337,7 +340,6 @@ const componentTypeArray = [
   SectioningComponent,
   InlineRenderInlineChildren,
   TextOrInline,
-  TextOrLatexFromInline,
   SingleCharacterInline,
 ];
 

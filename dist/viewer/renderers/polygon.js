@@ -8,6 +8,7 @@ export default React.memo(function Polygon(props) {
   let polygonJXG = useRef(null);
   let pointCoords = useRef(null);
   let draggedPoint = useRef(null);
+  let downOnPoint = useRef(null);
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
   let previousNVertices = useRef(null);
@@ -48,12 +49,8 @@ export default React.memo(function Polygon(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle)
     };
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
     let jsxPolygonAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -66,10 +63,11 @@ export default React.memo(function Polygon(props) {
       vertices: jsxPointAttributes.current,
       borders: jsxBorderAttributes
     };
-    if (SVs.labelIsLatex) {
-      jsxPolygonAttributes.label = {useMathJax: true};
-    } else {
-      jsxPolygonAttributes.label = {};
+    jsxPolygonAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxPolygonAttributes.label.useMathJax = true;
     }
     if (SVs.applyStyleToLabel) {
       jsxPolygonAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
@@ -101,11 +99,15 @@ export default React.memo(function Polygon(props) {
     for (let i = 0; i < SVs.nVertices; i++) {
       let vertex = polygon.vertices[i];
       vertex.off("drag");
-      vertex.on("drag", () => dragHandler(i));
+      vertex.on("drag", (e) => dragHandler(i, e));
       vertex.off("up");
       vertex.on("up", () => upHandler(i));
       vertex.off("down");
-      vertex.on("down", () => draggedPoint.current = null);
+      vertex.on("down", (e) => {
+        draggedPoint.current = null;
+        pointerAtDown.current = [e.x, e.y];
+        downOnPoint.current = i;
+      });
     }
   }
   function deletePolygonJXG() {
@@ -121,55 +123,63 @@ export default React.memo(function Polygon(props) {
     polygonJXG.current = null;
   }
   function dragHandler(i, e) {
-    draggedPoint.current = i;
-    if (i === -1) {
-      pointCoords.current = calculatePointPositions(e);
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true
+    if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+      draggedPoint.current = i;
+      if (i === -1) {
+        pointCoords.current = calculatePointPositions(e);
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true
+          }
+        });
+        for (let j = 0; j < SVs.nVertices; j++) {
+          polygonJXG.current.vertices[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
         }
-      });
-      for (let j = 0; j < SVs.nVertices; j++) {
-        polygonJXG.current.vertices[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
+      } else {
+        pointCoords.current = {};
+        pointCoords.current[i] = [polygonJXG.current.vertices[i].X(), polygonJXG.current.vertices[i].Y()];
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true,
+            sourceInformation: {vertex: i}
+          }
+        });
+        polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
+        board.updateInfobox(polygonJXG.current.vertices[i]);
       }
-    } else {
-      pointCoords.current = {};
-      pointCoords.current[i] = [polygonJXG.current.vertices[i].X(), polygonJXG.current.vertices[i].Y()];
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true,
-          sourceInformation: {vertex: i}
-        }
-      });
-      polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
-      board.updateInfobox(polygonJXG.current.vertices[i]);
     }
   }
   function upHandler(i) {
-    if (draggedPoint.current !== i) {
-      return;
+    if (draggedPoint.current === i) {
+      if (i === -1) {
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current
+          }
+        });
+      } else {
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            sourceInformation: {vertex: i}
+          }
+        });
+      }
+    } else if (draggedPoint.current === null && (downOnPoint.current === null || i !== -1)) {
+      callAction({
+        action: actions.polygonClicked
+      });
     }
-    if (i === -1) {
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current
-        }
-      });
-    } else {
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-          sourceInformation: {vertex: i}
-        }
-      });
+    if (i !== -1) {
+      downOnPoint.current = null;
     }
   }
   function calculatePointPositions(e) {
@@ -240,11 +250,7 @@ export default React.memo(function Polygon(props) {
       if (layerChanged) {
         polygonJXG.current.setAttribute({layer: polygonLayer});
       }
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      polygonJXG.current.name = label;
+      polygonJXG.current.name = SVs.label;
       if (polygonJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {
           polygonJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
@@ -280,7 +286,7 @@ export default React.memo(function Polygon(props) {
           border.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
           border.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
         }
-        let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+        let newDash = styleToDash(SVs.selectedStyle.lineStyle);
         if (border.visProp.dash !== newDash) {
           border.visProp.dash = newDash;
         }

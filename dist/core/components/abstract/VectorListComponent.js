@@ -3,7 +3,7 @@ import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstring
 
 export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorListComponent";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
   static returnSugarInstructions() {

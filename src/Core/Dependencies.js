@@ -2982,12 +2982,12 @@ class Dependency {
 
           } else {
             value = null;
-            changes.valuesChanged = {};
+            changes = {};
             usedDefault = false;
           }
         } else {
           value = null;
-          changes.valuesChanged = {};
+          changes = {};
           usedDefault = false;
         }
       } else if (this.returnSingleComponent) {
@@ -3211,8 +3211,8 @@ class MultipleStateVariablesDependency extends Dependency {
       this.componentName = this.upstreamComponentName;
     }
 
-    if (this.definition.variableNames === undefined) {
-      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames is not defined`);
+    if (!Array.isArray(this.definition.variableNames)) {
+      throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames must be an array`)
     }
     this.originalDownstreamVariableNames = this.definition.variableNames;
 
@@ -3861,11 +3861,6 @@ class AttributeComponentDependency extends Dependency {
 
     this.attributeName = this.definition.attributeName;
 
-    this.fallBackToAttributeFromShadowTarget = true;
-    if (this.definition.fallBackToAttributeFromShadowTarget !== undefined) {
-      this.fallBackToAttributeFromShadowTarget = this.definition.fallBackToAttributeFromShadowTarget;
-    }
-
     this.returnSingleComponent = true;
 
   }
@@ -3922,41 +3917,54 @@ class AttributeComponentDependency extends Dependency {
       }
     }
 
-    if (this.fallBackToAttributeFromShadowTarget) {
-      // if don't have an attribute component,
-      // check if shadows a component with that attribute component
+    // if don't have an attribute component,
+    // check if shadows a component with that attribute component
 
-      let comp = parent;
+    let comp = parent;
 
-      while (comp.shadows) {
+    while (comp.shadows) {
+      let shadows = comp.shadows;
+      let propVariable = comp.shadows.propVariable;
 
-        let propVariable = comp.shadows.propVariable;
+      comp = this.dependencyHandler._components[shadows.componentName];
+      if (!comp) {
+        break;
+      }
 
-        comp = this.dependencyHandler._components[comp.shadows.componentName];
-        if (!comp) {
+      if (propVariable) {
+        if (!(
+          comp.state[propVariable]?.shadowingInstructions?.attributesToShadow?.includes(this.attributeName)
+          || comp.constructor.createAttributesObject()[this.attributeName]?.propagateToProps
+        )) {
           break;
         }
-
-        if (propVariable) {
-          if (!(
-            comp.state[propVariable]?.shadowingInstructions?.attributeComponentsToShadow?.includes(this.attributeName)
-          )) {
+      } else {
+        let composite = this.dependencyHandler._components[shadows.compositeName];
+        if ("targetAttributesToIgnoreRecursively" in composite.state) {
+          let targetAttributesToIgnoreRecursively = await composite.stateValues.targetAttributesToIgnoreRecursively;
+          if (targetAttributesToIgnoreRecursively.includes(this.attributeName)) {
             break;
           }
         }
-
-        attribute = comp.attributes[this.attributeName];
-
-        if (attribute?.component) {
-          return {
-            success: true,
-            downstreamComponentNames: [attribute.component.componentName],
-            downstreamComponentTypes: [attribute.component.componentType],
+        if (shadows.firstLevelReplacement && "targetAttributesToIgnore" in composite.state) {
+          let targetAttributesToIgnore = await composite.stateValues.targetAttributesToIgnore;
+          if (targetAttributesToIgnore.includes(this.attributeName)) {
+            break;
           }
         }
       }
 
+      attribute = comp.attributes[this.attributeName];
+
+      if (attribute?.component) {
+        return {
+          success: true,
+          downstreamComponentNames: [attribute.component.componentName],
+          downstreamComponentTypes: [attribute.component.componentType],
+        }
+      }
     }
+
 
     return {
       success: true,
@@ -5905,7 +5913,7 @@ class SourceCompositeIdentityDependency extends Dependency {
 dependencyTypeArray.push(SourceCompositeIdentityDependency);
 
 
-class AdapterSourceDependency extends Dependency {
+class AdapterSourceStateVariableDependency extends Dependency {
   static dependencyType = "adapterSourceStateVariable";
 
   setUpParameters() {
@@ -5925,9 +5933,117 @@ class AdapterSourceDependency extends Dependency {
 
     this.returnSingleVariableValue = true;
 
-    // for source composite state variable
+    // for adaptor source state variable
     // always make variables optional so that don't get error
-    // depending on source composite (which a component can't control)
+    // depending on adaptor source (which a component can't control)
+    this.variablesOptional = true;
+
+  }
+
+
+  async determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    if (!component.adaptedFrom) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let sourceComposite = component.adaptedFrom;
+
+    return {
+      success: true,
+      downstreamComponentNames: [sourceComposite.componentName],
+      downstreamComponentTypes: [sourceComposite.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(AdapterSourceStateVariableDependency);
+
+class AdapterSourceDependency extends Dependency {
+  static dependencyType = "adapterSource";
+
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName;
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    if (this.definition.variableNames) {
+      if (!Array.isArray(this.definition.variableNames)) {
+        throw Error(`Invalid state variable ${this.representativeStateVariable} of ${this.upstreamComponentName}, dependency ${this.dependencyName}: variableNames must be an array`)
+      }
+      this.originalDownstreamVariableNames = this.definition.variableNames;
+    } else {
+      this.originalDownstreamVariableNames = [];
+    }
+
+    this.returnSingleComponent = true;
+
+    // for adaptor source state variable
+    // always make variables optional so that don't get error
+    // depending on adaptor source (which a component can't control)
     this.variablesOptional = true;
 
   }
@@ -6009,7 +6125,6 @@ class AdapterSourceDependency extends Dependency {
 }
 
 dependencyTypeArray.push(AdapterSourceDependency);
-
 
 class CountAmongSiblingsDependency extends Dependency {
   static dependencyType = "countAmongSiblingsOfSameType";
@@ -6509,8 +6624,8 @@ class AttributePrimitiveDependency extends StateVariableDependency {
 
     this.attributeName = this.definition.attributeName;
 
-    if (this.definition.componentName) {
-      this.componentName = this.definition.componentName;
+    if (this.definition.parentName) {
+      this.componentName = this.definition.parentName;
       this.specifiedComponentName = this.componentName;
     } else {
       this.componentName = this.upstreamComponentName;
@@ -6529,13 +6644,15 @@ class AttributePrimitiveDependency extends StateVariableDependency {
     }
 
     if (this.downstreamComponentNames.length === 1) {
-      let depComponent = this.dependencyHandler.components[this.downstreamComponentNames[0]];
+      let parent = this.dependencyHandler.components[this.componentName];
 
-      value = depComponent.attributes[this.attributeName];
-      if (value) {
-        value = value.primitive;
-      } else {
-        value = null;
+      if (parent) {
+        value = parent.attributes[this.attributeName];
+        if (value) {
+          value = value.primitive;
+        } else {
+          value = null;
+        }
       }
 
     }

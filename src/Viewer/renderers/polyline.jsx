@@ -15,6 +15,7 @@ export default React.memo(function Polyline(props) {
 
   let pointCoords = useRef(null);
   let draggedPoint = useRef(null);
+  let downOnPoint = useRef(null);
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
   let previousNVertices = useRef(null);
@@ -59,15 +60,9 @@ export default React.memo(function Polyline(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
-
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     //things to be passed to JSXGraph as attributes
     let jsxPolylineAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.label !== "",
       layer: 10 * SVs.layer + 7,
@@ -96,11 +91,11 @@ export default React.memo(function Polyline(props) {
     if (fixed || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
     }
-
-    if (SVs.labelIsLatex) {
-      jsxPolylineAttributes.label = { useMathJax: true };
-    } else {
-      jsxPolylineAttributes.label = {};
+    jsxPolylineAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxPolylineAttributes.label.useMathJax = true
     }
     if (SVs.applyStyleToLabel) {
       jsxPolylineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
@@ -122,9 +117,13 @@ export default React.memo(function Polyline(props) {
     let newPolylineJXG = board.create('curve', [x, y], jsxPolylineAttributes);
 
     for (let i = 0; i < SVs.nVertices; i++) {
-      pointsJXG.current[i].on('drag', () => dragHandler(i));
+      pointsJXG.current[i].on('drag', (e) => dragHandler(i, e));
       pointsJXG.current[i].on('up', () => upHandler(i));
-      pointsJXG.current[i].on('down', () => draggedPoint.current = null);
+      pointsJXG.current[i].on('down', (e) => {
+        draggedPoint.current = null;
+        pointerAtDown.current = [e.x, e.y];
+        downOnPoint.current = i;
+      });
     }
 
     newPolylineJXG.on('drag', e => dragHandler(-1, e));
@@ -163,69 +162,80 @@ export default React.memo(function Polyline(props) {
   }
 
   function dragHandler(i, e) {
-    draggedPoint.current = i;
+    //Protect against very small unintended drags
+    if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+      Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      draggedPoint.current = i;
 
-    if (i === -1) {
-      pointCoords.current = calculatePointPositions(e);
+      if (i === -1) {
+        pointCoords.current = calculatePointPositions(e);
 
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true,
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true,
+          }
+        })
+
+        polylineJXG.current.updateTransformMatrix();
+        let shiftX = polylineJXG.current.transformMat[1][0];
+        let shiftY = polylineJXG.current.transformMat[2][0];
+
+
+        for (let j = 0; j < SVs.nVertices; j++) {
+          pointsJXG.current[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
+          polylineJXG.current.dataX[j] = lastPositionsFromCore.current[j][0] - shiftX;
+          polylineJXG.current.dataY[j] = lastPositionsFromCore.current[j][1] - shiftY;
+
         }
-      })
-
-      polylineJXG.current.updateTransformMatrix();
-      let shiftX = polylineJXG.current.transformMat[1][0];
-      let shiftY = polylineJXG.current.transformMat[2][0];
-
-
-      for (let j = 0; j < SVs.nVertices; j++) {
-        pointsJXG.current[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
-        polylineJXG.current.dataX[j] = lastPositionsFromCore.current[j][0] - shiftX;
-        polylineJXG.current.dataY[j] = lastPositionsFromCore.current[j][1] - shiftY;
+      } else {
+        pointCoords.current = {};
+        pointCoords.current[i] = [pointsJXG.current[i].X(), pointsJXG.current[i].Y()];
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true,
+            sourceInformation: { vertex: i }
+          }
+        })
+        pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
+        board.updateInfobox(pointsJXG.current[i])
 
       }
-    } else {
-      pointCoords.current = {};
-      pointCoords.current[i] = [pointsJXG.current[i].X(), pointsJXG.current[i].Y()];
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true,
-          sourceInformation: { vertex: i }
-        }
-      })
-      pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
-      board.updateInfobox(pointsJXG.current[i])
-
     }
   }
 
   function upHandler(i) {
-    if (draggedPoint.current !== i) {
-      return;
+    if (draggedPoint.current === i) {
+      if (i === -1) {
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+          }
+        })
+      } else {
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            sourceInformation: { vertex: i }
+          }
+        })
+      }
+    } else if (draggedPoint.current === null && (downOnPoint.current === null || i !== -1)) {
+      // Note: counting on fact that up on polyline itself (i===-1) will trigger before up on points
+      callAction({
+        action: actions.polylineClicked
+      });
     }
 
-    if (i === -1) {
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-        }
-      })
-    } else {
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-          sourceInformation: { vertex: i }
-        }
-      })
+    if (i !== -1) {
+      downOnPoint.current = null;
     }
   }
 
@@ -369,11 +379,7 @@ export default React.memo(function Polyline(props) {
       }
 
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      polylineJXG.current.name = label;
+      polylineJXG.current.name = SVs.label;
 
       if (polylineJXG.current.hasLabel) {
         if (SVs.applyStyleToLabel) {

@@ -13,8 +13,6 @@ $userId = $jwtArray['userId'];
 $examUserId = array_key_exists("examineeUserId",$jwtArray) ? $jwtArray['examineeUserId'] : "";
 $examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] : "";
 
-$device = $jwtArray['deviceName'];
-
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId =  mysqli_real_escape_string($conn,$_POST["doenetId"]);
 $activityCid =  mysqli_real_escape_string($conn,$_POST["activityCid"]);
@@ -26,7 +24,8 @@ $object =  mysqli_real_escape_string($conn,$_POST["object"]);
 $result =  mysqli_real_escape_string($conn,$_POST["result"]);
 $context =  mysqli_real_escape_string($conn,$_POST["context"]);
 $version =  mysqli_real_escape_string($conn,$_POST["version"]);
-$variantIndex =  mysqli_real_escape_string($conn,$_POST["variantIndex"]);
+$activityVariantIndex =  mysqli_real_escape_string($conn,$_POST["activityVariantIndex"]);
+$pageVariantIndex =  mysqli_real_escape_string($conn,$_POST["pageVariantIndex"]);
 $timestamp =  mysqli_real_escape_string($conn,$_POST["timestamp"]);
 
 $success = TRUE;
@@ -53,9 +52,6 @@ if ($doenetId == ""){
 }elseif ($version == ""){
   $success = FALSE;
   $message = 'Internal Error: missing version';
-}elseif ($variantIndex == ""){
-  $success = FALSE;
-  $message = 'Internal Error: missing variantIndex';
 }elseif ($timestamp == ""){
   $success = FALSE;
   $message = 'Internal Error: missing timestamp';
@@ -88,13 +84,25 @@ if ($activityCid == ""){
   $activityCid = "'$activityCid'";
 }
 
+if ($pageVariantIndex == ""){
+  $pageVariantIndex = 'NULL';
+} else {
+  $pageVariantIndex = "'$pageVariantIndex'";
+}
+
+if ($activityVariantIndex == ""){
+  $activityVariantIndex = 'NULL';
+} else {
+  $activityVariantIndex = "'$activityVariantIndex'";
+}
+
 if ($pageNumber == ""){
   $pageNumber = 'NULL';
 }
 
 if ($success){
-  $sql = "INSERT INTO event (userId,deviceName,doenetId,activityCid,pageCid,pageNumber,attemptNumber,variantIndex,verb,object,result,context,version,timestamp,timestored)
-  VALUES ('$userId','$device','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$variantIndex,'$verb','$object','$result','$context','$version','$timestamp',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'))";
+  $sql = "INSERT INTO event (userId,doenetId,activityCid,pageCid,pageNumber,attemptNumber,activityVariantIndex,pageVariantIndex,verb,object,result,context,version,timestamp)
+  VALUES ('$userId','$doenetId',$activityCid,$pageCid,$pageNumber,$attemptNumber,$activityVariantIndex,$pageVariantIndex,'$verb','$object','$result','$context','$version','$timestamp')";
   $result = $conn->query($sql);
 }
 

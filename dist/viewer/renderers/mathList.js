@@ -1,5 +1,5 @@
 import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
-import React, {useEffect} from "../../_snowpack/pkg/react.js";
+import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 export default React.memo(function MathList(props) {
   let {name, SVs, children} = useDoenetRender(props);

@@ -8,6 +8,7 @@ export default class Vector extends GraphicalComponent {
 
   actions = {
     moveVector: this.moveVector.bind(this),
+    vectorClicked: this.vectorClicked.bind(this),
   }
 
   static primaryStateVariableForDefinition = "displacementShadow";
@@ -154,13 +155,17 @@ export default class Vector extends GraphicalComponent {
 
   static returnChildGroups() {
 
-    return [{
+    let childGroups = super.returnChildGroups();
+
+    childGroups.push(...[{
       group: "points",
       componentTypes: ["point"]
     }, {
       group: "vectors",
       componentTypes: ["vector"]
-    }]
+    }])
+
+    return childGroups;
 
   }
 
@@ -849,7 +854,7 @@ export default class Vector extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
         returnWrappingComponents(prefix) {
           if (prefix === "x") {
             return [];
@@ -1177,7 +1182,7 @@ export default class Vector extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
         returnWrappingComponents(prefix) {
           if (prefix === "headX") {
             return [];
@@ -1361,7 +1366,7 @@ export default class Vector extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
         returnWrappingComponents(prefix) {
           if (prefix === "tailX") {
             return [];
@@ -1933,6 +1938,17 @@ export default class Vector extends GraphicalComponent {
         }
       });
     }
+
+  }
+
+  async vectorClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

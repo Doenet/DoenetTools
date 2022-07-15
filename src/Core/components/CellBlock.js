@@ -3,7 +3,7 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class CellBlock extends BaseComponent {
   static componentType = "cellBlock";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

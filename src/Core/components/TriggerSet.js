@@ -8,11 +8,7 @@ export default class triggerSet extends InlineComponent {
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
     attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "update value",
-      public: true,
-      forRenderer: true,
+      createComponentOfType: "label",
     };
 
     attributes.triggerWhen = {
@@ -26,6 +22,10 @@ export default class triggerSet extends InlineComponent {
       createPrimitiveOfType: "string"
     }
 
+    attributes.triggerWhenTargetsClicked = {
+      createPrimitiveOfType: "string"
+    }
+
     return attributes;
   }
 
@@ -34,6 +34,9 @@ export default class triggerSet extends InlineComponent {
     return [{
       group: "updateValuesCallActions",
       componentTypes: ["updateValue", "callAction"]
+    }, {
+      group: "labels",
+      componentTypes: ["label"]
     }]
 
   }
@@ -43,6 +46,54 @@ export default class triggerSet extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.label = {
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "label",
+      },
+      hasEssential: true,
+      defaultValue: "update value",
+      additionalStateVariablesDefined: [{
+        variableName: "labelHasLatex",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        labelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "label",
+          variableNames: ["value", "hasLatex"]
+        },
+        labelChild: {
+          dependencyType: "child",
+          childGroups: ["labels"],
+          variableNames: ["value", "hasLatex"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.labelChild.length > 0) {
+          return {
+            setValue: {
+              label: dependencyValues.labelChild[0].stateValues.value,
+              labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.labelAttr) {
+          return {
+            setValue: {
+              label: dependencyValues.labelAttr.stateValues.value,
+              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { label: true },
+            setValue: { labelHasLatex: false }
+          }
+        }
+      }
+    }
 
     stateVariableDefinitions.updateValueAndActionsToTrigger = {
       returnDependencies: () => ({
@@ -66,52 +117,83 @@ export default class triggerSet extends InlineComponent {
           dependencyType: "attributePrimitive",
           attributeName: "triggerWithTargets"
         },
+        triggerWhenTargetsClicked: {
+          dependencyType: "attributePrimitive",
+          attributeName: "triggerWhenTargetsClicked"
+        },
         triggerWhen: {
           dependencyType: "attributeComponent",
           attributeName: "triggerWhen"
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen || dependencyValues.triggerWithTargets === null) {
+        if (dependencyValues.triggerWhen) {
           return { setValue: { triggerWithTargets: null } }
         } else {
-          return {
-            setValue: {
-              triggerWithTargets: dependencyValues.triggerWithTargets
-                .split(/\s+/).filter(s => s)
+          let triggerWithTargets = [];
+          if (dependencyValues.triggerWithTargets !== null) {
+            for (let target of dependencyValues.triggerWithTargets.split(/\s+/).filter(s => s)) {
+              triggerWithTargets.push({ target })
             }
           }
+          if (dependencyValues.triggerWhenTargetsClicked !== null) {
+            for (let target of dependencyValues.triggerWhenTargetsClicked.split(/\s+/).filter(s => s)) {
+              triggerWithTargets.push({ target, triggeringAction: "click" })
+            }
+          }
+
+          if (triggerWithTargets.length === 0) {
+            triggerWithTargets = null;
+          }
+
+          return { setValue: { triggerWithTargets } }
         }
       }
     }
 
-    stateVariableDefinitions.triggerWithTargetComponentNames = {
+    stateVariableDefinitions.triggerWithTargetIds = {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "triggerActions"
       },
       stateVariablesDeterminingDependencies: ["triggerWithTargets"],
       returnDependencies({ stateValues }) {
-        let dependencies = {};
+        let dependencies = {
+          triggerWithTargets: {
+            dependencyType: "stateVariable",
+            variableName: "triggerWithTargets"
+          }
+        };
         if (stateValues.triggerWithTargets) {
-          for (let [ind, target] of stateValues.triggerWithTargets.entries()) {
+          for (let [ind, targetObj] of stateValues.triggerWithTargets.entries()) {
 
             dependencies[`triggerWithTargetComponentName${ind}`] = {
               dependencyType: "expandTargetName",
-              target
+              target: targetObj.target
             }
           }
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
-        let triggerWithTargetComponentNames = [];
-        let n = Object.keys(dependencyValues).length - 1;
+        let triggerWithTargetIds = [];
 
-        for (let i = 0; i < n; i++) {
-          triggerWithTargetComponentNames.push(dependencyValues[`triggerWithTargetComponentName${i}`])
+        if (dependencyValues.triggerWithTargets) {
+          for (let [ind, targetObj] of dependencyValues.triggerWithTargets.entries()) {
+
+            let id = dependencyValues[`triggerWithTargetComponentName${ind}`];
+
+            if (targetObj.triggeringAction) {
+              id += "|" + targetObj.triggeringAction;
+            };
+
+            if (!triggerWithTargetIds.includes(id)) {
+              triggerWithTargetIds.push(id);
+            }
+
+          }
         }
 
-        return { setValue: { triggerWithTargetComponentNames } }
+        return { setValue: { triggerWithTargetIds } }
       },
       markStale() {
         return { updateActionChaining: true }

@@ -48,14 +48,9 @@ export default React.memo(function Circle(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -79,10 +74,11 @@ export default React.memo(function Circle(props) {
       jsxCircleAttributes.hasInnerPoints = true;
     }
 
-    if (SVs.labelIsLatex) {
-      jsxCircleAttributes.label = { useMathJax: true };
-    } else {
-      jsxCircleAttributes.label = {};
+    jsxCircleAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxCircleAttributes.label.useMathJax = true
     }
 
     if (SVs.showLabel && SVs.label !== "") {
@@ -100,7 +96,11 @@ export default React.memo(function Circle(props) {
 
 
     newCircleJXG.on('drag', function (e) {
-      dragged.current = true;
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+        dragged.current = true;
+      }
 
       centerCoords.current = calculateCenterPosition(e);
       callAction({
@@ -128,6 +128,10 @@ export default React.memo(function Circle(props) {
             throughAngles: throughAnglesAtDown.current,
           }
         })
+      } else {
+        callAction({
+          action: actions.circleClicked
+        });
       }
     });
 
@@ -258,11 +262,7 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
       }
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      circleJXG.current.name = label;
+      circleJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {

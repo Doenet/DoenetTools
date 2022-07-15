@@ -208,13 +208,17 @@ export default class Point extends GraphicalComponent {
 
   static returnChildGroups() {
 
-    return [{
+    let childGroups = super.returnChildGroups();
+
+    childGroups.push(...[{
       group: "points",
       componentTypes: ["point"]
     }, {
       group: "constraints",
       componentTypes: ["constraints"]
-    }]
+    }])
+
+    return childGroups;
 
   }
 
@@ -673,7 +677,7 @@ export default class Point extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       isArray: true,
       entryPrefixes: ["x"],
@@ -797,7 +801,7 @@ export default class Point extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "coords",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       returnDependencies: () => ({
         xs: {
@@ -1119,9 +1123,23 @@ export default class Point extends GraphicalComponent {
   switchPoint() {
   }
 
+
+  async pointClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+
   actions = {
     movePoint: this.movePoint.bind(this),
-    switchPoint: this.switchPoint.bind(this)
+    switchPoint: this.switchPoint.bind(this),
+    pointClicked: this.pointClicked.bind(this),
   };
 
 }

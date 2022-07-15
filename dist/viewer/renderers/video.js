@@ -2,6 +2,7 @@ import React, {useRef, useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {sizeToCSS} from "./utils/css.js";
 import cssesc from "../../_snowpack/pkg/cssesc.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Video(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   let player = useRef(null);
@@ -12,6 +13,20 @@ export default React.memo(function Video(props) {
   let timer = useRef(null);
   let lastPausedTime = useRef(0);
   let lastPlayedTime = useRef(0);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   useEffect(() => {
     if (SVs.youtube) {
       let cName = cssesc(name);
@@ -172,7 +187,10 @@ export default React.memo(function Video(props) {
   }
   if (SVs.hidden)
     return null;
-  return /* @__PURE__ */ React.createElement("div", {
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("div", {
     style: {margin: "12px 0", display: "flex", justifyContent: "left", alignItems: "center"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
@@ -189,5 +207,5 @@ export default React.memo(function Video(props) {
     type: `video/${SVs.source.split("/").pop().split(".").pop()}`
   }), "Your browser does not support the <video> tag.") : /* @__PURE__ */ React.createElement("span", {
     id: name
-  }, SVs.text));
+  }, SVs.text)));
 });

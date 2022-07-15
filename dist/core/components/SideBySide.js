@@ -1030,13 +1030,31 @@ export class SideBySide extends BlockComponent {
 
     return stateVariableDefinitions;
   }
+
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
+
 }
 
 
 
 export class SbsGroup extends BlockComponent {
   static componentType = "sbsGroup";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
   static createAttributesObject() {
@@ -1970,12 +1988,30 @@ export class SbsGroup extends BlockComponent {
 
     return stateVariableDefinitions;
   }
+
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
+
 }
 
 
 export class Stack extends BlockComponent {
   static componentType = "stack";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
   static returnChildGroups() {
@@ -1985,6 +2021,22 @@ export class Stack extends BlockComponent {
       componentTypes: ["_base"]
     }]
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

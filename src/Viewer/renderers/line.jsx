@@ -49,14 +49,9 @@ export default React.memo(function Line(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     //things to be passed to JSXGraph as attributes
     var jsxLineAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -71,10 +66,11 @@ export default React.memo(function Line(props) {
       highlight: !fixed,
     };
 
-    if (SVs.labelIsLatex) {
-      jsxLineAttributes.label = { useMathJax: true };
-    } else {
-      jsxLineAttributes.label = {};
+    jsxLineAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxLineAttributes.label.useMathJax = true
     }
 
     if (SVs.applyStyleToLabel) {
@@ -91,7 +87,11 @@ export default React.memo(function Line(props) {
     let newLineJXG = board.create('line', through, jsxLineAttributes);
 
     newLineJXG.on('drag', function (e) {
-      dragged.current = true;
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+        dragged.current = true;
+      }
       calculatePointPositions(e);
       callAction({
         action: actions.moveLine,
@@ -120,6 +120,13 @@ export default React.memo(function Line(props) {
         callAction({
           action: actions.switchLine,
         })
+        callAction({
+          action: actions.lineClicked
+        });
+      } else {
+        callAction({
+          action: actions.lineClicked
+        });
       }
     })
 
@@ -248,11 +255,7 @@ export default React.memo(function Line(props) {
         lineJXG.current.visProp.dash = newDash;
       }
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      lineJXG.current.name = label;
+      lineJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {

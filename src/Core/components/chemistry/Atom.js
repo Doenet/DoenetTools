@@ -30,7 +30,7 @@ export default class Atom extends InlineComponent {
       returnDependencies: () => ({
         fileContents: {
           dependencyType: "file",
-          cid: "bafkreibwp3x6tzyyvogvwnyrfgyvy3cwt7f22qd4ebfpu2meec6xc4dnfu",
+          cid: "bafkreibilal4glrbpo7p7oodtwtnzkfhiylfoqa2td4ij6h6iqva57kzcy",
           fileType: "csv"
         },
         symbolAttr: {

@@ -15,9 +15,10 @@ export default React.memo(function LineSegment(props) {
 
   let pointerAtDown = useRef(false);
   let pointsAtDown = useRef(false);
-  let draggedPoint = useRef(false);
+  let draggedPoint = useRef(null);
   let previousWithLabel = useRef(null);
   let pointCoords = useRef(null);
+  let downOnPoint = useRef(null);
 
   let lastPositionsFromCore = useRef(null);
 
@@ -49,14 +50,9 @@ export default React.memo(function LineSegment(props) {
 
     let fixed = !SVs.draggable || SVs.fixed;
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     //things to be passed to JSXGraph as attributes
     var jsxSegmentAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -71,10 +67,11 @@ export default React.memo(function LineSegment(props) {
       highlight: !fixed,
     };
 
-    if (SVs.labelIsLatex) {
-      jsxSegmentAttributes.label = { useMathJax: true };
-    } else {
-      jsxSegmentAttributes.label = {};
+    jsxSegmentAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxSegmentAttributes.label.useMathJax = true
     }
 
     if (SVs.applyStyleToLabel) {
@@ -110,8 +107,8 @@ export default React.memo(function LineSegment(props) {
 
     lineSegmentJXG.current = board.create('segment', [point1JXG.current, point2JXG.current], jsxSegmentAttributes);
 
-    point1JXG.current.on('drag', () => onDragHandler(1));
-    point2JXG.current.on('drag', () => onDragHandler(2));
+    point1JXG.current.on('drag', (e) => onDragHandler(1, e));
+    point2JXG.current.on('drag', (e) => onDragHandler(2, e));
     lineSegmentJXG.current.on('drag', (e) => onDragHandler(0, e));
 
     point1JXG.current.on('up', () => {
@@ -122,7 +119,12 @@ export default React.memo(function LineSegment(props) {
             point1coords: pointCoords.current,
           }
         })
+      } else if (draggedPoint.current === null) {
+        callAction({
+          action: actions.lineSegmentClicked
+        });
       }
+      downOnPoint.current = null;
     })
     point2JXG.current.on('up', () => {
       if (draggedPoint.current === 2) {
@@ -132,7 +134,12 @@ export default React.memo(function LineSegment(props) {
             point2coords: pointCoords.current,
           }
         })
+      } else if (draggedPoint.current === null) {
+        callAction({
+          action: actions.lineSegmentClicked
+        });
       }
+      downOnPoint.current = null;
     })
     lineSegmentJXG.current.on('up', function (e) {
       if (draggedPoint.current === 0) {
@@ -143,11 +150,24 @@ export default React.memo(function LineSegment(props) {
             point2coords: pointCoords.current[1],
           }
         })
+      } else if (draggedPoint.current === null && downOnPoint.current === null) {
+        // Note: counting on fact that up on line segment will trigger before up on points
+        callAction({
+          action: actions.lineSegmentClicked
+        });
       }
     });
 
-    point1JXG.current.on('down', () => draggedPoint.current = null);
-    point2JXG.current.on('down', () => draggedPoint.current = null);
+    point1JXG.current.on('down', (e) => {
+      draggedPoint.current = null;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 1;
+    });
+    point2JXG.current.on('down', (e) => {
+      draggedPoint.current = null;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 2;
+    });
     lineSegmentJXG.current.on('down', function (e) {
       draggedPoint.current = null;
       pointerAtDown.current = [e.x, e.y];
@@ -166,39 +186,43 @@ export default React.memo(function LineSegment(props) {
 
   function onDragHandler(i, e) {
 
-    draggedPoint.current = i;
+    //Protect against very small unintended drags
+    if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+      Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      draggedPoint.current = i;
 
-    if (i == 1) {
-      pointCoords.current = [lineSegmentJXG.current.point1.X(), lineSegmentJXG.current.point1.Y()];
-      callAction({
-        action: actions.moveLineSegment,
-        args: {
-          point1coords: pointCoords.current,
-          transient: true,
-          skippable: true,
-        }
-      })
-    } else if (i == 2) {
-      pointCoords.current = [lineSegmentJXG.current.point2.X(), lineSegmentJXG.current.point2.Y()];
-      callAction({
-        action: actions.moveLineSegment,
-        args: {
-          point2coords: pointCoords.current,
-          transient: true,
-          skippable: true,
-        }
-      })
-    } else {
-      calculatePointPositions(e);
-      callAction({
-        action: actions.moveLineSegment,
-        args: {
-          point1coords: pointCoords.current[0],
-          point2coords: pointCoords.current[1],
-          transient: true,
-          skippable: true,
-        }
-      })
+      if (i == 1) {
+        pointCoords.current = [lineSegmentJXG.current.point1.X(), lineSegmentJXG.current.point1.Y()];
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point1coords: pointCoords.current,
+            transient: true,
+            skippable: true,
+          }
+        })
+      } else if (i == 2) {
+        pointCoords.current = [lineSegmentJXG.current.point2.X(), lineSegmentJXG.current.point2.Y()];
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point2coords: pointCoords.current,
+            transient: true,
+            skippable: true,
+          }
+        })
+      } else {
+        calculatePointPositions(e);
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point1coords: pointCoords.current[0],
+            point2coords: pointCoords.current[1],
+            transient: true,
+            skippable: true,
+          }
+        })
+      }
     }
 
     lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[0]);
@@ -329,11 +353,7 @@ export default React.memo(function LineSegment(props) {
         lineSegmentJXG.current.visProp.dash = newDash;
       }
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      lineSegmentJXG.current.name = label;
+      lineSegmentJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {

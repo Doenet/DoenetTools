@@ -56,6 +56,7 @@
     "react-spring": "./@react-spring/web.js",
     "react-table": "./react-table.js",
     "react-use-measure": "./react-use-measure.js",
+    "react-visibility-sensor-v2": "./react-visibility-sensor-v2.js",
     "recoil": "./recoil.js",
     "socket.io-client": "./socket.io-client.js",
     "solid-svg": "./@fortawesome/free-solid-svg-icons.js",

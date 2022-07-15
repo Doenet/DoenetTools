@@ -1,5 +1,5 @@
 import { MathJax } from 'better-react-mathjax';
-import React, { useEffect } from 'react';
+import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
 export default React.memo(function MathList(props) {

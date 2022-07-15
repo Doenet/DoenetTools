@@ -64,13 +64,13 @@ export default class Copy extends CompositeComponent {
       public: true,
     };
     attributes.targetAttributesToIgnore = {
-      createComponentOfType: "textList",
+      createPrimitiveOfType: "stringArray",
       createStateVariable: "targetAttributesToIgnore",
       defaultValue: ["hide"],
       public: true,
     };
     attributes.targetAttributesToIgnoreRecursively = {
-      createComponentOfType: "textList",
+      createPrimitiveOfType: "stringArray",
       createStateVariable: "targetAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
@@ -1372,8 +1372,15 @@ export default class Copy extends CompositeComponent {
     // if creating copy directly from the target component,
     // create a serialized copy of the entire component
 
+    let targetAttributesToIgnore = await component.stateValues.targetAttributesToIgnore;
+    let targetAttributesToIgnoreRecursively = await component.stateValues.targetAttributesToIgnoreRecursively;
+
     let serializedReplacements = [
-      await replacementSourceComponent.serialize({ copyAll: !link, copyVariants: !link })
+      await replacementSourceComponent.serialize({
+        copyAll: !link, copyVariants: !link,
+        targetAttributesToIgnore,
+        targetAttributesToIgnoreRecursively
+      })
     ];
 
     // console.log(`serializedReplacements for ${component.componentName}`);
@@ -2217,11 +2224,12 @@ export async function replacementFromProp({ component, components,
                 flags
               });
 
-              if (stateVarObj.shadowingInstructions.attributeComponentsToShadow) {
-                for (let attrName of stateVarObj.shadowingInstructions.attributeComponentsToShadow) {
+              if (stateVarObj.shadowingInstructions.attributesToShadow) {
+                for (let attrName of stateVarObj.shadowingInstructions.attributesToShadow) {
                   if (target.attributes[attrName]?.component) {
                     attributesFromComponent[attrName] = { component: await target.attributes[attrName]?.component.serialize({ copyAll: true, copyVariants: true }) }
-
+                  } else if (target.attributes[attrName]?.primitive !== undefined) {
+                    attributesFromComponent[attrName] = { primitive: JSON.parse(JSON.stringify(target.attributes[attrName].primitive)) }
                   }
                 }
               }
@@ -2308,15 +2316,15 @@ export async function replacementFromProp({ component, components,
             let attributeComponentsShadowingStateVariables;
             if (arrayStateVarObj.shadowingInstructions.addAttributeComponentsShadowingStateVariables) {
               attributeComponentsShadowingStateVariables = {};
-  
+
               for (let attrName in arrayStateVarObj.shadowingInstructions.addAttributeComponentsShadowingStateVariables) {
                 let stateVariableToShadow = arrayStateVarObj.shadowingInstructions.addAttributeComponentsShadowingStateVariables[attrName].stateVariableToShadow;
-  
+
                 let sObj = target.state[stateVariableToShadow];
                 if (sObj.isArray) {
                   stateVariableToShadow = sObj.arrayVarNameFromArrayKey(arrayKey);
                 }
-  
+
                 attributeComponentsShadowingStateVariables[attrName] = {
                   stateVariableToShadow
                 }
@@ -2326,15 +2334,15 @@ export async function replacementFromProp({ component, components,
             let stateVariablesShadowingStateVariables;
             if (arrayStateVarObj.shadowingInstructions.addStateVariablesShadowingStateVariables) {
               stateVariablesShadowingStateVariables = {};
-  
+
               for (let attrName in arrayStateVarObj.shadowingInstructions.addStateVariablesShadowingStateVariables) {
                 let stateVariableToShadow = arrayStateVarObj.shadowingInstructions.addStateVariablesShadowingStateVariables[attrName].stateVariableToShadow;
-  
+
                 let sObj = target.state[stateVariableToShadow];
                 if (sObj.isArray) {
                   stateVariableToShadow = sObj.arrayVarNameFromArrayKey(arrayKey);
                 }
-  
+
                 stateVariablesShadowingStateVariables[attrName] = {
                   stateVariableToShadow
                 }
@@ -2414,11 +2422,12 @@ export async function replacementFromProp({ component, components,
                   flags
                 });
 
-                if (stateVarObj.shadowingInstructions.attributeComponentsToShadow) {
-                  for (let attrName of stateVarObj.shadowingInstructions.attributeComponentsToShadow) {
+                if (stateVarObj.shadowingInstructions.attributesToShadow) {
+                  for (let attrName of stateVarObj.shadowingInstructions.attributesToShadow) {
                     if (target.attributes[attrName]?.component) {
                       attributesFromComponent[attrName] = { component: await target.attributes[attrName]?.component.serialize({ copyAll: true, copyVariants: true }) }
-
+                    } else if (target.attributes[attrName]?.primitive !== undefined) {
+                      attributesFromComponent[attrName] = { primitive: JSON.parse(JSON.stringify(target.attributes[attrName].primitive)) }
                     }
                   }
                 }
@@ -2716,11 +2725,12 @@ export async function replacementFromProp({ component, components,
             flags
           });
 
-          if (stateVarObj.shadowingInstructions.attributeComponentsToShadow) {
-            for (let attrName of stateVarObj.shadowingInstructions.attributeComponentsToShadow) {
+          if (stateVarObj.shadowingInstructions.attributesToShadow) {
+            for (let attrName of stateVarObj.shadowingInstructions.attributesToShadow) {
               if (target.attributes[attrName]?.component) {
                 attributesFromComponent[attrName] = { component: await target.attributes[attrName]?.component.serialize({ copyAll: true, copyVariants: true }) }
-
+              } else if (target.attributes[attrName]?.primitive !== undefined) {
+                attributesFromComponent[attrName] = { primitive: JSON.parse(JSON.stringify(target.attributes[attrName].primitive)) }
               }
             }
           }

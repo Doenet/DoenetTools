@@ -37,6 +37,13 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       fillColor = SVs.selectedStyle.lineColor;
     }
 
+
+    // Note: actual content of label is being ignored
+    // but, if label is non-empty, then jsxgraph display a label
+    // which is an integral sign = value of integral
+
+    // TODO: either change behavior or change how label is specified
+
     let jsxAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
@@ -52,6 +59,10 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       curveLeft: { visible: false },
       curveRight: { visible: false }
     };
+
+    jsxAttributes.label = {
+      highlight: false
+    }
 
     let f = createFunctionFromDefinition(SVs.fDefinition);
     curveJXG.current = board.create('functiongraph', f, { visible: false });

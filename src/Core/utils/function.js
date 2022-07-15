@@ -83,25 +83,33 @@ export function returnNumericalFunctionFromFormula({ formula, nInputs, variables
     let varString = variables[0].subscripts_to_strings().tree;
 
     let minx = -Infinity, maxx = Infinity;
+    let openMin = false, openMax = false;
     if (domain !== null) {
       let domain0 = domain[0];
-
       if (domain0 !== undefined) {
         try {
-          minx = domain0[0].evaluate_to_constant();
+          minx = me.fromAst(domain0.tree[1][1]).evaluate_to_constant();
           if (!Number.isFinite(minx)) {
             minx = -Infinity;
+          } else {
+            openMin = !domain0.tree[2][1];
           }
-          maxx = domain0[1].evaluate_to_constant();
+          maxx = me.fromAst(domain0.tree[1][2]).evaluate_to_constant();
           if (!Number.isFinite(maxx)) {
             maxx = Infinity;
+          } else {
+            openMax = !domain0.tree[2][2];
           }
         } catch (e) { }
       }
     }
 
-    return function (x) {
-      if (x < minx || x > maxx) {
+    return function (x, overrideDomain = false) {
+      if(overrideDomain) {
+        if(isNaN(x)) {
+          return NaN;
+        }
+      } else if (!(x >= minx) || !(x <= maxx) || (openMin && x === minx) || (openMax && x === maxx)) {
         return NaN;
       }
       try {
@@ -263,18 +271,24 @@ export function returnInterpolatedFunction({ xs, coeffs, interpolationPoints, do
     return x => NaN;
   }
 
+
   let minx = -Infinity, maxx = Infinity;
+  let openMin = false, openMax = false;
   if (domain !== null) {
-    domain = domain[0];
-    if (domain !== undefined) {
+    let domain0 = domain[0];
+    if (domain0 !== undefined) {
       try {
-        minx = domain[0].evaluate_to_constant();
+        minx = me.fromAst(domain0.tree[1][1]).evaluate_to_constant();
         if (!Number.isFinite(minx)) {
           minx = -Infinity;
+        } else {
+          openMin = !domain0.tree[2][1];
         }
-        maxx = domain[1].evaluate_to_constant();
+        maxx = me.fromAst(domain0.tree[1][2]).evaluate_to_constant();
         if (!Number.isFinite(maxx)) {
           maxx = Infinity;
+        } else {
+          openMax = !domain0.tree[2][2];
         }
       } catch (e) { }
     }
@@ -282,9 +296,13 @@ export function returnInterpolatedFunction({ xs, coeffs, interpolationPoints, do
 
   let x0 = xs[0], xL = xs[xs.length - 1];
 
-  return function (x) {
+  return function (x, overrideDomain = false) {
 
-    if (isNaN(x) || x < minx || x > maxx) {
+    if(overrideDomain) {
+      if(isNaN(x)) {
+        return NaN;
+      }
+    } else if (!(x >= minx) || !(x <= maxx) || (openMin && x === minx) || (openMax && x === maxx)) {
       return NaN;
     }
 

@@ -7,6 +7,7 @@ import React, { useRef, useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
 import cssesc from 'cssesc';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 
 export default React.memo(function Video(props) {
@@ -21,6 +22,21 @@ export default React.memo(function Video(props) {
   let lastPlayedTime = useRef(0);
   
 
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   useEffect(()=>{
     if (SVs.youtube) {
@@ -325,6 +341,7 @@ export default React.memo(function Video(props) {
 
   if (SVs.hidden) return null;
   return (
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
     <div style={{ margin:"12px 0", display: "flex", justifyContent: "left", alignItems:"center"}}>
       <a name={name} />
       {
@@ -339,6 +356,7 @@ export default React.memo(function Video(props) {
           <span id={name}>{SVs.text}</span>
       }
     </div>
+    </VisibilitySensor>
   ) 
 
   // if (SVs.youtube) {

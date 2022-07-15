@@ -3,7 +3,7 @@ import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstring
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointListComponent";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
   static returnSugarInstructions() {

@@ -64,14 +64,9 @@ export default React.memo(function Curve(props) {
       return null;
     }
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     //things to be passed to JSXGraph as attributes
     var curveAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,
@@ -126,9 +121,10 @@ export default React.memo(function Curve(props) {
         offset,
         position,
         anchorx,
+        highlight: false
       };
 
-      if (SVs.labelIsLatex) {
+      if (SVs.labelHasLatex) {
         curveAttributes.label.useMathJax = true;
       }
 
@@ -138,8 +134,11 @@ export default React.memo(function Curve(props) {
         curveAttributes.label.strokeColor = "#000000";
       }
     } else {
-      if (SVs.labelIsLatex) {
-        curveAttributes.label = { useMathJax: true };
+      curveAttributes.label = {
+        highlight: false
+      }
+      if (SVs.labelHasLatex) {
+        curveAttributes.label.useMathJax = true;
       }
     }
 
@@ -189,10 +188,15 @@ export default React.memo(function Curve(props) {
     newCurveJXG.on('up', function (e) {
       // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
       // as useEffect will not be rerun
-      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null
-        && SVs.switchable && !SVs.fixed) {
+      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null) {
+        if (SVs.switchable && !SVs.fixed) {
+          callAction({
+            action: actions.switchCurve
+          });
+        }
         callAction({
-          action: actions.switchCurve
+          action: actions.curveClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });
@@ -589,11 +593,7 @@ export default React.memo(function Curve(props) {
 
       let visible = !SVs.hidden;
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      curveJXG.current.name = label;
+      curveJXG.current.name = SVs.label;
 
       curveJXG.current.visProp["visible"] = visible;
       curveJXG.current.visPropCalc["visible"] = visible;

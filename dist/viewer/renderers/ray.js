@@ -28,12 +28,8 @@ export default React.memo(function Ray(props) {
       return;
     }
     let fixed = !SVs.draggable || SVs.fixed;
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
     var jsxRayAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       layer: 10 * SVs.layer + 7,
@@ -48,10 +44,11 @@ export default React.memo(function Ray(props) {
       highlight: !fixed,
       straightFirst: false
     };
-    if (SVs.labelIsLatex) {
-      jsxRayAttributes.label = {useMathJax: true};
-    } else {
-      jsxRayAttributes.label = {};
+    jsxRayAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxRayAttributes.label.useMathJax = true;
     }
     if (SVs.applyStyleToLabel) {
       jsxRayAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
@@ -64,17 +61,19 @@ export default React.memo(function Ray(props) {
     ];
     let newRayJXG = board.create("line", through, jsxRayAttributes);
     newRayJXG.on("drag", function(e) {
-      dragged.current = true;
-      pointCoords.current = calculatePointPositions(e);
-      callAction({
-        action: actions.moveRay,
-        args: {
-          endpointcoords: pointCoords.current[0],
-          throughcoords: pointCoords.current[1],
-          transient: true,
-          skippable: true
-        }
-      });
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
+        pointCoords.current = calculatePointPositions(e);
+        callAction({
+          action: actions.moveRay,
+          args: {
+            endpointcoords: pointCoords.current[0],
+            throughcoords: pointCoords.current[1],
+            transient: true,
+            skippable: true
+          }
+        });
+      }
       rayJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastEndpointFromCore.current);
       rayJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastThroughpointFromCore.current);
     });
@@ -86,6 +85,10 @@ export default React.memo(function Ray(props) {
             endpointcoords: pointCoords.current[0],
             throughcoords: pointCoords.current[1]
           }
+        });
+      } else {
+        callAction({
+          action: actions.rayClicked
         });
       }
     });
@@ -166,15 +169,11 @@ export default React.memo(function Ray(props) {
         rayJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
         rayJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (rayJXG.current.visProp.dash !== newDash) {
         rayJXG.current.visProp.dash = newDash;
       }
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      rayJXG.current.name = label;
+      rayJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
         rayJXG.current.setAttribute({withlabel});

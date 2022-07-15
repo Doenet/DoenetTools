@@ -10,6 +10,7 @@ export default class Circle extends Curve {
 
   actions = {
     moveCircle: this.moveCircle.bind(this),
+    circleClicked: this.circleClicked.bind(this),
   };
 
 
@@ -34,9 +35,7 @@ export default class Circle extends Curve {
   }
 
   static returnChildGroups() {
-
-    return []
-
+    return GraphicalComponent.returnChildGroups();
   }
 
 
@@ -2371,6 +2370,16 @@ export default class Circle extends Curve {
 
   }
 
+  async circleClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 }
 
 function circleFromTwoNumericalPoints({ point1, point2 }) {

@@ -30,6 +30,6 @@ export default function ViewerUpdateButton(props){
 
 
   return <div style={props.style}>
-    <Button value='Update' onClick={updateViewer} />
+    <Button data-test="Viewer Update Button" value='Update' onClick={updateViewer} />
   </div>
 }

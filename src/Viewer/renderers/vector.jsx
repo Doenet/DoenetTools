@@ -19,6 +19,7 @@ export default React.memo(function Vector(props) {
   let pointsAtDown = useRef(false);
   let headBeingDragged = useRef(false);
   let tailBeingDragged = useRef(false);
+  let downOnPoint = useRef(null);
   let headcoords = useRef(null);
   let tailcoords = useRef(null);
 
@@ -56,14 +57,9 @@ export default React.memo(function Vector(props) {
     let layer = 10 * SVs.layer + 7;
     let fixed = !SVs.draggable || SVs.fixed;
 
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
-
     //things to be passed to JSXGraph as attributes
     var jsxVectorAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -111,10 +107,11 @@ export default React.memo(function Vector(props) {
     let newPoint2JXG = board.create('point', endpoints[1], headPointAttributes);
 
 
-    if (SVs.labelIsLatex) {
-      jsxVectorAttributes.label = { useMathJax: true };
-    } else {
-      jsxVectorAttributes.label = {};
+    jsxVectorAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxVectorAttributes.label.useMathJax = true
     }
 
     if (SVs.applyStyleToLabel) {
@@ -134,7 +131,12 @@ export default React.memo(function Vector(props) {
           action: actions.moveVector,
           args: { tailcoords: tailcoords.current }
         });
+      } else if (!headBeingDragged.current && !tailBeingDragged.current) {
+        callAction({
+          action: actions.vectorClicked
+        });
       }
+      downOnPoint.current = null;
     });
     newPoint2JXG.on('up', e => {
       if (headBeingDragged.current && !tailBeingDragged.current) {
@@ -142,7 +144,12 @@ export default React.memo(function Vector(props) {
           action: actions.moveVector,
           args: { headcoords: headcoords.current }
         });
+      } else if (!headBeingDragged.current && !tailBeingDragged.current) {
+        callAction({
+          action: actions.vectorClicked
+        });
       }
+      downOnPoint.current = null;
     });
     newVectorJXG.on('up', e => {
       if (headBeingDragged.current && tailBeingDragged.current) {
@@ -153,16 +160,25 @@ export default React.memo(function Vector(props) {
             tailcoords: tailcoords.current
           }
         });
+      } else if (!headBeingDragged.current && !tailBeingDragged.current && downOnPoint.current === null) {
+        // Note: counting on fact that up on vector will trigger before up on points
+        callAction({
+          action: actions.vectorClicked
+        });
       }
     });
 
     newPoint1JXG.on('down', function (e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 1;
     });
     newPoint2JXG.on('down', function (e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 2;
     });
 
     // if drag vector, need to keep track of original point positions
@@ -178,45 +194,43 @@ export default React.memo(function Vector(props) {
     });
 
     function onDragHandler(e, i) {
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
 
-      if (i === 0) {
-        tailBeingDragged.current = true;
-      } else if (i === 1) {
-        headBeingDragged.current = true;
-      } else {
-        headBeingDragged.current = true;
-        tailBeingDragged.current = true;
-      }
-
-      let instructions = { transient: true, skippable: true };
-
-      let performMove = false;
-
-      if (headBeingDragged.current) {
-        performMove = true;
-        if (i === -1) {
-          headcoords.current = calculatePointPosition(e, 1);
+        if (i === 0) {
+          tailBeingDragged.current = true;
+        } else if (i === 1) {
+          headBeingDragged.current = true;
         } else {
-          headcoords.current = [newVectorJXG.point2.X(), newVectorJXG.point2.Y()];
+          headBeingDragged.current = true;
+          tailBeingDragged.current = true;
         }
-        instructions.headcoords = headcoords.current;
-      }
-      if (tailBeingDragged.current) {
-        performMove = true;
-        if (i === -1) {
-          tailcoords.current = calculatePointPosition(e, 0);
-        } else {
-          tailcoords.current = [newVectorJXG.point1.X(), newVectorJXG.point1.Y()];
+
+        let instructions = { transient: true, skippable: true };
+
+        if (headBeingDragged.current) {
+          if (i === -1) {
+            headcoords.current = calculatePointPosition(e, 1);
+          } else {
+            headcoords.current = [newVectorJXG.point2.X(), newVectorJXG.point2.Y()];
+          }
+          instructions.headcoords = headcoords.current;
         }
-        instructions.tailcoords = tailcoords.current;
+        if (tailBeingDragged.current) {
+          if (i === -1) {
+            tailcoords.current = calculatePointPosition(e, 0);
+          } else {
+            tailcoords.current = [newVectorJXG.point1.X(), newVectorJXG.point1.Y()];
+          }
+          instructions.tailcoords = tailcoords.current;
 
-      }
+        }
 
-      if (i === 0 || i === 1) {
-        instructions.sourceInformation = { vertex: i };
-      }
+        if (i === 0 || i === 1) {
+          instructions.sourceInformation = { vertex: i };
+        }
 
-      if (performMove) {
         callAction({
           action: actions.moveVector,
           args: instructions
@@ -229,7 +243,6 @@ export default React.memo(function Vector(props) {
         } else if (i === 1) {
           board.updateInfobox(newPoint2JXG);
         }
-
       }
 
     }
@@ -402,11 +415,7 @@ export default React.memo(function Vector(props) {
         vectorJXG.current.visProp.dash = newDash;
       }
 
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      vectorJXG.current.name = label;
+      vectorJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {

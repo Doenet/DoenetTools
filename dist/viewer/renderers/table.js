@@ -1,7 +1,22 @@
-import React from "../../_snowpack/pkg/react.js";
+import React, {useEffect} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Table(props) {
-  let {name, SVs, children} = useDoenetRender(props);
+  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
@@ -32,10 +47,13 @@ export default React.memo(function Table(props) {
   heading = /* @__PURE__ */ React.createElement("div", {
     id: name + "_title"
   }, title);
-  return /* @__PURE__ */ React.createElement("div", {
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("div", {
     id: name,
     style: {margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
-  }), heading, childrenToRender);
+  }), heading, childrenToRender));
 });
