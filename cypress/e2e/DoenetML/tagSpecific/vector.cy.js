@@ -11519,7 +11519,7 @@ describe('Vector Tag Tests', function () {
     })
   })
 
-  it.only('mutual dependence among entire head, tail, displacement', () => {
+  it('mutual dependence among entire head, tail, displacement', () => {
     // this could be made more interesting once have operations on vectors
     cy.window().then(async (win) => {
       win.postMessage({

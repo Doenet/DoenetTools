@@ -71,8 +71,8 @@ function Test() {
 
     if (e.data.requestedVariantIndex !== undefined) {
       requestedVariantIndex.current = e.data.requestedVariantIndex;
+      setUpdateNumber(was => was + 1)
     }
-    // setUpdateNumber(was => was + 1)
   };
 
   let controls = null;

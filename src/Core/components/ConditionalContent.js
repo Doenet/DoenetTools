@@ -22,14 +22,7 @@ export default class ConditionalContent extends CompositeComponent {
       return [];
     }
 
-    let componentTypeIsSpecifiedType = (cType, specifiedCType) => componentInfoObjects.isInheritedComponentType({
-      inheritedComponentType: cType,
-      baseComponentType: specifiedCType
-    });
-
-    let componentIsSpecifiedType = (comp, specifiedCType) =>
-      componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
-      || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
+    let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
 
     let keepSerializedInds = [];
     for (let [ind, child] of serializedComponent.children.entries()) {

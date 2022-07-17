@@ -50,7 +50,7 @@ export default React.memo(function sideBySide(props) {
       thisMarginLeft += SVs.gapWidth/2;
     }
     if(i < nCols-1) {
-      thisMarginRight += SVs.gapWidth/2 + 1;
+      thisMarginRight += SVs.gapWidth/2;
     }
 
     styledChildren.push(<span 

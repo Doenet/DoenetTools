@@ -113,21 +113,21 @@ export default class Point extends GraphicalComponent {
 
 
       if (beginInd === -1) {
-        // if have no strings but have exactly one math child,
+        // if have no strings but have exactly one child that isn't in child group,
+        // (point, vector, constraints, label)
         // use that for coords
 
-        let componentTypeIsMath = cType => componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: cType,
-          baseComponentType: "math"
-        });
+        let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
 
+        let otherChildren = matchedChildren.filter(child => !(
+          componentIsSpecifiedType(child, "point")
+          || componentIsSpecifiedType(child, "vector")
+          || componentIsSpecifiedType(child, "constraints")
+          || componentIsSpecifiedType(child, "label")
+        ));
 
-        let mathChildren = matchedChildren.filter(child =>
-          componentTypeIsMath(child.componentType) || componentTypeIsMath(child.attributes?.createComponentOfType?.primitive)
-        );
-
-        if (mathChildren.length === 1) {
-          let mathChild = mathChildren[0];
+        if (otherChildren.length === 1) {
+          let mathChild = otherChildren[0];
           let mathInd = matchedChildren.indexOf(mathChild);
 
           let newChildren = [
@@ -141,7 +141,7 @@ export default class Point extends GraphicalComponent {
               coords: {
                 component: {
                   componentType: "math",
-                  children: mathChildren
+                  children: otherChildren
                 }
               }
             },
@@ -149,7 +149,7 @@ export default class Point extends GraphicalComponent {
           }
 
         } else {
-          // no strings and don't have exactly one math child
+          // no strings and don't have exactly one non child-group child
           return { success: false }
         }
 

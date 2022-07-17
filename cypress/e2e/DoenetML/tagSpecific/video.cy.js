@@ -23,7 +23,7 @@ describe('Video Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p>An introduction to Doenet.</p>
-  <video width="560 px" height="315px" youtube="tJ4ypc5L6uU" />
+  <video width="560 px" youtube="tJ4ypc5L6uU" />
 
   `}, "*");
     });
@@ -38,7 +38,7 @@ describe('Video Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <video width="560 px" height="315px" source="https://jsoncompare.org/LearningContainer/SampleFiles/Video/MP4/Sample-MP4-Video-File-for-Testing.mp4" />
+  <video width="560 px" source="https://jsoncompare.org/LearningContainer/SampleFiles/Video/MP4/Sample-MP4-Video-File-for-Testing.mp4" />
   `}, "*");
     });
     cy.get('#\\/_video1').invoke('css', 'width')
@@ -52,7 +52,7 @@ describe('Video Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <video width="560 px" height="315px">
+  <video width="560 px">
    <source>https://flowergarden.noaa.gov/video_library/video/seaharew.mp4</source>
    <source>https://flowergarden.noaa.gov/video_library/video/seaharew.ogg</source>
    <source>https://flowergarden.noaa.gov/video_library/video/seaharew.webm</source>
@@ -227,6 +227,82 @@ describe('Video Tag Tests', function () {
     // TODO: anything to check in the DOM?
 
   });
+
+  it('actions on youtube video', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p>An introduction to Doenet.</p>
+  <video youtube="tJ4ypc5L6uU" name="v" />
+
+  <p>State: <copy prop="state" target="v" assignNames="state" /></p>
+  <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
+
+  <p>Change time: <mathinput bindValueTo="$(v{prop='time'})" name="mi" /></p>
+
+
+  <p>Control via setting state variables directly:
+  <updateValue type="text" target="v" prop="state" newValue="playing" name="playUpdate">
+    <label>play</label>
+  </updateValue>
+  <updateValue type="text" target="v" prop="state" newValue="stopped" name="pauseUpdate">
+    <label>stop</label>
+  </updateValue>
+  </p>
+
+  <p>Control with actions:
+  <callAction target="v" actionName="playVideo" name="playAction"><label>Play action</label></callAction>
+  <callAction target="v" actionName="pauseVideo" name="pauseAction"><label>Pause action</label></callAction>
+  </p>
+  `}, "*");
+    });
+
+
+    cy.get('#\\/v').invoke('css', 'width')
+    .then(width => parseInt(width)).should('be.gte', widthsBySize["full"] - 4).and('be.lte', widthsBySize["full"] + 1)
+
+    cy.get('#\\/v').invoke('attr', 'src').then((src) => expect(src.includes("tJ4ypc5L6uU")).eq(true))
+
+    cy.get('#\\/state').contains("initializing")
+    cy.get('#\\/time').contains("0")
+
+    cy.log('play via action')
+    cy.get('#\\/state').contains("stopped")
+    cy.get('#\\/playAction').click();
+
+    cy.get('#\\/state').contains("playing")
+    cy.get('#\\/time').contains("1")
+    cy.get('#\\/time').contains("2")
+    cy.get('#\\/time').contains("3")
+
+    cy.log('pause via action')
+    cy.get('#\\/pauseAction').click();
+
+    cy.get('#\\/state').contains("stopped")
+    cy.get('#\\/time').contains("3")
+
+
+    cy.log('cue to first minute')
+    cy.get('#\\/mi textarea').type("{end}{backspace}60{enter}", {force: true});
+
+    cy.get('#\\/state').contains("stopped")
+    cy.get('#\\/time').contains("60")
+
+    cy.log('play via update')
+    cy.get('#\\/playUpdate').click();
+
+    cy.get('#\\/state').contains("playing")
+    cy.get('#\\/time').contains("61")
+    cy.get('#\\/time').contains("62")
+
+    cy.log('pause via update')
+    cy.get('#\\/pauseUpdate').click();
+
+    cy.get('#\\/state').contains("stopped")
+    cy.get('#\\/time').contains("62")
+
+
+  })
 
 
 })

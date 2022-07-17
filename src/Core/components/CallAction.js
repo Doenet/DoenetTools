@@ -11,18 +11,9 @@ export default class CallAction extends InlineComponent {
       return [];
     } else {
 
-      let componentTypeIsSpecifiedType = (cType, specifiedCType) => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: specifiedCType
-      });
-
-      let componentIsSpecifiedType = (comp, specifiedCType) =>
-        componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
-        || componentTypeIsSpecifiedType(comp.props?.componentType, specifiedCType)
-
       let keepSerializedInds = [];
       for (let [ind, child] of serializedComponent.children.entries()) {
-        if (!componentIsSpecifiedType(child, "label")) {
+        if (!componentInfoObjects.componentIsSpecifiedType(child, "label")) {
           keepSerializedInds.push(ind)
         }
       }
