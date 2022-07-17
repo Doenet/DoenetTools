@@ -121,12 +121,7 @@ export default class Curve extends GraphicalComponent {
 
     let breakNonLabelIntoFunctionsByCommas = function ({ matchedChildren, componentInfoObjects }) {
 
-      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: "label"
-      });
-
-      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.attributes?.createComponentOfType?.primitive)
+      let componentIsLabel = x=> componentInfoObjects.componentIsSpecifiedType(x, "label");
 
       // only apply if all children are strings, macros, or labels
       if (matchedChildren.length === 0 || !matchedChildren.every(child =>

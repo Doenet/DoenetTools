@@ -1694,13 +1694,15 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/xe').should('contain.text', 'e2e3e4e5e')
     cy.get('#\\/xe').should('contain.text', '−e')
-    cy.get('#\\/xe').should('contain.text', '−2e−3e−4e−5e')
+    cy.get('#\\/xe').should('contain.text', '−2e−3e')
+    cy.get('#\\/xe').should('contain.text', '−4e−5e')
     cy.get('#\\/xe').should('contain.text', '10')
     cy.get('#\\/xe').should('contain.text', '−10')
 
     cy.get('#\\/ye').should('contain.text', 'e2e3e4e5e')
-    cy.get('#\\/ye').should('contain.text', '−e−2e')
-    cy.get('#\\/ye').should('contain.text', '−3e−4e−5e')
+    cy.get('#\\/ye').should('contain.text', '−e')
+    cy.get('#\\/ye').should('contain.text', '−2e−3e')
+    cy.get('#\\/ye').should('contain.text', '−4e−5e')
     cy.get('#\\/ye').should('contain.text', '10')
     cy.get('#\\/ye').should('contain.text', '−10')
 

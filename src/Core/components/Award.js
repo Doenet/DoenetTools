@@ -177,15 +177,7 @@ export default class Award extends BaseComponent {
         return { success: false }
       }
 
-      let componentTypeIsSpecifiedType = (cType, specifiedCType) => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: specifiedCType
-      });
-
-      let componentIsSpecifiedType = (comp, specifiedCType) =>
-        componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
-        || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
-
+      let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
 
       let foundMath = false, foundText = false, foundBoolean = false;
 
