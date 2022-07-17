@@ -58,6 +58,14 @@ export default class GraphicalComponent extends BaseComponent {
 
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
 
+    stateVariableDefinitions.originalComponentName = {
+      shadowVariable: true,
+      returnDependencies: () => ({}),
+      definition({ componentName }) {
+        return { setValue: { originalComponentName: componentName } }
+      }
+    }
+
     stateVariableDefinitions.label = {
       forRenderer: true,
       public: true,
@@ -84,6 +92,10 @@ export default class GraphicalComponent extends BaseComponent {
         labelIsName: {
           dependencyType: "stateVariable",
           variableName: "labelIsName"
+        },
+        originalComponentName: {
+          dependencyType: "stateVariable",
+          variableName: "originalComponentName"
         }
       }),
       definition({ dependencyValues, componentName }) {
@@ -102,9 +114,20 @@ export default class GraphicalComponent extends BaseComponent {
             }
           }
         } else if (dependencyValues.labelIsName) {
-          let lastSlash = componentName.lastIndexOf('/');
+          let lastSlash = dependencyValues.originalComponentName.lastIndexOf('/');
+          let label = dependencyValues.originalComponentName.substring(lastSlash + 1);
+          if (label.slice(0, 2) === "__") {
+            // if label from componentName starts with two underscores,
+            // it is an automatically generated component name that has random characters in it
+            // Don't display name, as they are for internal use only (and the user cannot refer to them)
+            return {
+              useEssentialOrDefaultValue: { label: true },
+              setValue: { labelHasLatex: false }
+            }
+          }
+
           // &#95; is HTML entity for underscore, so JSXgraph won't replace it with subscript
-          let label = componentName.substring(lastSlash + 1).replaceAll("_", "&#95;");
+          label = label.replaceAll("_", "&#95;");
           return {
             setValue: {
               label,
