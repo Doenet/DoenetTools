@@ -8,6 +8,7 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 
 import {
+  AddRole,
   AddUser,
   DeleteCourse,
   EditDefaultRole,
@@ -87,14 +88,14 @@ const CourseInfoPanel = function ({ courseId }) {
       {canModifyCourseSettings === '1' && (
         <EditImageAndColor courseId={courseId} />
       )}
-      <br />
       {canModifyRoles === '1' && <EditDefaultRole courseId={courseId} />}
       {canManageUsers === '1' && <AddUser courseId={courseId} menu />}
       {canViewUsers === '1' && (
         <ManageUsers courseId={courseId} editable={canManageUsers === '1'} />
       )}
-      <br />
       {canModifyRoles === '1' && <MangeRoles courseId={courseId} />}
+      <br />
+      {canModifyRoles === '1' && <AddRole courseId={courseId} />}
       <br />
       {isOwner === '1' && <DeleteCourse courseId={courseId} />}
     </>
