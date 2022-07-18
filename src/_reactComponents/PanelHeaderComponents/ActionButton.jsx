@@ -114,7 +114,7 @@ export default function ActionButton(props) {
 
   if (props.disabled) {
     actionButton.backgroundColor = 'var(--mainGray)';
-    actionButton.color = 'var(--canvastext)';
+    actionButton.color = 'black';
     actionButton.cursor = 'not-allowed';
   }
 
@@ -135,6 +135,8 @@ export default function ActionButton(props) {
           {label}
         </Label>
         <Button
+          aria-labelledby={label} 
+          aria-label={actionButton.value}
           id={props.id}
           style={actionButton}
           alert={alert}

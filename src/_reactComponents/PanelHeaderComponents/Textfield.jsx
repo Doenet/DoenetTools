@@ -67,10 +67,6 @@ export default function Textfield(props) {
     textfieldValue.placeholder = props.placeholder;
   };
 
-  if (props.ariaLabel) {
-    textfieldValue.ariaLabel = props.ariaLabel;
-  };
-
   var disable = "";
   var read_only = false
   if (props.disabled) {
@@ -105,8 +101,8 @@ export default function Textfield(props) {
   return (
     <>
       <div style={container}>
-            <p style={label}>{label.value}</p>
-            <TextfieldStyling type="text" inputWidth={inputWidth} readOnly={read_only} alert={props.alert} disabled={props.disabled} ref={inputRef} value={props.value} placeholder={textfieldValue.placeholder} aria-label={textfieldValue.ariaLabel} style={textfieldValue} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }}></TextfieldStyling>
+            <p style={label} id="textfield-label">{label.value}</p>
+            <TextfieldStyling aria-labelledby="textfield-label" type="text" inputWidth={inputWidth} readOnly={read_only} alert={props.alert} disabled={props.disabled} ref={inputRef} value={props.value} placeholder={textfieldValue.placeholder} aria-label={textfieldValue.ariaLabel} style={textfieldValue} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }}></TextfieldStyling>
       </div>
     </>
   )

@@ -22,8 +22,8 @@ const Display = styled.button`
 const Menu = styled.div`
     border: var(--mainBorder);
     border-radius: var(--mainBorderRadius);
-    background-color: var(--mainGray);
-    height: 246px;
+    background-color: var(--canvas);
+    height: 352px;
     width: 220px;
     display: none;
     position: relative;
@@ -47,9 +47,9 @@ const ColorSection = styled.div`
 const ImageSection = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 54px);
-    grid-template-rows: repeat(5, 54px);
+    grid-template-rows: repeat(7, 54px);
     width: 224px;
-    height: 100px;
+    height: 140px;
     padding-bottom: 6px;
 `;
 
@@ -139,10 +139,11 @@ export default function ColorImagePicker(props){
         colorArray.push(
             <Color 
                 key={i} 
-                color={"#" + driveColors[i]} 
+                color={"#" + driveColors[i].Color} 
                 onClick={() => {
-                    changeColor(driveColors[i]);
+                    changeColor(driveColors[i].Color);
                 }}
+                aria-label={driveColors[i].Name}
             ></Color>
         );
     };
@@ -152,10 +153,11 @@ export default function ColorImagePicker(props){
         imageArray.push(
             <Image 
                 key={i} 
-                image={"url(/media/drive_pictures/" + driveImages[i] + ")"}
+                image={"url(/media/drive_pictures/" + driveImages[i].Image + ")"}
                 onClick={() => {
-                    changeImage(driveImages[i]);
+                    changeImage(driveImages[i].Image);
                 }}
+                aria-label={driveImages[i].Name}
                 // value={driveImages[i]}
                 // selected = {displayImage === driveImages[i]}
             ></Image>
@@ -164,8 +166,9 @@ export default function ColorImagePicker(props){
     
     return (
         <Container>
-            <Label>Background Image</Label>
+            <Label id="color-image-picker-label">Background Image</Label>
             <Display 
+                aria-labelledby='color-image-picker-label'
                 onClick={(e) => { handleClick(e) }} 
                 color={"#" + displayColor}
                 image={"url(/media/drive_pictures/" + displayImage + ")"}>

@@ -81,6 +81,8 @@ export default function Card(props) {
             <CardStyling 
                 alert={props.alert}
                 disabled={props.disabled}
+                aria-labelledby={label} 
+                aria-label={title.value}
                 onClick={(e) => { handleClick(e) }}
                 >
                 <h4 style={title}><b>{title.value}</b></h4>

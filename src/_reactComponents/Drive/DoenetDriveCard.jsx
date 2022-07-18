@@ -73,7 +73,7 @@ const DriveCard = (props) => {
 /* reduces the top margin on the h2, bottom on the p, and leaves a 0.5rem gap between the two */
 
   return (
-    <DriveCardContainer data-cy="driveCard" url={imageURL} color={props.color} width={props.width} height={props.height}>
+    <DriveCardContainer aria-labelledby="card-label role-label" data-cy="driveCard" url={imageURL} color={props.color} width={props.width} height={props.height}>
       <Image url={imageURL} color={props.color} />
       <Info
         style={{
@@ -81,14 +81,14 @@ const DriveCard = (props) => {
           backgroundColor: props.isSelected ? 'var(--lightBlue)' : '',
         }}
       >
-        <LabelContainer textAlign={props.textAlign} lineHeight={props.lineHeight} whiteSpace={props.whiteSpace} 
+        <LabelContainer id="card-label" textAlign={props.textAlign} lineHeight={props.lineHeight} whiteSpace={props.whiteSpace} 
         style={{
           color: props.isSelected ? 'black' : 'var(--canvastext)',
         }}>
           <b data-cy="driveCardLabel">{props.label}</b>
         </LabelContainer>
         {props?.role?.map((item) => {
-          return <LabelContainer key={item} style={{color:props.isSelected ? 'black' : 'var(--canvastext)'}}>{item}</LabelContainer>;
+          return <LabelContainer id="role-label" key={item} style={{color:props.isSelected ? 'black' : 'var(--canvastext)'}}>{item}</LabelContainer>;
         })}
       </Info>
     </DriveCardContainer>

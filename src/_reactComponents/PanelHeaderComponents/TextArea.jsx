@@ -49,10 +49,6 @@ export default function TextArea(props) {
     textareaValue.placeholder = props.placeholder;
   };
 
-  if (props.ariaLabel) {
-    textareaValue.ariaLabel = props.ariaLabel;
-  };
-
   var disable = "";
   if (props.disabled) {
     disable = "disabled";
@@ -88,8 +84,8 @@ export default function TextArea(props) {
   return (
     <>
       <div style={container}>
-            <p style={label}>{label.value}</p>
-            <Textarea defaultValue={textareaValue.value} width={inputWidth} aria-label={textareaValue.ariaLabel} placeholder={textareaValue.placeholder} onChange={(e) => { handleChange(e) }} onKeyDown={(e) => {handleKeyDown(e) }} onBlur={(e) => { handleBlur(e) }} disabled={disable} alert={props.alert}></Textarea>
+            <p style={label} id="textarea-label">{label.value}</p>
+            <Textarea aria-labelledby="textarea-label" defaultValue={textareaValue.value} width={inputWidth} aria-label={textareaValue.ariaLabel} placeholder={textareaValue.placeholder} onChange={(e) => { handleChange(e) }} onKeyDown={(e) => {handleKeyDown(e) }} onBlur={(e) => { handleBlur(e) }} disabled={disable} alert={props.alert}></Textarea>
       </div>
     </>
   )

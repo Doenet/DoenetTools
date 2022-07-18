@@ -49,7 +49,6 @@ export default function CollapseSection(props) {
   const labelVisible = props.label ? 'static' : 'none';
   const align = props.vertical ? 'static' : 'flex';
   const width = props.width ? props.width : null;
-  const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
   const disabled = props.disabled ? props.disabled : null;
   const label = props.label ? props.label : null;
 
@@ -63,9 +62,11 @@ export default function CollapseSection(props) {
   };
 
   return (
-      <Section aria-label={ariaLabel} width={width}>
+      <Section width={width}>
         <Label labelVisible={labelVisible} align={align}>{label}</Label>
           <SectionHeader
+              aria-label={title}
+              aria-labelledby={label} 
               style={headerStyle}
               disabled={disabled}
               onClick = {() => {disabled ? "" : setCollapsed(!collapsed);}} // If not disabled, the user can open/close the collapse section

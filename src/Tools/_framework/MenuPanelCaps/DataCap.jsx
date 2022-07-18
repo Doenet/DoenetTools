@@ -2,6 +2,7 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import {  coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { find_image_label, find_color_label } from './util';
 
 export default function DataCap(){
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
@@ -14,11 +15,15 @@ if (!course || Object.keys(course).length == 0){
 let color = course.color;
 let image = course.image;
 let label = course.label;
+
+let accessible_name = "course";
  
  if (image != 'none'){
+  accessible_name = find_image_label(image);
   image = 'url(/media/drive_pictures/' + image + ')';
  }
  if (color != 'none'){
+  accessible_name = find_color_label(color);
   color = '#' + color;
  }
 
@@ -32,8 +37,8 @@ let label = course.label;
  }
  
  return <>
-    <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
-      <img style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
+    <div style={{ position: "relative", width: "100%", height: "165px", overflow: "hidden"}}>
+      <img aria-label={accessible_name} style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
     </div>
     <b>{toolText}</b>
     <div style={{ padding:'16px 12px' }}>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { find_image_label, find_color_label } from './util'
 import { useRecoilValue } from 'recoil';
 // import { loadAssignmentSelector } from '../../../_reactComponents/Drive/NewDrive';
 // import { searchParamAtomFamily, pageToolViewAtom } from '../NewToolRoot';
@@ -25,10 +26,15 @@ let color = course.color;
 let image = course.image;
 // let label = course.label;
  
+let accessible_name = "course"
+
  if (image != 'none'){
+  accessible_name = find_image_label(image);
   image = 'url(/media/drive_pictures/' + image + ')';
  }
+
  if (color != 'none'){
+  accessible_name = find_color_label(color);
   color = '#' + color;
  }
   // let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -72,8 +78,8 @@ let image = course.image;
   //TODO: image and color defaults
   return (
   <div>
-    <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
-      <img style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
+    <div style={{ position: "relative", width: "100%", height: "165px", overflow: "hidden"}}>
+      <img aria-label={accessible_name} style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
     </div>
     <b>Assignment</b>
     {/* <div style={{ padding:'16px 12px' }}>

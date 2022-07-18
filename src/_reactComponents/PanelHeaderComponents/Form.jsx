@@ -144,11 +144,6 @@ export default function Form(props) {
     label = props.label;
   };
 
-  var ariaLabel = "";
-  if (props.ariaLabel) {
-    ariaLabel = props.ariaLabel;
-  };
-
   function handleChange(e) {
     if (cleared) {
       setText("");
@@ -200,7 +195,7 @@ export default function Form(props) {
 
   return (
     <Container align={align}>
-      <Label labelVisible={labelVisible} align={align}>{label}</Label>
+      <Label id="form-label" labelVisible={labelVisible} align={align}>{label}</Label>
       <div>
         <FormInput
           id="textarea"
@@ -220,7 +215,7 @@ export default function Form(props) {
           onKeyDown={(e) => { handleKeyDown(e) }}
           disabled={disable}
           alert={alert}
-          ariaLabel={ariaLabel}
+          aria-labelledby="form-label"
         />
         {clearButton}
         <SubmitButton

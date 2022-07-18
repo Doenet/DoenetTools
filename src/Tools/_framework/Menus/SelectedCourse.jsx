@@ -9,7 +9,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import DoenetDriveCardMenu from '../../../_reactComponents/Drive/DoenetDriveCardMenu';
-import { driveColors } from '../../../_reactComponents/Drive/util';
 import { useToast, toastType } from '../../_framework/Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
@@ -158,10 +157,10 @@ const CourseInfoPanel = function ({ courseId }) {
         initialImage={image}
         initialColor={color}
         imageCallback={(newImage) => {
-          modifyCourse({ image: newImage });
+          modifyCourse({ image: newImage, color: 'none' });
         }}
         colorCallback={(newColor) => {
-          modifyCourse({ color: newColor });
+          modifyCourse({ color: newColor, image: 'none' });
         }}
       />
       <br />

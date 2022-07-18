@@ -235,6 +235,7 @@ export default function UnitMenu(props) {
       <>
         <LabelContainer align={align}>
           <Label
+            id="unitmenu-label"
             visible={labelVisible}
             onMouseDown={(e) => {
               initialClickLabelPosition.current = [e.clientX, e.clientY]
@@ -246,6 +247,7 @@ export default function UnitMenu(props) {
           </Label>
           <Container>
             <Textfield
+              aria-labelledby="unitmenu-label"
               disabled={disabled}
               id="text"
               type="text"

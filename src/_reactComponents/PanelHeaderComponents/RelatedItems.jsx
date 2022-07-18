@@ -43,7 +43,6 @@ export default function RelatedItems(props) {
     const labelVisible = props.label ? 'static' : 'none';
     const width = props.width ? props.width : '200px';
     const size = props.size ? props.size : 4;
-    const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
     const alert = props.alert ? props.alert : null;
     const disabled = props.disabled ? props.disabled : null;
     const read_only = props.disabled ? true : false;
@@ -81,7 +80,7 @@ export default function RelatedItems(props) {
 
     return (
         <Container align={align}>
-            <Label labelVisible={labelVisible} align={align}>{label}</Label>
+            <Label id="related-items-label" labelVisible={labelVisible} align={align}>{label}</Label>
             <Select 
                 readOnly={read_only}
                 width={width}
@@ -90,10 +89,10 @@ export default function RelatedItems(props) {
                 onClick={(e) => { handleClick(e) }}
                 onBlur={(e) => { handleBlur(e) }}
                 onKeyDown={(e) => { handleKeyDown(e) }}
-                aria-label={ariaLabel}
                 alert={alert}
                 disabled={disabled}
                 multiple={props.multiple}
+                aria-labelledby="related-items-label"
             >
                 {options}
             </Select>

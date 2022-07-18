@@ -138,11 +138,6 @@ export default function Searchbar(props) {
         label = props.label;
     };
 
-    var ariaLabel = "";
-    if (props.ariaLabel) {
-        ariaLabel = props.ariaLabel;
-    };
-
     let autoFocus = false;
     if (props.autoFocus) {
         autoFocus = true;
@@ -185,10 +180,11 @@ export default function Searchbar(props) {
 
     return (
         <Container align={align}>
-            <Label labelVisible={labelVisible} align={align}>{label}</Label>
+            <Label id="search-label" labelVisible={labelVisible} align={align}>{label}</Label>
             <div style={{display: "table-cell"}} >
                 <FontAwesomeIcon icon={faSearch} style={searchIcon}/>
                 <CancelButton 
+                    aria-label="Clear"
                     ref={searchBarRef}
                     cancelShown={cancelShown}
                     marginLeft={marginLeft}
@@ -209,7 +205,7 @@ export default function Searchbar(props) {
                     value={searchTerm}
                     onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
                     autoFocus={autoFocus} 
-                    ariaLabel={ariaLabel}
+                    aria-labelledby="search-label"
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
                 {searchButton}
