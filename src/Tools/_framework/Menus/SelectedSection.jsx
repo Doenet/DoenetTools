@@ -55,7 +55,7 @@ export default function SelectedSection() {
 
   const addToast = useToast();
   let heading = (
-    <h2 data-cy="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
+    <h2 data-test="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
       <FontAwesomeIcon icon={faFolderTree} /> {recoilLabel}
     </h2>
   );

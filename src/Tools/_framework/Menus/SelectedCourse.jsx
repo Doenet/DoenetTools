@@ -80,7 +80,7 @@ const CourseInfoPanel = function ({ courseId }) {
 
   return (
     <>
-      <h2 data-cy="infoPanelItemLabel">
+      <h2 data-test="infoPanelItemLabel">
         <FontAwesomeIcon icon={faChalkboard} /> {label}
       </h2>
       {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}

@@ -77,7 +77,7 @@ export default function ChooseLearnerPanel(props) {
             <input
               type="password"
               value={code}
-              data-cy="signinCodeInput"
+              data-test="signinCodeInput"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' ) {
                   setStage('check code');
@@ -92,7 +92,7 @@ export default function ChooseLearnerPanel(props) {
         <button
           style={{}}
           onClick={() => setStage('check code')}
-          data-cy="signInButton"
+          data-test="signInButton"
         >
           Submit
         </button>

@@ -802,28 +802,20 @@ function Row({
 
   if (hasToggle) {
     openCloseIndicator = isOpen ? (
-      <span
-        data-cy="folderToggleCloseIcon"
-        onClick={() => {
-          if (hasToggle) {
-            toggleOpenClosed();
-          }
-        }}
-      >
-        <FontAwesomeIcon icon={faChevronDown} />
-      </span>
-    ) : (
-      <span
-        data-cy="folderToggleOpenIcon"
-        onClick={() => {
-          if (hasToggle) {
-            toggleOpenClosed();
-          }
-        }}
-      >
-        <FontAwesomeIcon icon={faChevronRight} />
-      </span>
-    );
+        <span data-test="folderToggleCloseIcon" onClick={ ()=>{
+          if (hasToggle){
+          toggleOpenClosed();
+        }}} >
+          <FontAwesomeIcon icon={faChevronDown} />
+        </span>
+      ) : (
+        <span data-test="folderToggleOpenIcon" onClick={ ()=>{
+          if (hasToggle){
+          toggleOpenClosed();
+        }}} >
+          <FontAwesomeIcon icon={faChevronRight} />
+        </span>
+      );
   }
 
   //Selection is based on course items and Recoil
@@ -1012,6 +1004,29 @@ function Row({
   const indentPx = 25;
 
   let activityJSX = (
+    <div 
+    key={`Row${doenetId}`}
+    role="button"
+    data-test="courseItem"
+    tabIndex={0}
+    className="noselect nooutline"
+    style={{
+      cursor: 'pointer',
+      padding: '8px',
+      border: '0px',
+      borderBottom: '2px solid var(--canvastext)',
+      backgroundColor: bgcolor,
+      color: color,
+      width: 'auto',
+      // marginLeft: marginSize,
+    }}
+    onClick={(e)=>{
+      handleSingleSelectionClick(e);
+    }}
+    onDoubleClick={(e)=>{
+      handleDoubleClick(e);
+    }}
+    >
     <div
       key={`Row${doenetId}`}
       role="button"
@@ -1035,76 +1050,39 @@ function Row({
         handleDoubleClick(e);
       }}
     >
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: columnsCSS,
-          gridTemplateRows: '1fr',
-          alignContent: 'center',
-          // marginTop: '8px',
-          // marginBottom: '8px',
-        }}
-      >
-        <span
-          style={{
-            marginLeft: `${indentLevel * indentPx}px`,
-          }}
-        >
-          <p
-            style={{
-              display: 'inline',
-              margin: '0px',
-            }}
-          >
-            {numbered ? (
-              <svg
-                style={{ verticalAlign: 'middle' }}
-                width="22"
-                height="22"
-                viewBox="0 0 22 22"
-              >
-                <circle
-                  cx="11"
-                  cy="11"
-                  r="12"
-                  stroke="var(--canvas)"
-                  strokeWidth="2"
-                  fill="var(--mainBlue)"
-                />
-                <text
-                  fontSize="14"
-                  fill="var(--canvas)"
-                  fontFamily="Verdana"
-                  textAnchor="middle"
-                  alignmentBaseline="baseline"
-                  x="11"
-                  y="16"
-                >
-                  {numbered}
-                </text>
-              </svg>
-            ) : null}
-            {openCloseIndicator}
-            <span style={{ marginLeft: '8px' }} data-cy="rowIcon">
-              <FontAwesomeIcon icon={icon} />
-            </span>
-            <span style={{ marginLeft: '4px' }} data-cy="rowLabel">
-              {label}{' '}
-            </span>
-          </p>
+      <span style={{ 
+        marginLeft: `${indentLevel * indentPx}px`
+      }}>
+
+      <p style={{ 
+        display: 'inline', 
+        margin: '0px' }} >
+       { numbered ?  <svg style={{verticalAlign:'middle'}} width="22" height="22" viewBox="0 0 22 22">
+      <circle cx="11"
+              cy="11"
+              r="12"
+              stroke="var(--canvas)"
+              strokeWidth="2"
+              fill="var(--mainBlue)"/>
+      <text fontSize="14"
+            fill="var(--canvas)"
+            fontFamily="Verdana"
+            textAnchor="middle"
+            alignmentBaseline="baseline"
+            x="11"
+            y="16">{numbered}</text>
+  </svg>: null }
+        {openCloseIndicator}
+        <span style={{marginLeft:'8px'}} data-test="rowIcon">
+          <FontAwesomeIcon icon={icon} />
         </span>
-        {numberOfVisibleColumns > 1 ? (
-          <span style={{ textAlign: 'center' }}>{columnsJSX[0]}</span>
-        ) : null}
-        {numberOfVisibleColumns > 2 ? (
-          <span style={{ textAlign: 'center' }}>{columnsJSX[1]}</span>
-        ) : null}
-        {numberOfVisibleColumns > 3 ? (
-          <span style={{ textAlign: 'center' }}>{columnsJSX[2]}</span>
-        ) : null}
-        {numberOfVisibleColumns > 4 ? (
-          <span style={{ textAlign: 'center' }}>{columnsJSX[3]}</span>
-        ) : null}
+        <span style={{marginLeft:'4px'}} data-test="rowLabel">{label} </span>
+      </p>
+      </span>
+    {numberOfVisibleColumns > 1 ? <span style={{ textAlign: 'center' }}>{columnsJSX[0]}</span> : null}
+    {numberOfVisibleColumns > 2 ? <span style={{ textAlign: 'center' }}>{columnsJSX[1]}</span> : null}
+    {numberOfVisibleColumns > 3 ? <span style={{ textAlign: 'center' }}>{columnsJSX[2]}</span> : null}
+    {numberOfVisibleColumns > 4 ? <span style={{ textAlign: 'center' }}>{columnsJSX[3]}</span> : null}
       </div>
     </div>
   );

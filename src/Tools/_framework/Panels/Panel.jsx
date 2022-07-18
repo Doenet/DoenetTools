@@ -184,7 +184,7 @@ export default function DragPanel({
       <DragHandle
         tabIndex="0"
         ref={handle}
-        data-cy="panelDragHandle"
+        data-test="panelDragHandle"
         $vertical={direction.vertical}
         $rounding={direction.rounding}
         $handleSize={handleSize}

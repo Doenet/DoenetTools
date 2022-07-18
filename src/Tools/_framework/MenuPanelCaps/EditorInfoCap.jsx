@@ -13,7 +13,7 @@ export default function EditorInfoCap(){
   const pageInfo = useRecoilValue(itemByDoenetId(pageId));
   const activityInfo = useRecoilValue(itemByDoenetId(doenetId));
 
-  if (!pageInfo){ return null;}
+  if (!pageInfo || !image){ return null;}
  if (image != 'none'){
   image = 'url(/media/drive_pictures/' + image + ')';
  }
