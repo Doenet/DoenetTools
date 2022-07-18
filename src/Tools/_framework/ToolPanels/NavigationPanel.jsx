@@ -117,7 +117,7 @@ export default function NavigationPanel() {
       async ({ doenetId, courseId }) => {
         let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
         let { canEditContent } = await snapshot.getPromise(
-          effectivePermissionsByCourseId,
+          effectivePermissionsByCourseId(courseId),
         );
         if (clickedItem.type == 'page') {
           set(pageToolViewAtom, (prev) => {
