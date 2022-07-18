@@ -33,6 +33,27 @@ Cypress.Commands.add("signin", ({userId}) => {
     // })
 });
 
+Cypress.Commands.add("saveDoenetML", ({doenetML,pageId,courseId}) => {
+  cy.request("POST","/api/saveDoenetML.php",{
+    doenetML,
+    pageId,
+    courseId,
+    backup:false,
+  })
+    .then((resp)=>{
+      cy.log("saveDoenetML",resp.body)
+    })
+
+});
+
+Cypress.Commands.add("clearEvents", ({doenetId}) => {
+  cy.request(`/cyapi/cypressClearEvents.php?doenetId=${doenetId}`)
+  // .then((resp)=>{
+  //   cy.log(resp.body)
+  // })
+
+});
+
 Cypress.Commands.add("clearAllOfAUsersCoursesAndItems", ({userId}) => {
   cy.request(`/cyapi/cypressAllOfAUsersCoursesAndItems.php?userId=${userId}`)
     // .then((resp)=>{
