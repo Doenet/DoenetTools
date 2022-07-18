@@ -1,5 +1,19 @@
 import React from 'react';
 import Select from 'react-select';
+import styled from 'styled-components';
+
+const Container = styled.div `
+    display: ${props => props.align};
+    width: auto;
+    align-items: center;
+`;
+
+const Label = styled.p `
+    font-size: 14px;
+    display: ${props => props.labelVisible};
+    margin-right: 5px;
+    margin-bottom: ${props => props.align == 'flex' ? 'none' : '2px'};
+`;
 
 const DropdownMenu = (props) => {
   // console.log('right ', props.right);
@@ -87,13 +101,26 @@ const DropdownMenu = (props) => {
     return { value, label };
   });
 
+  const labelVisible = props.label ? 'static' : 'none';
+
   var width = props.width;
   if (props.width == 'menu') {
     width = '210px';
   };
 
+  var align = 'flex';
+  var label = '';
+  if (props.label) {
+      label = props.label;
+      if (props.vertical) {
+      align = 'static';
+      }
+  };
+
   //   console.log(options, props.def);
   return (
+    <Container align={align}>
+            <Label labelVisible={labelVisible} align={align}>{label}</Label>
     <Select
       value={options[props.valueIndex - 1]}
       defaultValue={options[props.defaultIndex - 1]}
@@ -109,6 +136,7 @@ const DropdownMenu = (props) => {
       isMulti={props.isMulti ? props.isMulti : false}
       isDisabled={props.disabled ? true : false}
     />
+    </Container>
   );
 };
 
