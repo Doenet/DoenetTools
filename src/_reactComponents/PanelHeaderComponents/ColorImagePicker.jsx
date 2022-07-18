@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { driveColors, driveImages } from '../Drive/util.js';
 import styled, { css } from 'styled-components';
 
-const Display = styled.div`
+const Display = styled.button`
     border-radius: var(--mainBorderRadius);
+    border: none;
     height: 36px;
     width: 36px;
     background-size: cover;
@@ -12,6 +13,10 @@ const Display = styled.div`
     background-color: ${props => props.color || "var(--canvas)"};
     background-image: ${props => props.image || "none"};
     cursor: pointer;
+    &:focus {
+        outline: 2px solid var(--canvastext);
+        outline-offset: 2px;
+    }
 `;
 
 const Menu = styled.div`

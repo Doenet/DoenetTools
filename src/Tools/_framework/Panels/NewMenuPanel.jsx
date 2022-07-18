@@ -123,6 +123,10 @@ position:  static;
 left: 220px;
 cursor: pointer;
 z-index: 2;
+&:focus {
+  outline: 2px solid var(--mainBlue);
+  outline-offset: 2px;
+}
 `;
 
 const EditMenuPanels = styled.button`
@@ -148,14 +152,22 @@ const MenuPanelTitle = styled.button`
   border-bottom: ${(props) =>
     props.isOpen ? '2px solid var(--canvastext)' : '0px solid var(--canvastext)'};
   margin-top: 2px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: -6px;
+  }
 `;
 
 const SettingsButton = styled.button`
   background-color: var(--canvas);
   color: var(--canvastext);
   border: none;
+  border-radius: 80px;
   cursor: pointer;
   font-size: 20px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+  }
 `;
 
 const HomeButton = styled.button`
@@ -202,7 +214,7 @@ function Menu(props) {
 
   return (
     <>
-      <MenuPanelTitle isOpen={isOpen} onClick={() => setIsOpen((was) => !was)}>
+      <MenuPanelTitle isOpen={isOpen} aria-expanded={isOpen} onClick={() => setIsOpen((was) => !was)}>
         <h3>{props.title}</h3>
       </MenuPanelTitle>
       <div

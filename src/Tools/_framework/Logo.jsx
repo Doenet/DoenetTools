@@ -16,12 +16,17 @@ const LogoButton = styled.button`
   height: 25px;
   display: inline-block;
   justify-content: center;
+  border-radius: 10px;
   align-items: center;
   border-style: none;
   // border-radius: 50%;
   // margin-top: 8px;
   // margin-left: 90px;
   cursor: pointer;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 
 export const profileToolViewStashAtom = atom({

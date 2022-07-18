@@ -20,6 +20,7 @@ const DriveCardContainer = styled.figure`
   
   border: 2px solid var(--canvastext);
   cursor: pointer;
+  
 `;
 
 const Image = styled.img`
@@ -31,6 +32,10 @@ const Image = styled.img`
   background-color: ${(props) => props.color == 'none' ? 'none' : "#" + props.color};
   background-size: cover;
   background-position: center;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 const Info = styled.figcaption`
   border-radius: 0px 0px 5px 5px;
@@ -39,7 +44,10 @@ const Info = styled.figcaption`
   height: 65px;
   width: inherit;
   background: var(--canvas);
-  
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 
 const LabelContainer = styled.p`

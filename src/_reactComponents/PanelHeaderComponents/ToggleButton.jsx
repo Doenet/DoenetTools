@@ -34,6 +34,11 @@ const Button = styled.button`
         ? 'none'
         : 'var(--lightBlue)'};
   }
+
+  &:focus {
+    outline: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--mainBlue)')};
+    outline-offset: 2px;
+  }
 `;
 
 Button.defaultProps = {

@@ -13,6 +13,10 @@ const Textfield = styled.input`
   text-align: center;
   resize: none;
   cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+  &:focus {
+    outline: ${props => props.alert};
+    outline-offset: 2px;
+  }
 `;
 
 const Label = styled.p`
@@ -52,6 +56,11 @@ const Units = styled.button`
     background-color: ${props => props.disabled ? 'none' : 'var(--lightBlue)'};
     cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   };
+
+  &:focus {
+    outline: ${props => props.alert};
+    outline-offset: 4px;
+  }
 `;
 
 const Unit = styled.div`
@@ -250,7 +259,7 @@ export default function UnitMenu(props) {
               }}
               onChange={() => {changeValue(event)}}
             ></Textfield>
-              <Units disabled={disabled}>
+              <Units disabled={disabled} alert={alert}>
                 {currentUnit}
                 <Unit id="unit" disabled={disabled}>{unitComponents}</Unit>
               </Units>

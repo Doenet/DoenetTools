@@ -33,6 +33,7 @@ const DropdownMenu = (props) => {
       ':active': { backgroundColor: 'var(--canvas)' },
       //   left: props.absolute && props.left ? props.left : null,
       //   top: props.absolute && props.top ? props.top : null,
+      
     }),
     valueContainer: (provided, state) => ({
       ...provided,
@@ -41,6 +42,7 @@ const DropdownMenu = (props) => {
       backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
       ':active': { backgroundColor: 'var(--canvas)' },
       // padding: '0 6px',
+      
     }),
     indicatorsContainer: (provided, state) => ({
       ...provided,
@@ -76,9 +78,12 @@ const DropdownMenu = (props) => {
         borderRadius: 'var(--mainBorderRadius)',
         position: 'relative',
         transition: 'all 100ms',
-        ':focus': {
-          outline: 'none',
-        },
+        outline: state.isFocused ? '2px solid black' : 'none',
+        outlineOffset: state.isFocused ? '2px' : 'none',
+        // ':focus': {
+        //   outline: '2px solid black',
+        //   outlineOffset: '2px'
+        // },
       };
     },
   };

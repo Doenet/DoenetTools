@@ -16,6 +16,10 @@ const Select = styled.select `
     size: ${props => props.size};
     overflow: auto;
     cursor: ${props => props.disabled ? "not-allowed" : "auto"};
+    &:focus {
+        outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : 'var(--canvastext)'};
+        outline-offset: 2px;
+    }
 `;
 
 const Option = styled.option `
@@ -42,6 +46,8 @@ export default function RelatedItems(props) {
     const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
     const alert = props.alert ? props.alert : null;
     const disabled = props.disabled ? props.disabled : null;
+    const read_only = props.disabled ? true : false;
+
 
     var align = 'flex';
     var label = '';
@@ -77,6 +83,7 @@ export default function RelatedItems(props) {
         <Container align={align}>
             <Label labelVisible={labelVisible} align={align}>{label}</Label>
             <Select 
+                readOnly={read_only}
                 width={width}
                 size={size}
                 onChange={(e) => { handleChange(e) }}

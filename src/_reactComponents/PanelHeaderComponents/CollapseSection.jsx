@@ -22,6 +22,10 @@ const SectionHeader = Styled.div `
   text-align: center;
   background-color: var(--mainGray);
   color: var(--canvastext);
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 
 const SectionContent = Styled.div `
@@ -65,6 +69,8 @@ export default function CollapseSection(props) {
               style={headerStyle}
               disabled={disabled}
               onClick = {() => {disabled ? "" : setCollapsed(!collapsed);}} // If not disabled, the user can open/close the collapse section
+              onKeyDown = {(e) => {disabled ? "" : e.key === "Enter" ? setCollapsed(!collapsed) : "";}}
+              tabIndex="0"
           >
               <FontAwesomeIcon icon={faCaretRight} style={arrowIcon}/>
               {title}

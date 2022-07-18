@@ -18,7 +18,8 @@ const IncrementBox = styled.div`
   margin: 0;
   border-radius: 5px;
   border: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
-  background-color: var(--canvas);`
+  background-color: var(--canvas);
+  `
 
 
 const IncrementContainer = styled.div`
@@ -31,13 +32,17 @@ const IncreaseButton = styled.button`
   border-radius: 0px 2px 2px 0px;
   height: 100%;
   width: 36px;
-  color: ${(props) => (props.disabled ? 'var(--canvas)' : 'var(--canvastext)')};
+  color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
   border: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-    color: var(--canvas);
+    color: black;
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
+  }
+  &:focus {
+    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+    outline-offset: 4px;
   }
 `;
 
@@ -47,13 +52,17 @@ const DecreaseButton = styled.button`
   text-align: center;
   height: 100%;
   width: 36px;
-  color: ${(props) => (props.disabled ? 'var(--canvas)' : 'var(--canvastext)')};
+  color: ${(props) => (props.disabled ? 'black' : 'white')};
   font-size: 18px;
   border: none;
   &:hover {
     cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
-    color: var(--canvas);
+    color: black;
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
+  }
+  &:focus {
+    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+    outline-offset: 4px;
   }
 `;
 
@@ -65,6 +74,10 @@ const TextField = styled.input`
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'default')};
   outline: none;
   border: none;
+  &:focus {
+    outline: ${(props) => (props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)')};
+    outline-offset: 6px;
+  }
 `;
 
 const Label = styled.span`
@@ -380,13 +393,14 @@ export default function Increment(props) {
       {props.label && <Label>{props.label}</Label> }
       {props.label && props.vertical && <br /> }
       <IncrementContainer>
-        <IncrementBox
+        <IncrementBox 
           ref={containerRef}
           onBlur={containerOnBlur}
           alert={props.alert}
         >
           <DecreaseButton
             ref={decrementRef}
+            alert={props.alert}
             disabled={props.disabled}
             onClick={decrementOnClick}
           >
@@ -396,6 +410,7 @@ export default function Increment(props) {
             placeholder={props.placeholder}
             value={value}
             ref={textFieldRef}
+            alert={props.alert}
             disabled={props.disabled ? props.disabled : false}
             onChange={onTextFieldChange}
             onClick={(e) => {
@@ -411,6 +426,7 @@ export default function Increment(props) {
             }}
           />
           <IncreaseButton
+            alert={props.alert}
             ref={incrementRef}
             disabled={props.disabled}
             onClick={incrementOnClick}

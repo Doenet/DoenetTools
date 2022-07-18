@@ -20,6 +20,11 @@ const Button = styled.button`
     background-color: ${(props) =>
       props.alert ? 'var(--lightRed)' : 'var(--lightBlue)'};
   }
+
+  &:focus {
+    outline: 2px solid white;
+    outline-offset: ${(props) => props.theme.outlineOffset};
+  }
 `;
 
 Button.defaultProps = {
@@ -28,6 +33,7 @@ Button.defaultProps = {
     borderRadius: 'var(--mainBorderRadius)',
     padding: '0px 10px 0px 10px',
     border: 'none',
+    outlineOffset: '-4px'
   },
 };
 
@@ -132,6 +138,7 @@ export default function ActionButton(props) {
           id={props.id}
           style={actionButton}
           alert={alert}
+          disabled={props.disabled}
           onClick={(e) => {
             if (props.disabled !== true) {
               handleClick(e);

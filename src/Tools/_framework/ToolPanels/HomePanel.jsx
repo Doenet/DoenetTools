@@ -23,7 +23,13 @@ const DoenetLogo = styled.div`
 const DoenetImage = styled.img`
 @media (max-width: 768px) {
   width:500px;
-}`;
+}
+
+&:focus {
+  outline: 2px solid var(--mainBlue);
+  outline-offset: 2px;
+}
+`;
 
 const CloudColor = styled.div`
   background-color: var(--canvas);
