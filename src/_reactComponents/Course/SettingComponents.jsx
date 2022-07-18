@@ -111,7 +111,7 @@ export function EditDefaultRole({ courseId }) {
 
   return (
     <DropdownMenu
-      label="Default Role:"
+      label="Default Role"
       title=""
       items={
         //TODO reduce to hide roles as needed
@@ -162,7 +162,7 @@ export function AddUser({ courseId, menu = false, showOptions = false }) {
     <>
       <Textfield
         width={menu ? 'menu' : ''}
-        label="Add User:"
+        label="Add User"
         placeholder="email"
         value={emailInput}
         onChange={(e) => {
@@ -174,7 +174,7 @@ export function AddUser({ courseId, menu = false, showOptions = false }) {
         alert={emailInput !== '' && !isEmailValid}
         vertical={menu}
       />
-      {showOptions && <Textfield label="Name:" />}
+      {showOptions && <Textfield label="Name" />}
       <Button
         width="menu"
         value="Add User"
@@ -223,7 +223,7 @@ export function ManageUsers({ courseId, editable = false }) {
     <>
       <RelatedItems
         width="menu"
-        label="Select User:"
+        label="Select User"
         options={
           courseUsersRecoil?.map((user, idx) => (
             <option value={idx} key={user.email}>
@@ -242,7 +242,7 @@ export function ManageUsers({ courseId, editable = false }) {
         vertical
       />
       <DropdownMenu
-        label="Role:"
+        label="Assigned Role"
         title=""
         items={
           //TODO reduce to hide roles as needed
@@ -433,7 +433,7 @@ export function MangeRoles({ courseId }) {
   return (
     <Suspense fallback={<div>Loading roles...</div>}>
       <DropdownMenu
-        label="Role:"
+        label="Role"
         title=""
         items={
           //TODO reduce to hide roles as needed
@@ -457,6 +457,7 @@ export function MangeRoles({ courseId }) {
         vertical
       />
       <br />
+      <Textfield label="Label" width="menu" vertical />
       <RolePermissonCheckbox
         courseId={courseId}
         roleId={selectedRolePermissons.roleId}
@@ -576,6 +577,51 @@ export function MangeRoles({ courseId }) {
         </ButtonGroup>
       )}
     </Suspense>
+  );
+}
+
+export function AddRole({ courseId }) {
+  const addToast = useToast();
+  const { modifyRolePermissions } = useCourse(courseId);
+
+  const handleSave = () => {
+    modifyRolePermissions(
+      '',
+      { canViewCourse: '1', label: 'Untitled Role' },
+      () => {
+        addToast(`Create a new role: Untitled Role`);
+      },
+      (error) => {
+        addToast(error.message, toastType.ERROR);
+      },
+    );
+  };
+
+  return (
+    <ButtonGroup vertical>
+      {/* <Button
+              width="menu"
+              value="Reset Changes"
+              onClick={() => {
+                setEdited(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.keyCode === 13) {
+                  setEdited(false);
+                }
+              }}
+            /> */}
+      <Button
+        width="menu"
+        value="Create New Role"
+        onClick={handleSave}
+        onKeyDown={(e) => {
+          if (e.keyCode === 13) {
+            handleSave();
+          }
+        }}
+      />
+    </ButtonGroup>
   );
 }
 
