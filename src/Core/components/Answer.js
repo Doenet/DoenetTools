@@ -283,7 +283,9 @@ export default class Answer extends InlineComponent {
           childIsWrappable.push(true);
           mayNeedInput = true;
         } else {
-          childIsWrappable.push(false);
+          // wrap anything else as it isn't matched by a child group?
+          childIsWrappable.push(true);
+          mayNeedInput = true;
         }
       }
 
@@ -427,9 +429,6 @@ export default class Answer extends InlineComponent {
     return [{
       group: "awards",
       componentTypes: ["award"]
-    }, {
-      group: "numbers",
-      componentTypes: ["number"]
     }, {
       group: "inputs",
       componentTypes: ["_input"]
