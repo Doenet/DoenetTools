@@ -25,6 +25,8 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
     correctComponentTypeCapitalization(serializedComponents, componentInfoObjects.componentTypeLowerCaseMapping);
 
+    copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, componentInfoObjects.isCompositeComponent);
+
     createAttributesFromProps(serializedComponents, componentInfoObjects);
 
     applyMacros(serializedComponents, componentInfoObjects);
@@ -88,12 +90,42 @@ export async function expandDoenetMLsToFullSerializedComponents({
         if (originalCopyWithUri.children === undefined) {
           originalCopyWithUri.children = [];
         }
-        originalCopyWithUri.children.push({
-          componentType: "externalContent",
-          children: JSON.parse(JSON.stringify(serializedComponentsForCid)),
-          attributes: { newNamespace: { primitive: true } },
-          doenetAttributes: { createUniqueName: true }
-        });
+        if (originalCopyWithUri.doenetAttributes?.fromCopyFromURI) {
+
+          // remove blank string children
+          let newComponents = JSON.parse(JSON.stringify(serializedComponentsForCid))
+            .filter(x => typeof x !== "string" || x.trim());
+
+          if (newComponents.length === 1) {
+            let comp = newComponents[0];
+            if (originalCopyWithUri.children) {
+              // append children of original copy to children of the first component
+              if (!comp.children) {
+                comp.children = [];
+              }
+              comp.children.push(...originalCopyWithUri.children);
+            }
+
+            if (!comp.attributes) {
+              comp.attributes = {};
+            }
+
+            originalCopyWithUri.doenetAttributes.keptNewNamespaceOfSingleChild = Boolean(comp.attributes.newNamespace?.primitive);
+
+            comp.attributes.newNamespace = { primitive: true };
+
+            originalCopyWithUri.children = newComponents;
+
+          }
+
+        } else {
+          originalCopyWithUri.children.push({
+            componentType: "externalContent",
+            children: JSON.parse(JSON.stringify(serializedComponentsForCid)),
+            attributes: { newNamespace: { primitive: true } },
+            doenetAttributes: { createUniqueName: true }
+          });
+        }
       }
     }
 
@@ -298,6 +330,83 @@ function correctComponentTypeCapitalization(serializedComponents, componentTypeL
 
 }
 
+function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, isCompositeComponent) {
+  for (let component of serializedComponents) {
+    if (component.props) {
+      let foundCopyTarget = false;
+      let foundCopyFromURI = false;
+      let foundAssignNames = false;
+      let originalType = component.componentType;
+      let haveComposite = isCompositeComponent({
+        componentType: originalType,
+        includeNonStandard: false
+      });
+      for (let prop of Object.keys(component.props)) {
+        let lowerCaseProp = prop.toLowerCase();
+        if (lowerCaseProp === "copytarget") {
+          if (foundCopyTarget) {
+            throw Error(`Cannot repeat attribute ${prop}.  Found in component type ${originalType}${indexRangeString(component)}`)
+          } else if (foundCopyFromURI) {
+            throw Error(`Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(component)}`)
+          } else if (foundAssignNames) {
+            throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+          }
+          foundCopyTarget = true;
+          if (!component.doenetAttributes) {
+            component.doenetAttributes = {};
+          }
+          if (!haveComposite) {
+            component.props.createComponentOfType = originalType;
+            component.doenetAttributes.nameBecomesAssignNames = true;
+          }
+          component.componentType = "copy";
+          component.props.target = component.props[prop];
+          if (typeof component.props.target !== "string") {
+            throw Error(`Must specify value for copyTarget.  Found in component of type ${originalType}${indexRangeString(component)}`)
+          }
+          delete component.props[prop];
+
+          component.doenetAttributes.fromCopyTarget = true;
+          component.doenetAttributes.createNameFromComponentType = originalType;
+        } else if (lowerCaseProp === "copyfromuri") {
+          if (foundCopyFromURI) {
+            throw Error(`Cannot repeat attribute ${prop}.  Found in component type ${originalType}${indexRangeString(component)}`)
+          } else if (foundCopyTarget) {
+            throw Error(`Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(component)}`)
+          } else if (foundAssignNames) {
+            throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+          }
+          foundCopyFromURI = true;
+          if (!component.doenetAttributes) {
+            component.doenetAttributes = {};
+          }
+          if (!haveComposite) {
+            component.props.createComponentOfType = originalType;
+            component.doenetAttributes.nameBecomesAssignNames = true;
+          }
+          component.componentType = "copy";
+          component.props.uri = component.props[prop];
+          if (typeof component.props.uri !== "string") {
+            throw Error(`Must specify value for copyFromURI.  Found in component of type ${originalType}${indexRangeString(component)}`)
+          }
+          delete component.props[prop];
+          component.doenetAttributes.fromCopyFromURI = true;
+          component.doenetAttributes.createNameFromComponentType = originalType;
+        } else if (lowerCaseProp === "assignnames" && !haveComposite) {
+          if (foundCopyTarget || foundCopyFromURI) {
+            throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+          }
+          foundAssignNames = true;
+        }
+      }
+    }
+
+    if (component.children) {
+      copyTargetOrFromURIAttributeCreatesCopyComponent(component.children, isCompositeComponent);
+    }
+  }
+}
+
 function createAttributesFromProps(serializedComponents, componentInfoObjects) {
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
@@ -326,7 +435,7 @@ function createAttributesFromProps(serializedComponents, componentInfoObjects) {
         if (attrObj) {
 
           if (propName in attributes) {
-            throw Error(`Cannot repeat prop ${propName}.  Found in component type ${component.componentType}${indexRangeString(component)}`)
+            throw Error(`Cannot repeat attribute ${propName}.  Found in component type ${component.componentType}${indexRangeString(component)}`)
           }
 
           attributes[propName] = componentFromAttribute({
@@ -1302,6 +1411,9 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       attributes = serializedComponent.attributes = {};
     }
 
+    if (doenetAttributes.createNameFromComponentType) {
+      componentType = doenetAttributes.createNameFromComponentType;
+    }
 
     let prescribedName = doenetAttributes.prescribedName;
     let assignNames = doenetAttributes.assignNames;
@@ -1341,7 +1453,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             prescribedName = props[key];
             delete props[key];
           } else {
-            throw Error(`Cannot define name twice.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+            throw Error(`Cannot define name twice.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
           }
         } else if (lowercaseKey === "assignnames") {
           if (assignNames === undefined) {
@@ -1349,21 +1461,21 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             if (result.success) {
               assignNames = result.pieces;
             } else {
-              throw Error(`Invalid format for assignnames.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+              throw Error(`Invalid format for assignnames.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
             }
             delete props[key];
           } else {
-            throw Error(`Cannot define assignNames twice for a component.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+            throw Error(`Cannot define assignNames twice for a component.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
           }
         } else if (lowercaseKey === "target") {
           if (target === undefined) {
             if (typeof props[key] !== "string") {
-              throw Error(`Must specify value for target.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+              throw Error(`Must specify value for target.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
             }
             target = props[key].trim();
             delete props[key];
           } else {
-            throw Error(`Cannot define target twice for a component.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+            throw Error(`Cannot define target twice for a component.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
           }
         }
       }
@@ -1375,10 +1487,10 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (!prescribedNameFromDoenetAttributes && !doenetAttributes.createdFromSugar) {
 
         if (!(/[a-zA-Z]/.test(prescribedName.substring(0, 1)))) {
-          throw Error(`Invalid component name: ${prescribedName}.  Component name must begin with a letter.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+          throw Error(`Invalid component name: ${prescribedName}.  Component name must begin with a letter.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
         }
         if (!(/^[a-zA-Z0-9_\-]+$/.test(prescribedName))) {
-          throw Error(`Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+          throw Error(`Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
         }
       }
 
@@ -1409,7 +1521,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
       let assignNamesToReplacements = componentClass.assignNamesToReplacements;
       if (!assignNamesToReplacements) {
-        throw Error(`Cannot assign names for component type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`);
+        throw Error(`Cannot assign names for component type ${componentType}${indexRangeString(serializedComponent)}`);
       }
 
       // assignNames was specified
@@ -1417,18 +1529,20 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       doenetAttributes.assignNames = assignNames;
 
       if (!doenetAttributes.createUniqueAssignNames) {
-        let flattedNames = flattenDeep(assignNames);
-        for (let name of flattedNames) {
-          if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
-            throw Error(`All assigned names must begin with a letter.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`);
-          }
-          if (!(/^[a-zA-Z0-9_\-]+$/.test(name))) {
-            throw Error(`Assigned names can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`);
+        let flattenedNames = flattenDeep(assignNames);
+        if (!doenetAttributes.fromCopyTarget && !doenetAttributes.fromCopyFromURI) {
+          for (let name of flattenedNames) {
+            if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
+              throw Error(`All assigned names must begin with a letter.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`);
+            }
+            if (!(/^[a-zA-Z0-9_\-]+$/.test(name))) {
+              throw Error(`Assigned names can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`);
+            }
           }
         }
         // check if unique names
-        if (flattedNames.length !== new Set(flattedNames).size) {
-          throw Error(`Duplicate assigned names.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`);
+        if (flattenedNames.length !== new Set(flattenedNames).size) {
+          throw Error(`Duplicate assigned names.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`);
         }
       }
     }
@@ -1473,12 +1587,40 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       }
     }
 
+    if (doenetAttributes.nameBecomesAssignNames) {
+      if (newNamespace) {
+        // delete newNamespace from target but make it assignNewNamespaces
+        attributes.assignNewNamespaces = { primitive: true };
+        delete attributes.newNamespace;
+        newNamespace = false;
+      }
+      assignNames = doenetAttributes.assignNames = [prescribedName];
+
+      // delete nameBecomesAssignNames so that copies
+      // or further applications of createComponentNames
+      // do not repeat this process and make assignNames be the randomly generated name
+      delete doenetAttributes.nameBecomesAssignNames;
+
+      // create unique name for copy
+      let longNameId = parentName + "|createUniqueName|";
+      doenetAttributes.createUniqueName = true;
+      delete doenetAttributes.prescribedName;
+
+      if (serializedComponent.downstreamDependencies) {
+        longNameId += JSON.stringify(serializedComponent.downstreamDependencies);
+      } else {
+        longNameId += componentInd + "|" + indOffset + "|" + createNameContext;
+      }
+
+      prescribedName = createUniqueName("copy", longNameId);
+    }
+
     componentName += prescribedName;
 
     serializedComponent.componentName = componentName;
     if (prescribedName) {
       if (prescribedName in currentNamespace.namesUsed) {
-        throw Error(`Duplicate component name ${componentName}.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+        throw Error(`Duplicate component name ${componentName}.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
       }
       currentNamespace.namesUsed[prescribedName] = true;
     }
@@ -1489,7 +1631,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (assignNames) {
         for (let name of flattenDeep(assignNames)) {
           if (name in currentNamespace.namesUsed) {
-            throw Error(`Duplicate component name ${name} (from assignNames of ${componentName}).  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+            throw Error(`Duplicate component name ${name} (from assignNames of ${componentName}).  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
           }
           currentNamespace.namesUsed[name] = true;
         }
@@ -1538,7 +1680,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       }
 
       if (target.includes('|')) {
-        throw Error(`target cannot include |.  Found in component of type ${serializedComponent.componentType}${indexRangeString(serializedComponent)}`)
+        throw Error(`target cannot include |.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
       }
 
       // convert target to full name
@@ -1988,6 +2130,7 @@ export function getNumberOfVariants({ serializedComponent, componentInfoObjects 
 
 export function processAssignNames({
   assignNames = [],
+  assignNewNamespaces = false,
   serializedComponents,
   parentName,
   parentCreatesNewNamespace,
@@ -2108,6 +2251,13 @@ export function processAssignNames({
           name = [name];
         }
       }
+    }
+
+    if (assignNewNamespaces) {
+      if (!component.attributes) {
+        component.attributes = {};
+      }
+      component.attributes.newNamespace = { primitive: true }
     }
 
     if (Array.isArray(name)) {
@@ -2316,7 +2466,6 @@ function renameMatchingTNames(component, doenetAttributesByTargetComponentName, 
 
   if (component.originalName &&
     doenetAttributesByTargetComponentName
-
     && component.componentName !== component.originalName) {
     // we have a component who has been named and there are other components
     // whose targetComponentName refers to this component
@@ -2431,7 +2580,7 @@ export function setTNamesToAbsolute(components) {
   }
 }
 
-export function restrictTNamesToNamespace({ components, namespace, parentNamespace, parentIsCopy = false }) {
+export function restrictTNamesToNamespace({ components, namespace, parentNamespace, parentIsCopy = false, invalidateReferencesToBaseNamespace = false }) {
 
   if (parentNamespace === undefined) {
     parentNamespace = namespace;
@@ -2446,9 +2595,43 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
 
       if (target[0] === "/") {
         if (target.substring(0, nSpace) !== namespace) {
-          let targetComponentName = namespace + target.substring(1);
+          // if left part of target matches the left part of the namespace, delete matched part from larget
+          // else if left part of target matches the right part of the namespace, delete matched part
+
+          let namespaceParts = namespace.split("/").slice(1);
+          let targetParts = target.split("/").slice(1);;
+          let foundAMatch = false;
+          let targetComponentName = namespace + target.slice(1);
+
+          while (namespaceParts.length > 0 && namespaceParts[0] === targetParts[0]) {
+            namespaceParts = namespaceParts.slice(1);
+            targetParts = targetParts.slice(1);
+            foundAMatch = true;
+          }
+
+          if (foundAMatch) {
+            targetComponentName = namespace + targetParts.join("/");
+          } else {
+
+            let namespaceParts = namespace.split("/").slice(1);
+            for (let ind = 1; ind < namespaceParts.length; ind++) {
+              let namespacePiece = "/" + namespaceParts.slice(ind).join("/");
+              if (target.substring(0, namespacePiece.length) === namespacePiece) {
+                targetComponentName = "/" + namespaceParts.slice(0, ind).join("/") + target;
+                break;
+              }
+            }
+
+          }
+
           component.doenetAttributes.target = targetComponentName;
           component.doenetAttributes.targetComponentName = targetComponentName;
+        } else if (invalidateReferencesToBaseNamespace) {
+          let lastSlash = target.lastIndexOf("/");
+          if (target.slice(0, lastSlash + 1) === namespace) {
+            component.doenetAttributes.target = "";
+            component.doenetAttributes.targetComponentName = "";
+          }
         }
       } else if (target.substring(0, 3) === "../") {
         let tNamePart = target;
@@ -2468,7 +2651,14 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
             break;
           }
         }
-
+        if (invalidateReferencesToBaseNamespace) {
+          let targetComponentName = component.doenetAttributes.targetComponentName;
+          let lastSlash = targetComponentName.lastIndexOf("/");
+          if (targetComponentName.slice(0, lastSlash + 1) === namespace) {
+            component.doenetAttributes.target = "";
+            component.doenetAttributes.targetComponentName = "";
+          }
+        }
 
       }
     }
@@ -2488,7 +2678,8 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
         components: component.children,
         namespace: adjustedNamespace,
         parentNamespace: namespaceForChildren,
-        parentIsCopy: component.componentType === "copy"
+        parentIsCopy: component.componentType === "copy",
+        invalidateReferencesToBaseNamespace
       })
     }
     if (component.attributes) {
@@ -2496,11 +2687,13 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
         let attribute = component.attributes[attrName];
         if (attribute.component) {
           restrictTNamesToNamespace({
-            components: [attribute.component], namespace, parentNamespace
+            components: [attribute.component], namespace, parentNamespace,
+            invalidateReferencesToBaseNamespace
           })
         } else if (attribute.childrenForComponent) {
           restrictTNamesToNamespace({
-            components: attribute.childrenForComponent, namespace, parentNamespace
+            components: attribute.childrenForComponent, namespace, parentNamespace,
+            invalidateReferencesToBaseNamespace
           })
         }
       }
