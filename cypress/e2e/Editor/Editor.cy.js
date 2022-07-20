@@ -16,6 +16,7 @@ describe('doenetEditor test', function () {
   })
   beforeEach(() => {
     cy.signin({userId});
+    cy.clearIndexedDB();
     cy.clearAllOfAUsersActivities({userId})
     cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId});
     cy.visit(`http://localhost/course?tool=editor&doenetId=${doenetId}&pageId=${pageDoenetId}`)
@@ -53,11 +54,11 @@ it('Page Variant Menu Test',()=>{
 
 })
 
-it.only('Assign Activity Test using Toast',()=>{
+it('Assign Activity Test using Toast',()=>{
   const doenetMLString = '<problem name="problem1"><answer>42</answer></problem>'
 
   cy.get('.cm-content').type(doenetMLString)
-  cy.get('[data-test="Viewer Update Button"]').click();
+  // cy.get('[data-test="Viewer Update Button"]').click();
 
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
@@ -66,8 +67,6 @@ it.only('Assign Activity Test using Toast',()=>{
 
   cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
   cy.get('#\\/problem1_title').contains('Problem 1')
-
-
 
 })
 

@@ -18,6 +18,7 @@ describe('doenetEditor test', function () {
   })
   beforeEach(() => {
     cy.signin({userId});
+    cy.clearIndexedDB();
     cy.clearAllOfAUsersActivities({userId})
     // cy.createActivity({courseId,doenetId:doenetId1,parentDoenetId:courseId,pageDoenetId:pageDoenetId1});
     // cy.createActivity({courseId,doenetId:doenetId2,parentDoenetId:courseId,pageDoenetId:pageDoenetId2});
