@@ -20437,4 +20437,58 @@ describe('Answer Tag Tests', function () {
     })
   });
 
+  it('derivative works without award', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>What is the derivative of <function name="f">x^2</function>?
+  <answer><derivative>$f</derivative</answer></p>
+  <p>Submitted response: <aslist><math name="sr" prop="submittedResponses" copyTarget="_answer1" /></aslist></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.log("Correct answer in mathinput")
+      cy.get(mathinputAnchor).type(`2x{enter}`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('2x')
+      })
+
+
+      cy.log("Incorrect answer in mathinput")
+      cy.get(mathinputAnchor).type(`{end}x/2{enter}`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('2xx2')
+      })
+
+
+
+    })
+  });
+
 })
