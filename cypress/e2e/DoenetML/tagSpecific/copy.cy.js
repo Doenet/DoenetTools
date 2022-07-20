@@ -9019,5 +9019,83 @@ describe('Copy Tag Tests', function () {
     });
   });
 
+  it('copyTarget and createComponentOfType wrap to match specified type', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <mathinput name="mi" prefill="2" />
+        
+    <math name="m1" copyTarget="mi" />
+    <copy target="mi" assignNames="m2" createComponentOfType="math" />
+
+    <number name="n1" copyTarget="mi" />
+    <copy target="mi" assignNames="n2" createComponentOfType="number" />
+
+    <point name="P">(x,y)</point>
+
+    <coords name="c1" copyTarget="P" />
+    <copy assignNames="c2" target="P" createComponentOfType="coords" />
+
+    <math name="mc1" copyTarget="P" />
+    <copy assignNames="mc2" target="P" createComponentOfType="math" />
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/m1 .mjx-mrow')).eq(0).contains('2');
+    cy.get(cesc('#/m2 .mjx-mrow')).eq(0).contains('2');
+
+    cy.get(cesc('#/n1')).contains('2');
+    cy.get(cesc('#/n2')).contains('2');
+
+    cy.get(cesc('#/c1 .mjx-mrow')).eq(0).contains('(x,y)');
+    cy.get(cesc('#/c2 .mjx-mrow')).eq(0).contains('(x,y)');
+
+    cy.get(cesc('#/mc1 .mjx-mrow')).eq(0).contains('(x,y)');
+    cy.get(cesc('#/mc2 .mjx-mrow')).eq(0).contains('(x,y)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m1"].stateValues.value).eq(2);
+      expect(stateVariables["/m2"].stateValues.value).eq(2);
+
+      expect(stateVariables["/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/n2"].stateValues.value).eq(2);
+
+      expect(stateVariables["/c1"].stateValues.value).eqls(["vector", "x", "y"]);
+      expect(stateVariables["/c2"].stateValues.value).eqls(["vector", "x", "y"]);
+
+      expect(stateVariables["/mc1"].stateValues.value).eqls(["vector", "x", "y"]);
+      expect(stateVariables["/mc2"].stateValues.value).eqls(["vector", "x", "y"]);
+
+    });
+
+
+    cy.log('enter a')
+    cy.get(cesc('#/mi') + " textarea").type("{end}{backspace}a{enter}", { force: true });
+
+    cy.get(cesc('#/m1 .mjx-mrow')).eq(0).contains('a');
+    cy.get(cesc('#/m2 .mjx-mrow')).eq(0).contains('a');
+
+    cy.get(cesc('#/n1')).contains('NaN');
+    cy.get(cesc('#/n2')).contains('NaN');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m1"].stateValues.value).eq('x');
+      expect(stateVariables["/m2"].stateValues.value).eq('x');
+
+      expect(stateVariables["/n1"].stateValues.value).eqls(NaN);
+      expect(stateVariables["/n2"].stateValues.value).eqls(NaN);
+
+
+    });
+
+  });
 
 });
