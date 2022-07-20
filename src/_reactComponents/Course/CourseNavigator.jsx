@@ -524,9 +524,8 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     <div 
     key={`Row${doenetId}`}
     role="button"
-    data-test="courseItem"
     tabIndex={0}
-    className="noselect nooutline"
+    className="navigationRow noselect nooutline"
     style={{
       cursor: 'pointer',
       padding: '8px',
@@ -555,7 +554,9 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
         // marginBottom: '8px',
       }}
     >
-      <span style={{ 
+      <span 
+       className='navigationColumn1'
+      style={{ 
         marginLeft: `${indentLevel * indentPx}px`
       }}>
 
@@ -584,10 +585,10 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
         <span style={{marginLeft:'4px'}} data-test="rowLabel">{label} </span>
       </p>
       </span>
-    {numberOfVisibleColumns > 1 ? <span style={{ textAlign: 'center' }}>{columnsJSX[0]}</span> : null}
-    {numberOfVisibleColumns > 2 ? <span style={{ textAlign: 'center' }}>{columnsJSX[1]}</span> : null}
-    {numberOfVisibleColumns > 3 ? <span style={{ textAlign: 'center' }}>{columnsJSX[2]}</span> : null}
-    {numberOfVisibleColumns > 4 ? <span style={{ textAlign: 'center' }}>{columnsJSX[3]}</span> : null}
+    {numberOfVisibleColumns > 1 ? <span className='navigationColumn2' style={{ textAlign: 'center' }}>{columnsJSX[0]}</span> : null}
+    {numberOfVisibleColumns > 2 ? <span className='navigationColumn3' style={{ textAlign: 'center' }}>{columnsJSX[1]}</span> : null}
+    {numberOfVisibleColumns > 3 ? <span className='navigationColumn4' style={{ textAlign: 'center' }}>{columnsJSX[2]}</span> : null}
+    {numberOfVisibleColumns > 4 ? <span className='navigationColumn5' style={{ textAlign: 'center' }}>{columnsJSX[3]}</span> : null}
       </div>
     </div>
   )

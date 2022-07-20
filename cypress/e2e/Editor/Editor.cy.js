@@ -78,7 +78,7 @@ it('Assign Activity Test using Breadcrumbs',()=>{
   cy.get('[data-test="Assign Activity"]').click();
   cy.get('[data-test="Crumb Menu"]').click({force:true});
   cy.get('[data-test="Crumb Menu Item 2"]').click();
-  cy.get('[data-test="courseItem"]').click();
+  // cy.get('[data-test="navigationItem1"]').click(); //TODO: Fix this
   cy.get('[data-test="View Assigned Activity"]').click();
   cy.get('#\\/problem1_title').contains('Problem 1')
 })

@@ -737,9 +737,22 @@ export const useCourse = (courseId) => {
     return {content:null,previousDoenetId:null};
   }
 
+  const defaultFailure = useCallback(
+    (err) => {
+      addToast(`${err}`, toastType.ERROR);
+    },
+    [addToast],
+  );
+
   const create = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({ itemType, parentDoenetId, previousDoenetId, previousContainingDoenetId }) => {
+      async ({ itemType, 
+        parentDoenetId, 
+        previousDoenetId, 
+        previousContainingDoenetId
+         },
+         successCallback,
+         failureCallback = defaultFailure) => {
 
         let authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
         let newAuthorItemDoenetIds = [...authorItemDoenetIds];
@@ -1199,24 +1212,18 @@ export const useCourse = (courseId) => {
                 
             }
           }
-
-        
           // // console.log("updatedContainingObj",updatedContainingObj)
-
-
-           
+          
+          
+          
         }
+        successCallback(); //TODO: only call when is a success
         return newDoenetId;
       
       },
   );
 
-  const defaultFailure = useCallback(
-    (err) => {
-      addToast(`${err}`, toastType.ERROR);
-    },
-    [addToast],
-  );
+ 
 
   const modifyCourse = useRecoilCallback(
     ({ set }) =>
