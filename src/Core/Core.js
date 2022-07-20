@@ -136,6 +136,7 @@ export default class Core {
         }))
       .then(this.finishCoreConstruction)
       .catch(e => {
+        // throw e;
         postMessage({
           messageType: "inErrorState",
           coreId: this.coreId,
@@ -2105,7 +2106,16 @@ export default class Core {
       let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
       let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
       let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
-
+      let mediatingSubAssignNames = mediatingAssignNames?.some(Array.isArray);
+      let assignNewNamespaces = compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive;
+      let target = this._components[compositeMediatingTheShadow.doenetAttributes.targetComponentName];
+      let nonCompositeTargetWithNewNamespace;
+      if (target) {
+        nonCompositeTargetWithNewNamespace = !this.componentInfoObjects.isCompositeComponent({
+          componentType: target.componentType,
+          includeNonStandard: false
+        }) && target.attributes.newNamespace?.primitive;
+      }
 
       // Note: originalNamesAreConsistent means that processAssignNames should leave
       // the original names in the serializedComponents as is
@@ -2115,16 +2125,28 @@ export default class Core {
 
       // We set originalNamesAreConsistent to true if we can be sure
       // that we won't create any duplicate names.
-      // If the component begin shadowed has a newNamespace,
+      // If the component shadowing (or the original non-composite target) has a newNamespace,
+      // or the composite mediating the shadow is assigning new namespaces,
       // or we get a new namespace from the composite mediating the shadow, 
       // that will, in most cases, be enough to prevent name collisions.
-      // The one edge case is when the composite mediating the shadow also assigns names,
-      // in which case the assigned names could collide with the original names,
+
+      // One edge case is when the composite mediating the shadow also assigns names,
+      // in which case the assigned names could collide with the original names
+      // even if it makes a new namespace,
       // so we can't keep the original names.
 
+      // Another edge case is when the composite mediating the shadow
+      // assign names to sub-replacements.
+      // In that case, all bets are off and we cannot determine if those names
+      // could collide with existing names, so we can't keep the original names.
 
-      let originalNamesAreConsistent = newNamespace
-        || (mediatingNewNamespace && !mediatingAssignNames);
+
+      let originalNamesAreConsistent = !mediatingSubAssignNames && (
+        newNamespace || nonCompositeTargetWithNewNamespace
+        || (mediatingNewNamespace && !mediatingAssignNames)
+        || assignNewNamespaces
+      );
+
 
       let assignNames = component.doenetAttributes.assignNames;
       if (assignNames && await component.stateValues.addLevelToAssignNames) {
@@ -7983,7 +8005,7 @@ export default class Core {
     this.updateInfo.componentsToUpdateActionChaining = {};
 
     let id = componentName;
-    if(triggeringAction) {
+    if (triggeringAction) {
       id += "|" + triggeringAction
     }
 
@@ -8239,7 +8261,7 @@ export default class Core {
           event.context.additionalItemCreditAchieved = {};
           for (let itemNumber of itemsSubmitted) {
             event.context.additionalItemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
-        }
+          }
         }
         event.context.pageCreditAchieved = await this.document.stateValues.creditAchieved;
       }
@@ -8459,11 +8481,11 @@ export default class Core {
     let promise;
 
     if (Object.keys(infoToSend).length > 0) {
-        let event = {
+      let event = {
         object: { componentName: this.documentName, componentType: "document" },
-          verb: "isVisible",
+        verb: "isVisible",
         result: infoToSend
-        }
+      }
 
       promise = new Promise((resolve, reject) => {
 
@@ -8492,7 +8514,7 @@ export default class Core {
     clearTimeout(this.visibilityInfo.saveTimerId);
     clearTimeout(this.visibilityInfo.suspendTimerId);
     if (!this.visibilityInfo.suspended) {
-    this.visibilityInfo.suspended = true;
+      this.visibilityInfo.suspended = true;
       await this.sendVisibilityChangedEvents();
     }
   }

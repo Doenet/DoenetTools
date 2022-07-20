@@ -50,6 +50,7 @@ describe('Boolean Tag Tests', function () {
     <boolean name="t34"><number>0/0</number> = <math simplify>0/0</math></boolean>
     <boolean name="t35"><number>3/0</number> = <math simplify>4/0</math></boolean>
     <boolean name="t36"><number>3/-0</number> = <math simplify>-4/0</math></boolean>
+    <boolean name="t37">  true    </boolean>
 
     </p>
 
@@ -93,7 +94,7 @@ describe('Boolean Tag Tests', function () {
     cy.get('#\\/_text1').should('contain.text', 'a')
 
 
-    let nTrues = 36, nFalses = 31;
+    let nTrues = 37, nFalses = 31;
     for (let i = 1; i <= nTrues; i++) {
       cy.get(`#\\/t${i}`).should('have.text', "true")
     }
