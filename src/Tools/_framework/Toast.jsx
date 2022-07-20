@@ -192,6 +192,7 @@ function ToastMessage({
         <Life style={{ right: props.life }} />
         <p>{children}</p>
         <Button
+        data-test="toast cancel button"
           onClick={(e) => {
             e.stopPropagation();
             ref.current.cancel();

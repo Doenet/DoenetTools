@@ -34,6 +34,8 @@ describe('doenetEditor test', function () {
 it('Test Add Activity',()=>{
   cy.get('[data-test="Add Activity Button"]').click();
   cy.contains('[data-test="toast"]','Activity Created!');
+  cy.get('[data-test="toast cancel button"]').click();
+
 
   cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
   cy.get('.navigationRow').eq(0).get('.navigationColumn1').contains('Untitled Activity');
@@ -44,6 +46,7 @@ it('Test Add Activity',()=>{
 it('Test Add Collection',()=>{
   cy.get('[data-test="Add Collection Button"]').click();
   cy.contains('[data-test="toast"]','Collection Created!');
+  cy.get('[data-test="toast cancel button"]').click();
 
   cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
   cy.get('.navigationRow').eq(0).get('.navigationColumn1').contains('Untitled Collection');
@@ -53,6 +56,7 @@ it('Test Add Collection',()=>{
 it('Test Add Section',()=>{
   cy.get('[data-test="Add Section Button"]').click();
   cy.contains('[data-test="toast"]','Section Created!');
+  cy.get('[data-test="toast cancel button"]').click();
 
   cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
   cy.get('.navigationRow').eq(0).get('.navigationColumn1').contains('Untitled Section');
@@ -62,12 +66,15 @@ it('Test Add Section',()=>{
 it('Test Add a Activity, Collection and Section',()=>{
   cy.get('[data-test="Add Activity Button"]').click();
   cy.contains('[data-test="toast"]','Activity Created!');
+  cy.get('[data-test="toast cancel button"]').click();
 
   cy.get('[data-test="Add Collection Button"]').click();
   cy.contains('[data-test="toast"]','Collection Created!');
+  cy.get('[data-test="toast cancel button"]').click();
 
   cy.get('[data-test="Add Section Button"]').click();
   cy.contains('[data-test="toast"]','Section Created!');
+  cy.get('[data-test="toast cancel button"]').click();
 
   cy.get('.navigationRow').should('have.length',3); //Need this to wait for the 3rd one to appear
   cy.get('.navigationRow').eq(0).get('.navigationColumn1').contains('Untitled Activity');

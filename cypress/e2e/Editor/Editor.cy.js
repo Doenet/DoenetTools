@@ -53,15 +53,17 @@ it('Page Variant Menu Test',()=>{
 
 })
 
-it('Assign Activity Test using Toast',()=>{
+it.only('Assign Activity Test using Toast',()=>{
   const doenetMLString = '<problem name="problem1"><answer>42</answer></problem>'
 
   cy.get('.cm-content').type(doenetMLString)
-  // cy.get('[data-test="Viewer Update Button"]').click();
+  cy.get('[data-test="Viewer Update Button"]').click();
+
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
   cy.get('[data-test="toast"]').contains('Activity Assigned');
-  
+  cy.get('[data-test="toast cancel button"]').click();
+
   cy.visit(`http://localhost/course?tool=assignment&doenetId=${doenetId}`)
   cy.get('#\\/problem1_title').contains('Problem 1')
 
@@ -74,11 +76,15 @@ it('Assign Activity Test using Breadcrumbs',()=>{
   const doenetMLString = '<problem name="problem1"><answer>42</answer></problem>'
 
   cy.get('.cm-content').type(doenetMLString)
+  // cy.get('[data-test="Viewer Update Button"]').click(); //Shouldn't need to click the update button
   cy.get('[data-test="AssignmentSettingsMenu Menu"]').click();
   cy.get('[data-test="Assign Activity"]').click();
+  cy.get('[data-test="toast"]').contains('Activity Assigned');
+  cy.get('[data-test="toast cancel button"]').click();
   cy.get('[data-test="Crumb Menu"]').click({force:true});
   cy.get('[data-test="Crumb Menu Item 2"]').click();
-  // cy.get('[data-test="navigationItem1"]').click(); //TODO: Fix this
+  cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+  cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
   cy.get('[data-test="View Assigned Activity"]').click();
   cy.get('#\\/problem1_title').contains('Problem 1')
 })

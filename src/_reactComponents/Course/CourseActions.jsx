@@ -1469,13 +1469,13 @@ export const useCourse = (courseId) => {
         }
         //if not match then recurse into content
         let childContent = updateOrder({content:item.content,needleDoenetId,changesObj});
-        console.log(">>childContent",childContent)
-        console.log(">>nextContent",nextContent)
+        // console.log(">>childContent",childContent)
+        // console.log(">>nextContent",nextContent)
         if (childContent != null){
-          console.log("childContent",childContent)
+          // console.log("childContent",childContent)
           let nextOrderObj = {...item}
           nextOrderObj.content = childContent;
-          console.log(">>nextOrderObj",nextOrderObj)
+          // console.log(">>nextOrderObj",nextOrderObj)
           nextContent.splice(i,1,nextOrderObj);
           return nextContent;
         }
