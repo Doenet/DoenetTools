@@ -1258,14 +1258,26 @@ export default class Copy extends CompositeComponent {
 
       // console.warn(`Replacements from copy ${component.componentName} do not match the specified componentType and number of components`);
 
-      // since clearing out all replacements, reset all workspace variables
-      workspace.numReplacementsBySource = [];
-      workspace.numNonStringReplacementsBySource = [];
-      workspace.propVariablesCopiedBySource = [];
-      workspace.sourceNames = [];
-      workspace.uniqueIdentifiersUsedBySource = {};
 
-      let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[0] = [];
+      let wrapExistingReplacements = requiredLength === 1 && replacementTypes.length === 1
+        && !(replacementsToWithhold > 0) && workspace.sourceNames.length === 1;
+
+      let uniqueIdentifiersUsed, originalReplacements;
+
+      if(wrapExistingReplacements) {
+        originalReplacements = replacements;
+      } else {
+        // since clearing out all replacements, reset all workspace variables
+        workspace.numReplacementsBySource = [];
+        workspace.numNonStringReplacementsBySource = [];
+        workspace.propVariablesCopiedBySource = [];
+        workspace.sourceNames = [];
+        workspace.uniqueIdentifiersUsedBySource = {};
+
+        uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[0] = [];
+
+      }
+
       let newNamespace = component.attributes.newNamespace?.primitive;
 
       replacements = []
@@ -1281,13 +1293,17 @@ export default class Copy extends CompositeComponent {
         });
 
         let uniqueIdentifierBase = requiredComponentType + "|empty" + i;
-        let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+        let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, workspace.uniqueIdentifiersUsedBySource[0]);
         replacements.push({
           componentType: requiredComponentType,
           attributes: attributesFromComposite,
           uniqueIdentifier,
         });
 
+      }
+
+      if(wrapExistingReplacements) {
+        replacements[0].children = originalReplacements;
       }
 
       let processResult = serializeFunctions.processAssignNames({

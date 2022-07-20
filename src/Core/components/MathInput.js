@@ -386,7 +386,7 @@ export default class MathInput extends Input {
           let rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex());
           if (rawRendererValue === "\uff3f") {
             rawRendererValue = '';
-          } else if(dependencyValues.hideNaN && rawRendererValue === "NaN") {
+          } else if (dependencyValues.hideNaN && rawRendererValue === "NaN") {
             rawRendererValue = '';
           }
           return {
@@ -485,7 +485,7 @@ export default class MathInput extends Input {
             let desiredValue = stripLatex(desiredStateVariableValues.rawRendererValue.toLatex());
             if (desiredValue === "\uff3f") {
               desiredValue = '';
-            } else if(dependencyValues.hideNaN && desiredValue === "NaN") {
+            } else if (dependencyValues.hideNaN && desiredValue === "NaN") {
               desiredValue = '';
             }
             instructions.push({
@@ -628,5 +628,12 @@ export default class MathInput extends Input {
       this.coreFunctions.resolveAction({ actionId });
     }
   }
+
+  static adapters = [
+    {
+      stateVariable: "value",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+    }
+  ];
 
 }
