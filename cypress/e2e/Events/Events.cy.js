@@ -16,6 +16,7 @@ describe('doenet events test', function () {
   })
   beforeEach(() => {
     cy.signin({userId});
+    cy.clearIndexedDB();
     cy.clearAllOfAUsersActivities({userId})
     cy.createActivity({courseId,doenetId,parentDoenetId:courseId,pageDoenetId});
     cy.clearEvents({doenetId})
