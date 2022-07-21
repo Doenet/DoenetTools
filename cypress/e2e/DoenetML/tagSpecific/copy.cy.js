@@ -9098,4 +9098,484 @@ describe('Copy Tag Tests', function () {
 
   });
 
+
+  it('add children to invalid copyTarget', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g" copyTarget="invalid">
+      <point name="P" />
+    </graph>
+
+    <graph name="g2" copyTarget="invalid" newNamespace>
+      <point name="P" />
+    </graph>
+
+    <math name="Pcoords" copyTarget="P" />
+    <math name="g2Pcoords" copyTarget="g2/P" />
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/Pcoords') + ' .mjx-mrow').eq(0).contains('(0,0)');
+    cy.get(cesc('#/g2Pcoords') + ' .mjx-mrow').eq(0).contains('(0,0)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g"].activeChildren.length).eq(1);
+      expect(stateVariables["/g"].activeChildren[0].componentName).eq("/P");
+      expect(stateVariables["/P"].stateValues.xs).eqls([0, 0]);
+
+      expect(stateVariables["/g2"].activeChildren.length).eq(1);
+      expect(stateVariables["/g2"].activeChildren[0].componentName).eq("/g2/P");
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls([0, 0]);
+
+      expect(stateVariables["/Pcoords"].stateValues.value).eqls(["vector", 0, 0]);
+      expect(stateVariables["/g2Pcoords"].stateValues.value).eqls(["vector", 0, 0]);
+
+    });
+
+    cy.log(`move points`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: 5 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g2/P",
+        args: { x: 7, y: 6 }
+      })
+    })
+
+    cy.get(cesc('#/g2Pcoords') + ' .mjx-mrow').should('contain.text', '(7,6)');
+    cy.get(cesc('#/Pcoords') + ' .mjx-mrow').should('contain.text', '(3,5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.xs).eqls([3, 5]);
+
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls([7, 6]);
+
+      expect(stateVariables["/Pcoords"].stateValues.value).eqls(["vector", 3, 5]);
+      expect(stateVariables["/g2Pcoords"].stateValues.value).eqls(["vector", 7, 6]);
+
+    });
+
+
+  });
+
+  it('add children with copyTarget, different newNamespace combinations', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g1">
+      <point name="P1">(1,2)</point>
+    </graph>
+
+    <graph name="g1a" copyTarget="g1">
+      <vector name="v1">(4,5)</vector>
+    </graph>
+
+    <math name="P1coords" copyTarget="P1" />
+    <math name="v1Displacement" copyTarget="v1" />
+
+    <graph name="g2">
+      <point name="P2">(1,2)</point>
+    </graph>
+
+    <graph name="g2a" copyTarget="g2" newNamespace>
+      <vector name="v2">(4,5)</vector>
+    </graph>
+
+    <math name="P2coords" copyTarget="P2" />
+    <math name="P2acoords" copyTarget="g2a/P2" />
+    <math name="v2Displacement" copyTarget="g2a/v2" />
+
+    <graph name="g3" newNamespace>
+      <point name="P3">(1,2)</point>
+    </graph>
+
+    <graph name="g3a" copyTarget="g3" newNamespace>
+      <vector name="v3">(4,5)</vector>
+    </graph>
+
+    <math name="P3coords" copyTarget="g3/P3" />
+    <math name="P3acoords" copyTarget="g3a/P3" />
+    <math name="v3Displacement" copyTarget="g3a/v3" />
+
+    <graph name="g4" newNamespace>
+      <point name="P4">(1,2)</point>
+    </graph>
+
+    <graph name="g4a" copyTarget="g4">
+      <vector name="v4">(4,5)</vector>
+    </graph>
+
+    <math name="P4coords" copyTarget="g4/P4" />
+    <math name="P4acoords" copyTarget="g4a/P4" />
+    <math name="v4Displacement" copyTarget="v4" />
+
+
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/v1Displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+
+    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/v2Displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+
+    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/v3Displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+
+    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/v4Displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+
+    let P1aName;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g1"].activeChildren.length).eq(1);
+      expect(stateVariables["/g1"].activeChildren[0].componentName).eq("/P1");
+      expect(stateVariables["/P1"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/g1a"].activeChildren.length).eq(2);
+      expect(stateVariables["/g1a"].activeChildren[1].componentName).eq("/v1");
+      P1aName = stateVariables["/g1a"].activeChildren[0].componentName
+      expect(stateVariables[P1aName].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/v1"].stateValues.displacement).eqls([4, 5]);
+      expect(stateVariables["/P1coords"].stateValues.value).eqls(["vector", 1, 2]);
+      expect(stateVariables["/v1Displacement"].stateValues.value).eqls(["vector", 4, 5]);
+
+      expect(stateVariables["/g2"].activeChildren.length).eq(1);
+      expect(stateVariables["/g2"].activeChildren[0].componentName).eq("/P2");
+      expect(stateVariables["/P2"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/g2a"].activeChildren.length).eq(2);
+      expect(stateVariables["/g2a"].activeChildren[0].componentName).eq("/g2a/P2");
+      expect(stateVariables["/g2a"].activeChildren[1].componentName).eq("/g2a/v2");
+      expect(stateVariables["/g2a/P2"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/g2a/v2"].stateValues.displacement).eqls([4, 5]);
+      expect(stateVariables["/P2coords"].stateValues.value).eqls(["vector", 1, 2]);
+      expect(stateVariables["/P2acoords"].stateValues.value).eqls(["vector", 1, 2]);
+      expect(stateVariables["/v2Displacement"].stateValues.value).eqls(["vector", 4, 5]);
+
+      expect(stateVariables["/g3"].activeChildren.length).eq(1);
+      expect(stateVariables["/g3"].activeChildren[0].componentName).eq("/g3/P3");
+      expect(stateVariables["/g3/P3"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/g3a"].activeChildren.length).eq(2);
+      expect(stateVariables["/g3a"].activeChildren[0].componentName).eq("/g3a/P3");
+      expect(stateVariables["/g3a"].activeChildren[1].componentName).eq("/g3a/v3");
+      expect(stateVariables["/g3a/P3"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/g3a/v3"].stateValues.displacement).eqls([4, 5]);
+      expect(stateVariables["/P3coords"].stateValues.value).eqls(["vector", 1, 2]);
+      expect(stateVariables["/P3acoords"].stateValues.value).eqls(["vector", 1, 2]);
+      expect(stateVariables["/v3Displacement"].stateValues.value).eqls(["vector", 4, 5]);
+
+      expect(stateVariables["/g4"].activeChildren.length).eq(1);
+      expect(stateVariables["/g4"].activeChildren[0].componentName).eq("/g4/P4");
+      expect(stateVariables["/g4/P4"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/g4a"].activeChildren.length).eq(2);
+      expect(stateVariables["/g4a"].activeChildren[0].componentName).eq("/g4a/P4");
+      expect(stateVariables["/g4a"].activeChildren[1].componentName).eq("/v4");
+      expect(stateVariables["/g4a/P4"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/v4"].stateValues.displacement).eqls([4, 5]);
+      expect(stateVariables["/P4coords"].stateValues.value).eqls(["vector", 1, 2]);
+      expect(stateVariables["/P4acoords"].stateValues.value).eqls(["vector", 1, 2]);
+      expect(stateVariables["/v4Displacement"].stateValues.value).eqls(["vector", 4, 5]);
+
+    });
+
+    cy.log(`move points`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P1",
+        args: { x: 3, y: 5 }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v1",
+        args: {
+          headcoords: [8, 7]
+        }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P2",
+        args: { x: 6, y: 0 }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g2a/v2",
+        args: {
+          headcoords: [9, 1]
+        }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g3/P3",
+        args: { x: 5, y: 8 }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/g3a/v3",
+        args: {
+          headcoords: [8, 6]
+        }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g4/P4",
+        args: { x: 0, y: 3 }
+      })
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v4",
+        args: {
+          headcoords: [7, 2]
+        }
+      })
+    })
+
+    cy.get(cesc('#/v4Displacement') + ' .mjx-mrow').should('contain.text', '(7,2)');
+
+    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(3,5)');
+    cy.get(cesc('#/v1Displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
+
+    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(6,0)');
+    cy.get(cesc('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(6,0)');
+    cy.get(cesc('#/v2Displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
+
+    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(5,8)');
+    cy.get(cesc('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(5,8)');
+    cy.get(cesc('#/v3Displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
+
+    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(0,3)');
+    cy.get(cesc('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(0,3)');
+    cy.get(cesc('#/v4Displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
+
+    cy.window().then(async (win) => {
+
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P1"].stateValues.xs).eqls([3, 5]);
+      expect(stateVariables[P1aName].stateValues.xs).eqls([3, 5]);
+      expect(stateVariables["/v1"].stateValues.displacement).eqls([8, 7]);
+      expect(stateVariables["/P1coords"].stateValues.value).eqls(["vector", 3, 5]);
+      expect(stateVariables["/v1Displacement"].stateValues.value).eqls(["vector", 8, 7]);
+
+      expect(stateVariables["/P2"].stateValues.xs).eqls([6, 0]);
+      expect(stateVariables["/g2a/P2"].stateValues.xs).eqls([6, 0]);
+      expect(stateVariables["/g2a/v2"].stateValues.displacement).eqls([9, 1]);
+      expect(stateVariables["/P2coords"].stateValues.value).eqls(["vector", 6, 0]);
+      expect(stateVariables["/P2acoords"].stateValues.value).eqls(["vector", 6, 0]);
+      expect(stateVariables["/v2Displacement"].stateValues.value).eqls(["vector", 9, 1]);
+
+      expect(stateVariables["/g3/P3"].stateValues.xs).eqls([5, 8]);
+      expect(stateVariables["/g3a/P3"].stateValues.xs).eqls([5, 8]);
+      expect(stateVariables["/g3a/v3"].stateValues.displacement).eqls([8, 6]);
+      expect(stateVariables["/P3coords"].stateValues.value).eqls(["vector", 5, 8]);
+      expect(stateVariables["/P3acoords"].stateValues.value).eqls(["vector", 5, 8]);
+      expect(stateVariables["/v3Displacement"].stateValues.value).eqls(["vector", 8, 6]);
+
+      expect(stateVariables["/g4/P4"].stateValues.xs).eqls([0, 3]);
+      expect(stateVariables["/g4a/P4"].stateValues.xs).eqls([0, 3]);
+      expect(stateVariables["/v4"].stateValues.displacement).eqls([7, 2]);
+      expect(stateVariables["/P4coords"].stateValues.value).eqls(["vector", 0, 3]);
+      expect(stateVariables["/P4acoords"].stateValues.value).eqls(["vector", 0, 3]);
+      expect(stateVariables["/v4Displacement"].stateValues.value).eqls(["vector", 7, 2]);
+
+    });
+
+
+    cy.log(`move shadowed points`)
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: P1aName,
+        args: { x: 2, y: 1 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g2a/P2",
+        args: { x: 5, y: 4 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g3a/P3",
+        args: { x: 9, y: 7 }
+      })
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g4a/P4",
+        args: { x: 7, y: 6 }
+      })
+    })
+
+    cy.get(cesc('#/P4coords') + ' .mjx-mrow').should('contain.text', '(7,6)');
+
+    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(2,1)');
+    cy.get(cesc('#/v1Displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
+
+    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(5,4)');
+    cy.get(cesc('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(5,4)');
+    cy.get(cesc('#/v2Displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
+
+    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(9,7)');
+    cy.get(cesc('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(9,7)');
+    cy.get(cesc('#/v3Displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
+
+    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(7,6)');
+    cy.get(cesc('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(7,6)');
+    cy.get(cesc('#/v4Displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
+
+    cy.window().then(async (win) => {
+
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P1"].stateValues.xs).eqls([2, 1]);
+      expect(stateVariables[P1aName].stateValues.xs).eqls([2, 1]);
+      expect(stateVariables["/v1"].stateValues.displacement).eqls([8, 7]);
+      expect(stateVariables["/P1coords"].stateValues.value).eqls(["vector", 2, 1]);
+      expect(stateVariables["/v1Displacement"].stateValues.value).eqls(["vector", 8, 7]);
+
+      expect(stateVariables["/P2"].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables["/g2a/P2"].stateValues.xs).eqls([5, 4]);
+      expect(stateVariables["/g2a/v2"].stateValues.displacement).eqls([9, 1]);
+      expect(stateVariables["/P2coords"].stateValues.value).eqls(["vector", 5, 4]);
+      expect(stateVariables["/P2acoords"].stateValues.value).eqls(["vector", 5, 4]);
+      expect(stateVariables["/v2Displacement"].stateValues.value).eqls(["vector", 9, 1]);
+
+      expect(stateVariables["/g3/P3"].stateValues.xs).eqls([9, 7]);
+      expect(stateVariables["/g3a/P3"].stateValues.xs).eqls([9, 7]);
+      expect(stateVariables["/g3a/v3"].stateValues.displacement).eqls([8, 6]);
+      expect(stateVariables["/P3coords"].stateValues.value).eqls(["vector", 9, 7]);
+      expect(stateVariables["/P3acoords"].stateValues.value).eqls(["vector", 9, 7]);
+      expect(stateVariables["/v3Displacement"].stateValues.value).eqls(["vector", 8, 6]);
+
+      expect(stateVariables["/g4/P4"].stateValues.xs).eqls([7, 6]);
+      expect(stateVariables["/g4a/P4"].stateValues.xs).eqls([7, 6]);
+      expect(stateVariables["/v4"].stateValues.displacement).eqls([7, 2]);
+      expect(stateVariables["/P4coords"].stateValues.value).eqls(["vector", 7, 6]);
+      expect(stateVariables["/P4acoords"].stateValues.value).eqls(["vector", 7, 6]);
+      expect(stateVariables["/v4Displacement"].stateValues.value).eqls(["vector", 7, 2]);
+
+    });
+
+  });
+
+  it.only('add children with copyTarget', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g" newNamespace>
+      <point name="P">(-1,2)</point>
+    </graph>
+
+    <graph name="g2" copyTarget="g">
+      <vector name="v">(4,5)</vector>
+    </graph>
+
+    <graph name="g3" copyTarget="g2">
+      <circle name="c" center="$(../g/P)" />
+    </graph>
+
+    <copy name="cp1" target="g" assignNames="g4" />
+    
+    <graph copyTarget="cp1" name="g5">
+      <circle name="c" />
+    </graph>
+    
+    <graph copyTarget="g4" name="g6">
+      <circle name="c" />
+    </graph>
+    
+    <copy target="g" assignNames="g7" name="cp2">
+      <circle name="c" />
+    </copy>
+
+    <graph copyTarget="cp2" name="g8">
+      <vector name="v" />
+    </graph>
+    
+    <graph copyTarget="g7" name="g9">
+      <vector name="v" />
+    </graph>
+
+    <math name="Pcoords" copyTarget="g/P" />
+    <math name="vDisplacement" copyTarget="g2/v" />
+
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/m1 .mjx-mrow')).eq(0).contains('2');
+    cy.get(cesc('#/m2 .mjx-mrow')).eq(0).contains('2');
+
+    cy.get(cesc('#/n1')).contains('2');
+    cy.get(cesc('#/n2')).contains('2');
+
+    cy.get(cesc('#/c1 .mjx-mrow')).eq(0).contains('(x,y)');
+    cy.get(cesc('#/c2 .mjx-mrow')).eq(0).contains('(x,y)');
+
+    cy.get(cesc('#/mc1 .mjx-mrow')).eq(0).contains('(x,y)');
+    cy.get(cesc('#/mc2 .mjx-mrow')).eq(0).contains('(x,y)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m1"].stateValues.value).eq(2);
+      expect(stateVariables["/m2"].stateValues.value).eq(2);
+
+      expect(stateVariables["/n1"].stateValues.value).eq(2);
+      expect(stateVariables["/n2"].stateValues.value).eq(2);
+
+      expect(stateVariables["/c1"].stateValues.value).eqls(["vector", "x", "y"]);
+      expect(stateVariables["/c2"].stateValues.value).eqls(["vector", "x", "y"]);
+
+      expect(stateVariables["/mc1"].stateValues.value).eqls(["vector", "x", "y"]);
+      expect(stateVariables["/mc2"].stateValues.value).eqls(["vector", "x", "y"]);
+
+    });
+
+
+    cy.log('enter a')
+    cy.get(cesc('#/mi') + " textarea").type("{end}{backspace}a{enter}", { force: true });
+
+    cy.get(cesc('#/m1 .mjx-mrow')).eq(0).contains('a');
+    cy.get(cesc('#/m2 .mjx-mrow')).eq(0).contains('a');
+
+    cy.get(cesc('#/n1')).contains('NaN');
+    cy.get(cesc('#/n2')).contains('NaN');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/m1"].stateValues.value).eq('x');
+      expect(stateVariables["/m2"].stateValues.value).eq('x');
+
+      expect(stateVariables["/n1"].stateValues.value).eqls(NaN);
+      expect(stateVariables["/n2"].stateValues.value).eqls(NaN);
+
+
+    });
+
+  });
+
 });

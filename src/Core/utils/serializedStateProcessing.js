@@ -1701,7 +1701,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
       // recurse on child, creating new namespace if specified
 
-      if (!newNamespace) {
+      if (!(newNamespace || attributes.assignNewNamespaces?.primitive)) {
         createComponentNames({
           serializedComponents: serializedComponent.children,
           namespaceStack,
@@ -1722,18 +1722,53 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           flattenDeep(assignNames).forEach(x => namesUsed[x] = true);
         }
 
+
         let newNamespaceInfo = { namespace: prescribedName, componentCounts: {}, namesUsed };
-        namespaceStack.push(newNamespaceInfo);
-        createComponentNames({
-          serializedComponents: serializedComponent.children,
-          namespaceStack,
-          componentInfoObjects,
-          parentDoenetAttributes: doenetAttributes,
-          parentName: componentName,
-          useOriginalNames,
-          doenetAttributesByTargetComponentName,
-        });
-        namespaceStack.pop();
+
+        let addingNewNamespace = true;
+        let remainingChildren = [...serializedComponent.children];
+
+        while (remainingChildren.length > 0) {
+          let nextChildren = [];
+
+          for (let child of remainingChildren) {
+            if (Boolean(child.doenetAttributes?.ignoreParentNewNamespace) === addingNewNamespace) {
+              break;
+            }
+            nextChildren.push(child);
+          }
+
+          remainingChildren.splice(0, nextChildren.length);
+
+          if (true || addingNewNamespace) {
+            namespaceStack.push(newNamespaceInfo);
+          }
+
+          if (!addingNewNamespace) {
+            console.log("would be not adding new namespace here")
+            console.log(deepClone(nextChildren));
+            console.log(deepClone(namespaceStack))
+            console.log(deepClone(newNamespaceInfo))
+          }
+
+          createComponentNames({
+            serializedComponents: nextChildren,
+            namespaceStack,
+            componentInfoObjects,
+            parentDoenetAttributes: doenetAttributes,
+            parentName: componentName,
+            useOriginalNames,
+            doenetAttributesByTargetComponentName,
+          });
+
+          if (true || addingNewNamespace) {
+            namespaceStack.pop();
+          }
+
+          addingNewNamespace = !addingNewNamespace;
+        }
+
+
       }
     }
 

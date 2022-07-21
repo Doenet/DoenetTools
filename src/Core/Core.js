@@ -2163,6 +2163,35 @@ export default class Core {
       });
 
       serializedReplacements = processResult.serializedComponents;
+
+      if (target.componentName === shadowedComposite.componentName
+        && compositeMediatingTheShadow.doenetAttributes.fromCopyTarget
+      ) {
+
+        let newReplacements = deepClone(compositeMediatingTheShadow.serializedChildren);
+        let componentClass = this.componentInfoObjects.allComponentClasses[component.componentType];
+
+        if (!componentClass.includeBlankStringChildren) {
+          newReplacements = newReplacements.filter(
+            x => typeof x !== "string" || x.trim() !== ""
+          )
+        }
+
+        let processResult = serializeFunctions.processAssignNames({
+          assignNames,
+          serializedComponents: newReplacements,
+          parentName:  component.componentName,
+          parentCreatesNewNamespace: compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive,
+          indOffset: serializedReplacements.length,
+          componentInfoObjects: this.componentInfoObjects,
+          originalNamesAreConsistent: true
+        });
+
+        serializedReplacements.push(...processResult.serializedComponents)
+
+      }
+
+
     } else {
       // since original names came from the targetComponent
       // we can use them only if we created a new namespace
