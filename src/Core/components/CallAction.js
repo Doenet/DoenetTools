@@ -361,6 +361,7 @@ export default class CallAction extends InlineComponent {
             componentType: this.componentType,
           },
         },
+        caseInsensitiveMatch: true,
       })
 
       await this.coreFunctions.triggerChainedActions({
