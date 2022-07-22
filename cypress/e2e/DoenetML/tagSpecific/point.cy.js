@@ -23,8 +23,8 @@ describe('Point Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-      <point label="P">(5,6)</point>
-      <point label="Q">(1, <copy prop="y" target="_point1" />)</point>
+      <point>(5,6)</point>
+      <point>(1, <copy prop="y" target="_point1" />)</point>
     </graph>
     <copy prop="coords" target="_point1" assignNames="coords1" />
     <copy prop="coords" target="_point2" assignNames="coords2" />
@@ -66,14 +66,65 @@ describe('Point Tag Tests', function () {
     })
   });
 
+  it('point sugar a copy, with labels', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point>(5,6)<label>P</label></point>
+      <point><label>Q</label>(1, <copy prop="y" target="_point1" />)</point>
+    </graph>
+    <copy prop="coords" target="_point1" assignNames="coords1" />
+    <copy prop="coords" target="_point2" assignNames="coords2" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,6)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_point1'].stateValues.xs).eqls([5, 6])
+      expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', 5, 6])
+      expect(stateVariables['/_point1'].stateValues.label).eq("P")
+      expect(stateVariables['/_point2'].stateValues.xs).eqls([1, 6])
+      expect((stateVariables['/_point2'].stateValues.coords)).eqls(['vector', 1, 6])
+      expect(stateVariables['/_point2'].stateValues.label).eq("Q")
+    })
+
+    cy.log('move point P to (-1,-7)')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -1, y: -7 }
+      })
+    })
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,−7)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_point1'].stateValues.xs).eqls([-1, -7])
+      expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', -1, -7])
+      expect(stateVariables['/_point2'].stateValues.xs).eqls([1, -7])
+      expect((stateVariables['/_point2'].stateValues.coords)).eqls(['vector', 1, -7])
+      expect((stateVariables['/_point2'].stateValues.coords)).eqls(['vector', 1, -7])
+    })
+  });
+
   it('coords use a copy', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <point label="P">(5,6)</point>
-    <point label="Q" coords="(1, $(_point1{prop='y'}))" />
+    <point>(5,6)</point>
+    <point coords="(1, $(_point1{prop='y'}))" />
   </graph>
   <copy prop="coords" target="_point1" assignNames="coords1" />
   <copy prop="coords" target="_point2" assignNames="coords2" />
@@ -116,42 +167,65 @@ describe('Point Tag Tests', function () {
     })
   })
 
+  it('coords use a copy with label', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point><label>P</label>(5,6)</point>
+    <point coords="(1, $(_point1{prop='y'}))" ><label>Q</label></point>
+  </graph>
+  <copy prop="coords" target="_point1" assignNames="coords1" />
+  <copy prop="coords" target="_point2" assignNames="coords2" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(5,6)');
+    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,6)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_point1'].stateValues.xs).eqls([5, 6])
+      expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', 5, 6])
+      expect(stateVariables['/_point1'].stateValues.label).eq("P")
+      expect(stateVariables['/_point2'].stateValues.xs).eqls([1, 6])
+      expect((stateVariables['/_point2'].stateValues.coords)).eqls(['vector', 1, 6])
+      expect(stateVariables['/_point2'].stateValues.label).eq("Q")
+    })
+
+    cy.log('move point P to (-1,-7)')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/_point1",
+        args: { x: -1, y: -7 }
+      })
+    })
+
+    cy.get('#\\/coords1 .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get('#\\/coords2 .mjx-mrow').should('contain.text', '(1,−7)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_point1'].stateValues.xs).eqls([-1, -7])
+      expect(stateVariables['/_point1'].stateValues.coords).eqls(['vector', -1, -7])
+      expect(stateVariables['/_point2'].stateValues.xs).eqls([1, -7])
+      expect((stateVariables['/_point2'].stateValues.coords)).eqls(['vector', 1, -7])
+      expect((stateVariables['/_point2'].stateValues.coords)).eqls(['vector', 1, -7])
+    })
+  })
+
   it('label uses a copy', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <point label="P">(5,6)</point>
-    <point label="$l'">
-      (1,3)
-    </point>
-  </graph>
-  <copy prop="label" target="_point1" name="l" hide />
-    `}, "*");
-    });
-
-
-    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
-
-    cy.log(`Labels are P and P'`)
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_point1'].stateValues.label).eq('P')
-      expect(stateVariables['/_point2'].stateValues.label).eq(`P'`)
-
-    })
-
-  })
-
-
-  it('label uses a copy 2', () => {
-    cy.window().then(async (win) => {
-      win.postMessage({
-        doenetML: `
-  <text>a</text>
-  <graph>
-    <point label="P">(5,6)</point>
+    <point><label>P</label>(5,6)</point>
     <point>
       (1,3)
       <label><copy prop="label" target="_point1" />'</label>
@@ -166,22 +240,25 @@ describe('Point Tag Tests', function () {
     cy.log(`Labels are P and P'`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_point1'].stateValues.xs).eqls([5, 6])
       expect(stateVariables['/_point1'].stateValues.label).eq('P')
+      expect(stateVariables['/_point2'].stateValues.xs).eqls([1, 3])
       expect(stateVariables['/_point2'].stateValues.label).eq(`P'`)
 
     })
 
   })
 
-  it('label uses a copy 3', () => {
+  it('label uses a copy 2', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <point label="P">(5,6)</point>
-    <point label="$(_point1{prop='label'})'">
+    <point><label>P</label>(5,6)</point>
+    <point>
       (1,3)
+      <label>$(_point1{prop="label"})'</label>
     </point>
   </graph>
     `}, "*");
@@ -193,24 +270,45 @@ describe('Point Tag Tests', function () {
     cy.log(`Labels are P and P'`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_point1'].stateValues.xs).eqls([5, 6])
       expect(stateVariables['/_point1'].stateValues.label).eq('P')
+      expect(stateVariables['/_point2'].stateValues.xs).eqls([1, 3])
       expect(stateVariables['/_point2'].stateValues.label).eq(`P'`)
 
     })
 
   })
 
-  it('labelIsName', () => {
+  it('labels from labelIsName are preserved when shadowed', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <graph>
+  <graph name="g">
     <point name="P" labelIsName>(5,6)</point>
     <point labelIsName>
       (1,3)
     </point>
   </graph>
+
+  <copy target="g" assignNames="g2" />
+
+  <graph name="g3">
+     <copy target="P" assignNames="P3" />
+     <copy target="_point2" assignNames="Q3" />
+  </graph>
+
+  <graph name="g4">
+     <copy target="P" assignNames="P4" labelIsName="false" />
+     <copy target="_point2" assignNames="Q4" labelIsName="false" />
+  </graph>
+
+  <copy target="g2" assignNames="g5" />
+  <copy target="g3" assignNames="g6" />
+  <copy target="g4" assignNames="g7" />
+
+
+
     `}, "*");
     });
 
@@ -220,8 +318,211 @@ describe('Point Tag Tests', function () {
     cy.log(`Labels are P and P'`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
+
+      let P2Name = stateVariables["/g2"].activeChildren[0].componentName;
+      let Q2Name = stateVariables["/g2"].activeChildren[1].componentName;
+      let P5Name = stateVariables["/g5"].activeChildren[0].componentName;
+      let Q5Name = stateVariables["/g5"].activeChildren[1].componentName;
+      let P6Name = stateVariables["/g6"].activeChildren[0].componentName;
+      let Q6Name = stateVariables["/g6"].activeChildren[1].componentName;
+      let P7Name = stateVariables["/g7"].activeChildren[0].componentName;
+      let Q7Name = stateVariables["/g7"].activeChildren[1].componentName;
+
       expect(stateVariables['/P'].stateValues.label).eq('P')
       expect(stateVariables['/_point2'].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[P2Name].stateValues.label).eq('P')
+      expect(stateVariables[Q2Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables['/P3'].stateValues.label).eq('P')
+      expect(stateVariables['/Q3'].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables['/P4'].stateValues.label).eq('')
+      expect(stateVariables['/Q4'].stateValues.label).eq(``)
+      expect(stateVariables[P5Name].stateValues.label).eq('P')
+      expect(stateVariables[Q5Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[P6Name].stateValues.label).eq('P')
+      expect(stateVariables[Q6Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[P7Name].stateValues.label).eq('')
+      expect(stateVariables[Q7Name].stateValues.label).eq(``)
+    })
+
+  })
+
+  it('labelIsName in map', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph name="g1" newNamespace>
+    <map>
+      <template><point name="P" labelIsName>($v,1)</point></template>
+      <sources alias="v"><sequence from="-2" to="2" /></sources>
+    </map>
+  </graph>
+
+  <graph name="g2" newNamespace>
+    <map>
+      <template newNamespace><point name="P" labelIsName>($v,1)</point></template>
+      <sources alias="v"><sequence from="-2" to="2" /></sources>
+    </map>
+  </graph>
+
+  <graph name="g3" newNamespace>
+    <map assignNames="(A) (B) (C)">
+      <template><point name="P" labelIsName>($v,1)</point></template>
+      <sources alias="v"><sequence from="-2" to="2" /></sources>
+    </map>
+  </graph>
+
+  <graph name="g4" newNamespace>
+    <map assignNames="(A) (B) (C)">
+      <template newNamespace><point name="P" labelIsName>($v,1)</point></template>
+      <sources alias="v"><sequence from="-2" to="2" /></sources>
+    </map>
+  </graph>
+
+  <graph name="g5" newNamespace>
+    <map assignNames="A B C">
+      <template><point name="P" labelIsName>($v,1)</point></template>
+      <sources alias="v"><sequence from="-2" to="2" /></sources>
+    </map>
+  </graph>
+
+  <graph name="g6" newNamespace>
+    <map assignNames="A B C">
+      <template newNamespace><point name="P" labelIsName>($v,1)</point></template>
+      <sources alias="v"><sequence from="-2" to="2" /></sources>
+    </map>
+  </graph>
+
+
+  <copy target="g1" assignNames="g7" />
+  <copy target="g2" assignNames="g8" />
+  <copy target="g3" assignNames="g9" />
+  <copy target="g4" assignNames="g10" />
+  <copy target="g5" assignNames="g11" />
+  <copy target="g6" assignNames="g12" />
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`Labels are P and P'`)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let g1ChildNames = stateVariables["/g1"].activeChildren.map(x=>x.componentName)
+      let g2ChildNames = stateVariables["/g2"].activeChildren.map(x=>x.componentName)
+      let g3ChildNames = stateVariables["/g3"].activeChildren.map(x=>x.componentName)
+      let g4ChildNames = stateVariables["/g4"].activeChildren.map(x=>x.componentName)
+      let g5ChildNames = stateVariables["/g5"].activeChildren.map(x=>x.componentName)
+      let g6ChildNames = stateVariables["/g6"].activeChildren.map(x=>x.componentName)
+      let g7ChildNames = stateVariables["/g7"].activeChildren.map(x=>x.componentName)
+      let g8ChildNames = stateVariables["/g8"].activeChildren.map(x=>x.componentName)
+      let g9ChildNames = stateVariables["/g9"].activeChildren.map(x=>x.componentName)
+      let g10ChildNames = stateVariables["/g10"].activeChildren.map(x=>x.componentName)
+      let g11ChildNames = stateVariables["/g11"].activeChildren.map(x=>x.componentName)
+      let g12ChildNames = stateVariables["/g12"].activeChildren.map(x=>x.componentName)
+  
+      let g1ChildLabels = Array(5).fill("");
+      let g2ChildLabels = Array(5).fill("P");
+      let g3ChildLabels = ["A", "B", "C", "", ""];
+      let g4ChildLabels = ["A", "B", "C", "P", "P"];
+      let g5ChildLabels = Array(5).fill("");
+      let g6ChildLabels = Array(5).fill("P");
+
+      for(let [ind, name] of g1ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g1ChildLabels[ind])
+      }
+      for(let [ind, name] of g2ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g2ChildLabels[ind])
+      }
+      for(let [ind, name] of g3ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g3ChildLabels[ind])
+      }
+      for(let [ind, name] of g4ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g4ChildLabels[ind])
+      }
+      for(let [ind, name] of g5ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g5ChildLabels[ind])
+      }
+      for(let [ind, name] of g6ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g6ChildLabels[ind])
+      }
+
+      for(let [ind, name] of g7ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g1ChildLabels[ind])
+      }
+      for(let [ind, name] of g8ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g2ChildLabels[ind])
+      }
+      for(let [ind, name] of g9ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g3ChildLabels[ind])
+      }
+      for(let [ind, name] of g10ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g4ChildLabels[ind])
+      }
+      for(let [ind, name] of g11ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g5ChildLabels[ind])
+      }
+      for(let [ind, name] of g12ChildNames.entries()) {
+        expect(stateVariables[name].stateValues.label).eq(g6ChildLabels[ind])
+      }
+
+
+    })
+
+  })
+
+  it('labels from labelIsName, copy with link=false', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph name="g">
+    <point name="P" labelIsName>(5,6)</point>
+    <point labelIsName>
+      (1,3)
+    </point>
+  </graph>
+
+  <copy target="g" assignNames="g2" link="false" />
+
+  <graph name="g3">
+     <copy target="P" assignNames="P3" link="false" />
+     <copy target="_point2" assignNames="Q3" link="false" />
+  </graph>
+
+  <copy target="g2" assignNames="g4" link="false" />
+  <copy target="g3" assignNames="g5" link="false" />
+
+
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`Labels are P and P'`)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let P2Name = stateVariables["/g2"].activeChildren[0].componentName;
+      let Q2Name = stateVariables["/g2"].activeChildren[1].componentName;
+      let P4Name = stateVariables["/g4"].activeChildren[0].componentName;
+      let Q4Name = stateVariables["/g4"].activeChildren[1].componentName;
+      let P5Name = stateVariables["/g5"].activeChildren[0].componentName;
+      let Q5Name = stateVariables["/g5"].activeChildren[1].componentName;
+
+      expect(stateVariables['/P'].stateValues.label).eq('P')
+      expect(stateVariables['/_point2'].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[P2Name].stateValues.label).eq('P')
+      expect(stateVariables[Q2Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables['/P3'].stateValues.label).eq('P')
+      expect(stateVariables['/Q3'].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[P4Name].stateValues.label).eq('P')
+      expect(stateVariables[Q4Name].stateValues.label).eq(`&#95;point2`)
+      expect(stateVariables[P5Name].stateValues.label).eq('P')
+      expect(stateVariables[Q5Name].stateValues.label).eq(`&#95;point2`)
     })
 
   })
@@ -252,17 +553,17 @@ describe('Point Tag Tests', function () {
 
   })
 
-  it('point sugar from single macro', () => {
+  it('point sugar from single copied math', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <mathinput name="coords" />
     <graph>
-      <point label="P" name="P">$coords</point>
+      <point name="P" labelIsName>$(coords{createComponentOfType="math" prop="value"})</point>
     </graph>
     <graph>
-      <copy target="P" assignNames="Q" label="Q" />
+      <copy target="P" assignNames="Q" labelIsName/>
     </graph>
     <copy prop="coords" target="P" assignNames="Pcoords" />
     <copy prop="coords" target="Q" assignNames="Qcoords" />
@@ -294,8 +595,416 @@ describe('Point Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect((stateVariables['/P'].stateValues.xs)).eqls([-1, -7])
       expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect(stateVariables['/P'].stateValues.label).eq('P')
       expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
       expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect(stateVariables['/Q'].stateValues.label).eq('P')
+    })
+
+    cy.log('move point P to (3,5)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: 5 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(3,5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 3, 5])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 3, 5])
+    })
+
+    cy.log('move point Q to (9,1)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/Q",
+        args: { x: 9, y: 1 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(9,1)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 9, 1])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 9, 1])
+    })
+
+    cy.log('make point undefined again')
+    cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+    })
+
+    cy.log('create 1D point')
+    cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '−3');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '−3');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(-3)
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(-3)
+    })
+
+
+    cy.log('create 3D point')
+    cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+    })
+
+  });
+
+  it('point sugar from single math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="coords" />
+    <graph>
+      <point name="P" labelIsName><math>$coords</math></point>
+    </graph>
+    <graph>
+      <copy target="P" assignNames="Q" labelIsName/>
+    </graph>
+    <copy prop="coords" target="P" assignNames="Pcoords" />
+    <copy prop="coords" target="Q" assignNames="Qcoords" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('initially undefined')
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+    })
+
+    cy.log('create 2D point')
+    cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect(stateVariables['/P'].stateValues.label).eq('P')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect(stateVariables['/Q'].stateValues.label).eq('P')
+    })
+
+    cy.log('move point P to (3,5)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: 5 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(3,5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 3, 5])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 3, 5])
+    })
+
+    cy.log('move point Q to (9,1)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/Q",
+        args: { x: 9, y: 1 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(9,1)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 9, 1])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 9, 1])
+    })
+
+    cy.log('make point undefined again')
+    cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+    })
+
+    cy.log('create 1D point')
+    cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '−3');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '−3');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(-3)
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(-3)
+    })
+
+
+    cy.log('create 3D point')
+    cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+    })
+
+  });
+
+  it('point from vector with sugared single math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="coords" />
+    <graph>
+      <point name="P" labelIsName><vector><math>$coords</math></vector></point>
+    </graph>
+    <graph>
+      <copy target="P" assignNames="Q" labelIsName/>
+    </graph>
+    <copy prop="coords" target="P" assignNames="Pcoords" />
+    <copy prop="coords" target="Q" assignNames="Qcoords" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('initially undefined')
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+    })
+
+    cy.log('create 2D point')
+    cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect(stateVariables['/P'].stateValues.label).eq('P')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect(stateVariables['/Q'].stateValues.label).eq('P')
+    })
+
+    cy.log('move point P to (3,5)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: 5 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(3,5)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(3,5)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 3, 5])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([3, 5])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 3, 5])
+    })
+
+    cy.log('move point Q to (9,1)')
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/Q",
+        args: { x: 9, y: 1 }
+      })
+    });
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(9,1)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(9,1)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 9, 1])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([9, 1])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 9, 1])
+    })
+
+    cy.log('make point undefined again')
+    cy.get('#\\/coords textarea').type("{backspace}{backspace}{backspace}{backspace}{backspace}{backspace}{enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+    })
+
+    cy.log('create 1D point')
+    cy.get('#\\/coords textarea').type("-3{enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '−3');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '−3');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(-3)
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-3])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(-3)
+    })
+
+
+    cy.log('create 3D point')
+    cy.get('#\\/coords textarea').type("{end}{backspace}{backspace}(6,5,4){enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(6,5,4)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([6, 5, 4])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", 6, 5, 4])
+    })
+
+  });
+
+  it('point from copied vector with sugared single math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput name="coords" />
+    <vector name="v"><math>$coords</math></vector>
+    <graph>
+      <point name="P" labelIsName>$v</point>
+    </graph>
+    <graph>
+      <copy target="P" assignNames="Q" labelIsName/>
+    </graph>
+    <copy prop="coords" target="P" assignNames="Pcoords" />
+    <copy prop="coords" target="Q" assignNames="Qcoords" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('initially undefined')
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '\uff3f');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '\uff3f');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/P'].stateValues.coords)).eqls('\uff3f')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls(['\uff3f'])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls('\uff3f')
+    })
+
+    cy.log('create 2D point')
+    cy.get('#\\/coords textarea').type("(-1,-7){enter}", { force: true })
+
+    cy.get('#\\/Pcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+    cy.get('#\\/Qcoords .mjx-mrow').should('contain.text', '(−1,−7)');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect((stateVariables['/P'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/P'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect(stateVariables['/P'].stateValues.label).eq('P')
+      expect((stateVariables['/Q'].stateValues.xs)).eqls([-1, -7])
+      expect((stateVariables['/Q'].stateValues.coords)).eqls(["vector", -1, -7])
+      expect(stateVariables['/Q'].stateValues.label).eq('P')
     })
 
     cy.log('move point P to (3,5)')
@@ -1635,7 +2344,7 @@ describe('Point Tag Tests', function () {
 
   <graph>
   <point x="1" y="2">
-    <copy target="toGrid" />
+    <copy target="toGrid" createComponentOfType="constraints" />
   </point>
   </graph>
   <math><copy prop="coords" target="_point1" /></math>
@@ -2620,7 +3329,7 @@ describe('Point Tag Tests', function () {
   <graph>
 
   <point xs="-7.1 8.9">
-    <copy target="toGrid" />
+    <copy target="toGrid" createComponentOfType="constraints" />
   </point>
 
   </graph>
@@ -6042,14 +6751,14 @@ describe('Point Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <text name="l1" hide><copy prop="x" displaydigits="3" target="_point1" />, <copy prop="x" displaydigits="3" target="_point2" /></text>
-  <text name="l2" hide><copy prop="y" displaydigits="3" target="_point1" />, <copy prop="y" displaydigits="3" target="_point2" /></text>
   <graph>
-    <point label="$l1">
+    <point>
+      <label><text><copy prop="x" displaydigits="3" target="_point1" />, <copy prop="x" displaydigits="3" target="_point2" /></text></label>
       (1,2)
     </point>
-    <point label="$l2">
+    <point>
       (3,4)
+      <label><text><copy prop="y" displaydigits="3" target="_point1" />, <copy prop="y" displaydigits="3" target="_point2" /></text></label>
     </point>
   </graph>
 
@@ -9925,7 +10634,10 @@ describe('Point Tag Tests', function () {
     <text>a</text>
 
     <graph name="g">
-      <point labelPosition="$labelPos" label="$label">(1,2)</point>
+      <point labelPosition="$labelPos">
+        <label>$label</label>
+        (1,2)
+      </point>
     </graph>
 
     <p>label: <textinput name="label" prefill="A" /></p>

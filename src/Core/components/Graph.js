@@ -1,6 +1,7 @@
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import BlockComponent from './abstract/BlockComponent';
 import me from 'math-expressions';
+import { orderedPercentWidthMidpoints, orderedWidthMidpoints, widthsBySize, sizePossibilities } from '../utils/size';
 export default class Graph extends BlockComponent {
   static componentType = "graph";
   static renderChildren = true;
@@ -29,17 +30,37 @@ export default class Graph extends BlockComponent {
     };
     attributes.width = {
       createComponentOfType: "_componentSize",
-      createStateVariable: "width",
-      defaultValue: { size: 300, isAbsolute: true },
-      public: true,
-      forRenderer: true,
     };
+    attributes.size = {
+      createComponentOfType: "text",
+    }
     attributes.aspectRatio = {
       createComponentOfType: "number",
     };
+
+    // Note: height attribute is deprecated and will be removed in the future
     attributes.height = {
       createComponentOfType: "_componentSize",
     };
+
+    attributes.displayMode = {
+      createComponentOfType: "text",
+      createStateVariable: "displayMode",
+      validValues: ["block", "inline"],
+      defaultValue: "block",
+      forRenderer: true,
+      public: true,
+    }
+
+    attributes.horizontalAlign = {
+      createComponentOfType: "text",
+      createStateVariable: "horizontalAlign",
+      validValues: ["center", "left", "right"],
+      defaultValue: "center",
+      forRenderer: true,
+      public: true,
+    }
+
     attributes.identicalAxisScales = {
       createPrimitiveOfType: "boolean",
       createStateVariable: "identicalAxisScales",
@@ -223,6 +244,105 @@ export default class Graph extends BlockComponent {
           }]
         }
       }
+    }
+
+    stateVariableDefinitions.size = {
+      public: true,
+      defaultValue: "medium",
+      hasEssential: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
+      },
+      returnDependencies: () => ({
+        sizeAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "size",
+          variableNames: ["value"],
+        },
+        widthAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "width",
+          variableNames: ["componentSize"],
+        },
+      }),
+      definition({ dependencyValues }) {
+        const defaultSize = 'medium';
+
+        if (dependencyValues.sizeAttr) {
+          let size = dependencyValues.sizeAttr.stateValues.value.toLowerCase();
+
+          if (!sizePossibilities.includes(size)) {
+            size = defaultSize;
+          }
+          return {
+            setValue: { size }
+          }
+        } else if (dependencyValues.widthAttr) {
+          let componentSize = dependencyValues.widthAttr.stateValues.componentSize;
+          if (componentSize === null) {
+
+            return {
+              setValue: { size: defaultSize }
+            }
+          }
+          let { isAbsolute, size: widthSize } = componentSize;
+          let size;
+
+          if (isAbsolute) {
+            for (let [ind, pixels] of orderedWidthMidpoints.entries()) {
+              if (widthSize <= pixels) {
+                size = sizePossibilities[ind];
+                break
+              }
+            }
+            if (!size) {
+              size = defaultSize
+            }
+          } else {
+            for (let [ind, percent] of orderedPercentWidthMidpoints.entries()) {
+              if (widthSize <= percent) {
+                size = sizePossibilities[ind];
+                break
+              }
+            }
+            if (!size) {
+              size = defaultSize
+            }
+          }
+          return {
+            setValue: { size }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { size: true }
+          }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.width = {
+      public: true,
+      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize"
+      },
+      returnDependencies: () => ({
+        size: {
+          dependencyType: "stateVariable",
+          variableName: "size",
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        let width = { isAbsolute: true, size: widthsBySize[dependencyValues.size] }
+
+        return {
+          setValue: { width }
+        }
+
+      }
+
     }
 
     stateVariableDefinitions.aspectRatioFromAxisScales = {

@@ -1010,4 +1010,35 @@ describe('Number Tag Tests', function () {
 
   });
 
+  it('indeterminant forms give NaN', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  
+  <p><number name="if1">0^0</number></p>
+  <p><number name="if2">Infinity^0</number></p>
+  <p><number name="if3">0/0</number></p>
+  <p><number name="if4">Infinity/Infinity</number></p>
+  <p><number name="if5">0*Infinity</number></p>
+  <p><number name="if6">Infinity-Infinity</number></p>
+  <p><number name="if7">1^Infinity</number></p>
+  <p><number name="ifalt"><number>0^0</number>^0</number></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/if1').should('have.text', 'NaN');
+    cy.get('#\\/if2').should('have.text', 'NaN');
+    cy.get('#\\/if3').should('have.text', 'NaN');
+    cy.get('#\\/if4').should('have.text', 'NaN');
+    cy.get('#\\/if5').should('have.text', 'NaN');
+    cy.get('#\\/if6').should('have.text', 'NaN');
+    cy.get('#\\/if7').should('have.text', 'NaN');
+    cy.get('#\\/ifalt').should('have.text', 'NaN');
+
+
+  });
+
 });

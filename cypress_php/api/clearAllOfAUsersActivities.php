@@ -41,6 +41,17 @@ foreach($courseIds AS $courseId){
   ";
   $result = $conn->query($sql);
 
+  $sql = "
+  DELETE FROM activity_state
+  WHERE userId='$userId'
+  ";
+  $result = $conn->query($sql);
+
+  $sql = "
+  DELETE FROM page_state
+  WHERE userId='$userId'
+  ";
+  $result = $conn->query($sql);
 
 }
 

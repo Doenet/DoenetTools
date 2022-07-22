@@ -188,10 +188,15 @@ export default React.memo(function Curve(props) {
     newCurveJXG.on('up', function (e) {
       // TODO: don't think SVS.switchable, SVs.fixed will if change state variables
       // as useEffect will not be rerun
-      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null
-        && SVs.switchable && !SVs.fixed) {
+      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null) {
+        if (SVs.switchable && !SVs.fixed) {
+          callAction({
+            action: actions.switchCurve
+          });
+        }
         callAction({
-          action: actions.switchCurve
+          action: actions.curveClicked,
+          args: { name }   // send name so get original name if adapted
         });
       }
     });

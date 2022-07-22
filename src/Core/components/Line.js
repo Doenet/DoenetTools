@@ -7,7 +7,8 @@ export default class Line extends GraphicalComponent {
 
   actions = {
     moveLine: this.moveLine.bind(this),
-    switchLine: this.switchLine.bind(this)
+    switchLine: this.switchLine.bind(this),
+    lineClicked: this.lineClicked.bind(this)
   };
 
 
@@ -48,15 +49,10 @@ export default class Line extends GraphicalComponent {
         return { success: false };
       }
 
-      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: "label"
-      });
-
-
       // wrap first group of non-label children becomes equation
 
-      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.attributes?.createComponentOfType?.primitive));
+      let componentIsLabel = x=> componentInfoObjects.componentIsSpecifiedType(x, "label");
+      let childIsLabel = matchedChildren.map(componentIsLabel);
 
       let childrenToWrap = [], childrenToNotWrap = [];
 
@@ -1522,6 +1518,17 @@ export default class Line extends GraphicalComponent {
 
 
   switchLine() {
+
+  }
+
+  async lineClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

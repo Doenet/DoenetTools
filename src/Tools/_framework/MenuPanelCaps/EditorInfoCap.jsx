@@ -14,10 +14,11 @@ export default function EditorInfoCap(){
   const pageInfo = useRecoilValue(itemByDoenetId(pageId));
   const activityInfo = useRecoilValue(itemByDoenetId(doenetId));
 
-  if (!pageInfo){ return null;}
+
 
   let accessible_name = "course";
 
+  if (!pageInfo || !image){ return null;}
  if (image != 'none'){
   accessible_name = find_image_label(image);
   image = 'url(/media/drive_pictures/' + image + ')';

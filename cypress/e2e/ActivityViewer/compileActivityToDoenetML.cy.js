@@ -74,7 +74,7 @@ describe('Compile activity to JSON tests', function () {
       console.log(stateVariables1["/_choiceinput1"].stateValues.choiceTexts)
 
 
-      cy.get('[data-cy=next]').click();
+      cy.get('[data-test=next]').click();
 
       cy.get(cesc('#/derivativeProblem/_title1')).should('have.text', 'Derivative problem')
 

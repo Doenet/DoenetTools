@@ -1241,11 +1241,11 @@ function Folder(props) {
   }
 
   let openCloseText = isOpen ? (
-    <span data-cy="folderToggleCloseIcon">
+    <span data-test="folderToggleCloseIcon">
       <FontAwesomeIcon icon={faChevronDown} />
     </span>
   ) : (
-    <span data-cy="folderToggleOpenIcon">
+    <span data-test="folderToggleOpenIcon">
       <FontAwesomeIcon icon={faChevronRight} />
     </span>
   );
@@ -1391,7 +1391,7 @@ function Folder(props) {
       <div
         role="button"
         data-doenet-driveinstanceid={props.driveInstanceId}
-        data-cy="driveItem"
+        data-test="driveItem"
         tabIndex="0"
         className="noselect nooutline"
         style={{
@@ -1500,10 +1500,10 @@ function Folder(props) {
         >
           <div style={{ display: 'inline', margin: '0px' }}>
             {openCloseButton}
-            <span data-cy="folderIcon">
+            <span data-test="folderIcon">
               <FontAwesomeIcon icon={faFolder} />
             </span>
-            <span data-cy="folderLabel">{label}</span>
+            <span data-test="folderLabel">{label}</span>
           </div>
         </div>
       </div>
@@ -1520,7 +1520,7 @@ function Folder(props) {
         <div
           role="button"
           data-doenet-driveinstanceid={props.driveInstanceId}
-          data-cy="navDriveHeader"
+          data-test="navDriveHeader"
           tabIndex="0"
           className="noselect nooutline"
           style={{
@@ -1794,7 +1794,7 @@ function Folder(props) {
   }
 
   return (
-    <div data-cy="drive">
+    <div data-test="drive">
       {folder}
       {items}
     </div>
@@ -1821,7 +1821,7 @@ export const DragShadow = React.memo(function Node(props) {
   const indentPx = 30;
   return (
     <div
-      data-cy="dragShadow"
+      data-test="dragShadow"
       style={{
         width: '100%',
         height: '33px',
@@ -2226,7 +2226,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
     <div
     data-doenet-driveinstanceid={props.driveInstanceId}
       role="button"
-      data-cy="driveItem"
+      data-test="driveItem"
       tabIndex="0"
       className="noselect nooutline"
       style={{
@@ -2296,10 +2296,10 @@ export const DoenetML = React.memo(function DoenetML(props) {
         }}
       >
         <p style={{ display: 'inline', margin: '0px' }}>
-          <span data-cy="doenetMLIcon">
+          <span data-test="doenetMLIcon">
             <FontAwesomeIcon icon={faCode} />
           </span>
-          <span data-cy="doenetMLLabel">{label} </span>
+          <span data-test="doenetMLLabel">{label} </span>
         </p>
         {props.numColumns >= 2 ? column2 : null}
         {props.numColumns >= 3 ? column3 : null}
@@ -2695,7 +2695,7 @@ function useUpdateBreadcrumb(props) {
         }}
       >
         <Link
-          data-cy="breadcrumbDriveColumn"
+          data-test="breadcrumbDriveColumn"
           style={breadcrumbItemStyle}
           to={driveDestinationLink}
         >
@@ -2807,7 +2807,7 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
   }
 
   dragGhost = (
-    <div id={id} data-cy="dragGhost" style={containerStyle}>
+    <div id={id} data-test="dragGhost" style={containerStyle}>
       {dragGhost}
     </div>
   );

@@ -138,6 +138,7 @@ export default class Core {
       .catch(e => {
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: { errMsg: e.message }
         })
       })
@@ -324,13 +325,15 @@ export default class Core {
 
     postMessage({
       messageType: "initializeRenderers",
+      coreId: this.coreId,
       args: {
         coreInfo: this.coreInfo,
       }
     });
 
     postMessage({
-      messageType: "coreCreated"
+      messageType: "coreCreated",
+      coreId: this.coreId
     });
 
   }
@@ -339,6 +342,7 @@ export default class Core {
 
     postMessage({
       messageType: "updateRenderers",
+      coreId: this.coreId,
       args,
       init
     })
@@ -3557,32 +3561,32 @@ export default class Core {
 
       if (stateVarObj.chainActionOnActionOfStateVariableTargets) {
         let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTargets;
-        let targetNames = await stateVarObj.value;
+        let targetIds = await stateVarObj.value;
 
         let originObj = this.originsOfActionsChangedToActions[component.componentName];
 
-        let previousNames;
+        let previousIds;
         if (originObj) {
-          previousNames = originObj[varName];
+          previousIds = originObj[varName];
         }
 
-        if (!previousNames) {
-          previousNames = [];
+        if (!previousIds) {
+          previousIds = [];
         }
 
-        let newNames = [];
+        let newTargets = [];
 
-        if (Array.isArray(targetNames)) {
-          newNames = [...new Set(targetNames)];
-          for (let target of newNames) {
+        if (Array.isArray(targetIds)) {
+          newTargets = [...targetIds];
+          for (let id of newTargets) {
 
-            let indPrev = previousNames.indexOf(target);
+            let indPrev = previousIds.indexOf(id);
 
             if (indPrev === -1) {
-              // found a component that wasn't previously chained
-              let componentActionsChained = this.actionsChangedToActions[target];
+              // found a component/action that wasn't previously chained
+              let componentActionsChained = this.actionsChangedToActions[id];
               if (!componentActionsChained) {
-                componentActionsChained = this.actionsChangedToActions[target] = [];
+                componentActionsChained = this.actionsChangedToActions[id] = [];
               }
 
               componentActionsChained.push({
@@ -3594,17 +3598,17 @@ export default class Core {
             } else {
               // target was already chained
               // remove from previous names to indicate it should still be chained
-              previousNames.splice(indPrev, 1);
+              previousIds.splice(indPrev, 1);
             }
           }
 
 
         }
 
-        // if any names are left in previousNames,
+        // if any ids are left in previousIds,
         // then they should no longer be chained
-        for (let nameToNoLongerChain of previousNames) {
-          let componentActionsChained = this.actionsChangedToActions[nameToNoLongerChain];
+        for (let idToNoLongerChain of previousIds) {
+          let componentActionsChained = this.actionsChangedToActions[idToNoLongerChain];
           if (componentActionsChained) {
             let newComponentActionsChained = [];
 
@@ -3616,16 +3620,16 @@ export default class Core {
               }
             }
 
-            this.actionsChangedToActions[nameToNoLongerChain] = newComponentActionsChained;
+            this.actionsChangedToActions[idToNoLongerChain] = newComponentActionsChained;
 
           }
         }
 
-        if (newNames.length > 0) {
+        if (newTargets.length > 0) {
           if (!originObj) {
             originObj = this.originsOfActionsChangedToActions[component.componentName] = {};
           }
-          originObj[varName] = newNames;
+          originObj[varName] = newTargets;
         } else if (originObj) {
           delete originObj[varName];
 
@@ -7961,12 +7965,13 @@ export default class Core {
     if (actionId) {
       postMessage({
         messageType: "resolveAction",
+        coreId: this.coreId,
         args: { actionId }
       })
     }
   }
 
-  async triggerChainedActions({ componentName }) {
+  async triggerChainedActions({ componentName, triggeringAction }) {
 
     for (let cName in this.updateInfo.componentsToUpdateActionChaining) {
       await this.checkForActionChaining({
@@ -7977,9 +7982,13 @@ export default class Core {
 
     this.updateInfo.componentsToUpdateActionChaining = {};
 
+    let id = componentName;
+    if(triggeringAction) {
+      id += "|" + triggeringAction
+    }
 
-    if (this.actionsChangedToActions[componentName]) {
-      for (let chainedActionInstructions of this.actionsChangedToActions[componentName]) {
+    if (this.actionsChangedToActions[id]) {
+      for (let chainedActionInstructions of this.actionsChangedToActions[id]) {
         await this.performAction(chainedActionInstructions);
       }
     }
@@ -8384,6 +8393,7 @@ export default class Core {
         console.error(`Error saving event: ${e.message}`);
         // postMessage({
         //   messageType: "sendToast",
+        //   coreId: this.coreId,
         //   args: {
         //     message: `Error saving event: ${e.message}`,
         //     toastType: toastType.ERROR
@@ -9504,7 +9514,8 @@ export default class Core {
     }
 
     postMessage({
-      messageType: "savedState"
+      messageType: "savedState",
+      coreId: this.coreId,
     })
 
     if (!this.flags.allowSaveState) {
@@ -9558,6 +9569,7 @@ export default class Core {
 
     // postMessage({
     //   messageType: "sendToast",
+    //   coreId: this.coreId,
     //   args: {
     //     message: "You're not connected to the internet. Changes are not saved. ",
     //     toastType: toastType.ERROR
@@ -9571,6 +9583,7 @@ export default class Core {
     } catch (e) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: "Error synchronizing data.  Changes not saved to the server.",
           toastType: toastType.ERROR
@@ -9584,6 +9597,7 @@ export default class Core {
     if (resp.status === null) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
           toastType: toastType.ERROR
@@ -9597,6 +9611,7 @@ export default class Core {
     if (!data.success) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: data.message,
           toastType: toastType.ERROR
@@ -9634,6 +9649,7 @@ export default class Core {
 
         postMessage({
           messageType: "resetPage",
+          coreId: this.coreId,
           args: {
             changedOnDevice: data.device,
             newCid: data.cid,
@@ -9644,6 +9660,7 @@ export default class Core {
         // if the cid changed without the attemptNumber changing, something went wrong
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: {
             errMsg: "Content changed unexpectedly!"
           }
@@ -9683,6 +9700,7 @@ export default class Core {
         if (resp.status === null) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error.  Are you connected to the internet?`,
               toastType: toastType.ERROR
@@ -9691,6 +9709,7 @@ export default class Core {
         } else if (!resp.data.success) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error: ${resp.data.message}`,
               toastType: toastType.ERROR
@@ -9702,6 +9721,7 @@ export default class Core {
 
           postMessage({
             messageType: "updateCreditAchieved",
+            coreId: this.coreId,
             args: data
           })
 
@@ -9709,6 +9729,7 @@ export default class Core {
           if (data.viewedSolution) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since solution was viewed.',
                 toastType: toastType.INFO
@@ -9718,6 +9739,7 @@ export default class Core {
           if (data.timeExpired) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the time allowed has expired.',
                 toastType: toastType.INFO
@@ -9727,6 +9749,7 @@ export default class Core {
           if (data.pastDueDate) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the due date has passed.',
                 toastType: toastType.INFO
@@ -9736,6 +9759,7 @@ export default class Core {
           if (data.exceededAttemptsAllowed) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since no more attempts are allowed.',
                 toastType: toastType.INFO
@@ -9745,6 +9769,7 @@ export default class Core {
           if (data.databaseError) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'Credit not saved due to database error.',
                 toastType: toastType.ERROR
@@ -9756,6 +9781,7 @@ export default class Core {
       .catch(e => {
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message: `Credit not saved due to error: ${e.message}`,
             toastType: toastType.ERROR
@@ -9892,6 +9918,7 @@ export default class Core {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message,
             toastType: toastType.ERROR
@@ -9913,6 +9940,7 @@ export default class Core {
 
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message,
           toastType: toastType.ERROR
@@ -9934,6 +9962,7 @@ export default class Core {
   requestAnimationFrame(args) {
     postMessage({
       messageType: "requestAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }
@@ -9941,6 +9970,7 @@ export default class Core {
   cancelAnimationFrame(args) {
     postMessage({
       messageType: "cancelAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }

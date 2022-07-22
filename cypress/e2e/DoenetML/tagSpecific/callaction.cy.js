@@ -755,6 +755,144 @@ describe('CallAction Tag Tests', function () {
     });
   })
 
+  it('action triggered when click', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+    <copy prop="coords" target="P" assignNames="P2" />
+
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhenTargetsClicked="P" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    let numbers;
+
+    cy.get('#\\/nums').invoke('text').then(text => {
+      numbers = text.split(',').map(Number);
+      expect(numbers.length).eq(5);
+      for (let num of numbers) {
+        expect(Number.isInteger(num)).be.true;
+        expect(num).gte(1)
+        expect(num).lte(6)
+      }
+    })
+
+    cy.get('#\\/P2').should('contain.text', '(−1,2)')
+
+    cy.get('#\\/rs').should('not.exist');
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 3, y: -4 }
+      });
+      cy.get('#\\/P2').should('contain.text', '(3,−4)')
+
+      cy.get('#\\/nums').invoke('text').then(text => {
+        let numbers2 = text.split(',').map(Number);
+        expect(numbers2).eqls(numbers)
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "pointClicked",
+        componentName: "/P",
+      });
+
+      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
+        let numbers2 = text.split(',').map(Number);
+        if(numbers2.length !== 5) {
+          return false;
+        }
+        let foundChange = false;
+        for (let [i, num] of numbers2.entries()) {
+          if(!Number.isInteger(num) || num < 1 || num > 6 ) {
+            return false;
+          }
+          if(num !== numbers[i]) {
+            foundChange = true;
+          }
+        }
+        if(!foundChange) {
+          return false;
+        }
+        numbers = numbers2;
+        return true;
+      }))
+
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 }
+      });
+
+      cy.get('#\\/P2').should('contain.text', '(5,9)')
+
+      cy.get('#\\/nums').invoke('text').then(text => {
+        let numbers2 = text.split(',').map(Number);
+        expect(numbers2).eqls(numbers)
+      });
+    })
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "pointClicked",
+        componentName: "/P",
+      });
+
+      cy.waitUntil(() => cy.get('#\\/nums').invoke('text').then(text => {
+        let numbers2 = text.split(',').map(Number);
+        if(numbers2.length !== 5) {
+          return false;
+        }
+        let foundChange = false;
+        for (let [i, num] of numbers2.entries()) {
+          if(!Number.isInteger(num) || num < 1 || num > 6 ) {
+            return false;
+          }
+          if(num !== numbers[i]) {
+            foundChange = true;
+          }
+        }
+        if(!foundChange) {
+          return false;
+        }
+        numbers = numbers2;
+        return true;
+      }))
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 }
+      });
+
+      cy.get('#\\/P2').should('contain.text', '(9,7)')
+
+      cy.get('#\\/nums').invoke('text').then(text => {
+        let numbers2 = text.split(',').map(Number);
+        expect(numbers2).eqls(numbers)
+      });
+
+    });
+  })
+
   it('chained updates based on trigger', () => {
 
     cy.window().then(async (win) => {
@@ -1538,6 +1676,81 @@ describe('CallAction Tag Tests', function () {
     })
 
     cy.get('#\\/n').should('have.text', "2");
+
+
+  })
+
+  it('math in label', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p><callAction target="s" actionName="resample" name="rs" ><label>Hi <m>\\sum_{i=1}^5x_i</m></label></callAction></p>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/rs').should('contain.text', 'Hi ∑5i=1xi')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/rs'].stateValues.label).eq("Hi \\(\\sum_{i=1}^5x_i\\)");
+    });
+
+  })
+
+  it('case insensitive action name', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p><callAction target="s" actionName="reSamplE" name="rs"><label>roll dice</label></callAction></p>
+    <p>Sum: <number name="sum"><sum>
+      <map>
+        <template><number>$v*10^($i-1)</number></template>
+        <sources alias="v" indexAlias="i">$s</sources>
+      </map>
+    </sum></number></p>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    let numbers, sum = 0;
+
+    cy.get('#\\/nums').invoke('text').then(text => {
+      numbers = text.split(',').map(Number);
+      expect(numbers.length).eq(5);
+      for (let [ind, num] of numbers.entries()) {
+        expect(Number.isInteger(num)).be.true;
+        expect(num).gte(1)
+        expect(num).lte(6)
+        sum += num * 10 ** ind;
+      }
+    })
+    cy.get('#\\/sum').invoke('text').then(text => {
+      let sum2 = Number(text);
+      expect(sum2).eq(sum);
+    })
+
+    // main purpose of sum is to make sure wait until recalculation has occured
+    cy.get('#\\/rs_button').click().then(() => {
+      cy.get('#\\/sum').should('not.contain', sum.toString());
+    });
+
+
+    cy.get('#\\/nums').invoke('text').then(text => {
+      let numbers2 = text.split(',').map(Number);
+      expect(numbers2.length).eq(5);
+      for (let num of numbers2) {
+        expect(Number.isInteger(num)).be.true;
+        expect(num).gte(1)
+        expect(num).lte(6)
+      }
+      expect(numbers2).not.eqls(numbers)
+    })
 
 
   })

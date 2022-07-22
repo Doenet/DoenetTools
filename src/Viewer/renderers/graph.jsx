@@ -417,27 +417,38 @@ export default React.memo(function Graph(props) {
   }, [])
 
 
-
   const divStyle = {
     width: sizeToCSS(SVs.width),
     aspectRatio: String(SVs.aspectRatio),
     maxWidth: "100%"
   }
 
+  let outerStyle = {};
+
   if (SVs.hidden) {
     divStyle.display = "none";
+  } else if (SVs.displayMode === "inline") {
+    outerStyle = { display: "inline-block", verticalAlign: "middle" }
+  } else {
+    outerStyle = { display: "flex", justifyContent: SVs.horizontalAlign };
   }
+  
   divStyle.border = "2px solid var(--canvastext)";
-  divStyle.margin = "12px";
+  divStyle.marginBottom = "12px";
+  divStyle.marginTop = "12px";
   divStyle.backgroundColor = "var(--canvas)";
   divStyle.color = "var(--canvastext)";
 
 
   if (!board) {
-    return <>
-      <a name={name} />
-      <div id={name} className="jxgbox" style={divStyle} />
-    </>;
+    return (
+      <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+        <div style={outerStyle}>
+          <a name={name} />
+          <div id={name} className="jxgbox" style={divStyle} />
+        </div>
+      </VisibilitySensor>
+    );
   }
 
 
@@ -577,16 +588,15 @@ export default React.memo(function Graph(props) {
   }
 
 
-
   return (
-    // <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <>
-      <a name={name} />
-      <div id={name} className="jxgbox" style={divStyle} />
-      <BoardContext.Provider value={board}>
-        {children}
-      </BoardContext.Provider>
-    </>
-    //  </VisibilitySensor>
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+      <div style={outerStyle}>
+        <a name={name} />
+        <div id={name} className="jxgbox" style={divStyle} />
+        <BoardContext.Provider value={board}>
+          {children}
+        </BoardContext.Provider>
+      </div>
+    </VisibilitySensor>
   );
 })

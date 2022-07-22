@@ -136,8 +136,10 @@ export default class Core {
         }))
       .then(this.finishCoreConstruction)
       .catch(e => {
+        // throw e;
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: { errMsg: e.message }
         })
       })
@@ -324,13 +326,15 @@ export default class Core {
 
     postMessage({
       messageType: "initializeRenderers",
+      coreId: this.coreId,
       args: {
         coreInfo: this.coreInfo,
       }
     });
 
     postMessage({
-      messageType: "coreCreated"
+      messageType: "coreCreated",
+      coreId: this.coreId
     });
 
   }
@@ -339,6 +343,7 @@ export default class Core {
 
     postMessage({
       messageType: "updateRenderers",
+      coreId: this.coreId,
       args,
       init
     })
@@ -2101,7 +2106,16 @@ export default class Core {
       let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
       let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
       let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
-
+      let mediatingSubAssignNames = mediatingAssignNames?.some(Array.isArray);
+      let assignNewNamespaces = compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive;
+      let target = this._components[compositeMediatingTheShadow.doenetAttributes.targetComponentName];
+      let nonCompositeTargetWithNewNamespace;
+      if (target) {
+        nonCompositeTargetWithNewNamespace = !this.componentInfoObjects.isCompositeComponent({
+          componentType: target.componentType,
+          includeNonStandard: false
+        }) && target.attributes.newNamespace?.primitive;
+      }
 
       // Note: originalNamesAreConsistent means that processAssignNames should leave
       // the original names in the serializedComponents as is
@@ -2111,16 +2125,28 @@ export default class Core {
 
       // We set originalNamesAreConsistent to true if we can be sure
       // that we won't create any duplicate names.
-      // If the component begin shadowed has a newNamespace,
+      // If the component shadowing (or the original non-composite target) has a newNamespace,
+      // or the composite mediating the shadow is assigning new namespaces,
       // or we get a new namespace from the composite mediating the shadow, 
       // that will, in most cases, be enough to prevent name collisions.
-      // The one edge case is when the composite mediating the shadow also assigns names,
-      // in which case the assigned names could collide with the original names,
+
+      // One edge case is when the composite mediating the shadow also assigns names,
+      // in which case the assigned names could collide with the original names
+      // even if it makes a new namespace,
       // so we can't keep the original names.
 
+      // Another edge case is when the composite mediating the shadow
+      // assign names to sub-replacements.
+      // In that case, all bets are off and we cannot determine if those names
+      // could collide with existing names, so we can't keep the original names.
 
-      let originalNamesAreConsistent = newNamespace
-        || (mediatingNewNamespace && !mediatingAssignNames);
+
+      let originalNamesAreConsistent = !mediatingSubAssignNames && (
+        newNamespace || nonCompositeTargetWithNewNamespace
+        || (mediatingNewNamespace && !mediatingAssignNames)
+        || assignNewNamespaces
+      );
+
 
       let assignNames = component.doenetAttributes.assignNames;
       if (assignNames && await component.stateValues.addLevelToAssignNames) {
@@ -2134,9 +2160,39 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;
+
+      if (target?.componentName === shadowedComposite.componentName
+        && compositeMediatingTheShadow.doenetAttributes.fromCopyTarget
+      ) {
+
+        let newReplacements = deepClone(compositeMediatingTheShadow.serializedChildren);
+        let componentClass = this.componentInfoObjects.allComponentClasses[component.componentType];
+
+        if (!componentClass.includeBlankStringChildren) {
+          newReplacements = newReplacements.filter(
+            x => typeof x !== "string" || x.trim() !== ""
+          )
+        }
+
+        let processResult = serializeFunctions.processAssignNames({
+          assignNames,
+          serializedComponents: newReplacements,
+          parentName:  component.componentName,
+          parentCreatesNewNamespace: compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive,
+          indOffset: serializedReplacements.length,
+          componentInfoObjects: this.componentInfoObjects,
+          originalNamesAreConsistent: true
+        });
+
+        serializedReplacements.push(...processResult.serializedComponents)
+
+      }
+
+
     } else {
       // since original names came from the targetComponent
       // we can use them only if we created a new namespace
@@ -2149,6 +2205,7 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;
@@ -3557,32 +3614,32 @@ export default class Core {
 
       if (stateVarObj.chainActionOnActionOfStateVariableTargets) {
         let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTargets;
-        let targetNames = await stateVarObj.value;
+        let targetIds = await stateVarObj.value;
 
         let originObj = this.originsOfActionsChangedToActions[component.componentName];
 
-        let previousNames;
+        let previousIds;
         if (originObj) {
-          previousNames = originObj[varName];
+          previousIds = originObj[varName];
         }
 
-        if (!previousNames) {
-          previousNames = [];
+        if (!previousIds) {
+          previousIds = [];
         }
 
-        let newNames = [];
+        let newTargets = [];
 
-        if (Array.isArray(targetNames)) {
-          newNames = [...new Set(targetNames)];
-          for (let target of newNames) {
+        if (Array.isArray(targetIds)) {
+          newTargets = [...targetIds];
+          for (let id of newTargets) {
 
-            let indPrev = previousNames.indexOf(target);
+            let indPrev = previousIds.indexOf(id);
 
             if (indPrev === -1) {
-              // found a component that wasn't previously chained
-              let componentActionsChained = this.actionsChangedToActions[target];
+              // found a component/action that wasn't previously chained
+              let componentActionsChained = this.actionsChangedToActions[id];
               if (!componentActionsChained) {
-                componentActionsChained = this.actionsChangedToActions[target] = [];
+                componentActionsChained = this.actionsChangedToActions[id] = [];
               }
 
               componentActionsChained.push({
@@ -3594,17 +3651,17 @@ export default class Core {
             } else {
               // target was already chained
               // remove from previous names to indicate it should still be chained
-              previousNames.splice(indPrev, 1);
+              previousIds.splice(indPrev, 1);
             }
           }
 
 
         }
 
-        // if any names are left in previousNames,
+        // if any ids are left in previousIds,
         // then they should no longer be chained
-        for (let nameToNoLongerChain of previousNames) {
-          let componentActionsChained = this.actionsChangedToActions[nameToNoLongerChain];
+        for (let idToNoLongerChain of previousIds) {
+          let componentActionsChained = this.actionsChangedToActions[idToNoLongerChain];
           if (componentActionsChained) {
             let newComponentActionsChained = [];
 
@@ -3616,16 +3673,16 @@ export default class Core {
               }
             }
 
-            this.actionsChangedToActions[nameToNoLongerChain] = newComponentActionsChained;
+            this.actionsChangedToActions[idToNoLongerChain] = newComponentActionsChained;
 
           }
         }
 
-        if (newNames.length > 0) {
+        if (newTargets.length > 0) {
           if (!originObj) {
             originObj = this.originsOfActionsChangedToActions[component.componentName] = {};
           }
-          originObj[varName] = newNames;
+          originObj[varName] = newTargets;
         } else if (originObj) {
           delete originObj[varName];
 
@@ -7937,11 +7994,20 @@ export default class Core {
 
   }
 
-  async performAction({ componentName, actionName, args, event }) {
+  async performAction({ componentName, actionName, args, event, caseInsensitiveMatch }) {
 
     let component = this.components[componentName];
     if (component && component.actions) {
       let action = component.actions[actionName];
+      if(!action && caseInsensitiveMatch) {
+        let actionNameLower = actionName.toLowerCase();
+        for(let aName in component.actions) {
+          if(aName.toLowerCase() === actionNameLower) {
+            action = component.actions[aName];
+            break;
+          }
+        }
+      }
       if (action) {
         if (event) {
           this.requestRecordEvent(event);
@@ -7961,12 +8027,13 @@ export default class Core {
     if (actionId) {
       postMessage({
         messageType: "resolveAction",
+        coreId: this.coreId,
         args: { actionId }
       })
     }
   }
 
-  async triggerChainedActions({ componentName }) {
+  async triggerChainedActions({ componentName, triggeringAction }) {
 
     for (let cName in this.updateInfo.componentsToUpdateActionChaining) {
       await this.checkForActionChaining({
@@ -7977,9 +8044,13 @@ export default class Core {
 
     this.updateInfo.componentsToUpdateActionChaining = {};
 
+    let id = componentName;
+    if (triggeringAction) {
+      id += "|" + triggeringAction
+    }
 
-    if (this.actionsChangedToActions[componentName]) {
-      for (let chainedActionInstructions of this.actionsChangedToActions[componentName]) {
+    if (this.actionsChangedToActions[id]) {
+      for (let chainedActionInstructions of this.actionsChangedToActions[id]) {
         await this.performAction(chainedActionInstructions);
       }
     }
@@ -8230,7 +8301,7 @@ export default class Core {
           event.context.additionalItemCreditAchieved = {};
           for (let itemNumber of itemsSubmitted) {
             event.context.additionalItemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
-        }
+          }
         }
         event.context.pageCreditAchieved = await this.document.stateValues.creditAchieved;
       }
@@ -8384,6 +8455,7 @@ export default class Core {
         console.error(`Error saving event: ${e.message}`);
         // postMessage({
         //   messageType: "sendToast",
+        //   coreId: this.coreId,
         //   args: {
         //     message: `Error saving event: ${e.message}`,
         //     toastType: toastType.ERROR
@@ -8449,11 +8521,11 @@ export default class Core {
     let promise;
 
     if (Object.keys(infoToSend).length > 0) {
-        let event = {
+      let event = {
         object: { componentName: this.documentName, componentType: "document" },
-          verb: "isVisible",
+        verb: "isVisible",
         result: infoToSend
-        }
+      }
 
       promise = new Promise((resolve, reject) => {
 
@@ -8482,7 +8554,7 @@ export default class Core {
     clearTimeout(this.visibilityInfo.saveTimerId);
     clearTimeout(this.visibilityInfo.suspendTimerId);
     if (!this.visibilityInfo.suspended) {
-    this.visibilityInfo.suspended = true;
+      this.visibilityInfo.suspended = true;
       await this.sendVisibilityChangedEvents();
     }
   }
@@ -9504,7 +9576,8 @@ export default class Core {
     }
 
     postMessage({
-      messageType: "savedState"
+      messageType: "savedState",
+      coreId: this.coreId,
     })
 
     if (!this.flags.allowSaveState) {
@@ -9558,6 +9631,7 @@ export default class Core {
 
     // postMessage({
     //   messageType: "sendToast",
+    //   coreId: this.coreId,
     //   args: {
     //     message: "You're not connected to the internet. Changes are not saved. ",
     //     toastType: toastType.ERROR
@@ -9571,6 +9645,7 @@ export default class Core {
     } catch (e) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: "Error synchronizing data.  Changes not saved to the server.",
           toastType: toastType.ERROR
@@ -9584,6 +9659,7 @@ export default class Core {
     if (resp.status === null) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
           toastType: toastType.ERROR
@@ -9597,6 +9673,7 @@ export default class Core {
     if (!data.success) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: data.message,
           toastType: toastType.ERROR
@@ -9634,6 +9711,7 @@ export default class Core {
 
         postMessage({
           messageType: "resetPage",
+          coreId: this.coreId,
           args: {
             changedOnDevice: data.device,
             newCid: data.cid,
@@ -9644,6 +9722,7 @@ export default class Core {
         // if the cid changed without the attemptNumber changing, something went wrong
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: {
             errMsg: "Content changed unexpectedly!"
           }
@@ -9683,6 +9762,7 @@ export default class Core {
         if (resp.status === null) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error.  Are you connected to the internet?`,
               toastType: toastType.ERROR
@@ -9691,6 +9771,7 @@ export default class Core {
         } else if (!resp.data.success) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error: ${resp.data.message}`,
               toastType: toastType.ERROR
@@ -9702,6 +9783,7 @@ export default class Core {
 
           postMessage({
             messageType: "updateCreditAchieved",
+            coreId: this.coreId,
             args: data
           })
 
@@ -9709,6 +9791,7 @@ export default class Core {
           if (data.viewedSolution) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since solution was viewed.',
                 toastType: toastType.INFO
@@ -9718,6 +9801,7 @@ export default class Core {
           if (data.timeExpired) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the time allowed has expired.',
                 toastType: toastType.INFO
@@ -9727,6 +9811,7 @@ export default class Core {
           if (data.pastDueDate) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the due date has passed.',
                 toastType: toastType.INFO
@@ -9736,6 +9821,7 @@ export default class Core {
           if (data.exceededAttemptsAllowed) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since no more attempts are allowed.',
                 toastType: toastType.INFO
@@ -9745,6 +9831,7 @@ export default class Core {
           if (data.databaseError) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'Credit not saved due to database error.',
                 toastType: toastType.ERROR
@@ -9756,6 +9843,7 @@ export default class Core {
       .catch(e => {
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message: `Credit not saved due to error: ${e.message}`,
             toastType: toastType.ERROR
@@ -9892,6 +9980,7 @@ export default class Core {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message,
             toastType: toastType.ERROR
@@ -9913,6 +10002,7 @@ export default class Core {
 
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message,
           toastType: toastType.ERROR
@@ -9934,6 +10024,7 @@ export default class Core {
   requestAnimationFrame(args) {
     postMessage({
       messageType: "requestAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }
@@ -9941,6 +10032,7 @@ export default class Core {
   cancelAnimationFrame(args) {
     postMessage({
       messageType: "cancelAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }

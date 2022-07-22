@@ -266,7 +266,6 @@ export default function PageViewer(props) {
     }
   }
   function resetPage({changedOnDevice, newCid, newAttemptNumber}) {
-    console.log("resetPage", changedOnDevice, newCid, newAttemptNumber);
     if (newAttemptNumber !== attemptNumber) {
       toast(`Reverted activity as attempt number changed on other device`, toastType.ERROR);
       if (props.updateAttemptNumber) {
@@ -284,41 +283,51 @@ export default function PageViewer(props) {
     }
   }
   function calculateCidDoenetML() {
+    const coreIdWhenCalled = coreId.current;
     if (doenetMLFromProps !== void 0) {
       if (cidFromProps) {
         cidFromText(doenetMLFromProps).then((calcCid) => {
-          if (calcCid === cidFromProps) {
-            setDoenetML(doenetMLFromProps);
-            setCid(cidFromProps);
-            setStage("continue");
-          } else {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true);
+          if (coreIdWhenCalled === coreId.current) {
+            if (calcCid === cidFromProps) {
+              setDoenetML(doenetMLFromProps);
+              setCid(cidFromProps);
+              setStage("continue");
+            } else {
+              if (props.setIsInErrorState) {
+                props.setIsInErrorState(true);
+              }
+              setErrMsg(`doenetML did not match specified cid: ${cidFromProps}`);
             }
-            setErrMsg(`doenetML did not match specified cid: ${cidFromProps}`);
           }
         });
       } else {
         cidFromText(doenetMLFromProps).then((cid2) => {
-          setDoenetML(doenetMLFromProps);
-          setCid(cid2);
-          setStage("continue");
+          if (coreIdWhenCalled === coreId.current) {
+            setDoenetML(doenetMLFromProps);
+            setCid(cid2);
+            setStage("continue");
+          }
         });
       }
     } else {
       retrieveTextFileForCid(cidFromProps, "doenet").then((retrievedDoenetML) => {
-        setDoenetML(retrievedDoenetML);
-        setCid(cidFromProps);
-        setStage("continue");
-      }).catch((e) => {
-        if (props.setIsInErrorState) {
-          props.setIsInErrorState(true);
+        if (coreIdWhenCalled === coreId.current) {
+          setDoenetML(retrievedDoenetML);
+          setCid(cidFromProps);
+          setStage("continue");
         }
-        setErrMsg(`doenetML not found for cid: ${cidFromProps}`);
+      }).catch((e) => {
+        if (coreIdWhenCalled === coreId.current) {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true);
+          }
+          setErrMsg(`doenetML not found for cid: ${cidFromProps}`);
+        }
       });
     }
   }
   async function loadStateAndInitialize() {
+    const coreIdWhenCalled = coreId.current;
     let loadedState = false;
     if (props.flags.allowLocalState) {
       let localInfo;
@@ -407,7 +416,9 @@ export default function PageViewer(props) {
         }
       }
     }
-    startCore();
+    if (coreIdWhenCalled === coreId.current) {
+      startCore();
+    }
   }
   async function saveLoadedLocalStateToDatabase(localInfo) {
     let serverSaveId = await idb_get(`${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`);
@@ -429,7 +440,6 @@ export default function PageViewer(props) {
     } catch (e) {
       return {localInfo, cid, attemptNumber};
     }
-    console.log("result from saving to db", resp.data);
     let data = resp.data;
     if (!data.success) {
       return {localInfo, cid, attemptNumber};
@@ -453,6 +463,9 @@ export default function PageViewer(props) {
     return {localInfo, cid, attemptNumber};
   }
   function startCore() {
+    if (coreWorker.current) {
+      coreWorker.current.terminate();
+    }
     coreWorker.current = new Worker(props.unbundledCore ? "core/CoreWorker.js" : "/viewer/core.js", {type: "module"});
     coreWorker.current.postMessage({
       messageType: "createCore",
@@ -494,7 +507,6 @@ export default function PageViewer(props) {
       return;
     }
     let sWorker = new Worker("core/utils/initialState.js", {type: "module"});
-    console.log(`Generating initial renderer states for ${nVariants} variants`);
     sWorker.postMessage({
       messageType: "saveInitialRendererStates",
       args: {

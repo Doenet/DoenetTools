@@ -599,6 +599,110 @@ describe('TriggerSet Tag Tests', function () {
     });
   })
 
+  it('triggerSet triggered when click', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="P">(-1,2)</point>
+  </graph>
+  <math name="x">x</math>
+  <math name="y">y</math>
+  
+  <triggerSet triggerWhenTargetsClicked="P" >
+    <updateValue name="trip" target="x" newValue="3$x" simplify />
+    <updateValue name="quad" target="y" newValue="4$y" simplify />
+  </triggerSet>
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    });
+    cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('y')
+    });
+
+    cy.get('#\\/trip').should('not.exist');
+    cy.get('#\\/quad').should('not.exist');
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -1, y: -7 }
+      });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('y')
+      });
+    })
+
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "pointClicked",
+        componentName: "/P",
+      });
+      cy.get('#\\/x').should('contain.text', '3x')
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 }
+      });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('4y')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "pointClicked",
+        componentName: "/P",
+      });
+      cy.get('#\\/x').should('contain.text', '9x')
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 }
+      });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+      cy.get('#\\/y').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('16y')
+      });
+
+
+    });
+  })
+
   it('triggerWhen supercedes chaining for triggerset', () => {
 
     cy.window().then(async (win) => {
@@ -1129,6 +1233,32 @@ describe('TriggerSet Tag Tests', function () {
 
       });
     })
+  })
+
+  it('triggerSet with math in label', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Boolean to swap: <boolean name="b" /></p>
+
+    <triggerSet name="tset">
+      <label>It is <math>∂f/∂x</math></label>
+      <updateValue name="flip" target="b" newValue="not$b" type="boolean" />
+    </triggerSet>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/tset').should('contain.text', 'It is ∂f∂x')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/tset'].stateValues.label).eq("It is \\(\\frac{ \\partial f }{ \\partial x }\\)");
+    });
+
+
   })
 
 

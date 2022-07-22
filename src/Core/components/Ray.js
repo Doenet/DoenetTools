@@ -7,6 +7,7 @@ export default class Ray extends GraphicalComponent {
 
   actions = {
     moveRay: this.moveRay.bind(this),
+    rayClicked: this.rayClicked.bind(this),
   };
 
   static createAttributesObject() {
@@ -1479,6 +1480,17 @@ export default class Ray extends GraphicalComponent {
         }
       });
     }
+
+  }
+
+  async rayClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

@@ -207,7 +207,7 @@ export default class Point extends GraphicalComponent {
   }
 
   static returnChildGroups() {
-    
+
     let childGroups = super.returnChildGroups();
 
     childGroups.push(...[{
@@ -1123,9 +1123,23 @@ export default class Point extends GraphicalComponent {
   switchPoint() {
   }
 
+
+  async pointClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
+
   actions = {
     movePoint: this.movePoint.bind(this),
-    switchPoint: this.switchPoint.bind(this)
+    switchPoint: this.switchPoint.bind(this),
+    pointClicked: this.pointClicked.bind(this),
   };
 
 }

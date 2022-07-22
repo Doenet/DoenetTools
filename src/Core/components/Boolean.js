@@ -76,6 +76,12 @@ export default class BooleanComponent extends InlineComponent {
       defaultValue: 3,
       public: true,
     };
+    attributes.caseInsensitiveMatch = {
+      createComponentOfType: "boolean",
+      createStateVariable: "caseInsensitiveMatch",
+      defaultValue: false,
+      public: true,
+    };
     return attributes;
   }
 
@@ -274,6 +280,10 @@ export default class BooleanComponent extends InlineComponent {
         nPeriodicSetMatchesRequired: {
           dependencyType: "stateVariable",
           variableName: "nPeriodicSetMatchesRequired",
+        },
+        caseInsensitiveMatch: {
+          dependencyType: "stateVariable",
+          variableName: "caseInsensitiveMatch",
         },
         parsedExpression: {
           dependencyType: "stateVariable",

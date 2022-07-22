@@ -179,7 +179,7 @@ export default function ContentPanel({ main, support, hasNoHeaderPanel }) {
         <DragHandle
           ref={dragHandleRef}
           onMouseDown={onMouseDown}
-          data-cy="contentPanelDragHandle"
+          data-test="contentPanelDragHandle"
           key={`SupportHandle`}
         >
           <FontAwesomeIcon icon={faGripLinesVertical} />

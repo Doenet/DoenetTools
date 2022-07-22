@@ -32,7 +32,7 @@ export default React.memo(function sideBySide(props) {
       thisMarginLeft += SVs.gapWidth / 2;
     }
     if (i < nCols - 1) {
-      thisMarginRight += SVs.gapWidth / 2;
+      thisMarginRight += SVs.gapWidth / 2 + 1;
     }
     styledChildren.push(/* @__PURE__ */ React.createElement("span", {
       style: {
@@ -48,7 +48,7 @@ export default React.memo(function sideBySide(props) {
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement("div", {
     id: name,
-    style: {display: "flex", maxWidth: "800px", margin: "12px 0"}
+    style: {display: "flex", maxWidth: "850px", margin: "12px 0"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), styledChildren));

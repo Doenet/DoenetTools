@@ -181,7 +181,8 @@ const HomeButton = styled.button`
 function SelectionMenu(props){
   // console.log("child", props.children);
   return <>
-    <div style={{
+    <div 
+    style={{
       // paddingTop: "4px", 
       // marginTop: "2px",
       paddingBottom: "8px", 
@@ -220,6 +221,7 @@ function Menu(props) {
         aria-controls="menu" 
         onClick={() => setIsOpen((was) => !was)}
         id="menu-title"
+        data-test={`${props.type} Menu`}
       >
         <h3>{props.title}</h3>
       </MenuPanelTitle>
@@ -312,7 +314,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     if (panelToUse) {
       const key = `SelectionMenu${currentSelectionMenu}`;
       selectionPanel = (
-        <SelectionMenu key={key}>
+        <SelectionMenu key={key} >
           <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
             {React.createElement(panelToUse, { key })}
           </Suspense>
@@ -345,7 +347,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     let isOpen = initOpen[i];
 
     menusArray.push(
-      <Menu key={mKey} title={title} isInitOpen={isOpen}>
+      <Menu key={mKey} title={title} isInitOpen={isOpen} type={type}>
         <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
           {React.createElement(LazyMenuObj[type], { mKey })}
         </Suspense>

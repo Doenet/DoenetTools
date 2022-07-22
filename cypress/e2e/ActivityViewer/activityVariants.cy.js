@@ -415,7 +415,7 @@ describe('Activity variants tests', function () {
         expect(stateVariables1["/n"].stateValues.value).eq(activityData.variantsByPage[0])
 
 
-        cy.get('[data-cy=next]').click();
+        cy.get('[data-test=next]').click();
 
         cy.get('#\\/_text1').should('have.text', 'b');
 
@@ -516,7 +516,7 @@ describe('Activity variants tests', function () {
         })
 
 
-        cy.get('[data-cy=next]').click();
+        cy.get('[data-test=next]').click();
 
         cy.get('#\\/_text1').should('have.text', 'b');
 
@@ -541,12 +541,12 @@ describe('Activity variants tests', function () {
           })
 
 
-          cy.get('[data-cy=previous]').click();
+          cy.get('[data-test=previous]').click();
 
           cy.get(mathinputEditiableFieldAnchor).should('have.text', `${n}`)
           cy.get(mathinputCorrectAnchor).should('be.visible');
 
-          cy.get('[data-cy=next]').click();
+          cy.get('[data-test=next]').click();
 
           cy.get(textinputAnchor).should('have.value', l);
           cy.get(textinputCorrectAnchor).should('be.visible');
@@ -586,7 +586,7 @@ describe('Activity variants tests', function () {
           })
 
 
-          cy.get('[data-cy=previous]').click();
+          cy.get('[data-test=previous]').click();
 
           cy.get('#\\/_text1').should('have.text', 'a');
 
@@ -612,13 +612,13 @@ describe('Activity variants tests', function () {
           })
 
 
-          cy.get('[data-cy=next]').click();
+          cy.get('[data-test=next]').click();
 
           cy.get(textinputAnchor).type(`{end}{backspace}`);
           cy.get(textinputSubmitAnchor).click();
           cy.get(textinputCorrectAnchor).should('be.visible');
 
-          cy.get('[data-cy=previous]').click();
+          cy.get('[data-test=previous]').click();
 
           cy.get(mathinputAnchor).type(`{end}{backspace}`, { force: true });
           cy.get(mathinputSubmitAnchor).click();
@@ -727,7 +727,7 @@ describe('Activity variants tests', function () {
         })
 
 
-        cy.get('[data-cy=next]').click();
+        cy.get('[data-test=next]').click();
 
         cy.get('#\\/_text1').should('have.text', 'b');
 
@@ -752,12 +752,12 @@ describe('Activity variants tests', function () {
           })
 
 
-          cy.get('[data-cy=previous]').click();
+          cy.get('[data-test=previous]').click();
 
           cy.get(mathinputEditiableFieldAnchor).should('have.text', `${n}`)
           cy.get(mathinputCorrectAnchor).should('be.visible');
 
-          cy.get('[data-cy=next]').click();
+          cy.get('[data-test=next]').click();
 
           cy.get(textinputAnchor).should('have.value', l);
           cy.get(textinputCorrectAnchor).should('be.visible');
@@ -848,7 +848,7 @@ describe('Activity variants tests', function () {
         selection.page1 = page1;
 
 
-        cy.get('[data-cy=next]').click();
+        cy.get('[data-test=next]').click();
 
         cy.get('#\\/_title1').should('not.have.text', title1)
         cy.get('#\\/_text1').should('have.text', 'a').then(async () => {
@@ -943,7 +943,7 @@ describe('Activity variants tests', function () {
         expect(stateVariables1["/n"].stateValues.value).eq(activityData.variantsByPage[0])
 
 
-        cy.get('[data-cy=next]').click();
+        cy.get('[data-test=next]').click();
 
         cy.get('#\\/_text1').should('have.text', 'b');
 
@@ -1028,7 +1028,7 @@ describe('Activity variants tests', function () {
         expect(stateVariables1["/n"].stateValues.value).eq(activityData.variantsByPage[0])
 
 
-        cy.get('[data-cy=next]').click();
+        cy.get('[data-test=next]').click();
 
         cy.get('#\\/_text1').should('have.text', 'b');
 
@@ -1109,7 +1109,7 @@ describe('Activity variants tests', function () {
         expect(stateVariables1["/n"].stateValues.value).eq(activityData.variantsByPage[0])
 
 
-        cy.get('[data-cy=next]').click();
+        cy.get('[data-test=next]').click();
 
         cy.get('#\\/_text1').should('have.text', 'b');
 
@@ -1192,7 +1192,7 @@ describe('Activity variants tests', function () {
         expect(stateVariables1["/n"].stateValues.value).eq(variantOptions1[activityData.variantsByPage[0] - 1])
 
 
-        cy.get('[data-cy=next]').click();
+        cy.get('[data-test=next]').click();
 
         cy.get('#\\/_text1').should('have.text', 'b');
 
@@ -1277,7 +1277,7 @@ describe('Activity variants tests', function () {
         expect(stateVariables1["/n"].stateValues.value).eq(pageVariantOptions1[activityData.variantsByPage[0] - 1])
 
 
-        cy.get('[data-cy=next]').click();
+        cy.get('[data-test=next]').click();
 
         cy.get('#\\/_text1').should('have.text', 'b');
 

@@ -6,7 +6,11 @@ describe('Component Size Tag Tests', function () {
     cy.visit('/cypressTest')
   })
 
-  it('width of image from string', () => {
+  // Note: skipping all since we moved from widths to sizes
+  // TODO: create other tests for componentSize
+  // Could also check if the widths become the nearest size
+
+  it.skip('width of image from string', () => {
 
     let widthStrings = [
       "350", "350 px", "350px", "350 pixel", "  350  pixels ",
@@ -104,7 +108,7 @@ describe('Component Size Tag Tests', function () {
 
   })
 
-  it('changing absolute width of image', () => {
+  it.skip('changing absolute width of image', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -188,7 +192,7 @@ describe('Component Size Tag Tests', function () {
 
   })
 
-  it('changing relative width of image', () => {
+  it.skip('changing relative width of image', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -281,7 +285,7 @@ describe('Component Size Tag Tests', function () {
 
   })
 
-  it('height of image depends on width', () => {
+  it.skip('height of image depends on width', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `

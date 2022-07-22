@@ -1227,4 +1227,26 @@ describe('Extract Tag Tests', function () {
 
   })
 
+
+  it('extract is case insensitive', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <extract prop="LaTeX" assignNames="e1"><math>x</math></extract>
+    <extract prop="LATEX" assignNames="e2"><math>y</math></extract>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`check properties`);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/e1'].stateValues.value).eq("x");
+      expect(stateVariables['/e2'].stateValues.value).eq("y");
+    })
+
+  });
+
 });

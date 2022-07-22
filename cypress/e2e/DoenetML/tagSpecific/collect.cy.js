@@ -2765,5 +2765,142 @@ describe('Collect Tag Tests', function () {
 
   })
 
+  it('collect prop is case insensitive', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <panel>
+    <graph>
+      <point>(-3,1)</point>
+      <point>(-7,5)</point>
+    </graph>
+
+    <graph>
+      <copy target="_point1" assignNames="p1a" />
+      <point>(4,2)</point>
+      <point>
+        (<copy prop="y" target="_point2" />,
+        <copy prop="x" target="_point2" />)
+      </point>
+    </graph>
+    </panel>
+
+    <graph>
+      <collect componentTypes="point" name="points" target="_panel1" assignNames="q1 q2 q3 q4 q5" />
+    </graph>
+
+    <p>Coordinates of points: <collect componentTypes="point" prop="CoOrDS" name="coords" target="_panel1" assignNames="c1 c2 c3 c4 c5" /></p>
+    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="X" name="xs" target="_graph3" assignNames="x1 x2 x3 x4 x5" /></aslist></p>
+    <p><m>x</m>-coordinates of points via a copy: <aslist><copy name="xs2" target="xs" assignNames="xc1 xc2 xc3 xc4 xc5" /></aslist></p>
+    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="X" name="xs3" assignNames="xe1 xe2 xe3 xe4 xe5" ><copy name="points2" target="points" assignNames="qa1 qa2 qa3 qa4 qa5" /></extract></aslist></p>
+    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="Y" name="ys" target="_graph3" assignNames="y1 y2 y3 y4 y5" /></mean></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    let x1 = -3, y1 = 1;
+    let x2 = -7, y2 = 5;
+    let x3 = 4, y3 = 2;
+
+    let coords1Text = ('(' + x1 + ',' + y1 + ')').replace(/-/g, '−')
+    let coords2Text = ('(' + x2 + ',' + y2 + ')').replace(/-/g, '−')
+    let coords3Text = ('(' + x3 + ',' + y3 + ')').replace(/-/g, '−')
+    let coords2tText = ('(' + y2 + ',' + x2 + ')').replace(/-/g, '−')
+
+    let meany = (y1 + y2 + y1 + y3 + x2) / 5
+
+    cy.get('#\\/c1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(coords1Text);
+    })
+    cy.get('#\\/c2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(coords2Text);
+    })
+    cy.get('#\\/c3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(coords1Text);
+    })
+    cy.get('#\\/c4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(coords3Text);
+    })
+    cy.get('#\\/c5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(coords2tText);
+    })
+
+    cy.get('#\\/x1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x1).replace(/-/, '−'));
+    })
+    cy.get('#\\/x2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x2).replace(/-/, '−'));
+    })
+    cy.get('#\\/x3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x1).replace(/-/, '−'));
+    })
+    cy.get('#\\/x4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x3).replace(/-/, '−'));
+    })
+    cy.get('#\\/x5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(y2).replace(/-/, '−'));
+    })
+
+    cy.get('#\\/xc1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x1).replace(/-/, '−'));
+    })
+    cy.get('#\\/xc2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x2).replace(/-/, '−'));
+    })
+    cy.get('#\\/xc3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x1).replace(/-/, '−'));
+    })
+    cy.get('#\\/xc4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x3).replace(/-/, '−'));
+    })
+    cy.get('#\\/xc5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(y2).replace(/-/, '−'));
+    })
+
+
+    cy.get('#\\/xe1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x1).replace(/-/, '−'));
+    })
+    cy.get('#\\/xe2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x2).replace(/-/, '−'));
+    })
+    cy.get('#\\/xe3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x1).replace(/-/, '−'));
+    })
+    cy.get('#\\/xe4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(x3).replace(/-/, '−'));
+    })
+    cy.get('#\\/xe5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal(String(y2).replace(/-/, '−'));
+    })
+
+    cy.get('#\\/mean').find('.mjx-mrow').invoke('text').then((text) => {
+      expect(text.trim()).equal(String(meany).replace(/-/, '−'));
+    })
+
+
+    cy.window().then(async (win) => {
+      let xs = [x1, x2, x1, x3, y2];
+      let ys = [y1, y2, y1, y3, x2];
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let i = 0; i < 5; i++) {
+        expect((stateVariables[`/q${i + 1}`].stateValues.xs)[0]).eq(xs[i]);
+        expect((stateVariables[`/q${i + 1}`].stateValues.xs)[1]).eq(ys[i]);
+        expect((stateVariables[`/qa${i + 1}`].stateValues.xs)[0]).eq(xs[i]);
+        expect((stateVariables[`/qa${i + 1}`].stateValues.xs)[1]).eq(ys[i]);
+        expect((stateVariables[`/c${i + 1}`].stateValues.value)).eqls(["vector", xs[i], ys[i]]);
+        expect(stateVariables[`/x${i + 1}`].stateValues.value).eq(xs[i]);
+        expect(stateVariables[`/xc${i + 1}`].stateValues.value).eq(xs[i]);
+        expect(stateVariables[`/xe${i + 1}`].stateValues.value).eq(xs[i]);
+        expect(stateVariables[`/y${i + 1}`].stateValues.value).eq(ys[i]);
+      }
+      expect(stateVariables['/mean'].stateValues.value).eq(meany);
+
+    })
+
+  });
+
 
 });

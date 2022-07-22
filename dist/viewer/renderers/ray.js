@@ -61,17 +61,19 @@ export default React.memo(function Ray(props) {
     ];
     let newRayJXG = board.create("line", through, jsxRayAttributes);
     newRayJXG.on("drag", function(e) {
-      dragged.current = true;
-      pointCoords.current = calculatePointPositions(e);
-      callAction({
-        action: actions.moveRay,
-        args: {
-          endpointcoords: pointCoords.current[0],
-          throughcoords: pointCoords.current[1],
-          transient: true,
-          skippable: true
-        }
-      });
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
+        pointCoords.current = calculatePointPositions(e);
+        callAction({
+          action: actions.moveRay,
+          args: {
+            endpointcoords: pointCoords.current[0],
+            throughcoords: pointCoords.current[1],
+            transient: true,
+            skippable: true
+          }
+        });
+      }
       rayJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastEndpointFromCore.current);
       rayJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastThroughpointFromCore.current);
     });
@@ -83,6 +85,10 @@ export default React.memo(function Ray(props) {
             endpointcoords: pointCoords.current[0],
             throughcoords: pointCoords.current[1]
           }
+        });
+      } else {
+        callAction({
+          action: actions.rayClicked
         });
       }
     });

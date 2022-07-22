@@ -14,6 +14,7 @@ export default React.memo(function Vector(props) {
   let pointsAtDown = useRef(false);
   let headBeingDragged = useRef(false);
   let tailBeingDragged = useRef(false);
+  let downOnPoint = useRef(null);
   let headcoords = useRef(null);
   let tailcoords = useRef(null);
   let previousWithLabel = useRef(false);
@@ -98,7 +99,12 @@ export default React.memo(function Vector(props) {
           action: actions.moveVector,
           args: {tailcoords: tailcoords.current}
         });
+      } else if (!headBeingDragged.current && !tailBeingDragged.current) {
+        callAction({
+          action: actions.vectorClicked
+        });
       }
+      downOnPoint.current = null;
     });
     newPoint2JXG.on("up", (e) => {
       if (headBeingDragged.current && !tailBeingDragged.current) {
@@ -106,7 +112,12 @@ export default React.memo(function Vector(props) {
           action: actions.moveVector,
           args: {headcoords: headcoords.current}
         });
+      } else if (!headBeingDragged.current && !tailBeingDragged.current) {
+        callAction({
+          action: actions.vectorClicked
+        });
       }
+      downOnPoint.current = null;
     });
     newVectorJXG.on("up", (e) => {
       if (headBeingDragged.current && tailBeingDragged.current) {
@@ -117,15 +128,23 @@ export default React.memo(function Vector(props) {
             tailcoords: tailcoords.current
           }
         });
+      } else if (!headBeingDragged.current && !tailBeingDragged.current && downOnPoint.current === null) {
+        callAction({
+          action: actions.vectorClicked
+        });
       }
     });
     newPoint1JXG.on("down", function(e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 1;
     });
     newPoint2JXG.on("down", function(e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 2;
     });
     newVectorJXG.on("down", function(e) {
       headBeingDragged.current = false;
@@ -137,38 +156,35 @@ export default React.memo(function Vector(props) {
       ];
     });
     function onDragHandler(e, i) {
-      if (i === 0) {
-        tailBeingDragged.current = true;
-      } else if (i === 1) {
-        headBeingDragged.current = true;
-      } else {
-        headBeingDragged.current = true;
-        tailBeingDragged.current = true;
-      }
-      let instructions = {transient: true, skippable: true};
-      let performMove = false;
-      if (headBeingDragged.current) {
-        performMove = true;
-        if (i === -1) {
-          headcoords.current = calculatePointPosition(e, 1);
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        if (i === 0) {
+          tailBeingDragged.current = true;
+        } else if (i === 1) {
+          headBeingDragged.current = true;
         } else {
-          headcoords.current = [newVectorJXG.point2.X(), newVectorJXG.point2.Y()];
+          headBeingDragged.current = true;
+          tailBeingDragged.current = true;
         }
-        instructions.headcoords = headcoords.current;
-      }
-      if (tailBeingDragged.current) {
-        performMove = true;
-        if (i === -1) {
-          tailcoords.current = calculatePointPosition(e, 0);
-        } else {
-          tailcoords.current = [newVectorJXG.point1.X(), newVectorJXG.point1.Y()];
+        let instructions = {transient: true, skippable: true};
+        if (headBeingDragged.current) {
+          if (i === -1) {
+            headcoords.current = calculatePointPosition(e, 1);
+          } else {
+            headcoords.current = [newVectorJXG.point2.X(), newVectorJXG.point2.Y()];
+          }
+          instructions.headcoords = headcoords.current;
         }
-        instructions.tailcoords = tailcoords.current;
-      }
-      if (i === 0 || i === 1) {
-        instructions.sourceInformation = {vertex: i};
-      }
-      if (performMove) {
+        if (tailBeingDragged.current) {
+          if (i === -1) {
+            tailcoords.current = calculatePointPosition(e, 0);
+          } else {
+            tailcoords.current = [newVectorJXG.point1.X(), newVectorJXG.point1.Y()];
+          }
+          instructions.tailcoords = tailcoords.current;
+        }
+        if (i === 0 || i === 1) {
+          instructions.sourceInformation = {vertex: i};
+        }
         callAction({
           action: actions.moveVector,
           args: instructions

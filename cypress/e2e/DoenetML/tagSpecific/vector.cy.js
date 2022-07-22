@@ -190,6 +190,146 @@ describe('Vector Tag Tests', function () {
     })
   })
 
+  it('vector with just label, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector><label><m>\\vec{v}</m></label></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = 1;
+    let heady = 0;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_vector1"].stateValues.label).eq("\\(\\vec{v}\\)");
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+  })
+
   it('vector with sugared tuple giving xs, head/tail/displacement copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -224,6 +364,152 @@ describe('Vector Tag Tests', function () {
     let displacementTailShifty = 0;
 
     cy.window().then(async (win) => {
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+
+  })
+
+  it('vector with sugared tuple giving xs and label, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector>
+    (-4,2)
+    <label><m>\\vec{v}</m></label>
+  </vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_vector1"].stateValues.label).eq("\\(\\vec{v}\\)");
 
       await testVectorCopiedHTD({
         headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
@@ -471,6 +757,148 @@ describe('Vector Tag Tests', function () {
 
   })
 
+  it('vector with point giving displacement and label, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <vector><point>(-4,2)</point><label><m>\\vec{v}</m></label></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_vector1"].stateValues.label).eq("\\(\\vec{v}\\)");
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+  })
+
   it('vector from vector giving displacement, head/tail/displacement copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -610,6 +1038,147 @@ describe('Vector Tag Tests', function () {
 
   })
 
+  it('vector from vector giving displacement and label, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector><label><m>\\vec{v}</m></label><vector>(-4,2)</vector></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_vector1"].stateValues.label).eq("\\(\\vec{v}\\)");
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+  })
+
   it('vector with just displacement, head/tail/displacement copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -642,6 +1211,148 @@ describe('Vector Tag Tests', function () {
     let displacementTailShifty = 0;
 
     cy.window().then(async (win) => {
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+  })
+
+  it('vector with just displacement and label, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector displacement ="(-4,2)" >
+    <label><m>\\vec{v}</m></label>
+  </vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_vector1"].stateValues.label).eq("\\(\\vec{v}\\)");
 
       await testVectorCopiedHTD({
         headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
@@ -887,6 +1598,725 @@ describe('Vector Tag Tests', function () {
 
   })
 
+  it('vector with xs and label, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector xs="-4 2" ><label><m>\\vec{v}</m></label></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_vector1"].stateValues.label).eq("\\(\\vec{v}\\)");
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+  })
+
+  it('vector with math giving displacement, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector><math>(-4,2)</math></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+
+  })
+
+  it('vector with math giving displacement and label, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector>
+    <math>(-4,2)</math>
+    <label><m>\\vec{v}</m></label>
+  </vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_vector1"].stateValues.label).eq("\\(\\vec{v}\\)");
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+
+  })
+
+  it('vector with copied coords giving displacement, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <coords name="c">(-4,2)</coords>
+  <graph>
+  <vector>
+    <copy target="c" createComponentOfType="coords" />
+  </vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+
+  })
+
+  it('vector with copied coords giving displacement and label, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <coords name="c">(-4,2)</coords>
+  <graph>
+  <vector>
+    <label><m>\\vec{v}</m></label>
+    <copy target="c" createComponentOfType="coords" />
+  </vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_vector1"].stateValues.label).eq("\\(\\vec{v}\\)");
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+
+  })
+
   it('vector with x and y, head/tail/displacement copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -920,6 +2350,147 @@ describe('Vector Tag Tests', function () {
     let displacementTailShifty = 0;
 
     cy.window().then(async (win) => {
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move vector up and to the right')
+    cy.window().then(async (win) => {
+
+      let moveX = 3;
+      let moveY = 2;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: [tailx, taily],
+          headcoords: [headx, heady]
+        }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+    cy.log('move copied tail moves vector')
+    cy.window().then(async (win) => {
+
+      let moveX = -8;
+      let moveY = 4;
+      tailx += moveX;
+      headx += moveX;
+      taily += moveY;
+      heady += moveY;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/tail",
+        args: { x: tailx, y: taily }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied head')
+    cy.window().then(async (win) => {
+
+      headx = -3;
+      heady = -9;
+
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/head",
+        args: { x: headx, y: heady }
+      })
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+    })
+
+    cy.log('move copied displacement')
+    cy.window().then(async (win) => {
+
+      let displacementTailShiftx = -4;
+      let displacementTailShifty = -5;
+
+      let displacementx = 2;
+      let displacementy = -3;
+
+      headx = tailx + displacementx;
+      heady = taily + displacementy;
+
+      let displacementheadx = displacementTailShiftx + displacementx;
+      let displacementheady = displacementTailShifty + displacementy;
+
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/displacement",
+        args: {
+          tailcoords: [displacementTailShiftx, displacementTailShifty],
+          headcoords: [displacementheadx, displacementheady]
+        }
+      })
+
+
+      await testVectorCopiedHTD({
+        headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty
+      })
+
+    })
+
+  })
+
+  it('vector with x and y and label, head/tail/displacement copied', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+  <vector x="-4" y="2" ><label><m>\\vec{v}</m></label></vector>
+  </graph>
+
+  <graph>
+  <copy prop="tail" target="_vector1" assignNames="tail" />
+  <copy prop="head" target="_vector1" assignNames="head" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement" />
+  </graph>
+  
+  <copy prop="tail" target="_vector1" assignNames="tail2" />
+  <copy prop="head" target="_vector1" assignNames="head2" />
+  <copy prop="displacement" target="_vector1" assignNames="displacement2" />
+  `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+
+    let tailx = 0;
+    let taily = 0;
+    let headx = -4;
+    let heady = 2;
+    let displacementTailShiftx = 0;
+    let displacementTailShifty = 0;
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_vector1"].stateValues.label).eq("\\(\\vec{v}\\)");
 
       await testVectorCopiedHTD({
         headx, heady, tailx, taily, displacementTailShiftx, displacementTailShifty

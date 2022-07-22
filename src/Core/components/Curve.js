@@ -15,7 +15,8 @@ export default class Curve extends GraphicalComponent {
     moveControlVector: this.moveControlVector.bind(this),
     moveThroughPoint: this.moveThroughPoint.bind(this),
     changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
-    switchCurve: this.switchCurve.bind(this)
+    switchCurve: this.switchCurve.bind(this),
+    curveClicked: this.curveClicked.bind(this)
   };
 
   static primaryStateVariableForDefinition = "fShadow";
@@ -120,12 +121,7 @@ export default class Curve extends GraphicalComponent {
 
     let breakNonLabelIntoFunctionsByCommas = function ({ matchedChildren, componentInfoObjects }) {
 
-      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: "label"
-      });
-
-      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.attributes?.createComponentOfType?.primitive)
+      let componentIsLabel = x=> componentInfoObjects.componentIsSpecifiedType(x, "label");
 
       // only apply if all children are strings, macros, or labels
       if (matchedChildren.length === 0 || !matchedChildren.every(child =>
@@ -3256,6 +3252,16 @@ export default class Curve extends GraphicalComponent {
 
   }
 
+  async curveClicked({ actionId, name }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 
 }
 

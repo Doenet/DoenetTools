@@ -624,6 +624,86 @@ describe('UpdateValue Tag Tests', function () {
     });
   })
 
+  it('update triggered when click', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(-1,2)</point>
+    </graph>
+    <math name="x">x</math>
+    
+    <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhenTargetsClicked="P" />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+
+    cy.get('#\\/trip').should('not.exist');
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: -1, y: -7 }
+      });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('x')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "pointClicked",
+        componentName: "/P",
+      });
+      cy.get('#\\/x').should('contain.text', '3x')
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 5, y: 9 }
+      });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('3x')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "pointClicked",
+        componentName: "/P",
+      });
+      cy.get('#\\/x').should('contain.text', '9x')
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+    })
+
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: 9, y: 7 }
+      });
+      cy.get('#\\/x').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+        expect(text.trim()).equal('9x')
+      });
+
+
+    });
+  })
+
   it('chained updates based on trigger', () => {
 
     cy.window().then(async (win) => {
@@ -1797,6 +1877,29 @@ describe('UpdateValue Tag Tests', function () {
 
 
 
+
+  })
+
+  it('math in label', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="b" />
+    <updateValue target="b" newValue="not$b" type="boolean" name="update">
+      <label>we have <m>\\prod_{i=1}^3 y_i</m></label>
+    </updateValue>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/update').should('contain.text', 'we have ∏3i=1yi')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/update'].stateValues.label).eq("we have \\(\\prod_{i=1}^3 y_i\\)");
+    });
 
   })
 

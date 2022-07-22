@@ -1,5 +1,6 @@
 import cssesc from 'cssesc';
 import { createFunctionFromDefinition } from '../../../../src/Core/utils/function';
+import { widthsBySize } from '../../../../src/Core/utils/size';
 
 function cesc(s) {
   s = cssesc(s, { isIdentifier: true });
@@ -369,9 +370,9 @@ describe('Graph Tag Tests', function () {
 
     checkLimits(xmin, xmax, ymin, ymax)
     cy.get('#\\/g').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
     cy.get('#\\/g').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+      .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     cy.log('set aspect ratio to 2')
     cy.get('#\\/aspectRatio textarea').type('{end}{backspace}2{enter}', { force: true }).then(() => {
@@ -379,9 +380,9 @@ describe('Graph Tag Tests', function () {
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -391,9 +392,9 @@ describe('Graph Tag Tests', function () {
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -425,9 +426,9 @@ describe('Graph Tag Tests', function () {
       ymax = 10;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -437,9 +438,9 @@ describe('Graph Tag Tests', function () {
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -449,9 +450,9 @@ describe('Graph Tag Tests', function () {
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -483,9 +484,9 @@ describe('Graph Tag Tests', function () {
       ymax = 10;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -495,9 +496,9 @@ describe('Graph Tag Tests', function () {
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -507,9 +508,9 @@ describe('Graph Tag Tests', function () {
       ymax = 20;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -540,9 +541,9 @@ describe('Graph Tag Tests', function () {
       ymax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -551,9 +552,9 @@ describe('Graph Tag Tests', function () {
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -562,9 +563,9 @@ describe('Graph Tag Tests', function () {
       ymax = 35;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -595,9 +596,9 @@ describe('Graph Tag Tests', function () {
       ymax = 5;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -606,9 +607,9 @@ describe('Graph Tag Tests', function () {
       ymin = -5;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -617,9 +618,9 @@ describe('Graph Tag Tests', function () {
       ymin = -35;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -650,9 +651,9 @@ describe('Graph Tag Tests', function () {
       ymax = 30;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -662,9 +663,9 @@ describe('Graph Tag Tests', function () {
       ymax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -674,9 +675,9 @@ describe('Graph Tag Tests', function () {
       ymax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -707,9 +708,9 @@ describe('Graph Tag Tests', function () {
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -719,9 +720,9 @@ describe('Graph Tag Tests', function () {
       xmax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -731,9 +732,9 @@ describe('Graph Tag Tests', function () {
       xmax = 15;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -765,9 +766,9 @@ describe('Graph Tag Tests', function () {
       ymax = 60;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -777,9 +778,9 @@ describe('Graph Tag Tests', function () {
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -789,9 +790,9 @@ describe('Graph Tag Tests', function () {
       ymax = 140;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -822,9 +823,9 @@ describe('Graph Tag Tests', function () {
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -833,9 +834,9 @@ describe('Graph Tag Tests', function () {
       xmin = -90;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -844,9 +845,9 @@ describe('Graph Tag Tests', function () {
       xmin = 0;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -877,9 +878,9 @@ describe('Graph Tag Tests', function () {
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -888,9 +889,9 @@ describe('Graph Tag Tests', function () {
       xmax = 90;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -899,9 +900,9 @@ describe('Graph Tag Tests', function () {
       xmax = 0;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -932,9 +933,9 @@ describe('Graph Tag Tests', function () {
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -943,9 +944,9 @@ describe('Graph Tag Tests', function () {
       ymin = 0;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -954,9 +955,9 @@ describe('Graph Tag Tests', function () {
       ymin = -120;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
@@ -987,9 +988,9 @@ describe('Graph Tag Tests', function () {
       ymax = 40;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+        .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
     })
 
@@ -998,9 +999,9 @@ describe('Graph Tag Tests', function () {
       ymax = 0;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 149).and('be.lte', 151)
+        .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
 
     })
 
@@ -1009,14 +1010,13 @@ describe('Graph Tag Tests', function () {
       ymax = 120;
       checkLimits(xmin, xmax, ymin, ymax)
       cy.get('#\\/g').invoke('css', 'width')
-        .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+        .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
       cy.get('#\\/g').invoke('css', 'height')
-        .then(height => parseInt(height)).should('be.gte', 599).and('be.lte', 601)
+        .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
 
     })
 
   });
-
 
   it('identical axis scales, without given aspect ratio', () => {
     cy.window().then(async (win) => {
@@ -1060,9 +1060,9 @@ describe('Graph Tag Tests', function () {
 
 
     cy.get('#\\/g').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
     cy.get('#\\/g').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 299).and('be.lte', 301)
+      .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
 
 
     checkLimits(-10, 10, -10, 10)
@@ -1073,9 +1073,9 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/xmin').should('have.text', '-5');
     cy.get('#\\/g').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
     cy.get('#\\/g').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 399).and('be.lte', 401)
+      .then(height => parseInt(height)).should('be.gte', 566).and('be.lte', 567)
 
     checkLimits(-5, 10, -10, 10)
 
@@ -1084,9 +1084,9 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/ymax').should('have.text', '0');
     cy.get('#\\/g').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 299).and('be.lte', 301)
+      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
     cy.get('#\\/g').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 199).and('be.lte', 201)
+      .then(height => parseInt(height)).should('be.gte', 283).and('be.lte', 284)
 
     checkLimits(-5, 10, -10, 0)
 
@@ -1366,55 +1366,160 @@ describe('Graph Tag Tests', function () {
 
   });
 
-  it('relative width', () => {
+  it('graph sizes', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
 
-    <graph name="g100" width="100%" />
-    <graph name="g50" width="50%" />
+    <graph name="g" />
 
-    <graph name="g100_2" width="100%" aspectRatio="2" />
-    <graph name="g50_2" width="50%" aspectRatio="2" />
+    <graph name="gtiny" size="tiny" />
+    <graph name="gsmall" size="small" />
+    <graph name="gmedium" size="medium" />
+    <graph name="glarge" size="large" />
+    <graph name="gfull" size="full" />
+    <graph name="ginvalid" size="invalid" />
 
-    <graph name="g100_12" width="100%" aspectRatio="1/2" />
-    <graph name="g50_12" width="50%" aspectRatio="1/2" />
+    <graph name="ga10" width="10" />
+    <graph name="ga100" width="100" />
+    <graph name="ga200" width="200" />
+    <graph name="ga300" width="300" />
+    <graph name="ga400" width="400" />
+    <graph name="ga500" width="500" />
+    <graph name="ga600" width="600" />
+    <graph name="ga700" width="700" />
+    <graph name="ga800" width="800" />
+    <graph name="ga900" width="900" />
+    <graph name="ga10000" width="10000" />
+
+    <graph name="gp1" width="1%" />
+    <graph name="gp10" width="10%" />
+    <graph name="gp20" width="20%" />
+    <graph name="gp30" width="30%" />
+    <graph name="gp40" width="40%" />
+    <graph name="gp50" width="50%" />
+    <graph name="gp60" width="60%" />
+    <graph name="gp70" width="70%" />
+    <graph name="gp80" width="80%" />
+    <graph name="gp90" width="90%" />
+    <graph name="gp100" width="100%" />
+    <graph name="gp1000" width="1000%" />
+
+    <graph name="gbadwidth" width="bad" />
+
     `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
 
-    cy.get('#\\/g100').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 849).and('be.lte', 851)
-    cy.get('#\\/g100').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
+    let expectedSizes = {
+      g: "medium",
+      gtiny: "tiny",
+      gsmall: "small",
+      gmedium: "medium",
+      glarge: "large",
+      gfull: "full",
+      ginvalid: "medium",
+      ga10: "tiny",
+      ga100: "tiny",
+      ga200: "small",
+      ga300: "small",
+      ga400: "medium",
+      ga500: "medium",
+      ga600: "large",
+      ga700: "large",
+      ga800: "full",
+      ga900: "full",
+      ga10000: "full",
+      gp1: "tiny",
+      gp10: "tiny",
+      gp20: "small",
+      gp30: "small",
+      gp40: "small",
+      gp50: "medium",
+      gp60: "medium",
+      gp70: "large",
+      gp80: "large",
+      gp90: "full",
+      gp100: "full",
+      gp1000: "full",
+      gbadwidth: "medium",
+    }
 
-    cy.get('#\\/g50').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get('#\\/g50').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      for (let name in expectedSizes) {
+        expect(stateVariables["/" + name].stateValues.size).eq(expectedSizes[name])
+      }
 
-    cy.get('#\\/g100_2').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 849).and('be.lte', 851)
-    cy.get('#\\/g100_2').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 424).and('be.lte', 426)
+    });
 
-    cy.get('#\\/g50_2').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get('#\\/g50_2').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 212).and('be.lte', 213)
+    for (let name in expectedSizes) {
+      cy.get(cesc("#/" + name)).invoke('css', 'width')
+        .then(width => parseInt(width)).should('be.gte', widthsBySize[expectedSizes[name]] - 4).and('be.lte', widthsBySize[expectedSizes[name]] + 1)
+    }
 
-    cy.get('#\\/g100_12').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 849).and('be.lte', 851)
-    cy.get('#\\/g100_12').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 1699).and('be.lte', 1701)
+  });
 
-    cy.get('#\\/g50_12').invoke('css', 'width')
-      .then(width => parseInt(width)).should('be.gte', 424).and('be.lte', 426)
-    cy.get('#\\/g50_12').invoke('css', 'height')
-      .then(height => parseInt(height)).should('be.gte', 849).and('be.lte', 851)
+  it('horizontal align', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g" />
+    <graph name="gleft" horizontalAlign="left" />
+    <graph name="gright" horizontalAlign="right" />
+    <graph name="gcenter" horizontalAlign="center" />
+    <graph name="ginvalid" horizontalAlign="invalid" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g"].stateValues.horizontalAlign).eq("center")
+      expect(stateVariables["/gleft"].stateValues.horizontalAlign).eq("left")
+      expect(stateVariables["/gright"].stateValues.horizontalAlign).eq("right")
+      expect(stateVariables["/gcenter"].stateValues.horizontalAlign).eq("center")
+      expect(stateVariables["/ginvalid"].stateValues.horizontalAlign).eq("center")
+
+    });
+
+    // TODO: anything to check in the DOM?
+
+  });
+
+  it('displayMode', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g" />
+    <graph name="ginline" displayMode="inline" />
+    <graph name="gblock" displayMode="block" />
+    <graph name="ginvalid" displayMode="invalid" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g"].stateValues.displayMode).eq("block")
+      expect(stateVariables["/ginline"].stateValues.displayMode).eq("inline")
+      expect(stateVariables["/gblock"].stateValues.displayMode).eq("block")
+      expect(stateVariables["/ginvalid"].stateValues.displayMode).eq("block")
+
+    });
+
+    // TODO: anything to check in the DOM?
 
   });
 
@@ -1589,13 +1694,15 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/xe').should('contain.text', 'e2e3e4e5e')
     cy.get('#\\/xe').should('contain.text', '−e')
-    cy.get('#\\/xe').should('contain.text', '−2e−3e−4e−5e')
+    cy.get('#\\/xe').should('contain.text', '−2e−3e')
+    cy.get('#\\/xe').should('contain.text', '−4e−5e')
     cy.get('#\\/xe').should('contain.text', '10')
     cy.get('#\\/xe').should('contain.text', '−10')
 
     cy.get('#\\/ye').should('contain.text', 'e2e3e4e5e')
-    cy.get('#\\/ye').should('contain.text', '−e−2e')
-    cy.get('#\\/ye').should('contain.text', '−3e−4e−5e')
+    cy.get('#\\/ye').should('contain.text', '−e')
+    cy.get('#\\/ye').should('contain.text', '−2e−3e')
+    cy.get('#\\/ye').should('contain.text', '−4e−5e')
     cy.get('#\\/ye').should('contain.text', '10')
     cy.get('#\\/ye').should('contain.text', '−10')
 

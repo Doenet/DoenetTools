@@ -152,9 +152,15 @@ export default React.memo(function Curve(props) {
     draggedControlPoint.current = null;
     draggedThroughPoint.current = null;
     newCurveJXG.on("up", function(e) {
-      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null && SVs.switchable && !SVs.fixed) {
+      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null) {
+        if (SVs.switchable && !SVs.fixed) {
+          callAction({
+            action: actions.switchCurve
+          });
+        }
         callAction({
-          action: actions.switchCurve
+          action: actions.curveClicked,
+          args: {name}
         });
       }
     });

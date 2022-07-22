@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from "styled-components";
+import { MathJax } from "better-react-mathjax";
 
 const ButtonStyling = styled.button`
   margin: ${props => props.theme.margin};
@@ -98,6 +99,9 @@ export default function Button(props) {
     else if (props.icon){
         icon = props.icon;
         button.value = ''
+    }
+    if(props.value && props.valueHasLatex) {
+      button.value = <MathJax hideUntilTypeset={"first"} inline dynamic >{button.value}</MathJax>
     }
   };
 

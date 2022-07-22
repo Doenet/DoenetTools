@@ -150,6 +150,13 @@ export default React.memo(function Point(props) {
         callAction({
           action: actions.switchPoint
         });
+        callAction({
+          action: actions.pointClicked
+        });
+      } else {
+        callAction({
+          action: actions.pointClicked
+        });
       }
       dragged.current = false;
       shadowPointJXG.current.visProp.fillopacity = 0;

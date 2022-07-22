@@ -66,7 +66,7 @@ export default React.memo(function sideBySide(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <div id={name} style={{display:"flex",maxWidth:"800px", margin: "12px 0"}}>
+    <div id={name} style={{display:"flex",maxWidth:"850px", margin: "12px 0"}}>
       <a name={name} />
       {styledChildren}
     </div>
