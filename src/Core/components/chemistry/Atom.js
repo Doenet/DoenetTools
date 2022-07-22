@@ -6,6 +6,7 @@ export default class Atom extends InlineComponent {
   static componentType = "atom";
   static rendererType = "math";
 
+  static primaryStateVariableForDefinition = "atomicNumberShadow";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -26,6 +27,33 @@ export default class Atom extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    // atomicNumberShadow will be null unless atom was created
+    // via an adapter or copy prop or from serialized state with coords value
+    // In case of adapter or copy prop,
+    // given the primaryStateVariableForDefinition static variable,
+    // the definition of atomicNumberShadow will be changed to be the value
+    // that shadows the component adapted or copied
+    stateVariableDefinitions.atomicNumberShadow = {
+      defaultValue: null,
+      hasEssential: true,
+      essentialVarName: "atomicNumber",
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          atomicNumberShadow: true
+        }
+      }),
+      inverseDefinition: async function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "atomicNumberShadow",
+            value: desiredStateVariableValues.atomicNumberShadow
+          }]
+        };
+      }
+    }
+
     stateVariableDefinitions.dataForAtom = {
       returnDependencies: () => ({
         fileContents: {
@@ -43,6 +71,10 @@ export default class Atom extends InlineComponent {
           attributeName: "atomicNumber",
           variableNames: ["value"]
         },
+        atomicNumberShadow: {
+          dependencyType: "stateVariable",
+          variableName: "atomicNumberShadow"
+        },
       }),
 
 
@@ -53,6 +85,8 @@ export default class Atom extends InlineComponent {
           symbol = dependencyValues.symbolAttr.stateValues.value.toLowerCase();
         } else if (dependencyValues.atomicNumberAttr) {
           atomicNumber = dependencyValues.atomicNumberAttr.stateValues.value;
+        } else if (dependencyValues.atomicNumberShadow) {
+          atomicNumber = dependencyValues.atomicNumberShadow;
         } else {
           return { setValue: { dataForAtom: null } }
         }
@@ -83,7 +117,7 @@ export default class Atom extends InlineComponent {
 
         let numColumns = columnNames.length;
 
-        let columnTypes = ["number", "string", "string", "number", "number", "string",  "number", "string", "string", "number", "number", "number", "number", "number", "number", "number", "string"];
+        let columnTypes = ["number", "string", "string", "number", "number", "string", "number", "string", "string", "number", "number", "number", "number", "number", "number", "number", "string"];
 
 
         let dataForAtom = {};
@@ -93,7 +127,7 @@ export default class Atom extends InlineComponent {
           let value;
           if (prescribedType === "number") {
             value = rowData[colInd];
-            if(value === "") {
+            if (value === "") {
               value = NaN;
             } else {
               value = Number(value);
@@ -267,8 +301,6 @@ export default class Atom extends InlineComponent {
       }
     }
 
-
-
     stateVariableDefinitions.chargeOfCommonIon = {
       public: true,
       shadowingInstructions: {
@@ -294,7 +326,6 @@ export default class Atom extends InlineComponent {
       }
     }
 
-
     stateVariableDefinitions.metalCategory = {
       public: true,
       shadowingInstructions: {
@@ -319,7 +350,6 @@ export default class Atom extends InlineComponent {
 
       }
     }
-
 
     stateVariableDefinitions.groupName = {
       public: true,
@@ -371,7 +401,6 @@ export default class Atom extends InlineComponent {
       }
     }
 
-
     stateVariableDefinitions.ionizationEnergy = {
       public: true,
       shadowingInstructions: {
@@ -396,7 +425,6 @@ export default class Atom extends InlineComponent {
 
       }
     }
-
 
     stateVariableDefinitions.meltingPoint = {
       public: true,
@@ -423,7 +451,6 @@ export default class Atom extends InlineComponent {
       }
     }
 
-
     stateVariableDefinitions.boilingPoint = {
       public: true,
       shadowingInstructions: {
@@ -448,7 +475,6 @@ export default class Atom extends InlineComponent {
 
       }
     }
-
 
     stateVariableDefinitions.atomicRadius = {
       public: true,
@@ -475,7 +501,6 @@ export default class Atom extends InlineComponent {
       }
     }
 
-
     stateVariableDefinitions.density = {
       public: true,
       shadowingInstructions: {
@@ -500,8 +525,6 @@ export default class Atom extends InlineComponent {
 
       }
     }
-
-
 
     stateVariableDefinitions.electronegativity = {
       public: true,
@@ -528,8 +551,6 @@ export default class Atom extends InlineComponent {
       }
     }
 
-
-
     stateVariableDefinitions.electronConfiguration = {
       public: true,
       shadowingInstructions: {
@@ -555,7 +576,6 @@ export default class Atom extends InlineComponent {
       }
     }
 
-
     stateVariableDefinitions.orbitalDiagram = {
       public: true,
       shadowingInstructions: {
@@ -579,7 +599,6 @@ export default class Atom extends InlineComponent {
         }
       }
     }
-
 
     stateVariableDefinitions.latex = {
       additionalStateVariablesDefined: [{
@@ -608,6 +627,14 @@ export default class Atom extends InlineComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    "name",
+    {
+      stateVariable: "atomicNumber",
+      componentType: "ion"
+    }
+  ];
 
 }
 

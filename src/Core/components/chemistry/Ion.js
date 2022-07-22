@@ -6,6 +6,7 @@ export default class Ion extends InlineComponent {
   static componentType = "ion";
   static rendererType = "math";
 
+  static primaryStateVariableForDefinition = "atomicNumberShadow";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -37,6 +38,32 @@ export default class Ion extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+    // atomicNumberShadow will be null unless atom was created
+    // via an adapter or copy prop or from serialized state with coords value
+    // In case of adapter or copy prop,
+    // given the primaryStateVariableForDefinition static variable,
+    // the definition of atomicNumberShadow will be changed to be the value
+    // that shadows the component adapted or copied
+    stateVariableDefinitions.atomicNumberShadow = {
+      defaultValue: null,
+      hasEssential: true,
+      essentialVarName: "atomicNumber",
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          atomicNumberShadow: true
+        }
+      }),
+      inverseDefinition: async function ({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "atomicNumberShadow",
+            value: desiredStateVariableValues.atomicNumberShadow
+          }]
+        };
+      }
+    }
 
     stateVariableDefinitions.dataForAtom = {
       returnDependencies: () => ({
@@ -60,6 +87,10 @@ export default class Ion extends InlineComponent {
           childGroups: ["atoms"],
           variableNames: ["atomicNumber"]
         },
+        atomicNumberShadow: {
+          dependencyType: "stateVariable",
+          variableName: "atomicNumberShadow"
+        },
       }),
 
 
@@ -72,6 +103,8 @@ export default class Ion extends InlineComponent {
           symbol = dependencyValues.symbolAttr.stateValues.value.toLowerCase();
         } else if (dependencyValues.atomicNumberAttr) {
           atomicNumber = dependencyValues.atomicNumberAttr.stateValues.value;
+        } else if (dependencyValues.atomicNumberShadow) {
+          atomicNumber = dependencyValues.atomicNumberShadow;
         } else {
           return { setValue: { dataForAtom: null } }
         }
