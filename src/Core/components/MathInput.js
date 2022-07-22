@@ -338,6 +338,21 @@ export default class MathInput extends Input {
       }
     }
 
+    stateVariableDefinitions.dontUpdateRawValueInDefinition = {
+      defaultValue: false,
+      hasEssential: true,
+      returnDependencies: () => ({}),
+      definition: () => ({ useEssentialOrDefaultValue: { dontUpdateRawValueInDefinition: true } }),
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "dontUpdateRawValueInDefinition",
+            value: desiredStateVariableValues.dontUpdateRawValueInDefinition
+          }]
+        }
+      }
+    }
 
     // raw value from renderer
     stateVariableDefinitions.rawRendererValue = {
@@ -371,6 +386,10 @@ export default class MathInput extends Input {
           dependencyType: "stateVariable",
           variableName: "hideNaN"
         },
+        dontUpdateRawValueInDefinition: {
+          dependencyType: "stateVariable",
+          variableName: "dontUpdateRawValueInDefinition"
+        },
 
       }),
       definition({ dependencyValues, essentialValues, justUpdatedForNewComponent, componentName }) {
@@ -381,7 +400,11 @@ export default class MathInput extends Input {
         // use deepCompare of trees rather than equalsViaSyntax
         // so even tiny numerical differences that are within double precision are detected
         if (essentialValues.rawRendererValue === undefined
-          || !(justUpdatedForNewComponent || deepCompare(essentialValues.lastValueForDisplay.tree, dependencyValues.valueForDisplay.tree))
+          || !(
+            justUpdatedForNewComponent
+            || deepCompare(essentialValues.lastValueForDisplay.tree, dependencyValues.valueForDisplay.tree)
+            || dependencyValues.dontUpdateRawValueInDefinition
+          )
         ) {
           let rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex());
           if (rawRendererValue === "\uff3f") {
@@ -411,7 +434,7 @@ export default class MathInput extends Input {
       },
       async inverseDefinition({ desiredStateVariableValues, stateValues, essentialValues, dependencyValues, componentName }) {
 
-        // console.log(`inverse definition of rawRenderer value for ${componentName}`, desiredStateVariableValues, essentialValues)
+        // console.log(`inverse definition of rawRenderer value for ${componentName}`, desiredStateVariableValues, JSON.parse(JSON.stringify(essentialValues)))
 
         const calculateMathExpressionFromLatex = async (text) => {
 
@@ -553,6 +576,12 @@ export default class MathInput extends Input {
         let updateInstructions = [{
           updateType: "updateValue",
           componentName: this.componentName,
+          stateVariable: "dontUpdateRawValueInDefinition",
+          value: true,
+        },
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
           stateVariable: "value",
           value: immediateValue,
         },
@@ -561,6 +590,12 @@ export default class MathInput extends Input {
         // (hence the need to execute update first)
         {
           updateType: "executeUpdate"
+        },
+        {
+          updateType: "updateValue",
+          componentName: this.componentName,
+          stateVariable: "dontUpdateRawValueInDefinition",
+          value: false,
         },
         {
           updateType: "updateValue",

@@ -6501,4 +6501,112 @@ describe('MathInput Tag Tests', function () {
 
   });
 
+  it('copy raw renderer value, handle invalid math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <mathinput name="mi" />
+  <text name="rv" prop="rawRendererValue" copyTarget="mi" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/rv').should('have.text', '')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('')
+      expect(stateVariables["/rv"].stateValues.value).eqls('')
+    });
+
+    cy.log('enter value that parses to math')
+    cy.get('#\\/mi textarea').type("a", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'a')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls('a')
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls('a')
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a')
+    });
+
+    cy.log('enter value that is error in math')
+    cy.get('#\\/mi textarea').type("{end}^", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a^{ }')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'a')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{ }')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{ }')
+    });
+
+    cy.log('still have error in math')
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}b+", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a^{b+}')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'ab+')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{b+}')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{b+}')
+    });
+
+    cy.log('complete to valid math')
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}c", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a^{b+c}')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'ab+c')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(["^", "a", ["+", "b", "c"]])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["^", "a", ["+", "b", "c"]])
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{b+c}')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{b+c}')
+    });
+
+    cy.log('invalid math again')
+    cy.get('#\\/mi textarea').type("{end}-{enter}", { force: true });
+
+    cy.get('#\\/rv').should('have.text', 'a^{b+c}-')
+    cy.get('#\\/mi .mq-editable-field').should('contain.text', 'ab+c−')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{b+c}-')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{b+c}-')
+    });
+
+    cy.log('complete to valid math again')
+    cy.get('#\\/mi textarea').type("{end}d", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a^{b+c}-d')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'ab+c−d')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(["+", ["^", "a", ["+", "b", "c"]], ["-", "d"]])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["+", ["^", "a", ["+", "b", "c"]], ["-", "d"]])
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{b+c}-d')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{b+c}-d')
+    });
+  });
+
 });
