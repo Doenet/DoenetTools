@@ -248,6 +248,7 @@ export default function UnitMenu(props) {
           <Container>
             <Textfield
               aria-labelledby="unitmenu-label"
+              aria-disabled={props.disabled ? true : false}
               disabled={disabled}
               id="text"
               type="text"
@@ -261,7 +262,7 @@ export default function UnitMenu(props) {
               }}
               onChange={() => {changeValue(event)}}
             ></Textfield>
-              <Units disabled={disabled} alert={alert}>
+              <Units aria-disabled={props.disabled ? true : false} disabled={disabled} alert={alert} aria-haspopup="true">
                 {currentUnit}
                 <Unit id="unit" disabled={disabled}>{unitComponents}</Unit>
               </Units>

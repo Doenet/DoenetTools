@@ -67,10 +67,11 @@ export default function CollapseSection(props) {
           <SectionHeader
               aria-label={title}
               aria-labelledby={label} 
+              aria-disabled={disabled}
               style={headerStyle}
               disabled={disabled}
               onClick = {() => {disabled ? "" : setCollapsed(!collapsed);}} // If not disabled, the user can open/close the collapse section
-              onKeyDown = {(e) => {disabled ? "" : e.key === "Enter" ? setCollapsed(!collapsed) : "";}}
+              onKeyDown = {(e) => {disabled ? "" : e.key === "Enter" || e.key === "Spacebar" || e.key === " " ? setCollapsed(!collapsed) : "";}}
               tabIndex="0"
           >
               <FontAwesomeIcon icon={faCaretRight} style={arrowIcon}/>

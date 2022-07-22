@@ -40,6 +40,7 @@ import {
   authorCourseItemOrderByCourseIdBySection,
   studentCourseItemOrderByCourseIdBySection
 } from '../../_reactComponents/Course/CourseActions';
+import styled from 'styled-components';
 
 /**
  * Internal dependencies
@@ -50,6 +51,15 @@ import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';
 // import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { effectiveRoleAtom } from '../PanelHeaderComponents/RoleDropdown';
+
+const ToggleCloseIconStyling = styled.button`
+  border: none;
+  border-radius: 35px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
+`;
 
 export default function CourseNavigator(props) {
   console.log("=== CourseNavigator")
@@ -344,23 +354,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
 
   },[doenetId])
 
-  if (hasToggle){
-    openCloseIndicator = isOpen ? (
-        <span data-cy="folderToggleCloseIcon" onClick={ ()=>{
-          if (hasToggle){
-          toggleOpenClosed();
-        }}} >
-          <FontAwesomeIcon icon={faChevronDown} />
-        </span>
-      ) : (
-        <span data-cy="folderToggleOpenIcon" onClick={ ()=>{
-          if (hasToggle){
-          toggleOpenClosed();
-        }}} >
-          <FontAwesomeIcon icon={faChevronRight} />
-        </span>
-      );
-  }
+  
 
   //Selection is based on course items and Recoil
   //Always append to the end of the array so we know the last selected item
@@ -499,7 +493,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
 
     courseNavigatorProps?.updateSelectMenu({selectedItems:newSelectedItems});
 
-},[doenetId, courseId, setSelectionMenu])
+  },[doenetId, courseId, setSelectionMenu])
 
   let bgcolor = 'var(--canvas)';
   let color = 'var(--canvastext)';
@@ -508,6 +502,48 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     bgcolor = 'var(--lightBlue)';
   }else if (isBeingCut){
     bgcolor = 'var(--mainGray)'; //grey
+  }
+
+  if (hasToggle){
+    openCloseIndicator = isOpen ? (
+        <ToggleCloseIconStyling 
+          data-cy="folderToggleCloseIcon" 
+          aria-expanded="true"
+          style={{backgroundColor: bgcolor}}
+          onClick={ ()=>{
+            if (hasToggle){
+            toggleOpenClosed();
+          }}} 
+          onKeyDown={(e)=>{
+            if (e.key === "enter") {
+              if (hasToggle){
+                toggleOpenClosed();
+              }
+            }
+          }} 
+        >
+          <FontAwesomeIcon icon={faChevronDown} />
+        </ToggleCloseIconStyling>
+      ) : (
+        <ToggleCloseIconStyling 
+          data-cy="folderToggleOpenIcon" 
+          aria-expanded="false"
+          style={{backgroundColor: bgcolor}}
+          onClick={ ()=>{
+            if (hasToggle){
+            toggleOpenClosed();
+          }}}
+          onKeyDown={(e)=>{
+            if (e.key === "enter") {
+              if (hasToggle){
+                toggleOpenClosed();
+              }
+            }
+          }}  
+        >
+          <FontAwesomeIcon icon={faChevronRight} />
+        </ToggleCloseIconStyling>
+      );
   }
 
   //Used to open editor or assignment

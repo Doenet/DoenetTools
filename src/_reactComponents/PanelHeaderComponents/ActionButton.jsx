@@ -137,6 +137,7 @@ export default function ActionButton(props) {
         <Button
           aria-labelledby={label} 
           aria-label={actionButton.value}
+          aria-disabled={props.disabled}
           id={props.id}
           style={actionButton}
           alert={alert}

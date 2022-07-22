@@ -93,6 +93,9 @@ export default function RelatedItems(props) {
                 disabled={disabled}
                 multiple={props.multiple}
                 aria-labelledby="related-items-label"
+                aria-disabled={props.disabled ? true : false}
+                role="listbox"
+                aria-multiselectable={props.multiple}
             >
                 {options}
             </Select>

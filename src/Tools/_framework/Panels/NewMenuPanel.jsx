@@ -214,10 +214,18 @@ function Menu(props) {
 
   return (
     <>
-      <MenuPanelTitle isOpen={isOpen} aria-expanded={isOpen} onClick={() => setIsOpen((was) => !was)}>
+      <MenuPanelTitle 
+        isOpen={isOpen} 
+        aria-expanded={isOpen} 
+        aria-controls="menu" 
+        onClick={() => setIsOpen((was) => !was)}
+        id="menu-title"
+      >
         <h3>{props.title}</h3>
       </MenuPanelTitle>
       <div
+        id="menu"
+        aria-labelledby='menu-title'
         style={{
           display: hideShowStyle,
           paddingTop: '4px',

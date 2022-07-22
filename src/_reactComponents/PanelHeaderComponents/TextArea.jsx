@@ -85,7 +85,7 @@ export default function TextArea(props) {
     <>
       <div style={container}>
             <p style={label} id="textarea-label">{label.value}</p>
-            <Textarea aria-labelledby="textarea-label" defaultValue={textareaValue.value} width={inputWidth} aria-label={textareaValue.ariaLabel} placeholder={textareaValue.placeholder} onChange={(e) => { handleChange(e) }} onKeyDown={(e) => {handleKeyDown(e) }} onBlur={(e) => { handleBlur(e) }} disabled={disable} alert={props.alert}></Textarea>
+            <Textarea aria-disabled={props.disabled ? true : false} aria-labelledby="textarea-label" defaultValue={textareaValue.value} width={inputWidth} aria-label={textareaValue.ariaLabel} placeholder={textareaValue.placeholder} onChange={(e) => { handleChange(e) }} onKeyDown={(e) => {handleKeyDown(e) }} onBlur={(e) => { handleBlur(e) }} disabled={disable} alert={props.alert}></Textarea>
       </div>
     </>
   )

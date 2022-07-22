@@ -1258,13 +1258,6 @@ export default function attempt() {
         propCode: {isSelected: true},
         description: 'Sets state of toggle button'},
         {
-          name: 'Switch Value',
-          propPreview: '<ToggleButton switch_value="frog"/>',
-          propCode: { switch_value: 'frog' },
-          description:
-            'Sets different text value for when the button is selected',
-        },
-        {
           name: 'Label',
           propPreview: '<ToggleButton label="What: "/>',
           propCode: { label: 'What: ' },

@@ -203,9 +203,10 @@ export default function Searchbar(props) {
                     disabled={disable}
                     alert={alert}
                     value={searchTerm}
-                    onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
+                    onKeyDown={(e)=>{if (e.key === 'Enter' || e.key === "Spacebar" || e.key === " "){searchSubmitAction()}}}
                     autoFocus={autoFocus} 
                     aria-labelledby="search-label"
+                    aria-disabled={props.disabled ? true : false}
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
                 {searchButton}

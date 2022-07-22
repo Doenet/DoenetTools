@@ -216,6 +216,7 @@ export default function Form(props) {
           disabled={disable}
           alert={alert}
           aria-labelledby="form-label"
+          aria-disabled={props.disabled ? true : false}
         />
         {clearButton}
         <SubmitButton

@@ -29,11 +29,11 @@ const actionGroup = {
 };
 
 const verticalActionGroup = {
-  margin: '-2px 4px -2px 4px',
+  margin: '0px 4px 0px 4px',
   borderRadius: '0',
   padding: '0px 10px 0px 10px',
   border: '1px solid var(--mainGray)',
-  outlineOffset: '-8px'
+  outlineOffset: '-6px'
 };
 
 const ActionButtonGroup = (props) => {

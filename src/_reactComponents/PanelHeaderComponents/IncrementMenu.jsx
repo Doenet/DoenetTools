@@ -86,11 +86,9 @@ const Label = styled.span`
 `;
 
 const Menu = styled.div`
-  background-color: 'var(--mainGray)';
-  box-shadow: 0px 8px 16px 0px var(--mainGray);
-  border: 'var(--mainBorder)';
-  border-top: none;
-  border-radius: 'var(--mainBorderRadius)';
+  background-color: var(--canvas);
+  border: var(--mainBorder);
+  border-radius: var(--mainBorderRadius);
   position: absolute;
   left: 0;
   right: 0;
@@ -100,12 +98,12 @@ const Menu = styled.div`
 `;
 
 const MenuOption = styled.button`
-  background-color: 'var(--mainGray)';
+  background-color: var(--canvas);
   display: block;
   width: 100%;
   height: 24px;
   border: none;
-  border-bottom: 1px var(--canvastext) solid;
+  border-bottom: 2px var(--canvastext) solid;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -392,7 +390,7 @@ export default function Increment(props) {
     <Container label={props.label} vertical={props.vertical}>
       {props.label && <Label id="increment-label">{props.label}</Label> }
       {props.label && props.vertical && <br /> }
-      <IncrementContainer>
+      <IncrementContainer >
         <IncrementBox 
           ref={containerRef}
           onBlur={containerOnBlur}
@@ -400,6 +398,8 @@ export default function Increment(props) {
         >
           <DecreaseButton
             aria-label="Decrease"
+            aria-labelledby='increment-label'
+            aria-disabled={props.disabled ? true : false}
             ref={decrementRef}
             alert={props.alert}
             disabled={props.disabled}
@@ -409,6 +409,8 @@ export default function Increment(props) {
           </DecreaseButton>
           <TextField
             aria-labelledby='increment-label'
+            aria-haspopup="true"
+            aria-disabled={props.disabled ? true : false}
             placeholder={props.placeholder}
             value={value}
             ref={textFieldRef}
@@ -424,6 +426,11 @@ export default function Increment(props) {
               };
               if (e.key === 'Enter') {
                 onTextFieldEnter(e);
+                if (menuToggle) {
+                  setMenuToggle(false);
+                } else {
+                  setMenuToggle(true);
+                }
               };
             }}
           />
@@ -432,7 +439,9 @@ export default function Increment(props) {
             ref={incrementRef}
             disabled={props.disabled}
             onClick={incrementOnClick}
+            aria-labelledby="increment-label"
             aria-label="Increase"
+            aria-disabled={props.disabled ? true : false}
           >
             {increaseIcon}
           </IncreaseButton>
