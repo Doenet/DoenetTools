@@ -223,7 +223,8 @@ export default class Collect extends CompositeComponent {
           descendants.variableNames = [stateValues.propName];
           descendants.variablesOptional = true;
           descendants.propIndex = stateValues.propIndex;
-          descendants.publicCaseInsensitiveVariableMatch = true;
+          descendants.caseInsensitiveVariableMatch = true;
+          descendants.publicStateVariablesOnly = true;
           descendants.useMappedVariableNames = true;
         }
 

@@ -107,7 +107,8 @@ export default class Extract extends CompositeComponent {
             variablesOptional: true,
             childIndices,
             propIndex: stateValues.propIndex,
-            publicCaseInsensitiveVariableMatch: true,
+            caseInsensitiveVariableMatch: true,
+            publicStateVariablesOnly: true,
             useMappedVariableNames: true,
           },
           propName: {
