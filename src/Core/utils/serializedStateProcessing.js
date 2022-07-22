@@ -341,6 +341,10 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, 
         componentType: originalType,
         includeNonStandard: false
       });
+      let haveAnyComposite = isCompositeComponent({
+        componentType: originalType,
+        includeNonStandard: true
+      });
       for (let prop of Object.keys(component.props)) {
         let lowerCaseProp = prop.toLowerCase();
         if (lowerCaseProp === "copytarget") {
@@ -349,7 +353,11 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, 
           } else if (foundCopyFromURI) {
             throw Error(`Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(component)}`)
           } else if (foundAssignNames) {
-            throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+            if(haveAnyComposite) {
+              throw Error(`A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(component)}.`)
+            } else {
+              throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+            }
           }
           foundCopyTarget = true;
           if (!component.doenetAttributes) {
@@ -374,7 +382,11 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, 
           } else if (foundCopyTarget) {
             throw Error(`Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(component)}`)
           } else if (foundAssignNames) {
-            throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+            if(haveAnyComposite) {
+              throw Error(`A component of type ${originalType} cannot have both assignNames and copyFromURI.  Found${indexRangeString(component)}.`)
+            } else {
+              throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+            }
           }
           foundCopyFromURI = true;
           if (!component.doenetAttributes) {
@@ -394,7 +406,11 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, 
           component.doenetAttributes.createNameFromComponentType = originalType;
         } else if (lowerCaseProp === "assignnames" && !haveComposite) {
           if (foundCopyTarget || foundCopyFromURI) {
-            throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+            if(haveAnyComposite) {
+              throw Error(`A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(component)}.`)
+            } else {
+              throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+            }
           }
           foundAssignNames = true;
         }
@@ -1381,6 +1397,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
   doenetAttributesByTargetComponentName,
   indOffset = 0,
   createNameContext = "",
+  initWithoutShadowingComposite = false,
 }) {
 
   if (namespaceStack.length === 0) {
@@ -1725,34 +1742,57 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
         let newNamespaceInfo = { namespace: prescribedName, componentCounts: {}, namesUsed };
 
-        let addingNewNamespace = true;
-        let remainingChildren = [...serializedComponent.children];
+        if (doenetAttributes.haveNewNamespaceOnlyFromShadow) {
 
-        while (remainingChildren.length > 0) {
-          let nextChildren = [];
+          // if the parent component only has newNamespace from the fact that it is a shadow,
+          // as opposed to explicitly getting it from assignNewNamespaces,
+          // then, if a child is marked to ignore parent's newNamespace, it ignores it
+          // Note: ignoreParentNewNamespace is only added when have fromCopyTarget
 
-          for (let child of remainingChildren) {
-            if (Boolean(child.doenetAttributes?.ignoreParentNewNamespace) === addingNewNamespace) {
-              break;
+          let addingNewNamespace = true;
+          let remainingChildren = [...serializedComponent.children];
+
+          while (remainingChildren.length > 0) {
+            let nextChildren = [];
+
+            for (let child of remainingChildren) {
+              if (Boolean(child.doenetAttributes?.ignoreParentNewNamespace) === addingNewNamespace) {
+                break;
+              }
+              nextChildren.push(child);
             }
-            nextChildren.push(child);
+
+            remainingChildren.splice(0, nextChildren.length);
+
+            if (addingNewNamespace) {
+              namespaceStack.push(newNamespaceInfo);
+            } else if(initWithoutShadowingComposite) {
+              // if this is the first time through and we aren't shadowing a composite
+              // it is possible that ignoring the namespace will lead to name conflicts,
+              // so give the child a unique name
+              nextChildren.forEach(child => child.doenetAttributes.createUniqueName = true)
+            }
+
+            createComponentNames({
+              serializedComponents: nextChildren,
+              namespaceStack,
+              componentInfoObjects,
+              parentDoenetAttributes: doenetAttributes,
+              parentName: componentName,
+              useOriginalNames,
+              doenetAttributesByTargetComponentName,
+            });
+
+            if (addingNewNamespace) {
+              namespaceStack.pop();
+            }
+
+            addingNewNamespace = !addingNewNamespace;
           }
-
-          remainingChildren.splice(0, nextChildren.length);
-
-          if (true || addingNewNamespace) {
-            namespaceStack.push(newNamespaceInfo);
-          }
-
-          if (!addingNewNamespace) {
-            console.log("would be not adding new namespace here")
-            console.log(deepClone(nextChildren));
-            console.log(deepClone(namespaceStack))
-            console.log(deepClone(newNamespaceInfo))
-          }
-
+        } else {
+          namespaceStack.push(newNamespaceInfo);
           createComponentNames({
-            serializedComponents: nextChildren,
+            serializedComponents: serializedComponent.children,
             namespaceStack,
             componentInfoObjects,
             parentDoenetAttributes: doenetAttributes,
@@ -1760,12 +1800,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             useOriginalNames,
             doenetAttributesByTargetComponentName,
           });
-
-          if (true || addingNewNamespace) {
-            namespaceStack.pop();
-          }
-
-          addingNewNamespace = !addingNewNamespace;
+          namespaceStack.pop();
         }
 
 
@@ -2172,6 +2207,7 @@ export function processAssignNames({
   componentInfoObjects,
   indOffset = 0,
   originalNamesAreConsistent = false,
+  shadowingComposite = false,
 }) {
 
 
@@ -2358,6 +2394,7 @@ export function processAssignNames({
       parentCreatesNewNamespace, componentInfoObjects,
       doenetAttributesByTargetComponentName,
       originalNamesAreConsistent,
+      shadowingComposite,
     });
 
     processedComponents.push(component);
@@ -2377,6 +2414,7 @@ function createComponentNamesFromParentName({
   parentCreatesNewNamespace, componentInfoObjects,
   doenetAttributesByTargetComponentName,
   originalNamesAreConsistent,
+  shadowingComposite,
 }) {
 
 
@@ -2453,6 +2491,7 @@ function createComponentNamesFromParentName({
     useOriginalNames,
     doenetAttributesByTargetComponentName,
     indOffset: ind,
+    initWithoutShadowingComposite: !shadowingComposite,
   });
 
   // console.log(`result of create componentName`)

@@ -9037,9 +9037,13 @@ describe('Copy Tag Tests', function () {
 
     <coords name="c1" copyTarget="P" />
     <copy assignNames="c2" target="P" createComponentOfType="coords" />
+    <coords name="c3" copyTarget="P" prop="coords" />
+    <copy assignNames="c4" target="P" createComponentOfType="coords" prop="coords" />
 
     <math name="mc1" copyTarget="P" />
     <copy assignNames="mc2" target="P" createComponentOfType="math" />
+    <math name="mc3" copyTarget="P" prop="coords" />
+    <copy assignNames="mc4" target="P" createComponentOfType="math" prop="coords" />
 
     `}, "*");
     });
@@ -9047,17 +9051,21 @@ describe('Copy Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.get(cesc('#/m1 .mjx-mrow')).eq(0).contains('2');
-    cy.get(cesc('#/m2 .mjx-mrow')).eq(0).contains('2');
+    cy.get(cesc('#/m1') + ' .mjx-mrow').eq(0).contains('2');
+    cy.get(cesc('#/m2') + ' .mjx-mrow').eq(0).contains('2');
 
     cy.get(cesc('#/n1')).contains('2');
     cy.get(cesc('#/n2')).contains('2');
 
-    cy.get(cesc('#/c1 .mjx-mrow')).eq(0).contains('(x,y)');
-    cy.get(cesc('#/c2 .mjx-mrow')).eq(0).contains('(x,y)');
+    cy.get(cesc('#/c1') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc('#/c2') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc('#/c3') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc('#/c4') + ' .mjx-mrow').eq(0).contains('(x,y)');
 
-    cy.get(cesc('#/mc1 .mjx-mrow')).eq(0).contains('(x,y)');
-    cy.get(cesc('#/mc2 .mjx-mrow')).eq(0).contains('(x,y)');
+    cy.get(cesc('#/mc1') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc('#/mc2') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc('#/mc3') + ' .mjx-mrow').eq(0).contains('(x,y)');
+    cy.get(cesc('#/mc4') + ' .mjx-mrow').eq(0).contains('(x,y)');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -9069,9 +9077,13 @@ describe('Copy Tag Tests', function () {
 
       expect(stateVariables["/c1"].stateValues.value).eqls(["vector", "x", "y"]);
       expect(stateVariables["/c2"].stateValues.value).eqls(["vector", "x", "y"]);
+      expect(stateVariables["/c3"].stateValues.value).eqls(["vector", "x", "y"]);
+      expect(stateVariables["/c4"].stateValues.value).eqls(["vector", "x", "y"]);
 
       expect(stateVariables["/mc1"].stateValues.value).eqls(["vector", "x", "y"]);
       expect(stateVariables["/mc2"].stateValues.value).eqls(["vector", "x", "y"]);
+      expect(stateVariables["/mc3"].stateValues.value).eqls(["vector", "x", "y"]);
+      expect(stateVariables["/mc4"].stateValues.value).eqls(["vector", "x", "y"]);
 
     });
 
@@ -9079,16 +9091,18 @@ describe('Copy Tag Tests', function () {
     cy.log('enter a')
     cy.get(cesc('#/mi') + " textarea").type("{end}{backspace}a{enter}", { force: true });
 
-    cy.get(cesc('#/m1 .mjx-mrow')).eq(0).contains('a');
-    cy.get(cesc('#/m2 .mjx-mrow')).eq(0).contains('a');
+    cy.get(cesc('#/m1') + ' .mjx-mrow').should('contain.text', 'a');
+
+    cy.get(cesc('#/m1') + ' .mjx-mrow').eq(0).contains('a');
+    cy.get(cesc('#/m2') + ' .mjx-mrow').eq(0).contains('a');
 
     cy.get(cesc('#/n1')).contains('NaN');
     cy.get(cesc('#/n2')).contains('NaN');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/m1"].stateValues.value).eq('x');
-      expect(stateVariables["/m2"].stateValues.value).eq('x');
+      expect(stateVariables["/m1"].stateValues.value).eq('a');
+      expect(stateVariables["/m2"].stateValues.value).eq('a');
 
       expect(stateVariables["/n1"].stateValues.value).eqls(NaN);
       expect(stateVariables["/n2"].stateValues.value).eqls(NaN);
@@ -9097,7 +9111,6 @@ describe('Copy Tag Tests', function () {
     });
 
   });
-
 
   it('add children to invalid copyTarget', () => {
     cy.window().then(async (win) => {
@@ -9186,7 +9199,7 @@ describe('Copy Tag Tests', function () {
     </graph>
 
     <math name="P1coords" copyTarget="P1" />
-    <math name="v1Displacement" copyTarget="v1" />
+    <math name="v1displacement" copyTarget="v1" />
 
     <graph name="g2">
       <point name="P2">(1,2)</point>
@@ -9198,7 +9211,7 @@ describe('Copy Tag Tests', function () {
 
     <math name="P2coords" copyTarget="P2" />
     <math name="P2acoords" copyTarget="g2a/P2" />
-    <math name="v2Displacement" copyTarget="g2a/v2" />
+    <math name="v2displacement" copyTarget="g2a/v2" />
 
     <graph name="g3" newNamespace>
       <point name="P3">(1,2)</point>
@@ -9210,7 +9223,7 @@ describe('Copy Tag Tests', function () {
 
     <math name="P3coords" copyTarget="g3/P3" />
     <math name="P3acoords" copyTarget="g3a/P3" />
-    <math name="v3Displacement" copyTarget="g3a/v3" />
+    <math name="v3displacement" copyTarget="g3a/v3" />
 
     <graph name="g4" newNamespace>
       <point name="P4">(1,2)</point>
@@ -9222,7 +9235,7 @@ describe('Copy Tag Tests', function () {
 
     <math name="P4coords" copyTarget="g4/P4" />
     <math name="P4acoords" copyTarget="g4a/P4" />
-    <math name="v4Displacement" copyTarget="v4" />
+    <math name="v4displacement" copyTarget="v4" />
 
 
 
@@ -9233,19 +9246,19 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');
 
     cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v1Displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+    cy.get(cesc('#/v1displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
 
     cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
     cy.get(cesc('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v2Displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
 
     cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
     cy.get(cesc('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v3Displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
 
     cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
     cy.get(cesc('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(1,2)');
-    cy.get(cesc('#/v4Displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
+    cy.get(cesc('#/v4displacement') + ' .mjx-mrow').eq(0).contains('(4,5)');
 
     let P1aName;
 
@@ -9260,7 +9273,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables[P1aName].stateValues.xs).eqls([1, 2]);
       expect(stateVariables["/v1"].stateValues.displacement).eqls([4, 5]);
       expect(stateVariables["/P1coords"].stateValues.value).eqls(["vector", 1, 2]);
-      expect(stateVariables["/v1Displacement"].stateValues.value).eqls(["vector", 4, 5]);
+      expect(stateVariables["/v1displacement"].stateValues.value).eqls(["vector", 4, 5]);
 
       expect(stateVariables["/g2"].activeChildren.length).eq(1);
       expect(stateVariables["/g2"].activeChildren[0].componentName).eq("/P2");
@@ -9272,7 +9285,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables["/g2a/v2"].stateValues.displacement).eqls([4, 5]);
       expect(stateVariables["/P2coords"].stateValues.value).eqls(["vector", 1, 2]);
       expect(stateVariables["/P2acoords"].stateValues.value).eqls(["vector", 1, 2]);
-      expect(stateVariables["/v2Displacement"].stateValues.value).eqls(["vector", 4, 5]);
+      expect(stateVariables["/v2displacement"].stateValues.value).eqls(["vector", 4, 5]);
 
       expect(stateVariables["/g3"].activeChildren.length).eq(1);
       expect(stateVariables["/g3"].activeChildren[0].componentName).eq("/g3/P3");
@@ -9284,7 +9297,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables["/g3a/v3"].stateValues.displacement).eqls([4, 5]);
       expect(stateVariables["/P3coords"].stateValues.value).eqls(["vector", 1, 2]);
       expect(stateVariables["/P3acoords"].stateValues.value).eqls(["vector", 1, 2]);
-      expect(stateVariables["/v3Displacement"].stateValues.value).eqls(["vector", 4, 5]);
+      expect(stateVariables["/v3displacement"].stateValues.value).eqls(["vector", 4, 5]);
 
       expect(stateVariables["/g4"].activeChildren.length).eq(1);
       expect(stateVariables["/g4"].activeChildren[0].componentName).eq("/g4/P4");
@@ -9296,7 +9309,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables["/v4"].stateValues.displacement).eqls([4, 5]);
       expect(stateVariables["/P4coords"].stateValues.value).eqls(["vector", 1, 2]);
       expect(stateVariables["/P4acoords"].stateValues.value).eqls(["vector", 1, 2]);
-      expect(stateVariables["/v4Displacement"].stateValues.value).eqls(["vector", 4, 5]);
+      expect(stateVariables["/v4displacement"].stateValues.value).eqls(["vector", 4, 5]);
 
     });
 
@@ -9352,22 +9365,22 @@ describe('Copy Tag Tests', function () {
       })
     })
 
-    cy.get(cesc('#/v4Displacement') + ' .mjx-mrow').should('contain.text', '(7,2)');
+    cy.get(cesc('#/v4displacement') + ' .mjx-mrow').should('contain.text', '(7,2)');
 
     cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(3,5)');
-    cy.get(cesc('#/v1Displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
+    cy.get(cesc('#/v1displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
 
     cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(6,0)');
     cy.get(cesc('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(6,0)');
-    cy.get(cesc('#/v2Displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
+    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
 
     cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(5,8)');
     cy.get(cesc('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(5,8)');
-    cy.get(cesc('#/v3Displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
+    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
 
     cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(0,3)');
     cy.get(cesc('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(0,3)');
-    cy.get(cesc('#/v4Displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
+    cy.get(cesc('#/v4displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
 
     cy.window().then(async (win) => {
 
@@ -9376,28 +9389,28 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables[P1aName].stateValues.xs).eqls([3, 5]);
       expect(stateVariables["/v1"].stateValues.displacement).eqls([8, 7]);
       expect(stateVariables["/P1coords"].stateValues.value).eqls(["vector", 3, 5]);
-      expect(stateVariables["/v1Displacement"].stateValues.value).eqls(["vector", 8, 7]);
+      expect(stateVariables["/v1displacement"].stateValues.value).eqls(["vector", 8, 7]);
 
       expect(stateVariables["/P2"].stateValues.xs).eqls([6, 0]);
       expect(stateVariables["/g2a/P2"].stateValues.xs).eqls([6, 0]);
       expect(stateVariables["/g2a/v2"].stateValues.displacement).eqls([9, 1]);
       expect(stateVariables["/P2coords"].stateValues.value).eqls(["vector", 6, 0]);
       expect(stateVariables["/P2acoords"].stateValues.value).eqls(["vector", 6, 0]);
-      expect(stateVariables["/v2Displacement"].stateValues.value).eqls(["vector", 9, 1]);
+      expect(stateVariables["/v2displacement"].stateValues.value).eqls(["vector", 9, 1]);
 
       expect(stateVariables["/g3/P3"].stateValues.xs).eqls([5, 8]);
       expect(stateVariables["/g3a/P3"].stateValues.xs).eqls([5, 8]);
       expect(stateVariables["/g3a/v3"].stateValues.displacement).eqls([8, 6]);
       expect(stateVariables["/P3coords"].stateValues.value).eqls(["vector", 5, 8]);
       expect(stateVariables["/P3acoords"].stateValues.value).eqls(["vector", 5, 8]);
-      expect(stateVariables["/v3Displacement"].stateValues.value).eqls(["vector", 8, 6]);
+      expect(stateVariables["/v3displacement"].stateValues.value).eqls(["vector", 8, 6]);
 
       expect(stateVariables["/g4/P4"].stateValues.xs).eqls([0, 3]);
       expect(stateVariables["/g4a/P4"].stateValues.xs).eqls([0, 3]);
       expect(stateVariables["/v4"].stateValues.displacement).eqls([7, 2]);
       expect(stateVariables["/P4coords"].stateValues.value).eqls(["vector", 0, 3]);
       expect(stateVariables["/P4acoords"].stateValues.value).eqls(["vector", 0, 3]);
-      expect(stateVariables["/v4Displacement"].stateValues.value).eqls(["vector", 7, 2]);
+      expect(stateVariables["/v4displacement"].stateValues.value).eqls(["vector", 7, 2]);
 
     });
 
@@ -9429,19 +9442,19 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/P4coords') + ' .mjx-mrow').should('contain.text', '(7,6)');
 
     cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(2,1)');
-    cy.get(cesc('#/v1Displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
+    cy.get(cesc('#/v1displacement') + ' .mjx-mrow').eq(0).contains('(8,7)');
 
     cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(5,4)');
     cy.get(cesc('#/P2acoords') + ' .mjx-mrow').eq(0).contains('(5,4)');
-    cy.get(cesc('#/v2Displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
+    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(9,1)');
 
     cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(9,7)');
     cy.get(cesc('#/P3acoords') + ' .mjx-mrow').eq(0).contains('(9,7)');
-    cy.get(cesc('#/v3Displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
+    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(8,6)');
 
     cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(7,6)');
     cy.get(cesc('#/P4acoords') + ' .mjx-mrow').eq(0).contains('(7,6)');
-    cy.get(cesc('#/v4Displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
+    cy.get(cesc('#/v4displacement') + ' .mjx-mrow').eq(0).contains('(7,2)');
 
     cy.window().then(async (win) => {
 
@@ -9450,75 +9463,77 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables[P1aName].stateValues.xs).eqls([2, 1]);
       expect(stateVariables["/v1"].stateValues.displacement).eqls([8, 7]);
       expect(stateVariables["/P1coords"].stateValues.value).eqls(["vector", 2, 1]);
-      expect(stateVariables["/v1Displacement"].stateValues.value).eqls(["vector", 8, 7]);
+      expect(stateVariables["/v1displacement"].stateValues.value).eqls(["vector", 8, 7]);
 
       expect(stateVariables["/P2"].stateValues.xs).eqls([5, 4]);
       expect(stateVariables["/g2a/P2"].stateValues.xs).eqls([5, 4]);
       expect(stateVariables["/g2a/v2"].stateValues.displacement).eqls([9, 1]);
       expect(stateVariables["/P2coords"].stateValues.value).eqls(["vector", 5, 4]);
       expect(stateVariables["/P2acoords"].stateValues.value).eqls(["vector", 5, 4]);
-      expect(stateVariables["/v2Displacement"].stateValues.value).eqls(["vector", 9, 1]);
+      expect(stateVariables["/v2displacement"].stateValues.value).eqls(["vector", 9, 1]);
 
       expect(stateVariables["/g3/P3"].stateValues.xs).eqls([9, 7]);
       expect(stateVariables["/g3a/P3"].stateValues.xs).eqls([9, 7]);
       expect(stateVariables["/g3a/v3"].stateValues.displacement).eqls([8, 6]);
       expect(stateVariables["/P3coords"].stateValues.value).eqls(["vector", 9, 7]);
       expect(stateVariables["/P3acoords"].stateValues.value).eqls(["vector", 9, 7]);
-      expect(stateVariables["/v3Displacement"].stateValues.value).eqls(["vector", 8, 6]);
+      expect(stateVariables["/v3displacement"].stateValues.value).eqls(["vector", 8, 6]);
 
       expect(stateVariables["/g4/P4"].stateValues.xs).eqls([7, 6]);
       expect(stateVariables["/g4a/P4"].stateValues.xs).eqls([7, 6]);
       expect(stateVariables["/v4"].stateValues.displacement).eqls([7, 2]);
       expect(stateVariables["/P4coords"].stateValues.value).eqls(["vector", 7, 6]);
       expect(stateVariables["/P4acoords"].stateValues.value).eqls(["vector", 7, 6]);
-      expect(stateVariables["/v4Displacement"].stateValues.value).eqls(["vector", 7, 2]);
+      expect(stateVariables["/v4displacement"].stateValues.value).eqls(["vector", 7, 2]);
 
     });
 
   });
 
-  it.only('add children with copyTarget', () => {
+  it('add children with copyTarget, ignore implicit newNamespace when copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
 
-    <graph name="g" newNamespace>
-      <point name="P">(-1,2)</point>
-    </graph>
-
-    <graph name="g2" copyTarget="g">
-      <vector name="v">(4,5)</vector>
-    </graph>
-
-    <graph name="g3" copyTarget="g2">
-      <circle name="c" center="$(../g/P)" />
-    </graph>
-
-    <copy name="cp1" target="g" assignNames="g4" />
+    <group name="grp">
+      <graph name="g" size="small" newNamespace>
+        <point name="P">(1,2)</point>
+      </graph>
     
-    <graph copyTarget="cp1" name="g5">
-      <circle name="c" />
-    </graph>
+      <graph name="g2" copyTarget="g">
+        <vector name="v" />
+      </graph>
     
-    <graph copyTarget="g4" name="g6">
-      <circle name="c" />
-    </graph>
-    
-    <copy target="g" assignNames="g7" name="cp2">
-      <circle name="c" />
-    </copy>
+      <graph name="g3" copyTarget="g2" newNamespace />
 
-    <graph copyTarget="cp2" name="g8">
-      <vector name="v" />
-    </graph>
+      <graph name="g4" copyTarget="g2" />
     
-    <graph copyTarget="g7" name="g9">
-      <vector name="v" />
-    </graph>
+    </group>
+    
+    <group copyTarget="grp" name="grp2" newNamespace />
+  
+    <p>Point 1: <math copyTarget="g/P" name="P1coords" /></p>
+    <p>Point 2: <math copyTarget="g2/P" name="P2coords" /></p>
+    <p>Vector 2: <math copyTarget="v" name="v2displacement" /></p>
+    <p>Point 3: <math copyTarget="g3/P" name="P3coords" /></p>
+    <p>Vector 3: <math copyTarget="g3/v" name="v3displacement" /></p>
+    <p>Point 4: <math copyTarget="g4/P" name="P4coords" /></p>
+    <p>Nothing at g4/v: <math copyTarget="g4/v" name="v4nodisplacement" /></p>
 
-    <math name="Pcoords" copyTarget="g/P" />
-    <math name="vDisplacement" copyTarget="g2/v" />
+    <group name="grp2ps" newNamespace>
+      <p>Grp2 Point 1: <math copyTarget="/grp2/g/P" name="P1coords" /></p>
+      <p>Grp2 Point 2: <math copyTarget="/grp2/g2/P" name="P2coords" /></p>
+
+      <p>Grp2 Vector 2: <math copyTarget="/grp2/v" name="v2displacement" /></p>
+      <p>Nothing at /grp2/g2/v: <math copyTarget="/grp2/g2/v" name="v2nodisplacement" /></p>
+
+      <p>Grp2 Point 3: <math copyTarget="/grp2/g3/P" name="P3coords" /></p>
+      <p>Grp2 Vector 3: <math copyTarget="/grp2/g3/v" name="v3displacement" /></p>
+ 
+      <p>Grp2 Point 4: <math copyTarget="/grp2/g4/P" name="P4coords" /></p>
+      <p>Nothing at /grp2/g4/v: <math copyTarget="/grp2/g4/v" name="v4nodisplacement" /></p>
+    </group>
 
 
     `}, "*");
@@ -9527,54 +9542,474 @@ describe('Copy Tag Tests', function () {
     // to wait for page to load
     cy.get('#\\/_text1').should('have.text', 'a');
 
-    cy.get(cesc('#/m1 .mjx-mrow')).eq(0).contains('2');
-    cy.get(cesc('#/m2 .mjx-mrow')).eq(0).contains('2');
+    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
+    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
+    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/v4nodisplacement') + ' .mjx-mrow').eq(0).contains('\uff3f');
 
-    cy.get(cesc('#/n1')).contains('2');
-    cy.get(cesc('#/n2')).contains('2');
-
-    cy.get(cesc('#/c1 .mjx-mrow')).eq(0).contains('(x,y)');
-    cy.get(cesc('#/c2 .mjx-mrow')).eq(0).contains('(x,y)');
-
-    cy.get(cesc('#/mc1 .mjx-mrow')).eq(0).contains('(x,y)');
-    cy.get(cesc('#/mc2 .mjx-mrow')).eq(0).contains('(x,y)');
+    cy.get(cesc('#/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
+    cy.get(cesc('#/grp2ps/v2nodisplacement') + ' .mjx-mrow').eq(0).contains('\uff3f');
+    cy.get(cesc('#/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(1,0)');
+    cy.get(cesc('#/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(1,2)');
+    cy.get(cesc('#/grp2ps/v4nodisplacement') + ' .mjx-mrow').eq(0).contains('\uff3f');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/m1"].stateValues.value).eq(2);
-      expect(stateVariables["/m2"].stateValues.value).eq(2);
+      expect(stateVariables["/g/P"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/v"].stateValues.displacement).eqls([1, 0]);
+      expect(stateVariables["/g3/P"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/g3/v"].stateValues.displacement).eqls([1, 0]);
+      expect(stateVariables["/g4/P"].stateValues.xs).eqls([1, 2]);
+      let g4vName = stateVariables["/g4"].activeChildren[1].componentName
+      expect(g4vName.substring(0,3) === "/__");
+      expect(stateVariables[g4vName].stateValues.displacement).eqls([1, 0]);
+      expect(stateVariables["/g4/v"]).eq(undefined);
 
-      expect(stateVariables["/n1"].stateValues.value).eq(2);
-      expect(stateVariables["/n2"].stateValues.value).eq(2);
 
-      expect(stateVariables["/c1"].stateValues.value).eqls(["vector", "x", "y"]);
-      expect(stateVariables["/c2"].stateValues.value).eqls(["vector", "x", "y"]);
-
-      expect(stateVariables["/mc1"].stateValues.value).eqls(["vector", "x", "y"]);
-      expect(stateVariables["/mc2"].stateValues.value).eqls(["vector", "x", "y"]);
+      expect(stateVariables["/grp2/g/P"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/grp2/g2/P"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/grp2/v"].stateValues.displacement).eqls([1, 0]);
+      expect(stateVariables["/grp2/g2/v"]).eq(undefined);
+      expect(stateVariables["/grp2/g3/P"].stateValues.xs).eqls([1, 2]);
+      expect(stateVariables["/grp2/g3/v"].stateValues.displacement).eqls([1, 0]);
+      expect(stateVariables["/grp2/g4/P"].stateValues.xs).eqls([1, 2]);
+      let grp2g4vName = stateVariables["/grp2/g4"].activeChildren[1].componentName
+      expect(grp2g4vName.substring(0,3) === "/__");
+      expect(stateVariables[grp2g4vName].stateValues.displacement).eqls([1, 0]);
+      expect(stateVariables["/grp2/g4/v"]).eq(undefined);
 
     });
 
 
-    cy.log('enter a')
-    cy.get(cesc('#/mi') + " textarea").type("{end}{backspace}a{enter}", { force: true });
+  });
 
-    cy.get(cesc('#/m1 .mjx-mrow')).eq(0).contains('a');
-    cy.get(cesc('#/m2 .mjx-mrow')).eq(0).contains('a');
+  it('add children with copyTarget, multiple levels of groups', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <group name="grp0" >
+      <group name="grp1">
+    
+        <graph name="g" newNamespace>
+          <point name="P">(1,2)</point>
+        </graph>
+      
+        <graph name="g2" copyTarget="g">
+          <vector name="v">(4,5)</vector>
+        </graph>
+      
+        <graph name="g3" copyTarget="g2" newNamespace>
+          <circle name="c" center="$(../g/P)" />
+          <lineSegment name="l" endpoints="$P $(../v{prop='head'})" />
+        </graph>
+      
+        <copy name="cp1" target="g" assignNames="g4" />
+        
+        <graph copyTarget="cp1" name="g5" newNamespace>
+          <circle name="c" />
+        </graph>
+        
+      </group>
+      
+      
+      <group copyTarget="grp1" name="grp2" newNamespace>
+      
+        <graph copyTarget="../g5" name="g6">
+          <lineSegment name="l" endpoints="$(g6/c{prop='center'}) $(../g4/P)" />
+        </graph>
+      
+      </group>
+    
+    </group>
+    
+    
+    <group copyTarget="grp0" name="grp3" newNamespace>
+    
+      <graph copyTarget="../grp2/g6" name="g7" newNamespace>
+        <vector name="v" tail="$(l{prop='endpoint1'})" head="$(../v{prop='head'})" />
+      </graph>
+    
+    </group>
+    
+    <p>Point 1: <math copyTarget="g/P" name="P1coords" /></p>
+    <p>Point 2: <math copyTarget="g2/P" name="P2coords" /></p>
+    <p>Vector 2: <math copyTarget="v" name="v2displacement" /></p>
+    <p>Point 3: <math copyTarget="g3/P" name="P3coords" /></p>
+    <p>Vector 3: <math copyTarget="g3/v" name="v3displacement" /></p>
+    <p>Circle 3 center: <math copyTarget="g3/c" prop="center" name="c3center" /></p>
+    <p>Line segment 3 point 1: <math copyTarget="g3/l" prop="endpoint1" name="l3point1" /></p>
+    <p>Line segment 3 point 2: <math copyTarget="g3/l" prop="endpoint2" name="l3point2" /></p>
+    <p>Point 4: <math copyTarget="g4/P" name="P4coords" /></p>
+    <p>Point 5: <math copyTarget="g5/P" name="P5coords" /></p>
+    <p>Circle 5 center: <math copyTarget="g5/c" prop="center" name="c5center" /></p>
+    
+    <group name="grp2ps" newNamespace>
+      <p>Grp2 Point 1: <math copyTarget="/grp2/g/P" name="P1coords" /></p>
+      <p>Grp2 Point 2: <math copyTarget="/grp2/g2/P" name="P2coords" /></p>
+      <p>Grp2 Vector 2: <math copyTarget="/grp2/v" name="v2displacement" /></p>
+      <p>Grp2 Point 3: <math copyTarget="/grp2/g3/P" name="P3coords" /></p>
+      <p>Grp2 Vector 3: <math copyTarget="/grp2/g3/v" name="v3displacement" /></p>
+      <p>Grp2 Circle 3 center: <math copyTarget="/grp2/g3/c" prop="center" name="c3center" /></p>
+      <p>Grp2 Line segment 3 point 1: <math copyTarget="/grp2/g3/l" prop="endpoint1" name="l3point1" /></p>
+      <p>Grp2 Line segment 3 point 2: <math copyTarget="/grp2/g3/l" prop="endpoint2" name="l3point2" /></p>
+      <p>Grp2 Point 4: <math copyTarget="/grp2/g4/P" name="P4coords" /></p>
+      <p>Grp2 Point 5: <math copyTarget="/grp2/g5/P" name="P5coords" /></p>
+      <p>Grp2 Circle 5 center: <math copyTarget="/grp2/g5/c" prop="center" name="c5center" /></p>
+      <p>Grp2 Point 6: <math copyTarget="/grp2/g6/P" name="P6coords" /></p>
+      <p>Grp2 Circle 6 center: <math copyTarget="/grp2/g6/c" prop="center" name="c6center" /></p>
+      <p>Grp2 Line segment 6 point 1: <math copyTarget="/grp2/l" prop="endpoint1" name="l6point1" /></p>
+      <p>Grp2 Line segment 6 point 2: <math copyTarget="/grp2/l" prop="endpoint2" name="l6point2" /></p>
+    </group>
 
-    cy.get(cesc('#/n1')).contains('NaN');
-    cy.get(cesc('#/n2')).contains('NaN');
+    
+    <group name="grp3ps" newNamespace>
+
+      <p>Grp3 Point 1: <math copyTarget="/grp3/g/P" name="P1coords" /></p>
+      <p>Grp3 Point 2: <math copyTarget="/grp3/g2/P" name="P2coords" /></p>
+      <p>Grp3 Vector 2: <math copyTarget="/grp3/v" name="v2displacement" /></p>
+      <p>Grp3 Point 3: <math copyTarget="/grp3/g3/P" name="P3coords" /></p>
+      <p>Grp3 Vector 3: <math copyTarget="/grp3/g3/v" name="v3displacement" /></p>
+      <p>Grp3 Circle 3 center: <math copyTarget="/grp3/g3/c" prop="center" name="c3center" /></p>
+      <p>Grp3 Line segment 3 point 1: <math copyTarget="/grp3/g3/l" prop="endpoint1" name="l3point1" /></p>
+      <p>Grp3 Line segment 3 point 2: <math copyTarget="/grp3/g3/l" prop="endpoint2" name="l3point2" /></p>
+      <p>Grp3 Point 4: <math copyTarget="/grp3/g4/P" name="P4coords" /></p>
+      <p>Grp3 Point 5: <math copyTarget="/grp3/g5/P" name="P5coords" /></p>
+      <p>Grp3 Circle 5 center: <math copyTarget="/grp3/g5/c" prop="center" name="c5center" /></p>
+      
+      <group name="grp2ps" newNamespace>
+        <p>Grp3 Grp2 Point 1: <math copyTarget="/grp3/grp2/g/P" name="P1coords" /></p>
+        <p>Grp3 Grp2 Point 2: <math copyTarget="/grp3/grp2/g2/P" name="P2coords" /></p>
+        <p>Grp3 Grp2 Vector 2: <math copyTarget="/grp3/grp2/v" name="v2displacement" /></p>
+        <p>Grp3 Grp2 Point 3: <math copyTarget="/grp3/grp2/g3/P" name="P3coords" /></p>
+        <p>Grp3 Grp2 Vector 3: <math copyTarget="/grp3/grp2/g3/v" name="v3displacement" /></p>
+        <p>Grp3 Grp2 Circle 3 center: <math copyTarget="/grp3/grp2/g3/c" prop="center" name="c3center" /></p>
+        <p>Grp3 Grp2 Line segment 3 point 1: <math copyTarget="/grp3/grp2/g3/l" prop="endpoint1" name="l3point1" /></p>
+        <p>Grp3 Grp2 Line segment 3 point 2: <math copyTarget="/grp3/grp2/g3/l" prop="endpoint2" name="l3point2" /></p>
+        <p>Grp3 Grp2 Point 4: <math copyTarget="/grp3/grp2/g4/P" name="P4coords" /></p>
+        <p>Grp3 Grp2 Point 5: <math copyTarget="/grp3/grp2/g5/P" name="P5coords" /></p>
+        <p>Grp3 Grp2 Circle 5 center: <math copyTarget="/grp3/grp2/g5/c" prop="center" name="c5center" /></p>
+        <p>Grp3 Grp2 Point 6: <math copyTarget="/grp3/grp2/g6/P" name="P6coords" /></p>
+        <p>Grp3 Grp2 Circle 6 center: <math copyTarget="/grp3/grp2/g6/c" prop="center" name="c6center" /></p>
+        <p>Grp3 Grp2 Line segment 6 point 1: <math copyTarget="/grp3/grp2/l" prop="endpoint1" name="l6point1" /></p>
+        <p>Grp3 Grp2 Line segment 6 point 2: <math copyTarget="/grp3/grp2/l" prop="endpoint2" name="l6point2" /></p>
+        <p>Grp3 Point 7: <math copyTarget="/grp3/g7/P" name="P7coords" /></p>
+        <p>Grp3 Circle 7 center: <math copyTarget="/grp3/g7/c" prop="center" name="c7center" /></p>
+        <p>Grp3 Line segment 7 point 1: <math copyTarget="/grp3/g7/l" prop="endpoint1" name="l7point1" /></p>
+        <p>Grp3 Line segment 7 point 2: <math copyTarget="/grp3/g7/l" prop="endpoint2" name="l7point2" /></p>
+        <p>Grp3 Vector 7 head: <math copyTarget="/grp3/g7/v" prop="head" name="v7head" /></p>
+        <p>Grp3 Vector 7 tail: <math copyTarget="/grp3/g7/v" prop="tail" name="v7tail" /></p>
+      </group>
+
+    </group>
+
+
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    let P = [1, 2];
+    let v = [4, 5];
+    let vH = [4, 5];
+    let c0 = [0, 0];
+
+    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+
+
+    cy.get(cesc('#/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+
+
+    cy.get(cesc('#/grp3ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp3ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp3ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/grp3ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+
+
+    cy.get(cesc('#/grp3ps/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P7coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l7point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l7point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/v7head') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/v7tail') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/m1"].stateValues.value).eq('x');
-      expect(stateVariables["/m2"].stateValues.value).eq('x');
+      expect(stateVariables["/g/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/g3/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/g3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/g3/c"].stateValues.center).eqls(P);
+      expect(stateVariables["/g3/l"].stateValues.endpoints[0]).eqls(P);
+      expect(stateVariables["/g3/l"].stateValues.endpoints[1]).eqls(vH);
+      expect(stateVariables["/g4/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/g5/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/g5/c"].stateValues.center).eqls(c0);
 
-      expect(stateVariables["/n1"].stateValues.value).eqls(NaN);
-      expect(stateVariables["/n2"].stateValues.value).eqls(NaN);
+      expect(stateVariables["/grp2/g/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g2/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp2/g3/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp2/g3/c"].stateValues.center).eqls(P);
+      expect(stateVariables["/grp2/g3/l"].stateValues.endpoints[0]).eqls(P);
+      expect(stateVariables["/grp2/g3/l"].stateValues.endpoints[1]).eqls(vH);
+      expect(stateVariables["/grp2/g4/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g5/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g5/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp2/g6/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g6/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp2/l"].stateValues.endpoints[0]).eqls(c0);
+      expect(stateVariables["/grp2/l"].stateValues.endpoints[1]).eqls(P);
 
+      expect(stateVariables["/grp3/g/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g2/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp3/g3/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp3/g3/c"].stateValues.center).eqls(P);
+      expect(stateVariables["/grp3/g3/l"].stateValues.endpoints[0]).eqls(P);
+      expect(stateVariables["/grp3/g3/l"].stateValues.endpoints[1]).eqls(vH);
+      expect(stateVariables["/grp3/g4/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g5/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g5/c"].stateValues.center).eqls(c0);
+
+      expect(stateVariables["/grp3/grp2/g/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g2/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp3/grp2/g3/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp3/grp2/g3/c"].stateValues.center).eqls(P);
+      expect(stateVariables["/grp3/grp2/g3/l"].stateValues.endpoints[0]).eqls(P);
+      expect(stateVariables["/grp3/grp2/g3/l"].stateValues.endpoints[1]).eqls(vH);
+      expect(stateVariables["/grp3/grp2/g4/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g5/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g5/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp3/grp2/g6/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g6/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp3/grp2/l"].stateValues.endpoints[0]).eqls(c0);
+      expect(stateVariables["/grp3/grp2/l"].stateValues.endpoints[1]).eqls(P);
+      expect(stateVariables["/grp3/g7/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g7/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp3/g7/l"].stateValues.endpoints[0]).eqls(c0);
+      expect(stateVariables["/grp3/g7/l"].stateValues.endpoints[1]).eqls(P);
+      expect(stateVariables["/grp3/g7/v"].stateValues.head).eqls(vH);
+      expect(stateVariables["/grp3/g7/v"].stateValues.tail).eqls(c0);
 
     });
+
+
+    cy.log('move objects')
+    cy.window().then(async (win) => {
+      P = [3, 5]
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g/P",
+        args: { x: P[0], y: P[1] }
+      })
+      v = [8, 7]
+      vH = [5, 1]
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/v",
+        args: {
+          headcoords: vH,
+          tailcoords: [vH[0] - v[0], vH[1] - v[1]],
+        }
+      })
+      c0 = [6, 0];
+      win.callAction1({
+        actionName: "moveCircle",
+        componentName: "/g5/c",
+        args: { center: c0 }
+      })
+    })
+
+    cy.get(cesc('#/grp3ps/grp2ps/v7tail') + ' .mjx-mrow').should('contain.text', '(' + c0 + ')');
+
+
+    cy.get(cesc('#/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+
+
+    cy.get(cesc('#/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+
+
+    cy.get(cesc('#/grp3ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp3ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp3ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/grp3ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+
+
+    cy.get(cesc('#/grp3ps/grp2ps/P1coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P2coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/v2displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P3coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/v3displacement') + ' .mjx-mrow').eq(0).contains('(' + v + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/c3center') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l3point1') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l3point2') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P4coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P5coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/c5center') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P6coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l6point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l6point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/P7coords') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l7point1') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/l7point2') + ' .mjx-mrow').eq(0).contains('(' + P + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/v7head') + ' .mjx-mrow').eq(0).contains('(' + vH + ')');
+    cy.get(cesc('#/grp3ps/grp2ps/v7tail') + ' .mjx-mrow').eq(0).contains('(' + c0 + ')');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/g/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/g2/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/g3/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/g3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/g3/c"].stateValues.center).eqls(P);
+      expect(stateVariables["/g3/l"].stateValues.endpoints[0]).eqls(P);
+      expect(stateVariables["/g3/l"].stateValues.endpoints[1]).eqls(vH);
+      expect(stateVariables["/g4/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/g5/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/g5/c"].stateValues.center).eqls(c0);
+
+      expect(stateVariables["/grp2/g/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g2/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp2/g3/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp2/g3/c"].stateValues.center).eqls(P);
+      expect(stateVariables["/grp2/g3/l"].stateValues.endpoints[0]).eqls(P);
+      expect(stateVariables["/grp2/g3/l"].stateValues.endpoints[1]).eqls(vH);
+      expect(stateVariables["/grp2/g4/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g5/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g5/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp2/g6/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp2/g6/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp2/l"].stateValues.endpoints[0]).eqls(c0);
+      expect(stateVariables["/grp2/l"].stateValues.endpoints[1]).eqls(P);
+
+      expect(stateVariables["/grp3/g/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g2/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp3/g3/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp3/g3/c"].stateValues.center).eqls(P);
+      expect(stateVariables["/grp3/g3/l"].stateValues.endpoints[0]).eqls(P);
+      expect(stateVariables["/grp3/g3/l"].stateValues.endpoints[1]).eqls(vH);
+      expect(stateVariables["/grp3/g4/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g5/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g5/c"].stateValues.center).eqls(c0);
+
+      expect(stateVariables["/grp3/grp2/g/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g2/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp3/grp2/g3/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g3/v"].stateValues.displacement).eqls(v);
+      expect(stateVariables["/grp3/grp2/g3/c"].stateValues.center).eqls(P);
+      expect(stateVariables["/grp3/grp2/g3/l"].stateValues.endpoints[0]).eqls(P);
+      expect(stateVariables["/grp3/grp2/g3/l"].stateValues.endpoints[1]).eqls(vH);
+      expect(stateVariables["/grp3/grp2/g4/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g5/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g5/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp3/grp2/g6/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/grp2/g6/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp3/grp2/l"].stateValues.endpoints[0]).eqls(c0);
+      expect(stateVariables["/grp3/grp2/l"].stateValues.endpoints[1]).eqls(P);
+      expect(stateVariables["/grp3/g7/P"].stateValues.xs).eqls(P);
+      expect(stateVariables["/grp3/g7/c"].stateValues.center).eqls(c0);
+      expect(stateVariables["/grp3/g7/l"].stateValues.endpoints[0]).eqls(c0);
+      expect(stateVariables["/grp3/g7/l"].stateValues.endpoints[1]).eqls(P);
+      expect(stateVariables["/grp3/g7/v"].stateValues.head).eqls(vH);
+      expect(stateVariables["/grp3/g7/v"].stateValues.tail).eqls(c0);
+
+    });
+
+
 
   });
 

@@ -2160,6 +2160,7 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;
@@ -2204,6 +2205,7 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;

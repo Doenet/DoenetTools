@@ -1503,6 +1503,10 @@ export default class Copy extends CompositeComponent {
       unlinkExternalCopies: !link
     })
 
+    if (serializedReplacements.length > 0) {
+      delete serializedReplacements[0].doenetAttributes.haveNewNamespaceOnlyFromShadow;
+    }
+
     for (let repl of serializedReplacements) {
       if (typeof repl !== "object") {
         continue;
@@ -1521,6 +1525,12 @@ export default class Copy extends CompositeComponent {
         flags
       });
       Object.assign(repl.attributes, attributesFromComposite)
+    }
+
+    if (serializedReplacements[0].attributes.newNamespace?.primitive
+      && !component.attributes.assignNewNamespaces?.primitive
+    ) {
+      serializedReplacements[0].doenetAttributes.haveNewNamespaceOnlyFromShadow = true;
     }
 
     let processResult = serializeFunctions.processAssignNames({
@@ -1565,7 +1575,11 @@ export default class Copy extends CompositeComponent {
       ) {
         // the new components were added without a new namespace
         // even though their parent had a new namespace
-        // Mark them as ignoring their parent's new namespace so they are copied correctly
+        // The parent has already been marked as having a new namespace only because it is shadowing.
+        // Mark them to ignore their parent's new namespace.
+        // Then if the parent is copied directly,
+        // the children won't be given a new namespace
+
         for (let comp of processResult.serializedComponents) {
           comp.doenetAttributes.ignoreParentNewNamespace = true;
         }
