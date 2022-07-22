@@ -483,7 +483,6 @@ describe('Boolean Tag Tests', function () {
 
   })
 
-
   it('overwrite properties when copying', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -513,7 +512,6 @@ describe('Boolean Tag Tests', function () {
 
   })
 
-
   it('boolean simplifyOnCompare bug', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -532,6 +530,31 @@ describe('Boolean Tag Tests', function () {
 
     cy.get('#\\/b1').should('have.text', "true")
     cy.get('#\\/b2').should('have.text', "true")
+
+  })
+
+  it('case insensitive match', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="b1">a/B = A/b</boolean>
+    <boolean name="b2" caseInsensitiveMatch>a/B = A/b</boolean>
+    <boolean name="b3"><math>a/B</math> = <math>A/b</math></boolean>
+    <boolean name="b4" caseInsensitiveMatch><math>a/B</math> = <math>A/b</math></boolean>
+    <boolean name="b5"><text>one Word</text> = <text>One word</text></boolean>
+    <boolean name="b6" caseInsensitiveMatch><text>one Word</text> = <text>One word</text></boolean>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/b1').should('have.text', "false")
+    cy.get('#\\/b2').should('have.text', "true")
+    cy.get('#\\/b3').should('have.text', "false")
+    cy.get('#\\/b4').should('have.text', "true")
+    cy.get('#\\/b5').should('have.text', "false")
+    cy.get('#\\/b6').should('have.text', "true")
 
   })
 

@@ -136,7 +136,6 @@ export default class Sort extends CompositeComponent {
         return dependencies;
       },
       definition({ dependencyValues, componentInfoObjects }) {
-        console.log(dependencyValues)
         let allValues = [];
         for (let depName in dependencyValues) {
           if (depName.substring(0, 9) !== "component") {

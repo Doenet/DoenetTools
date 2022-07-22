@@ -117,6 +117,12 @@ export default class Answer extends InlineComponent {
       defaultValue: 3,
       public: true,
     };
+    attributes.caseInsensitiveMatch = {
+      createComponentOfType: "boolean",
+      createStateVariable: "caseInsensitiveMatch",
+      defaultValue: false,
+      public: true,
+    };
     attributes.showCorrectness = {
       createComponentOfType: "boolean",
       createStateVariable: "showCorrectnessPreliminary",

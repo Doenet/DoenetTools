@@ -100,6 +100,13 @@ export default class Award extends BaseComponent {
       public: true,
       fallBackToParentStateVariable: "nPeriodicSetMatchesRequired",
     };
+    attributes.caseInsensitiveMatch = {
+      createComponentOfType: "boolean",
+      createStateVariable: "caseInsensitiveMatch",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "caseInsensitiveMatch",
+    };
     attributes.feedbackCodes = {
       createComponentOfType: "textList",
       createStateVariable: "feedbackCodes",
@@ -430,6 +437,10 @@ export default class Award extends BaseComponent {
         nPeriodicSetMatchesRequired: {
           dependencyType: "stateVariable",
           variableName: "nPeriodicSetMatchesRequired",
+        },
+        caseInsensitiveMatch: {
+          dependencyType: "stateVariable",
+          variableName: "caseInsensitiveMatch",
         },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
