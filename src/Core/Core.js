@@ -7994,11 +7994,20 @@ export default class Core {
 
   }
 
-  async performAction({ componentName, actionName, args, event }) {
+  async performAction({ componentName, actionName, args, event, caseInsensitiveMatch }) {
 
     let component = this.components[componentName];
     if (component && component.actions) {
       let action = component.actions[actionName];
+      if(!action && caseInsensitiveMatch) {
+        let actionNameLower = actionName.toLowerCase();
+        for(let aName in component.actions) {
+          if(aName.toLowerCase() === actionNameLower) {
+            action = component.actions[aName];
+            break;
+          }
+        }
+      }
       if (action) {
         if (event) {
           this.requestRecordEvent(event);
