@@ -285,7 +285,6 @@ export default class Atom extends InlineComponent {
 
         if (dependencyValues.dataForAtom) {
           chargeOfCommonIon = dependencyValues.dataForAtom["Charge of Common Ion"];
-          console.log('chargeOfCommonIon', chargeOfCommonIon)
         } else {
           chargeOfCommonIon = null;
         }
@@ -582,38 +581,6 @@ export default class Atom extends InlineComponent {
     }
 
 
-    // stateVariableDefinitions.isotopeSymbol = {
-    //   public: true,
-    //   shadowingInstructions: {
-    //     createComponentOfType: "m",
-    //   },
-    //   returnDependencies: () => ({
-    //     symbol: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "symbol",
-    //     },
-    //     atomicNumber: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "atomicNumber",
-    //     },
-    //     massNumber: {
-    //       dependencyType: "stateVariable",
-    //       variableName: "massNumber",
-    //     },
-    //   }),
-    //   definition({ dependencyValues }) {
-    //     let latex;
-    //     if (!(dependencyValues.symbol in elements)) {
-    //       latex = "[Invalid Chemical Symbol]";
-    //     } else {
-    //       latex = `{}^{${dependencyValues.massNumber}}_{${dependencyValues.atomicNumber}}\\text{${dependencyValues.symbol}}`
-    //     }
-    //     return {
-    //       setValue: { isotopeSymbol: latex }
-    //     }
-    //   }
-    // }
-
     stateVariableDefinitions.latex = {
       additionalStateVariablesDefined: [{
         variableName: "latexWithInputChildren",
@@ -624,21 +591,13 @@ export default class Atom extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "symbol",
         },
-        // massNumber: {
-        //   dependencyType: "stateVariable",
-        //   variableName: "massNumber",
-        // },
-        // displayMassNumber: {
-        //   dependencyType: "stateVariable",
-        //   variableName: "displayMassNumber",
-        // },
       }),
       definition({ dependencyValues }) {
         let latex;
         if (dependencyValues.symbol) {
           latex = `\\text{${dependencyValues.symbol}}`
         } else {
-          latex = "[Invalid Chemical Symbol]";
+          latex = "[\\text{Invalid Chemical Symbol}]";
         }
         return {
           setValue: { latex, latexWithInputChildren: [latex] }
