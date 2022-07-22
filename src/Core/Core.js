@@ -2165,7 +2165,7 @@ export default class Core {
 
       serializedReplacements = processResult.serializedComponents;
 
-      if (target.componentName === shadowedComposite.componentName
+      if (target?.componentName === shadowedComposite.componentName
         && compositeMediatingTheShadow.doenetAttributes.fromCopyTarget
       ) {
 

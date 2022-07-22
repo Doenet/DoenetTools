@@ -32,14 +32,18 @@ export default class Sort extends CompositeComponent {
       public: true,
     }
 
+    attributes.sortByProp = {
+      createPrimitiveOfType: "string",
+    };
+
     return attributes;
   }
 
   static returnChildGroups() {
 
     return [{
-      group: "mathNumbers",
-      componentTypes: ["number", "math", "numberList", "mathList", "point", "vector"]
+      group: "anything",
+      componentTypes: ["_base"]
     }]
 
   }
@@ -49,11 +53,24 @@ export default class Sort extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.propName = {
+      returnDependencies: () => ({
+        propName: {
+          dependencyType: "attributePrimitive",
+          attributeName: "sortByProp"
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+        return { setValue: { propName: dependencyValues.propName } }
+      }
+    }
+
+
     stateVariableDefinitions.componentNamesForValues = {
       returnDependencies: () => ({
         children: {
           dependencyType: "child",
-          childGroups: ["mathNumbers"],
+          childGroups: ["anything"],
           variableNames: ["componentNamesInList"],
           variablesOptional: true
         }
@@ -74,7 +91,7 @@ export default class Sort extends CompositeComponent {
 
 
     stateVariableDefinitions.sortedValues = {
-      stateVariablesDeterminingDependencies: ["componentNamesForValues", "sortByComponent"],
+      stateVariablesDeterminingDependencies: ["componentNamesForValues", "sortByComponent", "propName"],
       returnDependencies({ stateValues }) {
         let dependencies = {
           sortVectorsBy: {
@@ -84,30 +101,54 @@ export default class Sort extends CompositeComponent {
           sortByComponent: {
             dependencyType: "stateVariable",
             variableName: "sortByComponent"
+          },
+          propName: {
+            dependencyType: "stateVariable",
+            variableName: "propName"
           }
         };
-        for (let [ind, cName] of stateValues.componentNamesForValues.entries()) {
-          dependencies[`component${ind}`] = {
-            dependencyType: "multipleStateVariables",
-            componentName: cName,
-            variableNames: [
-              "value",
-              `x${stateValues.sortByComponent}`,
-              `tailX${stateValues.sortByComponent}`
-            ],
-            variablesOptional: true,
+        if (stateValues.propName) {
+          for (let [ind, cName] of stateValues.componentNamesForValues.entries()) {
+            dependencies[`component${ind}`] = {
+              dependencyType: "stateVariable",
+              componentName: cName,
+              variableName: stateValues.propName,
+              variablesOptional: true,
+              caseInsensitiveVariableMatch: true,
+              publicStateVariablesOnly: true,
+              returnAsComponentObject: true
+            }
+          }
+        } else {
+          for (let [ind, cName] of stateValues.componentNamesForValues.entries()) {
+            dependencies[`component${ind}`] = {
+              dependencyType: "multipleStateVariables",
+              componentName: cName,
+              variableNames: [
+                "value",
+                `x${stateValues.sortByComponent}`,
+                `tailX${stateValues.sortByComponent}`
+              ],
+              variablesOptional: true,
+            }
           }
         }
         return dependencies;
       },
       definition({ dependencyValues, componentInfoObjects }) {
+        console.log(dependencyValues)
         let allValues = [];
         for (let depName in dependencyValues) {
           if (depName.substring(0, 9) !== "component") {
             continue;
           }
           let component = dependencyValues[depName];
-          if (componentInfoObjects.isInheritedComponentType({
+          if(dependencyValues.propName) {
+            allValues.push({
+              componentName: component.componentName,
+              numericalValue: Object.values(component.stateValues)[0],
+            })
+          } else if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: component.componentType,
             baseComponentType: "number"
           })) {
