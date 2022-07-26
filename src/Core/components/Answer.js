@@ -315,12 +315,16 @@ export default class Answer extends InlineComponent {
           return { success: false }
         } else {
           // wrap all choices in a choiceinput
+          let choiceinput = {
+            componentType: "choiceInput",
+            children: matchedChildren
+          };
+          if (componentAttributes.shuffleOrder) {
+            choiceinput.attributes = { shuffleOrder: { primitive: true } }
+          }
           return {
             success: true,
-            newChildren: [{
-              componentType: "choiceInput",
-              children: matchedChildren
-            }]
+            newChildren: [choiceinput]
           }
         }
       }
