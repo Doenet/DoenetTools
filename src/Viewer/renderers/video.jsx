@@ -20,7 +20,7 @@ export default React.memo(function Video(props) {
   let lastPlayerState = useRef(null);
   let pauseTimeoutId = useRef(null);
   let lastPausedTime = useRef(0);
-  let lastPlayedTime = useRef(0);
+  let lastPlayedTime = useRef(null);
   let pollIntervalId = useRef(null);
   let lastSetTimeAction = useRef(null);
 
@@ -231,6 +231,10 @@ export default React.memo(function Video(props) {
                 }
               })
 
+              // make last played time as null so that, if we getting a buffering state change,
+              // we know not to record another watched event
+              lastPlayedTime.current = null;
+
             }
             // console.log("recordVideoPaused",{
             //   endTime: currentTime,
@@ -256,13 +260,13 @@ export default React.memo(function Video(props) {
         clearTimeout(pauseTimeoutId.current);
         let currentTime = player.current.getCurrentTime();
 
-        if (lastPlayerState.current !== window.YT.PlayerState.UNSTARTED) {
+        if (lastPlayedTime.current !== null) {
 
-          rates.current[rates.current.length - 1].endingPoint = currentTime;
+          rates.current[rates.current.length - 1].endingPoint = preSkipTime.current;
 
           // console.log("BUFFERING recordVideoWatched",{
           //   beginTime: lastPlayedTime.current,
-          //   endTime: currentTime,
+          //   endTime: preSkipTime.current,
           //   duration,
           //   rates: rates.current,
           // })
@@ -295,7 +299,7 @@ export default React.memo(function Video(props) {
 
 
           lastPlayerState.current = event.data;
-
+          lastPlayedTime.current = null;
 
         }
 
@@ -327,6 +331,8 @@ export default React.memo(function Video(props) {
               rates: rates.current,
             }
           })
+
+          lastPlayedTime.current = null;
 
         }
 
@@ -366,59 +372,61 @@ export default React.memo(function Video(props) {
 
   }
 
+  if (player.current) {
 
-  let playerState = player.current?.getPlayerState?.();
-  if (SVs.state === "playing") {
-    if (playerState === window.YT.PlayerState.UNSTARTED
-      || playerState === window.YT.PlayerState.PAUSED
-      || playerState === window.YT.PlayerState.CUED
-      || playerState === window.YT.PlayerState.ENDED
-    ) {
-      player.current.playVideo();
-    }
-  } else if (SVs.state === "stopped") {
-    if (playerState === window.YT.PlayerState.PLAYING) {
-      player.current.pauseVideo();
-    }
-  }
-
-  if (SVs.time !== Number(lastSetTimeAction.current)) {
-
-    let time = SVs.time;
-    let duration = player.current.getDuration();
-
-    if (time > duration) {
-      time = Math.floor(duration);
-      callAction({
-        action: actions.setTime,
-        args: {
-          time
-        }
-      })
-    }
-    if (time !== Number(lastSetTimeAction.current)) {
-
-
-      if (player.current.getPlayerState() === window.YT.PlayerState.CUED) {
-        // if cued, seeking will automatically start the video.
-        // Pausing it first doesn't seem to work
-        // so, instead pause it 200 ms after hitting play
-        // (If pause immediately, then always get a black screen with spinning arrow.
-        // Pausing after 200 ms sometimes prevents black screen, but it is imperfect.)
-        // TODO: find a better solution
-        // See also: https://issuetracker.google.com/issues/77752719
-
-        player.current.pauseVideo(); // doesn't seem to do anything!
-        player.current.seekTo(time, true)
-        setTimeout(() => player.current.pauseVideo(), 200);
-      } else {
-        player.current.seekTo(time, true)
+    let playerState = player.current.getPlayerState();
+    if (SVs.state === "playing") {
+      if (playerState === window.YT.PlayerState.UNSTARTED
+        || playerState === window.YT.PlayerState.PAUSED
+        || playerState === window.YT.PlayerState.CUED
+        || playerState === window.YT.PlayerState.ENDED
+      ) {
+        player.current.playVideo();
       }
-
-      lastSetTimeAction.current = time;
+    } else if (SVs.state === "stopped") {
+      if (playerState === window.YT.PlayerState.PLAYING) {
+        player.current.pauseVideo();
+      }
     }
-  }
 
+    if (SVs.time !== Number(lastSetTimeAction.current)) {
+
+      let time = SVs.time;
+      let duration = player.current.getDuration();
+
+      if (time > duration) {
+        time = Math.floor(duration);
+        callAction({
+          action: actions.setTime,
+          args: {
+            time
+          }
+        })
+      }
+      if (time !== Number(lastSetTimeAction.current)) {
+
+
+        if (player.current.getPlayerState() === window.YT.PlayerState.CUED) {
+          // if cued, seeking will automatically start the video.
+          // Pausing it first doesn't seem to work
+          // so, instead pause it 200 ms after hitting play
+          // (If pause immediately, then always get a black screen with spinning arrow.
+          // Pausing after 200 ms sometimes prevents black screen, but it is imperfect.)
+          // TODO: find a better solution
+          // See also: https://issuetracker.google.com/issues/77752719
+
+          player.current.pauseVideo(); // doesn't seem to do anything!
+          player.current.seekTo(time, true)
+          setTimeout(() => player.current.pauseVideo(), 200);
+        } else {
+          player.current.seekTo(time, true)
+        }
+
+        lastSetTimeAction.current = time;
+      }
+    }
+
+  }
 
   if (SVs.hidden) return null;
 
