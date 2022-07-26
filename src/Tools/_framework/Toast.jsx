@@ -60,7 +60,11 @@ const Life = styled(animated.div)`
   bottom: ${(props) => (props.top ? '10px' : '0')};
   left: 0px;
   width: auto;
-  background-image: linear-gradient(130deg, var(--mainBlue), var(--solidLightBlue));
+  background-image: linear-gradient(
+    130deg,
+    var(--mainBlue),
+    var(--solidLightBlue)
+  );
   height: 5px;
 `;
 
@@ -89,30 +93,32 @@ const toastStack = atom({
   default: [],
 });
 
-let id = 0;
+const toastStackId = atom({
+  key: 'toastStackId',
+  default: 0,
+});
 
-export const recoilAddToast = ({ set }) =>
-(msg, type = toastType.INFO, action = null) => {
-  set(toastStack, (old) => [
-    ...old,
-    <ToastMessage
-      key={id}
-      type={type}
-      action={action}
-      duration={type.timeout}
-      tId={id}
-    >
-      {msg}
-    </ToastMessage>,
-  ]);
-  id++;
-}
+export const recoilAddToast =
+  ({ set, snapshot }) =>
+  (msg, type = toastType.INFO, action = null) => {
+    const id = snapshot.getLoadable().getValue();
+    set(toastStack, (old) => [
+      ...old,
+      <ToastMessage
+        key={id}
+        type={type}
+        action={action}
+        duration={type.timeout}
+        tId={id}
+      >
+        {msg}
+      </ToastMessage>,
+    ]);
+    set(toastStackId, (prev) => prev++);
+  };
 
 export const useToast = () => {
-  const addToast = useRecoilCallback(
-    recoilAddToast,
-    [],
-  );
+  const addToast = useRecoilCallback(recoilAddToast, []);
   return addToast;
 };
 
@@ -192,6 +198,7 @@ function ToastMessage({
         <Life style={{ right: props.life }} />
         <p>{children}</p>
         <Button
+          data-test="toast cancel button"
           onClick={(e) => {
             e.stopPropagation();
             ref.current.cancel();
