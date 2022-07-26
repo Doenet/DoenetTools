@@ -1425,10 +1425,10 @@ export default class Core {
     )
 
     for (let varDescription of variablesChanged) {
-      await this.recordActualChangeInStateVariable({
-        componentName: varDescription.componentName,
-        varName: varDescription.varName,
-      });
+      await this.markStateVariableAndUpstreamDependentsStale({
+        component: this._components[varDescription.componentName],
+        varName: varDescription.varName
+      })
     }
 
     await this.checkForStateVariablesUpdatesForNewComponent(componentName)
@@ -2181,7 +2181,7 @@ export default class Core {
         let processResult = serializeFunctions.processAssignNames({
           assignNames,
           serializedComponents: newReplacements,
-          parentName:  component.componentName,
+          parentName: component.componentName,
           parentCreatesNewNamespace: compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive,
           indOffset: serializedReplacements.length,
           componentInfoObjects: this.componentInfoObjects,
@@ -2666,12 +2666,13 @@ export default class Core {
           let haveParentValue = dependencyValues.parentValue !== undefined
             && dependencyValues.parentValue !== null;
           if (haveParentValue && !usedDefault.parentValue) {
-            return { setValue: { [varName]: dependencyValues.parentValue } }
+            return { setValue: { [varName]: dependencyValues.parentValue }, checkForActualChange: { [varName]: true } }
           } else {
             return {
               useEssentialOrDefaultValue: {
                 [varName]: true
-              }
+              },
+              checkForActualChange: { [varName]: true }
             }
           }
         }
@@ -2682,7 +2683,7 @@ export default class Core {
           attribute: attrName
         })
 
-        return { setValue: { [varName]: attributeValue } };
+        return { setValue: { [varName]: attributeValue }, checkForActualChange: { [varName]: true } };
       };
 
       if (!attributeSpecification.noInverse) {
@@ -2808,11 +2809,16 @@ export default class Core {
           return {
             useEssentialOrDefaultValue: {
               [varName]: true
-            }
+            },
+            checkForActualChange: { [varName]: true }
           };
         }
         else {
-          return { setValue: { [varName]: dependencyValues.adapterTargetVariable } };
+          return {
+            setValue: { [varName]: dependencyValues.adapterTargetVariable },
+            checkForActualChange: { [varName]: true }
+          };
+
         }
       };
 
@@ -3024,12 +3030,16 @@ export default class Core {
           let haveParentValue = dependencyValues.parentValue !== undefined
             && dependencyValues.parentValue !== null;
           if (haveParentValue && !usedDefault.parentValue) {
-            return { setValue: { [varName]: dependencyValues.parentValue } }
+            return {
+              setValue: { [varName]: dependencyValues.parentValue },
+              checkForActualChange: { [varName]: true }
+            }
           } else {
             return {
               useEssentialOrDefaultValue: {
                 [varName]: true
-              }
+              },
+              checkForActualChange: { [varName]: true }
             }
           }
 
@@ -3040,7 +3050,10 @@ export default class Core {
           attributeSpecification, attribute: attrName
         })
 
-        return { setValue: { [varName]: attributeValue } };
+        return {
+          setValue: { [varName]: attributeValue },
+          checkForActualChange: { [varName]: true }
+        };
       };
 
       if (!attributeSpecification.noInverse) {
@@ -6145,6 +6158,9 @@ export default class Core {
         // save old value
         // mark stale by putting getter back in place to get a new value next time it is requested
         stateVarObj._previousValue = await stateVarObj.value;
+        if (Array.isArray(stateVarObj._previousValue)) {
+          stateVarObj._previousValue = [...stateVarObj._previousValue]
+        }
         delete stateVarObj.value;
         let getStateVar = this.getStateVariableValue;
         Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: vName }), configurable: true });
@@ -6595,6 +6611,9 @@ export default class Core {
               // save old value
               // mark stale by putting getter back in place to get a new value next time it is requested
               stateVarObj._previousValue = await stateVarObj.value;
+              if (Array.isArray(stateVarObj._previousValue)) {
+                stateVarObj._previousValue = [...stateVarObj._previousValue]
+              }
               delete stateVarObj.value;
               Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component: upDepComponent, stateVariable: vName }), configurable: true });
             }
@@ -7999,10 +8018,10 @@ export default class Core {
     let component = this.components[componentName];
     if (component && component.actions) {
       let action = component.actions[actionName];
-      if(!action && caseInsensitiveMatch) {
+      if (!action && caseInsensitiveMatch) {
         let actionNameLower = actionName.toLowerCase();
-        for(let aName in component.actions) {
-          if(aName.toLowerCase() === actionNameLower) {
+        for (let aName in component.actions) {
+          if (aName.toLowerCase() === actionNameLower) {
             action = component.actions[aName];
             break;
           }

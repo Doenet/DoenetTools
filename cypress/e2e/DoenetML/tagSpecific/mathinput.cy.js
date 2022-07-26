@@ -981,11 +981,11 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.log("Type x- in first mathinput");
+    cy.log("Type x~ in first mathinput");
     cy.get('#\\/mi1 textarea').type(`x`, { force: true });
     // pause so that can detect change
     cy.get(`#\\/iv1`).should('contain.text', 'x')
-    cy.get('#\\/mi1 textarea').type(`-`, { force: true }).blur();
+    cy.get('#\\/mi1 textarea').type(`~`, { force: true }).blur();
     cy.get(`#\\/iv1`).should('contain.text', '\uFF3F')
 
     // since v1 was already invalid, can't be sure when have waited long enough
@@ -994,13 +994,13 @@ describe('MathInput Tag Tests', function () {
     cy.get('#\\/b').should('have.text', 'true')
 
     cy.log('Test values displayed in browser')
-    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−')
-    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x~')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x~')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x~')
     })
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x~')
     })
 
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1047,13 +1047,13 @@ describe('MathInput Tag Tests', function () {
 
 
     cy.log('Test values displayed in browser')
-    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−')
-    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x~')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x~')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x~')
     })
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x~')
     })
 
     cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1078,8 +1078,8 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/mi1a'].stateValues.value).eqls('＿');
     });
 
-    cy.log("Add y in copied mathinput");
-    cy.get('#\\/mi1a textarea').type(`{end}y`, { force: true });
+    cy.log("Delete ~ and add -y in copied mathinput");
+    cy.get('#\\/mi1a textarea').type(`{end}{backspace}-y`, { force: true });
     cy.get(`#\\/iv1`).should('contain.text', 'x−y')
 
     cy.log('Test values displayed in browser')
@@ -1155,20 +1155,20 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.log("Add * in copied mathinput");
-    cy.get('#\\/mi1a textarea').type(`{end}*`, { force: true });
+    cy.log("Add & in copied mathinput");
+    cy.get('#\\/mi1a textarea').type(`{end}@`, { force: true });
     cy.get(`#\\/iv1`).should('contain.text', '\uFF3F')
 
     cy.log('Test values displayed in browser')
-    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y·')
-    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y·')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y@')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y@')
     cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', '＿')
     cy.get(`#\\/iv1a .mjx-mrow`).should('contain.text', '＿')
     cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y@')
     })
     cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
-      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·')
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y@')
     })
 
 
@@ -1195,9 +1195,9 @@ describe('MathInput Tag Tests', function () {
     });
 
 
-    cy.log("Add z in first mathinput");
+    cy.log("Delete @ and add *z in first mathinput");
     cy.get('#\\/mi1 textarea').type(`{end}`, { force: true });
-    cy.get('#\\/mi1 textarea').type(`{end}z`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{end}{backspace}*z`, { force: true });
     cy.get(`#\\/iv1`).should('contain.text', 'x−yz')
 
     cy.log('Test values displayed in browser')
@@ -1233,6 +1233,359 @@ describe('MathInput Tag Tests', function () {
       expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
       expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
       expect(stateVariables['/mi1a'].stateValues.value).eqls('＿');
+    });
+
+
+    cy.log("Press enter");
+    cy.get('#\\/mi1 textarea').type(`{enter}`, { force: true });
+
+    cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', 'x−yz')
+    cy.get(`#\\/v1a .mjx-mrow`).should('contain.text', 'x−yz')
+
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·z')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·z')
+    })
+
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1a'].stateValues.value).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+    });
+
+
+  })
+
+  it('mathinput references with incomplete math expressions', () => {
+    let doenetML = `
+    <text>a</text>
+    <mathinput name="mi1" />
+    <copy target="mi1" assignNames="mi1a"  />
+    <copy prop='value' target="mi1" assignNames="v1" />
+    <copy prop='immediatevalue' target="mi1" assignNames="iv1"  />
+    <copy prop='value' target="mi1a" assignNames="v1a" />
+    <copy prop='immediatevalue' target="mi1a" assignNames="iv1a"  />
+    <p><booleaninput name="bi" /> <copy prop="value" target="bi" assignNames="b" /></p>
+    `;
+
+    cy.get('#testRunner_toggleControls').click();
+    cy.get('#testRunner_allowLocalState').click()
+    cy.wait(100)
+    cy.get('#testRunner_toggleControls').click();
+
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('')
+    })
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('＿')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('＿');
+      expect(stateVariables['/mi1'].stateValues.value).eqls('＿');
+      expect(stateVariables['/mi1a'].stateValues.value).eqls('＿');
+    });
+
+
+    cy.log("Type x- in first mathinput");
+    cy.get('#\\/mi1 textarea').type(`x`, { force: true });
+    // pause so that can detect change
+    cy.get(`#\\/iv1`).should('contain.text', 'x')
+    cy.get('#\\/mi1 textarea').type(`-`, { force: true }).blur();
+    cy.get(`#\\/iv1`).should('contain.text', 'x−')
+
+    // since v1 was already invalid, can't be sure when have waited long enough
+    // so click boolean input and wait for its effect to take
+    cy.get('#\\/bi_input').click()
+    cy.get('#\\/b').should('have.text', 'true')
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+    })
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls("x-");
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls("x-");
+      expect(stateVariables['/mi1'].stateValues.value).eqls("x-");
+      expect(stateVariables['/mi1a'].stateValues.value).eqls("x-");
+    });
+
+    // pause 2 seconds to make sure 1 second debounce for saving was satisfied
+    cy.wait(2000);
+
+    cy.log('reload page')
+    cy.reload();
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML
+      }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    // the DOM will display even before core is ready
+    // so to make sure core has loaded, click boolean and wait for it to change
+    cy.get("#\\/b").should('have.text', 'true');
+    cy.get('#\\/bi_input').click();
+    cy.get("#\\/b").should('have.text', 'false');
+
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−')
+    })
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls('x-');
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls('x-');
+      expect(stateVariables['/mi1'].stateValues.value).eqls('x-');
+      expect(stateVariables['/mi1a'].stateValues.value).eqls('x-');
+    });
+
+    cy.log("Add y in copied mathinput");
+    cy.get('#\\/mi1a textarea').type(`{end}y`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'x−y')
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y')
+    })
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1'].stateValues.value).eqls('x-');
+      expect(stateVariables['/mi1a'].stateValues.value).eqls('x-');
+    });
+
+
+    cy.log("blur");
+    cy.get('#\\/mi1a textarea').blur();
+    cy.get(`#\\/v1`).should('contain.text', 'x−y')
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/v1 .mjx-mrow`).should('contain.text', 'x−y')
+    cy.get(`#\\/v1a .mjx-mrow`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y')
+    })
+
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1a'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
+    });
+
+
+    cy.log("Add * in copied mathinput");
+    cy.get('#\\/mi1a textarea').type(`{end}*`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', '\uFF3F')
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y·')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y·')
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', 'x−y＿')
+    cy.get(`#\\/iv1a .mjx-mrow`).should('contain.text', 'x−y＿')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·')
+    })
+
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y＿')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y＿')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', '＿']]]);
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', '＿']]]);
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
+      expect(stateVariables['/mi1a'].stateValues.value).eqls(['+', 'x', ['-', 'y']]);
+    });
+
+
+    cy.log("Add z in first mathinput");
+    cy.get('#\\/mi1 textarea').type(`{end}`, { force: true });
+    cy.get('#\\/mi1 textarea').type(`{end}z`, { force: true });
+    cy.get(`#\\/iv1`).should('contain.text', 'x−yz')
+
+    cy.log('Test values displayed in browser')
+    cy.get(`#\\/mi1 .mq-editable-field`).should('contain.text', 'x−y·z')
+    cy.get(`#\\/mi1a .mq-editable-field`).should('contain.text', 'x−y·z')
+    cy.get(`#\\/iv1 .mjx-mrow`).should('contain.text', 'x−yz')
+    cy.get(`#\\/iv1a .mjx-mrow`).should('contain.text', 'x−yz')
+    cy.get(`#\\/mi1 .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·z')
+    })
+    cy.get(`#\\/mi1a .mq-editable-field`).invoke('text').then((text) => {
+      expect(text.replace(/[\s\u200B-\u200D\uFEFF]/g, '')).equal('x−y·z')
+    })
+
+
+    cy.get(`#\\/v1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y＿')
+    });
+    cy.get(`#\\/iv1`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+    cy.get(`#\\/v1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−y＿')
+    });
+    cy.get(`#\\/iv1a`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x−yz')
+    });
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mi1'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1a'].stateValues.immediateValue).eqls(['+', 'x', ['-', ['*', 'y', 'z']]]);
+      expect(stateVariables['/mi1'].stateValues.value).eqls(['+', 'x', ['-', ['*', 'y', '＿']]]);
+      expect(stateVariables['/mi1a'].stateValues.value).eqls(['+', 'x', ['-', ['*', 'y', '＿']]]);
     });
 
 
@@ -6501,6 +6854,114 @@ describe('MathInput Tag Tests', function () {
 
   });
 
+  it('copy raw renderer value, handle incomplete math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <mathinput name="mi" />
+  <text name="rv" prop="rawRendererValue" copyTarget="mi" />
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/rv').should('have.text', '')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', '')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls('\uff3f')
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('')
+      expect(stateVariables["/rv"].stateValues.value).eqls('')
+    });
+
+    cy.log('enter value that parses to math')
+    cy.get('#\\/mi textarea').type("a", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'a')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls('a')
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls('a')
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a')
+    });
+
+    cy.log('enter value that is incomplete in math')
+    cy.get('#\\/mi textarea').type("{end}^", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a^{ }')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'a')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(["^", "a", "\uff3f"])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["^", "a", "\uff3f"])
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{ }')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{ }')
+    });
+
+    cy.log('still have incomplete math')
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}bc+", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a^{bc+}')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'abc+')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(["^", "a", ["+", ["*", "b", "c"], "\uff3f"]])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["^", "a", ["+", ["*", "b", "c"], "\uff3f"]])
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{bc+}')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{bc+}')
+    });
+
+    cy.log('complete to valid math')
+    cy.get('#\\/mi textarea').type("{end}{leftArrow}d", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a^{bc+d}')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'abc+d')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(["^", "a", ["+",  ["*", "b", "c"], "d"]])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["^", "a", ["+",  ["*", "b", "c"], "d"]])
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{bc+d}')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{bc+d}')
+    });
+
+    cy.log('incomplete math again')
+    cy.get('#\\/mi textarea').type("{end}-{enter}", { force: true });
+
+    cy.get('#\\/rv').should('have.text', 'a^{bc+d}-')
+    cy.get('#\\/mi .mq-editable-field').should('contain.text', 'abc+d−')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(['+', ["^", "a", ["+",  ["*", "b", "c"], "d"]], ['-', '\uff3f']])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(['+', ["^", "a", ["+",  ["*", "b", "c"], "d"]], ['-', '\uff3f']])
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{bc+d}-')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{bc+d}-')
+    });
+
+    cy.log('complete to valid math again')
+    cy.get('#\\/mi textarea').type("{end}e", { force: true }).blur();
+
+    cy.get('#\\/rv').should('have.text', 'a^{bc+d}-e')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'abc+d−e')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/mi"].stateValues.value).eqls(['+', ["^", "a", ["+",  ["*", "b", "c"], "d"]], ['-', 'e']])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(['+', ["^", "a", ["+",  ["*", "b", "c"], "d"]], ['-', 'e']])
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{bc+d}-e')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a^{bc+d}-e')
+    });
+  });
+
   it('copy raw renderer value, handle invalid math', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -6539,74 +7000,47 @@ describe('MathInput Tag Tests', function () {
     });
 
     cy.log('enter value that is error in math')
-    cy.get('#\\/mi textarea').type("{end}^", { force: true }).blur();
+    cy.get('#\\/mi textarea').type("{end}@", { force: true }).blur();
 
-    cy.get('#\\/rv').should('have.text', 'a^{ }')
-    cy.get('#\\/mi .mq-editable-field').should('have.text', 'a')
+    cy.get('#\\/rv').should('have.text', 'a@')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'a@')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/mi"].stateValues.value).eqls('\uff3f')
       expect(stateVariables["/mi"].stateValues.immediateValue).eqls('\uff3f')
-      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{ }')
-      expect(stateVariables["/rv"].stateValues.value).eqls('a^{ }')
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a@')
+      expect(stateVariables["/rv"].stateValues.value).eqls('a@')
     });
 
     cy.log('still have error in math')
     cy.get('#\\/mi textarea').type("{end}{leftArrow}b+", { force: true }).blur();
 
-    cy.get('#\\/rv').should('have.text', 'a^{b+}')
-    cy.get('#\\/mi .mq-editable-field').should('have.text', 'ab+')
+    cy.get('#\\/rv').should('have.text', 'ab+@')
+    cy.get('#\\/mi .mq-editable-field').should('have.text', 'ab+@')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables["/mi"].stateValues.value).eqls('\uff3f')
       expect(stateVariables["/mi"].stateValues.immediateValue).eqls('\uff3f')
-      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{b+}')
-      expect(stateVariables["/rv"].stateValues.value).eqls('a^{b+}')
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('ab+@')
+      expect(stateVariables["/rv"].stateValues.value).eqls('ab+@')
     });
 
-    cy.log('complete to valid math')
-    cy.get('#\\/mi textarea').type("{end}{leftArrow}c", { force: true }).blur();
+    cy.log('make valid math')
+    cy.get('#\\/mi textarea').type("{end}{backspace}c", { force: true }).blur();
 
-    cy.get('#\\/rv').should('have.text', 'a^{b+c}')
+    cy.get('#\\/rv').should('have.text', 'ab+c')
     cy.get('#\\/mi .mq-editable-field').should('have.text', 'ab+c')
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/mi"].stateValues.value).eqls(["^", "a", ["+", "b", "c"]])
-      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["^", "a", ["+", "b", "c"]])
-      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{b+c}')
-      expect(stateVariables["/rv"].stateValues.value).eqls('a^{b+c}')
+      expect(stateVariables["/mi"].stateValues.value).eqls(["+", ["*", "a", "b"], "c"])
+      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["+", ["*", "a", "b"], "c"])
+      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('ab+c')
+      expect(stateVariables["/rv"].stateValues.value).eqls('ab+c')
     });
 
-    cy.log('invalid math again')
-    cy.get('#\\/mi textarea').type("{end}-{enter}", { force: true });
-
-    cy.get('#\\/rv').should('have.text', 'a^{b+c}-')
-    cy.get('#\\/mi .mq-editable-field').should('contain.text', 'ab+c−')
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/mi"].stateValues.value).eqls('\uff3f')
-      expect(stateVariables["/mi"].stateValues.immediateValue).eqls('\uff3f')
-      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{b+c}-')
-      expect(stateVariables["/rv"].stateValues.value).eqls('a^{b+c}-')
-    });
-
-    cy.log('complete to valid math again')
-    cy.get('#\\/mi textarea').type("{end}d", { force: true }).blur();
-
-    cy.get('#\\/rv').should('have.text', 'a^{b+c}-d')
-    cy.get('#\\/mi .mq-editable-field').should('have.text', 'ab+c−d')
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/mi"].stateValues.value).eqls(["+", ["^", "a", ["+", "b", "c"]], ["-", "d"]])
-      expect(stateVariables["/mi"].stateValues.immediateValue).eqls(["+", ["^", "a", ["+", "b", "c"]], ["-", "d"]])
-      expect(stateVariables["/mi"].stateValues.rawRendererValue).eqls('a^{b+c}-d')
-      expect(stateVariables["/rv"].stateValues.value).eqls('a^{b+c}-d')
-    });
   });
 
 });

@@ -107,6 +107,13 @@ export default class Award extends BaseComponent {
       public: true,
       fallBackToParentStateVariable: "caseInsensitiveMatch",
     };
+    attributes.matchBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchBlanks",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "matchBlanks",
+    };
     attributes.feedbackCodes = {
       createComponentOfType: "textList",
       createStateVariable: "feedbackCodes",
@@ -121,6 +128,14 @@ export default class Award extends BaseComponent {
     };
     attributes.targetsAreResponses = {
       createPrimitiveOfType: "string"
+    }
+
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      public: true,
+      fallBackToParentStateVariable: "splitSymbols",
     }
 
     return attributes;
@@ -441,6 +456,10 @@ export default class Award extends BaseComponent {
         caseInsensitiveMatch: {
           dependencyType: "stateVariable",
           variableName: "caseInsensitiveMatch",
+        },
+        matchBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "matchBlanks",
         },
       }),
       definition: function ({ dependencyValues, usedDefault }) {

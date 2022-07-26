@@ -14,6 +14,7 @@ export default function checkEquality({
   nSignErrorsMatched = 0,
   nPeriodicSetMatchesRequired = 3,
   caseInsensitiveMatch = false,
+  matchBlanks = false,
 }) {
 
   /*
@@ -127,6 +128,7 @@ export default function checkEquality({
               allowed_error_in_numbers: allowedErrorInNumbers,
               include_error_in_number_exponents: includeErrorInNumberExponents,
               allowed_error_is_absolute: allowedErrorIsAbsolute,
+              allow_blanks: matchBlanks,
             })
           }
           // temporary fix to keep complex numbers from crashing math-expressions
@@ -154,6 +156,7 @@ export default function checkEquality({
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
             allowed_error_is_absolute: allowedErrorIsAbsolute,
+            allow_blanks: matchBlanks
           })
           return { fraction_equal: equality ? 1 : 0 };
         }
@@ -211,6 +214,7 @@ export default function checkEquality({
               allowed_error_in_numbers: allowedErrorInNumbers,
               include_error_in_number_exponents: includeErrorInNumberExponents,
               allowed_error_is_absolute: allowedErrorIsAbsolute,
+              allow_blanks: matchBlanks,
             })
           }
           // temporary fix to keep complex numbers from crashing math-expressions
@@ -235,6 +239,7 @@ export default function checkEquality({
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
             allowed_error_is_absolute: allowedErrorIsAbsolute,
+            allow_blanks: matchBlanks
           })
           return { fraction_equal: equality ? 1 : 0 };
         }
@@ -570,6 +575,7 @@ export default function checkEquality({
         nSignErrorsMatched,
         nPeriodicSetMatchesRequired,
         caseInsensitiveMatch,
+        matchBlanks,
       })
       n_matches += sub_results.fraction_equal;
     }
@@ -617,6 +623,7 @@ export default function checkEquality({
           nSignErrorsMatched,
           nPeriodicSetMatchesRequired,
           caseInsensitiveMatch,
+          matchBlanks,
         })
         C[i + 1][j + 1] = Math.max(C[i][j] + sub_results.fraction_equal,
           C[i + 1][j], C[i][j + 1])
@@ -659,6 +666,7 @@ export default function checkEquality({
         nSignErrorsMatched,
         nPeriodicSetMatchesRequired,
         caseInsensitiveMatch,
+        matchBlanks,
       })
       if (sub_results.fraction_equal > best_match) {
         best_match = sub_results.fraction_equal;
