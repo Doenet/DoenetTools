@@ -93,6 +93,44 @@ export default class IonicCompound extends InlineComponent {
     }
 
 
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math"
+      },
+      returnDependencies: () => ({
+        ionicCompound: {
+          dependencyType: "stateVariable",
+          variableName: "ionicCompound",
+        },
+      }),
+      definition({ dependencyValues }) {
+        let tree;
+
+        if(dependencyValues.ionicCompound) {
+          tree = [];
+          for(let piece of dependencyValues.ionicCompound) {
+            let pieceTree = piece.symbol;
+            if(piece.count > 1) {
+              pieceTree = ["_", pieceTree, piece.count]
+            }
+            tree.push(pieceTree)
+          }
+          if(tree.length > 1) {
+            tree = ["*", ...tree];
+          } else if(tree.length === 1) {
+            tree = tree[0];
+          } else {
+            tree = "\uff3f";
+          }
+        } else {
+          tree = "\uff3f";
+        }
+        return {
+          setValue: { math: me.fromAst(tree) }
+        }
+      }
+    }
 
     stateVariableDefinitions.latex = {
       additionalStateVariablesDefined: [{
@@ -115,15 +153,6 @@ export default class IonicCompound extends InlineComponent {
             if(piece.count > 1) {
               latex += `_{${piece.count}}`
             }
-            if (piece.charge === -1) {
-              latex = latex + `^-`
-            } else if (piece.charge === 1) {
-              latex = latex + `^+`
-            } else if (piece.charge < 0) {
-              latex = latex + `^{${Math.abs(piece.charge)}-}`
-            } else if (piece.charge > 0) {
-              latex = latex + `^{${Math.abs(piece.charge)}+}`
-            }
           }
         } else {
           latex = "[\\text{Invalid Ionic Compound}]";
@@ -138,6 +167,7 @@ export default class IonicCompound extends InlineComponent {
     return stateVariableDefinitions;
   }
 
+  static adapters = ["math"];
 
 }
 

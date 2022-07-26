@@ -190,8 +190,8 @@ export class DependencyHandler {
             // were other downstream components involved
             for (let upVarName of upDep.upstreamVariableNames) {
               if (this._components[upDep.upstreamComponentName].state[upVarName].initiallyResolved) {
-                await this.core.recordActualChangeInStateVariable({
-                  componentName: upDep.upstreamComponentName,
+                await this.core.markStateVariableAndUpstreamDependentsStale({
+                  component: this.components[upDep.upstreamComponentName],
                   varName: upVarName,
                 })
               }
@@ -2659,8 +2659,8 @@ class Dependency {
 
     for (let upVarName of this.upstreamVariableNames) {
       if (this.dependencyHandler._components[this.upstreamComponentName].state[upVarName].initiallyResolved) {
-        await this.dependencyHandler.core.recordActualChangeInStateVariable({
-          componentName: this.upstreamComponentName,
+        await this.dependencyHandler.core.markStateVariableAndUpstreamDependentsStale({
+          component: this.dependencyHandler.components[this.upstreamComponentName],
           varName: upVarName,
         })
       }
@@ -2733,8 +2733,8 @@ class Dependency {
     if (recordChange) {
       for (let upVarName of this.upstreamVariableNames) {
         if (this.dependencyHandler._components[this.upstreamComponentName].state[upVarName].initiallyResolved) {
-          await this.dependencyHandler.core.recordActualChangeInStateVariable({
-            componentName: this.upstreamComponentName,
+          await this.dependencyHandler.core.markStateVariableAndUpstreamDependentsStale({
+            component: this.dependencyHandler.components[this.upstreamComponentName],
             varName: upVarName,
           })
         }
@@ -2764,8 +2764,8 @@ class Dependency {
 
     for (let upVarName of this.upstreamVariableNames) {
       if (this.dependencyHandler._components[this.upstreamComponentName].state[upVarName].initiallyResolved) {
-        await this.dependencyHandler.core.recordActualChangeInStateVariable({
-          componentName: this.upstreamComponentName,
+        await this.dependencyHandler.core.markStateVariableAndUpstreamDependentsStale({
+          component: this.dependencyHandler.components[this.upstreamComponentName],
           varName: upVarName,
         })
       }

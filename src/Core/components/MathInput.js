@@ -61,6 +61,7 @@ export default class MathInput extends Input {
       createStateVariable: "splitSymbols",
       defaultValue: true,
       public: true,
+      fallBackToParentStateVariable: "splitSymbols",
     };
     attributes.displayDigits = {
       createComponentOfType: "integer",
@@ -406,10 +407,8 @@ export default class MathInput extends Input {
             || dependencyValues.dontUpdateRawValueInDefinition
           )
         ) {
-          let rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex());
-          if (rawRendererValue === "\uff3f") {
-            rawRendererValue = '';
-          } else if (dependencyValues.hideNaN && rawRendererValue === "NaN") {
+          let rawRendererValue = stripLatex(dependencyValues.valueForDisplay.toLatex({ showBlanks: false }));
+          if (dependencyValues.hideNaN && rawRendererValue === "NaN") {
             rawRendererValue = '';
           }
           return {
@@ -505,10 +504,8 @@ export default class MathInput extends Input {
           // so even tiny numerical differences that are within double precision are detected
           if (!deepCompare(desiredStateVariableValues.rawRendererValue.tree, currentMath.tree)) {
 
-            let desiredValue = stripLatex(desiredStateVariableValues.rawRendererValue.toLatex());
-            if (desiredValue === "\uff3f") {
-              desiredValue = '';
-            } else if (dependencyValues.hideNaN && desiredValue === "NaN") {
+            let desiredValue = stripLatex(desiredStateVariableValues.rawRendererValue.toLatex({ showBlanks: false }));
+            if (dependencyValues.hideNaN && desiredValue === "NaN") {
               desiredValue = '';
             }
             instructions.push({

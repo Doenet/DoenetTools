@@ -123,6 +123,12 @@ export default class Answer extends InlineComponent {
       defaultValue: false,
       public: true,
     };
+    attributes.matchBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchBlanks",
+      defaultValue: false,
+      public: true,
+    };
     attributes.showCorrectness = {
       createComponentOfType: "boolean",
       createStateVariable: "showCorrectnessPreliminary",
@@ -167,6 +173,13 @@ export default class Answer extends InlineComponent {
       defaultValue: false,
       public: true,
     };
+
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      public: true,
+    }
 
     return attributes;
   }
