@@ -4101,6 +4101,17 @@ export default class Core {
 
       if (!stateVarObj.getAllArrayKeys) {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten = true, desiredSize) {
+
+          function prependToAllKeys(keys, newStuff) {
+            for(let [ind,key] of keys.entries()) {
+              if(Array.isArray(key)) {
+                prependToAllKeys(key, newStuff)
+              } else {
+                keys[ind] = newStuff + "," + key
+              }
+            }
+          }
+
           function getAllArrayKeysSub(subArraySize) {
             if (subArraySize.length === 1) {
               // array of numbers from 0 to subArraySize[0], cast to strings
@@ -4113,7 +4124,9 @@ export default class Core {
                 if (flatten) {
                   subKeys.push(...subSubKeys.map(x => ind + "," + x))
                 } else {
-                  subKeys.push(subSubKeys.map(x => ind + "," + x))
+                  let newSubSubKeys = deepClone(subSubKeys);
+                  prependToAllKeys(newSubSubKeys, ind)
+                  subKeys.push(newSubSubKeys)
                 }
               }
               return subKeys;

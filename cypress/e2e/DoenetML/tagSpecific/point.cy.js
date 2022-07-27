@@ -11524,4 +11524,76 @@ describe('Point Tag Tests', function () {
 
   });
 
+  it('copy point and override label', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P" displayDecimals="1" padZeros>
+        (1,2)
+        <label>We have <m>x^{<copy prop="x" target="P"/>} + y^{<copy target="P" prop="y" />}</m></label>
+      </point>
+    </graph>
+    <graph>
+      <point name="Q" displayDigits="3" padZeros copyTarget="P">
+        <label>No latex: x^<text><copy prop="x" target="Q"/></text> + y^<text><copy target="Q" prop="y" /></text></label>
+      </point>
+    </graph>
+
+    <p name="labelPPar">Label for P: <copy prop="label" target="P" /></p>
+    <p name="labelQPar">Label for Q: <copy prop="label" target="Q" /></p>
+    `}, "*");
+    });
+
+   
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    
+    cy.get('#\\/labelPPar').should('contain.text', 'Label for P: We have ')
+    cy.get('#\\/labelPPar .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x1.0+y2.0")
+    })
+    cy.get('#\\/labelQPar').should('have.text', 'Label for Q: No latex: x^1.00 + y^2.00')
+     
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.label).eq('We have \\(x^{1.0} + y^{2.0}\\)')
+      expect(stateVariables["/P"].stateValues.labelHasLatex).eq(true)
+
+      expect(stateVariables["/Q"].stateValues.label).eq('No latex: x^1.00 + y^2.00')
+      expect(stateVariables["/Q"].stateValues.labelHasLatex).eq(false)
+
+    })
+
+
+    cy.log('move point')
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: Math.PI, y: Math.E }
+      })
+    })
+
+
+    cy.get('#\\/labelQPar').should('have.text', 'Label for Q: No latex: x^3.14 + y^2.72')
+
+    cy.get('#\\/labelPPar').should('contain.text', 'Label for P: We have ')
+    cy.get('#\\/labelPPar .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x3.1+y2.7")
+    })
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.label).eq('We have \\(x^{3.1} + y^{2.7}\\)')
+      expect(stateVariables["/P"].stateValues.labelHasLatex).eq(true)
+
+      expect(stateVariables["/Q"].stateValues.label).eq('No latex: x^3.14 + y^2.72')
+      expect(stateVariables["/Q"].stateValues.labelHasLatex).eq(false)
+
+    })
+
+  });
+
 })

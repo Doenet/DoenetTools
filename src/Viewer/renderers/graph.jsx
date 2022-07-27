@@ -3,6 +3,16 @@ import { sizeToCSS } from './utils/css';
 import useDoenetRender from './useDoenetRenderer';
 import me from 'math-expressions';
 import VisibilitySensor from 'react-visibility-sensor-v2';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 
 export const BoardContext = createContext();
 
@@ -19,6 +29,8 @@ export default React.memo(function Graph(props) {
   const settingBoundingBox = useRef(false);
   // const resizingBoard = useRef(false);
   const boardJustInitialized = useRef(false);
+
+  const previousShowNavigation = useRef(false);
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -53,7 +65,7 @@ export default React.memo(function Graph(props) {
       JXG.Options.grid.gridY = SVs.grid[1];
     }
 
-    let board = window.JXG.JSXGraph.initBoard(name,
+    let newBoard = window.JXG.JSXGraph.initBoard(name,
       {
         boundingbox,
         axis: false,
@@ -66,13 +78,13 @@ export default React.memo(function Graph(props) {
 
       });
 
-    board.itemsRenderedLowQuality = {};
+    newBoard.itemsRenderedLowQuality = {};
 
-    board.on('boundingbox', () => {
+    newBoard.on('boundingbox', () => {
       if (!(settingBoundingBox.current
         //  || resizingBoard.current
       )) {
-        let newBoundingbox = board.getBoundingBox();
+        let newBoundingbox = newBoard.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = newBoundingbox;
 
         // look for a change in bounding box that isn't due to roundoff error
@@ -89,7 +101,7 @@ export default React.memo(function Graph(props) {
         }
       }
     })
-    setBoard(board);
+    setBoard(newBoard);
 
     previousDimensions.current = {
       width: parseFloat(sizeToCSS(SVs.width)),
@@ -98,320 +110,20 @@ export default React.memo(function Graph(props) {
 
 
     if (SVs.displayXAxis) {
-      let xaxisOptions = {};
-      if (SVs.xlabel) {
-        let position = 'rt';
-        let offset = [5, 10];
-        let anchorx = 'right'
-        if (SVs.xlabelPosition === "left") {
-          position = 'lft';
-          anchorx = 'left';
-          offset = [-5, 10];
-        }
-        xaxisOptions.name = SVs.xlabel;
-        xaxisOptions.withLabel = true;
-        xaxisOptions.label = {
-          position,
-          offset,
-          anchorx,
-          strokeColor: "var(--canvastext)"
-        };
-      }
-      xaxisOptions.ticks = {
-        ticksDistance: 2,
-        label: {
-          offset: [-5, -15],
-          layer: 2,
-        },
-        // minorTicks: 4,
-        precision: 4,
-        strokeColor: 'var(--canvastext)',
-        drawLabels: SVs.displayXAxisTickLabels
-      }
-      if (SVs.xTickScaleFactor !== null) {
-        let xTickScaleFactor = me.fromAst(SVs.xTickScaleFactor);
-        let scale = xTickScaleFactor.evaluate_to_constant();
-        if (scale > 0) {
-          let scaleSymbol = xTickScaleFactor.toString();
-          xaxisOptions.ticks.scale = scale;
-          xaxisOptions.ticks.scaleSymbol = scaleSymbol;
-        }
-      }
-      xaxisOptions.strokeColor = "var(--canvastext)";
-      xaxisOptions.highlight = false;
-
-      if (SVs.grid === "dense") {
-        xaxisOptions.ticks.majorHeight = -1;
-        xaxisOptions.ticks.minorHeight = -1;
-      } else if (SVs.grid === "medium") {
-        xaxisOptions.ticks.majorHeight = -1;
-        xaxisOptions.ticks.minorHeight = 10;
-      } else {
-        xaxisOptions.ticks.majorHeight = 20;
-        xaxisOptions.ticks.minorHeight = 10;
-      }
-
-      if (!SVs.displayYAxis) {
-        xaxisOptions.ticks.drawZero = true;
-      }
-
-      xaxis.current = board.create('axis', [[0, 0], [1, 0]], xaxisOptions)
-
-      // change default ticks function to decreasing starting tick size
-      xaxis.current.defaultTicks.ticksFunction = function () {
-        var delta, b, dist;
-
-        b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
-        dist = b.upper - b.lower;
-
-        // only change from JSXgraph: 0.6 * dist became 0.2 * dist
-        delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
-        if (dist <= 6 * delta) {
-          delta *= 0.5;
-        }
-        return delta;
-
-      };
-
-      // hack JSXgraph tick function so that
-      // if major tick is 2*10^n for some integer n, then have 3 minor ticks,
-      // otherwise have 4 minor ticks
-      // (Other changes are simply to account for fact that
-      // don't have access to Mat and Type)
-      xaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
-        var tickPosition,
-          eps2 = 1E-6,
-          deltas,
-          // Distance between two major ticks in user coordinates
-          ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta),
-          ev_it = true,
-          ev_mt = 4;
-        this.visProp.minorticks = 4;
-
-        // Calculate X and Y distance between two major ticks
-        deltas = this.getXandYdeltas();
-
-        // adjust ticks distance
-        ticksDelta *= this.visProp.scale;
-        if (ev_it && this.minTicksDistance > 1E-6) {
-          ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
-
-          // Only change from JSXgraph function:
-          // check if ticksDelta is 2*10^n for some integer n
-          let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
-          if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
-            ev_mt = 3;
-            this.visProp.minorticks = 3
-          }
-          ticksDelta /= (ev_mt + 1);
-        } else if (!ev_it) {
-          ticksDelta /= (ev_mt + 1);
-        }
-        this.ticksDelta = ticksDelta;
-
-        if (ticksDelta < 1E-6) {
-          return;
-        }
-
-        // Position ticks from zero to the positive side while not reaching the upper boundary
-        tickPosition = 0;
-        // if (!Type.evaluate(this.visProp.drawzero)) {
-        tickPosition = ticksDelta;
-        // }
-        while (tickPosition <= bounds.upper + eps2) {
-          // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
-          if (tickPosition >= bounds.lower - eps2) {
-            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
-          }
-          tickPosition += ticksDelta;
-
-          // Emergency out
-          if ((bounds.upper - tickPosition) > ticksDelta * 10000) {
-            break;
-          }
-        }
-
-        // Position ticks from zero (not inclusive) to the negative side while not reaching the lower boundary
-        tickPosition = -ticksDelta;
-        while (tickPosition >= bounds.lower - eps2) {
-          // Only draw ticks when we are within bounds, ignore case where lower < upper < tickPosition
-          if (tickPosition <= bounds.upper + eps2) {
-            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
-          }
-          tickPosition -= ticksDelta;
-
-          // Emergency out
-          if ((tickPosition - bounds.lower) > ticksDelta * 10000) {
-            break;
-          }
-        }
-      }
-
+      createXAxis(newBoard);
     }
 
     if (SVs.displayYAxis) {
-
-      let yaxisOptions = {};
-      if (SVs.ylabel) {
-        let position = 'rt';
-        let offset = [-10, -5];
-        let anchorx = 'right';
-        if (SVs.ylabelPosition === "bottom") {
-          position = 'lft';
-          offset[1] = 5;
-        }
-        if (SVs.ylabelAlignment === "right") {
-          anchorx = 'left';
-          offset[0] = 10;
-        }
-        yaxisOptions.name = SVs.ylabel;
-        yaxisOptions.withLabel = true;
-        yaxisOptions.label = {
-          position,
-          offset,
-          anchorx,
-          strokeColor: "var(--canvastext)"
-        }
-      }
-      yaxisOptions.strokeColor = "var(--canvastext)";
-      yaxisOptions.highlight = false;
-
-      yaxisOptions.ticks = {
-        ticksDistance: 2,
-        label: {
-          offset: [12, -2],
-          layer: 2
-        },
-        // minorTicks: 4,
-        precision: 4,
-        strokeColor: "var(--canvastext)",
-        drawLabels: SVs.displayYAxisTickLabels
-      }
-      if (SVs.yTickScaleFactor !== null) {
-        let yTickScaleFactor = me.fromAst(SVs.yTickScaleFactor);
-        let scale = yTickScaleFactor.evaluate_to_constant();
-        if (scale > 0) {
-          let scaleSymbol = yTickScaleFactor.toString();
-          yaxisOptions.ticks.scale = scale;
-          yaxisOptions.ticks.scaleSymbol = scaleSymbol;
-        }
-      }
-      if (SVs.grid === "dense") {
-        yaxisOptions.ticks.majorHeight = -1;
-        yaxisOptions.ticks.minorHeight = -1;
-      } else if (SVs.grid === "medium") {
-        yaxisOptions.ticks.majorHeight = -1;
-        yaxisOptions.ticks.minorHeight = 10;
-      } else {
-        yaxisOptions.ticks.majorHeight = 20;
-        yaxisOptions.ticks.minorHeight = 10;
-      }
-
-      if (!SVs.displayXAxis) {
-        yaxisOptions.ticks.drawZero = true;
-      }
-
-      yaxis.current = board.create('axis', [[0, 0], [0, 1]], yaxisOptions)
-
-
-      // change default ticks function to decreasing starting tick size
-      yaxis.current.defaultTicks.ticksFunction = function () {
-        var delta, b, dist;
-
-        b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
-        dist = b.upper - b.lower;
-
-        // only change from JSXgraph: 0.6 * dist became 0.2 * dist
-        delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
-        if (dist <= 6 * delta) {
-          delta *= 0.5;
-        }
-        return delta;
-
-      };
-
-      // hack JSXgraph tick function so that
-      // if major tick is 2*10^n for some integer n, then have 3 minor ticks,
-      // otherwise have 4 minor ticks
-      // (Other changes are simply to account for fact that
-      // don't have access to Mat and Type)
-      yaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
-        var tickPosition,
-          eps2 = 1E-6,
-          deltas,
-          // Distance between two major ticks in user coordinates
-          ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta),
-          ev_it = true,
-          ev_mt = 4;
-        this.visProp.minorticks = 4;
-
-        // Calculate X and Y distance between two major ticks
-        deltas = this.getXandYdeltas();
-
-        // adjust ticks distance
-        ticksDelta *= this.visProp.scale;
-        if (ev_it && this.minTicksDistance > 1E-6) {
-          ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
-
-          // Only change from JSXgraph function:
-          // check if ticksDelta is 2*10^n for some integer n
-          let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
-          if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
-            ev_mt = 3;
-            this.visProp.minorticks = 3
-          }
-          ticksDelta /= (ev_mt + 1);
-        } else if (!ev_it) {
-          ticksDelta /= (ev_mt + 1);
-        }
-        this.ticksDelta = ticksDelta;
-
-        if (ticksDelta < 1E-6) {
-          return;
-        }
-
-        // Position ticks from zero to the positive side while not reaching the upper boundary
-        tickPosition = 0;
-        // if (!Type.evaluate(this.visProp.drawzero)) {
-        tickPosition = ticksDelta;
-        // }
-        while (tickPosition <= bounds.upper + eps2) {
-          // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
-          if (tickPosition >= bounds.lower - eps2) {
-            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
-          }
-          tickPosition += ticksDelta;
-
-          // Emergency out
-          if ((bounds.upper - tickPosition) > ticksDelta * 10000) {
-            break;
-          }
-        }
-
-        // Position ticks from zero (not inclusive) to the negative side while not reaching the lower boundary
-        tickPosition = -ticksDelta;
-        while (tickPosition >= bounds.lower - eps2) {
-          // Only draw ticks when we are within bounds, ignore case where lower < upper < tickPosition
-          if (tickPosition <= bounds.upper + eps2) {
-            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
-          }
-          tickPosition -= ticksDelta;
-
-          // Emergency out
-          if ((tickPosition - bounds.lower) > ticksDelta * 10000) {
-            break;
-          }
-        }
-      }
-
-
+      createYAxis(newBoard);
     }
 
     boardJustInitialized.current = true;
 
+    previousShowNavigation.current = SVs.showNavigation;
+
     // on unmount
     return () => {
-      board.off('boundingbox');
+      newBoard.off('boundingbox');
     }
 
   }, [])
@@ -432,7 +144,7 @@ export default React.memo(function Graph(props) {
   } else {
     outerStyle = { display: "flex", justifyContent: SVs.horizontalAlign };
   }
-  
+
   divStyle.border = "2px solid var(--canvastext)";
   divStyle.marginBottom = "12px";
   divStyle.marginTop = "12px";
@@ -509,47 +221,74 @@ export default React.memo(function Graph(props) {
     }
 
     if (SVs.displayXAxis) {
-      xaxis.current.name = SVs.xlabel;
-      xaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayXAxisTickLabels });
-      if (xaxis.current.hasLabel) {
-        let position = 'rt';
-        let offset = [5, 10];
-        let anchorx = 'right'
-        if (SVs.xlabelPosition === "left") {
-          position = 'lft';
-          anchorx = 'left';
-          offset = [-5, 10];
+      if (xaxis.current) {
+        xaxis.current.name = SVs.xlabel;
+        xaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayXAxisTickLabels });
+        if (xaxis.current.hasLabel) {
+          let position = 'rt';
+          let offset = [5, 10];
+          let anchorx = 'right'
+          if (SVs.xlabelPosition === "left") {
+            position = 'lft';
+            anchorx = 'left';
+            offset = [-5, 10];
+          }
+          xaxis.current.label.visProp.position = position;
+          xaxis.current.label.visProp.anchorx = anchorx;
+          xaxis.current.label.visProp.offset = offset;
+          xaxis.current.label.needsUpdate = true;
+          xaxis.current.label.fullUpdate();
         }
-        xaxis.current.label.visProp.position = position;
-        xaxis.current.label.visProp.anchorx = anchorx;
-        xaxis.current.label.visProp.offset = offset;
-        xaxis.current.label.needsUpdate = true;
-        xaxis.current.label.fullUpdate();
+      } else {
+        createXAxis(board)
       }
+    } else if (xaxis.current) {
+      board.removeObject(xaxis.current)
+      xaxis.current = null;
     }
 
     if (SVs.displayYAxis) {
-      yaxis.current.name = SVs.ylabel;
-      yaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayYAxisTickLabels });
-      if (yaxis.current.hasLabel) {
-        let position = 'rt';
-        let offset = [-10, -5];
-        let anchorx = 'right';
-        if (SVs.ylabelPosition === "bottom") {
-          position = 'lft';
-          offset[1] = 5;
+      if (yaxis.current) {
+        yaxis.current.name = SVs.ylabel;
+        yaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayYAxisTickLabels });
+        if (yaxis.current.hasLabel) {
+          let position = 'rt';
+          let offset = [-10, -5];
+          let anchorx = 'right';
+          if (SVs.ylabelPosition === "bottom") {
+            position = 'lft';
+            offset[1] = 5;
+          }
+          if (SVs.ylabelAlignment === "right") {
+            anchorx = 'left';
+            offset[0] = 10;
+          }
+          yaxis.current.label.visProp.position = position;
+          yaxis.current.label.visProp.offset = offset;
+          yaxis.current.label.visProp.anchorx = anchorx;
+          yaxis.current.label.needsUpdate = true;
+          yaxis.current.label.fullUpdate();
         }
-        if (SVs.ylabelAlignment === "right") {
-          anchorx = 'left';
-          offset[0] = 10;
-        }
-        yaxis.current.label.visProp.position = position;
-        yaxis.current.label.visProp.offset = offset;
-        yaxis.current.label.visProp.anchorx = anchorx;
-        yaxis.current.label.needsUpdate = true;
-        yaxis.current.label.fullUpdate();
+      } else {
+        createYAxis(board);
+      }
+    } else if (yaxis.current) {
+      board.removeObject(yaxis.current);
+      yaxis.current = null;
+    }
+
+    if (SVs.showNavigation) {
+      if (!previousShowNavigation.current) {
+        addNavigationButtons();
+        previousShowNavigation.current = true;
+      }
+    } else {
+      if (previousShowNavigation.current) {
+        removeNavigationButtons();
+        previousShowNavigation.current = false;
       }
     }
+
     let currentDimensions = {
       width: parseFloat(sizeToCSS(SVs.width)),
       aspectRatio: SVs.aspectRatio,
@@ -599,4 +338,381 @@ export default React.memo(function Graph(props) {
       </div>
     </VisibilitySensor>
   );
+
+  function createYAxis(theBoard) {
+    let yaxisOptions = {};
+    if (SVs.ylabel) {
+      let position = 'rt';
+      let offset = [-10, -5];
+      let anchorx = 'right';
+      if (SVs.ylabelPosition === "bottom") {
+        position = 'lft';
+        offset[1] = 5;
+      }
+      if (SVs.ylabelAlignment === "right") {
+        anchorx = 'left';
+        offset[0] = 10;
+      }
+      yaxisOptions.name = SVs.ylabel;
+      yaxisOptions.withLabel = true;
+      yaxisOptions.label = {
+        position,
+        offset,
+        anchorx,
+        strokeColor: "var(--canvastext)"
+      };
+    }
+    yaxisOptions.strokeColor = "var(--canvastext)";
+    yaxisOptions.highlight = false;
+
+    yaxisOptions.ticks = {
+      ticksDistance: 2,
+      label: {
+        offset: [12, -2],
+        layer: 2
+      },
+      // minorTicks: 4,
+      precision: 4,
+      strokeColor: "var(--canvastext)",
+      drawLabels: SVs.displayYAxisTickLabels
+    };
+    if (SVs.yTickScaleFactor !== null) {
+      let yTickScaleFactor = me.fromAst(SVs.yTickScaleFactor);
+      let scale = yTickScaleFactor.evaluate_to_constant();
+      if (scale > 0) {
+        let scaleSymbol = yTickScaleFactor.toString();
+        yaxisOptions.ticks.scale = scale;
+        yaxisOptions.ticks.scaleSymbol = scaleSymbol;
+      }
+    }
+    if (SVs.grid === "dense") {
+      yaxisOptions.ticks.majorHeight = -1;
+      yaxisOptions.ticks.minorHeight = -1;
+    } else if (SVs.grid === "medium") {
+      yaxisOptions.ticks.majorHeight = -1;
+      yaxisOptions.ticks.minorHeight = 10;
+    } else {
+      yaxisOptions.ticks.majorHeight = 20;
+      yaxisOptions.ticks.minorHeight = 10;
+    }
+
+    if (!SVs.displayXAxis) {
+      yaxisOptions.ticks.drawZero = true;
+    }
+
+    yaxis.current = theBoard.create('axis', [[0, 0], [0, 1]], yaxisOptions);
+
+
+    // change default ticks function to decreasing starting tick size
+    yaxis.current.defaultTicks.ticksFunction = function () {
+      var delta, b, dist;
+
+      b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
+      dist = b.upper - b.lower;
+
+      // only change from JSXgraph: 0.6 * dist became 0.2 * dist
+      delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
+      if (dist <= 6 * delta) {
+        delta *= 0.5;
+      }
+      return delta;
+
+    };
+
+    // hack JSXgraph tick function so that
+    // if major tick is 2*10^n for some integer n, then have 3 minor ticks,
+    // otherwise have 4 minor ticks
+    // (Other changes are simply to account for fact that
+    // don't have access to Mat and Type)
+    yaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
+      var tickPosition, eps2 = 1E-6, deltas,
+        // Distance between two major ticks in user coordinates
+        ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta), ev_it = true, ev_mt = 4;
+      this.visProp.minorticks = 4;
+
+      // Calculate X and Y distance between two major ticks
+      deltas = this.getXandYdeltas();
+
+      // adjust ticks distance
+      ticksDelta *= this.visProp.scale;
+      if (ev_it && this.minTicksDistance > 1E-6) {
+        ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
+
+        // Only change from JSXgraph function:
+        // check if ticksDelta is 2*10^n for some integer n
+        let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
+        if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
+          ev_mt = 3;
+          this.visProp.minorticks = 3;
+        }
+        ticksDelta /= (ev_mt + 1);
+      } else if (!ev_it) {
+        ticksDelta /= (ev_mt + 1);
+      }
+      this.ticksDelta = ticksDelta;
+
+      if (ticksDelta < 1E-6) {
+        return;
+      }
+
+      // Position ticks from zero to the positive side while not reaching the upper boundary
+      tickPosition = 0;
+      // if (!Type.evaluate(this.visProp.drawzero)) {
+      tickPosition = ticksDelta;
+      // }
+      while (tickPosition <= bounds.upper + eps2) {
+        // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
+        if (tickPosition >= bounds.lower - eps2) {
+          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+        }
+        tickPosition += ticksDelta;
+
+        // Emergency out
+        if ((bounds.upper - tickPosition) > ticksDelta * 10000) {
+          break;
+        }
+      }
+
+      // Position ticks from zero (not inclusive) to the negative side while not reaching the lower boundary
+      tickPosition = -ticksDelta;
+      while (tickPosition >= bounds.lower - eps2) {
+        // Only draw ticks when we are within bounds, ignore case where lower < upper < tickPosition
+        if (tickPosition <= bounds.upper + eps2) {
+          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+        }
+        tickPosition -= ticksDelta;
+
+        // Emergency out
+        if ((tickPosition - bounds.lower) > ticksDelta * 10000) {
+          break;
+        }
+      }
+    };
+  }
+
+  function createXAxis(theBoard) {
+    let xaxisOptions = {};
+    if (SVs.xlabel) {
+      let position = 'rt';
+      let offset = [5, 10];
+      let anchorx = 'right';
+      if (SVs.xlabelPosition === "left") {
+        position = 'lft';
+        anchorx = 'left';
+        offset = [-5, 10];
+      }
+      xaxisOptions.name = SVs.xlabel;
+      xaxisOptions.withLabel = true;
+      xaxisOptions.label = {
+        position,
+        offset,
+        anchorx,
+        strokeColor: "var(--canvastext)"
+      };
+    }
+    xaxisOptions.ticks = {
+      ticksDistance: 2,
+      label: {
+        offset: [-5, -15],
+        layer: 2,
+      },
+      // minorTicks: 4,
+      precision: 4,
+      strokeColor: 'var(--canvastext)',
+      drawLabels: SVs.displayXAxisTickLabels
+    };
+    if (SVs.xTickScaleFactor !== null) {
+      let xTickScaleFactor = me.fromAst(SVs.xTickScaleFactor);
+      let scale = xTickScaleFactor.evaluate_to_constant();
+      if (scale > 0) {
+        let scaleSymbol = xTickScaleFactor.toString();
+        xaxisOptions.ticks.scale = scale;
+        xaxisOptions.ticks.scaleSymbol = scaleSymbol;
+      }
+    }
+    xaxisOptions.strokeColor = "var(--canvastext)";
+    xaxisOptions.highlight = false;
+
+    if (SVs.grid === "dense") {
+      xaxisOptions.ticks.majorHeight = -1;
+      xaxisOptions.ticks.minorHeight = -1;
+    } else if (SVs.grid === "medium") {
+      xaxisOptions.ticks.majorHeight = -1;
+      xaxisOptions.ticks.minorHeight = 10;
+    } else {
+      xaxisOptions.ticks.majorHeight = 20;
+      xaxisOptions.ticks.minorHeight = 10;
+    }
+
+    if (!SVs.displayYAxis) {
+      xaxisOptions.ticks.drawZero = true;
+    }
+
+    xaxis.current = theBoard.create('axis', [[0, 0], [1, 0]], xaxisOptions);
+
+    // change default ticks function to decreasing starting tick size
+    xaxis.current.defaultTicks.ticksFunction = function () {
+      var delta, b, dist;
+
+      b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), 'ticksdistance');
+      dist = b.upper - b.lower;
+
+      // only change from JSXgraph: 0.6 * dist became 0.2 * dist
+      delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
+      if (dist <= 6 * delta) {
+        delta *= 0.5;
+      }
+      return delta;
+
+    };
+
+    // hack JSXgraph tick function so that
+    // if major tick is 2*10^n for some integer n, then have 3 minor ticks,
+    // otherwise have 4 minor ticks
+    // (Other changes are simply to account for fact that
+    // don't have access to Mat and Type)
+    xaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
+      var tickPosition, eps2 = 1E-6, deltas,
+        // Distance between two major ticks in user coordinates
+        ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta), ev_it = true, ev_mt = 4;
+      this.visProp.minorticks = 4;
+
+      // Calculate X and Y distance between two major ticks
+      deltas = this.getXandYdeltas();
+
+      // adjust ticks distance
+      ticksDelta *= this.visProp.scale;
+      if (ev_it && this.minTicksDistance > 1E-6) {
+        ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
+
+        // Only change from JSXgraph function:
+        // check if ticksDelta is 2*10^n for some integer n
+        let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
+        if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
+          ev_mt = 3;
+          this.visProp.minorticks = 3;
+        }
+        ticksDelta /= (ev_mt + 1);
+      } else if (!ev_it) {
+        ticksDelta /= (ev_mt + 1);
+      }
+      this.ticksDelta = ticksDelta;
+
+      if (ticksDelta < 1E-6) {
+        return;
+      }
+
+      // Position ticks from zero to the positive side while not reaching the upper boundary
+      tickPosition = 0;
+      // if (!Type.evaluate(this.visProp.drawzero)) {
+      tickPosition = ticksDelta;
+      // }
+      while (tickPosition <= bounds.upper + eps2) {
+        // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
+        if (tickPosition >= bounds.lower - eps2) {
+          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+        }
+        tickPosition += ticksDelta;
+
+        // Emergency out
+        if ((bounds.upper - tickPosition) > ticksDelta * 10000) {
+          break;
+        }
+      }
+
+      // Position ticks from zero (not inclusive) to the negative side while not reaching the lower boundary
+      tickPosition = -ticksDelta;
+      while (tickPosition >= bounds.lower - eps2) {
+        // Only draw ticks when we are within bounds, ignore case where lower < upper < tickPosition
+        if (tickPosition <= bounds.upper + eps2) {
+          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+        }
+        tickPosition -= ticksDelta;
+
+        // Emergency out
+        if ((tickPosition - bounds.lower) > ticksDelta * 10000) {
+          break;
+        }
+      }
+    };
+  }
+
+  function addNavigationButtons() {
+    // not sure why getElementById doesn't work
+    let navigationBar = document.querySelector('#' + cesc(name) + `_navigationbar`);
+
+    // code modified from abstract.js and env.js of JSXGraph
+
+    let addEvent = function (obj, type, fn) {
+      var el = function () {
+        return fn.apply(board, arguments);
+      };
+
+      board['x_internal' + type] = board['x_internal' + type] || [];
+      board['x_internal' + type].push(el);
+
+      obj.addEventListener(type, el, false);
+    }
+
+    let cancelbubble = function (e) {
+      if (!e) {
+        e = window.event;
+      }
+
+      if (e.stopPropagation) {
+        // Non IE<=8
+        e.stopPropagation();
+      } else {
+        e.cancelBubble = true;
+      }
+    }
+
+    let createButton = function (label, handler) {
+      var button;
+
+      button = document.createElement('span');
+      navigationBar.appendChild(button);
+      button.appendChild(document.createTextNode(label));
+
+      // Style settings are superseded by adding the CSS class below
+      button.style.paddingLeft = '7px';
+      button.style.paddingRight = '7px';
+
+      if (button.classList !== undefined) { // classList not available in IE 9
+        button.classList.add('JXG_navigation_button');
+      }
+
+      addEvent(button, 'click', function (e) { (handler.bind(board))(); return false; }, board);
+      // prevent the click from bubbling down to the board
+      addEvent(button, 'mouseup', cancelbubble);
+      addEvent(button, 'mousedown', cancelbubble);
+      addEvent(button, 'touchend', cancelbubble);
+      addEvent(button, 'touchstart', cancelbubble);
+    };
+
+
+    if (board.attr.showzoom) {
+      createButton('\u2013', board.zoomOut);
+      createButton('o', board.zoom100);
+      createButton('+', board.zoomIn);
+    }
+    createButton('\u2190', board.clickLeftArrow);
+    createButton('\u2193', board.clickUpArrow);
+    createButton('\u2191', board.clickDownArrow);
+    createButton('\u2192', board.clickRightArrow);
+  }
+
+  function removeNavigationButtons() {
+    for (let i = 7; i >= 1; i--) {
+      let button = document.querySelector('#' + cesc(name) + `_navigationbar > :first-child`);
+      button.remove();
+    }
+
+    board.internalclick = [];
+    board.internalmousedown = [];
+    board.internalmouseup = [];
+    board.internaltouchend = [];
+    board.internaltouchstart = [];
+  }
+
 })

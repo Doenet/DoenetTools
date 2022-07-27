@@ -98,12 +98,13 @@ export default class GraphicalComponent extends BaseComponent {
           variableName: "originalComponentName"
         }
       }),
-      definition({ dependencyValues, componentName }) {
+      definition({ dependencyValues }) {
         if (dependencyValues.labelChild.length > 0) {
+          let labelChild = dependencyValues.labelChild[dependencyValues.labelChild.length-1]
           return {
             setValue: {
-              label: dependencyValues.labelChild[0].stateValues.value,
-              labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
+              label: labelChild.stateValues.value,
+              labelHasLatex: labelChild.stateValues.hasLatex
             }
           }
         } else if (dependencyValues.labelAttr) {
