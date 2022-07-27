@@ -18974,7 +18974,7 @@ describe('Answer Tag Tests', function () {
 
   });
 
-  it('with split symbols', () => {
+  it('with split symbols, specified directly on mathinput and math', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -19001,7 +19001,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/split_input').click();
 
-    // modify textinput so that recalculates value
+    // modify mathinput so that recalculates value
     cy.get('#\\/mi textarea').type("{end}a{backspace}", { force: true })
     cy.get('#\\/mi_submit').click();
     cy.get('#\\/mi_correct').should('be.visible')
@@ -19015,7 +19015,185 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/split_input').click();
 
-    // modify textinput so that recalculates value
+    // modify mathinput so that recalculates value
+    cy.get('#\\/mi textarea').type("{end}b{backspace}", { force: true })
+    cy.get('#\\/mi_submit').click();
+
+    cy.get('#\\/mi_correct').should('be.visible')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ans"].stateValues.value).eqls("xyz");
+      expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
+    })
+
+  });
+
+  it('with split symbols, sugared answer', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>split symbols: <booleaninput name="split" /></p>
+  <answer splitSymbols="$split">xyz</answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathName = stateVariables[stateVariables["/_answer1"].activeChildren[1].componentName].activeChildren[0].componentName;
+
+      cy.get(mathinputAnchor).type("xyz{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls("xyz");
+        expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
+      })
+
+      cy.get('#\\/split_input').click();
+
+      // modify mathinput so that recalculates value
+      cy.get(mathinputAnchor).type("{end}a{backspace}", { force: true })
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls(["*", "x", "y", "z"]);
+        expect(stateVariables[mathinputName].stateValues.value).eqls(["*", "x", "y", "z"]);
+      })
+
+
+      cy.get('#\\/split_input').click();
+
+      // modify mathinput so that recalculates value
+      cy.get(mathinputAnchor).type("{end}b{backspace}", { force: true })
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls("xyz");
+        expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
+      })
+    })
+  });
+
+  it('with split symbols, shortcut award, sugared math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>split symbols: <booleaninput name="split" /></p>
+  <answer splitSymbols="$split">
+    <award>xyz</award>
+  </answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathName = stateVariables["/_award1"].activeChildren[0].componentName;
+
+      cy.get(mathinputAnchor).type("xyz{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls("xyz");
+        expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
+      })
+
+      cy.get('#\\/split_input').click();
+
+      // modify mathinput so that recalculates value
+      cy.get(mathinputAnchor).type("{end}a{backspace}", { force: true })
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls(["*", "x", "y", "z"]);
+        expect(stateVariables[mathinputName].stateValues.value).eqls(["*", "x", "y", "z"]);
+      })
+
+
+      cy.get('#\\/split_input').click();
+
+      // modify mathinput so that recalculates value
+      cy.get(mathinputAnchor).type("{end}b{backspace}", { force: true })
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls("xyz");
+        expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
+      })
+    })
+  });
+
+  it('with split symbols, explicit mathinput and math, but inferred split symbols', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>split symbols: <booleaninput name="split" /></p>
+  <answer splitSymbols="$split">
+    <mathinput name="mi" />
+    <award><math name="ans">xyz</math></award>
+  </answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mi textarea').type("xyz{enter}", { force: true })
+    cy.get('#\\/mi_correct').should('be.visible')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ans"].stateValues.value).eqls("xyz");
+      expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
+    })
+
+    cy.get('#\\/split_input').click();
+
+    // modify mathinput so that recalculates value
+    cy.get('#\\/mi textarea').type("{end}a{backspace}", { force: true })
+    cy.get('#\\/mi_submit').click();
+    cy.get('#\\/mi_correct').should('be.visible')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ans"].stateValues.value).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables["/mi"].stateValues.value).eqls(["*", "x", "y", "z"]);
+    })
+
+
+    cy.get('#\\/split_input').click();
+
+    // modify mathinput so that recalculates value
     cy.get('#\\/mi textarea').type("{end}b{backspace}", { force: true })
     cy.get('#\\/mi_submit').click();
 
@@ -20432,6 +20610,589 @@ describe('Answer Tag Tests', function () {
         expect(text).eq('2')
       })
 
+
+
+    })
+  });
+
+  it('derivative works without award', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>What is the derivative of <function name="f">x^2</function>?
+  <answer><derivative>$f</derivative</answer></p>
+  <p>Submitted response: <aslist><math name="sr" prop="submittedResponses" copyTarget="_answer1" /></aslist></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+
+      cy.get(mathinputSubmitAnchor).should('be.visible');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('\uff3f')
+      })
+      cy.log("Correct answer in mathinput")
+      cy.get(mathinputAnchor).type(`2x{enter}`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('be.visible');
+      cy.get(mathinputIncorrectAnchor).should('not.exist');
+
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('2x')
+      })
+
+
+      cy.log("Incorrect answer in mathinput")
+      cy.get(mathinputAnchor).type(`{end}x/2{enter}`, { force: true });
+      cy.get(mathinputSubmitAnchor).should('not.exist');
+      cy.get(mathinputCorrectAnchor).should('not.exist');
+      cy.get(mathinputIncorrectAnchor).should('be.visible');
+
+      cy.get('#\\/sr .mjx-mrow').eq(0).invoke('text').then(text => {
+        expect(text).eq('2xx2')
+      })
+
+
+
+    })
+  });
+
+  it('case-insensitive match, math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Default, sugar: <answer name="defSugar">x+Y</answer></p>
+  <p>Case-insensitive, sugar: <answer caseInsensitiveMatch name="insSugar">x+Y</answer></p>
+  <p>Partial credit for insensitive, shortcut award: 
+    <answer name="shortAwards">
+      <award>x+Y</award>
+      <award caseInsensitiveMatch credit="0.5">x+Y</award>
+    </answer>
+  </p>
+  <p>Partial credit for insensitive, full syntax: 
+    <answer name="full">
+      <mathinput name="fullmi" />
+      <award><when>$fullmi = x+Y</when></award>
+      <award credit="0.5"><when caseInsensitiveMatch>$fullmi = x+Y</when></award>
+    </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputDefSugarName = stateVariables['/defSugar'].stateValues.inputChildren[0].componentName
+      let mathinputDefSugarAnchor = cesc('#' + mathinputDefSugarName) + " textarea";
+      let mathinputDefSugarSubmitAnchor = cesc('#' + mathinputDefSugarName + '_submit');
+      let mathinputDefSugarCorrectAnchor = cesc('#' + mathinputDefSugarName + '_correct');
+      let mathinputDefSugarIncorrectAnchor = cesc('#' + mathinputDefSugarName + '_incorrect');
+      let mathinputInsSugarName = stateVariables['/insSugar'].stateValues.inputChildren[0].componentName
+      let mathinputInsSugarAnchor = cesc('#' + mathinputInsSugarName) + " textarea";
+      let mathinputInsSugarSubmitAnchor = cesc('#' + mathinputInsSugarName + '_submit');
+      let mathinputInsSugarCorrectAnchor = cesc('#' + mathinputInsSugarName + '_correct');
+      let mathinputInsSugarIncorrectAnchor = cesc('#' + mathinputInsSugarName + '_incorrect');
+      let mathinputAwardName = stateVariables['/shortAwards'].stateValues.inputChildren[0].componentName
+      let mathinputAwardAnchor = cesc('#' + mathinputAwardName) + " textarea";
+      let mathinputAwardSubmitAnchor = cesc('#' + mathinputAwardName + '_submit');
+      let mathinputAwardCorrectAnchor = cesc('#' + mathinputAwardName + '_correct');
+      let mathinputAwardIncorrectAnchor = cesc('#' + mathinputAwardName + '_incorrect');
+      let mathinputAwardPartialAnchor = cesc('#' + mathinputAwardName + '_partial');
+      let mathinputFullName = '/fullmi';
+      let mathinputFullAnchor = cesc('#' + mathinputFullName) + " textarea";
+      let mathinputFullSubmitAnchor = cesc('#' + mathinputFullName + '_submit');
+      let mathinputFullCorrectAnchor = cesc('#' + mathinputFullName + '_correct');
+      let mathinputFullIncorrectAnchor = cesc('#' + mathinputFullName + '_incorrect');
+      let mathinputFullPartialAnchor = cesc('#' + mathinputFullName + '_partial');
+
+      cy.get(mathinputDefSugarSubmitAnchor).should('be.visible');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('not.exist');
+      cy.get(mathinputInsSugarSubmitAnchor).should('be.visible');
+      cy.get(mathinputInsSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputInsSugarIncorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardSubmitAnchor).should('be.visible');
+      cy.get(mathinputAwardCorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardPartialAnchor).should('not.exist');
+      cy.get(mathinputFullSubmitAnchor).should('be.visible');
+      cy.get(mathinputFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputFullIncorrectAnchor).should('not.exist');
+      cy.get(mathinputFullPartialAnchor).should('not.exist');
+
+
+      cy.log("wrong case 1")
+      cy.get(mathinputDefSugarAnchor).type(`x+y{enter}`, { force: true });
+      cy.get(mathinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputInsSugarAnchor).type(`x+y{enter}`, { force: true });
+      cy.get(mathinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputInsSugarCorrectAnchor).should('be.visible');
+      cy.get(mathinputInsSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(mathinputAwardAnchor).type(`x+y{enter}`, { force: true });
+      cy.get(mathinputAwardSubmitAnchor).should('not.exist');
+      cy.get(mathinputAwardCorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardPartialAnchor).should('have.text', '50 %');
+
+      cy.get(mathinputFullAnchor).type(`x+y{enter}`, { force: true });
+      cy.get(mathinputFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputFullIncorrectAnchor).should('not.exist');
+      cy.get(mathinputFullPartialAnchor).should('have.text', '50 %');
+
+
+      cy.log("correct case")
+      cy.get(mathinputDefSugarAnchor).type(`{end}{backspace}{backspace}{backspace}x+Y{enter}`, { force: true });
+      cy.get(mathinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefSugarCorrectAnchor).should('be.visible');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(mathinputInsSugarAnchor).type(`{end}{backspace}{backspace}{backspace}x+Y{enter}`, { force: true });
+      cy.get(mathinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputInsSugarCorrectAnchor).should('be.visible');
+      cy.get(mathinputInsSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(mathinputAwardAnchor).type(`{end}{backspace}{backspace}{backspace}x+Y{enter}`, { force: true });
+      cy.get(mathinputAwardSubmitAnchor).should('not.exist');
+      cy.get(mathinputAwardCorrectAnchor).should('be.visible');
+      cy.get(mathinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardPartialAnchor).should('not.exist');
+
+      cy.get(mathinputFullAnchor).type(`{end}{backspace}{backspace}{backspace}x+Y{enter}`, { force: true });
+      cy.get(mathinputFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputFullCorrectAnchor).should('be.visible');
+      cy.get(mathinputFullIncorrectAnchor).should('not.exist');
+      cy.get(mathinputFullPartialAnchor).should('not.exist');
+
+
+      cy.log("wrong case 2")
+      cy.get(mathinputDefSugarAnchor).type(`{end}{backspace}{backspace}{backspace}X+Y{enter}`, { force: true });
+      cy.get(mathinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputInsSugarAnchor).type(`{end}{backspace}{backspace}{backspace}X+Y{enter}`, { force: true });
+      cy.get(mathinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputInsSugarCorrectAnchor).should('be.visible');
+      cy.get(mathinputInsSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(mathinputAwardAnchor).type(`{end}{backspace}{backspace}{backspace}X+Y{enter}`, { force: true });
+      cy.get(mathinputAwardSubmitAnchor).should('not.exist');
+      cy.get(mathinputAwardCorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardPartialAnchor).should('have.text', '50 %');
+
+      cy.get(mathinputFullAnchor).type(`{end}{backspace}{backspace}{backspace}X+Y{enter}`, { force: true });
+      cy.get(mathinputFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputFullIncorrectAnchor).should('not.exist');
+      cy.get(mathinputFullPartialAnchor).should('have.text', '50 %');
+
+
+
+      cy.log("incorrect answer")
+      cy.get(mathinputDefSugarAnchor).type(`{end}{backspace}{backspace}{enter}`, { force: true });
+      cy.get(mathinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputInsSugarAnchor).type(`{end}{backspace}{backspace}{enter}`, { force: true });
+      cy.get(mathinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputInsSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputInsSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputAwardAnchor).type(`{end}{backspace}{backspace}{enter}`, { force: true });
+      cy.get(mathinputAwardSubmitAnchor).should('not.exist');
+      cy.get(mathinputAwardCorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardIncorrectAnchor).should('be.visible');
+      cy.get(mathinputAwardPartialAnchor).should('not.exist');
+
+      cy.get(mathinputFullAnchor).type(`{end}{backspace}{backspace}{enter}`, { force: true });
+      cy.get(mathinputFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputFullIncorrectAnchor).should('be.visible');
+      cy.get(mathinputFullPartialAnchor).should('not.exist');
+
+      cy.log("wrong case 3")
+      cy.get(mathinputDefSugarAnchor).type(`{end}+y{enter}`, { force: true });
+      cy.get(mathinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputInsSugarAnchor).type(`{end}+y{enter}`, { force: true });
+      cy.get(mathinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputInsSugarCorrectAnchor).should('be.visible');
+      cy.get(mathinputInsSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(mathinputAwardAnchor).type(`{end}+y{enter}`, { force: true });
+      cy.get(mathinputAwardSubmitAnchor).should('not.exist');
+      cy.get(mathinputAwardCorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(mathinputAwardPartialAnchor).should('have.text', '50 %');
+
+      cy.get(mathinputFullAnchor).type(`{end}+y{enter}`, { force: true });
+      cy.get(mathinputFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputFullIncorrectAnchor).should('not.exist');
+      cy.get(mathinputFullPartialAnchor).should('have.text', '50 %');
+
+
+    })
+  });
+
+  it('case-insensitive match, text', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Default, sugar: <answer type="text" name="defSugar">Hello there!</answer></p>
+  <p>Case-insensitive, sugar: <answer type="text" caseInsensitiveMatch name="insSugar">Hello there!</answer></p>
+  <p>Partial credit for insensitive, shortcut award: 
+    <answer type="text" name="shortAwards">
+      <award>Hello there!</award>
+      <award caseInsensitiveMatch credit="0.5">Hello there!</award>
+    </answer>
+  </p>
+  <p>Partial credit for insensitive, full syntax: 
+    <answer name="full">
+      <textinput name="fullmi" />
+      <award><when>$fullmi = <text>Hello there!</text></when></award>
+      <award credit="0.5"><when caseInsensitiveMatch>$fullmi = <text>Hello there!</text></when></award>
+    </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let textinputDefSugarName = stateVariables['/defSugar'].stateValues.inputChildren[0].componentName
+      let textinputDefSugarAnchor = cesc('#' + textinputDefSugarName) + "_input";
+      let textinputDefSugarSubmitAnchor = cesc('#' + textinputDefSugarName + '_submit');
+      let textinputDefSugarCorrectAnchor = cesc('#' + textinputDefSugarName + '_correct');
+      let textinputDefSugarIncorrectAnchor = cesc('#' + textinputDefSugarName + '_incorrect');
+      let textinputInsSugarName = stateVariables['/insSugar'].stateValues.inputChildren[0].componentName
+      let textinputInsSugarAnchor = cesc('#' + textinputInsSugarName) + "_input";
+      let textinputInsSugarSubmitAnchor = cesc('#' + textinputInsSugarName + '_submit');
+      let textinputInsSugarCorrectAnchor = cesc('#' + textinputInsSugarName + '_correct');
+      let textinputInsSugarIncorrectAnchor = cesc('#' + textinputInsSugarName + '_incorrect');
+      let textinputAwardName = stateVariables['/shortAwards'].stateValues.inputChildren[0].componentName
+      let textinputAwardAnchor = cesc('#' + textinputAwardName) + "_input";
+      let textinputAwardSubmitAnchor = cesc('#' + textinputAwardName + '_submit');
+      let textinputAwardCorrectAnchor = cesc('#' + textinputAwardName + '_correct');
+      let textinputAwardIncorrectAnchor = cesc('#' + textinputAwardName + '_incorrect');
+      let textinputAwardPartialAnchor = cesc('#' + textinputAwardName + '_partial');
+      let textinputFullName = '/fullmi';
+      let textinputFullAnchor = cesc('#' + textinputFullName) + "_input";
+      let textinputFullSubmitAnchor = cesc('#' + textinputFullName + '_submit');
+      let textinputFullCorrectAnchor = cesc('#' + textinputFullName + '_correct');
+      let textinputFullIncorrectAnchor = cesc('#' + textinputFullName + '_incorrect');
+      let textinputFullPartialAnchor = cesc('#' + textinputFullName + '_partial');
+
+      cy.get(textinputDefSugarSubmitAnchor).should('be.visible');
+      cy.get(textinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(textinputDefSugarIncorrectAnchor).should('not.exist');
+      cy.get(textinputInsSugarSubmitAnchor).should('be.visible');
+      cy.get(textinputInsSugarCorrectAnchor).should('not.exist');
+      cy.get(textinputInsSugarIncorrectAnchor).should('not.exist');
+      cy.get(textinputAwardSubmitAnchor).should('be.visible');
+      cy.get(textinputAwardCorrectAnchor).should('not.exist');
+      cy.get(textinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(textinputAwardPartialAnchor).should('not.exist');
+      cy.get(textinputFullSubmitAnchor).should('be.visible');
+      cy.get(textinputFullCorrectAnchor).should('not.exist');
+      cy.get(textinputFullIncorrectAnchor).should('not.exist');
+      cy.get(textinputFullPartialAnchor).should('not.exist');
+
+
+      cy.log("wrong case 1")
+      cy.get(textinputDefSugarAnchor).type(`hello there!{enter}`);
+      cy.get(textinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(textinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(textinputInsSugarAnchor).type(`hello there!{enter}`);
+      cy.get(textinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputInsSugarCorrectAnchor).should('be.visible');
+      cy.get(textinputInsSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(textinputAwardAnchor).type(`hello there!{enter}`);
+      cy.get(textinputAwardSubmitAnchor).should('not.exist');
+      cy.get(textinputAwardCorrectAnchor).should('not.exist');
+      cy.get(textinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(textinputAwardPartialAnchor).should('have.text', '50 %');
+
+      cy.get(textinputFullAnchor).type(`hello there!{enter}`);
+      cy.get(textinputFullSubmitAnchor).should('not.exist');
+      cy.get(textinputFullCorrectAnchor).should('not.exist');
+      cy.get(textinputFullIncorrectAnchor).should('not.exist');
+      cy.get(textinputFullPartialAnchor).should('have.text', '50 %');
+
+
+      cy.log("correct case")
+      cy.get(textinputDefSugarAnchor).clear().type(`Hello there!{enter}`);
+      cy.get(textinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputDefSugarCorrectAnchor).should('be.visible');
+      cy.get(textinputDefSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(textinputInsSugarAnchor).clear().type(`Hello there!{enter}`);
+      cy.get(textinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputInsSugarCorrectAnchor).should('be.visible');
+      cy.get(textinputInsSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(textinputAwardAnchor).clear().type(`Hello there!{enter}`);
+      cy.get(textinputAwardSubmitAnchor).should('not.exist');
+      cy.get(textinputAwardCorrectAnchor).should('be.visible');
+      cy.get(textinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(textinputAwardPartialAnchor).should('not.exist');
+
+      cy.get(textinputFullAnchor).clear().type(`Hello there!{enter}`);
+      cy.get(textinputFullSubmitAnchor).should('not.exist');
+      cy.get(textinputFullCorrectAnchor).should('be.visible');
+      cy.get(textinputFullIncorrectAnchor).should('not.exist');
+      cy.get(textinputFullPartialAnchor).should('not.exist');
+
+
+      cy.log("wrong case 2")
+      cy.get(textinputDefSugarAnchor).clear().type(`Hello There!{enter}`);
+      cy.get(textinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(textinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(textinputInsSugarAnchor).clear().type(`Hello There!{enter}`);
+      cy.get(textinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputInsSugarCorrectAnchor).should('be.visible');
+      cy.get(textinputInsSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(textinputAwardAnchor).clear().type(`Hello There!{enter}`);
+      cy.get(textinputAwardSubmitAnchor).should('not.exist');
+      cy.get(textinputAwardCorrectAnchor).should('not.exist');
+      cy.get(textinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(textinputAwardPartialAnchor).should('have.text', '50 %');
+
+      cy.get(textinputFullAnchor).clear().type(`Hello There!{enter}`);
+      cy.get(textinputFullSubmitAnchor).should('not.exist');
+      cy.get(textinputFullCorrectAnchor).should('not.exist');
+      cy.get(textinputFullIncorrectAnchor).should('not.exist');
+      cy.get(textinputFullPartialAnchor).should('have.text', '50 %');
+
+
+
+      cy.log("incorrect answer")
+      cy.get(textinputDefSugarAnchor).clear().type(`Hello{enter}`);
+      cy.get(textinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(textinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(textinputInsSugarAnchor).clear().type(`Hello{enter}`);
+      cy.get(textinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputInsSugarCorrectAnchor).should('not.exist');
+      cy.get(textinputInsSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(textinputAwardAnchor).clear().type(`Hello{enter}`);
+      cy.get(textinputAwardSubmitAnchor).should('not.exist');
+      cy.get(textinputAwardCorrectAnchor).should('not.exist');
+      cy.get(textinputAwardIncorrectAnchor).should('be.visible');
+      cy.get(textinputAwardPartialAnchor).should('not.exist');
+
+      cy.get(textinputFullAnchor).clear().type(`Hello{enter}`);
+      cy.get(textinputFullSubmitAnchor).should('not.exist');
+      cy.get(textinputFullCorrectAnchor).should('not.exist');
+      cy.get(textinputFullIncorrectAnchor).should('be.visible');
+      cy.get(textinputFullPartialAnchor).should('not.exist');
+
+      cy.log("wrong case 3")
+      cy.get(textinputDefSugarAnchor).clear().type(`hello There!{enter}`);
+      cy.get(textinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(textinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(textinputInsSugarAnchor).clear().type(`hello There!{enter}`);
+      cy.get(textinputInsSugarSubmitAnchor).should('not.exist');
+      cy.get(textinputInsSugarCorrectAnchor).should('be.visible');
+      cy.get(textinputInsSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(textinputAwardAnchor).clear().type(`hello There!{enter}`);
+      cy.get(textinputAwardSubmitAnchor).should('not.exist');
+      cy.get(textinputAwardCorrectAnchor).should('not.exist');
+      cy.get(textinputAwardIncorrectAnchor).should('not.exist');
+      cy.get(textinputAwardPartialAnchor).should('have.text', '50 %');
+
+      cy.get(textinputFullAnchor).clear().type(`hello There!{enter}`);
+      cy.get(textinputFullSubmitAnchor).should('not.exist');
+      cy.get(textinputFullCorrectAnchor).should('not.exist');
+      cy.get(textinputFullIncorrectAnchor).should('not.exist');
+      cy.get(textinputFullPartialAnchor).should('have.text', '50 %');
+
+
+    })
+  });
+
+  it('match blanks', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Default, sugar: <answer name="defSugar">_6^14C</answer></p>
+  <p>Match blanks, sugar: <answer matchBlanks name="blankSugar">_6^14C</answer></p>
+  <p>Default, shortcut award: 
+    <answer name="defShort"><award>_6^14C</award></answer>
+  </p>
+  <p>Match blanks, shortcut award: 
+    <answer name="blankShort" matchBlanks><award>_6^14C</award></answer>
+  </p>
+  <p>Default, full syntax: 
+    <answer name="defFull">
+      <mathinput name="deffullmi" />
+      <award><when>$deffullmi = _6^14C</when></award>
+    </answer>
+  </p>
+  <p>Match blanks, full syntax: 
+    <answer name="blankFull">
+      <mathinput name="blankfullmi" />
+      <award><when matchBlanks>$blankfullmi = _6^14C</when></award>
+    </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputDefSugarName = stateVariables['/defSugar'].stateValues.inputChildren[0].componentName
+      let mathinputDefSugarAnchor = cesc('#' + mathinputDefSugarName) + " textarea";
+      let mathinputDefSugarSubmitAnchor = cesc('#' + mathinputDefSugarName + '_submit');
+      let mathinputDefSugarCorrectAnchor = cesc('#' + mathinputDefSugarName + '_correct');
+      let mathinputDefSugarIncorrectAnchor = cesc('#' + mathinputDefSugarName + '_incorrect');
+      let mathinputBlankSugarName = stateVariables['/blankSugar'].stateValues.inputChildren[0].componentName
+      let mathinputBlankSugarAnchor = cesc('#' + mathinputBlankSugarName) + " textarea";
+      let mathinputBlankSugarSubmitAnchor = cesc('#' + mathinputBlankSugarName + '_submit');
+      let mathinputBlankSugarCorrectAnchor = cesc('#' + mathinputBlankSugarName + '_correct');
+      let mathinputBlankSugarIncorrectAnchor = cesc('#' + mathinputBlankSugarName + '_incorrect');
+      let mathinputDefShortName = stateVariables['/defShort'].stateValues.inputChildren[0].componentName
+      let mathinputDefShortAnchor = cesc('#' + mathinputDefShortName) + " textarea";
+      let mathinputDefShortSubmitAnchor = cesc('#' + mathinputDefShortName + '_submit');
+      let mathinputDefShortCorrectAnchor = cesc('#' + mathinputDefShortName + '_correct');
+      let mathinputDefShortIncorrectAnchor = cesc('#' + mathinputDefShortName + '_incorrect');
+      let mathinputBlankShortName = stateVariables['/blankShort'].stateValues.inputChildren[0].componentName
+      let mathinputBlankShortAnchor = cesc('#' + mathinputBlankShortName) + " textarea";
+      let mathinputBlankShortSubmitAnchor = cesc('#' + mathinputBlankShortName + '_submit');
+      let mathinputBlankShortCorrectAnchor = cesc('#' + mathinputBlankShortName + '_correct');
+      let mathinputBlankShortIncorrectAnchor = cesc('#' + mathinputBlankShortName + '_incorrect');
+      let mathinputDefFullName = '/deffullmi';
+      let mathinputDefFullAnchor = cesc('#' + mathinputDefFullName) + " textarea";
+      let mathinputDefFullSubmitAnchor = cesc('#' + mathinputDefFullName + '_submit');
+      let mathinputDefFullCorrectAnchor = cesc('#' + mathinputDefFullName + '_correct');
+      let mathinputDefFullIncorrectAnchor = cesc('#' + mathinputDefFullName + '_incorrect');
+      let mathinputBlankFullName = '/blankfullmi';
+      let mathinputBlankFullAnchor = cesc('#' + mathinputBlankFullName) + " textarea";
+      let mathinputBlankFullSubmitAnchor = cesc('#' + mathinputBlankFullName + '_submit');
+      let mathinputBlankFullCorrectAnchor = cesc('#' + mathinputBlankFullName + '_correct');
+      let mathinputBlankFullIncorrectAnchor = cesc('#' + mathinputBlankFullName + '_incorrect');
+
+      cy.get(mathinputDefSugarSubmitAnchor).should('be.visible');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarSubmitAnchor).should('be.visible');
+      cy.get(mathinputBlankSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarIncorrectAnchor).should('not.exist');
+      cy.get(mathinputDefShortSubmitAnchor).should('be.visible');
+      cy.get(mathinputDefShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefShortIncorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankShortSubmitAnchor).should('be.visible');
+      cy.get(mathinputBlankShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankShortIncorrectAnchor).should('not.exist');
+      cy.get(mathinputDefFullSubmitAnchor).should('be.visible');
+      cy.get(mathinputDefFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefFullIncorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankFullSubmitAnchor).should('be.visible');
+      cy.get(mathinputBlankFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankFullIncorrectAnchor).should('not.exist');
+
+
+      cy.log("wrong answer")
+      cy.get(mathinputDefSugarAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankSugarAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputBlankSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputDefShortAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputDefShortSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefShortIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankShortAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputBlankShortSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankShortIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputDefFullAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputDefFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefFullIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankFullAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputBlankFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankFullIncorrectAnchor).should('be.visible');
+
+
+
+      cy.log("correct answer")
+      cy.get(mathinputDefSugarAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankSugarAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputBlankSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarCorrectAnchor).should('be.visible');
+      cy.get(mathinputBlankSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(mathinputDefShortAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputDefShortSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefShortIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankShortAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputBlankShortSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankShortCorrectAnchor).should('be.visible');
+      cy.get(mathinputBlankShortIncorrectAnchor).should('not.exist');
+
+      cy.get(mathinputDefFullAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputDefFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefFullIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankFullAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputBlankFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankFullCorrectAnchor).should('be.visible');
+      cy.get(mathinputBlankFullIncorrectAnchor).should('not.exist');
 
 
     })

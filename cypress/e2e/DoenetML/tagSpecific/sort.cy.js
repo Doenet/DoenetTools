@@ -842,6 +842,87 @@ describe('Sort Tag Tests', function () {
 
   })
 
+  it('sort by prop', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>Coords for last point: <mathinput name="cs" /></p>
+  <sort assignNames="P1 P2 P3 P4 P5" sortByProp="NDIMENSIONS">
+    <point>(a,b)</point>
+    <point>x</point>
+    <point xs="s t u v" />
+    <point x="x" y="y" z="z" />
+    <point coords="$cs" />
+  </sort>
+
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/P1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/P2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('\uff3f')
+    })
+    cy.get('#\\/P3 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(a,b)')
+    })
+    cy.get('#\\/P4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x,y,z)')
+    })
+    cy.get('#\\/P5 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(s,t,u,v)')
+    })
+
+
+    cy.get('#\\/cs textarea').type("(a,b,c,d){enter}", {force:true});
+
+    cy.get('#\\/P5 .mjx-mrow').should('contain.text', '(a,b,c,d)');
+
+    cy.get('#\\/P1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/P2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(a,b)')
+    })
+    cy.get('#\\/P3 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x,y,z)')
+    })
+    cy.get('#\\/P4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(s,t,u,v)')
+    })
+    cy.get('#\\/P5 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(a,b,c,d)')
+    })
+
+
+    cy.get('#\\/cs textarea').type("{ctrl+home}{shift+ctrl+end}{backspace}(3,4,5){enter}", {force:true});
+
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', '(3,4,5)');
+
+    cy.get('#\\/P1 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x')
+    })
+    cy.get('#\\/P2 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(a,b)')
+    })
+    cy.get('#\\/P3 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(x,y,z)')
+    })
+    cy.get('#\\/P4 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(3,4,5)')
+    })
+    cy.get('#\\/P5 .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('(s,t,u,v)')
+    })
+
+
+  })
+
 })
 
 

@@ -146,16 +146,10 @@ export default class Function extends InlineComponent {
 
     let wrapStringOrMultipleNonLabelChildrenWithMath = function ({ matchedChildren, componentInfoObjects }) {
 
-
-      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: "label"
-      });
-
-
       // wrap first group of non-label children in <math>
 
-      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.attributes?.createComponentOfType?.primitive));
+      let componentIsLabel = x=> componentInfoObjects.componentIsSpecifiedType(x, "label");
+      let childIsLabel = matchedChildren.map(componentIsLabel);
 
       let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
 

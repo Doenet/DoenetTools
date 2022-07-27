@@ -2699,7 +2699,7 @@ describe('Spreadsheet Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', '1 B');
 
     cy.get('#\\/_math2 .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿+1')
+      expect(text.trim()).equal('1+＿')
     })
     cy.get('#\\/_number2').should('have.text', 'NaN')
     cy.get('#\\/_text2').should('have.text', '1 + ');

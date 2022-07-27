@@ -419,13 +419,13 @@ describe('Extract Tag Tests', function () {
       let aslist3 = stateVariables["/_p3"].activeChildren[0];
       for (let i = 0; i < 3; i++) {
         cy.get(cesc(`#${stateVariables[aslist1.componentName].activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal(`＿+${i + 1}`)
+          expect(text.trim()).equal(`${i + 1}+＿`)
         });
         cy.get(cesc(`#${stateVariables[aslist2.componentName].activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal(`＿+${i + 1}`)
+          expect(text.trim()).equal(`${i + 1}+＿`)
         });
         cy.get(cesc(`#${stateVariables[aslist3.componentName].activeChildren[i].componentName}`)).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-          expect(text.trim()).equal(`＿+${i + 1}`)
+          expect(text.trim()).equal(`${i + 1}+＿`)
         });
       }
 
@@ -436,9 +436,9 @@ describe('Extract Tag Tests', function () {
         expect(stateVariables["/_aslist1"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math"]);
         expect(stateVariables["/_aslist2"].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math"]);
         expect(stateVariables[stateVariables["/_p3"].activeChildren[0].componentName].activeChildren.map(x => x.componentType)).eqls(["math", "math", "math"]);
-        expect(stateVariables["/_aslist1"].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)).eqls([["+", "＿", 1], ["+", "＿", 2], ["+", "＿", 3]]);
-        expect(stateVariables["/_aslist2"].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)).eqls([["+", "＿", 1], ["+", "＿", 2], ["+", "＿", 3]]);
-        expect(stateVariables[stateVariables["/_p3"].activeChildren[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)).eqls([["+", "＿", 1], ["+", "＿", 2], ["+", "＿", 3]]);
+        expect(stateVariables["/_aslist1"].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)).eqls([["+", 1, "＿"], ["+", 2, "＿"], ["+", 3, "＿"]]);
+        expect(stateVariables["/_aslist2"].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)).eqls([["+", 1, "＿"], ["+", 2, "＿"], ["+", 3, "＿"]]);
+        expect(stateVariables[stateVariables["/_p3"].activeChildren[0].componentName].activeChildren.map(x => stateVariables[x.componentName].stateValues.value)).eqls([["+", 1, "＿"], ["+", 2, "＿"], ["+", 3, "＿"]]);
       })
     })
 
@@ -1226,5 +1226,27 @@ describe('Extract Tag Tests', function () {
     })
 
   })
+
+
+  it('extract is case insensitive', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <extract prop="LaTeX" assignNames="e1"><math>x</math></extract>
+    <extract prop="LATEX" assignNames="e2"><math>y</math></extract>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`check properties`);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/e1'].stateValues.value).eq("x");
+      expect(stateVariables['/e2'].stateValues.value).eq("y");
+    })
+
+  });
 
 });

@@ -114,21 +114,20 @@ export default class Vector extends GraphicalComponent {
       let lastInd = cTypes.lastIndexOf("string");
 
       if (beginInd === -1) {
-        // if have no strings but have exactly one math child,
+        // if have no strings but have exactly one child that isn't in child group,
+        // (point, vector, label)
         // use that for displacement
 
-        let componentTypeIsMath = cType => componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: cType,
-          baseComponentType: "math"
-        });
-  
+        let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
 
-        let mathChildren = matchedChildren.filter(child =>
-          componentTypeIsMath(child.componentType) || componentTypeIsMath(child.attributes?.createComponentOfType?.primitive)
-        );
+        let otherChildren = matchedChildren.filter(child => !(
+          componentIsSpecifiedType(child, "point")
+          || componentIsSpecifiedType(child, "vector")
+          || componentIsSpecifiedType(child, "label")
+        ));
 
-        if (mathChildren.length === 1) {
-          let mathChild = mathChildren[0];
+        if (otherChildren.length === 1) {
+          let mathChild = otherChildren[0];
           let mathInd = matchedChildren.indexOf(mathChild);
 
           let newChildren = [
@@ -142,7 +141,7 @@ export default class Vector extends GraphicalComponent {
               displacement: {
                 component: {
                   componentType: "math",
-                  children: mathChildren
+                  children: otherChildren
                 }
               }
             },
@@ -150,7 +149,7 @@ export default class Vector extends GraphicalComponent {
           }
 
         } else {
-          // no strings and don't have exactly one math child
+          // no strings and don't have exactly one non child-group child
           return { success: false }
         }
 

@@ -10254,7 +10254,7 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get('#\\/c1').should('have.text', "-2")
 
 
-    
+
     cy.log('erase propIndex')
 
     cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true });
@@ -10309,6 +10309,107 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get('#\\/y1').should('not.exist')
     cy.get('#\\/c1').should('not.exist')
 
+
+  })
+
+  it('copy control vectors', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph name="g">
+    <curve name="c" through="(1,2) (3,4) (-2,6)" >
+      <bezierControls>
+        (-1,0)
+        <controlVectors direction="both">(0,-1) (-1, 0)</controlVectors>
+        (1,0)
+      </bezierControls>
+    </curve>
+  </graph>
+  
+  <p><aslist><copy prop="controlVectors" target="c" assignNames="cv1 cv2 cv3 cv4 cv5 cv6" /></aslist></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/cv1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−1,0)")
+    })
+    cy.get('#\\/cv2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(1,0)")
+    })
+    cy.get('#\\/cv3 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(0,−1)")
+    })
+    cy.get('#\\/cv4 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−1,0)")
+    })
+    cy.get('#\\/cv5 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(1,0)")
+    })
+    cy.get('#\\/cv6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−1,0)")
+    })
+
+    cy.window().then(async (win) => {
+
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [0, 1],
+          controlVector: [2, 1]
+        }
+      })
+
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [1, 0],
+          controlVector: [3,-5]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [1, 1],
+          controlVector: [2,-4]
+        }
+      })
+      await win.callAction1({
+        actionName: "moveControlVector",
+        componentName: "/c",
+        args: {
+          controlVectorInds: [2, 0],
+          controlVector: [-2,-6]
+        }
+      })
+    })
+
+
+    cy.get('#\\/cv6 .mjx-mrow').should('contain.text', "(2,6)");
+    cy.get('#\\/cv1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−2,−1)")
+    })
+    cy.get('#\\/cv2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(2,1)")
+    })
+    cy.get('#\\/cv3 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(3,−5)")
+    })
+    cy.get('#\\/cv4 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(2,−4)")
+    })
+    cy.get('#\\/cv5 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−2,−6)")
+    })
+    cy.get('#\\/cv6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(2,6)")
+    })
 
   })
 

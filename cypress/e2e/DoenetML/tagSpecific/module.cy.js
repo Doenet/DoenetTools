@@ -182,10 +182,10 @@ describe('Module Tag Tests', function () {
       <setup>
         <customAttribute componentType="math" attribute="x" defaultValue="3" assignNames="pointX" />
         <customAttribute componentType="math" attribute="y" defaultValue="5" assignNames="pointY" />
-        <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="graphWidth" />
+        <customAttribute componentType="text" attribute="size" defaultValue="medium" assignNames="graphSize" />
         <customAttribute componentType="number" attribute="aspectRatio" defaultValue="300px" assignNames="graphAspectRatio" />
       </setup>
-      <graph width="$graphWidth" aspectRatio="$graphAspectRatio" name="g">
+      <graph size="$graphSize" aspectRatio="$graphAspectRatio" name="g">
         <point name="p" x="$pointX" y="$pointY" />
       </graph>
       <p>Point coords:
@@ -196,21 +196,27 @@ describe('Module Tag Tests', function () {
     </module>
 
     <p>Point coords: <mathinput name="x" prefill="7" /> <mathinput name="y" prefill='-7' /></p>
-    <p>Graph size: <mathinput name="w" prefill="200" /> <mathinput name="h" prefill="1/2" /></p>
+    <p>Graph size: <textinput name="s" prefill="small" /> <mathinput name="ar" prefill="1/2" /></p>
     
-    <copy target="m" x="$x" y="$y" width="$w" aspectRatio="$h" assignNames="m2" />
+    <copy target="m" x="$x" y="$y" size="$s" aspectRatio="$ar" assignNames="m2" />
 
-    <p><copy prop="value" target="h" assignNames="h2" /></p>
+    <p><copy prop="value" target="ar" assignNames="ar2" /></p>
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
+    let smallWidth = 255;
+    let mediumWidth = 425;
+    let largeWidth = 595;
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.size).eq("medium")
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(mediumWidth)
       expect(stateVariables["/m/g"].stateValues.aspectRatio).eq(1)
       expect((stateVariables["/m/p"].stateValues.xs)).eqls([3, 5]);
-      expect(stateVariables["/m2/g"].stateValues.width.size).eq(200)
+      expect(stateVariables["/m2/g"].stateValues.size).eq("small")
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(smallWidth)
       expect(stateVariables["/m2/g"].stateValues.aspectRatio).eq(0.5)
       expect((stateVariables["/m2/p"].stateValues.xs)).eqls([7, -7]);
     });
@@ -221,10 +227,12 @@ describe('Module Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.size).eq("medium")
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(mediumWidth)
       expect(stateVariables["/m/g"].stateValues.aspectRatio).eq(1)
       expect((stateVariables["/m/p"].stateValues.xs)).eqls([-6, 9]);
-      expect(stateVariables["/m2/g"].stateValues.width.size).eq(200)
+      expect(stateVariables["/m2/g"].stateValues.size).eq("small")
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(smallWidth)
       expect(stateVariables["/m2/g"].stateValues.aspectRatio).eq(0.5)
       expect((stateVariables["/m2/p"].stateValues.xs)).eqls([7, -7]);
     });
@@ -232,16 +240,18 @@ describe('Module Tag Tests', function () {
 
     cy.get(cesc('#/x') + " textarea").type("{end}{backspace}{backspace}1{enter}", { force: true })
     cy.get(cesc('#/y') + " textarea").type("{end}{backspace}{backspace}2{enter}", { force: true })
-    cy.get(cesc('#/w') + " textarea").type("{end}{backspace}{backspace}30{enter}", { force: true })
-    cy.get(cesc('#/h') + " textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}3/2{enter}", { force: true })
-    cy.get(cesc('#/h2')).should('contain.text', '3');
+    cy.get(cesc('#/s') + "_input").clear().type("large{enter}", { force: true })
+    cy.get(cesc('#/ar') + " textarea").type("{ctrl+home}{shift+ctrl+end}{backspace}3/2{enter}", { force: true })
+    cy.get(cesc('#/ar2')).should('contain.text', '3');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.size).eq("medium")
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(mediumWidth)
       expect(stateVariables["/m/g"].stateValues.aspectRatio).eq(1)
       expect((stateVariables["/m/p"].stateValues.xs)).eqls([-6, 9]);
-      expect(stateVariables["/m2/g"].stateValues.width.size).eq(230)
+      expect(stateVariables["/m2/g"].stateValues.size).eq("large")
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(largeWidth)
       expect(stateVariables["/m2/g"].stateValues.aspectRatio).eq(1.5)
       expect((stateVariables["/m2/p"].stateValues.xs)).eqls([1, 2]);
     });
@@ -252,10 +262,12 @@ describe('Module Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.size).eq("medium")
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(mediumWidth)
       expect(stateVariables["/m/g"].stateValues.aspectRatio).eq(1)
       expect((stateVariables["/m/p"].stateValues.xs)).eqls([-6, 9]);
-      expect(stateVariables["/m2/g"].stateValues.width.size).eq(230)
+      expect(stateVariables["/m2/g"].stateValues.size).eq("large")
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(largeWidth)
       expect(stateVariables["/m2/g"].stateValues.aspectRatio).eq(1.5)
       expect((stateVariables["/m2/p"].stateValues.xs)).eqls([-3, -4]);
     });
@@ -268,10 +280,12 @@ describe('Module Tag Tests', function () {
       })
 
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.size).eq("medium")
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(mediumWidth)
       expect(stateVariables["/m/g"].stateValues.aspectRatio).eq(1)
       expect((stateVariables["/m/p"].stateValues.xs)).eqls([-8, -9]);
-      expect(stateVariables["/m2/g"].stateValues.width.size).eq(230)
+      expect(stateVariables["/m2/g"].stateValues.size).eq("large")
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(largeWidth)
       expect(stateVariables["/m2/g"].stateValues.aspectRatio).eq(1.5)
       expect((stateVariables["/m2/p"].stateValues.xs)).eqls([-3, -4]);
     });
@@ -284,10 +298,12 @@ describe('Module Tag Tests', function () {
       })
 
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/m/g"].stateValues.width.size).eq(300)
+      expect(stateVariables["/m/g"].stateValues.size).eq("medium")
+      expect(stateVariables["/m/g"].stateValues.width.size).eq(mediumWidth)
       expect(stateVariables["/m/g"].stateValues.aspectRatio).eq(1)
       expect((stateVariables["/m/p"].stateValues.xs)).eqls([-8, -9]);
-      expect(stateVariables["/m2/g"].stateValues.width.size).eq(230)
+      expect(stateVariables["/m2/g"].stateValues.size).eq("large")
+      expect(stateVariables["/m2/g"].stateValues.width.size).eq(largeWidth)
       expect(stateVariables["/m2/g"].stateValues.aspectRatio).eq(1.5)
       expect((stateVariables["/m2/p"].stateValues.xs)).eqls([6, -10]);
     });
@@ -435,7 +451,7 @@ describe('Module Tag Tests', function () {
     <text>a</text>
 
     <section><title>First one</title>
-    <copy uri='doenet:cid=bafkreicbv4iendtnb6tp5a7t4uhxqlanctippidm3hx3oe5c5din5qqflq' assignNames="m1" />
+    <copy uri='doenet:cid=bafkreibrch5bxeapksiwnjzu6pkj5ulpfmgbk7l56pjnxdswd7urw34fhq' assignNames="m1" />
 
     <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" target="m1/ans" /></math></p>
     <p>Credit for problem 1: <copy prop="creditAchieved" target="m1/prob" assignNames="ca1" /></p>
@@ -446,7 +462,7 @@ describe('Module Tag Tests', function () {
     <p>Now, let's use initial point <m name="coordsa">(<math name="xa">-3</math>, <math name="ya">3</math>)</m> and the goal point <m name="coordsb">(<math name="xb">7</math>, <math name="yb">-5</math>)</m> </p>
 
     
-    <copy uri='doenet:cid=bafkreicbv4iendtnb6tp5a7t4uhxqlanctippidm3hx3oe5c5din5qqflq' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" width="200px" aspectRatio="1" assignNames="m2" />
+    <copy uri='doenet:cid=bafkreibrch5bxeapksiwnjzu6pkj5ulpfmgbk7l56pjnxdswd7urw34fhq' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" size="medium" aspectRatio="1" assignNames="m2" />
     <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" target="m2/ans" /></math></p>
     <p>Credit for problem 2: <copy prop="creditAchieved" target="m2/prob" assignNames="ca2" /></p>
     </section>
@@ -555,26 +571,29 @@ describe('Module Tag Tests', function () {
         <customAttribute componentType="math" attribute="a" defaultValue="1" assignNames="a" />
         <customAttribute componentType="math" attribute="b" defaultValue="2" assignNames="b" />
         <customAttribute componentType="math" attribute="c" defaultValue="3" assignNames="c" />
-        <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
+        <customAttribute componentType="text" attribute="size" defaultValue="medium" assignNames="size" />
         <customAttribute componentType="number" attribute="aspectRatio" defaultValue="1" assignNames="aspectRatio" />
       </setup>
     
       <p>Make the goal be <m>($a,$b)</m>.</p>
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
-      <copy width="$width" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreicbv4iendtnb6tp5a7t4uhxqlanctippidm3hx3oe5c5din5qqflq" assignNames="extMod" />
+      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreibrch5bxeapksiwnjzu6pkj5ulpfmgbk7l56pjnxdswd7urw34fhq" assignNames="extMod" />
     
       <p>Submitted response for problem: <math name="sr"><copy prop="submittedResponse" target="extMod/ans" /></math></p>
       <p>Credit for problem: <copy prop="creditAchieved" target="extMod/prob" assignNames="ca" /></p>
 
     </module>
     
-    <copy target="g" b="-5" c="9" width="200px" aspectRatio="200/250" assignNames="g2" />
-    <copy target="g" a="7" c="-3" width="350x" aspectRatio="1.2" assignNames="g3" />
+    <copy target="g" b="-5" c="9" size="small" aspectRatio="4/5" assignNames="g2" />
+    <copy target="g" a="7" c="-3" size="large" aspectRatio="1.2" assignNames="g3" />
 
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
 
+    let smallWidth = 255;
+    let mediumWidth = 425;
+    let largeWidth = 595;
 
     cy.get(cesc('#/g/_m1')).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim().replace(/−/g, '-')).equal('(1,2)')
@@ -624,11 +643,14 @@ describe('Module Tag Tests', function () {
       expect((stateVariables["/g/extMod/P"].stateValues.xs)).eqls([3, 0]);
       expect((stateVariables["/g2/extMod/P"].stateValues.xs)).eqls([9, 0]);
       expect((stateVariables["/g3/extMod/P"].stateValues.xs)).eqls([-3, 0]);
-      expect(stateVariables["/g/extMod/_graph1"].stateValues.width.size).eq(300);
+      expect(stateVariables["/g/extMod/_graph1"].stateValues.size).eq("medium");
+      expect(stateVariables["/g/extMod/_graph1"].stateValues.width.size).eq(mediumWidth);
       expect(stateVariables["/g/extMod/_graph1"].stateValues.aspectRatio).eq(1);
-      expect(stateVariables["/g2/extMod/_graph1"].stateValues.width.size).eq(200);
-      expect(stateVariables["/g2/extMod/_graph1"].stateValues.aspectRatio).eq(200/250);
-      expect(stateVariables["/g3/extMod/_graph1"].stateValues.width.size).eq(350);
+      expect(stateVariables["/g2/extMod/_graph1"].stateValues.size).eq("small");
+      expect(stateVariables["/g2/extMod/_graph1"].stateValues.width.size).eq(smallWidth);
+      expect(stateVariables["/g2/extMod/_graph1"].stateValues.aspectRatio).eq(0.8);
+      expect(stateVariables["/g3/extMod/_graph1"].stateValues.size).eq("large");
+      expect(stateVariables["/g3/extMod/_graph1"].stateValues.width.size).eq(largeWidth);
       expect(stateVariables["/g3/extMod/_graph1"].stateValues.aspectRatio).eq(1.2);
     });
 
@@ -743,7 +765,6 @@ describe('Module Tag Tests', function () {
 
   })
 
-
   // with no new namespace, links to inside the external module currently don't work
   // but we can set parameters
   it('module from uri inside a module, partial functionality with no new namespace', () => {
@@ -758,22 +779,26 @@ describe('Module Tag Tests', function () {
         <customAttribute componentType="math" attribute="a" defaultValue="1" assignNames="a" />
         <customAttribute componentType="math" attribute="b" defaultValue="2" assignNames="b" />
         <customAttribute componentType="math" attribute="c" defaultValue="3" assignNames="c" />
-        <customAttribute componentType="_componentSize" attribute="width" defaultValue="300px" assignNames="width" />
-        <customAttribute componentType="_componentSize" attribute="aspectRatio" defaultValue="300px" assignNames="aspectRatio" />
+        <customAttribute componentType="text" attribute="size" defaultValue="medium" assignNames="size" />
+        <customAttribute componentType="number" attribute="aspectRatio" defaultValue="1" assignNames="aspectRatio" />
       </setup>
     
       <p>Make the goal be <m>($a,$b)</m>.</p>
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
-      <copy width="$width" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreicbv4iendtnb6tp5a7t4uhxqlanctippidm3hx3oe5c5din5qqflq" assignNames="extMod" />
+      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreibrch5bxeapksiwnjzu6pkj5ulpfmgbk7l56pjnxdswd7urw34fhq" assignNames="extMod" />
 
     </module>
     
-    <copy target="g" b="-5" c="9" width="200px" aspectRatio="250px" assignNames="g2" />
-    <copy target="g" a="7" c="-3" width="350x" aspectRatio="325px" assignNames="g3" />
+    <copy target="g" b="-5" c="9" size="small" aspectRatio="4/5" assignNames="g2" />
+    <copy target="g" a="7" c="-3" size="large" aspectRatio="1.2" assignNames="g3" />
 
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    let smallWidth = 255;
+    let mediumWidth = 425;
+    let largeWidth = 595;
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -831,12 +856,15 @@ describe('Module Tag Tests', function () {
         expect((stateVariables["/extMod/P"].stateValues.xs)).eqls([3, 0]);
         expect(stateVariables[g2extPName].stateValues.xs).eqls([9, 0]);
         expect(stateVariables[g3extPName].stateValues.xs).eqls([-3, 0]);
-        expect(stateVariables["/extMod/_graph1"].stateValues.width.size).eq(300);
-        expect(stateVariables["/extMod/_graph1"].stateValues.aspectRatio).eq(300);
-        expect(stateVariables[g2extGraph.componentName].stateValues.width.size).eq(200);
-        expect(stateVariables[g2extGraph.componentName].stateValues.aspectRatio).eq(250);
-        expect(stateVariables[g3extGraph.componentName].stateValues.width.size).eq(350);
-        expect(stateVariables[g3extGraph.componentName].stateValues.aspectRatio).eq(325);
+        expect(stateVariables["/extMod/_graph1"].stateValues.size).eq("medium");
+        expect(stateVariables["/extMod/_graph1"].stateValues.width.size).eq(mediumWidth);
+        expect(stateVariables["/extMod/_graph1"].stateValues.aspectRatio).eq(1);
+        expect(stateVariables[g2extGraph.componentName].stateValues.size).eq("small");
+        expect(stateVariables[g2extGraph.componentName].stateValues.width.size).eq(smallWidth);
+        expect(stateVariables[g2extGraph.componentName].stateValues.aspectRatio).eq(0.8);
+        expect(stateVariables[g3extGraph.componentName].stateValues.size).eq("large");
+        expect(stateVariables[g3extGraph.componentName].stateValues.width.size).eq(largeWidth);
+        expect(stateVariables[g3extGraph.componentName].stateValues.aspectRatio).eq(1.2);
       });
 
       cy.log('submit answers')

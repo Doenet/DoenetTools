@@ -136,7 +136,7 @@ describe('MathList Tag Tests', function () {
       expect(text.trim()).equal('7')
     })
     cy.get('#\\/x8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
+      expect(text.trim()).equal('−')
     })
     cy.get('#\\/x9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('11')
@@ -167,8 +167,8 @@ describe('MathList Tag Tests', function () {
       expect(stateVariables["/x6"].stateValues.value).eqls(-11);
       expect(xs[6]).eqls(7);
       expect(stateVariables["/x7"].stateValues.value).eqls(7);
-      expect(xs[7]).eqls('\uff3f');
-      expect(stateVariables["/x8"].stateValues.value).eqls('\uff3f');
+      expect(xs[7]).eqls('-');
+      expect(stateVariables["/x8"].stateValues.value).eqls('-');
       expect(xs[8]).eqls(11);
       expect(stateVariables["/x9"].stateValues.value).eqls(11);
       expect(xs[9]).eqls(['*', 21, 'x', 'y']);

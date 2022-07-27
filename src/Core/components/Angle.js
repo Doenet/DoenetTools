@@ -90,24 +90,7 @@ export default class Angle extends GraphicalComponent {
 
     let stringAndMacrosToRadiansAttribute = function ({ matchedChildren, componentInfoObjects }) {
 
-      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: "label"
-      });
-
-      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.attributes?.createComponentOfType?.primitive)
-
-      // only apply if all children are strings, macros, or labels
-      if (matchedChildren.length === 0 ||
-        !matchedChildren.every(child =>
-          typeof child === "string" ||
-          child.doenetAttributes?.createdFromMacro ||
-          componentIsLabel(child)
-        )
-      ) {
-        return { success: false }
-      }
-
+      let componentIsLabel = x=> componentInfoObjects.componentIsSpecifiedType(x, "label");
 
       // find first non-label children for radians
 

@@ -66,7 +66,6 @@ export default class Choiceinput extends Input {
       createStateVariable: "shuffleOrder",
       defaultValue: false,
       public: true,
-      fallBackToParentStateVariable: "shuffleOrder",
     };
 
     attributes.preselectChoice = {
@@ -1085,7 +1084,7 @@ export default class Choiceinput extends Input {
   }) {
 
 
-    if (!serializedComponent.attributes.shuffleOrder?.primitive) {
+    if (!serializedComponent.attributes?.shuffleOrder?.primitive) {
       return super.determineNumberOfUniqueVariants({
         serializedComponent, componentInfoObjects
       });

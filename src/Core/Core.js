@@ -136,6 +136,7 @@ export default class Core {
         }))
       .then(this.finishCoreConstruction)
       .catch(e => {
+        // throw e;
         postMessage({
           messageType: "inErrorState",
           coreId: this.coreId,
@@ -1424,10 +1425,10 @@ export default class Core {
     )
 
     for (let varDescription of variablesChanged) {
-      await this.recordActualChangeInStateVariable({
-        componentName: varDescription.componentName,
-        varName: varDescription.varName,
-      });
+      await this.markStateVariableAndUpstreamDependentsStale({
+        component: this._components[varDescription.componentName],
+        varName: varDescription.varName
+      })
     }
 
     await this.checkForStateVariablesUpdatesForNewComponent(componentName)
@@ -2105,7 +2106,16 @@ export default class Core {
       let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
       let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
       let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
-
+      let mediatingSubAssignNames = mediatingAssignNames?.some(Array.isArray);
+      let assignNewNamespaces = compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive;
+      let target = this._components[compositeMediatingTheShadow.doenetAttributes.targetComponentName];
+      let nonCompositeTargetWithNewNamespace;
+      if (target) {
+        nonCompositeTargetWithNewNamespace = !this.componentInfoObjects.isCompositeComponent({
+          componentType: target.componentType,
+          includeNonStandard: false
+        }) && target.attributes.newNamespace?.primitive;
+      }
 
       // Note: originalNamesAreConsistent means that processAssignNames should leave
       // the original names in the serializedComponents as is
@@ -2115,16 +2125,28 @@ export default class Core {
 
       // We set originalNamesAreConsistent to true if we can be sure
       // that we won't create any duplicate names.
-      // If the component begin shadowed has a newNamespace,
+      // If the component shadowing (or the original non-composite target) has a newNamespace,
+      // or the composite mediating the shadow is assigning new namespaces,
       // or we get a new namespace from the composite mediating the shadow, 
       // that will, in most cases, be enough to prevent name collisions.
-      // The one edge case is when the composite mediating the shadow also assigns names,
-      // in which case the assigned names could collide with the original names,
+
+      // One edge case is when the composite mediating the shadow also assigns names,
+      // in which case the assigned names could collide with the original names
+      // even if it makes a new namespace,
       // so we can't keep the original names.
 
+      // Another edge case is when the composite mediating the shadow
+      // assign names to sub-replacements.
+      // In that case, all bets are off and we cannot determine if those names
+      // could collide with existing names, so we can't keep the original names.
 
-      let originalNamesAreConsistent = newNamespace
-        || (mediatingNewNamespace && !mediatingAssignNames);
+
+      let originalNamesAreConsistent = !mediatingSubAssignNames && (
+        newNamespace || nonCompositeTargetWithNewNamespace
+        || (mediatingNewNamespace && !mediatingAssignNames)
+        || assignNewNamespaces
+      );
+
 
       let assignNames = component.doenetAttributes.assignNames;
       if (assignNames && await component.stateValues.addLevelToAssignNames) {
@@ -2138,9 +2160,39 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;
+
+      if (target?.componentName === shadowedComposite.componentName
+        && compositeMediatingTheShadow.doenetAttributes.fromCopyTarget
+      ) {
+
+        let newReplacements = deepClone(compositeMediatingTheShadow.serializedChildren);
+        let componentClass = this.componentInfoObjects.allComponentClasses[component.componentType];
+
+        if (!componentClass.includeBlankStringChildren) {
+          newReplacements = newReplacements.filter(
+            x => typeof x !== "string" || x.trim() !== ""
+          )
+        }
+
+        let processResult = serializeFunctions.processAssignNames({
+          assignNames,
+          serializedComponents: newReplacements,
+          parentName: component.componentName,
+          parentCreatesNewNamespace: compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive,
+          indOffset: serializedReplacements.length,
+          componentInfoObjects: this.componentInfoObjects,
+          originalNamesAreConsistent: true
+        });
+
+        serializedReplacements.push(...processResult.serializedComponents)
+
+      }
+
+
     } else {
       // since original names came from the targetComponent
       // we can use them only if we created a new namespace
@@ -2153,6 +2205,7 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;
@@ -2613,12 +2666,13 @@ export default class Core {
           let haveParentValue = dependencyValues.parentValue !== undefined
             && dependencyValues.parentValue !== null;
           if (haveParentValue && !usedDefault.parentValue) {
-            return { setValue: { [varName]: dependencyValues.parentValue } }
+            return { setValue: { [varName]: dependencyValues.parentValue }, checkForActualChange: { [varName]: true } }
           } else {
             return {
               useEssentialOrDefaultValue: {
                 [varName]: true
-              }
+              },
+              checkForActualChange: { [varName]: true }
             }
           }
         }
@@ -2629,7 +2683,7 @@ export default class Core {
           attribute: attrName
         })
 
-        return { setValue: { [varName]: attributeValue } };
+        return { setValue: { [varName]: attributeValue }, checkForActualChange: { [varName]: true } };
       };
 
       if (!attributeSpecification.noInverse) {
@@ -2755,11 +2809,16 @@ export default class Core {
           return {
             useEssentialOrDefaultValue: {
               [varName]: true
-            }
+            },
+            checkForActualChange: { [varName]: true }
           };
         }
         else {
-          return { setValue: { [varName]: dependencyValues.adapterTargetVariable } };
+          return {
+            setValue: { [varName]: dependencyValues.adapterTargetVariable },
+            checkForActualChange: { [varName]: true }
+          };
+
         }
       };
 
@@ -2971,12 +3030,16 @@ export default class Core {
           let haveParentValue = dependencyValues.parentValue !== undefined
             && dependencyValues.parentValue !== null;
           if (haveParentValue && !usedDefault.parentValue) {
-            return { setValue: { [varName]: dependencyValues.parentValue } }
+            return {
+              setValue: { [varName]: dependencyValues.parentValue },
+              checkForActualChange: { [varName]: true }
+            }
           } else {
             return {
               useEssentialOrDefaultValue: {
                 [varName]: true
-              }
+              },
+              checkForActualChange: { [varName]: true }
             }
           }
 
@@ -2987,7 +3050,10 @@ export default class Core {
           attributeSpecification, attribute: attrName
         })
 
-        return { setValue: { [varName]: attributeValue } };
+        return {
+          setValue: { [varName]: attributeValue },
+          checkForActualChange: { [varName]: true }
+        };
       };
 
       if (!attributeSpecification.noInverse) {
@@ -4035,6 +4101,17 @@ export default class Core {
 
       if (!stateVarObj.getAllArrayKeys) {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten = true, desiredSize) {
+
+          function prependToAllKeys(keys, newStuff) {
+            for(let [ind,key] of keys.entries()) {
+              if(Array.isArray(key)) {
+                prependToAllKeys(key, newStuff)
+              } else {
+                keys[ind] = newStuff + "," + key
+              }
+            }
+          }
+
           function getAllArrayKeysSub(subArraySize) {
             if (subArraySize.length === 1) {
               // array of numbers from 0 to subArraySize[0], cast to strings
@@ -4047,7 +4124,9 @@ export default class Core {
                 if (flatten) {
                   subKeys.push(...subSubKeys.map(x => ind + "," + x))
                 } else {
-                  subKeys.push(subSubKeys.map(x => ind + "," + x))
+                  let newSubSubKeys = deepClone(subSubKeys);
+                  prependToAllKeys(newSubSubKeys, ind)
+                  subKeys.push(newSubSubKeys)
                 }
               }
               return subKeys;
@@ -6092,6 +6171,9 @@ export default class Core {
         // save old value
         // mark stale by putting getter back in place to get a new value next time it is requested
         stateVarObj._previousValue = await stateVarObj.value;
+        if (Array.isArray(stateVarObj._previousValue)) {
+          stateVarObj._previousValue = [...stateVarObj._previousValue]
+        }
         delete stateVarObj.value;
         let getStateVar = this.getStateVariableValue;
         Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: vName }), configurable: true });
@@ -6542,6 +6624,9 @@ export default class Core {
               // save old value
               // mark stale by putting getter back in place to get a new value next time it is requested
               stateVarObj._previousValue = await stateVarObj.value;
+              if (Array.isArray(stateVarObj._previousValue)) {
+                stateVarObj._previousValue = [...stateVarObj._previousValue]
+              }
               delete stateVarObj.value;
               Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component: upDepComponent, stateVariable: vName }), configurable: true });
             }
@@ -7941,11 +8026,20 @@ export default class Core {
 
   }
 
-  async performAction({ componentName, actionName, args, event }) {
+  async performAction({ componentName, actionName, args, event, caseInsensitiveMatch }) {
 
     let component = this.components[componentName];
     if (component && component.actions) {
       let action = component.actions[actionName];
+      if (!action && caseInsensitiveMatch) {
+        let actionNameLower = actionName.toLowerCase();
+        for (let aName in component.actions) {
+          if (aName.toLowerCase() === actionNameLower) {
+            action = component.actions[aName];
+            break;
+          }
+        }
+      }
       if (action) {
         if (event) {
           this.requestRecordEvent(event);
@@ -7983,7 +8077,7 @@ export default class Core {
     this.updateInfo.componentsToUpdateActionChaining = {};
 
     let id = componentName;
-    if(triggeringAction) {
+    if (triggeringAction) {
       id += "|" + triggeringAction
     }
 
@@ -8239,7 +8333,7 @@ export default class Core {
           event.context.additionalItemCreditAchieved = {};
           for (let itemNumber of itemsSubmitted) {
             event.context.additionalItemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
-        }
+          }
         }
         event.context.pageCreditAchieved = await this.document.stateValues.creditAchieved;
       }
@@ -8459,11 +8553,11 @@ export default class Core {
     let promise;
 
     if (Object.keys(infoToSend).length > 0) {
-        let event = {
+      let event = {
         object: { componentName: this.documentName, componentType: "document" },
-          verb: "isVisible",
+        verb: "isVisible",
         result: infoToSend
-        }
+      }
 
       promise = new Promise((resolve, reject) => {
 
@@ -8492,7 +8586,7 @@ export default class Core {
     clearTimeout(this.visibilityInfo.saveTimerId);
     clearTimeout(this.visibilityInfo.suspendTimerId);
     if (!this.visibilityInfo.suspended) {
-    this.visibilityInfo.suspended = true;
+      this.visibilityInfo.suspended = true;
       await this.sendVisibilityChangedEvents();
     }
   }

@@ -117,6 +117,18 @@ export default class Answer extends InlineComponent {
       defaultValue: 3,
       public: true,
     };
+    attributes.caseInsensitiveMatch = {
+      createComponentOfType: "boolean",
+      createStateVariable: "caseInsensitiveMatch",
+      defaultValue: false,
+      public: true,
+    };
+    attributes.matchBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchBlanks",
+      defaultValue: false,
+      public: true,
+    };
     attributes.showCorrectness = {
       createComponentOfType: "boolean",
       createStateVariable: "showCorrectnessPreliminary",
@@ -162,6 +174,13 @@ export default class Answer extends InlineComponent {
       public: true,
     };
 
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      public: true,
+    }
+
     return attributes;
   }
 
@@ -172,15 +191,7 @@ export default class Answer extends InlineComponent {
       // if chidren are strings and macros
       // wrap with award and type
 
-      let componentTypeIsSpecifiedType = (cType, specifiedCType) => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: specifiedCType
-      });
-
-      let componentIsSpecifiedType = (comp, specifiedCType) =>
-        componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
-        || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
-
+      let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
 
       let foundMath = false, foundText = false, foundBoolean = false;
       let nChoicesFound = 0;
@@ -291,7 +302,9 @@ export default class Answer extends InlineComponent {
           childIsWrappable.push(true);
           mayNeedInput = true;
         } else {
-          childIsWrappable.push(false);
+          // wrap anything else as it isn't matched by a child group?
+          childIsWrappable.push(true);
+          mayNeedInput = true;
         }
       }
 
@@ -302,12 +315,16 @@ export default class Answer extends InlineComponent {
           return { success: false }
         } else {
           // wrap all choices in a choiceinput
+          let choiceinput = {
+            componentType: "choiceInput",
+            children: matchedChildren
+          };
+          if (componentAttributes.shuffleOrder) {
+            choiceinput.attributes = { shuffleOrder: { primitive: true } }
+          }
           return {
             success: true,
-            newChildren: [{
-              componentType: "choiceInput",
-              children: matchedChildren
-            }]
+            newChildren: [choiceinput]
           }
         }
       }
@@ -435,9 +452,6 @@ export default class Answer extends InlineComponent {
     return [{
       group: "awards",
       componentTypes: ["award"]
-    }, {
-      group: "numbers",
-      componentTypes: ["number"]
     }, {
       group: "inputs",
       componentTypes: ["_input"]
