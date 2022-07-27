@@ -1793,4 +1793,47 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('display navigation bar', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph showNavigation="$b">
+    </graph>
+    <booleaninput name="b" />
+    <copy prop="showNavigation" target="_graph1" assignNames="ba" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+    cy.get('#\\/ba').should('have.text', 'false')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(false);
+    })
+
+
+    cy.get('#\\/b_input').click();
+
+    cy.get('#\\/ba').should('have.text', 'true')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(true);
+    })
+
+    cy.get('#\\/b_input').click();
+
+    cy.get('#\\/ba').should('have.text', 'false')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(false);
+    })
+
+
+  });
+
 });

@@ -3,6 +3,16 @@ import { sizeToCSS } from './utils/css';
 import useDoenetRender from './useDoenetRenderer';
 import me from 'math-expressions';
 import VisibilitySensor from 'react-visibility-sensor-v2';
+import cssesc from 'cssesc';
+
+function cesc(s) {
+  s = cssesc(s, { isIdentifier: true });
+  if (s.slice(0, 2) === '\\#') {
+    s = s.slice(1);
+  }
+  return s;
+}
+
 
 export const BoardContext = createContext();
 
@@ -19,6 +29,8 @@ export default React.memo(function Graph(props) {
   const settingBoundingBox = useRef(false);
   // const resizingBoard = useRef(false);
   const boardJustInitialized = useRef(false);
+
+  const previousShowNavigation = useRef(false);
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -106,6 +118,8 @@ export default React.memo(function Graph(props) {
     }
 
     boardJustInitialized.current = true;
+
+    previousShowNavigation.current = SVs.showNavigation;
 
     // on unmount
     return () => {
@@ -261,6 +275,18 @@ export default React.memo(function Graph(props) {
     } else if (yaxis.current) {
       board.removeObject(yaxis.current);
       yaxis.current = null;
+    }
+
+    if (SVs.showNavigation) {
+      if (!previousShowNavigation.current) {
+        addNavigationButtons();
+        previousShowNavigation.current = true;
+      }
+    } else {
+      if (previousShowNavigation.current) {
+        removeNavigationButtons();
+        previousShowNavigation.current = false;
+      }
     }
 
     let currentDimensions = {
@@ -610,4 +636,83 @@ export default React.memo(function Graph(props) {
       }
     };
   }
+
+  function addNavigationButtons() {
+    // not sure why getElementById doesn't work
+    let navigationBar = document.querySelector('#' + cesc(name) + `_navigationbar`);
+
+    // code modified from abstract.js and env.js of JSXGraph
+
+    let addEvent = function (obj, type, fn) {
+      var el = function () {
+        return fn.apply(board, arguments);
+      };
+
+      board['x_internal' + type] = board['x_internal' + type] || [];
+      board['x_internal' + type].push(el);
+
+      obj.addEventListener(type, el, false);
+    }
+
+    let cancelbubble = function (e) {
+      if (!e) {
+        e = window.event;
+      }
+
+      if (e.stopPropagation) {
+        // Non IE<=8
+        e.stopPropagation();
+      } else {
+        e.cancelBubble = true;
+      }
+    }
+
+    let createButton = function (label, handler) {
+      var button;
+
+      button = document.createElement('span');
+      navigationBar.appendChild(button);
+      button.appendChild(document.createTextNode(label));
+
+      // Style settings are superseded by adding the CSS class below
+      button.style.paddingLeft = '7px';
+      button.style.paddingRight = '7px';
+
+      if (button.classList !== undefined) { // classList not available in IE 9
+        button.classList.add('JXG_navigation_button');
+      }
+
+      addEvent(button, 'click', function (e) { (handler.bind(board))(); return false; }, board);
+      // prevent the click from bubbling down to the board
+      addEvent(button, 'mouseup', cancelbubble);
+      addEvent(button, 'mousedown', cancelbubble);
+      addEvent(button, 'touchend', cancelbubble);
+      addEvent(button, 'touchstart', cancelbubble);
+    };
+
+
+    if (board.attr.showzoom) {
+      createButton('\u2013', board.zoomOut);
+      createButton('o', board.zoom100);
+      createButton('+', board.zoomIn);
+    }
+    createButton('\u2190', board.clickLeftArrow);
+    createButton('\u2193', board.clickUpArrow);
+    createButton('\u2191', board.clickDownArrow);
+    createButton('\u2192', board.clickRightArrow);
+  }
+
+  function removeNavigationButtons() {
+    for (let i = 7; i >= 1; i--) {
+      let button = document.querySelector('#' + cesc(name) + `_navigationbar > :first-child`);
+      button.remove();
+    }
+
+    board.internalclick = [];
+    board.internalmousedown = [];
+    board.internalmouseup = [];
+    board.internaltouchend = [];
+    board.internaltouchstart = [];
+  }
+
 })
