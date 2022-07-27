@@ -1,14 +1,8 @@
-# ************************************************************
-# Sequel Ace SQL dump
-# Version 20033
-#
-# https://sequel-ace.com/
-# https://github.com/Sequel-Ace/Sequel-Ace
-#
-# Host: 127.0.0.1 (MySQL 5.7.29)
-# Database: doenet_local
-# Generation Time: 2022-06-17 17:38:26 +0000
-# ************************************************************
+-- MySQL dump 10.13  Distrib 5.7.29, for Linux (x86_64)
+--
+-- Host: localhost    Database: doenet_local
+-- ------------------------------------------------------
+-- Server version	5.7.29
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -27,7 +21,7 @@
 
 /*!40000 DROP DATABASE IF EXISTS `doenet_local`*/;
 
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `doenet_local` /*!40100 DEFAULT CHARACTER SET latin1 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `doenet_local` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci */;
 
 USE `doenet_local`;
 
@@ -150,6 +144,7 @@ CREATE TABLE `collection` (
   `entryVariant` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `collection`
@@ -176,6 +171,7 @@ CREATE TABLE `collection_groups` (
   `preAssigned` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `collection_groups`
@@ -241,7 +237,7 @@ CREATE TABLE `content_interactions` (
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -262,15 +258,16 @@ DROP TABLE IF EXISTS `course`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `course` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `courseId` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `label` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'Untitled Course',
-  `isPublic` tinyint(1) DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
-  `isDeleted` tinyint(1) DEFAULT '0',
+  `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled Course',
+  `isPublic` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Course is findable in search and drive_content isPublic content is available',
+  `isDeleted` tinyint(1) NOT NULL DEFAULT '0',
   `image` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `color` char(6) COLLATE utf8_unicode_ci DEFAULT 'none',
+  `color` char(6) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'none',
+  `defaultRoleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `driveId` (`courseId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -307,7 +304,7 @@ CREATE TABLE `course_content` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`),
   KEY `courseId` (`courseId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -347,24 +344,29 @@ LOCK TABLES `course_grade_category` WRITE;
 /*!40000 ALTER TABLE `course_grade_category` ENABLE KEYS */;
 UNLOCK TABLES;
 
-# Dump of table course_role
-# ------------------------------------------------------------
+--
+-- Table structure for table `course_role`
+--
 
 DROP TABLE IF EXISTS `course_role`;
-
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `course_role` (
   `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `roleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled Role',
   `canViewCourse` tinyint(1) NOT NULL DEFAULT '0',
+  `isIncludedInGradebook` tinyint(1) NOT NULL DEFAULT '0',
+  `canViewUnassignedContent` tinyint(1) NOT NULL DEFAULT '0',
   `canViewContentSource` tinyint(1) NOT NULL DEFAULT '0',
   `canEditContent` tinyint(1) NOT NULL DEFAULT '0',
   `canPublishContent` tinyint(1) NOT NULL DEFAULT '0',
-  `canViewUnassignedContent` tinyint(1) NOT NULL DEFAULT '0',
   `canProctor` tinyint(1) NOT NULL DEFAULT '0',
   `canViewAndModifyGrades` tinyint(1) NOT NULL DEFAULT '0',
   `canViewActivitySettings` tinyint(1) NOT NULL DEFAULT '0',
+  `canModifyActivitySettings` tinyint(1) NOT NULL DEFAULT '0',
   `canModifyCourseSettings` tinyint(1) NOT NULL DEFAULT '0',
+  `dataAccessPermisson` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'None',
   `canViewUsers` tinyint(1) NOT NULL DEFAULT '0',
   `canManageUsers` tinyint(1) NOT NULL DEFAULT '0',
   `canModifyRoles` tinyint(1) NOT NULL DEFAULT '0',
@@ -374,11 +376,20 @@ CREATE TABLE `course_role` (
   UNIQUE KEY `roleId` (`roleId`),
   CONSTRAINT `course_role_ibfk_1` FOREIGN KEY (`courseId`) REFERENCES `course` (`courseId`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Dumping data for table `course_role`
+--
 
+LOCK TABLES `course_role` WRITE;
+/*!40000 ALTER TABLE `course_role` DISABLE KEYS */;
+/*!40000 ALTER TABLE `course_role` ENABLE KEYS */;
+UNLOCK TABLES;
 
-# Dump of table course_user
-# ------------------------------------------------------------
+--
+-- Table structure for table `course_user`
+--
 
 DROP TABLE IF EXISTS `course_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
@@ -387,6 +398,15 @@ CREATE TABLE `course_user` (
   `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
   `roleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `externalId` varchar(32) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dateEnrolled` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC DateTime',
+  `section` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `withdrew` bit(1) DEFAULT b'0',
+  `dateWithdrew` datetime DEFAULT NULL COMMENT 'UTC DateTime',
+  `courseCredit` double DEFAULT NULL,
+  `courseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `timeLimitMultiplier` float DEFAULT '1',
+  `overrideCourseGrade` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`courseId`,`userId`),
   KEY `roleId` (`roleId`),
   CONSTRAINT `course_user_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `course_role` (`roleId`) ON DELETE CASCADE ON UPDATE NO ACTION,
@@ -568,15 +588,17 @@ CREATE TABLE `event` (
   `pageCid` char(64) COLLATE utf8_unicode_ci DEFAULT NULL,
   `pageNumber` int(11) DEFAULT NULL,
   `attemptNumber` int(11) DEFAULT NULL,
-  `activityVariantIndex` int(11) DEFAULT NULL,
-  `pageVariantIndex` int(11) DEFAULT NULL,
+  `variantIndex` int(11) NOT NULL,
   `object` mediumtext COLLATE utf8_unicode_ci,
   `context` mediumtext COLLATE utf8_unicode_ci,
   `result` mediumtext COLLATE utf8_unicode_ci,
   `timestamp` timestamp NULL DEFAULT NULL,
+  `timestored` timestamp NULL DEFAULT NULL,
   `version` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `deviceName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `valid` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=530 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -940,4 +962,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-08  1:12:14
+-- Dump completed on 2022-07-27 17:17:39
