@@ -1313,7 +1313,7 @@ export const useCourse = (courseId) => {
     async (roleId, newPermissions, successCallback, failureCallback = defaultFailure) =>
     {
       try {
-        const {data: {success, message}} = await axios.post('/api/updateRolePermissons.php', {courseId, roleId, permissions: newPermissions})
+        const {data: {success, message}} = await axios.post('/api/updateRolePermissons.php', {courseId, roleId, permissions: {...newPermissions, label: newPermissions?.roleLabel}})
         if(success) {
           set(
             courseRolesByCourseId(courseId), (prev => {

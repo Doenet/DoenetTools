@@ -8,14 +8,11 @@ import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonG
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 
 import {
-  AddRole,
   AddUser,
   DeleteCourse,
   EditDefaultRole,
   EditImageAndColor,
   EditLabel,
-  ManageUsers,
-  MangeRoles,
 } from '../../../_reactComponents/Course/SettingComponents';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
@@ -71,13 +68,8 @@ export default function SelectedCourse() {
 
 const CourseInfoPanel = function ({ courseId }) {
   const { label } = useCourse(courseId);
-  const {
-    canViewUsers,
-    canManageUsers,
-    canModifyRoles,
-    canModifyCourseSettings,
-    isOwner,
-  } = useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const { canManageUsers, canModifyRoles, canModifyCourseSettings, isOwner } =
+    useRecoilValue(effectivePermissionsByCourseId(courseId));
 
   return (
     <>
@@ -90,13 +82,6 @@ const CourseInfoPanel = function ({ courseId }) {
       )}
       {canModifyRoles === '1' && <EditDefaultRole courseId={courseId} />}
       {canManageUsers === '1' && <AddUser courseId={courseId} menu />}
-      {canViewUsers === '1' && (
-        <ManageUsers courseId={courseId} editable={canManageUsers === '1'} />
-      )}
-      {canModifyRoles === '1' && <MangeRoles courseId={courseId} />}
-      <br />
-      {canModifyRoles === '1' && <AddRole courseId={courseId} />}
-      <br />
       {isOwner === '1' && <DeleteCourse courseId={courseId} />}
     </>
   );

@@ -30,7 +30,7 @@ import {
 } from './CourseActions';
 
 const InputWrapper = styled.div`
-  margin: 0 5px 10px 5px;
+  margin: 10px 5px 0 5px;
   display: ${(props) => (props.flex ? 'flex' : 'block')};
   align-items: ${(props) => props.flex && 'center'};
 `;
@@ -131,7 +131,7 @@ export function EditDefaultRole({ courseId }) {
   );
 }
 
-export function AddUser({ courseId, menu = false, showOptions = false }) {
+export function AddUser({ courseId }) {
   const setCourseUsers = useSetRecoilState(courseUsersByCourseId(courseId));
   const addToast = useToast();
 
@@ -161,7 +161,7 @@ export function AddUser({ courseId, menu = false, showOptions = false }) {
   return (
     <>
       <Textfield
-        width={menu ? 'menu' : ''}
+        width="menu"
         label="Add User"
         placeholder="email"
         value={emailInput}
@@ -172,9 +172,8 @@ export function AddUser({ courseId, menu = false, showOptions = false }) {
           if (e.code === 'Enter') handleEmailChange();
         }}
         alert={emailInput !== '' && !isEmailValid}
-        vertical={menu}
+        vertical
       />
-      {showOptions && <Textfield label="Name" />}
       <Button
         width="menu"
         value="Add User"
@@ -182,6 +181,133 @@ export function AddUser({ courseId, menu = false, showOptions = false }) {
         disabled={!isEmailValid}
       />
     </>
+  );
+}
+
+const UserWithOptionsContainer = styled.div`
+  display: grid;
+  grid:
+    'first last email button' 1fr
+    'role empId . button' 1fr
+    / 1fr 1fr 1fr 0.5fr;
+  gap: 4px;
+  max-width: 850px;
+`;
+
+const ButtonFlexContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  grid-area: button;
+`;
+
+export function AddUserWithOptions({ courseId }) {
+  const setCourseUsers = useSetRecoilState(courseUsersByCourseId(courseId));
+  const { defaultRoleId } = useCourse(courseId);
+  const roles = useRecoilValue(courseRolesByCourseId(courseId));
+  const addToast = useToast();
+
+  const [userData, setUserData] = useState({
+    roleId: defaultRoleId,
+    firstName: '',
+    lastName: '',
+    empId: '',
+  });
+
+  const [emailInput, setEmailInput] = useState('');
+  const [isEmailValid, setIsEmailValid] = useState(false);
+  const validateEmail = useValidateEmail();
+  useLayoutEffect(() => {
+    setIsEmailValid(validateEmail(emailInput));
+  }, [emailInput, validateEmail]);
+
+  const handleEmailChange = async () => {
+    if (isEmailValid) {
+      const {
+        data: { success, message, userData: serverUserData },
+      } = await axios.post('/api/addUser.php', {
+        email: emailInput,
+        ...userData,
+      });
+      if (success) {
+        setCourseUsers((prev) => [...prev, { ...serverUserData }]);
+        setEmailInput('');
+        setUserData({
+          roleId: defaultRoleId,
+          firstName: '',
+          lastName: '',
+          empId: '',
+        });
+      } else {
+        addToast(message, toastType.ERROR);
+      }
+      setEmailInput('');
+    }
+  };
+
+  return (
+    <UserWithOptionsContainer>
+      <Textfield
+        label="First:"
+        width="250px"
+        value={userData.firstName}
+        onChange={(e) => {
+          setUserData((prev) => ({ ...prev, firstName: e.target.value }));
+        }}
+      />
+      <Textfield
+        label="Last:"
+        width="250px"
+        value={userData.lastName}
+        onChange={(e) => {
+          setUserData((prev) => ({ ...prev, lastName: e.target.value }));
+        }}
+      />
+      <ButtonFlexContainer>
+        <Button
+          width="50px"
+          value="Add User"
+          onClick={handleEmailChange}
+          disabled={!isEmailValid}
+        />
+      </ButtonFlexContainer>
+      <Textfield
+        label="Email:"
+        width="250px"
+        value={emailInput}
+        onChange={(e) => {
+          setEmailInput(e.target.value);
+        }}
+        onKeyDown={(e) => {
+          if (e.code === 'Enter') handleEmailChange();
+        }}
+        alert={emailInput !== '' && !isEmailValid}
+      />
+      <DropdownMenu
+        label="Role:"
+        width="190px"
+        items={
+          //TODO reduce to hide roles as needed
+          roles?.map(({ roleLabel, roleId }) => [roleId, roleLabel]) ?? []
+        }
+        onChange={({ value: selectedRoleId }) => {
+          setUserData((prev) => ({ ...prev, roleId: selectedRoleId }));
+        }}
+        valueIndex={
+          roles.findIndex(({ roleId }) => roleId == userData?.roleId) + 1
+        }
+        disabled={false}
+      />
+      <Textfield
+        label="empId:"
+        width="250px"
+        value={userData.empId}
+        onChange={(e) => {
+          setUserData((prev) => ({ ...prev, empId: e.target.value }));
+        }}
+      />
+    </UserWithOptionsContainer>
   );
 }
 
@@ -378,12 +504,20 @@ export function MangeRoles({ courseId }) {
   const addToast = useToast();
   const { modifyRolePermissions } = useCourse(courseId);
   const courseRolesRecoil = useRecoilValue(courseRolesByCourseId(courseId));
+  const [selectedRoleId, setSelectedRoleId] = useState(
+    courseRolesRecoil[0].roleId,
+  );
   const [selectedRolePermissons, setSelectedRolePermissons] = useState(
     courseRolesRecoil[0],
   );
+  useEffect(() => {
+    setSelectedRolePermissons(
+      courseRolesRecoil?.find(({ roleId }) => roleId === selectedRoleId),
+    );
+  }, [courseRolesRecoil, selectedRoleId]);
+
   const [permissonEdits, setPermissonEdits] = useState({});
   const [edited, setEdited] = useState(false);
-
   //   const [canViewContnetSourceProps, resetCanViewContnetSource] =
   //     useRolePermissionCheckbox({
   //       courseId,
@@ -406,6 +540,7 @@ export function MangeRoles({ courseId }) {
       permissonEdits,
       () => {
         setEdited(false);
+        setPermissonEdits({});
         addToast(
           `Permissions for ${selectedRolePermissons.roleLabel} updated successfully`,
         );
@@ -443,21 +578,27 @@ export function MangeRoles({ courseId }) {
           ]) ?? []
         }
         onChange={({ value: selectedRoleId }) => {
-          setSelectedRolePermissons(
-            courseRolesRecoil?.find(
-              ({ roleId }) => roleId === selectedRoleId,
-            ) ?? null,
-          );
+          setSelectedRoleId(selectedRoleId);
         }}
         valueIndex={
           courseRolesRecoil.findIndex(
-            ({ roleId }) => roleId == selectedRolePermissons?.roleId,
+            ({ roleId }) => roleId == selectedRoleId,
           ) + 1
         }
         vertical
       />
-      <br />
-      <Textfield label="Label" width="menu" vertical />
+      <Textfield
+        label="Label"
+        width="menu"
+        value={permissonEdits?.roleLabel ?? selectedRolePermissons.roleLabel}
+        vertical
+        onChange={(e) => {
+          setPermissonEdits((prev) => ({ ...prev, roleLabel: e.target.value }));
+          if (!edited) {
+            setEdited(true);
+          }
+        }}
+      />
       <RolePermissonCheckbox
         courseId={courseId}
         roleId={selectedRolePermissons.roleId}
@@ -522,7 +663,30 @@ export function MangeRoles({ courseId }) {
         onClick={handleCheckboxClick}
         permissonKey={'canModifyCourseSettings'}
       />
-      {/* data access permison */}
+      <DropdownMenu
+        label="Data Access Level"
+        title=""
+        items={['None', 'Aggregated', 'Anonymized', 'Identified'].map(
+          (value) => [value, value],
+        )}
+        onChange={({ value: dataAccessPermisson }) => {
+          setPermissonEdits((prev) => ({ ...prev, dataAccessPermisson }));
+          if (!edited) {
+            setEdited(true);
+          }
+        }}
+        defaultIndex={
+          ['None', 'Aggregated', 'Anonymized', 'Identified'].findIndex(
+            (value) => value === selectedRolePermissons.dataAccessPermisson,
+          ) + 1
+        }
+        // valueIndex={
+        //   courseRolesRecoil.findIndex(
+        //     ({ roleId }) => roleId == selectedRoleId,
+        //   ) + 1
+        // }
+        vertical
+      />
       <RolePermissonCheckbox
         courseId={courseId}
         roleId={selectedRolePermissons.roleId}

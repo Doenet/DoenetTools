@@ -1,4 +1,4 @@
-import React, {  useState } from 'react';
+import React, { useState } from 'react';
 // import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
@@ -7,7 +7,19 @@ import { atom, useSetRecoilState, useRecoilValue } from 'recoil';
 import { useToast, toastType } from '@Toast';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import { enrollmentByCourseId } from '../../../_reactComponents/Course/CourseActions';
-import { AddUser } from '../../../_reactComponents/Course/SettingComponents';
+import { AddUserWithOptions } from '../../../_reactComponents/Course/SettingComponents';
+import styled from 'styled-components';
+
+const InputWrapper = styled.div`
+  margin: 0 5px 10px 5px;
+  display: ${(props) => (props.flex ? 'flex' : 'block')};
+  align-items: ${(props) => props.flex && 'center'};
+  gap: 4px;
+`;
+const CheckboxLabelText = styled.span`
+  font-size: 15px;
+  line-height: 1.1;
+`;
 
 export const enrollmentTableDataAtom = atom({
   key: 'enrollmentTableDataAtom',
@@ -36,7 +48,12 @@ export default function Enrollment() {
 
   const addToast = useToast();
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const {recoilUnWithdraw,recoilWithdraw,recoilMergeData,value:enrollmentTableData} = useRecoilValue(enrollmentByCourseId(courseId));
+  const {
+    recoilUnWithdraw,
+    recoilWithdraw,
+    recoilMergeData,
+    value: enrollmentTableData,
+  } = useRecoilValue(enrollmentByCourseId(courseId));
   let [showWithdrawn, setShowWithdrawn] = useState(false);
 
   const process = useRecoilValue(processAtom);
@@ -48,7 +65,6 @@ export default function Enrollment() {
   // const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
 
   // const enrollmentTableData = useRecoilValue(enrollmentAtomFamily(courseId))
-
 
   if (!courseId) {
     return null;
@@ -100,12 +116,12 @@ export default function Enrollment() {
   }
 
   const enrollmentTable = (
-    <table>
+    <table style={{ width: '100%' }}>
       <thead>
         <tr>
           <th>Name</th>
           <th>Section</th>
-          <th>ID</th>
+          <th>External ID</th>
           <th>Email</th>
           <th>Date Enrolled</th>
         </tr>
@@ -251,11 +267,10 @@ export default function Enrollment() {
                 mergeEmail,
                 mergeSection,
               };
-// console.log("recoilMergeData payload",payload)
-              recoilMergeData(payload).then(()=>{
+              // console.log("recoilMergeData payload",payload)
+              recoilMergeData(payload).then(() => {
                 setProcess('Display Enrollment');
-              })
-     
+              });
             }}
           ></Button>
         </>
@@ -309,17 +324,18 @@ export default function Enrollment() {
   return (
     <div style={{ padding: '8px' }}>
       <h2>Enroll New:</h2>
-      <AddUser showOptions/>
+      <AddUserWithOptions courseId={courseId} />
+      <h2>Currently Enrolled:</h2>
       {enrollmentTableData.length > 0 ? (
-        <div>
-          Show Withdrawn{' '}
+        <InputWrapper flex>
+          <CheckboxLabelText>Show Withdrawn </CheckboxLabelText>
           <Checkbox
             onClick={() => {
               setShowWithdrawn(!showWithdrawn);
             }}
             checked={showWithdrawn}
           />
-        </div>
+        </InputWrapper>
       ) : null}
       {enrollmentTable}
       {enrollmentTableData.length === 0 ? (
