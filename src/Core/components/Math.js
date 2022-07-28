@@ -1081,6 +1081,15 @@ export default class MathComponent extends InlineComponent {
             })
           }
         }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "value",
+            desiredValue: desiredStateVariableValues.valueForDisplay
+          }]
+        };
       }
     }
 
@@ -1137,6 +1146,21 @@ export default class MathComponent extends InlineComponent {
           }
         }
         return { setValue: { latex } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let value;
+        try {
+          value = me.fromLatex(desiredStateVariableValues.latex);
+        } catch (e) {
+          return { success: false }
+        }
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "valueForDisplay",
+            desiredValue: value
+          }]
+        };
       }
     }
 

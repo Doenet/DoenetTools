@@ -1701,6 +1701,27 @@ describe('CallAction Tag Tests', function () {
 
   })
 
+  it('label is name', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p><callAction target="s" actionName="resample" name="resample_numbers" labelIsName /></p>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/resample_numbers').should('contain.text', 'resample numbers')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/resample_numbers'].stateValues.label).eq("resample numbers");
+    });
+
+  })
+
   it('case insensitive action name', () => {
     cy.window().then(async (win) => {
       win.postMessage({
