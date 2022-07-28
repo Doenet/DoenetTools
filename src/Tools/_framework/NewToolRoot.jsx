@@ -135,6 +135,7 @@ export default function ToolRoot() {
     EndExamPanel: lazy(() => import('./ToolPanels/EndExamPanel')),
     GuestDoenetMLEditor:lazy(() => import('./ToolPanels/GuestDoenetMLEditor')),
     GuestEditorViewer:lazy(() => import('./ToolPanels/GuestEditorViewer')),
+    RolesEditor: lazy(() => import('./ToolPanels/RoleEditor')),
   }).current;
 
   const LazyControlObj = useRef({
@@ -617,8 +618,8 @@ let navigationObj = {
       menusTitles: ['Import Learners'],
       menusInitOpen: [false],
       currentMainPanel: 'Enrollment',
-      supportPanelOptions: [],
-      supportPanelTitles: [],
+      supportPanelOptions: ['RolesEditor'],
+      supportPanelTitles: ['Roles Editor'],
       supportPanelIndex: 0,
       headerControls: ['EnrollmentBreadCrumb'],
       // headerControls: ["BackButton"],
