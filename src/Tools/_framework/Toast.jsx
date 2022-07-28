@@ -101,7 +101,7 @@ const toastStackId = atom({
 export const recoilAddToast =
   ({ set, snapshot }) =>
   (msg, type = toastType.INFO, action = null) => {
-    const id = snapshot.getLoadable().getValue();
+    const id = snapshot.getLoadable(toastStackId).getValue();
     set(toastStack, (old) => [
       ...old,
       <ToastMessage
