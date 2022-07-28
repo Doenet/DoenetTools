@@ -2895,6 +2895,8 @@ describe('Math Tag Tests', function () {
   <p><math name="m5" displayBlanks="$displayBlanks">'-_^</math></p>
   <p><math name="m6" displayBlanks="$displayBlanks">)</math></p>
   <p><math name="m7" displayBlanks="$displayBlanks">(,]</math></p>
+  <p><math name="m8" displayBlanks="$displayBlanks">2+()</math></p>
+  <p><math name="m9" displayBlanks="$displayBlanks">2+()+5</math></p>
   `}, "*");
     });
 
@@ -2907,6 +2909,8 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', '′−');
     cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', '');
     cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '(,]');
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2+');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2++5');
 
     cy.get('#\\/displayBlanks_input').click();
 
@@ -2918,6 +2922,8 @@ describe('Math Tag Tests', function () {
     cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', '\uff3f′−\uff3f\uff3f\uff3f');
     cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', '\uff3f');
     cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '(\uff3f,\uff3f]');
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2+\uff3f');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2+\uff3f+5');
   });
 
 
