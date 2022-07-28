@@ -1,4 +1,5 @@
 import { deepClone } from '../utils/deepFunctions';
+import { returnLabelStateVariableDefinitions } from '../utils/label';
 import InlineComponent from './abstract/InlineComponent';
 
 export default class CallAction extends InlineComponent {
@@ -29,6 +30,13 @@ export default class CallAction extends InlineComponent {
     // attributes.height = {default: 50};
     attributes.label = {
       createComponentOfType: "label",
+    };
+
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
     };
 
     attributes.actionName = {
@@ -80,53 +88,9 @@ export default class CallAction extends InlineComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.label = {
-      forRenderer: true,
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "label",
-      },
-      hasEssential: true,
-      defaultValue: "call action",
-      additionalStateVariablesDefined: [{
-        variableName: "labelHasLatex",
-        forRenderer: true,
-      }],
-      returnDependencies: () => ({
-        labelAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "label",
-          variableNames: ["value", "hasLatex"]
-        },
-        labelChild: {
-          dependencyType: "child",
-          childGroups: ["labels"],
-          variableNames: ["value", "hasLatex"]
-        },
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.labelChild.length > 0) {
-          return {
-            setValue: {
-              label: dependencyValues.labelChild[0].stateValues.value,
-              labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
-            }
-          }
-        } else if (dependencyValues.labelAttr) {
-          return {
-            setValue: {
-              label: dependencyValues.labelAttr.stateValues.value,
-              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
-            }
-          }
-        } else {
-          return {
-            useEssentialOrDefaultValue: { label: true },
-            setValue: { labelHasLatex: false }
-          }
-        }
-      }
-    }
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.target = {
       returnDependencies: () => ({

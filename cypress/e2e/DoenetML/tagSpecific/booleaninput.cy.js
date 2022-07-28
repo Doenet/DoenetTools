@@ -498,4 +498,62 @@ describe('BooleanInput Tag Tests', function () {
 
   })
 
+  it('boolean input with labelIsName', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><booleanInput name="asToggleButton" labelIsName /></p>
+    <p><booleanInput name="AnotherInput" asToggleButton="$asToggleButton" labelIsName /></p>
+
+    <boolean copyTarget="asToggleButton" name="v" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+
+    cy.log('Test values displayed in browser')
+
+    cy.get('#\\/asToggleButton_input').should('not.be.checked');
+    cy.get('#\\/AnotherInput_input').should('not.be.checked');
+    cy.get('#\\/v').should('have.text', "false");
+    cy.get('#\\/asToggleButton').should('contain.text', 'as toggle button')
+    cy.get('#\\/AnotherInput').should('contain.text', 'Another Input')
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/asToggleButton'].stateValues.value).eq(false);
+      expect(stateVariables['/AnotherInput'].stateValues.value).eq(false);
+      expect(stateVariables["/v"].stateValues.value).eq(false);
+      expect(stateVariables['/asToggleButton'].stateValues.label).eq("as toggle button");
+      expect(stateVariables['/AnotherInput'].stateValues.label).eq("Another Input");
+    });
+
+
+    cy.log('set as toggle button')
+    cy.get('#\\/asToggleButton_input').click();
+
+    cy.log('Test values displayed in browser')
+    cy.get('#\\/v').should('have.text', "true");
+    cy.get('#\\/asToggleButton_input').should('be.checked');
+    // TODO: how to check the renderer if ToggleButton is selected
+    //cy.get('#\\/AnotherInput_input').should('be.checked');
+    cy.get('#\\/asToggleButton').should('contain.text', 'as toggle button')
+    cy.get('#\\/AnotherInput').should('contain.text', 'Another Input')
+
+    cy.log('Test internal values are set to the correct values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/asToggleButton'].stateValues.value).eq(true);
+      expect(stateVariables['/AnotherInput'].stateValues.value).eq(false);
+      expect(stateVariables["/v"].stateValues.value).eq(true);
+      expect(stateVariables['/asToggleButton'].stateValues.label).eq("as toggle button");
+      expect(stateVariables['/AnotherInput'].stateValues.label).eq("Another Input");
+    });
+
+  })
+
 });
