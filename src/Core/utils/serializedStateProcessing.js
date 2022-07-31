@@ -555,8 +555,9 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
     // TODO: other components such as updateValue, animateFromSequence
     // Note: do not do this for collect, as this dot notation would be confusing for collect
 
-    if (component.props && component.componentType === "copy") {
-
+    if (component.props &&
+      ["copy", "updateValue", "animateFromSequence"].includes(component.componentType)
+    ) {
 
       let targetPropName;
       let sourceName;
@@ -619,22 +620,66 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
           if (componentResult.success) {
             let newComponent = componentResult.newComponent;
 
-            // assign new componentType, attributes, and doenetAttributes
-            // to original component
-            delete component.props[targetPropName];
-            Object.assign(component.attributes, newComponent.attributes)
-            if (!component.doenetAttributes) {
-              component.doenetAttributes = {};
-            }
-            Object.assign(component.doenetAttributes, newComponent.doenetAttributes)
-            if (!component.doenetAttributes.createNameFromComponentType) {
-              component.doenetAttributes.createNameFromComponentType = component.componentType;
-            }
-            component.componentType = newComponent.componentType;
+            if (component.componentType === "copy") {
+
+              // assign new componentType, attributes, and doenetAttributes
+              // to original component
+              delete component.props[targetPropName];
+              Object.assign(component.attributes, newComponent.attributes)
+              if (!component.doenetAttributes) {
+                component.doenetAttributes = {};
+              }
+              Object.assign(component.doenetAttributes, newComponent.doenetAttributes)
+              if (!component.doenetAttributes.createNameFromComponentType) {
+                component.doenetAttributes.createNameFromComponentType = component.componentType;
+              }
+              component.componentType = newComponent.componentType;
 
 
-            if (newComponent.children) {
-              component.children = newComponent.children;
+              if (newComponent.children) {
+                component.children = newComponent.children;
+              }
+            } else {
+              // have updateValue or animateFromSequence
+              if (newComponent.componentType === "copy") {
+                // if the new component created was a copy
+                // then we can just add the attributes to the original component
+
+                // assign new componentType, attributes, and doenetAttributes
+                // to original component
+                delete component.props[targetPropName];
+                Object.assign(component.attributes, newComponent.attributes)
+                if (!component.doenetAttributes) {
+                  component.doenetAttributes = {};
+                }
+                Object.assign(component.doenetAttributes, newComponent.doenetAttributes)
+              } else {
+                // if the new component created was an extract
+                // then wrap the extract in a setup and append
+                // and modify the updateValue/animateFromSequence to point to the extract
+
+                let longNameId = "fromExtendedSource|" + serializedComponents.length;
+                let nameForExtract = createUniqueName("extract", longNameId);
+                newComponent.doenetAttributes.prescribedName = nameForExtract;
+                newComponent.doenetAttributes.createdFromMacro = true;
+
+                let setupComponent = {
+                  componentType: "setup",
+                  children: [newComponent],
+                  doenetAttributes: { createdFromMacro: true }
+                }
+                serializedComponents.push(setupComponent);
+
+                delete component.props[targetPropName];
+
+                if (!component.doenetAttributes) {
+                  component.doenetAttributes = {};
+                }
+                component.doenetAttributes.target = nameForExtract;
+                component.doenetAttributes.allowDoubleUnderscoreTarget = true;
+
+              }
+
             }
           } else {
             console.warn(`invalid copy source: ${originalSource}`)
@@ -642,8 +687,10 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
           }
 
         } else {
-          // have just a simple target prop that is a targetName
-          if (!(component.attributes.prop || component.attributes.propIndex || component.attributes.componentIndex || component.attributes.createComponentOfType)) {
+          // have copy with just a simple target prop that is a targetName
+          if (component.componentType === "copy" &&
+            !(component.attributes.prop || component.attributes.propIndex || component.attributes.componentIndex || component.attributes.createComponentOfType)
+          ) {
             if (!component.doenetAttributes) {
               component.doenetAttributes = {};
             }
@@ -2133,7 +2180,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         target,
         oldTargetComponentName: doenetAttributes.targetComponentName,
         namespaceStack,
-        acceptDoubleUnderscore: doenetAttributes.createdFromSugar
+        acceptDoubleUnderscore: doenetAttributes.createdFromSugar || doenetAttributes.allowDoubleUnderscoreTarget
       });
 
     }

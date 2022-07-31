@@ -9012,7 +9012,15 @@ export default class Core {
         }
       } else {
         for (let [ind, arrayKey] of inverseDefinitionArgs.arrayKeys.entries()) {
-          desiredValuesForArray[arrayKey] = instruction.value[ind];
+          if (Array.isArray(instruction.value)) {
+            desiredValuesForArray[arrayKey] = instruction.value[ind];
+          } else if (instruction.value instanceof me.class) {
+            try {
+              desiredValuesForArray[arrayKey] = instruction.value.get_component(ind);
+            } catch (e) {
+
+            }
+          }
         }
       }
       inverseDefinitionArgs.desiredStateVariableValues = { [arrayStateVariable]: desiredValuesForArray };
