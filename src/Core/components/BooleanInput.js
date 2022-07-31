@@ -31,6 +31,7 @@ export default class BooleanInput extends Input {
   static componentType = "booleanInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

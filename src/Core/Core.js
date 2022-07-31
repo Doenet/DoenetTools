@@ -3484,10 +3484,10 @@ export default class Core {
             }
           }
 
-          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential
-            && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
-          ) {
-            result.useEssentialOrDefaultValue = { [varName]: true }
+          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential) {
+            result.useEssentialOrDefaultValue = {
+              [varName]: { defaultValue: dependencyValues.targetVariable }
+            }
           } else {
             result.setValue = { [varName]: dependencyValues.targetVariable }
           }
@@ -4103,8 +4103,8 @@ export default class Core {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten = true, desiredSize) {
 
           function prependToAllKeys(keys, newStuff) {
-            for(let [ind,key] of keys.entries()) {
-              if(Array.isArray(key)) {
+            for (let [ind, key] of keys.entries()) {
+              if (Array.isArray(key)) {
                 prependToAllKeys(key, newStuff)
               } else {
                 keys[ind] = newStuff + "," + key

@@ -12,6 +12,7 @@ export default class Answer extends InlineComponent {
   static renderChildren = true;
 
   static variableForPlainMacro = "submittedResponses";
+  static variableForPlainCopy = "submittedResponses";
 
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;

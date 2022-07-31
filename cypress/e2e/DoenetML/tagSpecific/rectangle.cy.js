@@ -689,8 +689,8 @@ function setupScene({ rectangleProperties, rectangleChildren }) {
   <copy name="v4" target="_rectangle1" prop="vertex4"/>
   </graph>
 
-  <mathinput bindValueTo="$(_rectangle1{prop='width'})" />
-  <mathinput bindValueTo="$(_rectangle1{prop='height'})" />
+  <mathinput bindValueTo="$(_rectangle1.width)" />
+  <mathinput bindValueTo="$(_rectangle1.height)" />
 
   <graph name="graph3">
     <copy name="rectangleCopy" target="_rectangle1"/>

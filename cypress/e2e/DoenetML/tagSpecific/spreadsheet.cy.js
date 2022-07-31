@@ -2933,10 +2933,10 @@ describe('Spreadsheet Tag Tests', function () {
   <cell name="coords" prefill="(1,2)" />
   </spreadsheet>
   <graph>
-    <point name="P" coords="$(coords{prop='math'})" />
+    <point name="P" coords="$(coords.math)" />
   </graph>
-  <p>Change x-coordinate: <mathinput name="x1" bindValueTo="$(P{prop='x1'})" /></p>
-  <p>Change y-coordinate: <mathinput name="x2" bindValueTo="$(P{prop='x2'})" /></p>
+  <p>Change x-coordinate: <mathinput name="x1" bindValueTo="$(P.x1)" /></p>
+  <p>Change y-coordinate: <mathinput name="x2" bindValueTo="$(P.x2)" /></p>
   `}, "*");
     });
 
@@ -2962,10 +2962,10 @@ describe('Spreadsheet Tag Tests', function () {
   <cell name="coords" ><math>(1,2)</math></cell>
   </spreadsheet>
   <graph>
-    <point name="P" coords="$(coords{prop='math'})" />
+    <point name="P" coords="$(coords.math)" />
   </graph>
-  <p>Change x-coordinate: <mathinput name="x1" bindValueTo="$(P{prop='x1'})" /></p>
-  <p>Change y-coordinate: <mathinput name="x2" bindValueTo="$(P{prop='x2'})" /></p>
+  <p>Change x-coordinate: <mathinput name="x1" bindValueTo="$(P.x1)" /></p>
+  <p>Change y-coordinate: <mathinput name="x2" bindValueTo="$(P.x2)" /></p>
   `}, "*");
     });
 

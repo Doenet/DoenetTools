@@ -720,7 +720,7 @@ describe('Conditional Content Tag Tests', function () {
     <mathinput name="n" />
     <p name="pa">a: <conditionalContent assignNames="a">
       <case condition="$n < 0"><text>dog</text></case>
-      <case condition="not $(_case1{prop='conditionSatisfied'}) and $n <=1"><text>cat</text></case>
+      <case condition="not $_case1.conditionSatisfied and $n <=1"><text>cat</text></case>
       <else><text>mouse</text></else>
     </conditionalContent></p>
 

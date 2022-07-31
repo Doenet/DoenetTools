@@ -24,7 +24,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <copy prop="radius" assignNames="radiusNumber" target="_circle1" />
     <copy prop="center" assignNames="centerPoint2" target="_circle1" />
@@ -226,7 +226,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point name="radiusPoint" x="$(_circle1{prop='radius'})" y="0" />
+    <point name="radiusPoint" x="$(_circle1.radius)" y="0" />
     </graph>
     <copy prop="radius" assignNames="radiusNumber" target="_circle1" />
     <copy prop="center" assignNames="centerPoint2" target="_circle1" />
@@ -476,7 +476,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <copy prop="center" assignNames="centerPoint2" target="_circle1" />
     <copy prop="radius" assignNames="radiusNumber" target="_circle1" />
@@ -732,7 +732,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <copy prop="center" assignNames="centerPoint2" target="_circle1" />
     <copy prop="radius" assignNames="radiusNumber" target="_circle1" />
@@ -1087,7 +1087,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" target="_circle1" />
@@ -1516,7 +1516,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" target="_circle1" />
@@ -1949,7 +1949,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" target="_circle1" />
@@ -2787,7 +2787,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" target="_circle1" />
@@ -3626,7 +3626,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" target="_circle1" />
@@ -3957,7 +3957,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" target="_circle1" />
@@ -4637,7 +4637,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point x="$(_circle1{prop='radius'})" y="0" />
+    <point x="$(_circle1.radius)" y="0" />
     </graph>
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" target="_circle1" />
@@ -5071,7 +5071,7 @@ describe('Circle Tag Tests', function () {
     </graph>
     <graph>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
-    <point name="radiusPoint" x="$(_circle1{prop='radius'})" y="0" />
+    <point name="radiusPoint" x="$(_circle1.radius)" y="0" />
     </graph>
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" target="_circle1" />
@@ -5235,7 +5235,7 @@ describe('Circle Tag Tests', function () {
       </graph>
     <graph>
       <copy prop="center" assignNames="centerPoint" target="_circle1" />
-      <point x="$(_circle1{prop='radius'})" y="0" />
+      <point x="$(_circle1.radius)" y="0" />
     </graph>
     <extract prop="coords" displaySmallAsZero assignNames="centerPoint2">
       <copy prop="center" target="_circle1" />
@@ -5932,7 +5932,7 @@ describe('Circle Tag Tests', function () {
     <graph>
     <triangle layer="1" name="t" vertices="(1,2) (3,5) (-5,2)" />
   
-    <circle name="c" through="$(t{prop='vertex1'}) $(t{prop='vertex2'}) $(t{prop='vertex3'})" />
+    <circle name="c" through="$t.vertex1 $t.vertex2 $t.vertex3" />
   
     <point name="x">
       (<extract prop="x"><copy prop="center" target="c" /></extract>,
@@ -6410,7 +6410,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle radius="2" center="(1,$(_circle1{prop='radius'}))" />
+    <circle radius="2" center="(1,$(_circle1.radius))" />
     <copy prop="center" target="_circle1" assignNames="centerPoint" />
   </graph>
 
@@ -6515,7 +6515,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle radius="2" center="(1,$(_circle1{prop='diameter'}))" />
+    <circle radius="2" center="(1,$_circle1.diameter)" />
     <copy prop="center" target="_circle1" assignNames="centerPoint" />
   </graph>
 
@@ -6631,7 +6631,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle center="(1,$(_circle1{prop='radius'}))" />
+    <circle center="(1,$(_circle1.radius))" />
     <copy prop="center" target="_circle1" assignNames="centerPoint" />
   </graph>
 
@@ -6739,7 +6739,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle radius="2" through="(1,2$(_circle1{prop='radius'}))" />
+    <circle radius="2" through="(1,2$(_circle1.radius))" />
     <copy prop="center" target="_circle1" assignNames="centerPoint" />
   </graph>
 
@@ -6856,7 +6856,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle through="(1,2$(_circle1{prop='radius'}))" />
+    <circle through="(1,2$(_circle1.radius))" />
     <copy prop="center" target="_circle1" assignNames="centerPoint" />
   </graph>
 
@@ -7095,7 +7095,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle through="(1,4)" center="($(_circle1{prop='throughPointX1_1'}), $(_circle1{prop='throughPointX1_2'})/2)"/>
+    <circle through="(1,4)" center="($_circle1.throughPointX1_1, $_circle1.throughPointX1_2/2)"/>
     <copy prop="center" target="_circle1" assignNames="centerPoint" />
   </graph>
 
@@ -7215,7 +7215,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle through="($(_circle1{prop='centerX1'}),$(_circle1{prop='centerX2'})2)" center="(1,2)" />
+    <circle through="($_circle1.centerX1,$(_circle1.centerX2)2)" center="(1,2)" />
     <copy prop="center" target="_circle1" assignNames="centerPoint" />
   </graph>
 
@@ -7334,7 +7334,7 @@ describe('Circle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <circle center="(1, $(_circle1{prop='centerX1'})+1)" />
+    <circle center="(1, $_circle1.centerX1+1)" />
     <copy prop="center" target="_circle1" assignNames="centerPoint" />
   </graph>
 
@@ -7650,7 +7650,7 @@ describe('Circle Tag Tests', function () {
   <graph>
     <point name="TP1">(1,2)</point>
     <copy prop="throughPoint2" target="_circle1" assignNames="TP2" />
-    <circle radius="$r" through="$TP1 ($(_circle1{prop='radius'})+1,3)" />
+    <circle radius="$r" through="$TP1 ($(_circle1.radius)+1,3)" />
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
   </graph>
 
@@ -7882,7 +7882,7 @@ describe('Circle Tag Tests', function () {
   <graph>
     <point name="TP1">(1,2)</point>
     <copy prop="throughPoint2" target="_circle1" assignNames="TP2" />
-    <circle through="$TP1 ($(_circle1{prop='throughPointX1_1'})+1,3)"/>
+    <circle through="$TP1 ($_circle1.throughPointX1_1+1,3)"/>
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
   </graph>
 
@@ -8098,7 +8098,7 @@ describe('Circle Tag Tests', function () {
   <graph>
     <point name="TP2">(1,2)</point>
     <copy prop="throughPoint3" target="_circle1" assignNames="TP3" />
-    <circle through="($(_circle1{prop='throughPointX2_1'})+1,3) $TP2 ($(_circle1{prop='throughPointX1_1'})+1,5)" />
+    <circle through="($_circle1.throughPointX2_1+1,3) $TP2 ($_circle1.throughPointX1_1+1,5)" />
     <copy prop="center" assignNames="centerPoint" target="_circle1" />
   </graph>
 
@@ -8596,32 +8596,32 @@ describe('Circle Tag Tests', function () {
     <circle name="c" />
   </graph>
 
-  <p>Change radius: <mathinput name="rc" bindValueTo="$(c{prop='radius'})" /></p>
-  <p>Change center: <mathinput name="cc" bindValueTo="$(c{prop='center'})" /></p>
+  <p>Change radius: <mathinput name="rc" bindValueTo="$(c.radius)" /></p>
+  <p>Change center: <mathinput name="cc" bindValueTo="$(c.center)" /></p>
 
   <graph>
     <point name="P">(3,4)</point>
     <copy target="c" center="$P" assignNames="c1" />
   </graph>
 
-  <p>Change radius: <mathinput name="rc1" bindValueTo="$(c1{prop='radius'})" /></p>
-  <p>Change center: <mathinput name="cc1" bindValueTo="$(c1{prop='center'})" /></p>
+  <p>Change radius: <mathinput name="rc1" bindValueTo="$(c1.radius)" /></p>
+  <p>Change center: <mathinput name="cc1" bindValueTo="$(c1.center)" /></p>
 
   <graph>
     <point name="Q">(7,7)</point>
     <copy target="c1" through="$Q" assignNames="c2" />
   </graph>
 
-  <p>Change radius: <mathinput name="rc2" bindValueTo="$(c2{prop='radius'})" /></p>
-  <p>Change center: <mathinput name="cc2" bindValueTo="$(c2{prop='center'})" /></p>
+  <p>Change radius: <mathinput name="rc2" bindValueTo="$(c2.radius)" /></p>
+  <p>Change center: <mathinput name="cc2" bindValueTo="$(c2.center)" /></p>
 
   <graph>
     <copy target="c" radius="$src3" assignNames = "c3" />
   </graph>
 
   <p>Set radius radius: <mathinput name="src3" prefill="3" /></p>
-  <p>Change radius: <mathinput name="rc3" bindValueTo="$(c3{prop='radius'})" /></p>
-  <p>Change center: <mathinput name="cc3" bindValueTo="$(c3{prop='center'})" /></p>
+  <p>Change radius: <mathinput name="rc3" bindValueTo="$(c3.radius)" /></p>
+  <p>Change center: <mathinput name="cc3" bindValueTo="$(c3.center)" /></p>
 
   `}, "*");
     });
@@ -8880,7 +8880,7 @@ describe('Circle Tag Tests', function () {
     <graph>
       <circle name="circ" />
     </graph>
-    <mathinput bindvalueTo="$(circ{prop='radius'})" name="r" />
+    <mathinput bindvalueTo="$(circ.radius)" name="r" />
     <p>radius: <copy prop='radius' target='circ' assignNames="r2" /></p>
     <p>Center: <copy prop="center" target="circ" assignNames="c" /></p>
   `;

@@ -3175,7 +3175,7 @@ describe('Function Tag Tests', function () {
     <graph>
     <point layer="2">(0,1)</point>
     <point layer="2">(3,1)</point>
-    <function>$(_point1{prop='y'}) exp(-(x-$(_point1{prop='x'}))^2)+$(_point2{prop='y'}) exp(-(x-$(_point2{prop='x'}))^2)</function>
+    <function>$_point1.y exp(-(x-$_point1.x)^2)+$_point2.y exp(-(x-$_point2.x)^2)</function>
     <copy prop="extrema" target="_function1" />
     </graph>
     
@@ -4737,9 +4737,9 @@ describe('Function Tag Tests', function () {
     <point>(3,4)</point>
     <point>(-5,7)</point>
     <point>(8,-1)</point>
-    <function yscale="5" maxima="($(_function2{prop='numbermaxima'}),$(_function2{prop='numberminima'}))" through="(-8,5) (9,10)" />
+    <function yscale="5" maxima="($_function2.numbermaxima,$_function2.numberminima)" through="(-8,5) (9,10)" />
     
-    <function yscale="$(_function1{prop='yscale'})" through="$_point1 $_point2 $_point3 $_point4 " maxima="(0, )" />
+    <function yscale="$_function1.yscale" through="$_point1 $_point2 $_point3 $_point4 " maxima="(0, )" />
     </graph>
     
     <p>Number of maxima: <copy prop="numbermaxima" assignNames="numbermaxima" target="_function2" /></p>

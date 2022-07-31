@@ -464,7 +464,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   <booleaninput name="b" />
   
   <p name="pa2">value: $a2</p>
-  <copy target="a" assignNames="a2" />
+  <slider copySource="a" name="a2" />
 
   `}, "*");
     });
@@ -669,7 +669,7 @@ describe('AnimateFromSequence Tag Tests', function () {
   <booleaninput name="b" />
   
   <p name="pa2">value: $a2</p>
-  <copy target="a" assignNames="a2" />
+  <slider copysource="a" name="a2" />
 
   `}, "*");
     });

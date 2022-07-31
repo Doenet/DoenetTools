@@ -42,13 +42,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -575,13 +575,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -1111,13 +1111,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -1642,13 +1642,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -2439,13 +2439,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -3547,13 +3547,13 @@ describe('Parabola Tag Tests', function () {
     </graph>
     <copy name="g3" target="g2"/>
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });

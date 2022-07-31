@@ -2116,7 +2116,7 @@ describe('Ray Tag Tests', function () {
     <ray name="original" endpoint="$zeroFixed" through="(1,3)" />
   </graph>
   <graph>
-    <ray name="multiplied" endpoint="$zeroFixed" through="($a$(original{prop='throughX1'}), $a$(original{prop='throughX2'}))" />
+    <ray name="multiplied" endpoint="$zeroFixed" through="($a$(original.throughX1), $a$(original.throughX2))" />
   </graph>
   <copy prop="direction" target='original' assignNames="o2" />
   <copy prop="direction" target='multiplied' assignNames="m2" />
@@ -2226,7 +2226,7 @@ describe('Ray Tag Tests', function () {
   <ray name="v" endpoint="(1,2)" through="(-2,3)" />
   <copy prop="through" assignNames="vh" target="v" />
   <copy prop="endpoint" assignNames="vt" target="v" />
-  <point name="c" x="$(vh{prop='x'})" y="$(vt{prop='y'})"/>
+  <point name="c" x="$(vh.x)" y="$(vt.y)"/>
   </graph>
   <copy prop="direction" target="v" assignNames="va" />
   `}, "*");
@@ -4548,9 +4548,9 @@ describe('Ray Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <ray through="$(_ray2{prop='through'})" endpoint="(1,0)" />
-  <ray endpoint="$(_ray3{prop='endpoint'})" through="(3,2)" />
-  <ray through="$(_ray1{prop='endpoint'})" endpoint="(-1,4)" />
+  <ray through="$(_ray2.through)" endpoint="(1,0)" />
+  <ray endpoint="$(_ray3.endpoint)" through="(3,2)" />
+  <ray through="$(_ray1.endpoint)" endpoint="(-1,4)" />
   </graph>
   <copy prop="through" target="_ray1" assignNames="v1h" />
   <copy prop="endpoint" target="_ray1" assignNames="v1t" />
@@ -4923,27 +4923,27 @@ describe('Ray Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <ray name="v1" through="$(v1{prop='endpoint'})" endpoint="(3,4)" />
+    <ray name="v1" through="$(v1.endpoint)" endpoint="(3,4)" />
   </graph>
 
   <graph>
-    <ray name="v2" through="$(v2{prop='direction'})" direction="(3,4)" />
+    <ray name="v2" through="$(v2.direction)" direction="(3,4)" />
   </graph>
 
   <graph>
-    <ray name="v3" endpoint="$(v3{prop='through'})" through="(3,4)" />
+    <ray name="v3" endpoint="$(v3.through)" through="(3,4)" />
   </graph>
 
   <graph>
-    <ray name="v4" endpoint="$(v4{prop='direction'})" direction="(3,4)" />
+    <ray name="v4" endpoint="$(v4.direction)" direction="(3,4)" />
   </graph>
 
   <graph>
-    <ray name="v5" direction="$(v5{prop='through'})" through="(3,4)" />
+    <ray name="v5" direction="$(v5.through)" through="(3,4)" />
   </graph>
 
   <graph>
-    <ray name="v6" direction="$(v6{prop='endpoint'})" endpoint="(3,4)" />
+    <ray name="v6" direction="$(v6.endpoint)" endpoint="(3,4)" />
   </graph>
   <copy target="v1" prop="through" assignNames="v1h" />
   <copy target="v2" prop="through" assignNames="v2h" />

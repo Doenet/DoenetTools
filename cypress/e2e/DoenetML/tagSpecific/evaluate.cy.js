@@ -330,7 +330,7 @@ describe('Evaluate Tag Tests', function () {
     <mathinput />
     <award><math>1</math></award>
   </answer>
-  <p><evaluate name="eval" function="$f" input="$(_answer1{prop='submittedResponse'})" /></p>
+  <p><evaluate name="eval" function="$f" input="$_answer1.submittedResponse" /></p>
 
   `}, "*");
     });

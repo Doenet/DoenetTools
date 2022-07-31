@@ -173,15 +173,15 @@ describe('Numberlist Tag Tests', function () {
       </numberlist>
     </numberlist></p>
 
-    <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number2'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number3'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number4'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number5'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number6'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number7'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number8'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number9'})"/>
+    <mathinput bindValueTo="$(_numberlist1.number1)"/>
+    <mathinput bindValueTo="$(_numberlist1.number2)"/>
+    <mathinput bindValueTo="$(_numberlist1.number3)"/>
+    <mathinput bindValueTo="$(_numberlist1.number4)"/>
+    <mathinput bindValueTo="$(_numberlist1.number5)"/>
+    <mathinput bindValueTo="$(_numberlist1.number6)"/>
+    <mathinput bindValueTo="$(_numberlist1.number7)"/>
+    <mathinput bindValueTo="$(_numberlist1.number8)"/>
+    <mathinput bindValueTo="$(_numberlist1.number9)"/>
 
     ` }, "*");
     });
@@ -284,15 +284,15 @@ describe('Numberlist Tag Tests', function () {
       </numberlist>
     </numberlist></p>
 
-    <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number2'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number3'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number4'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number5'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number6'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number7'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number8'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number9'})"/>
+    <mathinput bindValueTo="$(_numberlist1.number1)"/>
+    <mathinput bindValueTo="$(_numberlist1.number2)"/>
+    <mathinput bindValueTo="$(_numberlist1.number3)"/>
+    <mathinput bindValueTo="$(_numberlist1.number4)"/>
+    <mathinput bindValueTo="$(_numberlist1.number5)"/>
+    <mathinput bindValueTo="$(_numberlist1.number6)"/>
+    <mathinput bindValueTo="$(_numberlist1.number7)"/>
+    <mathinput bindValueTo="$(_numberlist1.number8)"/>
+    <mathinput bindValueTo="$(_numberlist1.number9)"/>
 
     ` }, "*");
     });
@@ -398,18 +398,18 @@ describe('Numberlist Tag Tests', function () {
       <copy target="mid" />
     </numberlist></p>
 
-    <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number2'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number3'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number4'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number5'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number6'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number7'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number8'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number9'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number10'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number11'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number12'})"/>
+    <mathinput bindValueTo="$(_numberlist1.number1)"/>
+    <mathinput bindValueTo="$(_numberlist1.number2)"/>
+    <mathinput bindValueTo="$(_numberlist1.number3)"/>
+    <mathinput bindValueTo="$(_numberlist1.number4)"/>
+    <mathinput bindValueTo="$(_numberlist1.number5)"/>
+    <mathinput bindValueTo="$(_numberlist1.number6)"/>
+    <mathinput bindValueTo="$(_numberlist1.number7)"/>
+    <mathinput bindValueTo="$(_numberlist1.number8)"/>
+    <mathinput bindValueTo="$(_numberlist1.number9)"/>
+    <mathinput bindValueTo="$(_numberlist1.number10)"/>
+    <mathinput bindValueTo="$(_numberlist1.number11)"/>
+    <mathinput bindValueTo="$(_numberlist1.number12)"/>
     ` }, "*");
     });
 

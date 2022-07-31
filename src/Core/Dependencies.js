@@ -3863,6 +3863,8 @@ class AttributeComponentDependency extends Dependency {
 
     this.returnSingleComponent = true;
 
+    this.shadowDepth = 0;
+
   }
 
   async determineDownstreamComponents() {
@@ -3907,6 +3909,7 @@ class AttributeComponentDependency extends Dependency {
     }
 
     let attribute = parent.attributes[this.attributeName];
+    this.shadowDepth = 0;
 
     if (attribute?.component) {
       // have an attribute that is a component
@@ -3954,6 +3957,8 @@ class AttributeComponentDependency extends Dependency {
         }
       }
 
+      this.shadowDepth++;
+
       attribute = comp.attributes[this.attributeName];
 
       if (attribute?.component) {
@@ -3972,6 +3977,22 @@ class AttributeComponentDependency extends Dependency {
       downstreamComponentTypes: [],
     }
 
+  }
+
+  async getValue({ verbose } = {}) {
+
+    let result = await super.getValue({ verbose, skipProxy: true });
+
+
+    if (result.value) {
+      result.value.shadowDepth = this.shadowDepth;
+    }
+
+    // if (!this.doNotProxy) {
+    //   result.value = new Proxy(result.value, readOnlyProxyHandler)
+    // }
+
+    return result;
   }
 
 
@@ -4674,7 +4695,9 @@ class DescendantDependency extends Dependency {
     for (let compositeName of unexpandedComposites) {
       let composite = this.dependencyHandler._components[compositeName];
       if (composite.attributes.createComponentOfType) {
-        let placeholderType = composite.attributes.createComponentOfType.primitive;
+        let placeholderType = this.dependencyHandler.componentInfoObjects.
+          componentTypeLowerCaseMapping[composite.attributes.createComponentOfType.primitive.toLowerCase()];
+
         let matches = this.componentTypes.some(ct =>
           this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: placeholderType,

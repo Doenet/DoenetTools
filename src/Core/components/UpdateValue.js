@@ -39,14 +39,14 @@ export default class UpdateValue extends InlineComponent {
     }
 
     attributes.componentIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
     };
 
     attributes.propIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,

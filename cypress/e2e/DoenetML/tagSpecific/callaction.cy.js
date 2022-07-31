@@ -580,7 +580,7 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P.x)>0 and $(P.y)>0" /></p>
     `}, "*");
     });
 
@@ -907,7 +907,7 @@ describe('CallAction Tag Tests', function () {
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
     <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P.x)>0 and $(P.y)>0" >
     <point>(3,4)</point>
     </callAction>
 
@@ -1135,9 +1135,9 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" triggerWhen="$(P.x)<0 and $(P.y)<0" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P.x)>0 and $(P.y)>0" >
     <point>(3,4)</point>
     </callAction>
     `}, "*");

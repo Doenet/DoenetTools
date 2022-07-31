@@ -1435,7 +1435,7 @@ describe('Line Tag Tests', function () {
   <line through="(-1,-2) (-3,-4)" />
   </graph>
   <graph>
-  <line through="$(_line1{prop='points'})" />
+  <line through="$(_line1.points)" />
   <copy prop="points" target="_line1" assignNames="p1 p2" />
   </graph>
   <copy prop="point1" target="_line1" assignNames="p1b" />
@@ -1651,10 +1651,10 @@ describe('Line Tag Tests', function () {
     <line through="(5,1)(1,5)" />
   </graph>
   <graph>
-  <line equation="$(_line1{prop='equation'})" />
+  <line equation="$(_line1.equation)" />
   </graph>
   <graph>
-  <line variables="u v" equation="$(_line1{prop='coeffvar1'})u +$(_line1{prop='coeffvar2'})v + $(_line1{prop='coeff0'}) = 0" />
+  <line variables="u v" equation="$(_line1.coeffvar1)u +$(_line1.coeffvar2)v + $(_line1.coeff0) = 0" />
   </graph>
   <copy prop="point1" target="_line1" assignNames="p1" />
   <copy prop="point2" target="_line1" assignNames="p2" />
@@ -1740,13 +1740,13 @@ describe('Line Tag Tests', function () {
 
   <graph>
     <point hide name="A">(1,2)</point>
-    <line through="$A ($(A{prop='y'}),$(A{prop='x'})) "/>
-    <point name="x1" x="$(_line1{prop='pointX1_1'})" y="$threeFixed" />
+    <line through="$A ($(A.y),$(A.x)) "/>
+    <point name="x1" x="$(_line1.pointX1_1)" y="$threeFixed" />
     <point name="x2">
       (<extract prop="x"><copy prop="point2" target="_line1" /></extract>,
       <math fixed>4</math>)
     </point>
-    <point name="y1" y="$(_line1{prop='pointX1_2'})" x="$threeFixed" />
+    <point name="y1" y="$(_line1.pointX1_2)" x="$threeFixed" />
     <point name="y2">
       (<math fixed>4</math>,
       <extract prop="y"><copy prop="point2" target="_line1" /></extract>)
@@ -1882,9 +1882,9 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <line through="$(_line2{prop='point2' createComponentOfType='point'}) (1,0)" />
-  <line through="$(_line3{prop='point2' createComponentOfType='point'}) (3,2)" />
-  <line through="$(_line1{prop='point2' createComponentOfType='point'}) (-1,4)" />
+  <line through="$(_line2.point2{ createComponentOfType='point'}) (1,0)" />
+  <line through="$(_line3.point2{ createComponentOfType='point'}) (3,2)" />
+  <line through="$(_line1.point2{ createComponentOfType='point'}) (-1,4)" />
   </graph>
   <copy prop="point1" target="_line1" assignNames="p11" />
   <copy prop="point2" target="_line1" assignNames="p12" />
@@ -5562,7 +5562,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line through="(3, $(_line1{prop='pointX1_1'})) (4,5)" />
+    <line through="(3, $(_line1.pointX1_1)) (4,5)" />
   </graph>
 
   <graph>
@@ -5791,7 +5791,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line through="(3,$(la{prop='pointX1_1'})) (4,5)" />
+    <line through="(3,$(la.pointX1_1)) (4,5)" />
   </graph>
 
   <graph>
@@ -6017,7 +6017,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line through="(2$(_line1{prop='pointX2_2'})+1, 2$(_line1{prop='pointX2_1'})+1) ($(_line1{prop='pointX1_1'})+1, 1)"/>
+    <line through="(2$(_line1.pointX2_2)+1, 2$(_line1.pointX2_1)+1) ($(_line1.pointX1_1)+1, 1)"/>
   </graph>
 
   <graph>
@@ -6276,7 +6276,7 @@ describe('Line Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <line through="(2$(la{prop='pointX2_2'})+1,2$(la{prop='pointX2_1'})+1) ($(la{prop='pointX1_1'})+1,1)" />
+    <line through="(2$(la.pointX2_2)+1,2$(la.pointX2_1)+1) ($(la.pointX1_1)+1,1)" />
   </graph>
 
   <graph>

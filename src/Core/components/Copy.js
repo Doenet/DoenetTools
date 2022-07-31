@@ -51,13 +51,13 @@ export default class Copy extends CompositeComponent {
       createPrimitiveOfType: "number",
     };
     attributes.componentIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
     };
     attributes.propIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
@@ -404,9 +404,37 @@ export default class Copy extends CompositeComponent {
           dependencyType: "doenetAttribute",
           attributeName: "isPlainMacro"
         },
+        targetComponent: {
+          dependencyType: "stateVariable",
+          variableName: "targetComponent"
+        }
       }),
-      definition: function ({ dependencyValues }) {
-        return { setValue: { isPlainMacro: dependencyValues.isPlainMacro } }
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let isPlainMacro = dependencyValues.isPlainMacro
+          && !componentInfoObjects.isCompositeComponent({
+            componentType: dependencyValues.targetComponent?.componentType,
+          })
+        return { setValue: { isPlainMacro } }
+      }
+    }
+
+    stateVariableDefinitions.isPlainCopy = {
+      returnDependencies: () => ({
+        isPlainCopy: {
+          dependencyType: "doenetAttribute",
+          attributeName: "isPlainCopy"
+        },
+        targetComponent: {
+          dependencyType: "stateVariable",
+          variableName: "targetComponent"
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let isPlainCopy = dependencyValues.isPlainCopy
+          && !componentInfoObjects.isCompositeComponent({
+            componentType: dependencyValues.targetComponent?.componentType,
+          })
+        return { setValue: { isPlainCopy } }
       }
     }
 
@@ -508,7 +536,7 @@ export default class Copy extends CompositeComponent {
     // when resolve determineDependencies
     stateVariableDefinitions.replacementSources = {
       stateVariablesDeterminingDependencies: [
-        "replacementSourceIdentities", "propName", "propIndex", "isPlainMacro",
+        "replacementSourceIdentities", "propName", "propIndex", "isPlainMacro", "isPlainCopy",
       ],
       additionalStateVariablesDefined: ["effectivePropNameBySource"],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
@@ -538,6 +566,9 @@ export default class Copy extends CompositeComponent {
             if (stateValues.isPlainMacro) {
               thisPropName = componentInfoObjects.allComponentClasses[source.componentType]
                 .variableForPlainMacro
+            } else if (stateValues.isPlainCopy) {
+              thisPropName = componentInfoObjects.allComponentClasses[source.componentType]
+                .variableForPlainCopy
             }
 
             let thisTarget;
@@ -620,7 +651,10 @@ export default class Copy extends CompositeComponent {
         let nComponentsSpecified;
 
         if (dependencyValues.typeAttr) {
-          if (!(dependencyValues.typeAttr in componentInfoObjects.allComponentClasses)) {
+          let componentType = componentInfoObjects.
+            componentTypeLowerCaseMapping[dependencyValues.typeAttr.toLowerCase()];
+
+          if (!(componentType in componentInfoObjects.allComponentClasses)) {
             throw Error(`Invalid componentType ${dependencyValues.typeAttr} of copy.`)
           }
           if (dependencyValues.nComponentsAttr !== null) {
@@ -1038,7 +1072,9 @@ export default class Copy extends CompositeComponent {
         // even though don't have valid target,
         // if have copyTarget, then include children added directly to component
 
-        let componentType = component.attributes.createComponentOfType.primitive;
+        let componentType = componentInfoObjects.
+          componentTypeLowerCaseMapping[component.attributes.createComponentOfType.primitive.toLowerCase()];
+
         let componentClass = componentInfoObjects.allComponentClasses[componentType];
 
         let attributesFromComposite = convertAttributesForComponentType({
@@ -1307,6 +1343,7 @@ export default class Copy extends CompositeComponent {
       requiredLength = 1;
     }
 
+    requiredComponentType = componentInfoObjects.componentTypeLowerCaseMapping[requiredComponentType.toLowerCase()];
 
     if (replacementTypes.length !== requiredLength ||
       !replacementTypes.every(x => x === requiredComponentType)) {

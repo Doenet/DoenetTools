@@ -138,10 +138,10 @@ describe('Graph Tag Tests', function () {
     <p>ymin: <copy prop="ymin" target="_graph1" assignNames="ymin" /></p>
     <p>ymax: <copy prop="ymax" target="_graph1" assignNames="ymax" /></p>
 
-    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$(_graph1{prop='xmin'})" /></p>
-    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$(_graph1{prop='xmax'})" /></p>
-    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$(_graph1{prop='ymin'})" /></p>
-    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$(_graph1{prop='ymax'})" /></p>
+    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$_graph1.xmin" /></p>
+    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$_graph1.xmax" /></p>
+    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$_graph1.ymin" /></p>
+    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$_graph1.ymax" /></p>
     
     `}, "*");
     });
@@ -1031,10 +1031,10 @@ describe('Graph Tag Tests', function () {
     <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
     <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
 
-    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$(g{prop='xmin'})" /></p>
-    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$(g{prop='xmax'})" /></p>
-    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$(g{prop='ymin'})" /></p>
-    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$(g{prop='ymax'})" /></p>
+    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$g.xmin" /></p>
+    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$g.xmax" /></p>
+    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$g.ymin" /></p>
+    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$g.ymax" /></p>
 
     `}, "*");
     });
@@ -1257,7 +1257,7 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <graph xlabel="$(x{prop='submittedResponse' createComponentOfType='math'})" ylabel="y" />
+    <graph xlabel="$(x.submittedResponse{ createComponentOfType='math'})" ylabel="y" />
 
     <answer name="x">x</answer>
     <copy prop="submittedResponse" target="x" assignNames="sr" />
