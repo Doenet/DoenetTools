@@ -123,6 +123,12 @@ export default class Answer extends InlineComponent {
       defaultValue: false,
       public: true,
     };
+    attributes.matchBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchBlanks",
+      defaultValue: false,
+      public: true,
+    };
     attributes.showCorrectness = {
       createComponentOfType: "boolean",
       createStateVariable: "showCorrectnessPreliminary",
@@ -167,6 +173,13 @@ export default class Answer extends InlineComponent {
       defaultValue: false,
       public: true,
     };
+
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      public: true,
+    }
 
     return attributes;
   }
@@ -302,12 +315,16 @@ export default class Answer extends InlineComponent {
           return { success: false }
         } else {
           // wrap all choices in a choiceinput
+          let choiceinput = {
+            componentType: "choiceInput",
+            children: matchedChildren
+          };
+          if (componentAttributes.shuffleOrder) {
+            choiceinput.attributes = { shuffleOrder: { primitive: true } }
+          }
           return {
             success: true,
-            newChildren: [{
-              componentType: "choiceInput",
-              children: matchedChildren
-            }]
+            newChildren: [choiceinput]
           }
         }
       }

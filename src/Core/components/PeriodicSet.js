@@ -602,12 +602,12 @@ export default class PeriodicSet extends MathComponent {
               // sort by numeric value
               shiftedOffsetsWithNumeric.sort((a, b) => a.num - b.num);
 
-              let minIndex = -1, maxIndex=1;
+              let minIndex = -1, maxIndex = 1;
 
-              if(Number.isFinite(dependencyValues.minIndexAsList)) {
+              if (Number.isFinite(dependencyValues.minIndexAsList)) {
                 minIndex = dependencyValues.minIndexAsList;
               }
-              if(Number.isFinite(dependencyValues.maxIndexAsList)) {
+              if (Number.isFinite(dependencyValues.maxIndexAsList)) {
                 maxIndex = dependencyValues.maxIndexAsList;
               }
 

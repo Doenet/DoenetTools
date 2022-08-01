@@ -553,6 +553,51 @@ describe('Point Tag Tests', function () {
 
   })
 
+  it('labelIsName converts case', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <graph>
+    <point name="the_first_point" labelIsName>(5,6)</point>
+    <point name="the-second-point" labelIsName>(1,3)</point>
+    <point name="theThirdPoint" labelIsName>(-2,1)</point>
+    <point name="TheFourthPoint" labelIsName>(7,-5)</point>
+    <point name="the-FIFTH_Point" labelIsName>(-6,-8)</point>
+    <point name="the_SiXiTH-Point" labelIsName>(9,0)</point>
+  </graph>
+
+  <p><text copyTarget="the_first_point" prop="label" name="l1" /></p>
+  <p><label copyTarget="the-second-point" prop="label" name="l2" /></p>
+  <p><text copyTarget="theThirdPoint" prop="label" name="l3" /></p>
+  <p><label copyTarget="TheFourthPoint" prop="label" name="l4" /></p>
+  <p><text copyTarget="the-FIFTH_Point" prop="label" name="l5" /></p>
+  <p><label copyTarget="the_SiXiTH-Point" prop="label" name="l6" /></p>
+    `}, "*");
+    });
+
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/l1").should('have.text', 'the first point');
+    cy.get("#\\/l2").should('have.text', 'the second point');
+    cy.get("#\\/l3").should('have.text', 'the third point');
+    cy.get("#\\/l4").should('have.text', 'The Fourth Point');
+    cy.get("#\\/l5").should('have.text', 'the FIFTH Point');
+    cy.get("#\\/l6").should('have.text', 'the SiXiTH Point');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/the_first_point'].stateValues.label).eq('the first point')
+      expect(stateVariables['/the-second-point'].stateValues.label).eq('the second point')
+      expect(stateVariables['/theThirdPoint'].stateValues.label).eq('the third point')
+      expect(stateVariables['/TheFourthPoint'].stateValues.label).eq('The Fourth Point')
+      expect(stateVariables['/the-FIFTH_Point'].stateValues.label).eq('the FIFTH Point')
+      expect(stateVariables['/the_SiXiTH-Point'].stateValues.label).eq('the SiXiTH Point')
+    })
+
+  })
+
   it('point sugar from single copied math', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -11519,6 +11564,319 @@ describe('Point Tag Tests', function () {
       expect(stateVariables["/S"].stateValues.label).eq('No latex: x^1.41 + y^0.333 and \\(\\left( 0.13, 1.1 \\right)\\)')
       expect(stateVariables["/S"].stateValues.labelHasLatex).eq(true)
 
+    })
+
+
+  });
+
+  it('copy point and override label', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P" displayDecimals="1" padZeros>
+        (1,2)
+        <label>We have <m>x^{<copy prop="x" target="P"/>} + y^{<copy target="P" prop="y" />}</m></label>
+      </point>
+    </graph>
+    <graph>
+      <point name="Q" displayDigits="3" padZeros copyTarget="P">
+        <label>No latex: x^<text><copy prop="x" target="Q"/></text> + y^<text><copy target="Q" prop="y" /></text></label>
+      </point>
+    </graph>
+
+    <p name="labelPPar">Label for P: <copy prop="label" target="P" /></p>
+    <p name="labelQPar">Label for Q: <copy prop="label" target="Q" /></p>
+    `}, "*");
+    });
+
+   
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    
+    cy.get('#\\/labelPPar').should('contain.text', 'Label for P: We have ')
+    cy.get('#\\/labelPPar .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x1.0+y2.0")
+    })
+    cy.get('#\\/labelQPar').should('have.text', 'Label for Q: No latex: x^1.00 + y^2.00')
+     
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.label).eq('We have \\(x^{1.0} + y^{2.0}\\)')
+      expect(stateVariables["/P"].stateValues.labelHasLatex).eq(true)
+
+      expect(stateVariables["/Q"].stateValues.label).eq('No latex: x^1.00 + y^2.00')
+      expect(stateVariables["/Q"].stateValues.labelHasLatex).eq(false)
+
+    })
+
+
+    cy.log('move point')
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/P",
+        args: { x: Math.PI, y: Math.E }
+      })
+    })
+
+
+    cy.get('#\\/labelQPar').should('have.text', 'Label for Q: No latex: x^3.14 + y^2.72')
+
+    cy.get('#\\/labelPPar').should('contain.text', 'Label for P: We have ')
+    cy.get('#\\/labelPPar .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("x3.1+y2.7")
+    })
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P"].stateValues.label).eq('We have \\(x^{3.1} + y^{2.7}\\)')
+      expect(stateVariables["/P"].stateValues.labelHasLatex).eq(true)
+
+      expect(stateVariables["/Q"].stateValues.label).eq('No latex: x^3.14 + y^2.72')
+      expect(stateVariables["/Q"].stateValues.labelHasLatex).eq(false)
+
+    })
+
+  });
+
+  it('update labels', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P1">
+        (1,2)
+        <label>P1</label>
+      </point>
+      <point name="P2">
+        (3,4)
+        <label><text>P2</text></label>
+      </point>
+      <point name="P3">
+        (5,6)
+        <label><math>P/3</math></label>
+      </point>
+      <point name="P4">
+        (7,8)
+        <label><m>\\frac{P}{4}</m></label>
+      </point>
+    </graph>
+
+    <p>Change label 1: <textinput bindValueTo="$(P1{prop='label'})" name="ti1" /></p>
+    <p><updateValue target="P1" prop="label" newValue="P1" type="text" name="revert1" >
+      <label>Revert value 1</label>
+    </updateValue></p>
+    <p>The label 1: <label copyTarget="P1" prop="label" name="theLabel1" /></p>
+
+    <p>Change label 2: <textinput bindValueTo="$(P2{prop='label'})" name="ti2" /></p>
+    <p><updateValue target="P2" prop="label" newValue="P2" type="text" name="revert2" >
+      <label>Revert value 2</label>
+    </updateValue></p>
+    <p>The label 2: <label copyTarget="P2" prop="label" name="theLabel2" /></p>
+
+    <p>Change label 3: <textinput bindValueTo="$(P3{prop='label'})" name="ti3" /></p>
+    <p><updateValue target="P3" prop="label" newValue="\\frac{P}{3}" type="text" name="revert3" >
+      <label>Revert value 3</label>
+    </updateValue></p>
+    <p>The label 3: <label copyTarget="P3" prop="label" name="theLabel3" /></p>
+    
+
+    <p>Change label 4: <textinput bindValueTo="$(P4{prop='label'})" name="ti4" /></p>
+    <p><updateValue target="P4" prop="label" newValue="\\frac{P}{4}" type="text" name="revert4" >
+      <label>Revert value 4</label>
+    </updateValue></p>
+    <p>The label 4: <label copyTarget="P4" prop="label" name="theLabel4" /></p>
+    
+    `}, "*");
+    });
+
+   
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+    
+    cy.get('#\\/theLabel1').should('have.text', 'P1')
+    cy.get("#\\/ti1_input").should('have.value', 'P1')
+    cy.get('#\\/theLabel2').should('have.text', 'P2')
+    cy.get("#\\/ti2_input").should('have.value', 'P2')
+    cy.get('#\\/theLabel3 .mjx-mrow').eq(0).should('have.text', 'P3')
+    cy.get("#\\/ti3_input").should('have.value', '\\frac{P}{3}')
+    cy.get('#\\/theLabel4 .mjx-mrow').eq(0).should('have.text', 'P4')
+    cy.get("#\\/ti4_input").should('have.value', '\\frac{P}{4}')
+     
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P1"].stateValues.label).eq('P1')
+      expect(stateVariables["/P1"].stateValues.labelHasLatex).eq(false)
+      expect(stateVariables["/theLabel1"].stateValues.value).eq('P1')
+      expect(stateVariables["/theLabel1"].stateValues.text).eq('P1')
+      expect(stateVariables["/theLabel1"].stateValues.latex).eq('P1')
+      expect(stateVariables["/theLabel1"].stateValues.hasLatex).eq(false)
+
+      expect(stateVariables["/P2"].stateValues.label).eq('P2')
+      expect(stateVariables["/P2"].stateValues.labelHasLatex).eq(false)
+      expect(stateVariables["/theLabel2"].stateValues.value).eq('P2')
+      expect(stateVariables["/theLabel2"].stateValues.text).eq('P2')
+      expect(stateVariables["/theLabel2"].stateValues.latex).eq('P2')
+      expect(stateVariables["/theLabel2"].stateValues.hasLatex).eq(false)
+
+      expect(stateVariables["/P3"].stateValues.label).eq('\\(\\frac{P}{3}\\)')
+      expect(stateVariables["/P3"].stateValues.labelHasLatex).eq(true)
+      expect(stateVariables["/theLabel3"].stateValues.value).eq('\\(\\frac{P}{3}\\)')
+      expect(stateVariables["/theLabel3"].stateValues.text).eq('\\frac{P}{3}')
+      expect(stateVariables["/theLabel3"].stateValues.latex).eq('\\frac{P}{3}')
+      expect(stateVariables["/theLabel3"].stateValues.hasLatex).eq(true)
+
+      expect(stateVariables["/P4"].stateValues.label).eq('\\(\\frac{P}{4}\\)')
+      expect(stateVariables["/P4"].stateValues.labelHasLatex).eq(true)
+      expect(stateVariables["/theLabel4"].stateValues.value).eq('\\(\\frac{P}{4}\\)')
+      expect(stateVariables["/theLabel4"].stateValues.text).eq('\\frac{P}{4}')
+      expect(stateVariables["/theLabel4"].stateValues.latex).eq('\\frac{P}{4}')
+      expect(stateVariables["/theLabel4"].stateValues.hasLatex).eq(true)
+    })
+
+
+    cy.log("Change label via textinput")
+    cy.get("#\\/ti1_input").clear().type("Q1{enter}");
+    cy.get("#\\/ti2_input").clear().type("Q2{enter}");
+    cy.get("#\\/ti3_input").clear().type("\\frac{{}Q}{{}3}{enter}");
+    cy.get("#\\/ti4_input").clear().type("\\frac{{}Q}{{}4}{enter}");
+    cy.get('#\\/theLabel4 .mjx-mrow').should('contain.text', 'Q4')
+
+
+    cy.get('#\\/theLabel1').should('have.text', 'Q1')
+    cy.get("#\\/ti1_input").should('have.value', 'Q1')
+    cy.get('#\\/theLabel2').should('have.text', 'Q2')
+    cy.get("#\\/ti2_input").should('have.value', 'Q2')
+    cy.get('#\\/theLabel3 .mjx-mrow').eq(0).should('have.text', 'Q3')
+    cy.get("#\\/ti3_input").should('have.value', '\\frac{Q}{3}')
+    cy.get('#\\/theLabel4 .mjx-mrow').eq(0).should('have.text', 'Q4')
+    cy.get("#\\/ti4_input").should('have.value', '\\frac{Q}{4}')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P1"].stateValues.label).eq('Q1')
+      expect(stateVariables["/P1"].stateValues.labelHasLatex).eq(false)
+      expect(stateVariables["/theLabel1"].stateValues.value).eq('Q1')
+      expect(stateVariables["/theLabel1"].stateValues.text).eq('Q1')
+      expect(stateVariables["/theLabel1"].stateValues.latex).eq('Q1')
+      expect(stateVariables["/theLabel1"].stateValues.hasLatex).eq(false)
+
+      expect(stateVariables["/P2"].stateValues.label).eq('Q2')
+      expect(stateVariables["/P2"].stateValues.labelHasLatex).eq(false)
+      expect(stateVariables["/theLabel2"].stateValues.value).eq('Q2')
+      expect(stateVariables["/theLabel2"].stateValues.text).eq('Q2')
+      expect(stateVariables["/theLabel2"].stateValues.latex).eq('Q2')
+      expect(stateVariables["/theLabel2"].stateValues.hasLatex).eq(false)
+
+      expect(stateVariables["/P3"].stateValues.label).eq('\\(\\frac{Q}{3}\\)')
+      expect(stateVariables["/P3"].stateValues.labelHasLatex).eq(true)
+      expect(stateVariables["/theLabel3"].stateValues.value).eq('\\(\\frac{Q}{3}\\)')
+      expect(stateVariables["/theLabel3"].stateValues.text).eq('\\frac{Q}{3}')
+      expect(stateVariables["/theLabel3"].stateValues.latex).eq('\\frac{Q}{3}')
+      expect(stateVariables["/theLabel3"].stateValues.hasLatex).eq(true)
+
+      expect(stateVariables["/P4"].stateValues.label).eq('\\(\\frac{Q}{4}\\)')
+      expect(stateVariables["/P4"].stateValues.labelHasLatex).eq(true)
+      expect(stateVariables["/theLabel4"].stateValues.value).eq('\\(\\frac{Q}{4}\\)')
+      expect(stateVariables["/theLabel4"].stateValues.text).eq('\\frac{Q}{4}')
+      expect(stateVariables["/theLabel4"].stateValues.latex).eq('\\frac{Q}{4}')
+      expect(stateVariables["/theLabel4"].stateValues.hasLatex).eq(true)
+    })
+
+    cy.log('Revert label')
+    cy.get('#\\/revert1_button').click();
+    cy.get('#\\/revert2_button').click();
+    cy.get('#\\/revert3_button').click();
+    cy.get('#\\/revert4_button').click();
+    cy.get('#\\/theLabel4 .mjx-mrow').should('contain.text', 'P4')
+
+    cy.get('#\\/theLabel1').should('have.text', 'P1')
+    cy.get("#\\/ti1_input").should('have.value', 'P1')
+    cy.get('#\\/theLabel2').should('have.text', 'P2')
+    cy.get("#\\/ti2_input").should('have.value', 'P2')
+    cy.get('#\\/theLabel3 .mjx-mrow').eq(0).should('have.text', 'P3')
+    cy.get("#\\/ti3_input").should('have.value', '\\frac{P}{3}')
+    cy.get('#\\/theLabel4 .mjx-mrow').eq(0).should('have.text', 'P4')
+    cy.get("#\\/ti4_input").should('have.value', '\\frac{P}{4}')
+     
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P1"].stateValues.label).eq('P1')
+      expect(stateVariables["/P1"].stateValues.labelHasLatex).eq(false)
+      expect(stateVariables["/theLabel1"].stateValues.value).eq('P1')
+      expect(stateVariables["/theLabel1"].stateValues.text).eq('P1')
+      expect(stateVariables["/theLabel1"].stateValues.latex).eq('P1')
+      expect(stateVariables["/theLabel1"].stateValues.hasLatex).eq(false)
+
+      expect(stateVariables["/P2"].stateValues.label).eq('P2')
+      expect(stateVariables["/P2"].stateValues.labelHasLatex).eq(false)
+      expect(stateVariables["/theLabel2"].stateValues.value).eq('P2')
+      expect(stateVariables["/theLabel2"].stateValues.text).eq('P2')
+      expect(stateVariables["/theLabel2"].stateValues.latex).eq('P2')
+      expect(stateVariables["/theLabel2"].stateValues.hasLatex).eq(false)
+
+      expect(stateVariables["/P3"].stateValues.label).eq('\\(\\frac{P}{3}\\)')
+      expect(stateVariables["/P3"].stateValues.labelHasLatex).eq(true)
+      expect(stateVariables["/theLabel3"].stateValues.value).eq('\\(\\frac{P}{3}\\)')
+      expect(stateVariables["/theLabel3"].stateValues.text).eq('\\frac{P}{3}')
+      expect(stateVariables["/theLabel3"].stateValues.latex).eq('\\frac{P}{3}')
+      expect(stateVariables["/theLabel3"].stateValues.hasLatex).eq(true)
+
+      expect(stateVariables["/P4"].stateValues.label).eq('\\(\\frac{P}{4}\\)')
+      expect(stateVariables["/P4"].stateValues.labelHasLatex).eq(true)
+      expect(stateVariables["/theLabel4"].stateValues.value).eq('\\(\\frac{P}{4}\\)')
+      expect(stateVariables["/theLabel4"].stateValues.text).eq('\\frac{P}{4}')
+      expect(stateVariables["/theLabel4"].stateValues.latex).eq('\\frac{P}{4}')
+      expect(stateVariables["/theLabel4"].stateValues.hasLatex).eq(true)
+    })
+
+    cy.log("Cannot switch to latex, unneeded delimiters ignored")
+    cy.get("#\\/ti1_input").clear().type("\\(\\frac{{}Q}{{}1}\\){enter}");
+    cy.get("#\\/ti2_input").clear().type("\\(\\frac{{}Q}{{}2}\\){enter}");
+    cy.get("#\\/ti3_input").clear().type("\\(\\frac{{}Q}{{}3}\\){enter}");
+    cy.get("#\\/ti4_input").clear().type("\\(\\frac{{}Q}{{}4}\\){enter}");
+    cy.get('#\\/theLabel4 .mjx-mrow').should('contain.text', 'Q4')
+
+    cy.get('#\\/theLabel1').should('have.text', '\\(\\frac{Q}{1}\\)')
+    cy.get("#\\/ti1_input").should('have.value', '\\(\\frac{Q}{1}\\)')
+    cy.get('#\\/theLabel2').should('have.text', '\\(\\frac{Q}{2}\\)')
+    cy.get("#\\/ti2_input").should('have.value', '\\(\\frac{Q}{2}\\)')
+    cy.get('#\\/theLabel3 .mjx-mrow').eq(0).should('have.text', 'Q3')
+    cy.get("#\\/ti3_input").should('have.value', '\\frac{Q}{3}')
+    cy.get('#\\/theLabel4 .mjx-mrow').eq(0).should('have.text', 'Q4')
+    cy.get("#\\/ti4_input").should('have.value', '\\frac{Q}{4}')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/P1"].stateValues.label).eq('\\(\\frac{Q}{1}\\)')
+      expect(stateVariables["/P1"].stateValues.labelHasLatex).eq(false)
+      expect(stateVariables["/theLabel1"].stateValues.value).eq('\\(\\frac{Q}{1}\\)')
+      expect(stateVariables["/theLabel1"].stateValues.text).eq('\\(\\frac{Q}{1}\\)')
+      expect(stateVariables["/theLabel1"].stateValues.latex).eq('\\(\\frac{Q}{1}\\)')
+      expect(stateVariables["/theLabel1"].stateValues.hasLatex).eq(false)
+
+      expect(stateVariables["/P2"].stateValues.label).eq('\\(\\frac{Q}{2}\\)')
+      expect(stateVariables["/P2"].stateValues.labelHasLatex).eq(false)
+      expect(stateVariables["/theLabel2"].stateValues.value).eq('\\(\\frac{Q}{2}\\)')
+      expect(stateVariables["/theLabel2"].stateValues.text).eq('\\(\\frac{Q}{2}\\)')
+      expect(stateVariables["/theLabel2"].stateValues.latex).eq('\\(\\frac{Q}{2}\\)')
+      expect(stateVariables["/theLabel2"].stateValues.hasLatex).eq(false)
+
+      expect(stateVariables["/P3"].stateValues.label).eq('\\(\\frac{Q}{3}\\)')
+      expect(stateVariables["/P3"].stateValues.labelHasLatex).eq(true)
+      expect(stateVariables["/theLabel3"].stateValues.value).eq('\\(\\frac{Q}{3}\\)')
+      expect(stateVariables["/theLabel3"].stateValues.text).eq('\\frac{Q}{3}')
+      expect(stateVariables["/theLabel3"].stateValues.latex).eq('\\frac{Q}{3}')
+      expect(stateVariables["/theLabel3"].stateValues.hasLatex).eq(true)
+
+      expect(stateVariables["/P4"].stateValues.label).eq('\\(\\frac{Q}{4}\\)')
+      expect(stateVariables["/P4"].stateValues.labelHasLatex).eq(true)
+      expect(stateVariables["/theLabel4"].stateValues.value).eq('\\(\\frac{Q}{4}\\)')
+      expect(stateVariables["/theLabel4"].stateValues.text).eq('\\frac{Q}{4}')
+      expect(stateVariables["/theLabel4"].stateValues.latex).eq('\\frac{Q}{4}')
+      expect(stateVariables["/theLabel4"].stateValues.hasLatex).eq(true)
     })
 
 

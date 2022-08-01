@@ -98,12 +98,20 @@ export default class MathComponent extends InlineComponent {
       createStateVariable: "splitSymbols",
       defaultValue: true,
       public: true,
+      fallBackToParentStateVariable: "splitSymbols",
     }
 
     attributes.groupCompositeReplacements = {
       createPrimitiveOfType: "boolean",
       createStateVariable: "groupCompositeReplacements",
       defaultValue: true,
+    }
+
+    attributes.displayBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displayBlanks",
+      defaultValue: true,
+      public: true,
     }
 
     return attributes;
@@ -1073,6 +1081,15 @@ export default class MathComponent extends InlineComponent {
             })
           }
         }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "value",
+            desiredValue: desiredStateVariableValues.valueForDisplay
+          }]
+        };
       }
     }
 
@@ -1099,6 +1116,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displayDecimals"
         },
+        displayBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "displayBlanks"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         let latex;
@@ -1112,12 +1133,34 @@ export default class MathComponent extends InlineComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
+        if (!dependencyValues.displayBlanks) {
+          params.showBlanks = false;
+        }
         try {
           latex = dependencyValues.valueForDisplay.toLatex(params);
         } catch (e) {
-          latex = '\uff3f';
+          if (dependencyValues.displayBlanks) {
+            latex = '\uff3f';
+          } else {
+            latex = '';
+          }
         }
         return { setValue: { latex } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let value;
+        try {
+          value = me.fromLatex(desiredStateVariableValues.latex);
+        } catch (e) {
+          return { success: false }
+        }
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "valueForDisplay",
+            desiredValue: value
+          }]
+        };
       }
     }
 
@@ -1162,6 +1205,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "value"
         },
+        displayBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "displayBlanks"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         let text;
@@ -1175,10 +1222,17 @@ export default class MathComponent extends InlineComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
+        if (!dependencyValues.displayBlanks) {
+          params.showBlanks = false;
+        }
         try {
           text = dependencyValues.valueForDisplay.toString(params);
         } catch (e) {
-          text = '\uff3f';
+          if (dependencyValues.displayBlanks) {
+            text = '\uff3f';
+          } else {
+            text = '';
+          }
         }
         return { setValue: { text } };
       },

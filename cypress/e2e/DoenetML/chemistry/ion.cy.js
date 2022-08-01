@@ -462,4 +462,100 @@ describe('Ion Tests', function () {
 
   });
 
+  it('answer ion symbols', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>Enter symbol for common ion of <atom name="Cl" symbol="Cl" />.  
+    <answer name="ansCl" splitSymbols="false"><math><ion>$Cl</ion></math></answer>
+  </p>
+
+  <p>Enter symbol for common ion of <atom name="H" symbol="H" />.  
+    <answer name="ansH" splitSymbols="false"><math><ion copyTarget="H" /></math></answer>
+  </p>
+
+  <p>Enter symbol for common ion of <atom name="Mg" symbol="Mg" />.  
+    <answer name="ansMg" splitSymbols="false"><extract prop="math"><ion copyTarget="Mg" /></extract></answer>
+  </p>
+
+  <p>Enter symbol for common ion of <atom name="P" symbol="P" />.  
+    <answer name="ansP" splitSymbols="false"><ion>$P</ion></answer>
+  </p>
+
+  <p>Enter symbol for common ion of <atom name="S" symbol="S" />.  
+    <answer name="ansS" splitSymbols="false"><ion copyTarget="S" /></answer>
+  </p>
+
+  `}, "*");
+    })
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputClName = stateVariables['/ansCl'].stateValues.inputChildren[0].componentName
+      let mathinputClAnchor = cesc('#' + mathinputClName) + " textarea";
+      let mathinputClSubmitAnchor = cesc('#' + mathinputClName + '_submit');
+      let mathinputClCorrectAnchor = cesc('#' + mathinputClName + '_correct');
+      let mathinputClIncorrectAnchor = cesc('#' + mathinputClName + '_incorrect');
+
+      let mathinputHName = stateVariables['/ansH'].stateValues.inputChildren[0].componentName
+      let mathinputHAnchor = cesc('#' + mathinputHName) + " textarea";
+      let mathinputHSubmitAnchor = cesc('#' + mathinputHName + '_submit');
+      let mathinputHCorrectAnchor = cesc('#' + mathinputHName + '_correct');
+      let mathinputHIncorrectAnchor = cesc('#' + mathinputHName + '_incorrect');
+
+      let mathinputMgName = stateVariables['/ansMg'].stateValues.inputChildren[0].componentName
+      let mathinputMgAnchor = cesc('#' + mathinputMgName) + " textarea";
+      let mathinputMgSubmitAnchor = cesc('#' + mathinputMgName + '_submit');
+      let mathinputMgCorrectAnchor = cesc('#' + mathinputMgName + '_correct');
+      let mathinputMgIncorrectAnchor = cesc('#' + mathinputMgName + '_incorrect');
+
+      let mathinputPName = stateVariables['/ansP'].stateValues.inputChildren[0].componentName
+      let mathinputPAnchor = cesc('#' + mathinputPName) + " textarea";
+      let mathinputPSubmitAnchor = cesc('#' + mathinputPName + '_submit');
+      let mathinputPCorrectAnchor = cesc('#' + mathinputPName + '_correct');
+      let mathinputPIncorrectAnchor = cesc('#' + mathinputPName + '_incorrect');
+
+      let mathinputSName = stateVariables['/ansS'].stateValues.inputChildren[0].componentName
+      let mathinputSAnchor = cesc('#' + mathinputSName) + " textarea";
+      let mathinputSSubmitAnchor = cesc('#' + mathinputSName + '_submit');
+      let mathinputSCorrectAnchor = cesc('#' + mathinputSName + '_correct');
+      let mathinputSIncorrectAnchor = cesc('#' + mathinputSName + '_incorrect');
+
+      cy.get(mathinputClAnchor).type("Cl{enter}", {force: true});
+      cy.get(mathinputClIncorrectAnchor).should('be.visible')
+
+      cy.get(mathinputClAnchor).type("{end}^-{enter}", {force: true});
+      cy.get(mathinputClCorrectAnchor).should('be.visible')
+
+      cy.get(mathinputHAnchor).type("H{enter}", {force: true});
+      cy.get(mathinputHIncorrectAnchor).should('be.visible')
+
+      cy.get(mathinputHAnchor).type("{end}^+{enter}", {force: true});
+      cy.get(mathinputHCorrectAnchor).should('be.visible')
+
+      cy.get(mathinputMgAnchor).type("Mg{enter}", {force: true});
+      cy.get(mathinputMgIncorrectAnchor).should('be.visible')
+
+      cy.get(mathinputMgAnchor).type("{end}^2+{enter}", {force: true});
+      cy.get(mathinputMgCorrectAnchor).should('be.visible')
+
+      cy.get(mathinputPAnchor).type("P{enter}", {force: true});
+      cy.get(mathinputPIncorrectAnchor).should('be.visible')
+
+      cy.get(mathinputPAnchor).type("{end}^3-{enter}", {force: true});
+      cy.get(mathinputPCorrectAnchor).should('be.visible')
+
+      cy.get(mathinputSAnchor).type("S{enter}", {force: true});
+      cy.get(mathinputSIncorrectAnchor).should('be.visible')
+
+      cy.get(mathinputSAnchor).type("{end}^2-{enter}", {force: true});
+      cy.get(mathinputSCorrectAnchor).should('be.visible')
+
+    })
+  });
+
 })

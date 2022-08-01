@@ -945,7 +945,7 @@ describe('ChoiceInput Tag Tests', function () {
       <choice><m>y</m></choice>
       <choice><math format="latex">\\frac{\\partial f}{\\partial x}</math></choice>
       <choice>3</choice>
-      <choice><text>1/e^x</text></choice>
+      <choice><text>1/(e^x)</text></choice>
     </choiceinput>
     
     <p>Select by typing: <mathinput prefill="y" /></p>
@@ -966,7 +966,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
 
-    let textOrder = ["x^2/2", "y", "∂f/∂x", "3", "1/e^x"];
+    let textOrder = ["(x^2)/2", "y", "∂f/∂x", "3", "1/(e^x)"];
 
     let checkChoices = function (selectedIndex, inputText, inputMath) {
 

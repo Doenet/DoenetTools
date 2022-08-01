@@ -415,7 +415,7 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('＿')
     })
     cy.get('#\\/b .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('insu＿')
+      expect(text.trim()).equal('sinu＿')
     })
 
     cy.get("#\\/formata").should('have.text', 'text');
@@ -427,13 +427,13 @@ describe('Math Tag Tests', function () {
     cy.log('change format of second back to text')
     cy.get('#\\/_textinput2_input').clear().type(`text{enter}`);
 
-    cy.get('#\\/b').should('contain.text', '＿sin(u)')
+    cy.get('#\\/b').should('contain.text', 'sin(u)＿')
 
     cy.get('#\\/a .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
     cy.get('#\\/b .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿sin(u)')
+      expect(text.trim()).equal('sin(u)＿')
     })
 
     cy.get("#\\/formata").should('have.text', 'text');
@@ -804,7 +804,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <p><text>a</text></p>
   <p><math>62.1</math></p>
-  <p><math>162.1*10^-3</math></p>
+  <p><math>162.1*10^(-3)</math></p>
   <p><math>1.3 x + 4pi</math></p>
   <p><copy target="_math1" assignNames="dig5a" displayDigits="5" /></p>
   <p><copy target="_math1" assignNames="dig5apad" displayDigits="5" padZeros /></p>
@@ -1544,6 +1544,96 @@ describe('Math Tag Tests', function () {
   <p><math name="m12" splitSymbols="false">x2_2x</math></p>
   <p><math name="m13" splitSymbols="false">2x_x2</math></p>
   <p><math name="m14" splitSymbols="false">xy uv x2y 2x x2</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yx2')
+    })
+    cy.get('#\\/m5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyx')
+    })
+    cy.get('#\\/m6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yx2')
+    })
+    cy.get('#\\/m7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+    cy.get('#\\/m11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+
+    cy.log('Test internal values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m1'].stateValues.value).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m2'].stateValues.value).eqls("xyz");
+      expect(stateVariables['/m3'].stateValues.value).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m4'].stateValues.value).eqls(["*", "y", ["^", "x", 2]]);
+      expect(stateVariables['/m5'].stateValues.value).eqls("xyx");
+      expect(stateVariables['/m6'].stateValues.value).eqls(["*", "y", ["^", "x", 2]]);
+      expect(stateVariables['/m7'].stateValues.value).eqls(["*", "x", ["_", "y", "u"], "v"]);
+      expect(stateVariables['/m8'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m9'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m10'].stateValues.value).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
+      expect(stateVariables['/m11'].stateValues.value).eqls(["_", "xy", "uv"]);
+      expect(stateVariables['/m12'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m13'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m14'].stateValues.value).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+
+    });
+
+  });
+
+  it('split symbols, nested', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1"><math>xyz</math></math></p>
+  <p><math name="m2" splitSymbols="false"><math>xyz</math></math></p>
+  <p><math name="m3" splitSymbols="true"><math>xyz</math></math></p>
+  <p><math name="m4" simplify><math>xyx</math></math></p>
+  <p><math name="m5" simplify splitSymbols="false"><math>xyx</math></math></p>
+  <p><math name="m6" simplify splitSymbols="true"><math>xyx</math></math></p>
+  <p><math name="m7"><math>xy_uv</math></math></p>
+  <p><math name="m8"><math>x2_2x</math></math></p>
+  <p><math name="m9"><math>2x_x2</math></math></p>
+  <p><math name="m10"><math>xy uv x2y 2x x2</math></math></p>
+  <p><math name="m11" splitSymbols="false"><math>xy_uv</math></math></p>
+  <p><math name="m12" splitSymbols="false"><math>x2_2x</math></math></p>
+  <p><math name="m13" splitSymbols="false"><math>2x_x2</math></math></p>
+  <p><math name="m14" splitSymbols="false"><math>xy uv x2y 2x x2</math></math></p>
   `}, "*");
     });
 
@@ -2791,6 +2881,51 @@ describe('Math Tag Tests', function () {
 
     })
   });
+
+  it('display blanks', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>Display blanks: <booleanInput name="displayBlanks" /></p>
+  <p><math name="m1" displayBlanks="$displayBlanks">x^() + /2</math></p>
+  <p><math name="m2" displayBlanks="$displayBlanks">+++</math></p>
+  <p><math name="m3" displayBlanks="$displayBlanks">2+</math></p>
+  <p><math name="m4" displayBlanks="$displayBlanks">2+2+</math></p>
+  <p><math name="m5" displayBlanks="$displayBlanks">'-_^</math></p>
+  <p><math name="m6" displayBlanks="$displayBlanks">)</math></p>
+  <p><math name="m7" displayBlanks="$displayBlanks">(,]</math></p>
+  <p><math name="m8" displayBlanks="$displayBlanks">2+()</math></p>
+  <p><math name="m9" displayBlanks="$displayBlanks">2+()+5</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', 'x+2');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '+++');
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '2+');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '2+2+');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', '′−');
+    cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', '');
+    cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '(,]');
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2+');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2++5');
+
+    cy.get('#\\/displayBlanks_input').click();
+
+    cy.get('#\\/m1 .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', 'x\uff3f+\uff3f2');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '+++');
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '2+');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '2+2+\uff3f');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', '\uff3f′−\uff3f\uff3f\uff3f');
+    cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', '\uff3f');
+    cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '(\uff3f,\uff3f]');
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2+\uff3f');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2+\uff3f+5');
+  });
+
 
 
 })

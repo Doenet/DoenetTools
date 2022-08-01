@@ -1261,5 +1261,30 @@ describe('TriggerSet Tag Tests', function () {
 
   })
 
+  it('triggerSet with label is name', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Boolean to swap: <boolean name="b" /></p>
+
+    <triggerSet name="trigger-me" labelIsName>
+      <updateValue name="flip" target="b" newValue="not$b" type="boolean" />
+    </triggerSet>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/trigger-me').should('contain.text', 'trigger me')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/trigger-me'].stateValues.label).eq("trigger me");
+    });
+
+
+  })
+
 
 });

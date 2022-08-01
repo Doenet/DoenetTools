@@ -1903,5 +1903,25 @@ describe('UpdateValue Tag Tests', function () {
 
   })
 
+  it('label is name', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="b" />
+    <updateValue target="b" newValue="not$b" type="boolean" name="SwapIt" labelIsName />
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/SwapIt').should('contain.text', 'Swap It')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/SwapIt'].stateValues.label).eq("Swap It");
+    });
+
+  })
 
 });
