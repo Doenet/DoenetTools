@@ -8,7 +8,7 @@ export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
   // used when creating new component via adapter or copy prop
-  static primaryStateVariableForDefinition = "value";
+  static primaryStateVariableForDefinition = "unnormalizedValue";
 
   static variableForPlainMacro = "value";
 
@@ -32,7 +32,7 @@ export default class MathComponent extends InlineComponent {
       defaultValue: "none",
       public: true,
       toLowerCase: true,
-      valueTransformations: { "true": "full" },
+      valueTransformations: { "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
     attributes.expand = {
@@ -603,11 +603,11 @@ export default class MathComponent extends InlineComponent {
     }
 
     // valueShadow will be long underscore unless math was created
-    // from serialized state with value
+    // from serialized state with unnormalizedValue
     stateVariableDefinitions.valueShadow = {
       defaultValue: me.fromAst('\uff3f'),  // long underscore
       hasEssential: true,
-      essentialVarName: "value",
+      essentialVarName: "unnormalizedValue",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {

@@ -594,7 +594,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
       }
 
       if (targetPropName && sourceName) {
-        if (componentIndex || componentAttributes || propArray) {
+        if (componentIndex || componentAttributes || propArray.length > 0) {
 
           // found an extended target
 
@@ -635,6 +635,11 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
               }
               component.componentType = newComponent.componentType;
 
+              if (propArray.length === 0 &&
+                !(component.attributes.prop || component.attributes.propIndex || component.attributes.createComponentOfType)
+              ) {
+                component.doenetAttributes.isPlainCopy = true;
+              }
 
               if (newComponent.children) {
                 component.children = newComponent.children;
@@ -689,7 +694,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
         } else {
           // have copy with just a simple target prop that is a targetName
           if (component.componentType === "copy" &&
-            !(component.attributes.prop || component.attributes.propIndex || component.attributes.componentIndex || component.attributes.createComponentOfType)
+            !(component.attributes.prop || component.attributes.propIndex || component.attributes.createComponentOfType)
           ) {
             if (!component.doenetAttributes) {
               component.doenetAttributes = {};
@@ -994,8 +999,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
         markCreatedFromMacro([newComponent]);
 
 
-
-        if (result.additionalAttributes === undefined && result.propArray.length === 0) {
+        if (result.propArray.length === 0) {
           newComponent.doenetAttributes.isPlainMacro = true;
         }
 
@@ -1232,14 +1236,14 @@ function findFirstFullMacroInString(str) {
       let strForMacro = str.substring(offset);
       let requiredLength = 0;
 
-      let findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+      let findResult = findWordOrDelimitedGroup(strForMacro, extendedWordCharacters);
 
       if (findResult.startDelim === "(") {
         // if have parens, then restrict to string inside parens
         // and allowed extended characters in words
         extendedWordCharacters = true;
         strForMacro = findResult.group;
-        requiredLength = findResult.matchLength;
+        requiredLength = findResult.group.length;
       }
 
       let result = buildSourcePieces(strForMacro, extendedWordCharacters)
@@ -1349,7 +1353,7 @@ function findWordOrDelimitedGroup(str, extendedWordCharacters = false) {
   // where the word/group must start with the first character of the string
 
   let withPeriod = false;
-  if (str[0] === ".") {
+  if (str[0] === "." && str[1] !== ".") {
     withPeriod = true;
     str = str.substring(1);
   }
@@ -1358,9 +1362,9 @@ function findWordOrDelimitedGroup(str, extendedWordCharacters = false) {
 
   if (extendedWordCharacters) {
     if (withPeriod) {
-      wordRe = /^([\w\/-]|\.\.\/)+/;
-    } else {
       wordRe = /^[\w-]+/;
+    } else {
+      wordRe = /^([\w\/-]|\.\.\/)+/;
     }
   } else {
     wordRe = /^[a-zA-Z_]\w*/;

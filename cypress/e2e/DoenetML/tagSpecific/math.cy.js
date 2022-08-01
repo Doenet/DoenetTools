@@ -1646,6 +1646,79 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('copy and overwrite simplify', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1">x+x</math></p>
+  <p><copy source="m1" simplify assignNames="m2" /></p>
+  <p><copy source="m2" simplify="none" assignNames="m3" /></p>
+  <p><copy source="m1.value" simplify assignNames="m2a" /></p>
+  <p><copy source="m2.value" simplify="none" assignNames="m3a" /></p>
+
+  <p><math name="m4" simplify>x+x</math></p>
+  <p><copy source="m4" simplify="none" assignNames="m5" /></p>
+  <p><copy source="m5" simplify assignNames="m6" /></p>
+  <p><copy source="m4.value" simplify="none" assignNames="m5a" /></p>
+  <p><copy source="m5a.value" simplify assignNames="m6a" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+x')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+x')
+    })
+    cy.get('#\\/m2a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m3a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+x')
+    })
+    cy.get('#\\/m6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+
+
+    cy.log('Test internal values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m1'].stateValues.value).eqls(["+", "x", "x"]);
+      expect(stateVariables['/m2'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m3'].stateValues.value).eqls(["+", "x", "x"]);
+      expect(stateVariables['/m2a'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m3a'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m4'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m5'].stateValues.value).eqls(["+", "x", "x"]);
+      expect(stateVariables['/m6'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m5a'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m6a'].stateValues.value).eqls(["*", 2, "x"]);
+
+
+    });
+
+  });
+
   it('split symbols', () => {
     cy.window().then(async (win) => {
       win.postMessage({

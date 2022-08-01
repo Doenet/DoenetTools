@@ -12454,7 +12454,7 @@ describe('Copy Tag Tests', function () {
     <p name="p5">P.1: $P.1</p>
     <p name="p6">x of P: $P.x</p>
     <p name="p7">y of P: $P.y</p>
-    <p name="p8">P._x: $P._x</p>
+    <p name="p8">nothing: $P._x</p>
     <p name="p9">x of P: $P.xs[1]</p>
     <p name="p10">y of P: $P.xs[2]</p>
     <p name="p11">nothing: $P.xs[3]</p>
@@ -12496,8 +12496,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/p5')).should('contain.text', ').1');
     cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '2');
     cy.get(cesc('#/p7') + ' .mjx-mrow').eq(0).should('have.text', '3');
-    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
-    cy.get(cesc('#/p8')).should('contain.text', ')._x');
+    cy.get(cesc('#/p8')).should('have.text', "nothing: ");
     cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '2');
     cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
     cy.get(cesc('#/p11')).should('have.text', "nothing: ");
@@ -12661,8 +12660,8 @@ describe('Copy Tag Tests', function () {
         actionName: "moveLine",
         componentName: "/l",
         args: {
-          point1coords: [7,8],
-          point2coords: [9,0]
+          point1coords: [7, 8],
+          point2coords: [9, 0]
         }
       })
     })
@@ -12867,8 +12866,8 @@ describe('Copy Tag Tests', function () {
         actionName: "moveLine",
         componentName: "/l",
         args: {
-          point1coords: [7,8],
-          point2coords: [9,0]
+          point1coords: [7, 8],
+          point2coords: [9, 0]
         }
       })
     })
@@ -13065,7 +13064,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/p34') + ' .mjx-mrow').eq(1).should('not.exist');
     cy.get(cesc('#/p35')).should('have.text', '')
 
-    cy.get(cesc('#/p36') ).should('have.text', '0 = -23.1058 \\, x - 3.0203 \\, y + 120.4105');
+    cy.get(cesc('#/p36')).should('have.text', '0 = -23.1058 \\, x - 3.0203 \\, y + 120.4105');
     cy.get(cesc('#/p37') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
     cy.get(cesc('#/p37') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
     cy.get(cesc('#/p38') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
@@ -13073,7 +13072,127 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  
+  it('dot and array notation, chaining, nested', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph size="small">
+      <line name="l" through="(1.92639372,9.8293629453) (5.9060742037,2.93520806203104)" />
+      $l.points
+    </graph>
+    
+    <p name="p1"><aslist>
+      $l[1].points[$l.points[1].x]{displayDigits="$l.points[2].x"}.y
+    </aslist></p>
+    <p name="p2"><aslist>
+      <copy source='l[1].points[$l.points[1].x]{displayDigits="$l.points[2].x"}.y' />
+    </aslist></p>
+    
+    
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '2.93521');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '2.93521');
+
+    cy.window().then(async (win) => {
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l",
+        args: {
+          point1coords: [1.38527302734, 8.48273402357],
+          point2coords: [5.9060742037,2.93520806203104],
+        }
+      })
+
+    })
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').should('contain.text', '8.48273');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '8.48273');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '8.48273');
+
+    cy.window().then(async (win) => {
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l",
+        args: {
+          point1coords: [1.38527302734, 8.48273402357],
+          point2coords: [4.482081034234, 7.34828203481],
+        }
+      })
+
+    })
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').should('contain.text', '8.483');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '8.483');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '8.483');
+
+
+
+  });
+
+  it('isPlainMacro and isPlainCopy', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput prefill="x+x" name="mi" />
+
+    <p name="pmacro1">$mi</p>
+    <p name="pmacro2">$mi{simplify}</p>
+    <p name="pcopy1"><copy source="mi" /></p>
+    <p name="pcopy2"><copy source="mi{simplify}" /></p>
+    <p name="pcopy3"><copy source="mi" simplify /></p>
+    <p name="pcopy4"><copy source="mi" createComponentOfType="mathinput" /></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/pmacro1') + " .mjx-mrow").eq(0).should('have.text', 'x+x');
+    cy.get(cesc('#/pmacro2') + " .mjx-mrow").eq(0).should('have.text', '2x');
+
+    cy.get(cesc('#/pcopy1') + " .mjx-mrow").eq(0).should('have.text', 'x+x');
+    cy.get(cesc('#/pcopy2') + " .mjx-mrow").eq(0).should('have.text', '2x');
+    cy.get(cesc('#/pcopy3') + " .mjx-mrow").eq(0).should('have.text', '2x');
+    cy.get(cesc('#/pcopy4') + " .mq-editable-field").eq(0).should('have.text', 'x+x');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let macrom1Name = stateVariables["/pmacro1"].activeChildren[0].componentName;
+      let macrom2Name = stateVariables["/pmacro2"].activeChildren[0].componentName;
+      let copym1Name = stateVariables["/pcopy1"].activeChildren[0].componentName;
+      let copym2Name = stateVariables["/pcopy2"].activeChildren[0].componentName;
+      let copym3Name = stateVariables["/pcopy3"].activeChildren[0].componentName;
+      let copymi4Name = stateVariables["/pcopy4"].activeChildren[0].componentName;
+
+      expect(stateVariables[macrom1Name].componentType).eq('math')
+      expect(stateVariables[macrom2Name].componentType).eq('math')
+      expect(stateVariables[copym1Name].componentType).eq('math')
+      expect(stateVariables[copym2Name].componentType).eq('math')
+      expect(stateVariables[copym3Name].componentType).eq('math')
+      expect(stateVariables[copymi4Name].componentType).eq('mathInput')
+      expect(stateVariables[macrom1Name].stateValues.value).eqls(["+", "x", "x"])
+      expect(stateVariables[macrom2Name].stateValues.value).eqls(["*", 2, "x"])
+      expect(stateVariables[copym1Name].stateValues.value).eqls(["+", "x", "x"])
+      expect(stateVariables[copym2Name].stateValues.value).eqls(["*", 2, "x"])
+      expect(stateVariables[copym3Name].stateValues.value).eqls(["*", 2, "x"])
+      expect(stateVariables[copymi4Name].stateValues.value).eqls(["+", "x", "x"])
+
+    });
+
+
+  });
+
   it('copies of composites ignore isPlainMacro and isPlainCopy', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -13101,13 +13220,13 @@ describe('Copy Tag Tests', function () {
 
     cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(0).should('have.text', 'x');
     cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(1).should('have.text', 'y');
-   
+
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      let [macromi1Name, macromi2Name] = stateVariables["/pmacro"].activeChildren.map(x=>x.componentName);
-      let [copymi1Name, copymi2Name] = stateVariables["/pcopy"].activeChildren.map(x=>x.componentName);
- 
+      let [macromi1Name, macromi2Name] = stateVariables["/pmacro"].activeChildren.map(x => x.componentName);
+      let [copymi1Name, copymi2Name] = stateVariables["/pcopy"].activeChildren.map(x => x.componentName);
+
       expect(stateVariables[macromi1Name].componentType).eq('mathInput')
       expect(stateVariables[macromi2Name].componentType).eq('mathInput')
       expect(stateVariables[copymi1Name].componentType).eq('mathInput')
@@ -13116,7 +13235,40 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables[macromi2Name].stateValues.value).eq('y')
       expect(stateVariables[copymi1Name].stateValues.value).eq('x')
       expect(stateVariables[copymi2Name].stateValues.value).eq('y')
-      
+
+    });
+
+
+  });
+
+  it('isPlainCopy does not mean isPlainMacro', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="p1"><math newNamespace name="x">x+<math name="y">y</math></math></p>
+
+    <p name="p2"><copy source="x" assignNames="x2" /></p>
+    
+    <p name="p3">x2/y: $(x2/y)</p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/p1') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
+    cy.get(cesc('#/p2') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
+    cy.get(cesc('#/p3') + " .mjx-mrow").eq(0).should('have.text', 'y');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/x2"].activeChildren.length).eq(2)
+
+      expect(stateVariables["/x2/y"].stateValues.value).eq("y")
+
     });
 
 
