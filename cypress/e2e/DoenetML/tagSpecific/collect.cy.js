@@ -1779,8 +1779,8 @@ describe('Collect Tag Tests', function () {
 
   });
 
-  // main point: when use macro on collection (but not group)
-  // inputs turn into their values
+  // main point: no longer turn inputs into their value 
+  // even with copy a collection with a macro
   it('test macros by collecting inputs and others', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1795,9 +1795,11 @@ describe('Collect Tag Tests', function () {
       <boolean>not $c</boolean>
     </group>
 
-    <p><collect source="_group1" componentTypes="_input math text boolean" /></p>
-    <p>$_collect1</p>
-    <p>$_group1</p>
+    <p name="pcollect1"><collect source="_group1" componentTypes="_input math text boolean" /></p>
+    <p name="pcollect2">$_collect1</p>
+    <p name="pgroup2">$_group1</p>
+    <p name="pcollect3"><copy source="_collect1" /></p>
+    <p name="pgroup3"><copy source="_group1" /></p>
     `}, "*");
     });
 
@@ -1806,43 +1808,59 @@ describe('Collect Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let group1Replacements = stateVariables["/_document1"].activeChildren.slice(3, 16)
-      let collect1Replacements = stateVariables["/_p1"].activeChildren;
-      let collect2Replacements = stateVariables["/_p2"].activeChildren;
-      let group2Replacements = stateVariables["/_p3"].activeChildren;
+      let collect1Replacements = stateVariables["/pcollect1"].activeChildren;
+      let collect2Replacements = stateVariables["/pcollect2"].activeChildren;
+      let group2Replacements = stateVariables["/pgroup2"].activeChildren;
+      let collect3Replacements = stateVariables["/pcollect3"].activeChildren;
+      let group3Replacements = stateVariables["/pgroup3"].activeChildren;
 
 
       expect(group1Replacements.length).eq(13);
       expect(collect1Replacements.length).eq(6);
       expect(collect2Replacements.length).eq(6);
       expect(group2Replacements.length).eq(13);
+      expect(collect3Replacements.length).eq(6);
+      expect(group3Replacements.length).eq(13);
 
       expect(group1Replacements[1].componentType).eq("mathInput");
       expect(stateVariables[group1Replacements[1].componentName].stateValues.value).eq('x');
       expect(collect1Replacements[0].componentType).eq("mathInput");
       expect(stateVariables[collect1Replacements[0].componentName].stateValues.value).eq('x');
-      expect(collect2Replacements[0].componentType).eq("math");
+      expect(collect2Replacements[0].componentType).eq("mathInput");
       expect(stateVariables[collect2Replacements[0].componentName].stateValues.value).eq('x');
       expect(group2Replacements[1].componentType).eq("mathInput");
       expect(stateVariables[group2Replacements[1].componentName].stateValues.value).eq('x');
+      expect(collect3Replacements[0].componentType).eq("mathInput");
+      expect(stateVariables[collect3Replacements[0].componentName].stateValues.value).eq('x');
+      expect(group3Replacements[1].componentType).eq("mathInput");
+      expect(stateVariables[group3Replacements[1].componentName].stateValues.value).eq('x');
 
       expect(group1Replacements[3].componentType).eq("textInput");
       expect(stateVariables[group1Replacements[3].componentName].stateValues.value).eq('hello');
       expect(collect1Replacements[1].componentType).eq("textInput");
       expect(stateVariables[collect1Replacements[1].componentName].stateValues.value).eq('hello');
-      expect(collect2Replacements[1].componentType).eq("text");
+      expect(collect2Replacements[1].componentType).eq("textInput");
       expect(stateVariables[collect2Replacements[1].componentName].stateValues.value).eq('hello');
       expect(group2Replacements[3].componentType).eq("textInput");
       expect(stateVariables[group2Replacements[3].componentName].stateValues.value).eq('hello');
+      expect(collect3Replacements[1].componentType).eq("textInput");
+      expect(stateVariables[collect3Replacements[1].componentName].stateValues.value).eq('hello');
+      expect(group3Replacements[3].componentType).eq("textInput");
+      expect(stateVariables[group3Replacements[3].componentName].stateValues.value).eq('hello');
 
 
       expect(group1Replacements[5].componentType).eq("booleanInput");
       expect(stateVariables[group1Replacements[5].componentName].stateValues.value).eq(false);
       expect(collect1Replacements[2].componentType).eq("booleanInput");
       expect(stateVariables[collect1Replacements[2].componentName].stateValues.value).eq(false);
-      expect(collect2Replacements[2].componentType).eq("boolean");
+      expect(collect2Replacements[2].componentType).eq("booleanInput");
       expect(stateVariables[collect2Replacements[2].componentName].stateValues.value).eq(false);
       expect(group2Replacements[5].componentType).eq("booleanInput");
       expect(stateVariables[group2Replacements[5].componentName].stateValues.value).eq(false);
+      expect(collect3Replacements[2].componentType).eq("booleanInput");
+      expect(stateVariables[collect3Replacements[2].componentName].stateValues.value).eq(false);
+      expect(group3Replacements[5].componentType).eq("booleanInput");
+      expect(stateVariables[group3Replacements[5].componentName].stateValues.value).eq(false);
 
 
       expect(group1Replacements[7].componentType).eq("math");
@@ -1853,6 +1871,10 @@ describe('Collect Tag Tests', function () {
       expect(stateVariables[collect2Replacements[3].componentName].stateValues.value).eqls(["*", 2, "x"]);
       expect(group2Replacements[7].componentType).eq("math");
       expect(stateVariables[group2Replacements[7].componentName].stateValues.value).eqls(["*", 2, "x"]);
+      expect(collect3Replacements[3].componentType).eq("math");
+      expect(stateVariables[collect3Replacements[3].componentName].stateValues.value).eqls(["*", 2, "x"]);
+      expect(group3Replacements[7].componentType).eq("math");
+      expect(stateVariables[group3Replacements[7].componentName].stateValues.value).eqls(["*", 2, "x"]);
 
       expect(group1Replacements[9].componentType).eq("text");
       expect(stateVariables[group1Replacements[9].componentName].stateValues.value).eq('hello there');
@@ -1862,6 +1884,10 @@ describe('Collect Tag Tests', function () {
       expect(stateVariables[collect2Replacements[4].componentName].stateValues.value).eq('hello there');
       expect(group2Replacements[9].componentType).eq("text");
       expect(stateVariables[group2Replacements[9].componentName].stateValues.value).eq('hello there');
+      expect(collect3Replacements[4].componentType).eq("text");
+      expect(stateVariables[collect3Replacements[4].componentName].stateValues.value).eq('hello there');
+      expect(group3Replacements[9].componentType).eq("text");
+      expect(stateVariables[group3Replacements[9].componentName].stateValues.value).eq('hello there');
 
       expect(group1Replacements[11].componentType).eq("boolean");
       expect(stateVariables[group1Replacements[11].componentName].stateValues.value).eq(true);
@@ -1871,6 +1897,10 @@ describe('Collect Tag Tests', function () {
       expect(stateVariables[collect2Replacements[5].componentName].stateValues.value).eq(true);
       expect(group2Replacements[11].componentType).eq("boolean");
       expect(stateVariables[group2Replacements[11].componentName].stateValues.value).eq(true);
+      expect(collect3Replacements[5].componentType).eq("boolean");
+      expect(stateVariables[collect3Replacements[5].componentName].stateValues.value).eq(true);
+      expect(group3Replacements[11].componentType).eq("boolean");
+      expect(stateVariables[group3Replacements[11].componentName].stateValues.value).eq(true);
 
     })
 
@@ -2302,7 +2332,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
       cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
       cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2330,7 +2360,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
       cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
       cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2361,7 +2391,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
       cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
       cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2472,7 +2502,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2502,7 +2532,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2537,7 +2567,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2567,7 +2597,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2597,7 +2627,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2628,7 +2658,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2658,7 +2688,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2689,7 +2719,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2719,7 +2749,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2747,7 +2777,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);

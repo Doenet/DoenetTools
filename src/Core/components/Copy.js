@@ -2974,7 +2974,7 @@ export async function replacementFromProp({ component, components,
 
 
         let primaryEssentialStateVariable = "value";
-        let componentClass = componentInfoObjects.allComponentClasses[createComponentOfType];
+        let componentClass = componentInfoObjects.allComponentClasses[stateVarObj.shadowingInstructions.createComponentOfType];
         if (componentClass.primaryEssentialStateVariable) {
           primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
         } else if (componentClass.primaryStateVariableForDefinition) {

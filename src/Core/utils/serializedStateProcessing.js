@@ -1205,10 +1205,11 @@ function createAttributesFromString(componentAttributes, componentInfoObjects) {
   let newAttributes = componentsForAttributes[0].attributes;
 
   if (newAttributes.prop || newAttributes.propIndex || newAttributes.componentIndex) {
-    return {
-      success: false,
-      message: "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex"
-    }
+    console.warn("Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex")
+    // return {
+    //   success: false,
+    //   message: "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex"
+    // }
   }
   return { success: true, newAttributes }
 }

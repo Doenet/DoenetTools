@@ -8469,7 +8469,8 @@ describe('Curve Tag Bezier Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <curve through="($(_curve1.throughPointX4_1)+1, $(_curve1.throughPointX4_2)+1) (1,2) (3,4) ($(_curve1.throughPointX7_1)+1, $(_curve1.throughPointX7_2+1) (5,7) (-5,7) ($(_curve1.throughPointX10_1)+1, $(_curve1.throughPointX10_2)+1) (3,1) (5,0) (-5,-1)" />
+  <curve through="($(_curve1.throughPointX4_1)+1, $(_curve1.throughPointX4_2)+1) (1,2) (3,4) ($(_curve1.throughPointX7_1)+1, $(_curve1.throughPointX7_2)+1) (5,7) (-5,7) ($(_curve1.throughPointX10_1)+1, $(_curve1.throughPointX10_2)+1) (3,1) (5,0) (-5,-1)" />
+  
   </graph>
 
   <graph name="g2" newNamespace>
