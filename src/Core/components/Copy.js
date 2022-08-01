@@ -2470,12 +2470,13 @@ export async function replacementFromProp({ component, components,
             Object.assign(attributesForReplacement, attributesFromComposite)
 
 
-            let primaryStateVariableForDefinition = "value";
+            let primaryEssentialStateVariable = "value";
             let componentClass = componentInfoObjects.allComponentClasses[createComponentOfType];
-            if (componentClass.primaryStateVariableForDefinition) {
-              primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+            if (componentClass.primaryEssentialStateVariable) {
+              primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
+            } else if (componentClass.primaryStateVariableForDefinition) {
+              primaryEssentialStateVariable = componentClass.primaryStateVariableForDefinition;
             }
-
 
             let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
             if (!Array.isArray(arrayIndex)) {
@@ -2490,7 +2491,7 @@ export async function replacementFromProp({ component, components,
               componentType: createComponentOfType,
               attributes: attributesForReplacement,
               state: {
-                [primaryStateVariableForDefinition]: propStateValue
+                [primaryEssentialStateVariable]: propStateValue
               },
               uniqueIdentifier,
             }
@@ -2666,12 +2667,13 @@ export async function replacementFromProp({ component, components,
               }
 
 
-              let primaryStateVariableForDefinition = "value";
+              let primaryEssentialStateVariable = "value";
               let componentClass = componentInfoObjects.allComponentClasses[createComponentOfType];
-              if (componentClass.primaryStateVariableForDefinition) {
-                primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+              if (componentClass.primaryEssentialStateVariable) {
+                primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
+              } else if (componentClass.primaryStateVariableForDefinition) {
+                primaryEssentialStateVariable = componentClass.primaryStateVariableForDefinition;
               }
-
 
               let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
               if (!Array.isArray(arrayIndex)) {
@@ -2688,7 +2690,7 @@ export async function replacementFromProp({ component, components,
                 componentType: createComponentOfType,
                 attributes: attributesForReplacement,
                 state: {
-                  [primaryStateVariableForDefinition]: propStateValue
+                  [primaryEssentialStateVariable]: propStateValue
                 },
                 uniqueIdentifier,
               }
@@ -2971,18 +2973,19 @@ export async function replacementFromProp({ component, components,
         Object.assign(attributesForReplacement, attributesFromComposite)
 
 
-        let primaryStateVariableForDefinition = "value";
-        let componentClass = componentInfoObjects.allComponentClasses[stateVarObj.shadowingInstructions.createComponentOfType];
-        if (componentClass.primaryStateVariableForDefinition) {
-          primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+        let primaryEssentialStateVariable = "value";
+        let componentClass = componentInfoObjects.allComponentClasses[createComponentOfType];
+        if (componentClass.primaryEssentialStateVariable) {
+          primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
+        } else if (componentClass.primaryStateVariableForDefinition) {
+          primaryEssentialStateVariable = componentClass.primaryStateVariableForDefinition;
         }
-
 
         let serializedComponent = {
           componentType: stateVarObj.shadowingInstructions.createComponentOfType,
           attributes: attributesForReplacement,
           state: {
-            [primaryStateVariableForDefinition]: stateVarValue
+            [primaryEssentialStateVariable]: stateVarValue
           },
           uniqueIdentifier,
         }

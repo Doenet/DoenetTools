@@ -10,6 +10,10 @@ export default class MathComponent extends InlineComponent {
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "unnormalizedValue";
 
+  // for copying a property with link="false"
+  // make sure it doesn't use the essential state variable unnormalizedValue
+  static primaryEssentialStateVariable = "value";
+
   static variableForPlainMacro = "value";
 
   static descendantCompositesMustHaveAReplacement = true;
@@ -607,7 +611,7 @@ export default class MathComponent extends InlineComponent {
     stateVariableDefinitions.valueShadow = {
       defaultValue: me.fromAst('\uff3f'),  // long underscore
       hasEssential: true,
-      essentialVarName: "unnormalizedValue",
+      essentialVarName: "value",
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
