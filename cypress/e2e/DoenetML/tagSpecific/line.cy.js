@@ -9852,6 +9852,9 @@ describe('Line Tag Tests', function () {
     <p><copy source="_line1.points[$n]" assignNames="P1 P2" /></p>
 
     <p><copy source="_line1.point2[$n]" assignNames="x" /></p>
+
+    <p><copy source="_line1.points[2][$n]" assignNames="xa" /></p>
+
     `}, "*");
     });
 
@@ -9864,21 +9867,25 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/P1').should('not.exist');
     cy.get('#\\/P2').should('not.exist');
     cy.get('#\\/x').should('not.exist');
+    cy.get('#\\/xa').should('not.exist');
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
 
     cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
 
     cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('not.exist');
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get('#\\/xa .mjx-mrow').should('not.exist');
 
 
   });

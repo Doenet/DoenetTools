@@ -25,9 +25,9 @@ describe('Spreadsheet Tag Tests', function () {
   <spreadsheet minNumRows="4" minNumColumns="4" />
   <text>a</text>
   <p>
-    <copy prop="cellA1" target="_spreadsheet1" assignNames="A1a" />
-    <copy prop="cellB3" target="_spreadsheet1" assignNames="B3a" />
-    <copy prop="cellD2" target="_spreadsheet1" assignNames="D2a" />
+    <copy prop="cellA1" source="_spreadsheet1" assignNames="A1a" />
+    <copy prop="cellB3" source="_spreadsheet1" assignNames="B3a" />
+    <copy prop="cellD2" source="_spreadsheet1" assignNames="D2a" />
   </p>
   `}, "*");
     });
@@ -81,9 +81,9 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellC1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellC3" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellC1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellC3" source="_spreadsheet1" /></extract>
   <spreadsheet>
   <cell>first</cell>
   <cell colnum="C" rownum="3">hello</cell>
@@ -180,11 +180,11 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellA3" target="_spreadsheet2" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellD3" target="C1" /></extract>
-  <extract prop="text" assignNames="t4"><copy prop="cellD4" target="C2" /></extract>
-  <extract prop="text" assignNames="t5"><copy prop="cellB1" target="C1a" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellA3" source="_spreadsheet2" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellD3" source="C1" /></extract>
+  <extract prop="text" assignNames="t4"><copy prop="cellD4" source="C2" /></extract>
+  <extract prop="text" assignNames="t5"><copy prop="cellB1" source="C1a" /></extract>
 
   <spreadsheet>
   <cell>first</cell>
@@ -195,17 +195,17 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy target="_cell4" assignNames="c4a" />
-  <copy colnum="A" target="_cell2" assignNames="c2a" />
-  <copy target="_cell3" assignNames="c3a" />
-  <copy colnum="2" rownum="4" target="_cell1" assignNames="c1a" />
-  <copy rownum="2" target="_cell5" assignNames="c5a" />
+  <copy source="_cell4" assignNames="c4a" />
+  <copy colnum="A" source="_cell2" assignNames="c2a" />
+  <copy source="_cell3" assignNames="c3a" />
+  <copy colnum="2" rownum="4" source="_cell1" assignNames="c1a" />
+  <copy rownum="2" source="_cell5" assignNames="c5a" />
   </spreadsheet>
 
-  <copy name="C1" target="_spreadsheet1" assignNames="ss1a" />
-  <copy name="C2" target="_spreadsheet2" assignNames="ss2a" />
-  <copy name="C1a" target="C1" assignNames="ss1b" />
-  <copy name="C2a" target="C2" assignNames="ss2b" />
+  <copy name="C1" source="_spreadsheet1" assignNames="ss1a" />
+  <copy name="C2" source="_spreadsheet2" assignNames="ss2a" />
+  <copy name="C1a" source="C1" assignNames="ss1b" />
+  <copy name="C2a" source="C2" assignNames="ss2b" />
   `}, "*");
     });
     cy.get('#\\/_spreadsheet1')//wait for window to load
@@ -363,11 +363,11 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellA3" target="_spreadsheet2" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellD3" target="C1" /></extract>
-  <extract prop="text" assignNames="t4"><copy prop="cellD4" target="C2" /></extract>
-  <extract prop="text" assignNames="t5"><copy prop="cellB1" target="C1a" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellA3" source="_spreadsheet2" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellD3" source="C1" /></extract>
+  <extract prop="text" assignNames="t4"><copy prop="cellD4" source="C2" /></extract>
+  <extract prop="text" assignNames="t5"><copy prop="cellB1" source="C1a" /></extract>
 
   <spreadsheet>
   <cell>first</cell>
@@ -378,17 +378,17 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy prop="cellD4" colnum="D" rownum="4" target="_spreadsheet1" assignNames="c4a" />
-  <copy prop="cellC3" colnum="A" rownum="3" target="_spreadsheet1" assignNames="c2a" />
-  <copy prop="cellD3" target="_spreadsheet1" assignNames="c3a" />
-  <copy prop="cellA1" colnum="2" rownum="4" target="_spreadsheet1" assignNames="c1a" />
-  <copy prop="cellb1" rownum="2" colnum="b" target="_spreadsheet1" assignNames="c5a" />
+  <copy prop="cellD4" colnum="D" rownum="4" source="_spreadsheet1" assignNames="c4a" />
+  <copy prop="cellC3" colnum="A" rownum="3" source="_spreadsheet1" assignNames="c2a" />
+  <copy prop="cellD3" source="_spreadsheet1" assignNames="c3a" />
+  <copy prop="cellA1" colnum="2" rownum="4" source="_spreadsheet1" assignNames="c1a" />
+  <copy prop="cellb1" rownum="2" colnum="b" source="_spreadsheet1" assignNames="c5a" />
   </spreadsheet>
 
-  <copy name="C1" target="_spreadsheet1" assignNames="ss1a" />
-  <copy name="C2" target="_spreadsheet2" assignNames="ss2a" />
-  <copy name="C1a" target="C1" assignNames="ss1b" />
-  <copy name="C2a" target="C2" assignNames="ss2b" />
+  <copy name="C1" source="_spreadsheet1" assignNames="ss1a" />
+  <copy name="C2" source="_spreadsheet2" assignNames="ss2a" />
+  <copy name="C1a" source="C1" assignNames="ss1b" />
+  <copy name="C2a" source="C2" assignNames="ss2b" />
   `}, "*");
     });
 
@@ -503,16 +503,16 @@ describe('Spreadsheet Tag Tests', function () {
                   for (let cellNum in cellLocations) {
                     let cLoc = cellLocations[cellNum][ssNum];
                     if (cellNum < 6 || ssNum == (valueInd2 > 2)) {
-                      if(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== allCellValues[cellNum][valueInd2]) {
+                      if (stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== allCellValues[cellNum][valueInd2]) {
                         return false;
                       }
                     } else {
                       if (ssNum === '1') {
-                        if(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== "") {
+                        if (stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== "") {
                           return false;
                         }
                       } else {
-                        if(stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== allCellValues[cellNum][2]) {
+                        if (stateVariables[ssName].stateValues.cells[cLoc[0] - 1][cLoc[1] - 1] !== allCellValues[cellNum][2]) {
                           return false;
                         }
                       }
@@ -538,8 +538,8 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t7"><copy prop="cellA7" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t7"><copy prop="cellA7" source="_spreadsheet1" /></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell colnum="D">D1</cell></row>
   <row><cell colnum="2">B2</cell><cell>C2</cell></row>
@@ -604,8 +604,8 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t7"><copy prop="cellG1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t7"><copy prop="cellG1" source="_spreadsheet1" /></extract>
   <spreadsheet>
   <column><cell>A1</cell><cell>A2</cell><cell rownum="D">A4</cell></column>
   <column><cell rownum="2">B2</cell><cell>B3</cell></column>
@@ -670,8 +670,8 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellC3" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t8"><copy prop="cellH5" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellC3" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t8"><copy prop="cellH5" source="_spreadsheet1" /></extract>
   <spreadsheet>
   <cellblock rownum="2" colnum="3">
     <row rownum="2"><cell>C3</cell><cell>D3</cell></row>
@@ -753,9 +753,9 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellD3" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellB4" target="_spreadsheet2" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellD3" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellB4" source="_spreadsheet2" /></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
   <column><cell rownum="2">A2</cell><cell>A3</cell><cell>A4</cell></column>
@@ -768,9 +768,9 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy prop="rangeC3D4" target="_spreadsheet1" />
-  <copy prop="range((1,1),(4,2))" target="_spreadsheet1" />
-  <copy prop="rangeD2C1" rownum="3" colnum="1" target="_spreadsheet1" />
+  <copy prop="rangeC3D4" source="_spreadsheet1" />
+  <copy prop="range((1,1),(4,2))" source="_spreadsheet1" />
+  <copy prop="rangeD2C1" rownum="3" colnum="1" source="_spreadsheet1" />
   </spreadsheet>
   `}, "*");
     });
@@ -850,9 +850,9 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellD2" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellE4" target="_spreadsheet2" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellD2" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellE4" source="_spreadsheet2" /></extract>
   <spreadsheet>
   <row><cell>A1</cell><cell>B1</cell><cell>C1</cell></row>
   <column><cell rownum="2">A2</cell><cell>A3</cell><cell>A4</cell></column>
@@ -865,10 +865,10 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy prop="row2" rownum="3" target="_spreadsheet1" />
-  <copy prop="column3" colnum="5" target="_spreadsheet1" />
-  <copy prop="rowA" target="_spreadsheet1" />
-  <copy prop="columnB" target="_spreadsheet1" />
+  <copy prop="row2" rownum="3" source="_spreadsheet1" />
+  <copy prop="column3" colnum="5" source="_spreadsheet1" />
+  <copy prop="rowA" source="_spreadsheet1" />
+  <copy prop="columnB" source="_spreadsheet1" />
   </spreadsheet>
   `}, "*");
     });
@@ -960,9 +960,9 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellC2" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellD5" target="_spreadsheet2" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellC2" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellD5" source="_spreadsheet2" /></extract>
   <spreadsheet minNumRows="3" minNumColumns="3">
   <cell>A1</cell><cell>B1</cell><cell>C1</cell>
   <cell rownum="2" colnum="1">A2</cell><cell>B2</cell><cell>C2</cell>
@@ -970,7 +970,7 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
 
   <spreadsheet>
-  <copy prop="cells" rownum="3" colnum="2" target="_spreadsheet1" />
+  <copy prop="cells" rownum="3" colnum="2" source="_spreadsheet1" />
   </spreadsheet>
   `}, "*");
     });
@@ -1039,9 +1039,9 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellE1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellF2" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellE4" target="_spreadsheet2" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellE1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellF2" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellE4" source="_spreadsheet2" /></extract>
   <spreadsheet>
   <cell colnum="5">alpha</cell>
   <cell>beta</cell>
@@ -1049,9 +1049,9 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
   
   <spreadsheet>
-  <copy prop="rangeE1F2" target="_spreadsheet1" />
-  <copy prop="rangeE1F2" colnum="4" target="_spreadsheet1" />
-  <copy prop="rangeE1F2" rownum="3" target="_spreadsheet1" />
+  <copy prop="rangeE1F2" source="_spreadsheet1" />
+  <copy prop="rangeE1F2" colnum="4" source="_spreadsheet1" />
+  <copy prop="rangeE1F2" rownum="3" source="_spreadsheet1" />
   </spreadsheet>  
   `}, "*");
     });
@@ -1135,11 +1135,11 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t2"><copy prop="cellB3" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t3"><copy prop="cellA4" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t4"><copy prop="cellD2" target="_spreadsheet1" /></extract>
-  <extract prop="text" assignNames="t5"><copy prop="cellA2" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t2"><copy prop="cellB3" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t3"><copy prop="cellA4" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t4"><copy prop="cellD2" source="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t5"><copy prop="cellA2" source="_spreadsheet1" /></extract>
   <spreadsheet minNumRows="4" minNumColumns="4">
   <cell>(1,2)</cell>
   <cell>hello</cell>
@@ -1147,23 +1147,23 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
   
   <graph name="inAllCells">
-    <copy prop="pointsInCells" target="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInCells" source="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   <graph name="inCellB3">
-    <copy prop="pointsInCellB3" target="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInCellB3" source="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   <graph name="inRow2">
-    <copy prop="pointsInRow2" target="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInRow2" source="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   <graph name="inColumn1">
-    <copy prop="pointsInColumn1" target="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInColumn1" source="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   <graph name="inRangeA2B4">
-    <copy prop="pointsInRangeA2B4" target="_spreadsheet1" removeEmptyArrayEntries />
+    <copy prop="pointsInRangeA2B4" source="_spreadsheet1" removeEmptyArrayEntries />
   </graph>
 
   `}, "*");
@@ -1442,7 +1442,7 @@ describe('Spreadsheet Tag Tests', function () {
   </spreadsheet>
   
   <p>
-    <copy prop="cellD1" target="_spreadsheet1" assignNames="D1a" />
+    <copy prop="cellD1" source="_spreadsheet1" assignNames="D1a" />
   </p>
 
 
@@ -1498,24 +1498,24 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="cellC1" target="_spreadsheet1" createComponentOfType="cell" />
-    <copy prop="cellE1" target="_spreadsheet1" createComponentOfType="cell" />
+    <copy prop="cellC1" source="_spreadsheet1" createComponentOfType="cell" />
+    <copy prop="cellE1" source="_spreadsheet1" createComponentOfType="cell" />
     <cell>first</cell>
-    <copy prop="cellB1" target="_spreadsheet1" createComponentOfType="cell" />
-    <copy prop="cellC1" target="_spreadsheet1" createComponentOfType="cell" />
+    <copy prop="cellB1" source="_spreadsheet1" createComponentOfType="cell" />
+    <copy prop="cellC1" source="_spreadsheet1" createComponentOfType="cell" />
 
     <row rownum="2">
-      <copy colnum="2" prop="cellC2" target="_spreadsheet1" />
-      <copy prop="cellD2" target="_spreadsheet1" />
-      <copy prop="cellE2" target="_spreadsheet1" />
-      <copy prop="cellF2" target="_spreadsheet1" />
-      <copy prop="cellA3" target="_spreadsheet1" />
+      <copy colnum="2" prop="cellC2" source="_spreadsheet1" />
+      <copy prop="cellD2" source="_spreadsheet1" />
+      <copy prop="cellE2" source="_spreadsheet1" />
+      <copy prop="cellF2" source="_spreadsheet1" />
+      <copy prop="cellA3" source="_spreadsheet1" />
     </row>
   </spreadsheet>
  
-  <copy assignNames"s2" target="_spreadsheet1" />
+  <copy assignNames"s2" source="_spreadsheet1" />
 
   `}, "*");
     });
@@ -1620,17 +1620,17 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy rownum="2" prop="cellC3" target="_spreadsheet1" />
+    <copy rownum="2" prop="cellC3" source="_spreadsheet1" />
     <cell rownum="3" colnum="B">first</cell>
-    <copy prop="cellB3" target="_spreadsheet1" />
-    <copy prop="cellA1" target="_spreadsheet1" />
-    <copy rownum="5" colnum="2" prop="rangeA1C3" target="_spreadsheet1" />
-    <copy prop="column2" colnum="5" target="_spreadsheet1" />
+    <copy prop="cellB3" source="_spreadsheet1" />
+    <copy prop="cellA1" source="_spreadsheet1" />
+    <copy rownum="5" colnum="2" prop="rangeA1C3" source="_spreadsheet1" />
+    <copy prop="column2" colnum="5" source="_spreadsheet1" />
   </spreadsheet>
 
-  <copy name="s2" target="_spreadsheet1" />
+  <copy name="s2" source="_spreadsheet1" />
   `}, "*");
     });
 
@@ -1818,16 +1818,16 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="rowC" target="_spreadsheet1" />
-    <copy prop="rowE" target="_spreadsheet1" />
+    <copy prop="rowC" source="_spreadsheet1" />
+    <copy prop="rowE" source="_spreadsheet1" />
     <row><cell>first</cell><cell>second</cell><cell colnum="6">sixth</cell></row>
-    <copy prop="rowB" target="_spreadsheet1" />
-    <copy prop="rowC" target="_spreadsheet1" />
+    <copy prop="rowB" source="_spreadsheet1" />
+    <copy prop="rowC" source="_spreadsheet1" />
   </spreadsheet>
 
-  <copy name="s2" target="_spreadsheet1" />
+  <copy name="s2" source="_spreadsheet1" />
   `}, "*");
     });
 
@@ -1905,16 +1905,16 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="columnC" target="_spreadsheet1" />
-    <copy prop="columnE" target="_spreadsheet1" />
+    <copy prop="columnC" source="_spreadsheet1" />
+    <copy prop="columnE" source="_spreadsheet1" />
     <column><cell>first</cell><cell>second</cell><cell rownum="6">sixth</cell></column>
-    <copy prop="columnB" target="_spreadsheet1" />
-    <copy prop="columnC" target="_spreadsheet1" />
+    <copy prop="columnB" source="_spreadsheet1" />
+    <copy prop="columnC" source="_spreadsheet1" />
   </spreadsheet>
 
-  <copy name="s2" target="_spreadsheet1" />
+  <copy name="s2" source="_spreadsheet1" />
   `}, "*");
     });
 
@@ -1993,19 +1993,19 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellF1" target="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellF1" source="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="rangeE1F2" target="_spreadsheet1" />
+    <copy prop="rangeE1F2" source="_spreadsheet1" />
     <cellblock>
       <row><cell>a</cell><cell>b</cell></row>
       <row><cell>c</cell><cell>d</cell></row>
       <row><cell>e</cell><cell>f</cell></row>
       <row><cell>g</cell><cell>h</cell></row>
     </cellblock>
-    <copy prop="rangeC1D3" target="_spreadsheet1" />
+    <copy prop="rangeC1D3" source="_spreadsheet1" />
   </spreadsheet>
 
-  <copy name="s2" target="_spreadsheet1" />
+  <copy name="s2" source="_spreadsheet1" />
   `}, "*");
     });
 
@@ -2160,26 +2160,26 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy rownum="2" colnum="1" prop="cellC3" target="_spreadsheet2" />
-    <copy prop="cellA2" target="_spreadsheet2" />
-    <copy prop="cellB2" target="_spreadsheet2" />
-    <copy prop="cellC2" target="_spreadsheet2" />
-    <copy prop="cellD2" target="_spreadsheet2" />
-    <copy prop="row2" rownum="4" target="_spreadsheet2" />
-    <copy prop="rangeB2D4" rownum="5" colnum="4" target="_spreadsheet2" />
+    <copy rownum="2" colnum="1" prop="cellC3" source="_spreadsheet2" />
+    <copy prop="cellA2" source="_spreadsheet2" />
+    <copy prop="cellB2" source="_spreadsheet2" />
+    <copy prop="cellC2" source="_spreadsheet2" />
+    <copy prop="cellD2" source="_spreadsheet2" />
+    <copy prop="row2" rownum="4" source="_spreadsheet2" />
+    <copy prop="rangeB2D4" rownum="5" colnum="4" source="_spreadsheet2" />
     <cell rownum="3" colnum="C">first</cell>
   </spreadsheet>
 
   <spreadsheet>
-    <copy rownum="2" colnum="1" prop="cellC3" target="_spreadsheet1" />
-    <copy prop="cellA2" target="_spreadsheet1" />
-    <copy prop="cellB2" target="_spreadsheet1" />
-    <copy prop="cellC2" target="_spreadsheet1" />
-    <copy prop="cellD2" target="_spreadsheet1" />
-    <copy prop="row2" rownum="4" target="_spreadsheet1" />
-    <copy prop="rangeB2D4" rownum="5" colnum="4" target="_spreadsheet1" />
+    <copy rownum="2" colnum="1" prop="cellC3" source="_spreadsheet1" />
+    <copy prop="cellA2" source="_spreadsheet1" />
+    <copy prop="cellB2" source="_spreadsheet1" />
+    <copy prop="cellC2" source="_spreadsheet1" />
+    <copy prop="cellD2" source="_spreadsheet1" />
+    <copy prop="row2" rownum="4" source="_spreadsheet1" />
+    <copy prop="rangeB2D4" rownum="5" colnum="4" source="_spreadsheet1" />
   </spreadsheet>
   `}, "*");
     });
@@ -2370,13 +2370,13 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet>
-    <copy prop="cellQ1" target="_spreadsheet1" />
-    <copy prop="rangeE6F8" target="_spreadsheet1" />
-    <copy rownum="4" prop="row10" target="_spreadsheet1" />
-    <copy rownum="5" prop="row8" target="_spreadsheet2" />
-    <copy rownum="2" colnum="4" prop="cellG2" target="_spreadsheet2" />
+    <copy prop="cellQ1" source="_spreadsheet1" />
+    <copy prop="rangeE6F8" source="_spreadsheet1" />
+    <copy rownum="4" prop="row10" source="_spreadsheet1" />
+    <copy rownum="5" prop="row8" source="_spreadsheet2" />
+    <copy rownum="2" colnum="4" prop="cellG2" source="_spreadsheet2" />
   </spreadsheet>
  
   <spreadsheet></spreadsheet>
@@ -2476,13 +2476,13 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet minNumRows="4" minNumColumns="4">
-    <cell><copy prop="numRows" target="_spreadsheet1" /></cell>
-    <cell><copy prop="numColumns" target="_spreadsheet1" /></cell>
+    <cell><copy prop="numRows" source="_spreadsheet1" /></cell>
+    <cell><copy prop="numColumns" source="_spreadsheet1" /></cell>
   </spreadsheet>
 
-  <copy name="s2" target="_spreadsheet1" />
+  <copy name="s2" source="_spreadsheet1" />
   `}, "*");
     });
 
@@ -2572,13 +2572,13 @@ describe('Spreadsheet Tag Tests', function () {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
-  <extract prop="text"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet>
-    <numRows><copy prop="cellA1" target="_spreadsheet1" /></numRows>
-    <numColumns><copy prop="cellB1" target="_spreadsheet1" /></numColumns>
+    <numRows><copy prop="cellA1" source="_spreadsheet1" /></numRows>
+    <numColumns><copy prop="cellB1" source="_spreadsheet1" /></numColumns>
   </spreadsheet>
 
-  <copy name="s2" target="_spreadsheet1" />
+  <copy name="s2" source="_spreadsheet1" />
   `}, "*");
     });
 
@@ -2672,18 +2672,18 @@ describe('Spreadsheet Tag Tests', function () {
   <cell>1</cell>
 </spreadsheet>
 
-<p><copy prop="cellA1" target="_spreadsheet1" /> A</p>
+<p><copy prop="cellA1" source="_spreadsheet1" /> A</p>
 
 <p><aslist>
-  <math simplify><copy prop="cellA1" target="_spreadsheet1" />+1</math>
-  <number><copy prop="cellA1" target="_spreadsheet1" />+1</number>
-  <text><copy prop="cellA1" target="_spreadsheet1" /> B</text>
+  <math simplify><copy prop="cellA1" source="_spreadsheet1" />+1</math>
+  <number><copy prop="cellA1" source="_spreadsheet1" />+1</number>
+  <text><copy prop="cellA1" source="_spreadsheet1" /> B</text>
 </aslist></p>
 
 <p><aslist>
-  <math simplify><copy prop="cellA1" target="_spreadsheet1" />+<copy prop="cellA2" target="_spreadsheet1" /></math>
-  <number><copy prop="cellA1" target="_spreadsheet1" />+<copy prop="cellA2" target="_spreadsheet1" /></number>
-  <text><copy prop="cellA1" target="_spreadsheet1" /> + <copy prop="cellA2" target="_spreadsheet1" /></text>
+  <math simplify><copy prop="cellA1" source="_spreadsheet1" />+<copy prop="cellA2" source="_spreadsheet1" /></math>
+  <number><copy prop="cellA1" source="_spreadsheet1" />+<copy prop="cellA2" source="_spreadsheet1" /></number>
+  <text><copy prop="cellA1" source="_spreadsheet1" /> + <copy prop="cellA2" source="_spreadsheet1" /></text>
 </aslist></p>
   `}, "*");
     });
@@ -2796,18 +2796,18 @@ describe('Spreadsheet Tag Tests', function () {
   <cell>1</cell><cell>2</cell>
 </spreadsheet>
 
-<copy prop="cellB1" target="s" assignNames="c1" />
-<copy prop="cellA1" target="s" assignNames="c2" />
+<copy prop="cellB1" source="s" assignNames="c1" />
+<copy prop="cellA1" source="s" assignNames="c2" />
 
 <tabular>
   <row>
-    <copy prop="cellB1" target="s" />
+    <copy prop="cellB1" source="s" />
     <cell>Hello</cell>
-    <copy prop="cellB2" target="s" />
+    <copy prop="cellB2" source="s" />
   </row>
   <row>
     <cell>Bye</cell>
-    <copy target="s" prop="cellA1" />
+    <copy source="s" prop="cellA1" />
   </row>
 </tabular>
 
@@ -2838,13 +2838,13 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <spreadsheet>
-  <cell>1</cell><cell><math simplify><copy fixed target="x" />+<copy prop="cellA2" target="_spreadsheet1" /></math></cell>
+  <cell>1</cell><cell><math simplify><copy fixed source="x" />+<copy prop="cellA2" source="_spreadsheet1" /></math></cell>
   <cell rownum="2" colnum="1">3</cell>
-  <cell><math simplify><copy prop="cellA1" fixed target="_spreadsheet1" /> + <copy prop="cellC2" target="_spreadsheet1" /></math></cell>
+  <cell><math simplify><copy prop="cellA1" fixed source="_spreadsheet1" /> + <copy prop="cellC2" source="_spreadsheet1" /></math></cell>
   <cell>5</cell>
 </spreadsheet>
 
-<math name="x" simplify><copy prop="cellA1" target="_spreadsheet1" />+1</math>
+<math name="x" simplify><copy prop="cellA1" source="_spreadsheet1" />+1</math>
   `}, "*");
     });
     cy.get('#\\/_spreadsheet1')//wait for window to load
@@ -2928,7 +2928,7 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet>
   <cell name="coords" prefill="(1,2)" />
   </spreadsheet>
@@ -2957,7 +2957,7 @@ describe('Spreadsheet Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <extract prop="text" assignNames="t1"><copy prop="cellA1" target="_spreadsheet1" /></extract>
+  <extract prop="text" assignNames="t1"><copy prop="cellA1" source="_spreadsheet1" /></extract>
   <spreadsheet>
   <cell name="coords" ><math>(1,2)</math></cell>
   </spreadsheet>
@@ -2996,20 +2996,20 @@ describe('Spreadsheet Tag Tests', function () {
 
     <p><mathinput name="n" /></p>
 
-    <extract prop="text" assignNames="R1"><copy prop="cellA1" target="_spreadsheet2" /></extract>
-    <extract prop="text" assignNames="R2"><copy prop="cellB1" target="_spreadsheet2" /></extract>
-    <extract prop="text" assignNames="R3"><copy prop="cellC1" target="_spreadsheet2" /></extract>
+    <extract prop="text" assignNames="R1"><copy prop="cellA1" source="_spreadsheet2" /></extract>
+    <extract prop="text" assignNames="R2"><copy prop="cellB1" source="_spreadsheet2" /></extract>
+    <extract prop="text" assignNames="R3"><copy prop="cellC1" source="_spreadsheet2" /></extract>
   
     <spreadsheet minNumRows="0" minNumColumns="0">
-      <copy prop="row1" target="_spreadsheet1" propIndex="$n" />
+      <copy prop="row1" source="_spreadsheet1" propIndex="$n" />
     </spreadsheet>
 
-    <extract prop="text" assignNames="C1"><copy prop="cellA1" target="_spreadsheet3" /></extract>
-    <extract prop="text" assignNames="C2"><copy prop="cellA2" target="_spreadsheet3" /></extract>
-    <extract prop="text" assignNames="C3"><copy prop="cellA3" target="_spreadsheet3" /></extract>
+    <extract prop="text" assignNames="C1"><copy prop="cellA1" source="_spreadsheet3" /></extract>
+    <extract prop="text" assignNames="C2"><copy prop="cellA2" source="_spreadsheet3" /></extract>
+    <extract prop="text" assignNames="C3"><copy prop="cellA3" source="_spreadsheet3" /></extract>
 
     <spreadsheet minNumRows="0" minNumColumns="0">
-      <copy prop="column2" target="_spreadsheet1" propIndex="$n" />
+      <copy prop="column2" source="_spreadsheet1" propIndex="$n" />
     </spreadsheet>
     `}, "*");
     });
@@ -3062,6 +3062,330 @@ describe('Spreadsheet Tag Tests', function () {
 
   });
 
+  it('copy propIndex of cells, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>A</cell><cell>B</cell><cell>C</cell></row>
+      <row><cell>D</cell><cell>E</cell><cell>F</cell></row>
+      <row><cell>G</cell><cell>H</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <copy assignNames="R1" source="_spreadsheet2.cellA1.text" />
+    <copy assignNames="R2" source="_spreadsheet2.cellB1.text" />
+    <copy assignNames="R3" source="_spreadsheet2.cellC1.text" />
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.row1[$n]" />
+    </spreadsheet>
+
+    <copy assignNames="C1" source="_spreadsheet3.cellA1.text" />
+    <copy assignNames="C2" source="_spreadsheet3.cellA2.text" />
+    <copy assignNames="C3" source="_spreadsheet3.cellA3.text" />
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.column2[$n]" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let row = ["A", "B", "C"];
+    let column = ["B", "E", "H"];
+
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[1]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[1]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[2]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[2]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+
+  it('copy multidimensional propIndex of cells, array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>A</cell><cell>B</cell><cell>C</cell></row>
+      <row><cell>D</cell><cell>E</cell><cell>F</cell></row>
+      <row><cell>G</cell><cell>H</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <copy assignNames="R1" source="_spreadsheet2.cellA1.text" />
+    <copy assignNames="R2" source="_spreadsheet2.cellB1.text" />
+    <copy assignNames="R3" source="_spreadsheet2.cellC1.text" />
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.cells[1][$n]" />
+    </spreadsheet>
+
+    <copy assignNames="C1" source="_spreadsheet3.cellA1.text" />
+    <copy assignNames="C2" source="_spreadsheet3.cellA2.text" />
+    <copy assignNames="C3" source="_spreadsheet3.cellA3.text" />
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.cells[$n][2]" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let row = ["A", "B", "C"];
+    let column = ["B", "E", "H"];
+
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[1]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[1]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[2]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[2]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+
+  it('copy multidimensional propIndex of rows and columns, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>A</cell><cell>B</cell><cell>C</cell></row>
+      <row><cell>D</cell><cell>E</cell><cell>F</cell></row>
+      <row><cell>G</cell><cell>H</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <copy assignNames="R1" source="_spreadsheet2.cellA1.text" />
+    <copy assignNames="R2" source="_spreadsheet2.cellB1.text" />
+    <copy assignNames="R3" source="_spreadsheet2.cellC1.text" />
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.rows[1][$n]" />
+    </spreadsheet>
+
+    <copy assignNames="C1" source="_spreadsheet3.cellA1.text" />
+    <copy assignNames="C2" source="_spreadsheet3.cellA2.text" />
+    <copy assignNames="C3" source="_spreadsheet3.cellA3.text" />
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.columns[2][$n]" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let row = ["A", "B", "C"];
+    let column = ["B", "E", "H"];
+
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[1]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[1]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[2]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[2]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+
+  it('copy single propIndex of rows and columns, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>A</cell><cell>B</cell><cell>C</cell></row>
+      <row><cell>D</cell><cell>E</cell><cell>F</cell></row>
+      <row><cell>G</cell><cell>H</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <copy assignNames="R1" source="_spreadsheet2.cellA1.text" />
+    <copy assignNames="R2" source="_spreadsheet2.cellB1.text" />
+    <copy assignNames="R3" source="_spreadsheet2.cellC1.text" />
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.rows[$n]" />
+    </spreadsheet>
+
+    <copy assignNames="C1" source="_spreadsheet3.cellA1.text" />
+    <copy assignNames="C2" source="_spreadsheet3.cellA2.text" />
+    <copy assignNames="C3" source="_spreadsheet3.cellA3.text" />
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.columns[$n]" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let rows = [["A", "B", "C"], ["D", "E", "F"], ["G", "H", "I"]];
+    let columns = [["A", "D", "G"], ["B", "E", "H"], ["C", "F", "I"]];
+
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', rows[0][0]);
+    cy.get('#\\/R2').should('have.text', rows[0][1]);
+    cy.get('#\\/R3').should('have.text', rows[0][2]);
+    cy.get('#\\/C1').should('have.text', columns[0][0]);
+    cy.get('#\\/C2').should('have.text', columns[0][1]);
+    cy.get('#\\/C3').should('have.text', columns[0][2]);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', rows[1][0]);
+    cy.get('#\\/R2').should('have.text', rows[1][1]);
+    cy.get('#\\/R3').should('have.text', rows[1][2]);
+    cy.get('#\\/C1').should('have.text', columns[1][0]);
+    cy.get('#\\/C2').should('have.text', columns[1][1]);
+    cy.get('#\\/C3').should('have.text', columns[1][2]);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', rows[2][0]);
+    cy.get('#\\/R2').should('have.text', rows[2][1]);
+    cy.get('#\\/R3').should('have.text', rows[2][2]);
+    cy.get('#\\/C1').should('have.text', columns[2][0]);
+    cy.get('#\\/C2').should('have.text', columns[2][1]);
+    cy.get('#\\/C3').should('have.text', columns[2][2]);
+
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+
   it('copy propIndex of evaluated cells', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -3077,20 +3401,20 @@ describe('Spreadsheet Tag Tests', function () {
 
     <p><mathinput name="n" /></p>
 
-    <extract prop="text" assignNames="R1"><copy prop="evaluatedCellA1" target="_spreadsheet2" /></extract>
-    <extract prop="text" assignNames="R2"><copy prop="evaluatedCellB1" target="_spreadsheet2" /></extract>
-    <extract prop="text" assignNames="R3"><copy prop="evaluatedCellC1" target="_spreadsheet2" /></extract>
+    <copy assignNames="R1" source="_spreadsheet2.evaluatedCellA1.text" />
+    <copy assignNames="R2" source="_spreadsheet2.evaluatedCellB1.text" />
+    <copy assignNames="R3" source="_spreadsheet2.evaluatedCellC1.text" />
   
     <spreadsheet minNumRows="0" minNumColumns="0">
-      <copy prop="evaluatedRow1" target="_spreadsheet1" propIndex="$n" />
+      <copy prop="evaluatedRow1" source="_spreadsheet1" propIndex="$n" />
     </spreadsheet>
 
-    <extract prop="text" assignNames="C1"><copy prop="evaluatedCellA1" target="_spreadsheet3" /></extract>
-    <extract prop="text" assignNames="C2"><copy prop="evaluatedCellA2" target="_spreadsheet3" /></extract>
-    <extract prop="text" assignNames="C3"><copy prop="evaluatedCellA3" target="_spreadsheet3" /></extract>
+    <copy assignNames="C1" source="_spreadsheet3.evaluatedCellA1.text" />
+    <copy assignNames="C2" source="_spreadsheet3.evaluatedCellA2.text" />
+    <copy assignNames="C3" source="_spreadsheet3.evaluatedCellA3.text" />
 
     <spreadsheet minNumRows="0" minNumColumns="0">
-      <copy prop="evaluatedColumn2" target="_spreadsheet1" propIndex="$n" />
+      <copy prop="evaluatedColumn2" source="_spreadsheet1" propIndex="$n" />
     </spreadsheet>
     `}, "*");
     });
@@ -3143,6 +3467,330 @@ describe('Spreadsheet Tag Tests', function () {
 
   });
 
+  it('copy propIndex of evaluated cells, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>1</cell><cell>2</cell><cell>=A1+B1</cell></row>
+      <row><cell>D</cell><cell>5</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>=B1+B2</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+    <copy assignNames="R1" source="_spreadsheet2.evaluatedCellA1.text" />
+    <copy assignNames="R2" source="_spreadsheet2.evaluatedCellB1.text" />
+    <copy assignNames="R3" source="_spreadsheet2.evaluatedCellC1.text" />
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.evaluatedRow1[$n]" />
+    </spreadsheet>
+
+    <copy assignNames="C1" source="_spreadsheet3.evaluatedCellA1.text" />
+    <copy assignNames="C2" source="_spreadsheet3.evaluatedCellA2.text" />
+    <copy assignNames="C3" source="_spreadsheet3.evaluatedCellA3.text" />
+
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.evaluatedColumn2[$n]" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let row = ["1", "2", "3"];
+    let column = ["2", "5", "7"];
+
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[1]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[1]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[2]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[2]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+ 
+  it('copy multidimensional propIndex of evaluated cells, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>1</cell><cell>2</cell><cell>=A1+B1</cell></row>
+      <row><cell>D</cell><cell>5</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>=B1+B2</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+    <copy assignNames="R1" source="_spreadsheet2.evaluatedCellA1.text" />
+    <copy assignNames="R2" source="_spreadsheet2.evaluatedCellB1.text" />
+    <copy assignNames="R3" source="_spreadsheet2.evaluatedCellC1.text" />
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.evaluatedCells[1][$n]" />
+    </spreadsheet>
+
+    <copy assignNames="C1" source="_spreadsheet3.evaluatedCellA1.text" />
+    <copy assignNames="C2" source="_spreadsheet3.evaluatedCellA2.text" />
+    <copy assignNames="C3" source="_spreadsheet3.evaluatedCellA3.text" />
+
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.evaluatedCells[$n][2]" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let row = ["1", "2", "3"];
+    let column = ["2", "5", "7"];
+
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[1]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[1]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[2]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[2]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+  
+  it('copy multidimensional propIndex of evaluated rows and columns, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>1</cell><cell>2</cell><cell>=A1+B1</cell></row>
+      <row><cell>D</cell><cell>5</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>=B1+B2</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+    <copy assignNames="R1" source="_spreadsheet2.evaluatedCellA1.text" />
+    <copy assignNames="R2" source="_spreadsheet2.evaluatedCellB1.text" />
+    <copy assignNames="R3" source="_spreadsheet2.evaluatedCellC1.text" />
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.evaluatedRows[1][$n]" />
+    </spreadsheet>
+
+    <copy assignNames="C1" source="_spreadsheet3.evaluatedCellA1.text" />
+    <copy assignNames="C2" source="_spreadsheet3.evaluatedCellA2.text" />
+    <copy assignNames="C3" source="_spreadsheet3.evaluatedCellA3.text" />
+
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.evaluatedColumns[2][$n]" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let row = ["1", "2", "3"];
+    let column = ["2", "5", "7"];
+
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[0]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[0]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[1]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[1]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', row[2]);
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('have.text', column[2]);
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+  
+  it('copy single propIndex of evaluated rows and columns, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>1</cell><cell>2</cell><cell>=A1+B1</cell></row>
+      <row><cell>D</cell><cell>5</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>=B1+B2</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+    <copy assignNames="R1" source="_spreadsheet2.evaluatedCellA1.text" />
+    <copy assignNames="R2" source="_spreadsheet2.evaluatedCellB1.text" />
+    <copy assignNames="R3" source="_spreadsheet2.evaluatedCellC1.text" />
+  
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.evaluatedRows[$n]" />
+    </spreadsheet>
+
+    <copy assignNames="C1" source="_spreadsheet3.evaluatedCellA1.text" />
+    <copy assignNames="C2" source="_spreadsheet3.evaluatedCellA2.text" />
+    <copy assignNames="C3" source="_spreadsheet3.evaluatedCellA3.text" />
+
+
+    <spreadsheet minNumRows="0" minNumColumns="0">
+      <copy source="_spreadsheet1.evaluatedColumns[$n]" />
+    </spreadsheet>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let rows = [["1", "2", "3"], ["D", "5", "F"], ["F", "7", "I"]];
+    let columns = [["1", "D", "F"], ["2", "5", "7"], ["3", "F", "I"]];
+
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', rows[0][0]);
+    cy.get('#\\/R2').should('have.text', rows[0][1]);
+    cy.get('#\\/R3').should('have.text', rows[0][2]);
+    cy.get('#\\/C1').should('have.text', columns[0][0]);
+    cy.get('#\\/C2').should('have.text', columns[0][1]);
+    cy.get('#\\/C3').should('have.text', columns[0][2]);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', rows[1][0]);
+    cy.get('#\\/R2').should('have.text', rows[1][1]);
+    cy.get('#\\/R3').should('have.text', rows[1][2]);
+    cy.get('#\\/C1').should('have.text', columns[1][0]);
+    cy.get('#\\/C2').should('have.text', columns[1][1]);
+    cy.get('#\\/C3').should('have.text', columns[1][2]);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/R1').should('have.text', rows[2][0]);
+    cy.get('#\\/R2').should('have.text', rows[2][1]);
+    cy.get('#\\/R3').should('have.text', rows[2][2]);
+    cy.get('#\\/C1').should('have.text', columns[2][0]);
+    cy.get('#\\/C2').should('have.text', columns[2][1]);
+    cy.get('#\\/C3').should('have.text', columns[2][2]);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
+
+
+  });
+ 
   it('copy propIndex of points in cells', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -3158,9 +3806,151 @@ describe('Spreadsheet Tag Tests', function () {
 
     <p><mathinput name="n" /></p>
 
-    <p><copy prop="pointsInRow1" target="_spreadsheet1" propIndex="$n" assignNames="P1 P2 P3" removeEmptyArrayEntries /></p>
+    <p><copy prop="pointsInRow1" source="_spreadsheet1" propIndex="$n" assignNames="P1 P2 P3" removeEmptyArrayEntries /></p>
 
-    <p><copy prop="pointsInColumn2" target="_spreadsheet1" propIndex="$n" assignNames="P4 P5 P6" removeEmptyArrayEntries /></p>
+    <p><copy prop="pointsInColumn2" source="_spreadsheet1" propIndex="$n" assignNames="P4 P5 P6" removeEmptyArrayEntries /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let c1 = "(1,2)";
+    let c2 = "(3,4)";
+    let c3 = "(5,6)";
+    let c4 = "(7,8)";
+
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c2);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c4);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+
+  });
+ 
+  it('copy propIndex of points in cells, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>(1,2)</cell><cell>B</cell><cell>(3,4)</cell></row>
+      <row><cell>D</cell><cell>(5,6)</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>(7,8)</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <p><copy source="_spreadsheet1.pointsInRow1[$n]" assignNames="P1 P2 P3" removeEmptyArrayEntries /></p>
+
+    <p><copy source="_spreadsheet1.pointsInColumn2[$n]" assignNames="P4 P5 P6" removeEmptyArrayEntries /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let c1 = "(1,2)";
+    let c2 = "(3,4)";
+    let c3 = "(5,6)";
+    let c4 = "(7,8)";
+
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c2);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c4);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+
+  });
+ 
+  it('copy multidimensional propIndex of points in cells, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>(1,2)</cell><cell>B</cell><cell>(3,4)</cell></row>
+      <row><cell>D</cell><cell>(5,6)</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>(7,8)</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <p><copy source="_spreadsheet1.pointsInCells[1][$n]" assignNames="P1 P2 P3" removeEmptyArrayEntries /></p>
+
+    <p><copy source="_spreadsheet1.pointsInCells[$n][2]" assignNames="P4 P5 P6" removeEmptyArrayEntries /></p>
     `}, "*");
     });
 
@@ -3214,6 +4004,147 @@ describe('Spreadsheet Tag Tests', function () {
 
   });
 
+  it('copy multidimensional propIndex of points in rows and columns, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>(1,2)</cell><cell>B</cell><cell>(3,4)</cell></row>
+      <row><cell>D</cell><cell>(5,6)</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>(7,8)</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <p><copy source="_spreadsheet1.pointsInRows[1][$n]" assignNames="P1 P2 P3" removeEmptyArrayEntries /></p>
+
+    <p><copy source="_spreadsheet1.pointsInColumns[2][$n]" assignNames="P4 P5 P6" removeEmptyArrayEntries /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let c1 = "(1,2)";
+    let c2 = "(3,4)";
+    let c3 = "(5,6)";
+    let c4 = "(7,8)";
+
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c2);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c4);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+
+  });
+
+  it('copy single propIndex of points in rows and columns, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+
+    <spreadsheet minNumRows="3" minNumColumns="3">
+      <row><cell>(1,2)</cell><cell>B</cell><cell>(3,4)</cell></row>
+      <row><cell>D</cell><cell>(5,6)</cell><cell>F</cell></row>
+      <row><cell>F</cell><cell>(7,8)</cell><cell>I</cell></row>
+    </spreadsheet>
+
+    <p><mathinput name="n" /></p>
+
+    <p><copy source="_spreadsheet1.pointsInRows[$n]" assignNames="P1 P2 P3" removeEmptyArrayEntries /></p>
+
+    <p><copy source="_spreadsheet1.pointsInColumns[$n]" assignNames="P4 P5 P6" removeEmptyArrayEntries /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let c1 = "(1,2)";
+    let c2 = "(3,4)";
+    let c3 = "(5,6)";
+    let c4 = "(7,8)";
+
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
+    cy.get('#\\/P2 .mjx-mrow').should('contain.text', c2);
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c1);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c3);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
+    cy.get('#\\/P5 .mjx-mrow').should('contain.text', c4);
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c4);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c2);
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P6 .mjx-mrow').should('not.exist')
+
+
+  });
 
 });
 
