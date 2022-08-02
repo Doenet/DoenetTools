@@ -100,7 +100,7 @@ if ($success) {
     }
 }
 
-//Bail on canModifyRoles demote attempt or non-canModifyRoles attempting to promote up
+//Bail on isAdmin demote attempt or non-isAdmin attempting to promote up
 if ($success) {
     if (!isset($targetUserPermissions)) {
         $targetUserPermissions = permissionsAndSettingsForOneCourseFunction(
@@ -112,7 +112,7 @@ if ($success) {
 
     $result = $conn->query(
         "SELECT
-        cr.canModifyRoles 
+        cr.isAdmin 
         FROM course_role AS cr
         WHERE roleId = '$roleId'"
     );
@@ -122,13 +122,13 @@ if ($success) {
         $message = 'server error: no such role';
     } elseif ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $newPermisson = $row['canModifyRoles'];
+        $newPermisson = $row['isAdmin'];
     }
 
     if (
         // ($requestorPermissions['isOwner'] != '1' ||
-        $requestorPermissions['canModifyRoles'] != '1' &&
-        $targetUserPermissions['canModifyRoles'] == '1' &&
+        $requestorPermissions['isAdmin'] != '1' &&
+        $targetUserPermissions['isAdmin'] == '1' &&
         $newPermisson == '0'
     ) {
         $success = false;
@@ -137,7 +137,7 @@ if ($success) {
     }
 
     if (
-        $requestorPermissions['canModifyRoles'] != '1' &&
+        $requestorPermissions['isAdmin'] != '1' &&
         $newPermisson == '1'
     ) {
         $success = false;

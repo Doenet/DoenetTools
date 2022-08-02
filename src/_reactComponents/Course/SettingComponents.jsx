@@ -707,13 +707,13 @@ export function MangeRoles({ courseId }) {
         roleId={selectedRolePermissons.roleId}
         onClick={handleCheckboxClick}
         permissonKey={'canManageUsers'}
-        parentPermissonKey={'canModifyRoles'}
+        parentPermissonKey={'isAdmin'}
       />
       <RolePermissonCheckbox
         courseId={courseId}
         roleId={selectedRolePermissons.roleId}
         onClick={handleCheckboxClick}
-        permissonKey={'canModifyRoles'}
+        permissonKey={'isAdmin'}
       />
       {edited && (
         <ButtonGroup vertical>

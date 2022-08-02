@@ -29,7 +29,7 @@ $permissonKeys = [
     'dataAccessPermisson',
     'canViewUsers',
     'canManageUsers',
-    'canModifyRoles',
+    'isAdmin',
     'sectionPermissionOnly',
 ];
 
@@ -59,7 +59,7 @@ if ($success) {
         $courseId
     );
 
-    if ($requestorPermissions['canModifyRoles'] == '1') {
+    if ($requestorPermissions['isAdmin'] == '1') {
         $success = false;
         $message = 'Operation Denied: you need permission to mange users';
     }
@@ -97,13 +97,13 @@ if ($success) {
             unset($_POST['permissions']['canViewActivitySettings']);
         }
     }
-    //modifyRoles > manageUsers > viewUsers
-    if (array_key_exists('canModifyRoles', $_POST['permissions'])) {
-        $newRoleCanModifyRoles = mysqli_real_escape_string(
+    //isAdmin > manageUsers > viewUsers
+    if (array_key_exists('isAdmin', $_POST['permissions'])) {
+        $newRoleIsAdmin = mysqli_real_escape_string(
             $conn,
-            $_POST['permissions']['canModifyRoles']
+            $_POST['permissions']['isAdmin']
         );
-        if ($newRoleCanModifyRoles == '1') {
+        if ($newRoleIsAdmin == '1') {
             array_push($segments, "canManageUsers = '1'");
             unset($_POST['permissions']['canManageUsers']);
             array_push($segments, "canViewUsers = '1'");

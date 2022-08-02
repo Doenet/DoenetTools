@@ -45,10 +45,10 @@ if ($success) {
         cr.canViewActivitySettings,
         cr.canModifyActivitySettings,
         cr.canModifyCourseSettings,
+        cr.dataAccessPermisson,
         cr.canViewUsers,
         cr.canManageUsers,
-        cr.canModifyRoles,
-        cr.dataAccessPermisson,
+        cr.isAdmin,
         cr.isOwner
         FROM course_role AS cr
         WHERE cr.courseId = '$courseId' 

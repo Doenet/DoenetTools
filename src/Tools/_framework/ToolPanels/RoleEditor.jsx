@@ -9,10 +9,10 @@ import { searchParamAtomFamily } from '../NewToolRoot';
 
 export default function RolesEditor() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { canModifyRoles } = useRecoilValue(
+  const { isAdmin } = useRecoilValue(
     coursePermissionsAndSettingsByCourseId(courseId),
   );
-  if (canModifyRoles !== '1') return null;
+  if (isAdmin !== '1') return null;
   return (
     <>
       <h2>Edit Role Permissons:</h2>

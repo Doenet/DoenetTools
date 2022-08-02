@@ -55,10 +55,10 @@ if ($success) {
       canViewActivitySettings = '1',
       canModifyActivitySettings = '1',
       canModifyCourseSettings = '1',
+      dataAccessPermisson = 'Identified',
       canViewUsers = '1',
       canManageUsers = '1',
-      canModifyRoles = '1',
-      dataAccessPermisson = 'Identified',
+      isAdmin = '1',
       isOwner = '1'
       ";
     $result = $conn->query($sql);

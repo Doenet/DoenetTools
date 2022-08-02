@@ -22,7 +22,7 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
     cr.canModifyCourseSettings,
     cr.canViewUsers,
     cr.canManageUsers,
-    cr.canModifyRoles,
+    cr.isAdmin,
     cr.dataAccessPermisson,
     cr.isOwner
     FROM course_role AS cr
@@ -60,7 +60,7 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
             'canModifyCourseSettings' => $row['canModifyCourseSettings'],
             'canViewUsers' => $row['canViewUsers'],
             'canManageUsers' => $row['canManageUsers'],
-            'canModifyRoles' => $row['canModifyRoles'],
+            'isAdmin' => $row['isAdmin'],
             'dataAccessPermisson' => $row['dataAccessPermisson'],
             'isOwner' => $row['isOwner'],
         ];

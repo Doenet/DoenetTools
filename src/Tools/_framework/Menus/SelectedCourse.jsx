@@ -68,7 +68,7 @@ export default function SelectedCourse() {
 
 const CourseInfoPanel = function ({ courseId }) {
   const { label } = useCourse(courseId);
-  const { canModifyRoles, canModifyCourseSettings, isOwner } = useRecoilValue(
+  const { isAdmin, canModifyCourseSettings, isOwner } = useRecoilValue(
     effectivePermissionsByCourseId(courseId),
   );
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -100,7 +100,7 @@ const CourseInfoPanel = function ({ courseId }) {
       {canModifyCourseSettings === '1' && (
         <EditImageAndColor courseId={courseId} />
       )}
-      {canModifyRoles === '1' && <EditDefaultRole courseId={courseId} />}
+      {isAdmin === '1' && <EditDefaultRole courseId={courseId} />}
       {isOwner === '1' && <DeleteCourse courseId={courseId} />}
     </>
   );
