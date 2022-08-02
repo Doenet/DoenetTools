@@ -276,7 +276,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     PageVariant:lazy(() => import('../Menus/PageVariant')),
     ActivityVariant:lazy(() => import('../Menus/ActivityVariant')),
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
-    LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
+    LoadPeople:lazy(() => import('../Menus/LoadPeople')),
     GradeUpload:lazy(() => import('../Menus/GradeUpload')),
     GradeDownload:lazy(() => import('../Menus/GradeDownload')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
