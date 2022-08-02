@@ -16496,7 +16496,7 @@ describe('Answer Tag Tests', function () {
 
         <answer name="a">
           <considerAsResponses>$P $Q</considerAsResponses>
-         <award><when>$(QQ{prop='x'}) > $(PP{prop='x'}) and $(QQ{prop='y'}) > $(PP{prop='y'})</when></award>
+         <award><when>$(QQ.x) > $(PP.x) and $(QQ.y) > $(PP.y)</when></award>
         </answer>
         
         <p>Current responses <aslist><copy assignNames="cr1 cr2" prop="currentResponses" target="a" createComponentOfType="math" nComponents="2" /></aslist></p>
@@ -16747,7 +16747,7 @@ describe('Answer Tag Tests', function () {
             <when>$m = y</when>
           </award>
           <award credit="0.8">
-            <when>$(m{prop='value'}) = z</when>
+            <when>$m.value = z</when>
           </award>
         </answer>
         </p>
@@ -18982,7 +18982,7 @@ describe('Answer Tag Tests', function () {
   <p>split symbols: <booleaninput name="split" /></p>
   <p>Answer: <math name="ans" splitSymbols="$split">xyz</math></p>
   <answer>
-    <mathinput name="mi" splitSymbols="$(ans{prop='splitSymbols'})" />
+    <mathinput name="mi" splitSymbols="$ans.splitSymbols" />
     <award>$ans</award>
   </answer>
    `}, "*");
@@ -19232,7 +19232,7 @@ describe('Answer Tag Tests', function () {
     <mathinput name="mi" />
     <award>1</award>
   </answer>
-  <conditionalContent condition="$(ans{prop='justSubmitted'})" assignNames="just">
+  <conditionalContent condition="$ans.justSubmitted" assignNames="just">
     <p>The answer was just submitted.</p>
   </conditionalContent>
    `}, "*");
@@ -19339,8 +19339,8 @@ describe('Answer Tag Tests', function () {
   <p>Current Response: <copy target="a" prop="currentResponse" assignNames="cr" /></p>
   <p>Submitted Response: <copy target="a" prop="submittedResponse" assignNames="sr" /></p>
   
-  <p>Change current response: <mathinput bindValueTo="$(a{prop='currentResponse'})" name="micr" /></p>
-  <p>Change submitted response: <mathinput bindValueTo="$(a{prop='submittedResponse'})" name="misr"  /></p>
+  <p>Change current response: <mathinput bindValueTo="$a.currentResponse" name="micr" /></p>
+  <p>Change submitted response: <mathinput bindValueTo="$a.submittedResponse" name="misr"  /></p>
    `}, "*");
     });
 
@@ -19562,7 +19562,7 @@ describe('Answer Tag Tests', function () {
   <p>Submitted response: <copy prop="submittedResponse" target="ans1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans1" assignNames="ca1" /></p>
 
-  <p><copy target="ans1" assignNames="ans2" /></p>
+  <p><answer copySource="ans1" name="ans2" /></p>
   <p>Current response: <copy prop="currentResponse" target="ans2" assignNames="cr2" /></p>
   <p>Submitted response: <copy prop="submittedResponse" target="ans2" createComponentOfType='math' assignNames="sr2" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans2" assignNames="ca2" /></p>
@@ -19729,7 +19729,7 @@ describe('Answer Tag Tests', function () {
   <p>Submitted response: <copy prop="submittedResponse" target="ans1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans1" assignNames="ca1" /></p>
 
-  <p><copy target="ans1" assignNames="ans2" link='false' /></p>
+  <p><answer copySource="ans1" name="ans2" link='false' /></p>
   <p>Current response: <copy prop="currentResponse" target="ans2" assignNames="cr2" /></p>
   <p>Submitted response: <copy prop="submittedResponse" target="ans2" createComponentOfType='math' assignNames="sr2" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans2" assignNames="ca2" /></p>
@@ -20622,7 +20622,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p>What is the derivative of <function name="f">x^2</function>?
   <answer><derivative>$f</derivative</answer></p>
-  <p>Submitted response: <aslist><math name="sr" prop="submittedResponses" copyTarget="_answer1" /></aslist></p>
+  <p>Submitted response: <aslist><math name="sr" copySource="_answer1.submittedResponses" /></aslist></p>
   `}, "*");
     });
 

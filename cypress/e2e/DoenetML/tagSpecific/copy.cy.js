@@ -30,14 +30,14 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math modifyIndirectly="false">x</math>
-    <copy assignNames="a" target="_math1"/>
-    <copy assignNames="b" target="a"/>
+    <copy assignNames="a" source="_math1"/>
+    <copy assignNames="b" source="a"/>
     <math modifyIndirectly="true">x</math>
-    <copy assignNames="c" target="_math2"/>
-    <copy assignNames="d" target="c"/>
+    <copy assignNames="c" source="_math2"/>
+    <copy assignNames="d" source="c"/>
     <point label="A">(1,2)</point>
-    <copy assignNames="e" target="_point1"/>
-    <copy assignNames="f" target="e"/>
+    <copy assignNames="e" source="_point1"/>
+    <copy assignNames="f" source="e"/>
     `}, "*");
     });
 
@@ -60,20 +60,20 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy copies properties, with copyTarget', () => {
+  it('copy copies properties, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <math modifyIndirectly="false">x</math>
     <math modifyIndirectly="true">x</math>
-    <math name="a" copyTarget="_math1"/>
-    <math name="b" copyTarget="a"/>
-    <math name="c" copyTarget="_math2"/>
-    <math name="d" copyTarget="c"/>
+    <math name="a" copySource="_math1"/>
+    <math name="b" copySource="a"/>
+    <math name="c" copySource="_math2"/>
+    <math name="d" copySource="c"/>
     <point label="A">(1,2)</point>
-    <point name="e" copytarget="_point1"/>
-    <point name="f" copytarget="e"/>
+    <point name="e" copySource="_point1"/>
+    <point name="f" copySource="e"/>
     `}, "*");
     });
 
@@ -102,19 +102,19 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math modifyIndirectly="false">x</math>
-    <copy name="cr1" assignNames="r1" target="_math1"/>
-    <copy name="cr2" assignNames="r2" modifyIndirectly="true" target="_math1"/>
-    <copy name="cr3" assignNames="r3" modifyIndirectly="true" target="cr1"/>
-    <copy name="cr4" assignNames="r4" target="cr2"/>
-    <copy name="cr5" assignNames="r5" target="cr3"/>
-    <copy name="cr6" assignNames="r6" target="cr2" modifyIndirectly="false" />
-    <copy name="cr7" assignNames="r7" target="cr3" modifyIndirectly="false" />
+    <copy name="cr1" assignNames="r1" source="_math1"/>
+    <copy name="cr2" assignNames="r2" modifyIndirectly="true" source="_math1"/>
+    <copy name="cr3" assignNames="r3" modifyIndirectly="true" source="cr1"/>
+    <copy name="cr4" assignNames="r4" source="cr2"/>
+    <copy name="cr5" assignNames="r5" source="cr3"/>
+    <copy name="cr6" assignNames="r6" source="cr2" modifyIndirectly="false" />
+    <copy name="cr7" assignNames="r7" source="cr3" modifyIndirectly="false" />
 
     <point label="A" name="A">(1,2)</point>
-    <copy name="cA2" assignNames="A2" target="A"/>
-    <copy label="B" name="cB" assignNames="B" target="A"/>
-    <copy label="C" name="cC" assignNames="C" target="cB"/>
-    <copy name="cC2" assignNames="C2" target="cC"/>
+    <copy name="cA2" assignNames="A2" source="A"/>
+    <copy label="B" name="cB" assignNames="B" source="A"/>
+    <copy label="C" name="cC" assignNames="C" source="cB"/>
+    <copy name="cC2" assignNames="C2" source="cC"/>
     `}, "*");
     });
 
@@ -141,25 +141,25 @@ describe('Copy Tag Tests', function () {
     })
   });
 
-  it('copy overwrites properties, with copyTarget', () => {
+  it('copy overwrites properties, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <math modifyIndirectly="false">x</math>
-    <math name="r1" copytarget="_math1"/>
-    <math name="r2" modifyIndirectly="true" copytarget="_math1"/>
-    <math name="r3" modifyIndirectly="true" copytarget="r1"/>
-    <math name="r4" copytarget="r2"/>
-    <math name="r5" copytarget="r3"/>
-    <math name="r6" copytarget="r2" modifyIndirectly="false" />
-    <math name="r7" copytarget="r3" modifyIndirectly="false" />
+    <math name="r1" copySource="_math1"/>
+    <math name="r2" modifyIndirectly="true" copySource="_math1"/>
+    <math name="r3" modifyIndirectly="true" copySource="r1"/>
+    <math name="r4" copySource="r2"/>
+    <math name="r5" copySource="r3"/>
+    <math name="r6" copySource="r2" modifyIndirectly="false" />
+    <math name="r7" copySource="r3" modifyIndirectly="false" />
 
     <point label="A" name="A">(1,2)</point>
-    <point name="A2" copytarget="A"/>
-    <point label="B" name="B" copytarget="A"/>
-    <point label="C" name="C" copytarget="B"/>
-    <point name="C2" copytarget="C"/>
+    <point name="A2" copySource="A"/>
+    <point label="B" name="B" copySource="A"/>
+    <point label="C" name="C" copySource="B"/>
+    <point name="C2" copySource="C"/>
     `}, "*");
     });
 
@@ -192,19 +192,19 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math modifyIndirectly="3 &gt; 4">x</math>
-    <copy name="cr1" assignNames="r1" target="_math1"/>
-    <copy name="cr2" assignNames="r2" modifyIndirectly="3&lt;4" target="_math1"/>
-    <copy name="cr3" assignNames="r3" modifyIndirectly="3&lt;4" target="cr1"/>
-    <copy name="cr4" assignNames="r4" target="cr2"/>
-    <copy name="cr5" assignNames="r5" target="cr3"/>
-    <copy name="cr6" assignNames="r6" target="cr2" modifyIndirectly="3&gt;4" />
-    <copy name="cr7" assignNames="r7" target="cr3" modifyIndirectly="3&gt;4" />
+    <copy name="cr1" assignNames="r1" source="_math1"/>
+    <copy name="cr2" assignNames="r2" modifyIndirectly="3&lt;4" source="_math1"/>
+    <copy name="cr3" assignNames="r3" modifyIndirectly="3&lt;4" source="cr1"/>
+    <copy name="cr4" assignNames="r4" source="cr2"/>
+    <copy name="cr5" assignNames="r5" source="cr3"/>
+    <copy name="cr6" assignNames="r6" source="cr2" modifyIndirectly="3&gt;4" />
+    <copy name="cr7" assignNames="r7" source="cr3" modifyIndirectly="3&gt;4" />
 
     <point label="A" name="A">(1,2)</point>
-    <copy name="cA2" assignNames="A2" target="A"/>
-    <copy label="B" name="cB"  assignNames="B" target="A"/>
-    <copy label="C" name="cC"  assignNames="C" target="cB"/>
-    <copy name="cC2" assignNames="C2" target="cC"/>
+    <copy name="cA2" assignNames="A2" source="A"/>
+    <copy label="B" name="cB"  assignNames="B" source="A"/>
+    <copy label="C" name="cC"  assignNames="C" source="cB"/>
+    <copy name="cC2" assignNames="C2" source="cC"/>
     `}, "*");
     });
 
@@ -231,25 +231,25 @@ describe('Copy Tag Tests', function () {
     })
   });
 
-  it('copy overwrites properties, decode XML entities, with copytarget', () => {
+  it('copy overwrites properties, decode XML entities, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <math modifyIndirectly="3 &gt; 4">x</math>
-    <math name="r1" copytarget="_math1"/>
-    <math name="r2" modifyIndirectly="3&lt;4" copytarget="_math1"/>
-    <math name="r3" modifyIndirectly="3&lt;4" copytarget="r1"/>
-    <math name="r4" copytarget="r2"/>
-    <math name="r5" copytarget="r3"/>
-    <math name="r6" copytarget="r2" modifyIndirectly="3&gt;4" />
-    <math name="r7" copytarget="r3" modifyIndirectly="3&gt;4" />
+    <math name="r1" copySource="_math1"/>
+    <math name="r2" modifyIndirectly="3&lt;4" copySource="_math1"/>
+    <math name="r3" modifyIndirectly="3&lt;4" copySource="r1"/>
+    <math name="r4" copySource="r2"/>
+    <math name="r5" copySource="r3"/>
+    <math name="r6" copySource="r2" modifyIndirectly="3&gt;4" />
+    <math name="r7" copySource="r3" modifyIndirectly="3&gt;4" />
 
     <point label="A" name="A">(1,2)</point>
-    <point name="A2" copytarget="A"/>
-    <point label="B" name="B" copytarget="A"/>
-    <point label="C" name="C" copytarget="B"/>
-    <point name="C2" copytarget="C"/>
+    <point name="A2" copySource="A"/>
+    <point label="B" name="B" copySource="A"/>
+    <point label="C" name="C" copySource="B"/>
+    <point name="C2" copySource="C"/>
     `}, "*");
     });
 
@@ -282,20 +282,20 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math name="x" modifyIndirectly="false" hide>x</math>
-    <copy assignNames="mr" prop="modifyIndirectly" target="x"/>
-    <copy assignNames="mr2" prop="modifyIndirectly" modifyIndirectly="true" target="x"/>
+    <copy assignNames="mr" prop="modifyIndirectly" source="x"/>
+    <copy assignNames="mr2" prop="modifyIndirectly" modifyIndirectly="true" source="x"/>
 
-    <copy assignNames="frmt" prop="format" target="x"/>
-    <copy assignNames="frmt2" prop="format" target="x" hide />
-    <copy assignNames="frmt3" hide target="frmt"/>
+    <copy assignNames="frmt" prop="format" source="x"/>
+    <copy assignNames="frmt2" prop="format" source="x" hide />
+    <copy assignNames="frmt3" hide source="frmt"/>
 
     <point name="A" label="A">(1,2)</point>
-    <copy assignNames="cA" prop="coords" target="A"/>
-    <copy assignNames="l" prop="latex" target="cA"/>
-    <copy assignNames="lmr" prop="latex" modifyIndirectly="false" target="cA"/>
-    <copy assignNames="A2" target="A"/>
-    <copy assignNames="cA2" prop="coords" target="A2"/>
-    <copy assignNames="l2" prop="latex" target="cA2"/>
+    <copy assignNames="cA" prop="coords" source="A"/>
+    <copy assignNames="l" prop="latex" source="cA"/>
+    <copy assignNames="lmr" prop="latex" modifyIndirectly="false" source="cA"/>
+    <copy assignNames="A2" source="A"/>
+    <copy assignNames="cA2" prop="coords" source="A2"/>
+    <copy assignNames="l2" prop="latex" source="cA2"/>
     `}, "*");
     });
 
@@ -345,26 +345,164 @@ describe('Copy Tag Tests', function () {
     })
   });
 
-  it('copy props, with copytarget', () => {
+  it('copy props, dot notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <math name="x" modifyIndirectly="false" hide>x</math>
-    <boolean name="mr" prop="modifyIndirectly" copytarget="x"/>
-    <boolean name="mr2" prop="modifyIndirectly" modifyIndirectly="true" copytarget="x"/>
+    <copy assignNames="mr" source="x.modifyIndirectly"/>
+    <copy assignNames="mr2" modifyIndirectly="true" source="x.modifyIndirectly"/>
 
-    <text name="frmt" prop="format" copytarget="x"/>
-    <text name="frmt2" prop="format" copytarget="x" hide />
-    <text name="frmt3" hide copytarget="frmt"/>
+    <copy assignNames="frmt" source="x.format"/>
+    <copy assignNames="frmt2" source="x.format" hide />
+    <copy assignNames="frmt3" hide source="frmt"/>
 
     <point name="A" label="A">(1,2)</point>
-    <coords name="cA" prop="coords" copytarget="A"/>
-    <text name="l" prop="latex" copytarget="cA"/>
-    <text name="lmr" prop="latex" modifyIndirectly="false" copytarget="cA"/>
-    <point name="A2" copytarget="A"/>
-    <coords name="cA2" prop="coords" copytarget="A2"/>
-    <text name="l2" prop="latex" copytarget="cA2"/>
+    <copy assignNames="cA" source="A.coords"/>
+    <copy assignNames="l" source="cA.latex"/>
+    <copy assignNames="lmr" modifyIndirectly="false" source="cA.latex"/>
+    <copy assignNames="A2" source="A"/>
+    <copy assignNames="cA2" source="A2.coords"/>
+    <copy assignNames="l2" source="cA2.latex"/>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`check properties`);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x'].stateValues.modifyIndirectly).eq(false);
+      expect(stateVariables['/x'].stateValues.hidden).eq(true);
+      // modifyIndirectly attribute is copied (as it has propagateToProps=true)
+      expect(stateVariables['/mr'].stateValues.modifyIndirectly).eq(false);
+      // hide attribute is not copied (default behavior)
+      expect(stateVariables['/mr'].stateValues.hidden).eq(false);
+      expect(stateVariables['/mr'].stateValues.value).eq(false);
+
+      // modifyIndirectly is overwritten
+      expect(stateVariables['/mr2'].stateValues.modifyIndirectly).eq(true);
+      expect(stateVariables['/mr2'].stateValues.hidden).eq(false);
+      expect(stateVariables['/mr2'].stateValues.value).eq(false);
+
+      // modifyIndirectly attribute is copied (as it has propagateToProps=true)
+      expect(stateVariables['/frmt'].stateValues.modifyIndirectly).eq(false);
+      // hide attribute is not copied (default behavior)
+      expect(stateVariables['/frmt'].stateValues.hidden).eq(false);
+      expect(stateVariables['/frmt'].stateValues.value).eq("text");
+
+      expect(stateVariables['/frmt2'].stateValues.modifyIndirectly).eq(false);
+      expect(stateVariables['/frmt2'].stateValues.hidden).eq(true);
+      expect(stateVariables['/frmt2'].stateValues.value).eq("text");
+
+      // all attributes copied when don't use prop
+      expect(stateVariables['/frmt3'].stateValues.modifyIndirectly).eq(false);
+      expect(stateVariables['/frmt3'].stateValues.value).eq("text");
+      expect(stateVariables['/frmt3'].stateValues.hidden).eq(true);
+
+      expect(stateVariables['/A'].stateValues.label).eq("A");
+      expect((stateVariables['/cA'].stateValues.value)).eqls(["vector", 1, 2]);
+      expect(stateVariables['/l'].stateValues.value).eq("\\left( 1, 2 \\right)");
+      expect(stateVariables['/l'].stateValues.modifyIndirectly).eq(true);
+      expect(stateVariables['/lmr'].stateValues.value).eq("\\left( 1, 2 \\right)");
+      expect(stateVariables['/lmr'].stateValues.modifyIndirectly).eq(false);
+      expect(stateVariables['/A2'].stateValues.label).eq("A");
+      expect((stateVariables['/cA2'].stateValues.value)).eqls(["vector", 1, 2]);
+      expect(stateVariables['/l2'].stateValues.value).eq("\\left( 1, 2 \\right)");
+
+    })
+  });
+
+  it('copy props, with copySource', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="x" modifyIndirectly="false" hide>x</math>
+    <boolean name="mr" copyProp="modifyIndirectly" copySource="x"/>
+    <boolean name="mr2" copyProp="modifyIndirectly" modifyIndirectly="true" copySource="x"/>
+
+    <text name="frmt" copyProp="format" copySource="x"/>
+    <text name="frmt2" copyProp="format" copySource="x" hide />
+    <text name="frmt3" hide copySource="frmt"/>
+
+    <point name="A" label="A">(1,2)</point>
+    <coords name="cA" copyProp="coords" copySource="A"/>
+    <text name="l" copyProp="latex" copySource="cA"/>
+    <text name="lmr" copyProp="latex" modifyIndirectly="false" copySource="cA"/>
+    <point name="A2" copySource="A"/>
+    <coords name="cA2" copyProp="coords" copySource="A2"/>
+    <text name="l2" copyProp="latex" copySource="cA2"/>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`check properties`);
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/x'].stateValues.modifyIndirectly).eq(false);
+      expect(stateVariables['/x'].stateValues.hidden).eq(true);
+      // modifyIndirectly attribute is copied (as it has propagateToProps=true)
+      expect(stateVariables['/mr'].stateValues.modifyIndirectly).eq(false);
+      // hide attribute is not copied (default behavior)
+      expect(stateVariables['/mr'].stateValues.hidden).eq(false);
+      expect(stateVariables['/mr'].stateValues.value).eq(false);
+
+      // modifyIndirectly is overwritten
+      expect(stateVariables['/mr2'].stateValues.modifyIndirectly).eq(true);
+      expect(stateVariables['/mr2'].stateValues.hidden).eq(false);
+      expect(stateVariables['/mr2'].stateValues.value).eq(false);
+
+      // modifyIndirectly attribute is copied (as it has propagateToProps=true)
+      expect(stateVariables['/frmt'].stateValues.modifyIndirectly).eq(false);
+      // hide attribute is not copied (default behavior)
+      expect(stateVariables['/frmt'].stateValues.hidden).eq(false);
+      expect(stateVariables['/frmt'].stateValues.value).eq("text");
+
+      expect(stateVariables['/frmt2'].stateValues.modifyIndirectly).eq(false);
+      expect(stateVariables['/frmt2'].stateValues.hidden).eq(true);
+      expect(stateVariables['/frmt2'].stateValues.value).eq("text");
+
+      // all attributes copied when don't use prop
+      expect(stateVariables['/frmt3'].stateValues.modifyIndirectly).eq(false);
+      expect(stateVariables['/frmt3'].stateValues.value).eq("text");
+      expect(stateVariables['/frmt3'].stateValues.hidden).eq(true);
+
+      expect(stateVariables['/A'].stateValues.label).eq("A");
+      expect((stateVariables['/cA'].stateValues.value)).eqls(["vector", 1, 2]);
+      expect(stateVariables['/l'].stateValues.value).eq("\\left( 1, 2 \\right)");
+      expect(stateVariables['/l'].stateValues.modifyIndirectly).eq(true);
+      expect(stateVariables['/lmr'].stateValues.value).eq("\\left( 1, 2 \\right)");
+      expect(stateVariables['/lmr'].stateValues.modifyIndirectly).eq(false);
+      expect(stateVariables['/A2'].stateValues.label).eq("A");
+      expect((stateVariables['/cA2'].stateValues.value)).eqls(["vector", 1, 2]);
+      expect(stateVariables['/l2'].stateValues.value).eq("\\left( 1, 2 \\right)");
+
+    })
+  });
+
+  it('copy props, with copySource, dot notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <math name="x" modifyIndirectly="false" hide>x</math>
+    <boolean name="mr" copySource="x.modifyIndirectly"/>
+    <boolean name="mr2" modifyIndirectly="true" copySource="x.modifyIndirectly"/>
+
+    <text name="frmt" copySource="x.format"/>
+    <text name="frmt2" copySource="x.format" hide />
+    <text name="frmt3" hide copySource="frmt"/>
+
+    <point name="A" label="A">(1,2)</point>
+    <coords name="cA" copySource="A.coords"/>
+    <text name="l" copySource="cA.latex"/>
+    <text name="lmr" modifyIndirectly="false" copySource="cA.latex"/>
+    <point name="A2" copySource="A"/>
+    <coords name="cA2" copySource="A2.coords"/>
+    <text name="l2" copySource="cA2.latex"/>
     `}, "*");
     });
 
@@ -424,15 +562,15 @@ describe('Copy Tag Tests', function () {
     </graph>
     
     <graph>
-      <copy assignNames="p2" target="p1"/>
+      <copy assignNames="p2" source="p1"/>
       <point name="p3">
-        (<copy prop="y" target="p2"/>,
-        <copy prop="x1" target="p2"/>)
+        (<copy prop="y" source="p2"/>,
+        <copy prop="x1" source="p2"/>)
       </point>
     </graph>
-    <copy target="p1" assignNames="p1a" />
-    <copy target="p2" assignNames="p2a" />
-    <copy target="p3" assignNames="p3a" />
+    <copy source="p1" assignNames="p1a" />
+    <copy source="p2" assignNames="p2a" />
+    <copy source="p3" assignNames="p3a" />
     `}, "*");
     });
 
@@ -512,7 +650,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy props of copy still updatable, with copytarget', () => {
+  it('copy props of copy still updatable, dot notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -522,15 +660,211 @@ describe('Copy Tag Tests', function () {
     </graph>
     
     <graph>
-      <point name="p2" copytarget="p1"/>
+      <copy assignNames="p2" source="p1"/>
       <point name="p3">
-        (<math prop="y" copytarget="p2"/>,
-        <math prop="x1" copytarget="p2"/>)
+        (<copy source="p2.y"/>,
+        <copy source="p2.x1"/>)
       </point>
     </graph>
-    <point copytarget="p1" name="p1a" />
-    <point copytarget="p2" name="p2a" />
-    <point copytarget="p3" name="p3a" />
+    <copy source="p1" assignNames="p1a" />
+    <copy source="p2" assignNames="p2a" />
+    <copy source="p3" assignNames="p3a" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`initial position`);
+    cy.get('#\\/p1a').should("contain.text", "(1,2)")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].stateValues.xs[0]).eq(1);
+      expect(stateVariables['/p1'].stateValues.xs[1]).eq(2);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(1);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(2);
+      expect(stateVariables['/p3'].stateValues.xs[0]).eq(2);
+      expect(stateVariables['/p3'].stateValues.xs[1]).eq(1);
+    })
+
+    cy.log(`move point 1`);
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p1",
+        args: { x: -3, y: 5 }
+      });
+    })
+
+    cy.get('#\\/p1a').should("contain.text", "(−3,5)")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].stateValues.xs[0]).eq(-3);
+      expect(stateVariables['/p1'].stateValues.xs[1]).eq(5);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(-3);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(5);
+      expect(stateVariables['/p3'].stateValues.xs[0]).eq(5);
+      expect(stateVariables['/p3'].stateValues.xs[1]).eq(-3);
+    })
+
+    cy.log(`move point 2`);
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p2",
+        args: { x: 6, y: -9 }
+      });
+    })
+
+    cy.get('#\\/p2a').should("contain.text", "(6,−9)")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].stateValues.xs[0]).eq(6);
+      expect(stateVariables['/p1'].stateValues.xs[1]).eq(-9);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(6);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(-9);
+      expect(stateVariables['/p3'].stateValues.xs[0]).eq(-9);
+      expect(stateVariables['/p3'].stateValues.xs[1]).eq(6);
+    })
+
+    cy.log(`move point 3`);
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p3",
+        args: { x: -1, y: -7 }
+      });
+    })
+
+    cy.get('#\\/p3a').should("contain.text", "(−1,−7)")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].stateValues.xs[0]).eq(-7);
+      expect(stateVariables['/p1'].stateValues.xs[1]).eq(-1);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(-7);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(-1);
+      expect(stateVariables['/p3'].stateValues.xs[0]).eq(-1);
+      expect(stateVariables['/p3'].stateValues.xs[1]).eq(-7);
+    })
+
+  });
+
+  it('copy props of copy still updatable, with copySource', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <point name="p1">(1,2)</point>
+    </graph>
+    
+    <graph>
+      <point name="p2" copySource="p1"/>
+      <point name="p3">
+        (<math copyProp="y" copySource="p2"/>,
+        <math copyProp="x1" copySource="p2"/>)
+      </point>
+    </graph>
+    <point copySource="p1" name="p1a" />
+    <point copySource="p2" name="p2a" />
+    <point copySource="p3" name="p3a" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`initial position`);
+    cy.get('#\\/p1a').should("contain.text", "(1,2)")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].stateValues.xs[0]).eq(1);
+      expect(stateVariables['/p1'].stateValues.xs[1]).eq(2);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(1);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(2);
+      expect(stateVariables['/p3'].stateValues.xs[0]).eq(2);
+      expect(stateVariables['/p3'].stateValues.xs[1]).eq(1);
+    })
+
+    cy.log(`move point 1`);
+    cy.window().then(async (win) => {
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p1",
+        args: { x: -3, y: 5 }
+      });
+    })
+
+    cy.get('#\\/p1a').should("contain.text", "(−3,5)")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].stateValues.xs[0]).eq(-3);
+      expect(stateVariables['/p1'].stateValues.xs[1]).eq(5);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(-3);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(5);
+      expect(stateVariables['/p3'].stateValues.xs[0]).eq(5);
+      expect(stateVariables['/p3'].stateValues.xs[1]).eq(-3);
+    })
+
+    cy.log(`move point 2`);
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p2",
+        args: { x: 6, y: -9 }
+      });
+    })
+
+    cy.get('#\\/p2a').should("contain.text", "(6,−9)")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].stateValues.xs[0]).eq(6);
+      expect(stateVariables['/p1'].stateValues.xs[1]).eq(-9);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(6);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(-9);
+      expect(stateVariables['/p3'].stateValues.xs[0]).eq(-9);
+      expect(stateVariables['/p3'].stateValues.xs[1]).eq(6);
+    })
+
+    cy.log(`move point 3`);
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/p3",
+        args: { x: -1, y: -7 }
+      });
+    })
+
+    cy.get('#\\/p3a').should("contain.text", "(−1,−7)")
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/p1'].stateValues.xs[0]).eq(-7);
+      expect(stateVariables['/p1'].stateValues.xs[1]).eq(-1);
+      expect(stateVariables["/p2"].stateValues.xs[0]).eq(-7);
+      expect(stateVariables["/p2"].stateValues.xs[1]).eq(-1);
+      expect(stateVariables['/p3'].stateValues.xs[0]).eq(-1);
+      expect(stateVariables['/p3'].stateValues.xs[1]).eq(-7);
+    })
+
+  });
+
+  it('copy props of copy still updatable, with copySource, dot notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <point name="p1">(1,2)</point>
+    </graph>
+    
+    <graph>
+      <point name="p2" copySource="p1"/>
+      <point name="p3">
+        (<math copySource="p2.y"/>,
+        <math copySource="p2.x1"/>)
+      </point>
+    </graph>
+    <point copySource="p1" name="p1a" />
+    <point copySource="p2" name="p2a" />
+    <point copySource="p3" name="p3a" />
     `}, "*");
     });
 
@@ -615,16 +949,16 @@ describe('Copy Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <math>x</math>
-    <copy prop="label" target="_math1"/>
+    <copy prop="label" source="_math1"/>
 
-    <point label="A" target="x</point>
-    <copy target="_point1"/>
-    <copy prop="format" target="_ref1"/>
+    <point label="A" source="x</point>
+    <copy source="_point1"/>
+    <copy prop="format" source="_ref1"/>
 
-    <copy name="A2" target="A"/>
-    <copy name="cA2" prop="coords" target="A2"/>
-    <copy name="lcA2" prop="label" target="cA2"/>
-    <copy name="llcA2" label="B" target="cA2"/>
+    <copy name="A2" source="A"/>
+    <copy name="cA2" prop="coords" source="A2"/>
+    <copy name="lcA2" prop="label" source="cA2"/>
+    <copy name="llcA2" label="B" source="cA2"/>
 
     `}, "*");
     });
@@ -636,7 +970,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy of prop copy shadows target', () => {
+  it('copy of prop copy shadows source', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -646,14 +980,14 @@ describe('Copy Tag Tests', function () {
     </graph>
   
     <graph>
-    <copy prop="displacement" name="cd1" assignNames="d1" target="_vector1"/>
+    <copy prop="displacement" name="cd1" assignNames="d1" source="_vector1"/>
     </graph>
   
     <graph>
-    <copy target="cd1" assignNames="d2" />
+    <copy source="cd1" assignNames="d2" />
     </graph>
 
-    <copy target="_vector1" assignNames="v1a" />
+    <copy source="_vector1" assignNames="v1a" />
     `}, "*");
     });
 
@@ -816,7 +1150,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy of prop copy shadows target, with copytarget', () => {
+  it('copy of prop copy shadows source, dot notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -826,14 +1160,374 @@ describe('Copy Tag Tests', function () {
     </graph>
   
     <graph>
-      <vector prop="displacement" name="d1" copytarget="_vector1"/>
+    <copy name="cd1" assignNames="d1" source="_vector1.displacement"/>
     </graph>
   
     <graph>
-      <vector copytarget="d1" name="d2" />
+    <copy source="cd1" assignNames="d2" />
     </graph>
 
-    <vector copytarget="_vector1" name="v1a" />
+    <copy source="_vector1" assignNames="v1a" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`initial positions`);
+    cy.window().then(async (win) => {
+      let displacement = [-4, 2];
+      let v_tail = [1, 1];
+      let d_tail = [0, 0];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+      expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+      expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+      expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+      expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+      expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+      expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+      expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+      expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+    })
+
+    cy.log(`move vector 1`);
+    cy.window().then(async (win) => {
+      let displacement = [3, 1];
+      let v_tail = [-1, 4];
+      let d_tail = [0, 0];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: v_tail,
+          headcoords: v_head,
+        }
+      });
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+      })
+    })
+
+    cy.log(`move vector 2`);
+    cy.window().then(async (win) => {
+      let displacement = [5, -2];
+      let v_tail = [-1, 4];
+      let d_tail = [3, -7];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/d1",
+        args: {
+          tailcoords: d_tail,
+          headcoords: d_head,
+        }
+      });
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+      })
+    })
+
+    cy.log(`move vector 3`);
+    cy.window().then(async (win) => {
+      let displacement = [-3, 6];
+      let v_tail = [-1, 4];
+      let d_tail = [4, -2];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/d2",
+        args: {
+          tailcoords: d_tail,
+          headcoords: d_head,
+        }
+      });
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+      })
+    })
+
+    cy.log(`move vector 1`);
+    cy.window().then(async (win) => {
+      let displacement = [5, 0];
+      let v_tail = [-8, 6];
+      let d_tail = [4, -2];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: v_tail,
+          headcoords: v_head,
+        }
+      });
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+      })
+    })
+
+  });
+
+  it('copy of prop copy shadows source, with copySource', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <vector displacement="(-4,2)" tail="(1,1)" />
+    </graph>
+  
+    <graph>
+      <vector copyprop="displacement" name="d1" copySource="_vector1"/>
+    </graph>
+  
+    <graph>
+      <vector copySource="d1" name="d2" />
+    </graph>
+
+    <vector copySource="_vector1" name="v1a" />
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log(`initial positions`);
+    cy.window().then(async (win) => {
+      let displacement = [-4, 2];
+      let v_tail = [1, 1];
+      let d_tail = [0, 0];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+      expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+      expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+      expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+      expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+      expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+      expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+      expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+      expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+    })
+
+    cy.log(`move vector 1`);
+    cy.window().then(async (win) => {
+      let displacement = [3, 1];
+      let v_tail = [-1, 4];
+      let d_tail = [0, 0];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: v_tail,
+          headcoords: v_head,
+        }
+      });
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+      })
+    })
+
+    cy.log(`move vector 2`);
+    cy.window().then(async (win) => {
+      let displacement = [5, -2];
+      let v_tail = [-1, 4];
+      let d_tail = [3, -7];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/d1",
+        args: {
+          tailcoords: d_tail,
+          headcoords: d_head,
+        }
+      });
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      cy.window().then(async (win) => {
+
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+      })
+    })
+
+    cy.log(`move vector 3`);
+    cy.window().then(async (win) => {
+      let displacement = [-3, 6];
+      let v_tail = [-1, 4];
+      let d_tail = [4, -2];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/d2",
+        args: {
+          tailcoords: d_tail,
+          headcoords: d_head,
+        }
+      });
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+      })
+    })
+
+    cy.log(`move vector 1`);
+    cy.window().then(async (win) => {
+      let displacement = [5, 0];
+      let v_tail = [-8, 6];
+      let d_tail = [4, -2];
+      let v_head = displacement.map((x, i) => x + v_tail[i]);
+      let d_head = displacement.map((x, i) => x + d_tail[i]);
+
+      win.callAction1({
+        actionName: "moveVector",
+        componentName: "/_vector1",
+        args: {
+          tailcoords: v_tail,
+          headcoords: v_head,
+        }
+      });
+
+      cy.get('#\\/v1a').should('contain.text', `(${nInDOM(displacement[0])},${nInDOM(displacement[1])})`)
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/_vector1'].stateValues.tail).eqls([...v_tail]);
+        expect(stateVariables['/_vector1'].stateValues.head).eqls([...v_head]);
+        expect(stateVariables['/_vector1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d1'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d1'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d1'].stateValues.displacement).eqls([...displacement]);
+        expect(stateVariables['/d2'].stateValues.tail).eqls([...d_tail]);
+        expect(stateVariables['/d2'].stateValues.head).eqls([...d_head]);
+        expect(stateVariables['/d2'].stateValues.displacement).eqls([...displacement]);
+      })
+    })
+
+  });
+
+  it('copy of prop copy shadows source, with copySource, dot notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+    <vector displacement="(-4,2)" tail="(1,1)" />
+    </graph>
+  
+    <graph>
+      <vector name="d1" copySource="_vector1.displacement"/>
+    </graph>
+  
+    <graph>
+      <vector copySource="d1" name="d2" />
+    </graph>
+
+    <vector copySource="_vector1" name="v1a" />
     `}, "*");
     });
 
@@ -1009,11 +1703,11 @@ describe('Copy Tag Tests', function () {
       </aslist>
     </p>
     
-    <p><copy name="al2" target="_aslist1"/></p>
-    <copy assignNames="p2" target="_p1"/>
+    <p><copy name="al2" source="_aslist1"/></p>
+    <copy assignNames="p2" source="_p1"/>
     
-    <p><copy target="al2"/></p>
-    <copy target="p2" assignNames="p3"/>
+    <p><copy source="al2"/></p>
+    <copy source="p2" assignNames="p3"/>
 
     `}, "*");
     });
@@ -1115,7 +1809,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('property children account for replacement changes', () => {
+  it('property children account for replacement changes, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1128,13 +1822,13 @@ describe('Copy Tag Tests', function () {
       </aslist>
     </p>
     
-    <p><aslist name="al2" copytarget="_aslist1"/></p>
+    <p><aslist name="al2" copySource="_aslist1"/></p>
 
-    <p><aslist copytarget="al2"/></p>
+    <p><aslist copySource="al2"/></p>
 
-    <p name="p2" copytarget="_p1"/>
+    <p name="p2" copySource="_p1"/>
     
-    <p copytarget="p2" name="p3"/>
+    <p copySource="p2" name="p3"/>
 
     `}, "*");
     });
@@ -1335,7 +2029,7 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <p>Hidden text: <text name="hidden" hide>secret</text></p>
     <p>Revealed by default: $hidden</p>
-    <p>Force to stay hidden: <copy target="hidden" targetAttributesToIgnore="" /></p>
+    <p>Force to stay hidden: <copy source="hidden" targetAttributesToIgnore="" /></p>
 
     `}, "*");
     });
@@ -1350,14 +2044,14 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy ignores hide by default, with copytarget', () => {
+  it('copy ignores hide by default, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <p>Hidden text: <text name="hidden" hide>secret</text></p>
-    <p>Revealed by default: <text copyTarget="hidden" /></p>
-    <p>Force to stay hidden: <text copyTarget="hidden" targetAttributesToIgnore="" /></p>
+    <p>Revealed by default: <text copySource="hidden" /></p>
+    <p>Force to stay hidden: <text copySource="hidden" targetAttributesToIgnore="" /></p>
 
     `}, "*");
     });
@@ -1379,7 +2073,7 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
     <p name="pReveal">Revealed: $(theP/hidden)</p>
-    <copy target="theP" assignNames="theP2" />
+    <copy source="theP" assignNames="theP2" />
     <p name="pReveal2">Revealed 2: $(theP2/hidden)</p>
 
 
@@ -1397,15 +2091,15 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy keeps hidden children hidden, with copytarget', () => {
+  it('copy keeps hidden children hidden, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <p name="theP" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-    <p name="pReveal">Revealed: <text copyTarget="theP/hidden" /></p>
-    <p copytarget="theP" name="theP2" />
-    <p name="pReveal2">Revealed 2: <text copyTarget="theP2/hidden" /></p>
+    <p name="pReveal">Revealed: <text copySource="theP/hidden" /></p>
+    <p copySource="theP" name="theP2" />
+    <p name="pReveal2">Revealed 2: <text copySource="theP2/hidden" /></p>
 
 
     `}, "*");
@@ -1428,13 +2122,13 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
 
-    <text name="target">hello</text>
+    <text name="source">hello</text>
 
     <booleaninput name='h1' prefill="false" label="Hide first copy" />
     <booleaninput name='h2' prefill="true" label="Hide second copy" />
 
-    <p name="c1">copy 1: <copy hide="$h1" target="target" /></p>
-    <p name="c2">copy 2: <copy hide="$h2" target="target" /></p>
+    <p name="c1">copy 1: <copy hide="$h1" source="source" /></p>
+    <p name="c2">copy 2: <copy hide="$h2" source="source" /></p>
     `}, "*");
     });
 
@@ -1457,19 +2151,19 @@ describe('Copy Tag Tests', function () {
 
   })
 
-  it('copies hide dynamically, with copytarget', () => {
+  it('copies hide dynamically, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
 
-    <text name="target">hello</text>
+    <text name="source">hello</text>
 
     <booleaninput name='h1' prefill="false" label="Hide first copy" />
     <booleaninput name='h2' prefill="true" label="Hide second copy" />
 
-    <p name="c1">copy 1: <text hide="$h1" copytarget="target" /></p>
-    <p name="c2">copy 2: <text hide="$h2" copytarget="target" /></p>
+    <p name="c1">copy 1: <text hide="$h1" copySource="source" /></p>
+    <p name="c2">copy 2: <text hide="$h2" copySource="source" /></p>
     `}, "*");
     });
 
@@ -1950,7 +2644,7 @@ describe('Copy Tag Tests', function () {
       <else>$jump</else>
     </conditionalContent></p>
 
-    <copy target="verb" assignNames="verb2" />
+    <copy source="verb" assignNames="verb2" />
     `}, "*");
     });
 
@@ -1968,7 +2662,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy of component that changes away from a copy, with copyTarget', () => {
+  it('copy of component that changes away from a copy, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1982,7 +2676,7 @@ describe('Copy Tag Tests', function () {
       <else>$jump</else>
     </conditionalContent></p>
 
-    <text copytarget="verb" name="verb2" />
+    <text copySource="verb" name="verb2" />
     `}, "*");
     });
 
@@ -2000,7 +2694,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy of invalid target gives math in boolean and math', () => {
+  it('copy of invalid source gives math in boolean and math', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2041,9 +2735,9 @@ describe('Copy Tag Tests', function () {
 
     <p>Original: <math name="m" simplify="$s1">x +x</math></p>
     
-    <p>Unlinked copy: <copy link="false" target="m" simplify="$s2" assignNames="m2" /></p>
+    <p>Unlinked copy: <copy link="false" source="m" simplify="$s2" assignNames="m2" /></p>
 
-    <p>Linked copy: <copy target="m" simplify="$s2" assignNames="m3" /></p>
+    <p>Linked copy: <copy source="m" simplify="$s2" assignNames="m3" /></p>
     
     <p>Double value of original: <updateValue target="m" newValue="2$m" name="doubleOriginal" label="double original" /></p>
     <p>Double value of copy 1: <updateValue target="m2" newValue="2$m2" name="doubleCopy1" label="double copy 1" /></p>
@@ -2213,7 +2907,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy no link, base test, with copytarget', () => {
+  it('copy no link, base test, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2223,9 +2917,9 @@ describe('Copy Tag Tests', function () {
 
     <p>Original: <math name="m" simplify="$s1">x +x</math></p>
     
-    <p>Unlinked copy: <math link="false" copytarget="m" simplify="$s2" name="m2" /></p>
+    <p>Unlinked copy: <math link="false" copySource="m" simplify="$s2" name="m2" /></p>
 
-    <p>Linked copy: <math copytarget="m" simplify="$s2" name="m3" /></p>
+    <p>Linked copy: <math copySource="m" simplify="$s2" name="m3" /></p>
     
     <p>Double value of original: <updateValue target="m" newValue="2$m" name="doubleOriginal" label="double original" /></p>
     <p>Double value of copy 1: <updateValue target="m2" newValue="2$m2" name="doubleCopy1" label="double copy 1" /></p>
@@ -2406,33 +3100,33 @@ describe('Copy Tag Tests', function () {
     </graph>
     
     <graph>
-      <copy target="A" link="false" name="Anolink" assignNames="A2" />
-      <copy target="l" link="false" name="lnolink" assignNames="l2" />
+      <copy source="A" link="false" name="Anolink" assignNames="A2" />
+      <copy source="l" link="false" name="lnolink" assignNames="l2" />
     </graph>
     
     <graph>
-      <copy target="l" prop="point1" link="false" name="plnolink" assignNames="A3" />
+      <copy source="l" prop="point1" link="false" name="plnolink" assignNames="A3" />
     </graph>
     <graph>
-      <copy target="l" prop="points" link="false" name="plsnolink" assignNames="A4 B4"  />
+      <copy source="l" prop="points" link="false" name="plsnolink" assignNames="A4 B4"  />
     </graph>
 
-    <copy target="g" link="false" name="gnolink" newNamespace />
+    <copy source="g" link="false" name="gnolink" newNamespace />
     
-    <copy target="A" prop="x" link="false" assignNames="Ax" name="pxnolink" />
+    <copy source="A" prop="x" link="false" assignNames="Ax" name="pxnolink" />
 
     <p>
-      <copy target="A" assignNames="Ac" />
-      <copy target="B" assignNames="Bc" />
-      <copy prop="point1" target="l" assignNames="lp1" />
-      <copy target="A2" assignNames="A2c" />
-      <copy prop="point1" target="l2" assignNames="l2p1" />
-      <copy target="A3" assignNames="A3c" />
-      <copy target="A4" assignNames="A4c" />
-      <copy target="B4" assignNames="B4c" />
-      <copy target="gnolink/A" assignNames="A5c" />
-      <copy target="gnolink/B" assignNames="B5c" />
-      <copy prop="point1" target="gnolink/l" assignNames="l3p1" />
+      <copy source="A" assignNames="Ac" />
+      <copy source="B" assignNames="Bc" />
+      <copy prop="point1" source="l" assignNames="lp1" />
+      <copy source="A2" assignNames="A2c" />
+      <copy prop="point1" source="l2" assignNames="l2p1" />
+      <copy source="A3" assignNames="A3c" />
+      <copy source="A4" assignNames="A4c" />
+      <copy source="B4" assignNames="B4c" />
+      <copy source="gnolink/A" assignNames="A5c" />
+      <copy source="gnolink/B" assignNames="B5c" />
+      <copy prop="point1" source="gnolink/l" assignNames="l3p1" />
 
     </p>
   
@@ -2825,7 +3519,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy points and lines with no link, with copytarget', () => {
+  it('copy points and lines with no link, dot notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -2838,34 +3532,893 @@ describe('Copy Tag Tests', function () {
     </graph>
     
     <graph>
-      <point copytarget="A" link="false" name="A2" />
-      <line copytarget="l" link="false" name="l2" />
+      <copy source="A" link="false" name="Anolink" assignNames="A2" />
+      <copy source="l" link="false" name="lnolink" assignNames="l2" />
     </graph>
     
     <graph>
-      <point copytarget="l" prop="point1" link="false" name="A3" />
+      <copy source="l.point1" link="false" name="plnolink" assignNames="A3" />
     </graph>
     <graph>
-      <point copytarget="l" prop="point1" link="false" name="A4" />
-      <point copytarget="l" prop="point2" link="false" name="B4" />
+      <copy source="l.points" link="false" name="plsnolink" assignNames="A4 B4"  />
     </graph>
 
-    <graph copytarget="g" link="false" name="gnolink" newNamespace />
+    <copy source="g" link="false" name="gnolink" newNamespace />
     
-    <math copytarget="A" prop="x" link="false" name="Ax" />
+    <copy source="A.x" link="false" assignNames="Ax" name="pxnolink" />
 
     <p>
-      <point copytarget="A" name="Ac" />
-      <point copytarget="B" name="Bc" />
-      <point prop="point1" copytarget="l" name="lp1" />
-      <point copytarget="A2" name="A2c" />
-      <point prop="point1" copytarget="l2" name="l2p1" />
-      <point copytarget="A3" name="A3c" />
-      <point copytarget="A4" name="A4c" />
-      <point copytarget="B4" name="B4c" />
-      <point copytarget="gnolink/A" name="A5c" />
-      <point copytarget="gnolink/B" name="B5c" />
-      <point prop="point1" copytarget="gnolink/l" name="l3p1" />
+      <copy source="A" assignNames="Ac" />
+      <copy source="B" assignNames="Bc" />
+      <copy source="l.point1" assignNames="lp1" />
+      <copy source="A2" assignNames="A2c" />
+      <copy source="l2.point1" assignNames="l2p1" />
+      <copy source="A3" assignNames="A3c" />
+      <copy source="A4" assignNames="A4c" />
+      <copy source="B4" assignNames="B4c" />
+      <copy source="gnolink/A" assignNames="A5c" />
+      <copy source="gnolink/B" assignNames="B5c" />
+      <copy source="gnolink/l.point1" assignNames="l3p1" />
+
+    </p>
+  
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(`#\\/Ax`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('1')
+    })
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/Anolink"].stateValues.link).eq(false)
+      expect(stateVariables["/lnolink"].stateValues.link).eq(false)
+      expect(stateVariables["/plnolink"].stateValues.link).eq(false)
+      expect(stateVariables["/plsnolink"].stateValues.link).eq(false)
+      expect(stateVariables["/gnolink"].stateValues.link).eq(false)
+      expect(stateVariables["/pxnolink"].stateValues.link).eq(false)
+      expect(stateVariables["/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+
+    })
+
+    cy.log('move A');
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: -9, y: -3 }
+      })
+    })
+
+    cy.get("#\\/Ac").should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-9, -3])
+      expect(stateVariables["/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-9, -3])
+      expect(stateVariables["/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+    });
+
+    cy.log('move B')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: -2, y: 6 }
+      })
+    })
+
+    cy.get("#\\/Bc").should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-9, -3])
+      expect(stateVariables["/B"].stateValues.xs).eqls([-2, 6])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-9, -3])
+      expect(stateVariables["/l"].stateValues.point2).eqls([-2, 6])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+
+
+    });
+
+    cy.log('move l')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l",
+        args: {
+          point1coords: [-7, -6],
+          point2coords: [8, 0]
+        }
+      })
+    })
+
+    cy.get("#\\/lp1").should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+    });
+
+    cy.log('move A2')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A2",
+        args: { x: 5, y: 4 }
+      })
+    })
+
+    cy.get("#\\/A2c").should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+    });
+
+
+    cy.log('move l2')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l2",
+        args: {
+          point1coords: [-5, 9],
+          point2coords: [-4, -1]
+        }
+      })
+    })
+
+    cy.get("#\\/l2p1").should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+    });
+
+
+    cy.log('move A3')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A3",
+        args: { x: 6, y: -3 }
+      })
+    })
+
+    cy.get("#\\/A3c").should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move A4')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A4",
+        args: { x: -2, y: 7 }
+      })
+    })
+
+    cy.get("#\\/A4c").should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move B4')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B4",
+        args: { x: -9, y: -8 }
+      })
+    })
+
+    cy.get("#\\/B4c").should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([-9, -8])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move A5')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/gnolink/A",
+        args: { x: -10, y: -9 }
+      })
+    })
+
+    cy.get("#\\/A5c").should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([-9, -8])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([-10, -9])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([-10, -9])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move B5')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/gnolink/B",
+        args: { x: -8, y: -7 }
+      })
+    })
+
+    cy.get("#\\/B5c").should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([-9, -8])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([-10, -9])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([-8, -7])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([-10, -9])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([-8, -7])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move l3')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/gnolink/l",
+        args: {
+          point1coords: [6, 5],
+          point2coords: [4, -3]
+        }
+      })
+    })
+
+    cy.get("#\\/l3p1").should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([-9, -8])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([6, 5])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([4, -3])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([6, 5])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([4, -3])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+  });
+
+  it('copy points and lines with no link, with copySource', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g">
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+      <line through="$A $B" name="l" />
+    </graph>
+    
+    <graph>
+      <point copySource="A" link="false" name="A2" />
+      <line copySource="l" link="false" name="l2" />
+    </graph>
+    
+    <graph>
+      <point copySource="l" copyProp="point1" link="false" name="A3" />
+    </graph>
+    <graph>
+      <point copySource="l" copyProp="point1" link="false" name="A4" />
+      <point copySource="l" copyProp="point2" link="false" name="B4" />
+    </graph>
+
+    <graph copySource="g" link="false" name="gnolink" newNamespace />
+    
+    <math copySource="A" copyProp="x" link="false" name="Ax" />
+
+    <p>
+      <point copySource="A" name="Ac" />
+      <point copySource="B" name="Bc" />
+      <point copyProp="point1" copySource="l" name="lp1" />
+      <point copySource="A2" name="A2c" />
+      <point copyProp="point1" copySource="l2" name="l2p1" />
+      <point copySource="A3" name="A3c" />
+      <point copySource="A4" name="A4c" />
+      <point copySource="B4" name="B4c" />
+      <point copySource="gnolink/A" name="A5c" />
+      <point copySource="gnolink/B" name="B5c" />
+      <point copyProp="point1" copySource="gnolink/l" name="l3p1" />
+
+    </p>
+  
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(`#\\/Ax`).find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim().replace(/−/g, '-')).equal('1')
+    })
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables["/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+
+    })
+
+    cy.log('move A');
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: -9, y: -3 }
+      })
+    })
+
+    cy.get("#\\/Ac").should('contain.text', `(${nInDOM(-9)},${nInDOM(-3)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-9, -3])
+      expect(stateVariables["/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-9, -3])
+      expect(stateVariables["/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+    });
+
+    cy.log('move B')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: -2, y: 6 }
+      })
+    })
+
+    cy.get("#\\/Bc").should('contain.text', `(${nInDOM(-2)},${nInDOM(6)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-9, -3])
+      expect(stateVariables["/B"].stateValues.xs).eqls([-2, 6])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-9, -3])
+      expect(stateVariables["/l"].stateValues.point2).eqls([-2, 6])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+
+
+    });
+
+    cy.log('move l')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l",
+        args: {
+          point1coords: [-7, -6],
+          point2coords: [8, 0]
+        }
+      })
+    })
+
+    cy.get("#\\/lp1").should('contain.text', `(${nInDOM(-7)},${nInDOM(-6)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+    });
+
+    cy.log('move A2')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A2",
+        args: { x: 5, y: 4 }
+      })
+    })
+
+    cy.get("#\\/A2c").should('contain.text', `(${nInDOM(5)},${nInDOM(4)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+    });
+
+
+    cy.log('move l2')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l2",
+        args: {
+          point1coords: [-5, 9],
+          point2coords: [-4, -1]
+        }
+      })
+    })
+
+    cy.get("#\\/l2p1").should('contain.text', `(${nInDOM(-5)},${nInDOM(9)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+
+    });
+
+
+    cy.log('move A3')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A3",
+        args: { x: 6, y: -3 }
+      })
+    })
+
+    cy.get("#\\/A3c").should('contain.text', `(${nInDOM(6)},${nInDOM(-3)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move A4')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A4",
+        args: { x: -2, y: 7 }
+      })
+    })
+
+    cy.get("#\\/A4c").should('contain.text', `(${nInDOM(-2)},${nInDOM(7)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move B4')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B4",
+        args: { x: -9, y: -8 }
+      })
+    })
+
+    cy.get("#\\/B4c").should('contain.text', `(${nInDOM(-9)},${nInDOM(-8)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([-9, -8])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([1, 2])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([1, 2])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move A5')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/gnolink/A",
+        args: { x: -10, y: -9 }
+      })
+    })
+
+    cy.get("#\\/A5c").should('contain.text', `(${nInDOM(-10)},${nInDOM(-9)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([-9, -8])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([-10, -9])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([3, 4])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([-10, -9])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([3, 4])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move B5')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "movePoint",
+        componentName: "/gnolink/B",
+        args: { x: -8, y: -7 }
+      })
+    })
+
+    cy.get("#\\/B5c").should('contain.text', `(${nInDOM(-8)},${nInDOM(-7)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([-9, -8])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([-10, -9])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([-8, -7])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([-10, -9])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([-8, -7])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+    cy.log('move l3')
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/gnolink/l",
+        args: {
+          point1coords: [6, 5],
+          point2coords: [4, -3]
+        }
+      })
+    })
+
+    cy.get("#\\/l3p1").should('contain.text', `(${nInDOM(6)},${nInDOM(5)})`)
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/A"].stateValues.xs).eqls([-7, -6])
+      expect(stateVariables["/B"].stateValues.xs).eqls([8, 0])
+      expect(stateVariables["/l"].stateValues.point1).eqls([-7, -6])
+      expect(stateVariables["/l"].stateValues.point2).eqls([8, 0])
+      expect(stateVariables["/A2"].stateValues.xs).eqls([5, 4])
+      expect(stateVariables["/l2"].stateValues.point1).eqls([-5, 9])
+      expect(stateVariables["/l2"].stateValues.point2).eqls([-4, -1])
+      expect(stateVariables["/A3"].stateValues.xs).eqls([6, -3])
+      expect(stateVariables["/A4"].stateValues.xs).eqls([-2, 7])
+      expect(stateVariables["/B4"].stateValues.xs).eqls([-9, -8])
+      expect(stateVariables["/gnolink/A"].stateValues.xs).eqls([6, 5])
+      expect(stateVariables["/gnolink/B"].stateValues.xs).eqls([4, -3])
+      expect(stateVariables["/gnolink/l"].stateValues.point1).eqls([6, 5])
+      expect(stateVariables["/gnolink/l"].stateValues.point2).eqls([4, -3])
+      expect(stateVariables["/Ax"].stateValues.value).eqls(1)
+    });
+
+  });
+
+  it('copy points and lines with no link, with copySource, dot notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g">
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+      <line through="$A $B" name="l" />
+    </graph>
+    
+    <graph>
+      <point copySource="A" link="false" name="A2" />
+      <line copySource="l" link="false" name="l2" />
+    </graph>
+    
+    <graph>
+      <point copySource="l.point1" link="false" name="A3" />
+    </graph>
+    <graph>
+      <point copySource="l.point1" link="false" name="A4" />
+      <point copySource="l.point2" link="false" name="B4" />
+    </graph>
+
+    <graph copySource="g" link="false" name="gnolink" newNamespace />
+    
+    <math copySource="A.x" link="false" name="Ax" />
+
+    <p>
+      <point copySource="A" name="Ac" />
+      <point copySource="B" name="Bc" />
+      <point copySource="l.point1" name="lp1" />
+      <point copySource="A2" name="A2c" />
+      <point copySource="l2.point1" name="l2p1" />
+      <point copySource="A3" name="A3c" />
+      <point copySource="A4" name="A4c" />
+      <point copySource="B4" name="B4c" />
+      <point copySource="gnolink/A" name="A5c" />
+      <point copySource="gnolink/B" name="B5c" />
+      <point copySource="gnolink/l.point1" name="l3p1" />
 
     </p>
   
@@ -3258,7 +4811,7 @@ describe('Copy Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Hello</p>
-    <copy target="_p1" assignNames="p2" link="false" />
+    <copy source="_p1" assignNames="p2" link="false" />
     `}, "*");
     });
 
@@ -3270,13 +4823,13 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy string with no link, with copytarget', () => {
+  it('copy string with no link, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <p>Hello</p>
-    <p copytarget="_p1" name="p2" link="false" />
+    <p copySource="_p1" name="p2" link="false" />
     `}, "*");
     });
 
@@ -3294,8 +4847,8 @@ describe('Copy Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><group name="g"><text name="m">hello</text> <copy target="m" assignNames="q" /></group></p>
-    <p><copy target="g" link="false" /></p>
+    <p><group name="g"><text name="m">hello</text> <copy source="m" assignNames="q" /></group></p>
+    <p><copy source="g" link="false" /></p>
     `}, "*");
     });
 
@@ -3308,13 +4861,13 @@ describe('Copy Tag Tests', function () {
   });
 
   // This was causing a duplicate componentName error
-  it('copy group with assignNames inside with no link, with copytarget', () => {
+  it('copy group with assignNames inside with no link, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p><group name="g"><text name="m">hello</text> <copy target="m" assignNames="q" /></group></p>
-    <p><group copytarget="g" link="false" /></p>
+    <p><group name="g"><text name="m">hello</text> <copy source="m" assignNames="q" /></group></p>
+    <p><group copySource="g" link="false" /></p>
     `}, "*");
     });
 
@@ -3333,24 +4886,24 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <group>
       <p><math name="twox">x+x</math></p>
-      <copy target="twox" name="ctwox" assignNames="twoxa" />
-      <copy target="twox" name="c2twox" assignNames="twoxb" />
+      <copy source="twox" name="ctwox" assignNames="twoxa" />
+      <copy source="twox" name="c2twox" assignNames="twoxb" />
     </group>
     
-    <copy target="twox" assignNames="twoxc" />
-    <copy target="twox" link="false" assignNames="twoxd" />
+    <copy source="twox" assignNames="twoxc" />
+    <copy source="twox" link="false" assignNames="twoxd" />
     
-    <copy target="twoxa" assignNames="twoxe" />
-    <copy target="twoxa" link="false" assignNames="twoxf" />
+    <copy source="twoxa" assignNames="twoxe" />
+    <copy source="twoxa" link="false" assignNames="twoxf" />
     
-    <copy target="ctwox" assignNames="twoxg" />
-    <copy target="ctwox" link="false" assignNames="twoxh" />
+    <copy source="ctwox" assignNames="twoxg" />
+    <copy source="ctwox" link="false" assignNames="twoxh" />
 
-    <copy target="twoxb" assignNames="twoxi" />
-    <copy target="twoxb" link="false" assignNames="twoxj" />
+    <copy source="twoxb" assignNames="twoxi" />
+    <copy source="twoxb" link="false" assignNames="twoxj" />
     
-    <copy target="c2twox" assignNames="twoxk" />
-    <copy target="c2twox" link="false" assignNames="twoxl" />
+    <copy source="c2twox" assignNames="twoxk" />
+    <copy source="c2twox" link="false" assignNames="twoxl" />
   
     `}, "*");
     });
@@ -3400,31 +4953,31 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy group with copies with no link, with copytarget', () => {
+  it('copy group with copies with no link, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <group>
       <p><math name="twox">x+x</math></p>
-      <math copytarget="twox" name="twoxa" />
-      <math copytarget="twox" name="twoxb" />
+      <math copySource="twox" name="twoxa" />
+      <math copySource="twox" name="twoxb" />
     </group>
     
-    <math copytarget="twox" name="twoxc" />
-    <math copytarget="twox" link="false" name="twoxd" />
+    <math copySource="twox" name="twoxc" />
+    <math copySource="twox" link="false" name="twoxd" />
     
-    <math copytarget="twoxa" name="twoxe" />
-    <math copytarget="twoxa" link="false" name="twoxf" />
+    <math copySource="twoxa" name="twoxe" />
+    <math copySource="twoxa" link="false" name="twoxf" />
     
-    <math copytarget="twoxe" name="twoxg" />
-    <math copytarget="twoxf" link="false" name="twoxh" />
+    <math copySource="twoxe" name="twoxg" />
+    <math copySource="twoxf" link="false" name="twoxh" />
 
-    <math copytarget="twoxb" name="twoxi" />
-    <math copytarget="twoxb" link="false" name="twoxj" />
+    <math copySource="twoxb" name="twoxi" />
+    <math copySource="twoxb" link="false" name="twoxj" />
     
-    <math copytarget="twoxi" name="twoxk" />
-    <math copytarget="twoxj" link="false" name="twoxl" />
+    <math copySource="twoxi" name="twoxk" />
+    <math copySource="twoxj" link="false" name="twoxl" />
   
     `}, "*");
     });
@@ -3483,13 +5036,13 @@ describe('Copy Tag Tests', function () {
       <textinput name="sim" prefill="full" />
     
       <p><math name="twox">x+x</math>
-      <copy target="twox" simplify="$sim" name="ctwox" assignNames="twoxa" />
+      <copy source="twox" simplify="$sim" name="ctwox" assignNames="twoxa" />
       <math name="threex" simplify="$sim">x+x+x</math>
       </p>
     </group>
     
-    <copy target="g" link="false" name="g2" newNamespace />
-    <copy target="g2/g" link="false" name="g3" newNamespace />
+    <copy source="g" link="false" name="g2" newNamespace />
+    <copy source="g2/g" link="false" name="g3" newNamespace />
     `}, "*");
     });
 
@@ -3636,7 +5189,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy group with copy overwriting attribute, no link, with copytarget', () => {
+  it('copy group with copy overwriting attribute, no link, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -3645,13 +5198,13 @@ describe('Copy Tag Tests', function () {
       <textinput name="sim" prefill="full" />
     
       <p><math name="twox">x+x</math>
-      <math copytarget="twox" simplify="$sim" name="twoxa" />
+      <math copySource="twox" simplify="$sim" name="twoxa" />
       <math name="threex" simplify="$sim">x+x+x</math>
       </p>
     </group>
     
-    <group copytarget="g" link="false" name="g2" newNamespace />
-    <group copytarget="g2" link="false" name="g3" newNamespace />
+    <group copySource="g" link="false" name="g2" newNamespace />
+    <group copySource="g2" link="false" name="g3" newNamespace />
     `}, "*");
     });
 
@@ -3804,10 +5357,10 @@ describe('Copy Tag Tests', function () {
     <text>a</text>
     <group name="g" newNamespace>
     <copy uri="doenet:cid=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" assignNames="p" />
-    <p>Credit achieved: <copy prop="creditAchieved" target="p/derivativeProblem/_answer1" assignNames="ca" /></p>
+    <p>Credit achieved: <copy source="p/derivativeProblem/_answer1.creditAchieved" assignNames="ca" /></p>
     </group>
     
-    <copy target="g" link="false" assignNames="g2" />
+    <copy source="g" link="false" assignNames="g2" />
     `}, "*");
     });
 
@@ -3835,17 +5388,17 @@ describe('Copy Tag Tests', function () {
     });
   });
 
-  it('copy group with link through assignNames of external, no link, with copytarget', () => {
+  it('copy group with link through assignNames of external, no link, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
     <group name="g" newNamespace>
     <problem copyfromuri="doenet:cid=bafkreide4mismb45mxved2ibfh5jnj75kty7vjz7w6zo7goyxpwr2e7wti" name="p" />
-    <p>Credit achieved: <number prop="creditAchieved" copytarget="p/_answer1" name="ca" /></p>
+    <p>Credit achieved: <number copySource="p/_answer1.creditAchieved" name="ca" /></p>
     </group>
     
-    <group copytarget="g" link="false" name="g2" />
+    <group copySource="g" link="false" name="g2" />
     `}, "*");
     });
 
@@ -3884,7 +5437,7 @@ describe('Copy Tag Tests', function () {
       </graph>
     </group>
     
-    <copy target='g' link="false" />
+    <copy source='g' link="false" />
     `}, "*");
     });
 
@@ -3894,7 +5447,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy group, no link, with function adapted to curve, with copytarget', () => {
+  it('copy group, no link, with function adapted to curve, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -3905,7 +5458,7 @@ describe('Copy Tag Tests', function () {
       </graph>
     </group>
     
-    <group copytarget='g' link="false" />
+    <group copySource='g' link="false" />
     `}, "*");
     });
 
@@ -3923,12 +5476,12 @@ describe('Copy Tag Tests', function () {
     <textinput name="external" prefill="bye" />
 
     <group name="g" newNamespace>
-      <copy target="/external" prop="value" assignNames="w" />
+      <copy source="/external.value" assignNames="w" />
       <point label="$(/external)" name="P">(a,b)</point>
-      <copy prop="label" target="P" assignNames="Plabel" />
+      <copy source="P.label" assignNames="Plabel" />
     </group>
     
-    <copy target="g" assignNames="g2" link="false" />
+    <copy source="g" assignNames="g2" link="false" />
     `}, "*");
     });
 
@@ -3962,7 +5515,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy group, no link, copy to external inside attribute, with copytarget', () => {
+  it('copy group, no link, copy to external inside attribute, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -3970,15 +5523,15 @@ describe('Copy Tag Tests', function () {
     <textinput name="external" prefill="bye" />
 
     <group name="g" newNamespace>
-      <text copytarget="/external" prop="value" name="w" />
+      <text copySource="/external.value" name="w" />
       <point name="P">
         <label>$(/external)</label>
         (a,b)
       </point>
-      <label prop="label" copytarget="P" name="Plabel" />
+      <label copySource="P.label" name="Plabel" />
     </group>
     
-    <group copytarget="g" name="g2" link="false" />
+    <group copySource="g" name="g2" link="false" />
     `}, "*");
     });
 
@@ -4022,9 +5575,9 @@ describe('Copy Tag Tests', function () {
       <textinput name="ti" prefill="hello" />
       <map assignNames="a">
         <template newNamespace>
-          <copy target="x" assignNames="w" />
+          <copy source="x" assignNames="w" />
           <point label="$x" name="P">(a,b)</point>
-          <copy prop="label" target="P" assignNames="Plabel" />
+          <copy prop="label" source="P" assignNames="Plabel" />
 
 
         </template>
@@ -4034,7 +5587,7 @@ describe('Copy Tag Tests', function () {
       </map>
     </group>
     
-    <copy target="g" assignNames="g2" link="false" />
+    <copy source="g" assignNames="g2" link="false" />
     `}, "*");
     });
 
@@ -4069,7 +5622,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy group, no link, internal copy to source alias is linked, with copytarget', () => {
+  it('copy group, no link, internal copy to source alias is linked, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -4079,12 +5632,12 @@ describe('Copy Tag Tests', function () {
       <textinput name="ti" prefill="hello" />
       <map assignNames="a">
         <template newNamespace>
-          <text copytarget="x" name="w" />
+          <text copySource="x" name="w" />
           <point name="P">
             <label>$x</label>
             (a,b)
           </point>
-          <label prop="label" copytarget="P" name="Plabel" />
+          <label copyProp="label" copySource="P" name="Plabel" />
         </template>
         <sources alias="x">
           $ti
@@ -4092,7 +5645,7 @@ describe('Copy Tag Tests', function () {
       </map>
     </group>
     
-    <group copytarget="g" name="g2" link="false" />
+    <group copySource="g" name="g2" link="false" />
     `}, "*");
     });
 
@@ -4127,7 +5680,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy no link containing external copies use absolute target', () => {
+  it('copy no link containing external copies use absolute source', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -4137,12 +5690,12 @@ describe('Copy Tag Tests', function () {
     <number name="m">2$n</number>
     
     <group newNamespace name="g">
-      <p>m = <copy target="../m" assignNames="m1" /></p>
-      <p>m = <copy target="../m" assignNames="m2" link="false" /></p>
+      <p>m = <copy source="../m" assignNames="m1" /></p>
+      <p>m = <copy source="../m" assignNames="m2" link="false" /></p>
     </group>
     
-    <copy target="g" assignNames="g2" />
-    <copy target="g" link="false" assignNames="g3" />
+    <copy source="g" assignNames="g2" />
+    <copy source="g" link="false" assignNames="g3" />
     `}, "*");
     });
 
@@ -4160,7 +5713,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy no link containing external copies use absolute target, with copytarget', () => {
+  it('copy no link containing external copies use absolute source, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -4170,12 +5723,12 @@ describe('Copy Tag Tests', function () {
     <number name="m">2$n</number>
     
     <group newNamespace name="g">
-      <p>m = <number copytarget="../m" name="m1" /></p>
-      <p>m = <number copytarget="../m" name="m2" link="false" /></p>
+      <p>m = <number copySource="../m" name="m1" /></p>
+      <p>m = <number copySource="../m" name="m2" link="false" /></p>
     </group>
     
-    <group copytarget="g" name="g2" />
-    <group copytarget="g" link="false" name="g3" />
+    <group copySource="g" name="g2" />
+    <group copySource="g" link="false" name="g3" />
     `}, "*");
     });
 
@@ -4213,24 +5766,24 @@ describe('Copy Tag Tests', function () {
     </section>
     
     <section name="section2" newNamespace>
-      <copy target='../section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+      <copy source='../section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
     </section>
 
     <section name="section3">
-      <copy target='section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+      <copy source='section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
     </section>
 
-    <copy target='section1' link='false' assignNames="section4" />
+    <copy source='section1' link='false' assignNames="section4" />
     
     <section name="section5" newNamespace>
-      <copy target='../section1/_map1' assignNames='(p1) (p2) (p3) (p4)' />
+      <copy source='../section1/_map1' assignNames='(p1) (p2) (p3) (p4)' />
     </section>
 
     <section name="section6">
-      <copy target='section1/_map1' assignNames='(p1a) (p2a) (p3a) (p4a)' />
+      <copy source='section1/_map1' assignNames='(p1a) (p2a) (p3a) (p4a)' />
     </section>
 
-    <copy target='section1' assignNames="section7" />
+    <copy source='section1' assignNames="section7" />
   
     `}, "*");
     });
@@ -4435,7 +5988,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copy dynamic map no link, check aliases, with copytarget', () => {
+  it('copy dynamic map no link, check aliases, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -4455,24 +6008,24 @@ describe('Copy Tag Tests', function () {
     </section>
     
     <section name="section2" newNamespace>
-      <map copytarget='../section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+      <map copySource='../section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
     </section>
 
     <section name="section3">
-      <map copytarget='section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
+      <map copySource='section1/_map1' link='false' assignNames='(p1) (p2) (p3) (p4)' />
     </section>
 
-    <section copytarget='section1' link='false' name="section4" />
+    <section copySource='section1' link='false' name="section4" />
     
     <section name="section5" newNamespace>
-      <map copytarget='../section1/_map1' assignNames='(p1) (p2) (p3) (p4)' />
+      <map copySource='../section1/_map1' assignNames='(p1) (p2) (p3) (p4)' />
     </section>
 
     <section name="section6">
-      <map copytarget='section1/_map1' assignNames='(p1a) (p2a) (p3a) (p4a)' />
+      <map copySource='section1/_map1' assignNames='(p1a) (p2a) (p3a) (p4a)' />
     </section>
 
-    <section copytarget='section1' name="section7" />
+    <section copySource='section1' name="section7" />
   
     `}, "*");
     });
@@ -4980,8 +6533,8 @@ describe('Copy Tag Tests', function () {
       </map>
     </graph>
     
-    <p><m name="m1">A_1 = <copy target="t1/A" displayDigits="3" /></m></p>
-    <p><m name="m2">A_2 = <copy target="t2/A" displayDigits="3" /></m></p>
+    <p><m name="m1">A_1 = <copy source="t1/A" displayDigits="3" /></m></p>
+    <p><m name="m2">A_2 = <copy source="t2/A" displayDigits="3" /></m></p>
     
     `}, "*");
     });
@@ -5108,12 +6661,12 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('trim whitespace off target', () => {
+  it('trim whitespace off source', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text name="hi">Hello</text>
-    <p><copy target=" hi  " /> there</p>
+    <p><copy source=" hi  " /> there</p>
     `}, "*");
     });
 
@@ -5123,12 +6676,12 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('trim whitespace off target, with copytarget', () => {
+  it('trim whitespace off source, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text name="hi">Hello</text>
-    <p><text copytarget=" hi  " /> there</p>
+    <p><text copySource=" hi  " /> there</p>
     `}, "*");
     });
 
@@ -5283,17 +6836,17 @@ describe('Copy Tag Tests', function () {
       <text>a</text>
       <p>values: <group name="grp"><number>1</number> <number>2</number></group> <number>3</number></p>
       
-      <section><copy name="c1" target="_p1" newNamespace /></section>
+      <section><copy name="c1" source="_p1" newNamespace /></section>
       
-      <copy name="c2" target="c1" />
-      <copy name="c3" target="c1" assignNames="p1a" />
-      <copy name="c4" target="c1" newNamespace />
-      <copy name="c5" target="c1" newNamespace assignNames="p1b" />
+      <copy name="c2" source="c1" />
+      <copy name="c3" source="c1" assignNames="p1a" />
+      <copy name="c4" source="c1" newNamespace />
+      <copy name="c5" source="c1" newNamespace assignNames="p1b" />
       
-      <copy name="c7" target="_section1" />
-      <copy name="c8" target="_section1" assignNames="s1a" />
-      <copy name="c9" target="_section1" newNamespace />
-      <copy name="c10" target="_section1" newNamespace assignNames="s1b" />
+      <copy name="c7" source="_section1" />
+      <copy name="c8" source="_section1" assignNames="s1a" />
+      <copy name="c9" source="_section1" newNamespace />
+      <copy name="c10" source="_section1" newNamespace assignNames="s1b" />
     
     `}, "*");
     });
@@ -5454,20 +7007,20 @@ describe('Copy Tag Tests', function () {
     })
   });
 
-  it('copy with newNamespace retains original names, even with group, with copytarget', () => {
+  it('copy with newNamespace retains original names, even with group, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
       <p>values: <group name="grp"><number>1</number> <number>2</number></group> <number>3</number></p>
       
-      <section><p name="p1a" copytarget="_p1" newNamespace /></section>
+      <section><p name="p1a" copySource="_p1" newNamespace /></section>
       
-      <p copytarget="p1a" name="p1b" />
-      <p copytarget="p1a" newNamespace name="p1c" />
+      <p copySource="p1a" name="p1b" />
+      <p copySource="p1a" newNamespace name="p1c" />
       
-      <section copytarget="_section1" name="s1a" />
-      <section copytarget="_section1" newNamespace name="s1b" />
+      <section copySource="_section1" name="s1a" />
+      <section copySource="_section1" newNamespace name="s1b" />
     
     `}, "*");
     });
@@ -5544,17 +7097,17 @@ describe('Copy Tag Tests', function () {
       <text>a</text>
       <p>values: <group name="grp" assignNames="n1 n2"><number>1</number> <number>2</number></group> <number name="n3">3</number></p>
       
-      <section><copy name="c1" target="_p1" newNamespace /></section>
+      <section><copy name="c1" source="_p1" newNamespace /></section>
       
-      <copy name="c2" target="c1" />
-      <copy name="c3" target="c1" assignNames="p1a" />
-      <copy name="c4" target="c1" newNamespace />
-      <copy name="c5" target="c1" newNamespace assignNames="p1b" />
+      <copy name="c2" source="c1" />
+      <copy name="c3" source="c1" assignNames="p1a" />
+      <copy name="c4" source="c1" newNamespace />
+      <copy name="c5" source="c1" newNamespace assignNames="p1b" />
       
-      <copy name="c7" target="_section1" />
-      <copy name="c8" target="_section1" assignNames="s1a" />
-      <copy name="c9" target="_section1" newNamespace />
-      <copy name="c10" target="_section1" newNamespace assignNames="s1b" />
+      <copy name="c7" source="_section1" />
+      <copy name="c8" source="_section1" assignNames="s1a" />
+      <copy name="c9" source="_section1" newNamespace />
+      <copy name="c10" source="_section1" newNamespace assignNames="s1b" />
     
     `}, "*");
     });
@@ -5711,20 +7264,20 @@ describe('Copy Tag Tests', function () {
     })
   });
 
-  it('copy with newNamespace retains original names, even with group that assigns names, with copytarget', () => {
+  it('copy with newNamespace retains original names, even with group that assigns names, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
       <p>values: <group name="grp" assignNames="n1 n2"><number>1</number> <number>2</number></group> <number name="n3">3</number></p>
       
-      <section><p name="p1a" copytarget="_p1" newNamespace /></section>
+      <section><p name="p1a" copySource="_p1" newNamespace /></section>
       
-      <p copytarget="p1a" name="p1b" />
-      <p copytarget="p1a" newNamespace name="p1c" />
+      <p copySource="p1a" name="p1b" />
+      <p copySource="p1a" newNamespace name="p1c" />
       
-      <section copytarget="_section1" name="s1a" />
-      <section copytarget="_section1" newNamespace name="s1b" />
+      <section copySource="_section1" name="s1a" />
+      <section copySource="_section1" newNamespace name="s1b" />
     
     `}, "*");
     });
@@ -5801,17 +7354,17 @@ describe('Copy Tag Tests', function () {
       <text>a</text>
       <p>values: <group name="grp" newNamespace><number>1</number> <number>2</number></group> <number>3</number></p>
       
-      <section><copy name="c1" target="_p1" newNamespace /></section>
+      <section><copy name="c1" source="_p1" newNamespace /></section>
       
-      <copy name="c2" target="c1" />
-      <copy name="c3" target="c1" assignNames="p1a" />
-      <copy name="c4" target="c1" newNamespace />
-      <copy name="c5" target="c1" newNamespace assignNames="p1b" />
+      <copy name="c2" source="c1" />
+      <copy name="c3" source="c1" assignNames="p1a" />
+      <copy name="c4" source="c1" newNamespace />
+      <copy name="c5" source="c1" newNamespace assignNames="p1b" />
       
-      <copy name="c7" target="_section1" />
-      <copy name="c8" target="_section1" assignNames="s1a" />
-      <copy name="c9" target="_section1" newNamespace />
-      <copy name="c10" target="_section1" newNamespace assignNames="s1b" />
+      <copy name="c7" source="_section1" />
+      <copy name="c8" source="_section1" assignNames="s1a" />
+      <copy name="c9" source="_section1" newNamespace />
+      <copy name="c10" source="_section1" newNamespace assignNames="s1b" />
     
     `}, "*");
     });
@@ -5969,20 +7522,20 @@ describe('Copy Tag Tests', function () {
     })
   });
 
-  it('copy with newNamespace retains original names, even with group that has new namespace, with copytarget', () => {
+  it('copy with newNamespace retains original names, even with group that has new namespace, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
       <p>values: <group name="grp" newNamespace><number>1</number> <number>2</number></group> <number>3</number></p>
       
-      <section><p name="p1a" copytarget="_p1" newNamespace /></section>
+      <section><p name="p1a" copySource="_p1" newNamespace /></section>
       
-      <p copytarget="p1a" name="p1b" />
-      <p copytarget="p1a" newNamespace name="p1c" />
+      <p copySource="p1a" name="p1b" />
+      <p copySource="p1a" newNamespace name="p1c" />
       
-      <section copytarget="_section1" name="s1a" />
-      <section copytarget="_section1" newNamespace name="s1b" />
+      <section copySource="_section1" name="s1a" />
+      <section copySource="_section1" newNamespace name="s1b" />
     
     `}, "*");
     });
@@ -6058,19 +7611,19 @@ describe('Copy Tag Tests', function () {
       <text>a</text>
       <p>values: <group name="grp" newNamespace assignNames="n1 n2"><number>1</number> <number>2</number></group> <number name="n1">3</number></p>
       
-      <section><copy name="c1" target="_p1" newNamespace /></section>
+      <section><copy name="c1" source="_p1" newNamespace /></section>
       
-      <copy name="c2" target="c1" />
-      <copy name="c3" target="c1" assignNames="p1a" />
-      <copy name="c4" target="c1" newNamespace />
-      <copy name="c5" target="c1" newNamespace assignNames="p1b" />
-      <copy name="c6" target="c1" newNamespace assignNames="grp" />
+      <copy name="c2" source="c1" />
+      <copy name="c3" source="c1" assignNames="p1a" />
+      <copy name="c4" source="c1" newNamespace />
+      <copy name="c5" source="c1" newNamespace assignNames="p1b" />
+      <copy name="c6" source="c1" newNamespace assignNames="grp" />
       
-      <copy name="c7" target="_section1" />
-      <copy name="c8" target="_section1" assignNames="s1a" />
-      <copy name="c9" target="_section1" newNamespace />
-      <copy name="c10" target="_section1" newNamespace assignNames="s1b" />
-      <copy name="c11" target="_section1" newNamespace assignNames="grp" />
+      <copy name="c7" source="_section1" />
+      <copy name="c8" source="_section1" assignNames="s1a" />
+      <copy name="c9" source="_section1" newNamespace />
+      <copy name="c10" source="_section1" newNamespace assignNames="s1b" />
+      <copy name="c11" source="_section1" newNamespace assignNames="grp" />
     
     `}, "*");
     });
@@ -6261,20 +7814,20 @@ describe('Copy Tag Tests', function () {
     })
   });
 
-  it('copy with newNamespace retains original names, even with group that has new namespace and assigns names, with copytarget', () => {
+  it('copy with newNamespace retains original names, even with group that has new namespace and assigns names, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
       <text>a</text>
       <p>values: <group name="grp" newNamespace assignNames="n1 n2"><number>1</number> <number>2</number></group> <number name="n1">3</number></p>
       
-      <section><p name="p1a" copytarget="_p1" newNamespace /></section>
+      <section><p name="p1a" copySource="_p1" newNamespace /></section>
       
-      <p copytarget="p1a" name="p1b" />
-      <p copytarget="p1a" newNamespace name="p1c" />
+      <p copySource="p1a" name="p1b" />
+      <p copySource="p1a" newNamespace name="p1c" />
       
-      <section copytarget="_section1" name="s1a" />
-      <section copytarget="_section1" newNamespace name="s1b" />
+      <section copySource="_section1" name="s1a" />
+      <section copySource="_section1" newNamespace name="s1b" />
     
     `}, "*");
     });
@@ -6350,12 +7903,12 @@ describe('Copy Tag Tests', function () {
       <text>a</text>
       <group name="grp" newNamespace><number name="num1">1</number> <number name="num2">2</number> <group><number name="num3">3</number><number name="num4">4</number><group><number name="num5">5</number><number name="num6">6</number></group></group></group>
 
-      <copy target="grp" assignNames="grp2" />
+      <copy source="grp" assignNames="grp2" />
       
-      <group copytarget="grp2" name="grp3" />
+      <group copySource="grp2" name="grp3" />
 
-      <group copytarget="grp2/_group1" name="grp4" newNamespace />
-      <group copytarget="grp3/_group1" name="grp5" newNamespace />
+      <group copySource="grp2/_group1" name="grp4" newNamespace />
+      <group copySource="grp3/_group1" name="grp5" newNamespace />
 
     `}, "*");
     });
@@ -6402,7 +7955,7 @@ describe('Copy Tag Tests', function () {
       <text>a</text>
       <group name="grp" newNamespace><number name="num1">1</number> <number name="num2">2</number></group>
 
-      <p><copy target="grp" assignNames="(num2)" /></p>
+      <p><copy source="grp" assignNames="(num2)" /></p>
       
 
     `}, "*");
@@ -6428,18 +7981,18 @@ describe('Copy Tag Tests', function () {
     </graph>
     
     <graph name="g1a">
-      <collect name="col" componentTypes="point" target="g1" assignNames="A1 B1" />
+      <collect name="col" componentTypes="point" source="g1" assignNames="A1 B1" />
     </graph>
     
     <graph name="g2">
-      <copy target="col" assignNames="A2 B2" componentIndex="$n" />
+      <copy source="col" assignNames="A2 B2" componentIndex="$n" />
     </graph>
   
-    <copy target="g2" name="g3" newNamespace />
+    <copy source="g2" name="g3" newNamespace />
 
-    <aslist name="al"><copy prop="x" target="col" componentIndex="$n" assignNames="Ax Bx" /></aslist>
+    <aslist name="al"><copy prop="x" source="col" componentIndex="$n" assignNames="Ax Bx" /></aslist>
 
-    <copy target="al" name="al2" newNamespace />
+    <copy source="al" name="al2" newNamespace />
 
     `}, "*");
     });
@@ -6448,10 +8001,33 @@ describe('Copy Tag Tests', function () {
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
+    cy.get('#\\/Ax .mjx-mrow').should('not.exist');
+    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Ax .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/A2']).eq(undefined);
+      expect(stateVariables["/g3/A2"]).eq(undefined);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/B2']).eq(undefined);
+      expect(stateVariables["/g3/B2"]).eq(undefined);
+      expect(stateVariables['/Ax']).eq(undefined);
+      expect(stateVariables["/al2/Ax"]).eq(undefined);
+      expect(stateVariables['/Bx']).eq(undefined);
+      expect(stateVariables["/al2/Bx"]).eq(undefined);
+    });
+
+    cy.log('restrict collection to first component');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+
+    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
     cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/Bx .mjx-mrow').should('contain.text', nInDOM(x2));
     cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/Bx .mjx-mrow').should('contain.text', nInDOM(x2));
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -6459,12 +8035,156 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables['/A2'].stateValues.xs).eqls([x1, y1]);
       expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x1, y1]);
       expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/B2'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables["/g3/B2"].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/B2']).eq(undefined);
+      expect(stateVariables["/g3/B2"]).eq(undefined);
       expect(stateVariables['/Ax'].stateValues.value).eq(x1);
       expect(stateVariables["/al2/Ax"].stateValues.value).eq(x1);
-      expect(stateVariables['/Bx'].stateValues.value).eq(x2);
-      expect(stateVariables["/al2/Bx"].stateValues.value).eq(x2);
+      expect(stateVariables['/Bx']).eq(undefined);
+      expect(stateVariables["/al2/Bx"]).eq(undefined);
+    });
+
+    cy.log('move copied point')
+    cy.window().then(async (win) => {
+      x1 = 9, y1 = -5;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A2",
+        args: { x: x1, y: y1 }
+      })
+
+      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/A2'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B2']).eq(undefined);
+        expect(stateVariables["/g3/B2"]).eq(undefined);
+        expect(stateVariables['/Ax'].stateValues.value).eq(x1);
+        expect(stateVariables["/al2/Ax"].stateValues.value).eq(x1);
+        expect(stateVariables['/Bx']).eq(undefined);
+        expect(stateVariables["/al2/Bx"]).eq(undefined);
+      });
+
+    })
+
+    cy.log('collect second component');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/A2'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B2']).eq(undefined);
+        expect(stateVariables["/g3/B2"]).eq(undefined);
+        expect(stateVariables['/Ax'].stateValues.value).eq(x2);
+        expect(stateVariables["/al2/Ax"].stateValues.value).eq(x2);
+        expect(stateVariables['/Bx']).eq(undefined);
+        expect(stateVariables["/al2/Bx"]).eq(undefined);
+      });
+
+    })
+
+
+    cy.log('move double copied point')
+    cy.window().then(async (win) => {
+      x2 = 0, y2 = 8;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g3/A2",
+        args: { x: x2, y: y2 }
+      })
+
+      cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/A2'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B2']).eq(undefined);
+        expect(stateVariables["/g3/B2"]).eq(undefined);
+        expect(stateVariables['/Ax'].stateValues.value).eq(x2);
+        expect(stateVariables["/al2/Ax"].stateValues.value).eq(x2);
+        expect(stateVariables['/Bx']).eq(undefined);
+        expect(stateVariables["/al2/Bx"]).eq(undefined);
+      });
+
+    })
+
+  })
+
+  it('copy componentIndex, array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>n: <mathinput name="n" /></p>
+
+    <graph name="g1">
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+    </graph>
+    
+    <graph name="g1a">
+      <collect name="col" componentTypes="point" source="g1" assignNames="A1 B1" />
+    </graph>
+    
+    <graph name="g2">
+      <copy source="col[$n]" assignNames="A2 B2" />
+    </graph>
+  
+    <copy source="g2" name="g3" newNamespace />
+
+    <aslist name="al"><copy source="col[$n].x" assignNames="Ax Bx" /></aslist>
+
+    <copy source="al" name="al2" newNamespace />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
+
+    cy.get('#\\/Ax .mjx-mrow').should('not.exist');
+    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Ax .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/A2']).eq(undefined);
+      expect(stateVariables["/g3/A2"]).eq(undefined);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/B2']).eq(undefined);
+      expect(stateVariables["/g3/B2"]).eq(undefined);
+      expect(stateVariables['/Ax']).eq(undefined);
+      expect(stateVariables["/al2/Ax"]).eq(undefined);
+      expect(stateVariables['/Bx']).eq(undefined);
+      expect(stateVariables["/al2/Bx"]).eq(undefined);
     });
 
     cy.log('restrict collection to first component');
@@ -6581,7 +8301,7 @@ describe('Copy Tag Tests', function () {
 
   })
 
-  it('copy componentIndex, with copytarget', () => {
+  it('copy componentIndex, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -6595,18 +8315,138 @@ describe('Copy Tag Tests', function () {
     </graph>
     
     <graph name="g1a">
-      <collect name="col" componentTypes="point" target="g1" assignNames="A1 B1" />
+      <collect name="col" componentTypes="point" source="g1" assignNames="A1 B1" />
     </graph>
     
     <graph name="g2">
-      <point copytarget="col" name="A2" componentIndex="$n" />
+      <point copySource="col" name="A2" componentIndex="$n" />
     </graph>
   
-    <graph copytarget="g2" name="g3" newNamespace />
+    <graph copySource="g2" name="g3" newNamespace />
   
-    <aslist name="al"><math prop="x" copytarget="col" componentIndex="$n" name="Ax" /></aslist>
+    <aslist name="al"><math copyprop="x" copySource="col" componentIndex="$n" name="Ax" /></aslist>
   
-    <aslist copytarget="al" name="al2" newNamespace />
+    <aslist copySource="al" name="al2" newNamespace />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
+
+    cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+    cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/A2'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/Ax'].stateValues.value).eq(x1);
+      expect(stateVariables["/al2/Ax"].stateValues.value).eq(x1);
+    });
+
+    cy.log('move copied point')
+    cy.window().then(async (win) => {
+      x1 = 9, y1 = -5;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A2",
+        args: { x: x1, y: y1 }
+      })
+
+      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/A2'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/Ax'].stateValues.value).eq(x1);
+        expect(stateVariables["/al2/Ax"].stateValues.value).eq(x1);
+      });
+
+    })
+
+    cy.log('restrict collection to second component');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/A2'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/Ax'].stateValues.value).eq(x2);
+        expect(stateVariables["/al2/Ax"].stateValues.value).eq(x2);
+      });
+
+    })
+
+
+    cy.log('move double copied point')
+    cy.window().then(async (win) => {
+      x2 = 0, y2 = 8;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/g3/A2",
+        args: { x: x2, y: y2 }
+      })
+
+      cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/A2'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/Ax'].stateValues.value).eq(x2);
+        expect(stateVariables["/al2/Ax"].stateValues.value).eq(x2);
+      });
+
+    })
+
+  })
+
+  it('copy componentIndex, with copySource, array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>n: <mathinput name="n" prefill="1" /></p>
+
+    <graph name="g1">
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+    </graph>
+    
+    <graph name="g1a">
+      <collect name="col" componentTypes="point" source="g1" assignNames="A1 B1" />
+    </graph>
+    
+    <graph name="g2">
+      <point copySource="col[$n]" name="A2" />
+    </graph>
+  
+    <graph copySource="g2" name="g3" newNamespace />
+  
+    <aslist name="al"><math copySource="col[$n].x" name="Ax" /></aslist>
+  
+    <aslist copySource="al" name="al2" newNamespace />
 
     `}, "*");
     });
@@ -6716,13 +8556,13 @@ describe('Copy Tag Tests', function () {
     </graph>
 
     <graph name="g1a">
-      <collect name="col" componentTypes="point" target="g1" assignNames="A1 B1" />
+      <collect name="col" componentTypes="point" source="g1" assignNames="A1 B1" />
     </graph>
   
     
-    <p><aslist name="al"><copy prop="xs" target="col" componentIndex="$m" propIndex="$n" assignNames="n1 n2 n3 n4" /></aslist></p>
+    <p><aslist name="al"><copy prop="xs" source="col" componentIndex="$m" propIndex="$n" assignNames="n1 n2 n3 n4" /></aslist></p>
 
-    <p><copy target="al" name="al2" newNamespace /></p>
+    <p><copy source="al" name="al2" newNamespace /></p>
 
     `}, "*");
     });
@@ -6731,39 +8571,12 @@ describe('Copy Tag Tests', function () {
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(y1));
-    cy.get('#\\/n3 .mjx-mrow').should('contain.text', nInDOM(x2));
-    cy.get('#\\/n4 .mjx-mrow').should('contain.text', nInDOM(y2));
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y1));
-    cy.get('#\\/al2\\/n3 .mjx-mrow').should('contain.text', nInDOM(x2));
-    cy.get('#\\/al2\\/n4 .mjx-mrow').should('contain.text', nInDOM(y2));
-
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
-      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/n2'].stateValues.value).eq(y1);
-      expect(stateVariables['/n3'].stateValues.value).eq(x2);
-      expect(stateVariables['/n4'].stateValues.value).eq(y2);
-      expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/al2/n2'].stateValues.value).eq(y1);
-      expect(stateVariables['/al2/n3'].stateValues.value).eq(x2);
-      expect(stateVariables['/al2/n4'].stateValues.value).eq(y2);
-    });
-
-    cy.log('set propIndex to 1');
-
-    cy.get('#\\/n textarea').type("1{enter}", { force: true })
-
-    cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
     cy.get('#\\/n3 .mjx-mrow').should('not.exist');
     cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
     cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
     cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
 
@@ -6771,12 +8584,39 @@ describe('Copy Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
       expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/n2'].stateValues.value).eq(x2);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
       expect(stateVariables['/n3']).eq(undefined);
       expect(stateVariables['/n4']).eq(undefined);
-      expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/al2/n2'].stateValues.value).eq(x2);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
+      expect(stateVariables['/al2/n3']).eq(undefined);
+      expect(stateVariables['/al2/n4']).eq(undefined);
+    });
+
+    cy.log('set propIndex to 1');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
+      expect(stateVariables['/n3']).eq(undefined);
+      expect(stateVariables['/n4']).eq(undefined);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
       expect(stateVariables['/al2/n3']).eq(undefined);
       expect(stateVariables['/al2/n4']).eq(undefined);
     });
@@ -6790,12 +8630,12 @@ describe('Copy Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
 
@@ -6803,12 +8643,12 @@ describe('Copy Tag Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
         expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-        expect(stateVariables['/n1'].stateValues.value).eq(x1);
-        expect(stateVariables['/n2'].stateValues.value).eq(x2);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
         expect(stateVariables['/n3']).eq(undefined);
         expect(stateVariables['/n4']).eq(undefined);
-        expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
-        expect(stateVariables['/al2/n2'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
         expect(stateVariables['/al2/n3']).eq(undefined);
         expect(stateVariables['/al2/n4']).eq(undefined);
       });
@@ -7064,13 +8904,156 @@ describe('Copy Tag Tests', function () {
     cy.log('clear propIndex')
     cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
 
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
     cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
+      expect(stateVariables['/n3']).eq(undefined);
+      expect(stateVariables['/n4']).eq(undefined);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
+      expect(stateVariables['/al2/n3']).eq(undefined);
+      expect(stateVariables['/al2/n4']).eq(undefined);
+    })
+
+  })
+
+  it('copy propIndex and componentIndex, array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>m: <mathinput name="m" /></p>
+    <p>n: <mathinput name="n" /></p>
+
+    <graph name="g1">
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+    </graph>
+
+    <graph name="g1a">
+      <collect name="col" componentTypes="point" source="g1" assignNames="A1 B1" />
+    </graph>
+  
+    
+    <p><aslist name="al"><copy source="col[$m].xs[$n]" assignNames="n1 n2 n3 n4" /></aslist></p>
+
+    <p><copy source="al" name="al2" newNamespace /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
+
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
+      expect(stateVariables['/n3']).eq(undefined);
+      expect(stateVariables['/n4']).eq(undefined);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
+      expect(stateVariables['/al2/n3']).eq(undefined);
+      expect(stateVariables['/al2/n4']).eq(undefined);
+    });
+
+    cy.log('set propIndex to 1');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
+      expect(stateVariables['/n3']).eq(undefined);
+      expect(stateVariables['/n4']).eq(undefined);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
+      expect(stateVariables['/al2/n3']).eq(undefined);
+      expect(stateVariables['/al2/n4']).eq(undefined);
+    });
+
+    cy.log('move point 1')
+    cy.window().then(async (win) => {
+      x1 = 9, y1 = -5;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/A",
+        args: { x: x1, y: y1 }
+      })
+
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+    cy.log('set componentIndex to 2');
+
+    cy.get('#\\/m textarea').type("2{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
       cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/n4 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
 
@@ -7079,19 +9062,262 @@ describe('Copy Tag Tests', function () {
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
         expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
         expect(stateVariables['/n1'].stateValues.value).eq(x2);
-        expect(stateVariables['/n2'].stateValues.value).eq(y2);
+        expect(stateVariables['/n2']).eq(undefined);
         expect(stateVariables['/n3']).eq(undefined);
         expect(stateVariables['/n4']).eq(undefined);
         expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
-        expect(stateVariables['/al2/n2'].stateValues.value).eq(y2);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+
+    })
+
+
+    cy.log('move point2')
+    cy.window().then(async (win) => {
+      x2 = 0, y2 = 8;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: x2, y: y2 }
+      })
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n2']).eq(undefined);
         expect(stateVariables['/al2/n3']).eq(undefined);
         expect(stateVariables['/al2/n4']).eq(undefined);
       });
     })
 
+
+    cy.log('set propIndex to 2')
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(y2);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(y2);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+    cy.log('set componentIndex to 1')
+    cy.get('#\\/m textarea').type("{end}{backspace}1{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(y1);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(y1);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+
+    cy.log('set propIndex to 3')
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+    cy.log('set propIndex to 1')
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x1);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+
+    cy.log('set componentIndex to 3')
+    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+
+    cy.log('set componentIndex to 2')
+    cy.get('#\\/m textarea').type("{end}{backspace}2{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/n2']).eq(undefined);
+        expect(stateVariables['/n3']).eq(undefined);
+        expect(stateVariables['/n4']).eq(undefined);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n2']).eq(undefined);
+        expect(stateVariables['/al2/n3']).eq(undefined);
+        expect(stateVariables['/al2/n4']).eq(undefined);
+      });
+    })
+
+    cy.log('clear propIndex')
+    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
+
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
+      expect(stateVariables['/n3']).eq(undefined);
+      expect(stateVariables['/n4']).eq(undefined);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
+      expect(stateVariables['/al2/n3']).eq(undefined);
+      expect(stateVariables['/al2/n4']).eq(undefined);
+    })
+
   })
 
-  it('copy propIndex and componentIndex, with copytarget', () => {
+  it('copy propIndex and componentIndex, with copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -7106,13 +9332,208 @@ describe('Copy Tag Tests', function () {
     </graph>
 
     <graph name="g1a">
-      <collect name="col" componentTypes="point" target="g1" assignNames="A1 B1" />
+      <collect name="col" componentTypes="point" source="g1" assignNames="A1 B1" />
     </graph>
   
     
-    <p><aslist name="al"><math prop="xs" copytarget="col" componentIndex="$m" propIndex="$n" name="n1" /></aslist></p>
+    <p><aslist name="al"><math copyprop="xs" copySource="col" componentIndex="$m" propIndex="$n" name="n1" /></aslist></p>
 
-    <p><aslist copytarget="al" name="al2" newNamespace /></p>
+    <p><aslist copySource="al" name="al2" newNamespace /></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait for page to load
+
+    let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
+      });
+
+    })
+
+
+    cy.log('move point2')
+    cy.window().then(async (win) => {
+      x2 = 0, y2 = 8;
+      await win.callAction1({
+        actionName: "movePoint",
+        componentName: "/B",
+        args: { x: x2, y: y2 }
+      })
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
+      });
+    })
+
+
+    cy.log('set propIndex to 2')
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y2));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(y2);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(y2);
+      });
+    })
+
+
+    cy.log('set componentIndex to 1')
+    cy.get('#\\/m textarea').type("{end}{backspace}1{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(y1));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(y1);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(y1);
+      });
+    })
+
+
+
+    cy.log('set propIndex to 3')
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq('\uff3f');
+        expect(stateVariables['/al2/n1'].stateValues.value).eq('\uff3f');
+      });
+    })
+
+
+    cy.log('set propIndex to 1')
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x1);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
+      });
+    })
+
+
+
+    cy.log('set componentIndex to 3')
+    cy.get('#\\/m textarea').type("{end}{backspace}3{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq('\uff3f');
+        expect(stateVariables['/al2/n1'].stateValues.value).eq('\uff3f');
+      });
+    })
+
+
+    cy.log('set componentIndex to 2')
+    cy.get('#\\/m textarea').type("{end}{backspace}2{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
+      });
+    })
+
+    cy.log('clear propIndex')
+    cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
+
+    cy.window().then(async (win) => {
+      cy.get('#\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', '\uff3f');
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+        expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+        expect(stateVariables['/n1'].stateValues.value).eq('\uff3f');
+        expect(stateVariables['/al2/n1'].stateValues.value).eq('\uff3f');
+      });
+    })
+
+  })
+
+  it('copy propIndex and componentIndex, with copySource', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p>m: <mathinput name="m" prefill="2" /></p>
+    <p>n: <mathinput name="n" prefill="1" /></p>
+
+    <graph name="g1">
+      <point name="A">(1,2)</point>
+      <point name="B">(3,4)</point>
+    </graph>
+
+    <graph name="g1a">
+      <collect name="col" componentTypes="point" source="g1" assignNames="A1 B1" />
+    </graph>
+  
+    
+    <p><aslist name="al"><math copySource="col[$m].xs[$n]" name="n1" /></aslist></p>
+
+    <p><aslist copySource="al" name="al2" newNamespace /></p>
 
     `}, "*");
     });
@@ -7294,28 +9715,28 @@ describe('Copy Tag Tests', function () {
 
     <p newNamespace name="p1" hide fixed>Hidden text: <text name="hidden" hide fixed newNamespace>secret <text name="pw">password</text></text></p>
 
-    <p name="p2">Text revealed by default: <copy target="p1/hidden" name="c1" assignNames="notHidden" /></p>
-    <p name="p3">Because target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c1" obtainPropFromComposite /></p>
-    <p name="p4">Check attributes: <copy prop="hidden" target="notHidden" /> <copy prop="fixed" target="notHidden" /> <copy prop="newNamespace" target="notHidden" /></p>
-    <p name="p5">Check if new namespace copied: <copy target="notHidden/pw"/></p>
+    <p name="p2">Text revealed by default: <copy source="p1/hidden" name="c1" assignNames="notHidden" /></p>
+    <p name="p3">Because source attributes to ignore are: <copy prop="targetAttributesToIgnore" source="c1" obtainPropFromComposite /></p>
+    <p name="p4">Check attributes: <copy prop="hidden" source="notHidden" /> <copy prop="fixed" source="notHidden" /> <copy prop="newNamespace" source="notHidden" /></p>
+    <p name="p5">Check if new namespace copied: <copy source="notHidden/pw"/></p>
 
     <p>Text but not paragraph stays hidden by default:</p>
-    <copy target="p1" name="c2" assignNames="p6" />
-    <p name="p7">Because target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c2" obtainPropFromComposite /></p>
-    <p name="p8">Check attributes: <copy prop="hidden" target="p6" /> <copy prop="fixed" target="p6" /> <copy prop="newNamespace" target="p6" /> <copy prop="hidden" target="p6/hidden" /> <copy prop="fixed" target="p6/hidden" /> <copy prop="newNamespace" target="p6/hidden" /></p>
-    <p name="p9">Check if inner new namespace copied: <copy target="p6/hidden/pw"/></p>
+    <copy source="p1" name="c2" assignNames="p6" />
+    <p name="p7">Because source attributes to ignore are: <copy prop="targetAttributesToIgnore" source="c2" obtainPropFromComposite /></p>
+    <p name="p8">Check attributes: <copy prop="hidden" source="p6" /> <copy prop="fixed" source="p6" /> <copy prop="newNamespace" source="p6" /> <copy prop="hidden" source="p6/hidden" /> <copy prop="fixed" source="p6/hidden" /> <copy prop="newNamespace" source="p6/hidden" /></p>
+    <p name="p9">Check if inner new namespace copied: <copy source="p6/hidden/pw"/></p>
 
 
-    <p name="p10">Now text stays hidden: <copy target="p1/hidden" name="c3" assignNames="stillHidden" targetAttributesToIgnore="newNamespace fixed" /></p>
-    <p name="p11">Because target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c3" obtainPropFromComposite /></p>
-    <p name="p12">Check attributes: <copy prop="hidden" target="stillHidden" /> <copy prop="fixed" target="stillHidden" /> <copy prop="newNamespace" target="stillHidden" /></p>
-    <p name="p13">Check that new namespace not copied: <copy target="stillHidden/pw" /></p>
+    <p name="p10">Now text stays hidden: <copy source="p1/hidden" name="c3" assignNames="stillHidden" targetAttributesToIgnore="newNamespace fixed" /></p>
+    <p name="p11">Because source attributes to ignore are: <copy prop="targetAttributesToIgnore" source="c3" obtainPropFromComposite /></p>
+    <p name="p12">Check attributes: <copy prop="hidden" source="stillHidden" /> <copy prop="fixed" source="stillHidden" /> <copy prop="newNamespace" source="stillHidden" /></p>
+    <p name="p13">Check that new namespace not copied: <copy source="stillHidden/pw" /></p>
 
     <p>Now paragraph stay hidden:</p>
-    <copy target="p1" name="c4" assignNames="p14" targetAttributesToIgnore="newNamespace fixed" />
-    <p name="p15">Because target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c4" obtainPropFromComposite /></p>
-    <p name="p16">Check attributes: <copy prop="hidden" target="p14" /> <copy prop="fixed" target="p14" /> <copy prop="newNamespace" target="p14" /></p>
-    <p name="p17">Check that outer new namespace not copied: <copy target="p14/hidden"/></p>
+    <copy source="p1" name="c4" assignNames="p14" targetAttributesToIgnore="newNamespace fixed" />
+    <p name="p15">Because source attributes to ignore are: <copy prop="targetAttributesToIgnore" source="c4" obtainPropFromComposite /></p>
+    <p name="p16">Check attributes: <copy prop="hidden" source="p14" /> <copy prop="fixed" source="p14" /> <copy prop="newNamespace" source="p14" /></p>
+    <p name="p17">Check that outer new namespace not copied: <copy source="p14/hidden"/></p>
 
 
     `}, "*");
@@ -7327,22 +9748,22 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/p1').should('not.exist');
 
     cy.get('#\\/p2').should('have.text', 'Text revealed by default: secret password');
-    cy.get('#\\/p3').should('have.text', 'Because target attributes to ignore are: hide');
+    cy.get('#\\/p3').should('have.text', 'Because source attributes to ignore are: hide');
     cy.get('#\\/p4').should('have.text', 'Check attributes: false true true');
     cy.get('#\\/p5').should('have.text', 'Check if new namespace copied: password')
 
     cy.get('#\\/p6').should('have.text', 'Hidden text: ')
-    cy.get('#\\/p7').should('have.text', 'Because target attributes to ignore are: hide')
+    cy.get('#\\/p7').should('have.text', 'Because source attributes to ignore are: hide')
     cy.get('#\\/p8').should('have.text', 'Check attributes: false true true true true true');
     cy.get('#\\/p9').should('have.text', 'Check if inner new namespace copied: password')
 
     cy.get('#\\/p10').should('have.text', 'Now text stays hidden: ');
-    cy.get('#\\/p11').should('have.text', 'Because target attributes to ignore are: newNamespace, fixed');
+    cy.get('#\\/p11').should('have.text', 'Because source attributes to ignore are: newNamespace, fixed');
     cy.get('#\\/p12').should('have.text', 'Check attributes: true false false');
     cy.get('#\\/p13').should('have.text', 'Check that new namespace not copied: ')
 
     cy.get('#\\/p14').should('not.exist');
-    cy.get('#\\/p15').should('have.text', 'Because target attributes to ignore are: newNamespace, fixed');
+    cy.get('#\\/p15').should('have.text', 'Because source attributes to ignore are: newNamespace, fixed');
     cy.get('#\\/p16').should('have.text', 'Check attributes: true false false');
     cy.get('#\\/p17').should('have.text', 'Check that outer new namespace not copied: ')
 
@@ -7359,21 +9780,21 @@ describe('Copy Tag Tests', function () {
     <p name="p1" hide newNamespace fixed isResponse>The text: <text name="hidden" hide fixed isResponse>secret</text></p>
 
     <p>Text but not paragraph stays hidden by default:</p>
-    <copy target="p1" name="c1" assignNames="p2" />
-    <p name="p3">Because target attributes to ignore recursively are: <copy prop="targetAttributesToIgnoreRecursively" target="c1" obtainPropFromComposite /></p>
-    <p name="p4">Check attributes: <copy prop="hidden" target="p2" /> <copy prop="fixed" target="p2" /> <copy prop="isResponse" target="p2" /> <copy prop="hidden" target="p2/hidden" /> <copy prop="fixed" target="p2/hidden" /> <copy prop="isResponse" target="p2/hidden" /></p>
+    <copy source="p1" name="c1" assignNames="p2" />
+    <p name="p3">Because source attributes to ignore recursively are: <copy prop="targetAttributesToIgnoreRecursively" source="c1" obtainPropFromComposite /></p>
+    <p name="p4">Check attributes: <copy prop="hidden" source="p2" /> <copy prop="fixed" source="p2" /> <copy prop="isResponse" source="p2" /> <copy prop="hidden" source="p2/hidden" /> <copy prop="fixed" source="p2/hidden" /> <copy prop="isResponse" source="p2/hidden" /></p>
 
     <p>Now all is revealed:</p>
-    <copy target="p1" name="c2" assignNames="p5" targetAttributesToIgnoreRecursively="hide fixed" />
-    <p name="p6">Because target attributes to ignore recursively are: <copy prop="targetAttributesToIgnoreRecursively" target="c2" obtainPropFromComposite /></p>
-    <p name="p7">Check attributes: <copy prop="hidden" target="p5" /> <copy prop="fixed" target="p5" /> <copy prop="isResponse" target="p5" /> <copy prop="hidden" target="p5/hidden" /> <copy prop="fixed" target="p5/hidden" /> <copy prop="isResponse" target="p5/hidden" /></p>
+    <copy source="p1" name="c2" assignNames="p5" targetAttributesToIgnoreRecursively="hide fixed" />
+    <p name="p6">Because source attributes to ignore recursively are: <copy prop="targetAttributesToIgnoreRecursively" source="c2" obtainPropFromComposite /></p>
+    <p name="p7">Check attributes: <copy prop="hidden" source="p5" /> <copy prop="fixed" source="p5" /> <copy prop="isResponse" source="p5" /> <copy prop="hidden" source="p5/hidden" /> <copy prop="fixed" source="p5/hidden" /> <copy prop="isResponse" source="p5/hidden" /></p>
 
 
     <p>All is still revealed:</p>
-    <copy target="p1" name="c3" assignNames="p8" targetAttributesToIgnoreRecursively="hide" targetAttributesToIgnore="fixed isResponse" />
-    <p name="p9">Because target attributes to ignore recursively are: <copy prop="targetAttributesToIgnoreRecursively" target="c3" obtainPropFromComposite /></p>
-    <p name="p10">And target attributes to ignore are: <copy prop="targetAttributesToIgnore" target="c3" obtainPropFromComposite /></p>
-    <p name="p11">Check attributes: <copy prop="hidden" target="p8" /> <copy prop="fixed" target="p8" /> <copy prop="isResponse" target="p8" /> <copy prop="hidden" target="p8/hidden" /> <copy prop="fixed" target="p8/hidden" /> <copy prop="isResponse" target="p8/hidden" /></p>
+    <copy source="p1" name="c3" assignNames="p8" targetAttributesToIgnoreRecursively="hide" targetAttributesToIgnore="fixed isResponse" />
+    <p name="p9">Because source attributes to ignore recursively are: <copy prop="targetAttributesToIgnoreRecursively" source="c3" obtainPropFromComposite /></p>
+    <p name="p10">And source attributes to ignore are: <copy prop="targetAttributesToIgnore" source="c3" obtainPropFromComposite /></p>
+    <p name="p11">Check attributes: <copy prop="hidden" source="p8" /> <copy prop="fixed" source="p8" /> <copy prop="isResponse" source="p8" /> <copy prop="hidden" source="p8/hidden" /> <copy prop="fixed" source="p8/hidden" /> <copy prop="isResponse" source="p8/hidden" /></p>
 
     `}, "*");
     });
@@ -7384,21 +9805,21 @@ describe('Copy Tag Tests', function () {
     cy.get('#\\/p1').should('not.exist');
 
     cy.get('#\\/p2').should('have.text', 'The text: ');
-    cy.get('#\\/p3').should('have.text', 'Because target attributes to ignore recursively are: isResponse');
+    cy.get('#\\/p3').should('have.text', 'Because source attributes to ignore recursively are: isResponse');
     cy.get('#\\/p4').should('have.text', 'Check attributes: false true false true true false');
 
     cy.get('#\\/p5').should('have.text', 'The text: secret');
-    cy.get('#\\/p6').should('have.text', 'Because target attributes to ignore recursively are: hide, fixed');
+    cy.get('#\\/p6').should('have.text', 'Because source attributes to ignore recursively are: hide, fixed');
     cy.get('#\\/p7').should('have.text', 'Check attributes: false false true false false true');
 
     cy.get('#\\/p8').should('have.text', 'The text: secret');
-    cy.get('#\\/p9').should('have.text', 'Because target attributes to ignore recursively are: hide');
-    cy.get('#\\/p10').should('have.text', 'And target attributes to ignore are: fixed, isResponse');
+    cy.get('#\\/p9').should('have.text', 'Because source attributes to ignore recursively are: hide');
+    cy.get('#\\/p10').should('have.text', 'And source attributes to ignore are: fixed, isResponse');
     cy.get('#\\/p11').should('have.text', 'Check attributes: false false false false true true');
 
   });
 
-  it('copyTarget', () => {
+  it('copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -7406,44 +9827,44 @@ describe('Copy Tag Tests', function () {
     <graph name="g1">
       <point name="P">(1,2)</point>
     </graph>
-    <copy prop="x" target="P" assignNames="P1x" />
+    <copy source="P.x" assignNames="P1x" />
     <graph name="g2" newNamespace>
       <point name="P">(3,4)</point>
     </graph>
-    <copy prop="x" target="g2/P" assignNames="P2x" />
+    <copy source="g2/P.x" assignNames="P2x" />
     <graph name="g3">
-      <point copyTarget="P" name="Pa" />
+      <point copySource="P" name="Pa" />
     </graph>
     <graph name="g4" newNamespace>
-      <point copyTarget="../g2/P" name="Pa" />
+      <point copySource="../g2/P" name="Pa" />
     </graph>
-    <graph copyTarget="g1" name="g5" />
-    <graph copyTarget="g2" name="g6" />
-    <graph copyTarget="g3" name="g7" />
-    <graph copyTarget="g4" name="g8" />
+    <graph copySource="g1" name="g5" />
+    <graph copySource="g2" name="g6" />
+    <graph copySource="g3" name="g7" />
+    <graph copySource="g4" name="g8" />
 
-    <graph copyTarget="g1" name="g9" newNamespace />
-    <graph copyTarget="g2" name="g10" newNamespace />
-    <graph copyTarget="g3" name="g11" newNamespace />
-    <graph copyTarget="g4" name="g12" newNamespace />
+    <graph copySource="g1" name="g9" newNamespace />
+    <graph copySource="g2" name="g10" newNamespace />
+    <graph copySource="g3" name="g11" newNamespace />
+    <graph copySource="g4" name="g12" newNamespace />
 
-    <graph copyTarget="g5" name="g13" />
-    <graph copyTarget="g6" name="g14" />
-    <graph copyTarget="g7" name="g15" />
-    <graph copyTarget="g8" name="g16" />
-    <graph copyTarget="g9" name="g17" />
-    <graph copyTarget="g10" name="g18" />
-    <graph copyTarget="g11" name="g19" />
-    <graph copyTarget="g12" name="g20" />
+    <graph copySource="g5" name="g13" />
+    <graph copySource="g6" name="g14" />
+    <graph copySource="g7" name="g15" />
+    <graph copySource="g8" name="g16" />
+    <graph copySource="g9" name="g17" />
+    <graph copySource="g10" name="g18" />
+    <graph copySource="g11" name="g19" />
+    <graph copySource="g12" name="g20" />
   
-    <graph copyTarget="g5" name="g21" newNamespace />
-    <graph copyTarget="g6" name="g22" newNamespace />
-    <graph copyTarget="g7" name="g23" newNamespace />
-    <graph copyTarget="g8" name="g24" newNamespace />
-    <graph copyTarget="g9" name="g25" newNamespace />
-    <graph copyTarget="g10" name="g26" newNamespace />
-    <graph copyTarget="g11" name="g27" newNamespace />
-    <graph copyTarget="g12" name="g28" newNamespace />
+    <graph copySource="g5" name="g21" newNamespace />
+    <graph copySource="g6" name="g22" newNamespace />
+    <graph copySource="g7" name="g23" newNamespace />
+    <graph copySource="g8" name="g24" newNamespace />
+    <graph copySource="g9" name="g25" newNamespace />
+    <graph copySource="g10" name="g26" newNamespace />
+    <graph copySource="g11" name="g27" newNamespace />
+    <graph copySource="g12" name="g28" newNamespace />
 
     `}, "*");
     });
@@ -7714,7 +10135,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copyTarget and copies with assignNewNamespaces', () => {
+  it('copySource and copies with assignNewNamespaces', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -7722,44 +10143,44 @@ describe('Copy Tag Tests', function () {
     <graph name="g1">
       <point name="P">(1,2)</point>
     </graph>
-    <copy prop="x" target="P" assignNames="P1x" />
+    <copy source="P.x" assignNames="P1x" />
     <graph name="g2" newNamespace>
       <point name="P">(3,4)</point>
     </graph>
-    <copy prop="x" target="g2/P" assignNames="P2x" />
+    <copy source="g2/P.x" assignNames="P2x" />
     <graph name="g3">
-      <point copyTarget="P" name="Pa" />
+      <point copySource="P" name="Pa" />
     </graph>
     <graph name="g4" newNamespace>
-      <point copyTarget="../g2/P" name="Pa" />
+      <point copySource="../g2/P" name="Pa" />
     </graph>
-    <graph copyTarget="g1" name="g5" />
-    <graph copyTarget="g2" name="g6" />
-    <graph copyTarget="g3" name="g7" />
-    <graph copyTarget="g4" name="g8" />
+    <graph copySource="g1" name="g5" />
+    <graph copySource="g2" name="g6" />
+    <graph copySource="g3" name="g7" />
+    <graph copySource="g4" name="g8" />
 
-    <copy target="g1" assignNames="g9" assignNewNamespaces />
-    <copy target="g2" assignNames="g10" assignNewNamespaces />
-    <copy target="g3" assignNames="g11" assignNewNamespaces />
-    <copy target="g4" assignNames="g12" assignNewNamespaces />
+    <copy source="g1" assignNames="g9" assignNewNamespaces />
+    <copy source="g2" assignNames="g10" assignNewNamespaces />
+    <copy source="g3" assignNames="g11" assignNewNamespaces />
+    <copy source="g4" assignNames="g12" assignNewNamespaces />
 
-    <graph copyTarget="g5" name="g13" />
-    <graph copyTarget="g6" name="g14" />
-    <graph copyTarget="g7" name="g15" />
-    <graph copyTarget="g8" name="g16" />
-    <graph copyTarget="g9" name="g17" />
-    <graph copyTarget="g10" name="g18" />
-    <graph copyTarget="g11" name="g19" />
-    <graph copyTarget="g12" name="g20" />
+    <graph copySource="g5" name="g13" />
+    <graph copySource="g6" name="g14" />
+    <graph copySource="g7" name="g15" />
+    <graph copySource="g8" name="g16" />
+    <graph copySource="g9" name="g17" />
+    <graph copySource="g10" name="g18" />
+    <graph copySource="g11" name="g19" />
+    <graph copySource="g12" name="g20" />
   
-    <copy target="g5" assignNames="g21" assignNewNamespaces />
-    <copy target="g6" assignNames="g22" assignNewNamespaces />
-    <copy target="g7" assignNames="g23" assignNewNamespaces />
-    <copy target="g8" assignNames="g24" assignNewNamespaces />
-    <copy target="g9" assignNames="g25" assignNewNamespaces />
-    <copy target="g10" assignNames="g26" assignNewNamespaces />
-    <copy target="g11" assignNames="g27" assignNewNamespaces />
-    <copy target="g12" assignNames="g28" assignNewNamespaces />
+    <copy source="g5" assignNames="g21" assignNewNamespaces />
+    <copy source="g6" assignNames="g22" assignNewNamespaces />
+    <copy source="g7" assignNames="g23" assignNewNamespaces />
+    <copy source="g8" assignNames="g24" assignNewNamespaces />
+    <copy source="g9" assignNames="g25" assignNewNamespaces />
+    <copy source="g10" assignNames="g26" assignNewNamespaces />
+    <copy source="g11" assignNames="g27" assignNewNamespaces />
+    <copy source="g12" assignNames="g28" assignNewNamespaces />
 
     `}, "*");
     });
@@ -8041,21 +10462,21 @@ describe('Copy Tag Tests', function () {
 
     <problem name="p1">
       <answer>y</answer>
-      <p>Credit achieved: <copy prop="creditAchieved" target="p1" assignNames="ca" /></p>
-      <p>Value of mathinput: <copy prop="value" target="mi" assignNames="m" /></p>
-      <p>Other answer credit achieved: <copy prop="creditAchieved" target="p2/_answer1" assignNames="cao" /></p>
+      <p>Credit achieved: <copy source="p1.creditAchieved" assignNames="ca" /></p>
+      <p>Value of mathinput: <copy source="mi.value" assignNames="m" /></p>
+      <p>Other answer credit achieved: <copy source="p2/_answer1.creditAchieved" assignNames="cao" /></p>
       </problem>
 
     <problem name="p2" newNamespace>
       <answer>z</answer>
-      <p>Credit achieved: <copy prop="creditAchieved" target="../p2" assignNames="ca" /></p>
-      <p>Value of mathinput: <copy prop="value" target="../mi" assignNames="m" /></p>
-      <p>Other answer credit achieved: <copy prop="creditAchieved" target="../_answer2" assignNames="cao" /></p>
+      <p>Credit achieved: <copy source="../p2.creditAchieved" assignNames="ca" /></p>
+      <p>Value of mathinput: <copy source="../mi.value" assignNames="m" /></p>
+      <p>Other answer credit achieved: <copy source="../_answer2.creditAchieved" assignNames="cao" /></p>
     </problem>
 
-    <copy target="p1" assignNames="p3" assignNewNamespaces />
+    <copy source="p1" assignNames="p3" assignNewNamespaces />
 
-    <copy target="p2" assignNames="p4" assignNewNamespaces />
+    <copy source="p2" assignNames="p4" assignNewNamespaces />
 
     `}, "*");
     });
@@ -8357,7 +10778,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copyTarget with newNamespace and references to parent', () => {
+  it('copySource with newNamespace and references to parent', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -8368,21 +10789,21 @@ describe('Copy Tag Tests', function () {
 
     <problem name="p1">
       <answer>y</answer>
-      <p>Credit achieved: <copy prop="creditAchieved" target="p1" assignNames="ca" /></p>
-      <p>Value of mathinput: <copy prop="value" target="mi" assignNames="m" /></p>
-      <p>Other answer credit achieved: <copy prop="creditAchieved" target="p2/_answer1" assignNames="cao" /></p>
+      <p>Credit achieved: <number copysource="p1.creditAchieved" name="ca" /></p>
+      <p>Value of mathinput: <math copysource="mi" name="m" /></p>
+      <p>Other answer credit achieved: <number copysource="p2/_answer1.creditAchieved" name="cao" /></p>
     </problem>
 
     <problem name="p2" newNamespace>
       <answer>z</answer>
-      <p>Credit achieved: <copy prop="creditAchieved" target="../p2" assignNames="ca" /></p>
-      <p>Value of mathinput: <copy prop="value" target="../mi" assignNames="m" /></p>
-      <p>Other answer credit achieved: <copy prop="creditAchieved" target="../_answer2" assignNames="cao" /></p>
+      <p>Credit achieved: <number copysource="../p2.creditAchieved" name="ca" /></p>
+      <p>Value of mathinput: <math copysource="../mi" name="m" /></p>
+      <p>Other answer credit achieved: <number copysource="../_answer2.creditAchieved" name="cao" /></p>
     </problem>
 
-    <problem copyTarget="p1" name="p3" newNamespace />
+    <problem copySource="p1" name="p3" newNamespace />
 
-    <problem copyTarget="p2" name="p4" newNamespace />
+    <problem copySource="p2" name="p4" newNamespace />
 
     `}, "*");
     });
@@ -8684,7 +11105,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('copyTarget of copy and map', () => {
+  it('copySource of copy and map', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -8692,17 +11113,17 @@ describe('Copy Tag Tests', function () {
 
     <mathinput name="n" prefill="2" />
 
-    <p>Value: <copy target="n" prop="value" name="cp" assignNames="n2" /></p>
-    <p>Value 2: <copy copytarget="cp" name="cp2" assignNames="n3" /></p>
+    <p>Value: <copy source="n" prop="value" name="cp" assignNames="n2" /></p>
+    <p>Value 2: <copy copySource="cp" name="cp2" assignNames="n3" /></p>
 
     <map name="map1" assignNames="(p1) (p2) (p3)">
-      <template><p newNamespace>Hello <number copyTarget="v" />!  <mathinput name="x" /> <math copyTarget="x" prop="value" /></p></template>
+      <template><p newNamespace>Hello <number copySource="v" />!  <mathinput name="x" /> <math copySource="x" /></p></template>
       <sources alias="v"><sequence from="1" to="$n" /></sources>
     </map>
 
-    <map copyTarget="map1" name="map2" assignNames="(p1a) (p2a) (p3a)" />
+    <map copySource="map1" name="map2" assignNames="(p1a) (p2a) (p3a)" />
 
-    <map copyTarget="map2" name="map3" assignNames="(p1b) (p2b) (p3b)" />
+    <map copySource="map2" name="map3" assignNames="(p1b) (p2b) (p3b)" />
 
 
     `}, "*");
@@ -9019,7 +11440,7 @@ describe('Copy Tag Tests', function () {
     });
   });
 
-  it('copyTarget and createComponentOfType wrap to match specified type', () => {
+  it('copySource and createComponentOfType wrap to match specified type', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -9027,23 +11448,23 @@ describe('Copy Tag Tests', function () {
 
     <mathinput name="mi" prefill="2" />
         
-    <math name="m1" copyTarget="mi" />
-    <copy target="mi" assignNames="m2" createComponentOfType="math" />
+    <math name="m1" copySource="mi" />
+    <copy source="mi" assignNames="m2" createComponentOfType="MatH" />
 
-    <number name="n1" copyTarget="mi" />
-    <copy target="mi" assignNames="n2" createComponentOfType="number" />
+    <number name="n1" copySource="mi" />
+    <copy source="mi" assignNames="n2" createComponentOfType="number" />
 
     <point name="P">(x,y)</point>
 
-    <coords name="c1" copyTarget="P" />
-    <copy assignNames="c2" target="P" createComponentOfType="coords" />
-    <coords name="c3" copyTarget="P" prop="coords" />
-    <copy assignNames="c4" target="P" createComponentOfType="coords" prop="coords" />
+    <coords name="c1" copySource="P" />
+    <copy assignNames="c2" source="P" createComponentOfType="coords" />
+    <coords name="c3" copySource="P" copyprop="coords" />
+    <copy assignNames="c4" source="P" createComponentOfType="coords" prop="coords" />
 
-    <math name="mc1" copyTarget="P" />
-    <copy assignNames="mc2" target="P" createComponentOfType="math" />
-    <math name="mc3" copyTarget="P" prop="coords" />
-    <copy assignNames="mc4" target="P" createComponentOfType="math" prop="coords" />
+    <math name="mc1" copySource="P" />
+    <copy assignNames="mc2" source="P" createComponentOfType="math" />
+    <math name="mc3" copySource="P" copyprop="coords" />
+    <copy assignNames="mc4" source="P" createComponentOfType="math" prop="coords" />
 
     `}, "*");
     });
@@ -9112,22 +11533,22 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('add children to invalid copyTarget', () => {
+  it('add children to invalid copySource', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
     <text>a</text>
 
-    <graph name="g" copyTarget="invalid">
+    <graph name="g" copySource="invalid">
       <point name="P" />
     </graph>
 
-    <graph name="g2" copyTarget="invalid" newNamespace>
+    <graph name="g2" copySource="invalid" newNamespace>
       <point name="P" />
     </graph>
 
-    <math name="Pcoords" copyTarget="P" />
-    <math name="g2Pcoords" copyTarget="g2/P" />
+    <math name="Pcoords" copySource="P" />
+    <math name="g2Pcoords" copySource="g2/P" />
 
     `}, "*");
     });
@@ -9184,7 +11605,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('add children with copyTarget, different newNamespace combinations', () => {
+  it('add children with copySource, different newNamespace combinations', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -9194,48 +11615,48 @@ describe('Copy Tag Tests', function () {
       <point name="P1">(1,2)</point>
     </graph>
 
-    <graph name="g1a" copyTarget="g1">
+    <graph name="g1a" copySource="g1">
       <vector name="v1">(4,5)</vector>
     </graph>
 
-    <math name="P1coords" copyTarget="P1" />
-    <math name="v1displacement" copyTarget="v1" />
+    <math name="P1coords" copySource="P1" />
+    <math name="v1displacement" copySource="v1" />
 
     <graph name="g2">
       <point name="P2">(1,2)</point>
     </graph>
 
-    <graph name="g2a" copyTarget="g2" newNamespace>
+    <graph name="g2a" copySource="g2" newNamespace>
       <vector name="v2">(4,5)</vector>
     </graph>
 
-    <math name="P2coords" copyTarget="P2" />
-    <math name="P2acoords" copyTarget="g2a/P2" />
-    <math name="v2displacement" copyTarget="g2a/v2" />
+    <math name="P2coords" copySource="P2" />
+    <math name="P2acoords" copySource="g2a/P2" />
+    <math name="v2displacement" copySource="g2a/v2" />
 
     <graph name="g3" newNamespace>
       <point name="P3">(1,2)</point>
     </graph>
 
-    <graph name="g3a" copyTarget="g3" newNamespace>
+    <graph name="g3a" copySource="g3" newNamespace>
       <vector name="v3">(4,5)</vector>
     </graph>
 
-    <math name="P3coords" copyTarget="g3/P3" />
-    <math name="P3acoords" copyTarget="g3a/P3" />
-    <math name="v3displacement" copyTarget="g3a/v3" />
+    <math name="P3coords" copySource="g3/P3" />
+    <math name="P3acoords" copySource="g3a/P3" />
+    <math name="v3displacement" copySource="g3a/v3" />
 
     <graph name="g4" newNamespace>
       <point name="P4">(1,2)</point>
     </graph>
 
-    <graph name="g4a" copyTarget="g4">
+    <graph name="g4a" copySource="g4">
       <vector name="v4">(4,5)</vector>
     </graph>
 
-    <math name="P4coords" copyTarget="g4/P4" />
-    <math name="P4acoords" copyTarget="g4a/P4" />
-    <math name="v4displacement" copyTarget="v4" />
+    <math name="P4coords" copySource="g4/P4" />
+    <math name="P4acoords" copySource="g4a/P4" />
+    <math name="v4displacement" copySource="v4" />
 
 
 
@@ -9490,7 +11911,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('add children with copyTarget, ignore implicit newNamespace when copied', () => {
+  it('add children with copySource, ignore implicit newNamespace when copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -9501,38 +11922,38 @@ describe('Copy Tag Tests', function () {
         <point name="P">(1,2)</point>
       </graph>
     
-      <graph name="g2" copyTarget="g">
+      <graph name="g2" copySource="g">
         <vector name="v" />
       </graph>
     
-      <graph name="g3" copyTarget="g2" newNamespace />
+      <graph name="g3" copySource="g2" newNamespace />
 
-      <graph name="g4" copyTarget="g2" />
+      <graph name="g4" copySource="g2" />
     
     </group>
     
-    <group copyTarget="grp" name="grp2" newNamespace />
+    <group copySource="grp" name="grp2" newNamespace />
   
-    <p>Point 1: <math copyTarget="g/P" name="P1coords" /></p>
-    <p>Point 2: <math copyTarget="g2/P" name="P2coords" /></p>
-    <p>Vector 2: <math copyTarget="v" name="v2displacement" /></p>
-    <p>Point 3: <math copyTarget="g3/P" name="P3coords" /></p>
-    <p>Vector 3: <math copyTarget="g3/v" name="v3displacement" /></p>
-    <p>Point 4: <math copyTarget="g4/P" name="P4coords" /></p>
-    <p>Nothing at g4/v: <math copyTarget="g4/v" name="v4nodisplacement" /></p>
+    <p>Point 1: <math copySource="g/P" name="P1coords" /></p>
+    <p>Point 2: <math copySource="g2/P" name="P2coords" /></p>
+    <p>Vector 2: <math copySource="v" name="v2displacement" /></p>
+    <p>Point 3: <math copySource="g3/P" name="P3coords" /></p>
+    <p>Vector 3: <math copySource="g3/v" name="v3displacement" /></p>
+    <p>Point 4: <math copySource="g4/P" name="P4coords" /></p>
+    <p>Nothing at g4/v: <math copySource="g4/v" name="v4nodisplacement" /></p>
 
     <group name="grp2ps" newNamespace>
-      <p>Grp2 Point 1: <math copyTarget="/grp2/g/P" name="P1coords" /></p>
-      <p>Grp2 Point 2: <math copyTarget="/grp2/g2/P" name="P2coords" /></p>
+      <p>Grp2 Point 1: <math copySource="/grp2/g/P" name="P1coords" /></p>
+      <p>Grp2 Point 2: <math copySource="/grp2/g2/P" name="P2coords" /></p>
 
-      <p>Grp2 Vector 2: <math copyTarget="/grp2/v" name="v2displacement" /></p>
-      <p>Nothing at /grp2/g2/v: <math copyTarget="/grp2/g2/v" name="v2nodisplacement" /></p>
+      <p>Grp2 Vector 2: <math copySource="/grp2/v" name="v2displacement" /></p>
+      <p>Nothing at /grp2/g2/v: <math copySource="/grp2/g2/v" name="v2nodisplacement" /></p>
 
-      <p>Grp2 Point 3: <math copyTarget="/grp2/g3/P" name="P3coords" /></p>
-      <p>Grp2 Vector 3: <math copyTarget="/grp2/g3/v" name="v3displacement" /></p>
+      <p>Grp2 Point 3: <math copySource="/grp2/g3/P" name="P3coords" /></p>
+      <p>Grp2 Vector 3: <math copySource="/grp2/g3/v" name="v3displacement" /></p>
  
-      <p>Grp2 Point 4: <math copyTarget="/grp2/g4/P" name="P4coords" /></p>
-      <p>Nothing at /grp2/g4/v: <math copyTarget="/grp2/g4/v" name="v4nodisplacement" /></p>
+      <p>Grp2 Point 4: <math copySource="/grp2/g4/P" name="P4coords" /></p>
+      <p>Nothing at /grp2/g4/v: <math copySource="/grp2/g4/v" name="v4nodisplacement" /></p>
     </group>
 
 
@@ -9568,7 +11989,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables["/g3/v"].stateValues.displacement).eqls([1, 0]);
       expect(stateVariables["/g4/P"].stateValues.xs).eqls([1, 2]);
       let g4vName = stateVariables["/g4"].activeChildren[1].componentName
-      expect(g4vName.substring(0,3) === "/__");
+      expect(g4vName.substring(0, 3) === "/__");
       expect(stateVariables[g4vName].stateValues.displacement).eqls([1, 0]);
       expect(stateVariables["/g4/v"]).eq(undefined);
 
@@ -9581,7 +12002,7 @@ describe('Copy Tag Tests', function () {
       expect(stateVariables["/grp2/g3/v"].stateValues.displacement).eqls([1, 0]);
       expect(stateVariables["/grp2/g4/P"].stateValues.xs).eqls([1, 2]);
       let grp2g4vName = stateVariables["/grp2/g4"].activeChildren[1].componentName
-      expect(grp2g4vName.substring(0,3) === "/__");
+      expect(grp2g4vName.substring(0, 3) === "/__");
       expect(stateVariables[grp2g4vName].stateValues.displacement).eqls([1, 0]);
       expect(stateVariables["/grp2/g4/v"]).eq(undefined);
 
@@ -9590,7 +12011,7 @@ describe('Copy Tag Tests', function () {
 
   });
 
-  it('add children with copyTarget, multiple levels of groups', () => {
+  it('add children with copySource, multiple levels of groups', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -9602,28 +12023,28 @@ describe('Copy Tag Tests', function () {
           <point name="P">(1,2)</point>
         </graph>
       
-        <graph name="g2" copyTarget="g">
+        <graph name="g2" copySource="g">
           <vector name="v">(4,5)</vector>
         </graph>
       
-        <graph name="g3" copyTarget="g2" newNamespace>
+        <graph name="g3" copySource="g2" newNamespace>
           <circle name="c" center="$(../g/P)" />
-          <lineSegment name="l" endpoints="$P $(../v{prop='head'})" />
+          <lineSegment name="l" endpoints="$P $(../v.head)" />
         </graph>
       
-        <copy name="cp1" target="g" assignNames="g4" />
+        <copy name="cp1" source="g" assignNames="g4" />
         
-        <graph copyTarget="cp1" name="g5" newNamespace>
+        <graph copySource="cp1" name="g5" newNamespace>
           <circle name="c" />
         </graph>
         
       </group>
       
       
-      <group copyTarget="grp1" name="grp2" newNamespace>
+      <group copySource="grp1" name="grp2" newNamespace>
       
-        <graph copyTarget="../g5" name="g6">
-          <lineSegment name="l" endpoints="$(g6/c{prop='center'}) $(../g4/P)" />
+        <graph copySource="../g5" name="g6">
+          <lineSegment name="l" endpoints="$(g6/c.center) $(../g4/P)" />
         </graph>
       
       </group>
@@ -9631,81 +12052,81 @@ describe('Copy Tag Tests', function () {
     </group>
     
     
-    <group copyTarget="grp0" name="grp3" newNamespace>
+    <group copySource="grp0" name="grp3" newNamespace>
     
-      <graph copyTarget="../grp2/g6" name="g7" newNamespace>
-        <vector name="v" tail="$(l{prop='endpoint1'})" head="$(../v{prop='head'})" />
+      <graph copySource="../grp2/g6" name="g7" newNamespace>
+        <vector name="v" tail="$l.endpoint1" head="$(../v.head)" />
       </graph>
     
     </group>
     
-    <p>Point 1: <math copyTarget="g/P" name="P1coords" /></p>
-    <p>Point 2: <math copyTarget="g2/P" name="P2coords" /></p>
-    <p>Vector 2: <math copyTarget="v" name="v2displacement" /></p>
-    <p>Point 3: <math copyTarget="g3/P" name="P3coords" /></p>
-    <p>Vector 3: <math copyTarget="g3/v" name="v3displacement" /></p>
-    <p>Circle 3 center: <math copyTarget="g3/c" prop="center" name="c3center" /></p>
-    <p>Line segment 3 point 1: <math copyTarget="g3/l" prop="endpoint1" name="l3point1" /></p>
-    <p>Line segment 3 point 2: <math copyTarget="g3/l" prop="endpoint2" name="l3point2" /></p>
-    <p>Point 4: <math copyTarget="g4/P" name="P4coords" /></p>
-    <p>Point 5: <math copyTarget="g5/P" name="P5coords" /></p>
-    <p>Circle 5 center: <math copyTarget="g5/c" prop="center" name="c5center" /></p>
+    <p>Point 1: <math copySource="g/P" name="P1coords" /></p>
+    <p>Point 2: <math copySource="g2/P" name="P2coords" /></p>
+    <p>Vector 2: <math copySource="v" name="v2displacement" /></p>
+    <p>Point 3: <math copySource="g3/P" name="P3coords" /></p>
+    <p>Vector 3: <math copySource="g3/v" name="v3displacement" /></p>
+    <p>Circle 3 center: <math copySource="g3/c.center" name="c3center" /></p>
+    <p>Line segment 3 point 1: <math copySource="g3/l.endpoint1" name="l3point1" /></p>
+    <p>Line segment 3 point 2: <math copySource="g3/l.endpoint2" name="l3point2" /></p>
+    <p>Point 4: <math copySource="g4/P" name="P4coords" /></p>
+    <p>Point 5: <math copySource="g5/P" name="P5coords" /></p>
+    <p>Circle 5 center: <math copySource="g5/c.center" name="c5center" /></p>
     
     <group name="grp2ps" newNamespace>
-      <p>Grp2 Point 1: <math copyTarget="/grp2/g/P" name="P1coords" /></p>
-      <p>Grp2 Point 2: <math copyTarget="/grp2/g2/P" name="P2coords" /></p>
-      <p>Grp2 Vector 2: <math copyTarget="/grp2/v" name="v2displacement" /></p>
-      <p>Grp2 Point 3: <math copyTarget="/grp2/g3/P" name="P3coords" /></p>
-      <p>Grp2 Vector 3: <math copyTarget="/grp2/g3/v" name="v3displacement" /></p>
-      <p>Grp2 Circle 3 center: <math copyTarget="/grp2/g3/c" prop="center" name="c3center" /></p>
-      <p>Grp2 Line segment 3 point 1: <math copyTarget="/grp2/g3/l" prop="endpoint1" name="l3point1" /></p>
-      <p>Grp2 Line segment 3 point 2: <math copyTarget="/grp2/g3/l" prop="endpoint2" name="l3point2" /></p>
-      <p>Grp2 Point 4: <math copyTarget="/grp2/g4/P" name="P4coords" /></p>
-      <p>Grp2 Point 5: <math copyTarget="/grp2/g5/P" name="P5coords" /></p>
-      <p>Grp2 Circle 5 center: <math copyTarget="/grp2/g5/c" prop="center" name="c5center" /></p>
-      <p>Grp2 Point 6: <math copyTarget="/grp2/g6/P" name="P6coords" /></p>
-      <p>Grp2 Circle 6 center: <math copyTarget="/grp2/g6/c" prop="center" name="c6center" /></p>
-      <p>Grp2 Line segment 6 point 1: <math copyTarget="/grp2/l" prop="endpoint1" name="l6point1" /></p>
-      <p>Grp2 Line segment 6 point 2: <math copyTarget="/grp2/l" prop="endpoint2" name="l6point2" /></p>
+      <p>Grp2 Point 1: <math copySource="/grp2/g/P" name="P1coords" /></p>
+      <p>Grp2 Point 2: <math copySource="/grp2/g2/P" name="P2coords" /></p>
+      <p>Grp2 Vector 2: <math copySource="/grp2/v" name="v2displacement" /></p>
+      <p>Grp2 Point 3: <math copySource="/grp2/g3/P" name="P3coords" /></p>
+      <p>Grp2 Vector 3: <math copySource="/grp2/g3/v" name="v3displacement" /></p>
+      <p>Grp2 Circle 3 center: <math copySource="/grp2/g3/c.center" name="c3center" /></p>
+      <p>Grp2 Line segment 3 point 1: <math copySource="/grp2/g3/l.endpoint1" name="l3point1" /></p>
+      <p>Grp2 Line segment 3 point 2: <math copySource="/grp2/g3/l.endpoint2" name="l3point2" /></p>
+      <p>Grp2 Point 4: <math copySource="/grp2/g4/P" name="P4coords" /></p>
+      <p>Grp2 Point 5: <math copySource="/grp2/g5/P" name="P5coords" /></p>
+      <p>Grp2 Circle 5 center: <math copySource="/grp2/g5/c.center" name="c5center" /></p>
+      <p>Grp2 Point 6: <math copySource="/grp2/g6/P" name="P6coords" /></p>
+      <p>Grp2 Circle 6 center: <math copySource="/grp2/g6/c.center" name="c6center" /></p>
+      <p>Grp2 Line segment 6 point 1: <math copySource="/grp2/l.endpoint1" name="l6point1" /></p>
+      <p>Grp2 Line segment 6 point 2: <math copySource="/grp2/l.endpoint2" name="l6point2" /></p>
     </group>
 
     
     <group name="grp3ps" newNamespace>
 
-      <p>Grp3 Point 1: <math copyTarget="/grp3/g/P" name="P1coords" /></p>
-      <p>Grp3 Point 2: <math copyTarget="/grp3/g2/P" name="P2coords" /></p>
-      <p>Grp3 Vector 2: <math copyTarget="/grp3/v" name="v2displacement" /></p>
-      <p>Grp3 Point 3: <math copyTarget="/grp3/g3/P" name="P3coords" /></p>
-      <p>Grp3 Vector 3: <math copyTarget="/grp3/g3/v" name="v3displacement" /></p>
-      <p>Grp3 Circle 3 center: <math copyTarget="/grp3/g3/c" prop="center" name="c3center" /></p>
-      <p>Grp3 Line segment 3 point 1: <math copyTarget="/grp3/g3/l" prop="endpoint1" name="l3point1" /></p>
-      <p>Grp3 Line segment 3 point 2: <math copyTarget="/grp3/g3/l" prop="endpoint2" name="l3point2" /></p>
-      <p>Grp3 Point 4: <math copyTarget="/grp3/g4/P" name="P4coords" /></p>
-      <p>Grp3 Point 5: <math copyTarget="/grp3/g5/P" name="P5coords" /></p>
-      <p>Grp3 Circle 5 center: <math copyTarget="/grp3/g5/c" prop="center" name="c5center" /></p>
+      <p>Grp3 Point 1: <math copySource="/grp3/g/P" name="P1coords" /></p>
+      <p>Grp3 Point 2: <math copySource="/grp3/g2/P" name="P2coords" /></p>
+      <p>Grp3 Vector 2: <math copySource="/grp3/v" name="v2displacement" /></p>
+      <p>Grp3 Point 3: <math copySource="/grp3/g3/P" name="P3coords" /></p>
+      <p>Grp3 Vector 3: <math copySource="/grp3/g3/v" name="v3displacement" /></p>
+      <p>Grp3 Circle 3 center: <math copySource="/grp3/g3/c.center" name="c3center" /></p>
+      <p>Grp3 Line segment 3 point 1: <math copySource="/grp3/g3/l.endpoint1" name="l3point1" /></p>
+      <p>Grp3 Line segment 3 point 2: <math copySource="/grp3/g3/l.endpoint2" name="l3point2" /></p>
+      <p>Grp3 Point 4: <math copySource="/grp3/g4/P" name="P4coords" /></p>
+      <p>Grp3 Point 5: <math copySource="/grp3/g5/P" name="P5coords" /></p>
+      <p>Grp3 Circle 5 center: <math copySource="/grp3/g5/c.center" name="c5center" /></p>
       
       <group name="grp2ps" newNamespace>
-        <p>Grp3 Grp2 Point 1: <math copyTarget="/grp3/grp2/g/P" name="P1coords" /></p>
-        <p>Grp3 Grp2 Point 2: <math copyTarget="/grp3/grp2/g2/P" name="P2coords" /></p>
-        <p>Grp3 Grp2 Vector 2: <math copyTarget="/grp3/grp2/v" name="v2displacement" /></p>
-        <p>Grp3 Grp2 Point 3: <math copyTarget="/grp3/grp2/g3/P" name="P3coords" /></p>
-        <p>Grp3 Grp2 Vector 3: <math copyTarget="/grp3/grp2/g3/v" name="v3displacement" /></p>
-        <p>Grp3 Grp2 Circle 3 center: <math copyTarget="/grp3/grp2/g3/c" prop="center" name="c3center" /></p>
-        <p>Grp3 Grp2 Line segment 3 point 1: <math copyTarget="/grp3/grp2/g3/l" prop="endpoint1" name="l3point1" /></p>
-        <p>Grp3 Grp2 Line segment 3 point 2: <math copyTarget="/grp3/grp2/g3/l" prop="endpoint2" name="l3point2" /></p>
-        <p>Grp3 Grp2 Point 4: <math copyTarget="/grp3/grp2/g4/P" name="P4coords" /></p>
-        <p>Grp3 Grp2 Point 5: <math copyTarget="/grp3/grp2/g5/P" name="P5coords" /></p>
-        <p>Grp3 Grp2 Circle 5 center: <math copyTarget="/grp3/grp2/g5/c" prop="center" name="c5center" /></p>
-        <p>Grp3 Grp2 Point 6: <math copyTarget="/grp3/grp2/g6/P" name="P6coords" /></p>
-        <p>Grp3 Grp2 Circle 6 center: <math copyTarget="/grp3/grp2/g6/c" prop="center" name="c6center" /></p>
-        <p>Grp3 Grp2 Line segment 6 point 1: <math copyTarget="/grp3/grp2/l" prop="endpoint1" name="l6point1" /></p>
-        <p>Grp3 Grp2 Line segment 6 point 2: <math copyTarget="/grp3/grp2/l" prop="endpoint2" name="l6point2" /></p>
-        <p>Grp3 Point 7: <math copyTarget="/grp3/g7/P" name="P7coords" /></p>
-        <p>Grp3 Circle 7 center: <math copyTarget="/grp3/g7/c" prop="center" name="c7center" /></p>
-        <p>Grp3 Line segment 7 point 1: <math copyTarget="/grp3/g7/l" prop="endpoint1" name="l7point1" /></p>
-        <p>Grp3 Line segment 7 point 2: <math copyTarget="/grp3/g7/l" prop="endpoint2" name="l7point2" /></p>
-        <p>Grp3 Vector 7 head: <math copyTarget="/grp3/g7/v" prop="head" name="v7head" /></p>
-        <p>Grp3 Vector 7 tail: <math copyTarget="/grp3/g7/v" prop="tail" name="v7tail" /></p>
+        <p>Grp3 Grp2 Point 1: <math copySource="/grp3/grp2/g/P" name="P1coords" /></p>
+        <p>Grp3 Grp2 Point 2: <math copySource="/grp3/grp2/g2/P" name="P2coords" /></p>
+        <p>Grp3 Grp2 Vector 2: <math copySource="/grp3/grp2/v" name="v2displacement" /></p>
+        <p>Grp3 Grp2 Point 3: <math copySource="/grp3/grp2/g3/P" name="P3coords" /></p>
+        <p>Grp3 Grp2 Vector 3: <math copySource="/grp3/grp2/g3/v" name="v3displacement" /></p>
+        <p>Grp3 Grp2 Circle 3 center: <math copySource="/grp3/grp2/g3/c.center" name="c3center" /></p>
+        <p>Grp3 Grp2 Line segment 3 point 1: <math copySource="/grp3/grp2/g3/l.endpoint1" name="l3point1" /></p>
+        <p>Grp3 Grp2 Line segment 3 point 2: <math copySource="/grp3/grp2/g3/l.endpoint2" name="l3point2" /></p>
+        <p>Grp3 Grp2 Point 4: <math copySource="/grp3/grp2/g4/P" name="P4coords" /></p>
+        <p>Grp3 Grp2 Point 5: <math copySource="/grp3/grp2/g5/P" name="P5coords" /></p>
+        <p>Grp3 Grp2 Circle 5 center: <math copySource="/grp3/grp2/g5/c.center" name="c5center" /></p>
+        <p>Grp3 Grp2 Point 6: <math copySource="/grp3/grp2/g6/P" name="P6coords" /></p>
+        <p>Grp3 Grp2 Circle 6 center: <math copySource="/grp3/grp2/g6/c.center" name="c6center" /></p>
+        <p>Grp3 Grp2 Line segment 6 point 1: <math copySource="/grp3/grp2/l.endpoint1" name="l6point1" /></p>
+        <p>Grp3 Grp2 Line segment 6 point 2: <math copySource="/grp3/grp2/l.endpoint2" name="l6point2" /></p>
+        <p>Grp3 Point 7: <math copySource="/grp3/g7/P" name="P7coords" /></p>
+        <p>Grp3 Circle 7 center: <math copySource="/grp3/g7/c.center" name="c7center" /></p>
+        <p>Grp3 Line segment 7 point 1: <math copySource="/grp3/g7/l.endpoint1" name="l7point1" /></p>
+        <p>Grp3 Line segment 7 point 2: <math copySource="/grp3/g7/l.endpoint2" name="l7point2" /></p>
+        <p>Grp3 Vector 7 head: <math copySource="/grp3/g7/v.head" name="v7head" /></p>
+        <p>Grp3 Vector 7 tail: <math copySource="/grp3/g7/v.tail" name="v7tail" /></p>
       </group>
 
     </group>
@@ -10009,6 +12430,974 @@ describe('Copy Tag Tests', function () {
 
     });
 
+
+
+  });
+
+  it('dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <point name="P">(2,3)</point>
+    </graph>
+    
+    <p name="p1">P: $P</p>
+    <p name="p2">P: $P[1]</p>
+    <p name="p3">nothing: $P[2]</p>
+    <p name="p4">P.: $P.</p>
+    <p name="p5">P.1: $P.1</p>
+    <p name="p6">x of P: $P.x</p>
+    <p name="p7">y of P: $P.y</p>
+    <p name="p8">nothing: $P._x</p>
+    <p name="p9">x of P: $P.xs[1]</p>
+    <p name="p10">y of P: $P.xs[2]</p>
+    <p name="p11">nothing: $P.xs[3]</p>
+    
+    
+    <p name="p12">P: $(P)</p>
+    <p name="p13">(P).x: $(P).x</p>
+    <p name="p14">no match: $(P.)</p>
+    <p name="p15">nothing: $(P.1)</p>
+    <p name="p16">x of P: $(P.x)</p>
+    <p name="p17">y of P: $(P.y)</p>
+    <p name="p18">x of P: $(P.xs[1])</p>
+    <p name="p19">y of P: $(P.xs[2])</p>
+
+
+    <p name="p20">P: <copy source="P" /></p>
+    <p name="p21">P: <copy source="P[1]" /></p>
+    <p name="p22">nothing: <copy source="P[2]" /></p>
+    <p name="p23">nothing: <copy source="P." /></p>
+    <p name="p24">nothing: <copy source="P.1" /></p>
+    <p name="p25">x of P: <copy source="P.x" /></p>
+    <p name="p26">y of P: <copy source="P.y" /></p>
+    <p name="p27">nothing: <copy source="P._x" /></p>
+    <p name="p28">x of P: <copy source="P.xs[1]" /></p>
+    <p name="p29">y of P: <copy source="P.xs[2]" /></p>
+    <p name="p30">nothing: <copy source="P.xs[3]" /></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc('#/p3')).should('have.text', "nothing: ")
+    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc('#/p4')).should('contain.text', ').');
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc('#/p5')).should('contain.text', ').1');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc('#/p7') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p8')).should('have.text', "nothing: ");
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p11')).should('have.text', "nothing: ");
+
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc('#/p13')).should('contain.text', ').x');
+    cy.get(cesc('#/p14')).should('have.text', "no match: $(P.)");
+    cy.get(cesc('#/p15')).should('have.text', "nothing: ");
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p18') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '3');
+
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc('#/p21') + ' .mjx-mrow').eq(0).should('have.text', '(2,3)');
+    cy.get(cesc('#/p22')).should('have.text', "nothing: ")
+    cy.get(cesc('#/p23')).should('have.text', "nothing: ")
+    cy.get(cesc('#/p24')).should('have.text', "nothing: ")
+    cy.get(cesc('#/p25') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc('#/p26') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p27')).should('have.text', "nothing: ")
+    cy.get(cesc('#/p28') + ' .mjx-mrow').eq(0).should('have.text', '2');
+    cy.get(cesc('#/p29') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p30')).should('have.text', "nothing: ");
+
+
+  });
+
+  it('dot and array notation, chaining, macros', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph size="small">
+      <line name="l" through="(2/3,3) (5,6)" displayDigits="2" />
+    </graph>
+    
+    <p name="p1">$l.points.coords</p>
+    <p name="p2">$l.points.x</p>
+    <p name="p3">$l.points.y</p>
+    <p name="p4">$l.points.bad</p>
+    <p name="p5">$l.points.xs[1]</p>
+    <p name="p6">$l.points.xs[2]</p>
+    <p name="p7">$l.points.xs[3]</p>
+
+    <p name="p8">$l.points[1].coords</p>
+    <p name="p9">$l.points[1].x</p>
+    <p name="p10">$l.points[1].y</p>
+    <p name="p11">$l.points[1].bad</p>
+    <p name="p12">$l.points[1].xs[1]</p>
+    <p name="p13">$l.points[1].xs[2]</p>
+    <p name="p14">$l.points[1].xs[3]</p>
+
+    <p name="p15">$l.points[2].coords</p>
+    <p name="p16">$l.points[2].x</p>
+    <p name="p17">$l.points[2].y</p>
+    <p name="p18">$l.points[2].bad</p>
+    <p name="p19">$l.points[2].xs[1]</p>
+    <p name="p20">$l.points[2].xs[2]</p>
+    <p name="p21">$l.points[2].xs[3]</p>
+
+    <p name="p22">$l.points[3].coords</p>
+    <p name="p23">$l.points[3].x</p>
+    <p name="p24">$l.points[3].y</p>
+    <p name="p25">$l.points[3].bad</p>
+    <p name="p26">$l.points[3].xs[1]</p>
+    <p name="p27">$l.points[3].xs[2]</p>
+    <p name="p28">$l.points[3].xs[3]</p>
+
+    <p name="p29">$l.points.coords.latex</p>
+    <p name="p30">$l.points.x.latex</p>
+    <p name="p31">$l.points.y.latex</p>
+    <p name="p32">$l.points.bad.latex</p>
+    <p name="p33">$l.points.xs[1].latex</p>
+    <p name="p34">$l.points.xs[2].latex</p>
+    <p name="p35">$l.points.xs[3].latex</p>
+    
+    <p name="p36">$l.points[1].coords.latex</p>
+    <p name="p37">$l.points[1].x.latex</p>
+    <p name="p38">$l.points[1].y.latex</p>
+    <p name="p39">$l.points[1].bad.latex</p>
+    <p name="p40">$l.points[1].xs[1].latex</p>
+    <p name="p41">$l.points[1].xs[2].latex</p>
+    <p name="p42">$l.points[1].xs[3].latex</p>
+
+    <p name="p43">$l.points[1][1]</p>
+    <p name="p44">$l.points[1][2]</p>
+    <p name="p45">$l.points[2][1]</p>
+    <p name="p46">$l.points[2][2]</p>
+    <p name="p47">$l.points[0][1]</p>
+    <p name="p48">$l.points[1][0]</p>
+    <p name="p49">$l.points[1][3]</p>
+    <p name="p50">$l.points[3][1]</p>
+    
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(5,6)');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '5');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '6');
+    cy.get(cesc('#/p4')).should('have.text', '')
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '5');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '6');
+    cy.get(cesc('#/p7')).should('have.text', '')
+
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p11')).should('have.text', '')
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p14')).should('have.text', '')
+
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)');
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p18')).should('have.text', '')
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p21')).should('have.text', '')
+
+    cy.get(cesc('#/p22')).should('have.text', '')
+    cy.get(cesc('#/p23')).should('have.text', '')
+    cy.get(cesc('#/p24')).should('have.text', '')
+    cy.get(cesc('#/p25')).should('have.text', '')
+    cy.get(cesc('#/p26')).should('have.text', '')
+    cy.get(cesc('#/p27')).should('have.text', '')
+    cy.get(cesc('#/p28')).should('have.text', '')
+
+    cy.get(cesc('#/p29')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)');
+    cy.get(cesc('#/p30')).should('have.text', '\\frac{2}{3}5');
+    cy.get(cesc('#/p31')).should('have.text', '36');
+    cy.get(cesc('#/p32')).should('have.text', '')
+    cy.get(cesc('#/p33')).should('have.text', '\\frac{2}{3}5');
+    cy.get(cesc('#/p34')).should('have.text', '36');
+    cy.get(cesc('#/p35')).should('have.text', '')
+
+    cy.get(cesc('#/p36')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)');
+    cy.get(cesc('#/p37')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc('#/p38')).should('have.text', '3');
+    cy.get(cesc('#/p39')).should('have.text', '')
+    cy.get(cesc('#/p40')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc('#/p41')).should('have.text', '3');
+    cy.get(cesc('#/p42')).should('have.text', '')
+
+    cy.get(cesc('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc('#/p47')).should('have.text', '')
+    cy.get(cesc('#/p48')).should('have.text', '')
+    cy.get(cesc('#/p49')).should('have.text', '')
+    cy.get(cesc('#/p50')).should('have.text', '')
+
+
+    cy.log('move points');
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l",
+        args: {
+          point1coords: [7, 8],
+          point2coords: [9, 0]
+        }
+      })
+    })
+
+    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(9,0)');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '9');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '0');
+    cy.get(cesc('#/p4')).should('have.text', '')
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '9');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '0');
+    cy.get(cesc('#/p7')).should('have.text', '')
+
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p11')).should('have.text', '')
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p14')).should('have.text', '')
+
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)');
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p18')).should('have.text', '')
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p21')).should('have.text', '')
+
+    cy.get(cesc('#/p22')).should('have.text', '')
+    cy.get(cesc('#/p23')).should('have.text', '')
+    cy.get(cesc('#/p24')).should('have.text', '')
+    cy.get(cesc('#/p25')).should('have.text', '')
+    cy.get(cesc('#/p26')).should('have.text', '')
+    cy.get(cesc('#/p27')).should('have.text', '')
+    cy.get(cesc('#/p28')).should('have.text', '')
+
+    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
+    cy.get(cesc('#/p30')).should('have.text', '79');
+    cy.get(cesc('#/p31')).should('have.text', '80');
+    cy.get(cesc('#/p32')).should('have.text', '')
+    cy.get(cesc('#/p33')).should('have.text', '79');
+    cy.get(cesc('#/p34')).should('have.text', '80');
+    cy.get(cesc('#/p35')).should('have.text', '')
+
+    cy.get(cesc('#/p36')).should('have.text', '\\left( 7, 8 \\right)');
+    cy.get(cesc('#/p37')).should('have.text', '7');
+    cy.get(cesc('#/p38')).should('have.text', '8');
+    cy.get(cesc('#/p39')).should('have.text', '')
+    cy.get(cesc('#/p40')).should('have.text', '7');
+    cy.get(cesc('#/p41')).should('have.text', '8');
+    cy.get(cesc('#/p42')).should('have.text', '')
+
+    cy.get(cesc('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc('#/p47')).should('have.text', '')
+    cy.get(cesc('#/p48')).should('have.text', '')
+    cy.get(cesc('#/p49')).should('have.text', '')
+    cy.get(cesc('#/p50')).should('have.text', '')
+
+  });
+
+  it('dot and array notation, chaining, copies', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph size="small">
+      <line name="l" through="(2/3,3) (5,6)" displayDigits="2" />
+    </graph>
+    
+    <p name="p1"><copy source="l.points.coords" /></p>
+    <p name="p2"><copy source="l.points.x" /></p>
+    <p name="p3"><copy source="l.points.y" /></p>
+    <p name="p4"><copy source="l.points.bad" /></p>
+    <p name="p5"><copy source="l.points.xs[1]" /></p>
+    <p name="p6"><copy source="l.points.xs[2]" /></p>
+    <p name="p7"><copy source="l.points.xs[3]" /></p>
+
+    <p name="p8"><copy source="l.points[1].coords" /></p>
+    <p name="p9"><copy source="l.points[1].x" /></p>
+    <p name="p10"><copy source="l.points[1].y" /></p>
+    <p name="p11"><copy source="l.points[1].bad" /></p>
+    <p name="p12"><copy source="l.points[1].xs[1]" /></p>
+    <p name="p13"><copy source="l.points[1].xs[2]" /></p>
+    <p name="p14"><copy source="l.points[1].xs[3]" /></p>
+
+    <p name="p15"><copy source="l.points[2].coords" /></p>
+    <p name="p16"><copy source="l.points[2].x" /></p>
+    <p name="p17"><copy source="l.points[2].y" /></p>
+    <p name="p18"><copy source="l.points[2].bad" /></p>
+    <p name="p19"><copy source="l.points[2].xs[1]" /></p>
+    <p name="p20"><copy source="l.points[2].xs[2]" /></p>
+    <p name="p21"><copy source="l.points[2].xs[3]" /></p>
+
+    <p name="p22"><copy source="l.points[3].coords" /></p>
+    <p name="p23"><copy source="l.points[3].x" /></p>
+    <p name="p24"><copy source="l.points[3].y" /></p>
+    <p name="p25"><copy source="l.points[3].bad" /></p>
+    <p name="p26"><copy source="l.points[3].xs[1]" /></p>
+    <p name="p27"><copy source="l.points[3].xs[2]" /></p>
+    <p name="p28"><copy source="l.points[3].xs[3]" /></p>
+
+    <p name="p29"><copy source="l.points.coords.latex" /></p>
+    <p name="p30"><copy source="l.points.x.latex" /></p>
+    <p name="p31"><copy source="l.points.y.latex" /></p>
+    <p name="p32"><copy source="l.points.bad.latex" /></p>
+    <p name="p33"><copy source="l.points.xs[1].latex" /></p>
+    <p name="p34"><copy source="l.points.xs[2].latex" /></p>
+    <p name="p35"><copy source="l.points.xs[3].latex" /></p>
+    
+    <p name="p36"><copy source="l.points[1].coords.latex" /></p>
+    <p name="p37"><copy source="l.points[1].x.latex" /></p>
+    <p name="p38"><copy source="l.points[1].y.latex" /></p>
+    <p name="p39"><copy source="l.points[1].bad.latex" /></p>
+    <p name="p40"><copy source="l.points[1].xs[1].latex" /></p>
+    <p name="p41"><copy source="l.points[1].xs[2].latex" /></p>
+    <p name="p42"><copy source="l.points[1].xs[3].latex" /></p>
+    
+    <p name="p43"><copy source="l.points[1][1]" /></p>
+    <p name="p44"><copy source="l.points[1][2]" /></p>
+    <p name="p45"><copy source="l.points[2][1]" /></p>
+    <p name="p46"><copy source="l.points[2][2]" /></p>
+    <p name="p47"><copy source="l.points[0][1]" /></p>
+    <p name="p48"><copy source="l.points[1][0]" /></p>
+    <p name="p49"><copy source="l.points[1][3]" /></p>
+    <p name="p50"><copy source="l.points[3][1]" /></p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(5,6)');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '5');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '6');
+    cy.get(cesc('#/p4')).should('have.text', '')
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '5');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '6');
+    cy.get(cesc('#/p7')).should('have.text', '')
+
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(23,3)');
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p11')).should('have.text', '')
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p14')).should('have.text', '')
+
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(5,6)');
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p18')).should('have.text', '')
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p21')).should('have.text', '')
+
+    cy.get(cesc('#/p22')).should('have.text', '')
+    cy.get(cesc('#/p23')).should('have.text', '')
+    cy.get(cesc('#/p24')).should('have.text', '')
+    cy.get(cesc('#/p25')).should('have.text', '')
+    cy.get(cesc('#/p26')).should('have.text', '')
+    cy.get(cesc('#/p27')).should('have.text', '')
+    cy.get(cesc('#/p28')).should('have.text', '')
+
+    cy.get(cesc('#/p29')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)\\left( 5, 6 \\right)');
+    cy.get(cesc('#/p30')).should('have.text', '\\frac{2}{3}5');
+    cy.get(cesc('#/p31')).should('have.text', '36');
+    cy.get(cesc('#/p32')).should('have.text', '')
+    cy.get(cesc('#/p33')).should('have.text', '\\frac{2}{3}5');
+    cy.get(cesc('#/p34')).should('have.text', '36');
+    cy.get(cesc('#/p35')).should('have.text', '')
+
+    cy.get(cesc('#/p36')).should('have.text', '\\left( \\frac{2}{3}, 3 \\right)');
+    cy.get(cesc('#/p37')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc('#/p38')).should('have.text', '3');
+    cy.get(cesc('#/p39')).should('have.text', '')
+    cy.get(cesc('#/p40')).should('have.text', '\\frac{2}{3}');
+    cy.get(cesc('#/p41')).should('have.text', '3');
+    cy.get(cesc('#/p42')).should('have.text', '')
+
+    cy.get(cesc('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '23');
+    cy.get(cesc('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '3');
+    cy.get(cesc('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc('#/p47')).should('have.text', '')
+    cy.get(cesc('#/p48')).should('have.text', '')
+    cy.get(cesc('#/p49')).should('have.text', '')
+    cy.get(cesc('#/p50')).should('have.text', '')
+
+    cy.log('move points');
+
+    cy.window().then(async (win) => {
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l",
+        args: {
+          point1coords: [7, 8],
+          point2coords: [9, 0]
+        }
+      })
+    })
+
+    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(9,0)');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '9');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '0');
+    cy.get(cesc('#/p4')).should('have.text', '')
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '9');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '0');
+    cy.get(cesc('#/p7')).should('have.text', '')
+
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(7,8)');
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p11')).should('have.text', '')
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p14')).should('have.text', '')
+
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(9,0)');
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p18')).should('have.text', '')
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p21')).should('have.text', '')
+
+    cy.get(cesc('#/p22')).should('have.text', '')
+    cy.get(cesc('#/p23')).should('have.text', '')
+    cy.get(cesc('#/p24')).should('have.text', '')
+    cy.get(cesc('#/p25')).should('have.text', '')
+    cy.get(cesc('#/p26')).should('have.text', '')
+    cy.get(cesc('#/p27')).should('have.text', '')
+    cy.get(cesc('#/p28')).should('have.text', '')
+
+    cy.get(cesc('#/p29')).should('have.text', '\\left( 7, 8 \\right)\\left( 9, 0 \\right)');
+    cy.get(cesc('#/p30')).should('have.text', '79');
+    cy.get(cesc('#/p31')).should('have.text', '80');
+    cy.get(cesc('#/p32')).should('have.text', '')
+    cy.get(cesc('#/p33')).should('have.text', '79');
+    cy.get(cesc('#/p34')).should('have.text', '80');
+    cy.get(cesc('#/p35')).should('have.text', '')
+
+    cy.get(cesc('#/p36')).should('have.text', '\\left( 7, 8 \\right)');
+    cy.get(cesc('#/p37')).should('have.text', '7');
+    cy.get(cesc('#/p38')).should('have.text', '8');
+    cy.get(cesc('#/p39')).should('have.text', '')
+    cy.get(cesc('#/p40')).should('have.text', '7');
+    cy.get(cesc('#/p41')).should('have.text', '8');
+    cy.get(cesc('#/p42')).should('have.text', '')
+
+    cy.get(cesc('#/p43') + ' .mjx-mrow').eq(0).should('have.text', '7');
+    cy.get(cesc('#/p44') + ' .mjx-mrow').eq(0).should('have.text', '8');
+    cy.get(cesc('#/p45') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc('#/p46') + ' .mjx-mrow').eq(0).should('have.text', '0');
+    cy.get(cesc('#/p47')).should('have.text', '')
+    cy.get(cesc('#/p48')).should('have.text', '')
+    cy.get(cesc('#/p49')).should('have.text', '')
+    cy.get(cesc('#/p50')).should('have.text', '')
+
+
+  });
+
+  it('dot and array notation, chaining, specify attributes, macros', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph size="small">
+      <line name="l" through="(3.92639372,9.8293629453) (0.9060742037,32.93520806203104)" displayDigits="2" />
+    </graph>
+    
+    <p name="p1">$l.points.coords</p>
+    <p name="p2">$l.points.x</p>
+    <p name="p3">$l.points.y</p>
+    <p name="p4">$l.points.bad</p>
+    <p name="p5">$l.points.xs[1]</p>
+    <p name="p6">$l.points.xs[2]</p>
+    <p name="p7">$l.points.xs[3]</p>
+
+    <p name="p8">$(l.points.coords{displayDecimals="4"})</p>
+    <p name="p9">$(l.points.x{displayDecimals="4"})</p>
+    <p name="p10">$(l.points.y{displayDecimals="4"})</p>
+    <p name="p11">$(l.points.bad{displayDecimals="4"})</p>
+    <p name="p12">$(l.points.xs[1]{displayDecimals="4"})</p>
+    <p name="p13">$(l.points.xs[2]{displayDecimals="4"})</p>
+    <p name="p14">$(l.points.xs[3]{displayDecimals="4"})</p>
+
+    <p name="p15">$(l.points[1].coords{displayDecimals="4"})</p>
+    <p name="p16">$(l.points[1].x{displayDecimals="4"})</p>
+    <p name="p17">$(l.points[1].y{displayDecimals="4"})</p>
+    <p name="p18">$(l.points[1].bad{displayDecimals="4"})</p>
+    <p name="p19">$(l.points[1].xs[1]{displayDecimals="4"})</p>
+    <p name="p20">$(l.points[1].xs[2]{displayDecimals="4"})</p>
+    <p name="p21">$(l.points[1].xs[3]{displayDecimals="4"})</p>
+
+    <p name="p22">$l.points.coords{displayDecimals="4"}</p>
+    <p name="p23">$l.points{displayDecimals="4"}.x</p>
+    <p name="p24">$l{displayDecimals="4"}.points.y</p>
+    <p name="p25">$l.points.bad{displayDecimals="4"}</p>
+    <p name="p26">$l.points.xs[1]{displayDecimals="4"}</p>
+    <p name="p27">$l.points{displayDecimals="4"}.xs[2]</p>
+    <p name="p28">$l{displayDecimals="4"}.points.xs[3]</p>
+
+    <p name="p29">$l.points[1].coords{displayDecimals="4"}</p>
+    <p name="p30">$l.points[1]{displayDecimals="4"}.x</p>
+    <p name="p31">$l{displayDecimals="4"}.points[1].y</p>
+    <p name="p32">$l.points[1].bad{displayDecimals="4"}</p>
+    <p name="p33">$l.points[1].xs[1]{displayDecimals="4"}</p>
+    <p name="p34">$l.points[1]{displayDecimals="4"}.xs[2]</p>
+    <p name="p35">$l{displayDecimals="4"}.points[1].xs[3]</p>
+
+    <p name="p36">$l{displayDecimals="4"}.latex</p>
+    <p name="p37">$(l{displayDigits="3"}.points{displayDecimals="4"})</p>
+    <p name="p38">$(l{displayDigits="3"}.points[1]{displayDecimals="4"})</p>
+    
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '(3.9,9.8)');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(3).should('have.text', '(0.91,33)');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '3.9');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(1).should('have.text', '0.91');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '9.8');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(1).should('have.text', '33');
+    cy.get(cesc('#/p4')).should('have.text', '')
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(0).should('have.text', '3.9');
+    cy.get(cesc('#/p5') + ' .mjx-mrow').eq(1).should('have.text', '0.91');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(0).should('have.text', '9.8');
+    cy.get(cesc('#/p6') + ' .mjx-mrow').eq(1).should('have.text', '33');
+    cy.get(cesc('#/p7')).should('have.text', '')
+
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc('#/p8') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc('#/p9') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc('#/p10') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
+    cy.get(cesc('#/p11')).should('have.text', '')
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc('#/p12') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc('#/p13') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
+    cy.get(cesc('#/p14')).should('have.text', '')
+
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc('#/p15') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc('#/p16') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc('#/p17') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p18')).should('have.text', '')
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc('#/p19') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc('#/p20') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p21')).should('have.text', '')
+
+    cy.get(cesc('#/p22') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc('#/p22') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
+    cy.get(cesc('#/p23') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc('#/p23') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
+    cy.get(cesc('#/p24') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc('#/p24') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
+    cy.get(cesc('#/p25')).should('have.text', '')
+    cy.get(cesc('#/p26') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc('#/p26') + ' .mjx-mrow').eq(1).should('have.text', '0.9061');
+    cy.get(cesc('#/p27') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc('#/p27') + ' .mjx-mrow').eq(1).should('have.text', '32.9352');
+    cy.get(cesc('#/p28')).should('have.text', '')
+
+    cy.get(cesc('#/p29') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc('#/p29') + ' .mjx-mrow').eq(3).should('not.exist');
+    cy.get(cesc('#/p30') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc('#/p30') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p31') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc('#/p31') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p32')).should('have.text', '')
+    cy.get(cesc('#/p33') + ' .mjx-mrow').eq(0).should('have.text', '3.9264');
+    cy.get(cesc('#/p33') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p34') + ' .mjx-mrow').eq(0).should('have.text', '9.8294');
+    cy.get(cesc('#/p34') + ' .mjx-mrow').eq(1).should('not.exist');
+    cy.get(cesc('#/p35')).should('have.text', '')
+
+    cy.get(cesc('#/p36')).should('have.text', '0 = -23.1058 \\, x - 3.0203 \\, y + 120.4105');
+    cy.get(cesc('#/p37') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc('#/p37') + ' .mjx-mrow').eq(3).should('have.text', '(0.9061,32.9352)');
+    cy.get(cesc('#/p38') + ' .mjx-mrow').eq(0).should('have.text', '(3.9264,9.8294)');
+    cy.get(cesc('#/p38') + ' .mjx-mrow').eq(3).should('not.exist');
+
+  });
+
+  it('dot and array notation, chaining, nested', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph size="small">
+      <line name="l" through="(1.92639372,9.8293629453) (5.9060742037,2.93520806203104)" />
+      $l.points
+    </graph>
+    
+    <p name="p1"><aslist>
+      $l[1].points[$l.points[1].x]{displayDigits="$l.points[2].x"}.y
+    </aslist></p>
+    <p name="p2"><aslist>
+      <copy source='l[1].points[$l.points[1].x]{displayDigits="$l.points[2].x"}.y' />
+    </aslist></p>
+    
+    
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '2.93521');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '2.93521');
+
+    cy.window().then(async (win) => {
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l",
+        args: {
+          point1coords: [1.38527302734, 8.48273402357],
+          point2coords: [5.9060742037, 2.93520806203104],
+        }
+      })
+
+    })
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').should('contain.text', '8.48273');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '8.48273');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '8.48273');
+
+    cy.window().then(async (win) => {
+
+      win.callAction1({
+        actionName: "moveLine",
+        componentName: "/l",
+        args: {
+          point1coords: [1.38527302734, 8.48273402357],
+          point2coords: [4.482081034234, 7.34828203481],
+        }
+      })
+
+    })
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').should('contain.text', '8.483');
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '8.483');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '8.483');
+
+
+
+  });
+
+  it('dot and array notation, multidimensional, dynamic', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph size="small">
+      <line through="(1,2) (3,4)" />
+      <line through="(5,7) (9,6)" />
+    </graph>
+
+    <graph size="small">
+      <collect name="col" componentTypes="line" source="_graph1" />
+    </graph>
+
+    <p>Line number: <mathinput name="ln" prefill="1" /></p>
+    <p>Point number: <mathinput name="pn" prefill="1" /></p>
+    <p>Coordinate number: <mathinput name="cn" prefill="1" /></p>
+
+    
+    <p name="p1">$col[$ln].points[$pn][$cn]</p>
+    <p name="p2"><copy source="col[$ln].points[$pn][$cn]" /></p>
+    <p name="p3">$col[$ln].points[$pn].xs[$cn]</p>
+    <p name="p4"><copy source="col[$ln].points[$pn].xs[$cn]" /></p>
+    
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '1');
+    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '1');
+
+    cy.get(cesc('#/ln') + " textarea").type("{end}{backspace}{enter}", { force: true })
+
+    cy.get(cesc('#/p1')).should('have.text', '');
+    cy.get(cesc('#/p2')).should('have.text', '');
+    cy.get(cesc('#/p3')).should('have.text', '');
+    cy.get(cesc('#/p4')).should('have.text', '');
+
+    cy.get(cesc('#/ln') + " textarea").type("2{enter}", { force: true })
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '5');
+    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '5');
+
+    cy.get(cesc('#/pn') + " textarea").type("{end}{backspace}{enter}", { force: true })
+
+    cy.get(cesc('#/p1')).should('have.text', '');
+    cy.get(cesc('#/p2')).should('have.text', '');
+    cy.get(cesc('#/p3')).should('have.text', '');
+    cy.get(cesc('#/p4')).should('have.text', '');
+
+    cy.get(cesc('#/pn') + " textarea").type("2{enter}", { force: true })
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '9');
+    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '9');
+
+    cy.get(cesc('#/cn') + " textarea").type("{end}{backspace}{enter}", { force: true })
+
+    cy.get(cesc('#/p1')).should('have.text', '');
+    cy.get(cesc('#/p2')).should('have.text', '');
+    cy.get(cesc('#/p3')).should('have.text', '');
+    cy.get(cesc('#/p4')).should('have.text', '');
+
+    cy.get(cesc('#/cn') + " textarea").type("2{enter}", { force: true })
+
+    cy.get(cesc('#/p1') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc('#/p2') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc('#/p3') + ' .mjx-mrow').eq(0).should('have.text', '6');
+    cy.get(cesc('#/p4') + ' .mjx-mrow').eq(0).should('have.text', '6');
+
+  });
+
+  it('isPlainMacro and isPlainCopy', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <mathinput prefill="x+x" name="mi" />
+
+    <p name="pmacro1">$mi</p>
+    <p name="pmacro2">$mi{simplify}</p>
+    <p name="pcopy1"><copy source="mi" /></p>
+    <p name="pcopy2"><copy source="mi{simplify}" /></p>
+    <p name="pcopy3"><copy source="mi" simplify /></p>
+    <p name="pcopy4"><copy source="mi" createComponentOfType="mathinput" /></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/pmacro1') + " .mjx-mrow").eq(0).should('have.text', 'x+x');
+    cy.get(cesc('#/pmacro2') + " .mjx-mrow").eq(0).should('have.text', '2x');
+
+    cy.get(cesc('#/pcopy1') + " .mjx-mrow").eq(0).should('have.text', 'x+x');
+    cy.get(cesc('#/pcopy2') + " .mjx-mrow").eq(0).should('have.text', '2x');
+    cy.get(cesc('#/pcopy3') + " .mjx-mrow").eq(0).should('have.text', '2x');
+    cy.get(cesc('#/pcopy4') + " .mq-editable-field").eq(0).should('have.text', 'x+x');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let macrom1Name = stateVariables["/pmacro1"].activeChildren[0].componentName;
+      let macrom2Name = stateVariables["/pmacro2"].activeChildren[0].componentName;
+      let copym1Name = stateVariables["/pcopy1"].activeChildren[0].componentName;
+      let copym2Name = stateVariables["/pcopy2"].activeChildren[0].componentName;
+      let copym3Name = stateVariables["/pcopy3"].activeChildren[0].componentName;
+      let copymi4Name = stateVariables["/pcopy4"].activeChildren[0].componentName;
+
+      expect(stateVariables[macrom1Name].componentType).eq('math')
+      expect(stateVariables[macrom2Name].componentType).eq('math')
+      expect(stateVariables[copym1Name].componentType).eq('math')
+      expect(stateVariables[copym2Name].componentType).eq('math')
+      expect(stateVariables[copym3Name].componentType).eq('math')
+      expect(stateVariables[copymi4Name].componentType).eq('mathInput')
+      expect(stateVariables[macrom1Name].stateValues.value).eqls(["+", "x", "x"])
+      expect(stateVariables[macrom2Name].stateValues.value).eqls(["*", 2, "x"])
+      expect(stateVariables[copym1Name].stateValues.value).eqls(["+", "x", "x"])
+      expect(stateVariables[copym2Name].stateValues.value).eqls(["*", 2, "x"])
+      expect(stateVariables[copym3Name].stateValues.value).eqls(["*", 2, "x"])
+      expect(stateVariables[copymi4Name].stateValues.value).eqls(["+", "x", "x"])
+
+    });
+
+
+  });
+
+  it('copies of composites ignore isPlainMacro and isPlainCopy', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <group name="g">
+      <mathinput prefill="x" />
+      <mathinput prefill="y" />
+    </group>
+
+    <p><collect componentTypes="mathinput" source="g" name="col" /></p>
+
+    <p name="pmacro">$col</p>
+
+    <p name="pcopy"><copy source="col" /></p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/pmacro') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pmacro') + " .mq-editable-field").eq(1).should('have.text', 'y');
+
+    cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(0).should('have.text', 'x');
+    cy.get(cesc('#/pcopy') + " .mq-editable-field").eq(1).should('have.text', 'y');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let [macromi1Name, macromi2Name] = stateVariables["/pmacro"].activeChildren.map(x => x.componentName);
+      let [copymi1Name, copymi2Name] = stateVariables["/pcopy"].activeChildren.map(x => x.componentName);
+
+      expect(stateVariables[macromi1Name].componentType).eq('mathInput')
+      expect(stateVariables[macromi2Name].componentType).eq('mathInput')
+      expect(stateVariables[copymi1Name].componentType).eq('mathInput')
+      expect(stateVariables[copymi2Name].componentType).eq('mathInput')
+      expect(stateVariables[macromi1Name].stateValues.value).eq('x')
+      expect(stateVariables[macromi2Name].stateValues.value).eq('y')
+      expect(stateVariables[copymi1Name].stateValues.value).eq('x')
+      expect(stateVariables[copymi2Name].stateValues.value).eq('y')
+
+    });
+
+
+  });
+
+  it('isPlainCopy does not mean isPlainMacro', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="p1"><math newNamespace name="x">x+<math name="y">y</math></math></p>
+
+    <p name="p2"><copy source="x" assignNames="x2" /></p>
+    
+    <p name="p3">x2/y: $(x2/y)</p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    cy.get(cesc('#/p1') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
+    cy.get(cesc('#/p2') + " .mjx-mrow").eq(0).should('have.text', 'x+y');
+    cy.get(cesc('#/p3') + " .mjx-mrow").eq(0).should('have.text', 'y');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/x2"].activeChildren.length).eq(2)
+
+      expect(stateVariables["/x2/y"].stateValues.value).eq("y")
+
+    });
 
 
   });

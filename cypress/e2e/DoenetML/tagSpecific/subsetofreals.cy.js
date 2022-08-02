@@ -1365,7 +1365,7 @@ describe('SubsetOfReals Tag Tests', function () {
   <p>Subset 6: <copy target="s3" assignNames="s6" /></p>
   <p>Subset 7: <copy prop="value" target="s3" assignNames="s7" /></p>
   <p>Subset 8: <subsetOfReals name="s8">$s1</subsetOfReals></p>
-  <p>Subset 9: <subsetOfReals name="s9">$(s1{prop='value'})</subsetOfReals></p>
+  <p>Subset 9: <subsetOfReals name="s9">$(s1.value)</subsetOfReals></p>
   <p>Modify subset 1: <mathinput name="input1" bindValueTo="$s1" /></p>
   <p>Modify subset 2: <mathinput name="input2" bindValueTo="$s2" /></p>
   <p>Modify subset 3: <mathinput name="input3" bindValueTo="$s3" /></p>

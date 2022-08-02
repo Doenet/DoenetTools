@@ -178,11 +178,26 @@ export default class NumberComponent extends InlineComponent {
           ||
           dependencyValues.mathListParentDisplayDecimals !== null && !usedDefault.mathListParentDisplayDecimals;
 
+
+        let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
+        let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+        if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          // if both display digits and display decimals did not use default
+          // we'll regard display digits as using default if it comes from a deeper shadow
+          let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+          let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+          if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+            displayDigitsAttrUsedDefault = true;
+          }
+        }
+
         if (!haveListParentWithDisplayDecimals && dependencyValues.displayDigitsAttr !== null) {
           // have to check to exclude case where have displayDecimals from mathList parent
           // because otherwise a non-default displayDigits will win over displayDecimals
 
-          if (usedDefault.displayDigitsAttr) {
+          if (displayDigitsAttrUsedDefault) {
             foundDefaultValue = true;
             theDefaultValueFound = dependencyValues.displayDigitsAttr.stateValues.value;
           } else {
@@ -197,7 +212,7 @@ export default class NumberComponent extends InlineComponent {
 
         if (
           !haveListParentWithDisplayDecimals
-          && (dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr)
+          && displayDecimalsAttrUsedDefault
           && dependencyValues.numberMathChildren.length === 1
           && dependencyValues.otherChildren.length === 0
         ) {

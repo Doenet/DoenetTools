@@ -257,9 +257,9 @@ describe('ChoiceInput Tag Tests', function () {
         <choice>e</choice>
         <choice>f</choice>
       </choiceinput>
-      <copy name="copy" target="ci1" assignNames="ci2" />
-      <copy name="copy2" inline="false" target="ci1" assignNames="ci3" />
-      <copy name="copy3" inline="false" target="copy" assignNames="ci4" />
+      <copy name="copy" target="ci1" assignNames="ci2" createComponentOfType="choiceinput" />
+      <copy name="copy2" inline="false" target="ci1" assignNames="ci3" createComponentOfType="choiceinput" />
+      <copy name="copy3" inline="false" target="copy" assignNames="ci4" createComponentOfType="choiceinput" />
   
       <p>Selected values: <aslist>
       <copy prop='selectedvalue' target="ci1" />
@@ -451,7 +451,7 @@ describe('ChoiceInput Tag Tests', function () {
       <choice>Can't convert this latex: <m>\\int_a^b q(t) \\, dt</m>.</choice>
     </choiceinput>
 
-    <copy name="copy" inline target="ci1" assignNames="ci2" />
+    <copy name="copy" inline target="ci1" assignNames="ci2" createComponentOfType="choiceinput" />
 
     <p>Selected values: <aslist>
     <copy prop='selectedvalue' target="ci1" />
@@ -565,7 +565,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     <p>Select by typing: <textinput prefill="monkey" /></p>
 
-    <copy name="copy" inline target="ci1" assignNames="ci2" />
+    <copy name="copy" inline target="ci1" assignNames="ci2" createComponentOfType="choiceinput" />
 
     <p>Selected values: <aslist>
     <copy prop='selectedvalue' target="ci1" />
@@ -712,7 +712,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     <p>Select by typing: <textinput prefill="monkey" /></p>
 
-    <copy name="copy" inline target="ci1" assignNames="ci2" />
+    <copy name="copy" inline target="ci1" assignNames="ci2" createComponentOfType="choiceinput" />
 
     <p>Selected values: <aslist>
     <copy prop='selectedvalues' target="ci1" />
@@ -877,7 +877,7 @@ describe('ChoiceInput Tag Tests', function () {
 
     <p>Fixed to be: <text name="alwaysMonkey" fixed>monkey</text></p>
 
-    <copy name="copy" inline target="ci1" assignNames="ci2" />
+    <copy name="copy" inline target="ci1" assignNames="ci2" createComponentOfType="choiceinput" />
 
     <p>Selected values: <aslist>
     <copy prop='selectedvalue' target="ci1" />
@@ -950,7 +950,7 @@ describe('ChoiceInput Tag Tests', function () {
     
     <p>Select by typing: <mathinput prefill="y" /></p>
 
-    <copy name="copy" inline target="ci1" assignNames="ci2" />
+    <copy name="copy" inline target="ci1" assignNames="ci2" createComponentOfType="choiceinput" />
 
     <p>Selected values: <aslist>
     <copy prop='selectedvalue' target="ci1" />

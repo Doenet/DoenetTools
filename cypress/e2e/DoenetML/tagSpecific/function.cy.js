@@ -3175,7 +3175,7 @@ describe('Function Tag Tests', function () {
     <graph>
     <point layer="2">(0,1)</point>
     <point layer="2">(3,1)</point>
-    <function>$(_point1{prop='y'}) exp(-(x-$(_point1{prop='x'}))^2)+$(_point2{prop='y'}) exp(-(x-$(_point2{prop='x'}))^2)</function>
+    <function>$_point1.y exp(-(x-$_point1.x)^2)+$_point2.y exp(-(x-$_point2.x)^2)</function>
     <copy prop="extrema" target="_function1" />
     </graph>
     
@@ -4737,9 +4737,9 @@ describe('Function Tag Tests', function () {
     <point>(3,4)</point>
     <point>(-5,7)</point>
     <point>(8,-1)</point>
-    <function yscale="5" maxima="($(_function2{prop='numbermaxima'}),$(_function2{prop='numberminima'}))" through="(-8,5) (9,10)" />
+    <function yscale="5" maxima="($_function2.numbermaxima,$_function2.numberminima)" through="(-8,5) (9,10)" />
     
-    <function yscale="$(_function1{prop='yscale'})" through="$_point1 $_point2 $_point3 $_point4 " maxima="(0, )" />
+    <function yscale="$_function1.yscale" through="$_point1 $_point2 $_point3 $_point4 " maxima="(0, )" />
     </graph>
     
     <p>Number of maxima: <copy prop="numbermaxima" assignNames="numbermaxima" target="_function2" /></p>
@@ -6295,6 +6295,235 @@ describe('Function Tag Tests', function () {
     })
     cy.get('#\\/f5f .mjx-mrow').eq(0).invoke('text').then(text => {
       expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+  })
+
+  it('rounding, overwrite on copy', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <function name="f1">255.029847 sin(0.52952342x) + 3</function>
+  <function name="f2" displayDigits="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f3" displayDigits="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f4" displayDecimals="3"> 255.029847 sin(0.52952342x) + 3</function>
+  <function name="f5" displayDecimals="3" padZeros> 255.029847 sin(0.52952342x) + 3</function>
+
+  <copy source="f1" assignNames="f1dg6" displayDigits="6" />
+  <copy source="f2" assignNames="f2dg6" displayDigits="6" />
+  <copy source="f3" assignNames="f3dg6" displayDigits="6" />
+  <copy source="f4" assignNames="f4dg6" displayDigits="6" />
+  <copy source="f5" assignNames="f5dg6" displayDigits="6" />
+  <copy source="f1" assignNames="f1dc7" displayDecimals="7" />
+  <copy source="f2" assignNames="f2dc7" displayDecimals="7" />
+  <copy source="f3" assignNames="f3dc7" displayDecimals="7" />
+  <copy source="f4" assignNames="f4dc7" displayDecimals="7" />
+  <copy source="f5" assignNames="f5dc7" displayDecimals="7" />
+  <copy source="f1" assignNames="f1pt" padZeros />
+  <copy source="f2" assignNames="f2pt" padZeros />
+  <copy source="f3" assignNames="f3pt" padZeros />
+  <copy source="f4" assignNames="f4pt" padZeros />
+  <copy source="f5" assignNames="f5pt" padZeros />
+  <copy source="f1" assignNames="f1pf" padZeros="false" />
+  <copy source="f2" assignNames="f2pf" padZeros="false" />
+  <copy source="f3" assignNames="f3pf" padZeros="false" />
+  <copy source="f4" assignNames="f4pf" padZeros="false" />
+  <copy source="f5" assignNames="f5pf" padZeros="false" />
+
+  <copy source="f1.formula" assignNames="f1fdg6" displayDigits="6" />
+  <copy source="f2.formula" assignNames="f2fdg6" displayDigits="6" />
+  <copy source="f3.formula" assignNames="f3fdg6" displayDigits="6" />
+  <copy source="f4.formula" assignNames="f4fdg6" displayDigits="6" />
+  <copy source="f5.formula" assignNames="f5fdg6" displayDigits="6" />
+  <copy source="f1.formula" assignNames="f1fdc7" displayDecimals="7" />
+  <copy source="f2.formula" assignNames="f2fdc7" displayDecimals="7" />
+  <copy source="f3.formula" assignNames="f3fdc7" displayDecimals="7" />
+  <copy source="f4.formula" assignNames="f4fdc7" displayDecimals="7" />
+  <copy source="f5.formula" assignNames="f5fdc7" displayDecimals="7" />
+  <copy source="f1.formula" assignNames="f1fpt" padZeros />
+  <copy source="f2.formula" assignNames="f2fpt" padZeros />
+  <copy source="f3.formula" assignNames="f3fpt" padZeros />
+  <copy source="f4.formula" assignNames="f4fpt" padZeros />
+  <copy source="f5.formula" assignNames="f5fpt" padZeros />
+  <copy source="f1.formula" assignNames="f1fpf" padZeros="false" />
+  <copy source="f2.formula" assignNames="f2fpf" padZeros="false" />
+  <copy source="f3.formula" assignNames="f3fpf" padZeros="false" />
+  <copy source="f4.formula" assignNames="f4fpf" padZeros="false" />
+  <copy source="f5.formula" assignNames="f5fpf" padZeros="false" />
+
+
+  <function name="f1dg6a" displayDigits="6" ><copy source="f1" /></function>
+  <function name="f2dg6a" displayDigits="6" ><copy source="f2" /></function>
+  <function name="f3dg6a" displayDigits="6" ><copy source="f3" /></function>
+  <function name="f4dg6a" displayDigits="6" ><copy source="f4" /></function>
+  <function name="f5dg6a" displayDigits="6" ><copy source="f5" /></function>
+  <function name="f1dc7a" displayDecimals="7" ><copy source="f1" /></function>
+  <function name="f2dc7a" displayDecimals="7" ><copy source="f2" /></function>
+  <function name="f3dc7a" displayDecimals="7" ><copy source="f3" /></function>
+  <function name="f4dc7a" displayDecimals="7" ><copy source="f4" /></function>
+  <function name="f5dc7a" displayDecimals="7" ><copy source="f5" /></function>
+  <function name="f1pta" padZeros ><copy source="f1" /></function>
+  <function name="f2pta" padZeros ><copy source="f2" /></function>
+  <function name="f3pta" padZeros ><copy source="f3" /></function>
+  <function name="f4pta" padZeros ><copy source="f4" /></function>
+  <function name="f5pta" padZeros ><copy source="f5" /></function>
+  <function name="f1pfa" padZeros="false" ><copy source="f1" /></function>
+  <function name="f2pfa" padZeros="false" ><copy source="f2" /></function>
+  <function name="f3pfa" padZeros="false" ><copy source="f3" /></function>
+  <function name="f4pfa" padZeros="false" ><copy source="f4" /></function>
+  <function name="f5pfa" padZeros="false" ><copy source="f5" /></function>
+
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/f1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.52952342x)+3")
+    })
+    cy.get('#\\/f2 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f3 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f4 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
+    })
+    cy.get('#\\/f5 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+    cy.get('#\\/f1dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get('#\\/f2dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get('#\\/f3dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.529523x)+3.00000")
+    })
+    cy.get('#\\/f4dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get('#\\/f5dg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.529523x)+3.00000")
+    })
+
+    cy.get('#\\/f1fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get('#\\/f2fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get('#\\/f3fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.529523x)+3.00000")
+    })
+    cy.get('#\\/f4fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get('#\\/f5fdg6 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.529523x)+3.00000")
+    })
+
+    cy.get('#\\/f1dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get('#\\/f2dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get('#\\/f3dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.529523x)+3.00000")
+    })
+    cy.get('#\\/f4dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.529523x)+3")
+    })
+    cy.get('#\\/f5dg6a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.529523x)+3.00000")
+    })
+
+    cy.get('#\\/f1dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get('#\\/f2dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get('#\\/f3dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
+    })
+    cy.get('#\\/f4dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get('#\\/f5dc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
+    })
+
+    cy.get('#\\/f1fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get('#\\/f2fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get('#\\/f3fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
+    })
+    cy.get('#\\/f4fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get('#\\/f5fdc7 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
+    })
+
+    cy.get('#\\/f1dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get('#\\/f2dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get('#\\/f3dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
+    })
+    cy.get('#\\/f4dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.5295234x)+3")
+    })
+    cy.get('#\\/f5dc7a .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.0298470sin(0.5295234x)+3.0000000")
+    })
+
+    cy.get('#\\/f1pt .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.0298470sin(0.5295234200x)+3.000000000")
+    })
+    cy.get('#\\/f2pt .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f3pt .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.530x)+3.00")
+    })
+    cy.get('#\\/f4pt .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+    cy.get('#\\/f5pt .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.030sin(0.530x)+3.000")
+    })
+
+    cy.get('#\\/f1pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.029847sin(0.52952342x)+3")
+    })
+    cy.get('#\\/f2pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f3pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255sin(0.53x)+3")
+    })
+    cy.get('#\\/f4pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
+    })
+    cy.get('#\\/f5pf .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text).eq("255.03sin(0.53x)+3")
     })
 
   })

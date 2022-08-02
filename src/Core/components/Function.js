@@ -148,7 +148,7 @@ export default class Function extends InlineComponent {
 
       // wrap first group of non-label children in <math>
 
-      let componentIsLabel = x=> componentInfoObjects.componentIsSpecifiedType(x, "label");
+      let componentIsLabel = x => componentInfoObjects.componentIsSpecifiedType(x, "label");
       let childIsLabel = matchedChildren.map(componentIsLabel);
 
       let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
@@ -304,19 +304,61 @@ export default class Function extends InlineComponent {
       }),
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.displayDigitsAttr !== null) {
-          return {
-            setValue: {
-              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
             }
           }
-        } else if (dependencyValues.displayDecimalsAttr === null
-          && dependencyValues.functionChild.length > 0 && !usedDefault.functionChild[0]
-        ) {
-          // have to check to exclude case where have displayDecimals attribute
-          // because otherwise a non-default displayDigits will win over displayDecimals
-          return {
-            setValue: {
-              displayDigits: dependencyValues.functionChild[0].stateValues.displayDigits
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+
+        } else if (dependencyValues.functionChild.length > 0) {
+
+          let displayDigitsFunctionChildUsedDefault = usedDefault.functionChild[0];
+          let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsFunctionChildUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
+            // if both display digits (from function) and display decimals did not use default
+            // we'll regard display digits as using default 
+            displayDigitsFunctionChildUsedDefault = true;
+          }
+
+          if (displayDigitsFunctionChildUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.functionChild[0].stateValues.displayDigits
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.functionChild[0].stateValues.displayDigits
+              }
             }
           }
         } else {
@@ -2140,10 +2182,10 @@ export default class Function extends InlineComponent {
 
             if (haveDerivative && dleft * dright <= 0) {
               let x;
-              
-              if(dleft === 0) {
+
+              if (dleft === 0) {
                 x = xleft;
-              } else if(dright === 0) {
+              } else if (dright === 0) {
                 x = xright;
               } else {
                 x = numerics.fzero(derivative, [xleft, xright]);
@@ -2310,21 +2352,37 @@ export default class Function extends InlineComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "minima") {
-          return "minimum" + propIndex;
+          if (propIndex.length === 1) {
+            return "minimum" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            let componentNum = Number(propIndex[0]);
+            if (Number.isInteger(componentNum) && componentNum > 0) {
+              if (propIndex[1] === 1) {
+                return "minimumLocation" + componentNum;
+              } else if (propIndex[1] === 2) {
+                return "minimumValue" + componentNum;
+              }
+            }
+            return null;
+          }
         }
         if (varName === "minimumLocations") {
-          return "minimumLocation" + propIndex;
+            // if propIndex has additional entries, ignore them
+          return "minimumLocation" + propIndex[0];
         }
         if (varName === "minimumValues") {
-          return "minimumValue" + propIndex;
+            // if propIndex has additional entries, ignore them
+          return "minimumValue" + propIndex[0];
         }
         if (varName.slice(0, 7) === "minimum") {
           // could be minimum, minimumLocation, or minimumValue
           let componentNum = Number(varName.slice(7));
           if (Number.isInteger(componentNum) && componentNum > 0) {
-            if (propIndex === 1) {
+            // if propIndex has additional entries, ignore them
+            if (propIndex[0] === 1) {
               return "minimumLocation" + componentNum;
-            } else if (propIndex === 2) {
+            } else if (propIndex[0] === 2) {
               return "minimumValue" + componentNum;
             }
           }
@@ -2739,9 +2797,9 @@ export default class Function extends InlineComponent {
 
               let x;
 
-              if(dleft === 0) {
+              if (dleft === 0) {
                 x = xleft;
-              } else if(dright === 0) {
+              } else if (dright === 0) {
                 x = xright;
               } else {
                 x = numerics.fzero(derivative, [xleft, xright]);
@@ -2909,21 +2967,37 @@ export default class Function extends InlineComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "maxima") {
-          return "maximum" + propIndex;
+          if (propIndex.length === 1) {
+            return "maximum" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            let componentNum = Number(propIndex[0]);
+            if (Number.isInteger(componentNum) && componentNum > 0) {
+              if (propIndex[1] === 1) {
+                return "maximumLocation" + componentNum;
+              } else if (propIndex[1] === 2) {
+                return "maximumValue" + componentNum;
+              }
+            }
+            return null;
+          }
         }
         if (varName === "maximumLocations") {
-          return "maximumLocation" + propIndex;
+            // if propIndex has additional entries, ignore them
+          return "maximumLocation" + propIndex[0];
         }
         if (varName === "maximumValues") {
-          return "maximumValue" + propIndex;
+            // if propIndex has additional entries, ignore them
+          return "maximumValue" + propIndex[0];
         }
         if (varName.slice(0, 7) === "maximum") {
           // could be maximum, maximumLocation, or maximumValue
           let componentNum = Number(varName.slice(7));
           if (Number.isInteger(componentNum) && componentNum > 0) {
-            if (propIndex === 1) {
+            // if propIndex has additional entries, ignore them
+            if (propIndex[0] === 1) {
               return "maximumLocation" + componentNum;
-            } else if (propIndex === 2) {
+            } else if (propIndex[0] === 2) {
               return "maximumValue" + componentNum;
             }
           }
@@ -3097,21 +3171,37 @@ export default class Function extends InlineComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "extrema") {
-          return "extremum" + propIndex;
+          if (propIndex.length === 1) {
+            return "extremum" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            let componentNum = Number(propIndex[0]);
+            if (Number.isInteger(componentNum) && componentNum > 0) {
+              if (propIndex[1] === 1) {
+                return "extremumLocation" + componentNum;
+              } else if (propIndex[1] === 2) {
+                return "extremumValue" + componentNum;
+              }
+            }
+            return null;
+          }
         }
         if (varName === "extremumLocations") {
-          return "extremumLocation" + propIndex;
+            // if propIndex has additional entries, ignore them
+          return "extremumLocation" + propIndex[0];
         }
         if (varName === "extremumValues") {
-          return "extremumValue" + propIndex;
+            // if propIndex has additional entries, ignore them
+          return "extremumValue" + propIndex[0];
         }
         if (varName.slice(0, 8) === "extremum") {
           // could be extremum, extremumLocation, or extremumValue
           let componentNum = Number(varName.slice(8));
           if (Number.isInteger(componentNum) && componentNum > 0) {
-            if (propIndex === 1) {
+            // if propIndex has additional entries, ignore them
+            if (propIndex[0] === 1) {
               return "extremumLocation" + componentNum;
-            } else if (propIndex === 2) {
+            } else if (propIndex[0] === 2) {
               return "extremumValue" + componentNum;
             }
           }

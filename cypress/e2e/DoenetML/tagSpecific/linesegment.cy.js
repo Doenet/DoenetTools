@@ -827,7 +827,7 @@ describe('LineSegment Tag Tests', function () {
   </graph>
   <graph name="g1" newNamespace>
     <point>(-2,1)</point>
-    <lineSegment endpoints="($(../_number1), $(_point1{prop='x'})) ($(_point1{prop='y'}),5)"  name="ls"/>
+    <lineSegment endpoints="($(../_number1), $(_point1.x)) ($(_point1.y),5)"  name="ls"/>
   </graph>
 
   <graph name="g2" newNamespace>
@@ -2695,7 +2695,7 @@ describe('LineSegment Tag Tests', function () {
   <linesegment endpoints="(-1,-2) (-3,-4)" />
   </graph>
   <graph>
-  <linesegment endpoints="$(_linesegment1{prop='endpoints'})" />
+  <linesegment endpoints="$(_linesegment1.endpoints)" />
   <copy prop="endpoints" target="_linesegment1" assignNames="p1 p2" />
   </graph>
   <copy prop="endpoint1" target="_linesegment1" assignNames="p1b" />
@@ -2852,7 +2852,7 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-    <linesegment endpoints="(1,2) ($(_linesegment1{prop='endpointX1_2'}), $(_linesegment1{prop='endpointX1_1'}))" />
+    <linesegment endpoints="(1,2) ($(_linesegment1.endpointX1_2), $(_linesegment1.endpointX1_1))" />
     <point name="x1">
       (<extract prop="x"><copy prop="endpoint1" target="_linesegment1" /></extract>,
       <math fixed>3</math>)
@@ -3000,9 +3000,9 @@ describe('LineSegment Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <linesegment endpoints="$(_linesegment2{prop='endpoint2' createComponentOfType='point'}) (1,0)" />
-  <linesegment endpoints="$(_linesegment3{prop='endpoint2' createComponentOfType='point'}) (3,2)" />
-  <linesegment endpoints="$(_linesegment1{prop='endpoint2' createComponentOfType='point'}) (-1,4)" />
+  <linesegment endpoints="$(_linesegment2.endpoint2{ createComponentOfType='point'}) (1,0)" />
+  <linesegment endpoints="$(_linesegment3.endpoint2{ createComponentOfType='point'}) (3,2)" />
+  <linesegment endpoints="$(_linesegment1.endpoint2{ createComponentOfType='point'}) (-1,4)" />
   </graph>
   <copy prop="endpoint1" target="_linesegment1" assignNames="p11" />
   <copy prop="endpoint2" target="_linesegment1" assignNames="p12" />
@@ -3209,9 +3209,9 @@ describe('LineSegment Tag Tests', function () {
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);

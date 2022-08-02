@@ -136,7 +136,7 @@ describe('BooleanInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p><booleaninput prefill="true" label="green" name="bi1" /></p>
-    <p><copy target="bi1" assignNames="bi1a" /></p>
+    <p><booleanInput copySource="bi1" name="bi1a" /></p>
     <p><copy prop="value" target="bi1" assignNames="v1" /></p>
     <p><booleaninput label="red" name="bi2" /></p>
     <p><copy prop="value" target="bi2" assignNames="v2" /></p>

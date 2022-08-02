@@ -348,15 +348,15 @@ describe('MathList Tag Tests', function () {
       </mathlist>
     </mathlist>
 
-    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
+    <mathinput bindValueTo="$(_mathlist1.math1)" />
+    <mathinput bindValueTo="$(_mathlist1.math2)" />
+    <mathinput bindValueTo="$(_mathlist1.math3)" />
+    <mathinput bindValueTo="$(_mathlist1.math4)" />
+    <mathinput bindValueTo="$(_mathlist1.math5)" />
+    <mathinput bindValueTo="$(_mathlist1.math6)" />
+    <mathinput bindValueTo="$(_mathlist1.math7)" />
+    <mathinput bindValueTo="$(_mathlist1.math8)" />
+    <mathinput bindValueTo="$(_mathlist1.math9)" />
 
     ` }, "*");
     });
@@ -528,15 +528,15 @@ describe('MathList Tag Tests', function () {
       </mathlist>
     </mathlist>
 
-    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
+    <mathinput bindValueTo="$(_mathlist1.math1)" />
+    <mathinput bindValueTo="$(_mathlist1.math2)" />
+    <mathinput bindValueTo="$(_mathlist1.math3)" />
+    <mathinput bindValueTo="$(_mathlist1.math4)" />
+    <mathinput bindValueTo="$(_mathlist1.math5)" />
+    <mathinput bindValueTo="$(_mathlist1.math6)" />
+    <mathinput bindValueTo="$(_mathlist1.math7)" />
+    <mathinput bindValueTo="$(_mathlist1.math8)" />
+    <mathinput bindValueTo="$(_mathlist1.math9)" />
 
     ` }, "*");
     });
@@ -716,18 +716,18 @@ describe('MathList Tag Tests', function () {
       <copy target="mid" assignNames="mid2" />
     </mathlist>
 
-    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math10'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math11'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math12'})" />
+    <mathinput bindValueTo="$(_mathlist1.math1)" />
+    <mathinput bindValueTo="$(_mathlist1.math2)" />
+    <mathinput bindValueTo="$(_mathlist1.math3)" />
+    <mathinput bindValueTo="$(_mathlist1.math4)" />
+    <mathinput bindValueTo="$(_mathlist1.math5)" />
+    <mathinput bindValueTo="$(_mathlist1.math6)" />
+    <mathinput bindValueTo="$(_mathlist1.math7)" />
+    <mathinput bindValueTo="$(_mathlist1.math8)" />
+    <mathinput bindValueTo="$(_mathlist1.math9)" />
+    <mathinput bindValueTo="$(_mathlist1.math10)" />
+    <mathinput bindValueTo="$(_mathlist1.math11)" />
+    <mathinput bindValueTo="$(_mathlist1.math12)" />
 
     ` }, "*");
     });

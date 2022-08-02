@@ -80,18 +80,74 @@ export default class Evaluate extends MathComponent {
           attributeName: "function",
           variableNames: ["displayDigits"],
         },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.displayDigitsAttr !== null) {
-          return {
-            setValue: {
-              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
             }
           }
-        } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
-          return {
-            setValue: {
-              displayDigits: dependencyValues.functionAttr.stateValues.displayDigits
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        } else if (dependencyValues.functionAttr) {
+
+          let displayDigitsFunctionAttrUsedDefault = usedDefault.functionAttr;
+          let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsFunctionAttrUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
+            // if both display digits (from function) and display decimals did not use default
+            // we'll regard display digits as using default if it comes 
+            // from the same or deeper shadow
+            let shadowDepthDisplayDigitsFunction = dependencyValues.functionAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals <= shadowDepthDisplayDigitsFunction) {
+              displayDigitsFunctionAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsFunctionAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.functionAttr.stateValues.displayDigits
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.functionAttr.stateValues.displayDigits
+              }
             }
           }
         } else {
@@ -128,10 +184,20 @@ export default class Evaluate extends MathComponent {
               displayDecimals: dependencyValues.displayDecimalsAttr.stateValues.value
             }
           }
-        } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
-          return {
-            setValue: {
-              displayDecimals: dependencyValues.functionAttr.stateValues.displayDecimals
+        } else if (dependencyValues.functionAttr) {
+          if (usedDefault.functionAttr) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDecimals: {
+                  defaultValue: dependencyValues.functionAttr.stateValues.displayDecimals
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDecimals: dependencyValues.functionAttr.stateValues.displayDecimals
+              }
             }
           }
         } else {
@@ -168,10 +234,20 @@ export default class Evaluate extends MathComponent {
               displaySmallAsZero: dependencyValues.displaySmallAsZeroAttr.stateValues.value
             }
           }
-        } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
-          return {
-            setValue: {
-              displaySmallAsZero: dependencyValues.functionAttr.stateValues.displaySmallAsZero
+        } else if (dependencyValues.functionAttr) {
+          if (usedDefault.functionAttr) {
+            return {
+              useEssentialOrDefaultValue: {
+                displaySmallAsZero: {
+                  defaultValue: dependencyValues.functionAttr.stateValues.displaySmallAsZero
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displaySmallAsZero: dependencyValues.functionAttr.stateValues.displaySmallAsZero
+              }
             }
           }
         } else {
@@ -208,10 +284,20 @@ export default class Evaluate extends MathComponent {
               padZeros: dependencyValues.padZerosAttr.stateValues.value
             }
           }
-        } else if (dependencyValues.functionAttr && !usedDefault.functionAttr) {
-          return {
-            setValue: {
-              padZeros: dependencyValues.functionAttr.stateValues.padZeros
+        } else if (dependencyValues.functionAttr) {
+          if (usedDefault.functionAttr) {
+            return {
+              useEssentialOrDefaultValue: {
+                padZeros: {
+                  defaultValue: dependencyValues.functionAttr.stateValues.padZeros
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                padZeros: dependencyValues.functionAttr.stateValues.padZeros
+              }
             }
           }
         } else {

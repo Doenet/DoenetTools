@@ -121,7 +121,7 @@ describe('Component Size Tag Tests', function () {
 <p>width as adapted math: <math name="wMath"><copy prop="width" target="ae" /></math></p>
 <p>width as extracted number: <extract prop="number" assignNames="wExtract"><copy prop="width" target="ae" /></extract></p>
 <p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract"><copy prop="width" target="ae" /></extract></p>
-<p>Change width 2: <mathinput name="w2" bindValueTo="$(ae{prop='width'})" /></p>
+<p>Change width 2: <mathinput name="w2" bindValueTo="$ae.width" /></p>
   `}, "*");
     });
 
@@ -205,7 +205,7 @@ describe('Component Size Tag Tests', function () {
 <p>width as adapted math: <math name="wMath"><copy prop="width" target="ae" /></math></p>
 <p>width as extracted number: <extract prop="number" assignNames="wExtract"><copy prop="width" target="ae" /></extract></p>
 <p>extracted isAbsolute: <extract prop="isAbsolute" assignNames="absExtract"><copy prop="width" target="ae" /></extract></p>
-<p>Change width 2: <mathinput name="w2" bindValueTo="$(ae{prop='width'})" /></p>
+<p>Change width 2: <mathinput name="w2" bindValueTo="$(ae.width)" /></p>
 </document>
   `}, "*");
     });
@@ -290,12 +290,12 @@ describe('Component Size Tag Tests', function () {
       win.postMessage({
         doenetML: `
 <p><mathinput name="wPrescribed" prefill="500" /></p>
-<image name="ae" width="$wPrescribed px" height="$(ae{prop='width'})/2" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
+<image name="ae" width="$wPrescribed px" height="$(ae.width)/2" source="https://mathinsight.org/media/image/image/giant_anteater.jpg" />
 
 <p>width: <copy prop="width" target="ae" assignNames="w" /></p>
 <p>height: <copy prop="height" target="ae" assignNames="h" /></p>
-<p>Change width 2: <mathinput name="w2" bindValueTo="$(ae{prop='width'})" /></p>
-<p>Change height 2: <mathinput name="h2" bindValueTo="$(ae{prop='height'})" /></p>
+<p>Change width 2: <mathinput name="w2" bindValueTo="$(ae.width)" /></p>
+<p>Change height 2: <mathinput name="h2" bindValueTo="$(ae.height)" /></p>
   `}, "*");
     });
 

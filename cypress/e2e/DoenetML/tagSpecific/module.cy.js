@@ -189,8 +189,8 @@ describe('Module Tag Tests', function () {
         <point name="p" x="$pointX" y="$pointY" />
       </graph>
       <p>Point coords:
-        <mathinput name="x2" bindValueTo="$(p{prop='x'})" />
-        <mathinput name="y2" bindValueTo="$(p{prop='y'})" />
+        <mathinput name="x2" bindValueTo="$(p.x)" />
+        <mathinput name="y2" bindValueTo="$(p.y)" />
       </p>
       <p><copy prop="value" target="y2" assignNames="y2a" /></p>
     </module>

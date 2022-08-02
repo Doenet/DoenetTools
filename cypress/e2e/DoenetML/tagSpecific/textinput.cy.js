@@ -28,7 +28,7 @@ describe('TextInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <textinput prefill='hello' name="ti1" />
-    <copy target="ti1" assignNames="ti1a" />
+    <copy target="ti1" assignNames="ti1a" createComponentOfType="textinput" />
     <copy prop='value' target="ti1" assignNames="v1" />
     <copy prop='immediateValue' target="ti1" assignNames="iv1" />
     <copy prop='value' target="ti1a" assignNames="v1a" />
@@ -578,7 +578,7 @@ describe('TextInput Tag Tests', function () {
         doenetML: `
     <p>Original text: <text>hello there</text></p>
     <p>textinput based on text: <textinput bindValueTo="$_text1" /></p>
-    <p>Copied textinput: <copy target="_textinput1" assignNames="textinput2" /></p>
+    <p>Copied textinput: <textInput copySource="_textinput1" name="textinput2" /></p>
     `}, "*");
     });
 
@@ -803,7 +803,7 @@ describe('TextInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <p>Original textinput: <textinput prefill="hello there"/></p>
-    <p>textinput based on textinput: <textinput bindValueTo="$(_textinput1{prop='immediateValue'})" /></p>
+    <p>textinput based on textinput: <textinput bindValueTo="$(_textinput1.immediateValue)" /></p>
     <p>Immediate value of original: <text name="originalimmediate"><copy prop="immediateValue" target="_textinput1"/></text></p>
     <p>Value of original: <text name="originalvalue"><copy prop="value" target="_textinput1"/></text></p>
     <p>Immediate value of second: <text name="secondimmediate"><copy prop="immediateValue" target="_textinput2"/></text></p>
@@ -954,7 +954,7 @@ describe('TextInput Tag Tests', function () {
     <textinput name="ti" expanded />
 
     <p>$ti</p>
-    <p>$(ti{prop='immediateValue'})</p>
+    <p>$(ti.immediateValue)</p>
     `}, "*");
     });
 

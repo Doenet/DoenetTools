@@ -404,22 +404,38 @@ export class Extrema extends BaseComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === extremaClass.componentType) {
-          return extremaClass.componentTypeSingular + propIndex;
+          if (propIndex.length === 1) {
+            return extremaClass.componentTypeSingular + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            let componentNum = Number(propIndex[0]);
+            if (Number.isInteger(componentNum) && componentNum > 0) {
+              if (propIndex[1] === 1) {
+                return extremaClass.componentTypeSingular + "Location" + componentNum
+              } else if (propIndex[1] === 2) {
+                return extremaClass.componentTypeSingular + "Value" + componentNum
+              }
+            }
+            return null;
+          }
         }
         if (varName === extremaClass.componentTypeSingular + "Locations") {
-          return extremaClass.componentTypeSingular + "Location" + propIndex;
+          // if propIndex has additional entries, ignore them
+          return extremaClass.componentTypeSingular + "Location" + propIndex[0];
         }
         if (varName === extremaClass.componentTypeSingular + "Values") {
-          return extremaClass.componentTypeSingular + "Value" + propIndex;
+          // if propIndex has additional entries, ignore them
+          return extremaClass.componentTypeSingular + "Value" + propIndex[0];
         }
         let typeLen = extremaClass.componentTypeSingular.length;
         if (varName.slice(0, typeLen) === extremaClass.componentTypeSingular) {
           // could be extremaClass.componentTypeSingular, or with "Location" or "Value" appended
           let componentNum = Number(varName.slice(typeLen));
           if (Number.isInteger(componentNum) && componentNum > 0) {
-            if (propIndex === 1) {
+            // if propIndex has additional entries, ignore them
+            if (propIndex[0] === 1) {
               return extremaClass.componentTypeSingular + "Location" + componentNum
-            } else if (propIndex === 2) {
+            } else if (propIndex[0] === 2) {
               return extremaClass.componentTypeSingular + "Value" + componentNum
             }
           }

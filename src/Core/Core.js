@@ -3484,10 +3484,10 @@ export default class Core {
             }
           }
 
-          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential
-            && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
-          ) {
-            result.useEssentialOrDefaultValue = { [varName]: true }
+          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential) {
+            result.useEssentialOrDefaultValue = {
+              [varName]: { defaultValue: dependencyValues.targetVariable }
+            }
           } else {
             result.setValue = { [varName]: dependencyValues.targetVariable }
           }
@@ -4103,8 +4103,8 @@ export default class Core {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten = true, desiredSize) {
 
           function prependToAllKeys(keys, newStuff) {
-            for(let [ind,key] of keys.entries()) {
-              if(Array.isArray(key)) {
+            for (let [ind, key] of keys.entries()) {
+              if (Array.isArray(key)) {
                 prependToAllKeys(key, newStuff)
               } else {
                 keys[ind] = newStuff + "," + key
@@ -4157,7 +4157,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + [Number(propIndex), ...Array(stateVarObj.nDimensions - 1).fill(1)].join('_')
+          return entryPrefixes[0] + [...propIndex.map(x => Math.round(Number(x))), ...Array(stateVarObj.nDimensions - propIndex.length).fill(1)].join('_')
         };
       }
 
@@ -4228,7 +4228,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + propIndex;
+          return entryPrefixes[0] + propIndex[0];
         };
       }
 
@@ -9012,7 +9012,15 @@ export default class Core {
         }
       } else {
         for (let [ind, arrayKey] of inverseDefinitionArgs.arrayKeys.entries()) {
-          desiredValuesForArray[arrayKey] = instruction.value[ind];
+          if (Array.isArray(instruction.value)) {
+            desiredValuesForArray[arrayKey] = instruction.value[ind];
+          } else if (instruction.value instanceof me.class) {
+            try {
+              desiredValuesForArray[arrayKey] = instruction.value.get_component(ind);
+            } catch (e) {
+
+            }
+          }
         }
       }
       inverseDefinitionArgs.desiredStateVariableValues = { [arrayStateVariable]: desiredValuesForArray };
