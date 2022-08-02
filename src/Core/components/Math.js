@@ -226,10 +226,10 @@ export default class MathComponent extends InlineComponent {
           dependencyValues.mathListParentDisplayDecimals !== null && !usedDefault.mathListParentDisplayDecimals;
 
         let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
-        let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+        let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
 
-        if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
-          // if both display digits and display decimals did not used default
+        if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          // if both display digits and display decimals did not use default
           // we'll regard display digits as using default if it comes from a deeper shadow
           let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
           let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
@@ -257,7 +257,7 @@ export default class MathComponent extends InlineComponent {
 
         if (
           !haveListParentWithDisplayDecimals
-          && displayDecimalsAttrInfoUsedDefault
+          && displayDecimalsAttrUsedDefault
           && dependencyValues.mathChildren.length === 1
           && dependencyValues.stringChildren.length === 0
         ) {

@@ -9637,7 +9637,6 @@ describe('Line Tag Tests', function () {
 
   });
 
-
   // Testing bug in saving essential state set in definition
   it('reload line', () => {
     let doenetML = `
@@ -9794,7 +9793,6 @@ describe('Line Tag Tests', function () {
 
   });
 
-
   it('copy propIndex of points', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -9818,9 +9816,9 @@ describe('Line Tag Tests', function () {
     let t1x = 2, t1y = -3;
     let t2x = 3, t2y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P1').should('not.exist');
+    cy.get('#\\/P2').should('not.exist');
+    cy.get('#\\/x').should('not.exist');
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
@@ -9836,6 +9834,81 @@ describe('Line Tag Tests', function () {
     cy.get('#\\/P1 .mjx-mrow').should('not.exist');
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
+
+
+  });
+
+  it('copy propIndex of points, array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <line through="(2,-3) (3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy source="_line1.points[$n]" assignNames="P1 P2" /></p>
+
+    <p><copy source="_line1.point2[$n]" assignNames="x" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = 4;
+
+    cy.get('#\\/P1').should('not.exist');
+    cy.get('#\\/P2').should('not.exist');
+    cy.get('#\\/x').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+
+
+  });
+
+  it('display digits and decimals, overwrite in copies', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <line name="l" equation="0=52.82340235234x + 2.235980242343224y+0.486234234" />
+    <line name="ldg3" displayDigits="3" copySource="l" />
+    <line name="ldc5" displayDecimals="5" copySource="l" />
+    <line name="ldg3a" displayDigits="3" copySource="ldc5" />
+    <line name="ldc5a" displayDecimals="5" copySource="ldg3" />
+    <line name="ldg3b" displayDigits="3" copySource="ldc5a" />
+    <line name="ldc5b" displayDecimals="5" copySource="ldg3a" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/l .mjx-mrow').eq(0).should('have.text', '0=52.82340235x+2.235980242y+0.486234234')
+    cy.get('#\\/ldg3 .mjx-mrow').eq(0).should('have.text', '0=52.8x+2.24y+0.486')
+    cy.get('#\\/ldg3a .mjx-mrow').eq(0).should('have.text', '0=52.8x+2.24y+0.486')
+    cy.get('#\\/ldg3b .mjx-mrow').eq(0).should('have.text', '0=52.8x+2.24y+0.486')
+    cy.get('#\\/ldc5 .mjx-mrow').eq(0).should('have.text', '0=52.8234x+2.23598y+0.48623')
+    cy.get('#\\/ldc5a .mjx-mrow').eq(0).should('have.text', '0=52.8234x+2.23598y+0.48623')
+    cy.get('#\\/ldc5b .mjx-mrow').eq(0).should('have.text', '0=52.8234x+2.23598y+0.48623')
 
 
   });

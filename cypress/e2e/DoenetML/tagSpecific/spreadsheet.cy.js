@@ -3020,12 +3020,12 @@ describe('Spreadsheet Tag Tests', function () {
     let row = ["A", "B", "C"];
     let column = ["B", "E", "H"];
 
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('have.text', row[1]);
-    cy.get('#\\/R3').should('have.text', row[2]);
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('have.text', column[1]);
-    cy.get('#\\/C3').should('have.text', column[2]);
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/R1').should('have.text', row[0]);
@@ -3101,12 +3101,12 @@ describe('Spreadsheet Tag Tests', function () {
     let row = ["1", "2", "3"];
     let column = ["2", "5", "7"];
 
-    cy.get('#\\/R1').should('have.text', row[0]);
-    cy.get('#\\/R2').should('have.text', row[1]);
-    cy.get('#\\/R3').should('have.text', row[2]);
-    cy.get('#\\/C1').should('have.text', column[0]);
-    cy.get('#\\/C2').should('have.text', column[1]);
-    cy.get('#\\/C3').should('have.text', column[2]);
+    cy.get('#\\/R1').should('not.exist');
+    cy.get('#\\/R2').should('not.exist');
+    cy.get('#\\/R3').should('not.exist');
+    cy.get('#\\/C1').should('not.exist');
+    cy.get('#\\/C2').should('not.exist');
+    cy.get('#\\/C3').should('not.exist');
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/R1').should('have.text', row[0]);
@@ -3172,11 +3172,11 @@ describe('Spreadsheet Tag Tests', function () {
     let c3 = "(5,6)";
     let c4 = "(7,8)";
 
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', c1);
-    cy.get('#\\/P2 .mjx-mrow').should('contain.text', c2);
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist')
     cy.get('#\\/P3 .mjx-mrow').should('not.exist')
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', c3);
-    cy.get('#\\/P5 .mjx-mrow').should('contain.text', c4);
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist')
+    cy.get('#\\/P5 .mjx-mrow').should('not.exist')
     cy.get('#\\/P6 .mjx-mrow').should('not.exist')
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true });

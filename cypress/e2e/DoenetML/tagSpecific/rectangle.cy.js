@@ -622,11 +622,11 @@ describe('Rectangle Tag Tests', function () {
     let t3x = 3, t3y = 4;
     let t4x = 2, t4y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P3 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
-    cy.get('#\\/P4 .mjx-mrow').should('contain.text', `(${nInDOM(t4x)},${nInDOM(t4y)})`);
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);

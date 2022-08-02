@@ -294,23 +294,21 @@ export default class Point extends GraphicalComponent {
       }),
       definition({ dependencyValues, usedDefault }) {
 
-        let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
-        let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
-
-        if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
-          // if both display digits and display decimals did not used default
-          // we'll regard display digits as using default if it comes from a deeper shadow
-          let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
-          let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
-
-          if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
-            displayDigitsAttrUsedDefault = true;
-          }
-        }
-
         if (dependencyValues.displayDigitsAttr !== null) {
-          // have to check to exclude case where have displayDecimals from mathList parent
-          // because otherwise a non-default displayDigits will win over displayDecimals
+
+          let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+  
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
+            // if both display digits and display decimals did not used default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+  
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
 
           if (displayDigitsAttrUsedDefault) {
             return { useEssentialOrDefaultValue: { displayDigits: { defaultValue: dependencyValues.displayDigitsAttr.stateValues.value } } }

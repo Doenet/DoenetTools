@@ -57,7 +57,7 @@ export default class Copy extends CompositeComponent {
       public: true,
     };
     attributes.propIndex = {
-      createComponentOfType: "integer",
+      createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
@@ -580,13 +580,20 @@ export default class Copy extends CompositeComponent {
                 value: thisPropName,
               }
 
+              let propIndex = stateValues.propIndex;
+              if (propIndex) {
+                // make propIndex be a shallow copy
+                // so that can detect if it changed
+                // when update dependencies
+                propIndex = [...propIndex]
+              }
               thisTarget = {
                 dependencyType: "stateVariable",
                 componentName: source.componentName,
                 variableName: thisPropName,
                 returnAsComponentObject: true,
                 variablesOptional: true,
-                propIndex: stateValues.propIndex,
+                propIndex,
                 caseInsensitiveVariableMatch: true,
                 publicStateVariablesOnly: true,
                 useMappedVariableNames: true,
@@ -625,7 +632,7 @@ export default class Copy extends CompositeComponent {
               }
               if (!propName && dependencyValues["propName" + ind]) {
                 // a propName was specified, but it just wasn't found
-                propName = dependencyValues["propName" + ind];
+                propName = "__prop_name_not_found";
               }
               effectivePropNameBySource.push(propName)
             }
@@ -2198,7 +2205,9 @@ export async function replacementFromProp({ component, components,
   })[0];
 
   if (varName === undefined || varName.slice(0, 12) === "__not_public") {
-    console.warn(`Could not find prop ${propName} on a component of type ${replacementSource.componentType}`)
+    if(propName !== "__prop_name_not_found") {
+      console.warn(`Could not find prop ${propName} on a component of type ${replacementSource.componentType}`)
+    }
     return {
       serializedReplacements: [],
       propVariablesCopiedByReplacement: [],

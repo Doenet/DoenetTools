@@ -4157,7 +4157,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + [Number(propIndex), ...Array(stateVarObj.nDimensions - 1).fill(1)].join('_')
+          return entryPrefixes[0] + [...propIndex.map(x => Math.round(Number(x))), ...Array(stateVarObj.nDimensions - propIndex.length).fill(1)].join('_')
         };
       }
 
@@ -4228,7 +4228,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + propIndex;
+          return entryPrefixes[0] + propIndex[0];
         };
       }
 

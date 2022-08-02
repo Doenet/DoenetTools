@@ -1836,4 +1836,50 @@ describe('Graph Tag Tests', function () {
 
   });
 
+  it('display digits and decimals, overwrite in copies', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g" size="small" xmin="-45.03232523423" xmax="8.2857234234" ymin="-5.582342383823423" ymax="7.83710375032" />
+    <graph name="gdg3" displayDigits="3" copySource="g" />
+    <graph name="gdc5" displayDecimals="5" copySource="g" />
+    <graph name="gdg3a" displayDigits="3" copySource="gdc5" />
+    <graph name="gdc5a" displayDecimals="5" copySource="gdg3" />
+    <graph name="gdg3b" displayDigits="3" copySource="gdc5a" />
+    <graph name="gdc5b" displayDecimals="5" copySource="gdg3a" />
+
+    <p name="p">$g.xmin, $g.xmax, $g.ymin, $g.ymax</p>
+
+    <p name="pdg3">$gdg3.xmin, $gdg3.xmax, $gdg3.ymin, $gdg3.ymax</p>
+    <p name="pdg3a">$gdg3a.xmin, $gdg3a.xmax, $gdg3a.ymin, $gdg3a.ymax</p>
+    <p name="pdg3b">$gdg3b.xmin, $gdg3b.xmax, $gdg3b.ymin, $gdg3b.ymax</p>
+    <p name="pdg3c">$g{displayDigits="3"}.xmin, $g{displayDigits="3"}.xmax, $g{displayDigits="3"}.ymin, $g{displayDigits="3"}.ymax</p>
+    <p name="pdg3d">$gdc5{displayDigits="3"}.xmin, $gdc5{displayDigits="3"}.xmax, $gdc5{displayDigits="3"}.ymin, $gdc5{displayDigits="3"}.ymax</p>
+
+    <p name="pdc5">$gdc5.xmin, $gdc5.xmax, $gdc5.ymin, $gdc5.ymax</p>
+    <p name="pdc5a">$gdc5a.xmin, $gdc5a.xmax, $gdc5a.ymin, $gdc5a.ymax</p>
+    <p name="pdc5b">$gdc5b.xmin, $gdc5b.xmax, $gdc5b.ymin, $gdc5b.ymax</p>
+    <p name="pdc5c">$g{displayDecimals="5"}.xmin, $g{displayDecimals="5"}.xmax, $g{displayDecimals="5"}.ymin, $g{displayDecimals="5"}.ymax</p>
+    <p name="pdc5d">$gdg3{displayDecimals="5"}.xmin, $gdg3{displayDecimals="5"}.xmax, $gdg3{displayDecimals="5"}.ymin, $gdg3{displayDecimals="5"}.ymax</p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/p').should('have.text', '-45.03232523, 8.285723423, -5.582342384, 7.83710375')
+    cy.get('#\\/pdg3').should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get('#\\/pdg3b').should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get('#\\/pdg3c').should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get('#\\/pdg3d').should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get('#\\/pdc5').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get('#\\/pdc5b').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get('#\\/pdc5c').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get('#\\/pdc5d').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+
+
+  });
+
 });

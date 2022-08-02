@@ -46,7 +46,7 @@ export default class Collect extends CompositeComponent {
     };
 
     attributes.propIndex = {
-      createComponentOfType: "integer",
+      createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
@@ -220,9 +220,16 @@ export default class Collect extends CompositeComponent {
         }
 
         if (stateValues.propName) {
+          let propIndex = stateValues.propIndex;
+          if (propIndex) {
+            // make propIndex be a shallow copy
+            // so that can detect if it changed
+            // when update dependencies
+            propIndex = [...propIndex]
+          }
           descendants.variableNames = [stateValues.propName];
           descendants.variablesOptional = true;
-          descendants.propIndex = stateValues.propIndex;
+          descendants.propIndex = propIndex;
           descendants.caseInsensitiveVariableMatch = true;
           descendants.publicStateVariablesOnly = true;
           descendants.useMappedVariableNames = true;
@@ -264,7 +271,7 @@ export default class Collect extends CompositeComponent {
           }
           if (!propName && dependencyValues.propName) {
             // a propName was specified, but it just wasn't found
-            propName = dependencyValues.propName;
+            propName = "__prop_name_not_found";
           }
           effectivePropNameByComponent.push(propName)
         }

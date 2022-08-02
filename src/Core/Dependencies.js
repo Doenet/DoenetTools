@@ -2380,8 +2380,12 @@ class Dependency {
       this.useMappedVariableNames = true;
     }
 
-    if (Number.isInteger(dependencyDefinition.propIndex)) {
-      this.propIndex = dependencyDefinition.propIndex;
+    if (dependencyDefinition.propIndex) {
+      if (dependencyDefinition.propIndex.every(Number.isFinite)) {
+        this.propIndex = dependencyDefinition.propIndex.map(Math.round);
+      } else {
+        this.propIndex = [];
+      }
     }
 
     // if returnSingleVariableValue, then
@@ -4457,8 +4461,12 @@ class DescendantDependency extends Dependency {
     // of all composites except copies of external content
     this.ignoreReplacementsOfEncounteredComposites = this.definition.ignoreReplacementsOfEncounteredComposites;
 
-    if (Number.isInteger(this.definition.componentIndex)) {
-      this.componentIndex = this.definition.componentIndex;
+    if (this.definition.componentIndex !== null && this.definition.componentIndex !== undefined) {
+      if (Number.isInteger(this.definition.componentIndex)) {
+        this.componentIndex = this.definition.componentIndex;
+      } else {
+        this.componentIndex = NaN;
+      }
     }
 
   }
@@ -5438,8 +5446,12 @@ class ReplacementDependency extends Dependency {
 
     this.recurseNonStandardComposites = this.definition.recurseNonStandardComposites;
 
-    if (Number.isInteger(this.definition.componentIndex)) {
-      this.componentIndex = this.definition.componentIndex;
+    if (this.definition.componentIndex !== null && this.definition.componentIndex !== undefined) {
+      if (Number.isInteger(this.definition.componentIndex)) {
+        this.componentIndex = this.definition.componentIndex;
+      } else {
+        this.componentIndex = NaN;
+      }
     }
 
     this.includeWithheldReplacements = this.definition.includeWithheldReplacements;

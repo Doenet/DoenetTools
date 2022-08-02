@@ -2277,23 +2277,24 @@ describe('Collect Tag Tests', function () {
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/Bx .mjx-mrow').should('contain.text', nInDOM(x2));
-    cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/Bx .mjx-mrow').should('contain.text', nInDOM(x2));
+
+    cy.get('#\\/Ax .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Ax .mjx-mrow').should('not.exist');
+    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
-      expect(stateVariables['/A2'].stateValues.xs).eqls([x1, y1]);
-      expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/A2']).eq(undefined);
+      expect(stateVariables["/g3/A2"]).eq(undefined);
       expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/B2'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables["/g3/B2"].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/Ax'].stateValues.value).eq(x1);
-      expect(stateVariables["/al2/Ax"].stateValues.value).eq(x1);
-      expect(stateVariables['/Bx'].stateValues.value).eq(x2);
-      expect(stateVariables["/al2/Bx"].stateValues.value).eq(x2);
+      expect(stateVariables['/B2']).eq(undefined);
+      expect(stateVariables["/g3/B2"]).eq(undefined);
+      expect(stateVariables['/Ax']).eq(undefined);
+      expect(stateVariables["/al2/Ax"]).eq(undefined);
+      expect(stateVariables['/Bx']).eq(undefined);
+      expect(stateVariables["/al2/Bx"]).eq(undefined);
     });
 
     cy.log('restrict collection to first component');
@@ -2435,39 +2436,13 @@ describe('Collect Tag Tests', function () {
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(y1));
-    cy.get('#\\/n3 .mjx-mrow').should('contain.text', nInDOM(x2));
-    cy.get('#\\/n4 .mjx-mrow').should('contain.text', nInDOM(y2));
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y1));
-    cy.get('#\\/al2\\/n3 .mjx-mrow').should('contain.text', nInDOM(x2));
-    cy.get('#\\/al2\\/n4 .mjx-mrow').should('contain.text', nInDOM(y2));
 
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
-      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/n2'].stateValues.value).eq(y1);
-      expect(stateVariables['/n3'].stateValues.value).eq(x2);
-      expect(stateVariables['/n4'].stateValues.value).eq(y2);
-      expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/al2/n2'].stateValues.value).eq(y1);
-      expect(stateVariables['/al2/n3'].stateValues.value).eq(x2);
-      expect(stateVariables['/al2/n4'].stateValues.value).eq(y2);
-    });
-
-    cy.log('set propIndex to 1');
-
-    cy.get('#\\/n textarea').type("1{enter}", { force: true })
-
-    cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
     cy.get('#\\/n3 .mjx-mrow').should('not.exist');
     cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
     cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
     cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
 
@@ -2475,12 +2450,39 @@ describe('Collect Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
       expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/n2'].stateValues.value).eq(x2);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
       expect(stateVariables['/n3']).eq(undefined);
       expect(stateVariables['/n4']).eq(undefined);
-      expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/al2/n2'].stateValues.value).eq(x2);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
+      expect(stateVariables['/al2/n3']).eq(undefined);
+      expect(stateVariables['/al2/n4']).eq(undefined);
+    });
+
+    cy.log('set propIndex to 1');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
+      expect(stateVariables['/n3']).eq(undefined);
+      expect(stateVariables['/n4']).eq(undefined);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
       expect(stateVariables['/al2/n3']).eq(undefined);
       expect(stateVariables['/al2/n4']).eq(undefined);
     });
@@ -2494,12 +2496,12 @@ describe('Collect Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
 
@@ -2507,12 +2509,12 @@ describe('Collect Tag Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
         expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-        expect(stateVariables['/n1'].stateValues.value).eq(x1);
-        expect(stateVariables['/n2'].stateValues.value).eq(x2);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
         expect(stateVariables['/n3']).eq(undefined);
         expect(stateVariables['/n4']).eq(undefined);
-        expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
-        expect(stateVariables['/al2/n2'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
         expect(stateVariables['/al2/n3']).eq(undefined);
         expect(stateVariables['/al2/n4']).eq(undefined);
       });
@@ -2769,12 +2771,12 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
 
     cy.window().then(async (win) => {
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
 
@@ -2782,12 +2784,12 @@ describe('Collect Tag Tests', function () {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
         expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-        expect(stateVariables['/n1'].stateValues.value).eq(x2);
-        expect(stateVariables['/n2'].stateValues.value).eq(y2);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
         expect(stateVariables['/n3']).eq(undefined);
         expect(stateVariables['/n4']).eq(undefined);
-        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
-        expect(stateVariables['/al2/n2'].stateValues.value).eq(y2);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
         expect(stateVariables['/al2/n3']).eq(undefined);
         expect(stateVariables['/al2/n4']).eq(undefined);
       });

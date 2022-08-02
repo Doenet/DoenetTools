@@ -2170,4 +2170,72 @@ describe('Angle Tag Tests', function () {
 
   })
 
+  it('display digits and decimals, overwrite in copies', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <angle name="a">1.39372582305929123842034823</angle>
+  <angle name="aDig5a" displayDigits="5" copySource="a" />
+  <angle name="aDec6a" displayDecimals="6" copySource="a" />
+  <angle name="aDig5b" displayDigits="5" copySource="aDec6a" />
+  <angle name="aDec6b" displayDecimals="6" copySource="aDig5a" />
+  <angle name="aDig5c" displayDigits="5" copySource="aDec6b" />
+  <angle name="aDec6c" displayDecimals="6" copySource="aDig5b" />
+
+  <angle name="aDig5d" displayDigits="5">1.39372582305929123842034823</angle>
+  <angle name="aDec6d" displayDecimals="6">1.39372582305929123842034823</angle>
+  <angle name="aDig5e" displayDigits="5" copySource="aDec6d" />
+  <angle name="aDec6e" displayDecimals="6" copySource="aDig5d" />
+  <angle name="aDig5f" displayDigits="5" copySource="aDec6e" />
+  <angle name="aDec6f" displayDecimals="6" copySource="aDig5e" />
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.393725823")
+    })
+    cy.get('#\\/aDig5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.3937")
+    })
+    cy.get('#\\/aDec6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.393726")
+    })
+    cy.get('#\\/aDig5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.3937")
+    })
+    cy.get('#\\/aDec6b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.393726")
+    })
+    cy.get('#\\/aDig5c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.3937")
+    })
+    cy.get('#\\/aDec6c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.393726")
+    })
+    cy.get('#\\/aDig5d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.3937")
+    })
+    cy.get('#\\/aDec6d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.393726")
+    })
+    cy.get('#\\/aDig5e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.3937")
+    })
+    cy.get('#\\/aDec6e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.393726")
+    })
+    cy.get('#\\/aDig5f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.3937")
+    })
+    cy.get('#\\/aDec6f').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).eq("1.393726")
+    })
+
+
+  })
+
 });

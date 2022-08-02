@@ -31,7 +31,7 @@ export default class AnimateFromSequence extends BaseComponent {
     };
 
     attributes.propIndex = {
-      createComponentOfType: "integer",
+      createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
@@ -376,13 +376,20 @@ export default class AnimateFromSequence extends BaseComponent {
             let thisTarget;
 
             if (stateValues.propName) {
+              let propIndex = stateValues.propIndex;
+              if (propIndex) {
+                // make propIndex be a shallow copy
+                // so that can detect if it changed
+                // when update dependencies
+                propIndex = [...propIndex]
+              }
               thisTarget = {
                 dependencyType: "stateVariable",
                 componentName: source.componentName,
                 variableName: stateValues.propName,
                 returnAsComponentObject: true,
                 variablesOptional: true,
-                propIndex: stateValues.propIndex,
+                propIndex,
                 caseInsensitiveVariableMatch: true,
                 publicStateVariablesOnly: true,
                 useMappedVariableNames: true,

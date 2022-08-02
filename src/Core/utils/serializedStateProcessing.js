@@ -1154,12 +1154,12 @@ function createComponentFromExtendedSource({ sourceName,
     newComponent.attributes.prop = { primitive: propObj.prop };
 
     if (propObj.propIndex) {
-      let childrenForAttribute = [propObj.propIndex];
+      let childrenForAttribute = [propObj.propIndex.join(" ")];
       applyMacros(childrenForAttribute, componentInfoObjects);
 
       newComponent.attributes.propIndex = {
         component: {
-          componentType: "integer",
+          componentType: "numberList",
           children: childrenForAttribute
         }
       };
@@ -1321,11 +1321,17 @@ function buildSourcePieces(str, extendedWordCharacters) {
     str = str.substring(findResult.matchLength);
     findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
 
-    if (findResult.startDelim === "[") {
-      propObj.propIndex = findResult.group;
+    let propIndex = [];
+
+    while (findResult.startDelim === "[") {
+      propIndex.push(findResult.group);
       matchLength += findResult.matchLength;
       str = str.substring(findResult.matchLength);
       findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+    }
+
+    if(propIndex.length >0) {
+      propObj.propIndex = propIndex;
     }
 
     if (findResult.startDelim === "{") {

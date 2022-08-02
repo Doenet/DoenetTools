@@ -10255,45 +10255,25 @@ describe('Curve Tag Bezier Tests', function () {
     cy.get('#\\/c1').should('have.text', "-2")
 
 
-
     cy.log('erase propIndex')
 
     cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true });
 
-    cy.get('#\\/Px2 .mjx-mrow').should('contain.text', "(−4,7)")
-    cy.get('#\\/Px1 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(3,4)")
-    })
-    cy.get('#\\/Px2 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(−4,7)")
-    })
-    cy.get('#\\/Py1 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(1,2)")
-    })
-    cy.get('#\\/Py2 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(−2,6)")
-    })
-    cy.get('#\\/Py3 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(2,9)")
-    })
-    cy.get('#\\/Py4 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(6,5)")
-    })
-    cy.get('#\\/Pc1 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(−2,6)")
-    })
-    cy.get('#\\/Pc2 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(4,7)")
-    })
-    cy.get('#\\/x1 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(3,4)")
-    })
-    cy.get('#\\/y1 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(1,2)")
-    })
-    cy.get('#\\/c1 .mjx-mrow').eq(0).invoke('text').then(text => {
-      expect(text.trim()).eq("(−2,6)")
-    })
+    cy.get('#\\/Px1').should('not.exist');
+    cy.get('#\\/Px2').should('not.exist');
+
+    cy.get('#\\/Py1').should('not.exist');
+    cy.get('#\\/Py2').should('not.exist');
+    cy.get('#\\/Py3').should('not.exist');
+    cy.get('#\\/Py4').should('not.exist');
+
+    cy.get('#\\/Pc1').should('not.exist');
+    cy.get('#\\/Pc2').should('not.exist');
+
+
+    cy.get('#\\/x1').should('not.exist');
+    cy.get('#\\/y1').should('not.exist');
+    cy.get('#\\/c1').should('not.exist');
 
 
     cy.log('set propIndex to 4')
