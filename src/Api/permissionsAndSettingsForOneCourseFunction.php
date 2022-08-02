@@ -2,6 +2,7 @@
 
 function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
 {
+    //TODO: is this safe?
     $sql = "SELECT
     c.label,
     c.isPublic,
@@ -9,7 +10,6 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
     c.color,
     c.defaultRoleId,
     cr.label as roleLabel,
-    cr.canViewCourse,
     cr.isIncludedInGradebook,
     cr.canViewContentSource,
     cr.canEditContent,
@@ -32,7 +32,6 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
     ON c.courseId = cu.courseId
     WHERE c.courseId = '$courseId'
     AND cu.userId = '$userId'
-    AND cr.canViewCourse = '1'
     AND c.isDeleted = '0'
     ORDER BY c.id DESC
     ";
@@ -49,7 +48,6 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
             'color' => $row['color'],
             'defaultRoleId' => $row['defaultRoleId'],
             'roleLabel' => $row['roleLabel'],
-            'canViewCourse' => $row['canViewCourse'],
             'isIncludedInGradebook' => $row['isIncludedInGradebook'],
             'canViewContentSource' => $row['canViewContentSource'],
             'canEditContent' => $row['canEditContent'],
@@ -66,6 +64,8 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
             'dataAccessPermisson' => $row['dataAccessPermisson'],
             'isOwner' => $row['isOwner'],
         ];
+    } else {
+        return false;
     }
 
     return $permissionsAndSettings;

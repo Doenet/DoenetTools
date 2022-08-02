@@ -12,7 +12,6 @@ function getpermissionsAndSettings($conn, $userId)
       c.color,
       c.defaultRoleId,
       cr.label as roleLabel,
-      cr.canViewCourse,
       cr.isIncludedInGradebook,
       cr.canViewContentSource,
       cr.canEditContent,
@@ -34,7 +33,6 @@ function getpermissionsAndSettings($conn, $userId)
       RIGHT JOIN course as c
       ON c.courseId = cu.courseId
       WHERE cu.userId = '$userId'
-      AND cr.canViewCourse = '1'
       AND c.isDeleted = '0'
       ORDER BY c.id DESC
       ";
@@ -51,7 +49,6 @@ function getpermissionsAndSettings($conn, $userId)
                 'color' => $row['color'],
                 'defaultRoleId' => $row['defaultRoleId'],
                 'roleLabel' => $row['roleLabel'],
-                'canViewCourse' => $row['canViewCourse'],
                 'isIncludedInGradebook' => $row['isIncludedInGradebook'],
                 'canViewContentSource' => $row['canViewContentSource'],
                 'canEditContent' => $row['canEditContent'],

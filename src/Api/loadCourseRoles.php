@@ -35,7 +35,6 @@ if ($success) {
     $sql = "SELECT 
         cr.roleId,
         cr.label as roleLabel,
-        cr.canViewCourse,
         cr.isIncludedInGradebook,
         cr.canViewContentSource,
         cr.canEditContent,

@@ -45,7 +45,6 @@ if ($success) {
       courseId = '$courseId',
       roleId = '$ownerRoleId',
       label = 'Owner',
-      canViewCourse = '1',
       isIncludedInGradebook = '0',
       canViewContentSource = '1',
       canEditContent = '1',
@@ -69,7 +68,6 @@ if ($success) {
       courseId= '$courseId', 
       roleId= '$defaultRoleId', 
       label= 'Student', 
-      canViewCourse = '1', 
       isIncludedInGradebook = '1'
       ";
 

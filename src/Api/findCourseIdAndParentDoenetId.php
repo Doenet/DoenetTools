@@ -46,8 +46,7 @@ if ($success) {
         $userId,
         $courseId
     );
-    $allowed = $permissons['canViewCourse'];
-    // reimplement this
+    // TODO: URGENT
     // else {
     //     //Fail because there is no DB row for the user on this drive so we shouldn't allow an add
     //     http_response_code(401); //User has bad auth
@@ -55,7 +54,7 @@ if ($success) {
     //         'message' => 'User Unauthorized',
     //     ]);
     // }
-    if (!$allowed) {
+    if ($permissons == false) {
         http_response_code(403); //User if forbidden from operation
         echo json_encode([
             'message' => 'User lacks permission',
