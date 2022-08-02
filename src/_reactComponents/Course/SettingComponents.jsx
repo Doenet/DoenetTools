@@ -255,6 +255,7 @@ export function AddUserWithOptions({ courseId }) {
         onChange={(e) => {
           setUserData((prev) => ({ ...prev, firstName: e.target.value }));
         }}
+        vertical
       />
       <Textfield
         label="Last:"
@@ -263,6 +264,7 @@ export function AddUserWithOptions({ courseId }) {
         onChange={(e) => {
           setUserData((prev) => ({ ...prev, lastName: e.target.value }));
         }}
+        vertical
       />
       <ButtonFlexContainer>
         <Button
@@ -270,6 +272,7 @@ export function AddUserWithOptions({ courseId }) {
           value="Add User"
           onClick={handleEmailChange}
           disabled={!isEmailValid}
+          vertical
         />
       </ButtonFlexContainer>
       <Textfield
@@ -282,6 +285,7 @@ export function AddUserWithOptions({ courseId }) {
         onKeyDown={(e) => {
           if (e.code === 'Enter') handleEmailChange();
         }}
+        vertical
         alert={emailInput !== '' && !isEmailValid}
       />
       <DropdownMenu
@@ -297,15 +301,17 @@ export function AddUserWithOptions({ courseId }) {
         valueIndex={
           roles.findIndex(({ roleId }) => roleId == userData?.roleId) + 1
         }
+        vertical
         disabled={false}
       />
       <Textfield
-        label="empId:"
+        label="External Id:"
         width="250px"
         value={userData.empId}
         onChange={(e) => {
           setUserData((prev) => ({ ...prev, empId: e.target.value }));
         }}
+        vertical
       />
     </UserWithOptionsContainer>
   );
@@ -598,6 +604,7 @@ export function MangeRoles({ courseId }) {
             setEdited(true);
           }
         }}
+        disabled={selectedRolePermissons.isOwner === '1'}
       />
       <RolePermissonCheckbox
         courseId={courseId}
@@ -686,6 +693,7 @@ export function MangeRoles({ courseId }) {
         //   ) + 1
         // }
         vertical
+        disabled={selectedRolePermissons.isOwner === '1'}
       />
       <RolePermissonCheckbox
         courseId={courseId}
@@ -706,12 +714,6 @@ export function MangeRoles({ courseId }) {
         roleId={selectedRolePermissons.roleId}
         onClick={handleCheckboxClick}
         permissonKey={'canModifyRoles'}
-      />
-      <RolePermissonCheckbox
-        courseId={courseId}
-        roleId={selectedRolePermissons.roleId}
-        onClick={handleCheckboxClick}
-        permissonKey={'isOwner'}
       />
       {edited && (
         <ButtonGroup vertical>
@@ -751,7 +753,7 @@ export function AddRole({ courseId }) {
   const handleSave = () => {
     modifyRolePermissions(
       '',
-      { canViewCourse: '1', label: 'Untitled Role' },
+      { label: 'Untitled Role' },
       () => {
         addToast(`Create a new role: Untitled Role`);
       },

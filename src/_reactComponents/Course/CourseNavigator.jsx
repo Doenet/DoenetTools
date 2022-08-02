@@ -1091,7 +1091,7 @@ function Row({
   return <>{activityJSX}</>;
 }
 
-function getColumnsCSS(numberOfVisibleColumns) {
+export function getColumnsCSS(numberOfVisibleColumns) {
   let columnsCSS = '250px repeat(4,1fr)'; //5 columns max
   if (numberOfVisibleColumns === 4) {
     columnsCSS = '250px repeat(3,1fr)';

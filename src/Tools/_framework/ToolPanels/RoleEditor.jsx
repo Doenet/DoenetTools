@@ -15,6 +15,7 @@ export default function RolesEditor() {
   if (canModifyRoles !== '1') return null;
   return (
     <>
+      <h2>Edit Role Permissons:</h2>
       <MangeRoles courseId={courseId} />
       <AddRole courseId={courseId} />
     </>

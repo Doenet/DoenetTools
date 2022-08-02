@@ -1,20 +1,20 @@
 import { faChalkboard } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
 
 import {
-  AddUser,
   DeleteCourse,
   EditDefaultRole,
   EditImageAndColor,
   EditLabel,
 } from '../../../_reactComponents/Course/SettingComponents';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { pageToolViewAtom } from '../NewToolRoot';
 
 export default function SelectedCourse() {
   const [courseCardsSelection, setCourseCardsSelection] = useRecoilState(
@@ -68,20 +68,39 @@ export default function SelectedCourse() {
 
 const CourseInfoPanel = function ({ courseId }) {
   const { label } = useCourse(courseId);
-  const { canManageUsers, canModifyRoles, canModifyCourseSettings, isOwner } =
-    useRecoilValue(effectivePermissionsByCourseId(courseId));
+  const { canModifyRoles, canModifyCourseSettings, isOwner } = useRecoilValue(
+    effectivePermissionsByCourseId(courseId),
+  );
+  const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   return (
     <>
       <h2 data-test="infoPanelItemLabel">
         <FontAwesomeIcon icon={faChalkboard} /> {label}
       </h2>
+      <ButtonGroup vertical>
+        <Button
+          width="menu"
+          value="Enter Course"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setPageToolView({
+              page: 'course',
+              tool: 'dashboard',
+              view: '',
+              params: {
+                courseId,
+              },
+            });
+          }}
+        />
+      </ButtonGroup>
       {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}
       {canModifyCourseSettings === '1' && (
         <EditImageAndColor courseId={courseId} />
       )}
       {canModifyRoles === '1' && <EditDefaultRole courseId={courseId} />}
-      {canManageUsers === '1' && <AddUser courseId={courseId} menu />}
       {isOwner === '1' && <DeleteCourse courseId={courseId} />}
     </>
   );
