@@ -55,13 +55,13 @@ export default function Dashboard(props) {
           />
           {canManageUsers === '1' ? (
             <Card
-              name="Enrollment"
+              name="People"
               icon={<FontAwesomeIcon icon={faUser} />}
-              value="Enrollment"
+              value="People"
               onClick={() =>
                 setPageToolView({
                   page: 'course',
-                  tool: 'enrollment',
+                  tool: 'people',
                   view: '',
                   params: { courseId },
                 })
