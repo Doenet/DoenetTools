@@ -14,22 +14,22 @@ import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { fileByPageId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
 
-const enrollmentAtomByCourseId = atomFamily({
-  key:"enrollmentAtomByCourseId",
+const peopleAtomByCourseId = atomFamily({
+  key:"peopleAtomByCourseId",
   default:[],
   effects:courseId => [ ({setSelf, trigger})=>{
     if (trigger == 'get' && courseId){
-      axios.get('/api/getEnrollment.php', { params: { courseId } })
+      axios.get('/api/getPeople.php', { params: { courseId } })
       .then(resp=>{
-        setSelf(resp.data.enrollmentArray)
+        setSelf(resp.data.peopleArray)
       })
     } 
   },
   ]
 })
 
-export const enrollmentByCourseId = selectorFamily({
-  key:"enrollmentByCourseId",
+export const peopleByCourseId = selectorFamily({
+  key:"peopleByCourseId",
   get:(courseId)=>({get,getCallback})=>{
     const recoilWithdraw = getCallback(({set})=> async (email)=>{
         let payload = {
@@ -41,7 +41,7 @@ export const enrollmentByCourseId = selectorFamily({
           let resp = await axios.post('/api/withDrawStudents.php', payload);
           // console.log("resp",resp.data)
           if (resp.status < 300) {
-            set(enrollmentAtomByCourseId(courseId),
+            set(peopleAtomByCourseId(courseId),
           ( prev ) => {
               let next = [...prev];
               const indexOfStudent = next.findIndex((value)=>value.email == email)
@@ -69,7 +69,7 @@ export const enrollmentByCourseId = selectorFamily({
         let resp = await axios.post('/api/unWithDrawStudents.php', payload);
         // console.log("resp",resp.data)
         if (resp.status < 300) {
-          set(enrollmentAtomByCourseId(courseId),
+          set(peopleAtomByCourseId(courseId),
         ( prev ) => {
             let next = [...prev];
             const indexOfStudent = next.findIndex((value)=>value.email == email)
@@ -92,7 +92,7 @@ export const enrollmentByCourseId = selectorFamily({
         let resp = await axios.post('/api/mergeEnrollmentData.php', payload);
         // console.log("resp",resp.data)
         if (resp.status < 300) {
-          set(enrollmentAtomByCourseId(courseId),resp.data.enrollmentArray);
+          set(peopleAtomByCourseId(courseId),resp.data.enrollmentArray);
           //TODO (Emilio): toast
         } else {
           throw new Error(`response code: ${resp.status}`);
@@ -104,7 +104,7 @@ export const enrollmentByCourseId = selectorFamily({
     })
 
     return {
-      value:get(enrollmentAtomByCourseId(courseId)),
+      value:get(peopleAtomByCourseId(courseId)),
       recoilWithdraw,
       recoilUnWithdraw,
       recoilMergeData

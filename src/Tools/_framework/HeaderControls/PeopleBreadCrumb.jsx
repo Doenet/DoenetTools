@@ -2,16 +2,16 @@ import React, { Suspense } from 'react';
 import { useRecoilValue } from 'recoil';
 import { BreadCrumb } from '../../../_reactComponents/PanelHeaderComponents/BreadCrumb';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { useCourseChooserCrumb, useDashboardCrumb, useEnrollmentCrumb } from '../../../_utils/breadcrumbUtil';
+import { useCourseChooserCrumb, useDashboardCrumb, usePeopleCrumb } from '../../../_utils/breadcrumbUtil';
 
 export default function EnrollmentBreadCrumb() {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const courseChooserCrumb = useCourseChooserCrumb();
   const dashboardCrumb = useDashboardCrumb(courseId);
-  const enrollmentCrumb = useEnrollmentCrumb(courseId);
+  const peopleCrumb = usePeopleCrumb(courseId);
   return (
     <Suspense fallback={<div>loading Breadcrumbs...</div>}>
-      <BreadCrumb crumbs={[courseChooserCrumb,dashboardCrumb,enrollmentCrumb]}/>
+      <BreadCrumb crumbs={[courseChooserCrumb,dashboardCrumb,peopleCrumb]}/>
     </Suspense>
   );
 }

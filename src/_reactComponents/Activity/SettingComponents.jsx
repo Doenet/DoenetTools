@@ -12,7 +12,8 @@ import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox';
 import Increment from '../PanelHeaderComponents/IncrementMenu';
 import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
 import { useRecoilValue } from 'recoil';
-import { enrollmentByCourseId, itemByDoenetId, useCourse } from '../Course/CourseActions';
+import {
+  peopleByCourseId,
 import axios from 'axios';
 import RelatedItems from '../PanelHeaderComponents/RelatedItems';
 import ActionButtonGroup from '../PanelHeaderComponents/ActionButtonGroup';
@@ -937,7 +938,7 @@ export function AssignTo({ courseId, doenetId }) {
   } = useActivity(courseId, doenetId);
 
   const { value: enrolledStudents } = useRecoilValue(
-    enrollmentByCourseId(courseId),
+    peopleByCourseId(courseId),
   );
 
   //email addresses of only those who assignment is restricted to

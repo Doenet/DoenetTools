@@ -7,7 +7,7 @@ import {
   processAtom,
   enrolllearnerAtom,
   enrollmentTableDataAtom,
-} from '../ToolPanels/Enrollment';
+} from '../ToolPanels/People';
 import { searchParamAtomFamily } from '../NewToolRoot';
 
 export default function ManualEnrollment(props) {

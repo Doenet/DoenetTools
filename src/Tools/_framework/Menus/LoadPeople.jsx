@@ -5,12 +5,12 @@ import parse from 'csv-parse';
 import {
   useSetRecoilState,
 } from 'recoil';
-import {processAtom,headersAtom,entriesAtom} from '../ToolPanels/Enrollment';
+import {processAtom,headersAtom,entriesAtom} from '../ToolPanels/People';
 
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
 
-export default function LoadEnrollment(props){
+export default function LoadPeople(props){
   const setProcess = useSetRecoilState(processAtom);
   const setHeaders = useSetRecoilState(headersAtom);
   const setEntries = useSetRecoilState(entriesAtom);

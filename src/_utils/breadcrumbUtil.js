@@ -245,15 +245,15 @@ export function useAssignmentCrumb({ doenetId }) {
   };
 }
 
-export function useEnrollmentCrumb(courseId) {
+export function usePeopleCrumb(courseId) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   return {
-    label: 'Enrollment',
+    label: 'People',
     onClick: () => {
       setPageToolView({
         page: 'course',
-        tool: 'enrollment',
+        tool: 'people',
         view: '',
         params: {
           courseId,

@@ -25,42 +25,44 @@ if (array_key_exists('courseId', $_REQUEST)) {
     $allowed = $permissons['canViewUsers']; //TODO Emilio deal with undefined (for a 401?)
 }
 
-$enrollmentArray = [];
+$peopleArray = [];
 
 if ($allowed) {
-    $sql = "SELECT cu.userId,
+    $sql = "SELECT
 		u.firstName,
 		u.lastName,
 		u.email,
 		cu.externalId,
+        cu.roleId,
 		cu.dateEnrolled,
 		cu.section,
 		cu.withdrew
 		FROM course_user AS cu, user AS u
-		WHERE cu.userId = u.userId
+		WHERE cu.userId = u.userId 
         AND cu.courseId = '$courseId'
 		ORDER BY firstName
 		";
     $result = $conn->query($sql);
-
-    while ($row = $result->fetch_assoc()) {
-        $learner = [
-            'userId' => $row['userId'],
-            'firstName' => $row['firstName'],
-            'lastName' => $row['lastName'],
-            'email' => $row['email'],
-            'externalId' => $row['externalId'],
-            'dateEnrolled' => $row['dateEnrolled'],
-            'section' => $row['section'],
-            'withdrew' => $row['withdrew'],
-        ];
-        array_push($enrollmentArray, $learner);
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $learner = [
+                'firstName' => $row['firstName'],
+                'lastName' => $row['lastName'],
+                'email' => $row['email'],
+                'externalId' => $row['externalId'],
+                'roleId' => $row['roleId'],
+                'dateEnrolled' => $row['dateEnrolled'],
+                'section' => $row['section'],
+                'withdrew' => $row['withdrew'],
+            ];
+            array_push($peopleArray, $learner);
+        }
     }
 }
 
 $response_arr = [
     'success' => $allowed,
-    'enrollmentArray' => $enrollmentArray,
+    'peopleArray' => $peopleArray,
 ];
 
 http_response_code(200);

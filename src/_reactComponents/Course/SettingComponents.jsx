@@ -146,7 +146,7 @@ export function AddUser({ courseId }) {
     if (isEmailValid) {
       const {
         data: { success, message, userData },
-      } = await axios.post('/api/addUser.php', {
+      } = await axios.post('/api/addCourseUser.php', {
         email: emailInput,
       });
       if (success) {
@@ -226,7 +226,7 @@ export function AddUserWithOptions({ courseId }) {
     if (isEmailValid) {
       const {
         data: { success, message, userData: serverUserData },
-      } = await axios.post('/api/addUser.php', {
+      } = await axios.post('/api/addCourseUser.php', {
         email: emailInput,
         ...userData,
       });
