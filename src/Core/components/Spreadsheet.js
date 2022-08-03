@@ -482,7 +482,7 @@ export default class Spreadsheet extends BlockComponent {
         return "cell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
-        if (varName === "cells") {
+        if (varName === "cells" || varName === "rows") {
           if (propIndex.length === 1) {
             return "row" + propIndex[0];
           } else {
@@ -490,14 +490,12 @@ export default class Spreadsheet extends BlockComponent {
             return `cell(${propIndex[0]},${propIndex[1]})`
           }
         }
-        if (varName === "rows") {
-          if (propIndex.length === 1) {
-            return "row" + propIndex[0];
-          }
-        }
         if (varName === "columns") {
           if (propIndex.length === 1) {
             return "column" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `cell(${propIndex[1]},${propIndex[0]})`
           }
         }
         if (varName.slice(0, 3) === "row") {
@@ -820,7 +818,7 @@ export default class Spreadsheet extends BlockComponent {
         return "evaluatedCell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
-        if (varName === "evaluatedCells") {
+        if (varName === "evaluatedCells" || varName === "evaluatedRows") {
           if (propIndex.length === 1) {
             return "evaluatedRow" + propIndex[0];
           } else {
@@ -828,14 +826,12 @@ export default class Spreadsheet extends BlockComponent {
             return `evaluatedCell(${propIndex[0]},${propIndex[1]})`
           }
         }
-        if (varName === "evaluatedRows") {
-          if (propIndex.length === 1) {
-            return "evaluatedRow" + propIndex[0];
-          }
-        }
         if (varName === "evaluatedColumns") {
           if (propIndex.length === 1) {
             return "evaluatedColumn" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `evaluatedCell(${propIndex[1]},${propIndex[0]})`
           }
         }
         if (varName.slice(0, 12) === "evaluatedRow") {
@@ -1098,7 +1094,7 @@ export default class Spreadsheet extends BlockComponent {
         return "pointsInCell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
-        if (varName === "pointsInCells") {
+        if (varName === "pointsInCells" || varName === "pointsInRows") {
           if (propIndex.length === 1) {
             return "pointsInRow" + propIndex[0];
           } else {
@@ -1106,14 +1102,12 @@ export default class Spreadsheet extends BlockComponent {
             return `pointsInCell(${propIndex[0]},${propIndex[1]})`
           }
         }
-        if (varName === "pointsInRows") {
-          if (propIndex.length === 1) {
-            return "pointsInRow" + propIndex[0];
-          }
-        }
         if (varName === "pointsInColumns") {
           if (propIndex.length === 1) {
             return "pointsInColumn" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `pointsInCell(${propIndex[1]},${propIndex[0]})`
           }
         }
         if (varName.slice(0, 11) === "pointsInRow") {

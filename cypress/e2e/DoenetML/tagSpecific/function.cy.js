@@ -6132,6 +6132,174 @@ describe('Function Tag Tests', function () {
 
   })
 
+  it('copy props with propIndex, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>n: <mathinput name="n" prefill="2" /></p>
+
+  <graph name="g">
+    <function name="f" minima="(-7,-5) (2,1)" maxima="(-4,4) (8,9)" />
+  </graph>
+  
+  <p><aslist><copy source="f.minima[$n]" assignNames="mn1 mn2" /></aslist></p>
+  <p><aslist><copy source="f.maxima[$n]" assignNames="mx1 mx2" /></aslist></p>
+  <p><aslist><copy source="f.extrema[$n]" assignNames="ex1 ex2 ex3 ex4" /></aslist></p>
+  
+  <p><aslist><copy source="f.minimumLocations[$n]" assignNames="mnl1 mnl2" /></aslist></p>
+  <p><aslist><copy source="f.maximumLocations[$n]" assignNames="mxl1 mxl2" /></aslist></p>
+  <p><aslist><copy source="f.extremumLocations[$n]" assignNames="exl1 exl2 exl3 exl4" /></aslist></p>
+  
+  <p><aslist><copy source="f.minimumValues[$n]" assignNames="mnv1 mnv2" /></aslist></p>
+  <p><aslist><copy source="f.maximumValues[$n]" assignNames="mxv1 mxv2" /></aslist></p>
+  <p><aslist><copy source="f.extremumValues[$n]" assignNames="exv1 exv2 exv3 exv4" /></aslist></p>
+
+  <p><aslist><copy source="f.minimum1[$n]" assignNames="mn11 mn12" /></aslist></p>
+  <p><aslist><copy source="f.maximum1[$n]" assignNames="mx11 mx12" /></aslist></p>
+  <p><aslist><copy source="f.extremum1[$n]" assignNames="ex11 ex12 ex13 ex14" /></aslist></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(2,1)")
+    })
+    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(8,9)")
+    })
+    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−4,4)")
+    })
+    cy.get('#\\/mnl1').should('have.text', "2")
+    cy.get('#\\/mxl1').should('have.text', "8")
+    cy.get('#\\/exl1').should('have.text', "-4")
+
+    cy.get('#\\/mnv1').should('have.text', "1")
+    cy.get('#\\/mxv1').should('have.text', "9")
+    cy.get('#\\/exv1').should('have.text', "4")
+
+    cy.get('#\\/mn11').should('have.text', "-5")
+    cy.get('#\\/mx11').should('have.text', "4")
+    cy.get('#\\/ex11').should('have.text', "-5")
+
+
+    cy.log('set propIndex to 1')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+
+    cy.get('#\\/mnl1').should('have.text', "-7")
+    cy.get('#\\/mxl1').should('have.text', "-4")
+    cy.get('#\\/exl1').should('have.text', "-7")
+
+    cy.get('#\\/mnv1').should('have.text', "-5")
+    cy.get('#\\/mxv1').should('have.text', "4")
+    cy.get('#\\/exv1').should('have.text', "-5")
+
+    cy.get('#\\/mn11').should('have.text', "-7")
+    cy.get('#\\/mx11').should('have.text', "-4")
+    cy.get('#\\/ex11').should('have.text', "-7")
+
+    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−7,−5)")
+    })
+    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−4,4)")
+    })
+    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−7,−5)")
+    })
+
+
+  })
+
+  it('copy props with multidimensional propIndex, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>n: <mathinput name="n" prefill="2" /></p>
+
+  <graph name="g">
+    <function name="f" minima="(-7,-5) (2,1)" maxima="(-4,4) (8,9)" />
+  </graph>
+  
+  <p><aslist><copy source="f.minima[$n]" assignNames="mn1 mn2" /></aslist></p>
+  <p><aslist><copy source="f.maxima[$n]" assignNames="mx1 mx2" /></aslist></p>
+  <p><aslist><copy source="f.extrema[$n]" assignNames="ex1 ex2 ex3 ex4" /></aslist></p>
+  
+  <p><aslist><copy source="f.minima[$n][1]" assignNames="mnl1 mnl2" /></aslist></p>
+  <p><aslist><copy source="f.maxima[$n][1]" assignNames="mxl1 mxl2" /></aslist></p>
+  <p><aslist><copy source="f.extrema[$n][1]" assignNames="exl1 exl2 exl3 exl4" /></aslist></p>
+  
+  <p><aslist><copy source="f.minima[$n][2]" assignNames="mnv1 mnv2" /></aslist></p>
+  <p><aslist><copy source="f.maxima[$n][2]" assignNames="mxv1 mxv2" /></aslist></p>
+  <p><aslist><copy source="f.extrema[$n][2]" assignNames="exv1 exv2 exv3 exv4" /></aslist></p>
+
+  <p><aslist><copy source="f.minima[1][$n]" assignNames="mn11 mn12" /></aslist></p>
+  <p><aslist><copy source="f.maxima[1][$n]" assignNames="mx11 mx12" /></aslist></p>
+  <p><aslist><copy source="f.extrema[1][$n]" assignNames="ex11 ex12 ex13 ex14" /></aslist></p>
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(2,1)")
+    })
+    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(8,9)")
+    })
+    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−4,4)")
+    })
+    cy.get('#\\/mnl1').should('have.text', "2")
+    cy.get('#\\/mxl1').should('have.text', "8")
+    cy.get('#\\/exl1').should('have.text', "-4")
+
+    cy.get('#\\/mnv1').should('have.text', "1")
+    cy.get('#\\/mxv1').should('have.text', "9")
+    cy.get('#\\/exv1').should('have.text', "4")
+
+    cy.get('#\\/mn11').should('have.text', "-5")
+    cy.get('#\\/mx11').should('have.text', "4")
+    cy.get('#\\/ex11').should('have.text', "-5")
+
+
+    cy.log('set propIndex to 1')
+
+    cy.get('#\\/n textarea').type("{end}{backspace}1{enter}", { force: true });
+
+    cy.get('#\\/mnl1').should('have.text', "-7")
+    cy.get('#\\/mxl1').should('have.text', "-4")
+    cy.get('#\\/exl1').should('have.text', "-7")
+
+    cy.get('#\\/mnv1').should('have.text', "-5")
+    cy.get('#\\/mxv1').should('have.text', "4")
+    cy.get('#\\/exv1').should('have.text', "-5")
+
+    cy.get('#\\/mn11').should('have.text', "-7")
+    cy.get('#\\/mx11').should('have.text', "-4")
+    cy.get('#\\/ex11').should('have.text', "-7")
+
+    cy.get('#\\/mn1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−7,−5)")
+    })
+    cy.get('#\\/mx1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−4,4)")
+    })
+    cy.get('#\\/ex1 .mjx-mrow').eq(0).invoke('text').then(text => {
+      expect(text.trim()).eq("(−7,−5)")
+    })
+
+
+  })
+
   it('rounding', () => {
     cy.window().then(async (win) => {
       win.postMessage({

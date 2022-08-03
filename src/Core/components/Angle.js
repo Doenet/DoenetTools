@@ -177,9 +177,9 @@ export default class Angle extends GraphicalComponent {
         if (dependencyValues.displayDigitsAttr !== null) {
 
           let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
 
-          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
             // if both display digits and display decimals did not use default
             // we'll regard display digits as using default if it comes from a deeper shadow
             let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;

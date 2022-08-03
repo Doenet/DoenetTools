@@ -9512,7 +9512,7 @@ describe('Copy Tag Tests', function () {
 
   })
 
-  it('copy propIndex and componentIndex, with copySource', () => {
+  it('copy propIndex and componentIndex, with copySource, array notation', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
