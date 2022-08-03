@@ -1587,6 +1587,10 @@ describe('Substitute Tag Tests', function () {
     <substitute match="a" replacement="0.07394918" assignNames="e1Pad" padZeros>
       $orig
     </substitute></p>
+    <p>
+      <math copyTarget="e1Dec4" name="e1Dig4a" displayDigits="4" />
+      <math copyTarget="e1Dig4" name="e1Dec4a" displayDecimals="4" />
+    </p>
 
 
     <p><substitute match="a" replacement="0.07394918" assignNames="e2">
@@ -1601,7 +1605,10 @@ describe('Substitute Tag Tests', function () {
     <substitute match="a" replacement="0.07394918" assignNames="e2Pad" padZeros>
       $origDig3
     </substitute></p>
-
+    <p>
+      <math copyTarget="e2Dec4" name="e2Dig4a" displayDigits="4" />
+      <math copyTarget="e2Dig4" name="e2Dec4a" displayDecimals="4" />
+    </p>
 
     <p><substitute match="a" replacement="0.07394918" assignNames="e3">
       $origDec3
@@ -1615,7 +1622,10 @@ describe('Substitute Tag Tests', function () {
     <substitute match="a" replacement="0.07394918" assignNames="e3Pad" padZeros>
       $origDec3
     </substitute></p>
-
+    <p>
+      <math copyTarget="e3Dec4" name="e3Dig4a" displayDigits="4" />
+      <math copyTarget="e3Dig4" name="e3Dec4a" displayDecimals="4" />
+    </p>
 
     <p><substitute match="a" replacement="0.07394918" assignNames="e4">
       $origPad
@@ -1629,6 +1639,10 @@ describe('Substitute Tag Tests', function () {
     <substitute match="a" replacement="0.07394918" assignNames="e4NoPad" padZeros="false">
       $origPad
     </substitute></p>
+    <p>
+      <math copyTarget="e4Dec4" name="e4Dig4a" displayDigits="4" />
+      <math copyTarget="e4Dig4" name="e4Dec4a" displayDecimals="4" />
+    </p>
 
     `}, "*");
     });
@@ -1647,6 +1661,12 @@ describe('Substitute Tag Tests', function () {
     cy.get('#\\/e1Pad .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).equal('0.07394918000x+847.2941839+5.000000000y')
     })
+    cy.get('#\\/e1Dig4a .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07395x+847.3+5y')
+    })
+    cy.get('#\\/e1Dec4a .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847.2942+5y')
+    })
 
 
     cy.get('#\\/e2 .mjx-mrow').eq(0).invoke('text').then((text) => {
@@ -1660,6 +1680,12 @@ describe('Substitute Tag Tests', function () {
     })
     cy.get('#\\/e2Pad .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).equal('0.0739x+847+5.00y')
+    })
+    cy.get('#\\/e2Dig4a .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07395x+847.3+5y')
+    })
+    cy.get('#\\/e2Dec4a .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847.2942+5y')
     })
 
 
@@ -1675,6 +1701,12 @@ describe('Substitute Tag Tests', function () {
     cy.get('#\\/e3Pad .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).equal('0.074x+847.294+5.000y')
     })
+    cy.get('#\\/e3Dig4a .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07395x+847.3+5y')
+    })
+    cy.get('#\\/e3Dec4a .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847.2942+5y')
+    })
 
     cy.get('#\\/e4 .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).equal('0.07394918000x+847.2941839+5.000000000y')
@@ -1687,6 +1719,12 @@ describe('Substitute Tag Tests', function () {
     })
     cy.get('#\\/e4NoPad .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text).equal('0.07394918x+847.2941839+5y')
+    })
+    cy.get('#\\/e4Dig4a .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.07395x+847.3+5.000y')
+    })
+    cy.get('#\\/e4Dec4a .mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text).equal('0.0739x+847.2942+5.0000y')
     })
 
 

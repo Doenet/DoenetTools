@@ -3163,12 +3163,10 @@ export default class Core {
         if (stateDef.set) {
           stateDef.definition = function ({ dependencyValues, usedDefault }) {
             let valueFromTarget = stateDef.set(dependencyValues.targetVariable);
-            if (setDefault && usedDefault.targetVariable
-              && deepCompare(valueFromTarget, stateDef.defaultValue)
-            ) {
+            if (setDefault && usedDefault.targetVariable) {
               return {
                 useEssentialOrDefaultValue: {
-                  [primaryStateVariableForDefinition]: true
+                  [primaryStateVariableForDefinition]: { defaultValue: valueFromTarget }
                 },
                 alwaysShadow: [primaryStateVariableForDefinition],
               }
@@ -3182,12 +3180,10 @@ export default class Core {
           };
         } else {
           stateDef.definition = function ({ dependencyValues, usedDefault }) {
-            if (setDefault && usedDefault.targetVariable
-              && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
-            ) {
+            if (setDefault && usedDefault.targetVariable) {
               return {
                 useEssentialOrDefaultValue: {
-                  [primaryStateVariableForDefinition]: true
+                  [primaryStateVariableForDefinition]: { defaultValue: dependencyValues.targetVariable }
                 },
                 alwaysShadow: [primaryStateVariableForDefinition],
               }

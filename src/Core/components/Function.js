@@ -306,9 +306,9 @@ export default class Function extends InlineComponent {
         if (dependencyValues.displayDigitsAttr !== null) {
 
           let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
-          let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
 
-          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
             // if both display digits and display decimals did not use default
             // we'll regard display digits as using default if it comes from a deeper shadow
             let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
@@ -338,9 +338,9 @@ export default class Function extends InlineComponent {
         } else if (dependencyValues.functionChild.length > 0) {
 
           let displayDigitsFunctionChildUsedDefault = usedDefault.functionChild[0];
-          let displayDecimalsAttrInfoUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
 
-          if (!(displayDigitsFunctionChildUsedDefault || displayDecimalsAttrInfoUsedDefault)) {
+          if (!(displayDigitsFunctionChildUsedDefault || displayDecimalsAttrUsedDefault)) {
             // if both display digits (from function) and display decimals did not use default
             // we'll regard display digits as using default 
             displayDigitsFunctionChildUsedDefault = true;

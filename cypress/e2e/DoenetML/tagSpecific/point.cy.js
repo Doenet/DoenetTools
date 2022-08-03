@@ -11338,7 +11338,7 @@ describe('Point Tag Tests', function () {
     <copy prop="coords" target="Q" assignNames="Qcoords" />
     <copy prop="coords" target="R" assignNames="Rcoords" />
 
-    <copy prop="coords" target="P" assignNames="PcoordsDec4" displayDecimals="4" displayDigits="0" />
+    <copy prop="coords" target="P" assignNames="PcoordsDec4" displayDecimals="4" />
     <copy prop="coords" target="Q" assignNames="QcoordsDig4" displayDigits="4" />
     <copy prop="coords" target="R" assignNames="RcoordsDig2" displayDigits="2" />
 
@@ -11450,6 +11450,32 @@ describe('Point Tag Tests', function () {
 
 
   });
+
+  it('rounding, copy and override', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p><point name="p1">(34.245023482352345, 245.23823402358234234)</point></p>
+    <p><point name="p1Dig4" copySource="p1" displayDigits="4" /></p>
+    <p><point name="p1Dec6" copySource="p1" displayDecimals="5" /></p>
+    <p><point name="p1Dig4a" copySource="p1Dec6" displayDigits="4" /></p>
+    <p><point name="p1Dec6a" copySource="p1Dig4" displayDecimals="5" /></p>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/p1 .mjx-mrow").eq(0).should("have.text", "(34.24502348,245.238234)")
+ 
+    cy.get("#\\/p1Dig4 .mjx-mrow").eq(0).should("have.text", "(34.25,245.2)")
+    cy.get("#\\/p1Dig4a .mjx-mrow").eq(0).should("have.text", "(34.25,245.2)")
+
+    cy.get("#\\/p1Dec6 .mjx-mrow").eq(0).should("have.text", "(34.24502,245.23823)")
+    cy.get("#\\/p1Dec6a .mjx-mrow").eq(0).should("have.text", "(34.24502,245.23823)")
+
+  })
 
   it('label point with child, part math', () => {
     cy.window().then(async (win) => {

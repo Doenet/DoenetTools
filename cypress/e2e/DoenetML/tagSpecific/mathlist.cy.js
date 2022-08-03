@@ -2128,6 +2128,38 @@ describe('MathList Tag Tests', function () {
 
   })
 
+  it('mathlist and rounding, copy and override', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><mathList name="ml1">34.245023482352345 <math displayDigits="2">245.23823402358234234</math></mathList></p>
+    <p><mathList name="ml1Dig4" copySource="ml1" displayDigits="4" /></p>
+    <p><mathList name="ml1Dec6" copySource="ml1" displayDecimals="6" /></p>
+    <p><mathList name="ml1Dig4a" copySource="ml1Dec6" displayDigits="4" /></p>
+    <p><mathList name="ml1Dec6a" copySource="ml1Dig4" displayDecimals="6" /></p>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/ml1 .mjx-mrow").eq(0).should("have.text", "34.24502348")
+    cy.get("#\\/ml1 .mjx-mrow").eq(1).should("have.text", "250")
+ 
+    cy.get("#\\/ml1Dig4 .mjx-mrow").eq(0).should("have.text", "34.25")
+    cy.get("#\\/ml1Dig4 .mjx-mrow").eq(1).should("have.text", "245.2")
+    cy.get("#\\/ml1Dig4a .mjx-mrow").eq(0).should("have.text", "34.25")
+    cy.get("#\\/ml1Dig4a .mjx-mrow").eq(1).should("have.text", "245.2")
+
+    cy.get("#\\/ml1Dec6 .mjx-mrow").eq(0).should("have.text", "34.245023")
+    cy.get("#\\/ml1Dec6 .mjx-mrow").eq(1).should("have.text", "245.238234")
+    cy.get("#\\/ml1Dec6a .mjx-mrow").eq(0).should("have.text", "34.245023")
+    cy.get("#\\/ml1Dec6a .mjx-mrow").eq(1).should("have.text", "245.238234")
+
+
+  })
+
+
   it('mathlist adapts to math and text', () => {
     cy.window().then(async (win) => {
       win.postMessage({
