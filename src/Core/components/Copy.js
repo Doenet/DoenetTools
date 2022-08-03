@@ -56,6 +56,18 @@ export default class Copy extends CompositeComponent {
       defaultValue: null,
       public: true,
     };
+    attributes.sourceSubnames = {
+      createPrimitiveOfType: "stringArray",
+      createStateVariable: "targetSubnames",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.sourceSubnamesComponentIndex = {
+      createComponentOfType: "numberList",
+      createStateVariable: "targetSubnamesComponentIndex",
+      defaultValue: null,
+      public: true,
+    };
     attributes.propIndex = {
       createComponentOfType: "numberList",
       createStateVariable: "propIndex",
@@ -461,6 +473,7 @@ export default class Copy extends CompositeComponent {
     stateVariableDefinitions.replacementSourceIdentities = {
       stateVariablesDeterminingDependencies: [
         "targetComponent", "componentIndex", "propName",
+        "targetSubnames", "targetSubnamesComponentIndex",
         "obtainPropFromComposite", "linkAttrForDetermineDeps"
       ],
       additionalStateVariablesDefined: ["addLevelToAssignNames"],
@@ -484,11 +497,18 @@ export default class Copy extends CompositeComponent {
             if (stateValues.linkAttrForDetermineDeps) {
 
               useReplacements = true;
+
+              let targetSubnamesComponentIndex = stateValues.targetSubnamesComponentIndex;
+              if(targetSubnamesComponentIndex) {
+                targetSubnamesComponentIndex = [...targetSubnamesComponentIndex]
+              }
               dependencies.targets = {
                 dependencyType: "replacement",
                 compositeName: stateValues.targetComponent.componentName,
                 recursive: true,
                 componentIndex: stateValues.componentIndex,
+                targetSubnames: stateValues.targetSubnames,
+                targetSubnamesComponentIndex
               }
             } else {
               addLevelToAssignNames = true;
@@ -2205,7 +2225,7 @@ export async function replacementFromProp({ component, components,
   })[0];
 
   if (varName === undefined || varName.slice(0, 12) === "__not_public") {
-    if(propName !== "__prop_name_not_found") {
+    if (propName !== "__prop_name_not_found") {
       console.warn(`Could not find prop ${propName} on a component of type ${replacementSource.componentType}`)
     }
     return {
