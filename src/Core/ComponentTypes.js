@@ -159,6 +159,7 @@ import SummaryStatistics from './components/SummaryStatistics';
 import Chart from './components/Chart';
 import Legend from './components/Legend';
 import Label from './components/Label';
+import MatchesPattern from './components/MatchesPattern';
 
 
 //Extended
@@ -315,6 +316,7 @@ const componentTypeArray = [
   Chart,
   Legend,
   Label,
+  MatchesPattern,
 
   BaseComponent,
   InlineComponent,
