@@ -5454,6 +5454,18 @@ class ReplacementDependency extends Dependency {
       }
     }
 
+    if (this.definition.targetSubnames) {
+      this.targetSubnames = this.definition.targetSubnames;
+    }
+
+    if (this.definition.targetSubnamesComponentIndex) {
+      if (this.definition.targetSubnamesComponentIndex.every(Number.isInteger)) {
+        this.targetSubnamesComponentIndex = this.definition.targetSubnamesComponentIndex;
+      } else {
+        this.targetSubnamesComponentIndex = [NaN];
+      }
+    }
+
     this.includeWithheldReplacements = this.definition.includeWithheldReplacements;
 
     this.expandReplacements = true;
@@ -5634,6 +5646,68 @@ class ReplacementDependency extends Dependency {
       }
     }
 
+    if (this.targetSubnames) {
+      function replaceComponentsUsingSubname({ components, subNames, subNamesComponentIndex, dep }) {
+        if (subNames.length === 0) {
+          return components;
+        }
+        let remainingSubnames = subNames.slice(1);
+
+        let newComponents = [];
+
+        for (let comp of components) {
+          let newCname = comp.componentName + "/" + subNames[0];
+
+          let newComp = dep.dependencyHandler._components[newCname];
+          if (!newComp) {
+            let dependenciesMissingComponent = dep.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[newCname];
+            if (!dependenciesMissingComponent) {
+              dependenciesMissingComponent = dep.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[newCname] = [];
+            }
+            if (!dependenciesMissingComponent.includes(dep)) {
+              dependenciesMissingComponent.push(dep);
+            }
+
+          } else {
+
+            if (dep.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: newComp.componentType,
+              baseComponentType: "_composite",
+            })) {
+              // TODO: recurse to more composites
+
+              console.warn('Have not yet implemented recursing subnames to multiple levels of composites')
+
+            } else {
+              // don't have a composite
+              // so add only if there are no more subnames and either no more component indices
+              // or just one index of 1 left
+              if (remainingSubnames.length === 0 && (
+                subNamesComponentIndex?.length || 0 === 0
+                || (subNamesComponentIndex.lenght === 1 && subNamesComponentIndex[0] === 1)
+              )) {
+                newComponents.push(newComp)
+              }
+
+
+            }
+          }
+
+        }
+
+        return newComponents;
+
+      }
+
+      replacements = replaceComponentsUsingSubname({
+        components: replacements,
+        subNames: this.targetSubnames,
+        subNamesComponentIndex: this.targetSubnamesComponentIndex,
+        dep: this
+      })
+
+      
+    }
     let downstreamComponentNames = [];
     let downstreamComponentTypes = [];
 

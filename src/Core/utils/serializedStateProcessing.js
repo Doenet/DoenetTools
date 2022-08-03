@@ -564,6 +564,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
       let componentIndex;
       let componentAttributes;
       let propArray;
+      let subNames;
 
       let originalSource;
 
@@ -588,6 +589,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
             componentIndex = sourcePiecesResult.componentIndex;
             componentAttributes = sourcePiecesResult.componentAttributes;
             propArray = sourcePiecesResult.propArray;
+            subNames = sourcePiecesResult.subNames;
           }
 
         }
@@ -612,6 +614,7 @@ function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObj
           let componentResult = createComponentFromExtendedSource({
             sourceName,
             componentIndex,
+            subNames,
             componentAttributes,
             propArray,
             componentInfoObjects
@@ -969,6 +972,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
         let componentResult = createComponentFromExtendedSource({
           sourceName: result.sourceName,
           componentIndex: result.componentIndex,
+          subNames: result.subNames,
           componentAttributes: result.componentAttributes,
           propArray: result.propArray,
           componentInfoObjects
@@ -1102,7 +1106,7 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
 function createComponentFromExtendedSource({ sourceName,
   componentIndex, componentAttributes, propArray,
-
+  subNames,
   componentInfoObjects }) {
 
   let newComponent = {
@@ -1121,6 +1125,38 @@ function createComponentFromExtendedSource({ sourceName,
         children: childrenForAttribute
       }
     };
+  }
+
+  if (subNames?.length > 0) {
+    let sourceSubnames = [];
+    let sourceSubnamesComponentIndex = [];
+
+    for (let subNameObj of subNames) {
+      sourceSubnames.push(subNameObj.subName);
+      if (subNameObj.subNameComponentIndex !== undefined) {
+        if (sourceSubnamesComponentIndex.length < sourceSubnames - 1) {
+          // TODO: NaN will presumably make it not return anything
+          // When we enable recursing to composites, we'll need a staregy to skip subname component index
+          sourceSubnamesComponentIndex.push(...Array[sourceSubnames - 1 - sourceSubnamesComponentIndex.length].fill(NaN))
+        }
+        sourceSubnamesComponentIndex.push(subNameObj.subNameComponentIndex);
+      }
+    }
+
+    newComponent.attributes.sourceSubnames = {
+      primitive: sourceSubnames
+    };
+    if (sourceSubnamesComponentIndex.length > 0) {
+      let childrenForAttribute = [sourceSubnamesComponentIndex.join(" ")];
+      applyMacros(childrenForAttribute, componentInfoObjects);
+
+      newComponent.attributes.sourceSubnamesComponentIndex = {
+        component: {
+          componentType: "numberList",
+          children: childrenForAttribute
+        }
+      };
+    }
   }
 
   let propsAddExtract = false;
@@ -1287,7 +1323,7 @@ function buildSourcePieces(str, extendedWordCharacters) {
   }
 
   let result = {
-    sourceName: findResult.word
+    sourceName: (findResult.withSlash ? "/" : "") + findResult.word
   }
 
   matchLength += findResult.matchLength;
@@ -1301,6 +1337,28 @@ function buildSourcePieces(str, extendedWordCharacters) {
     str = str.substring(findResult.matchLength);
     findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
   }
+
+  let subNames = [];
+  while (findResult.withSlash) {
+    // check for additional subname piece of /name[componentIndex]
+
+    let subnameObj = { subName: findResult.word }
+    matchLength += findResult.matchLength;
+    str = str.substring(findResult.matchLength);
+    findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+
+    if (findResult.startDelim === "[") {
+      subnameObj.subNameComponentIndex = findResult.group;
+      matchLength += findResult.matchLength;
+      str = str.substring(findResult.matchLength);
+      findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+    }
+
+    subNames.push(subnameObj);
+  }
+
+  result.subNames = subNames;
+
 
   if (findResult.startDelim === "{") {
     result.componentAttributes = findResult.group;
@@ -1330,7 +1388,7 @@ function buildSourcePieces(str, extendedWordCharacters) {
       findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
     }
 
-    if(propIndex.length >0) {
+    if (propIndex.length > 0) {
       propObj.propIndex = propIndex;
     }
 
@@ -1355,11 +1413,12 @@ function buildSourcePieces(str, extendedWordCharacters) {
 }
 
 function findWordOrDelimitedGroup(str, extendedWordCharacters = false) {
-  // find the next word (possibly begininng with a period),
+  // find the next word (possibly begininng with a period or, extendedWordCharacters, a slash ),
   // or a group delimited by (), [], or {},
   // where the word/group must start with the first character of the string
 
   let withPeriod = false;
+  let withSlash = false;
   if (str[0] === "." && str[1] !== ".") {
     withPeriod = true;
     str = str.substring(1);
@@ -1371,6 +1430,10 @@ function findWordOrDelimitedGroup(str, extendedWordCharacters = false) {
     if (withPeriod) {
       wordRe = /^[\w-]+/;
     } else {
+      if (str[0] === "/" && str[1].match(/\w/)) {
+        withSlash = true;
+        str = str.substring(1);
+      }
       wordRe = /^([\w\/-]|\.\.\/)+/;
     }
   } else {
@@ -1383,11 +1446,12 @@ function findWordOrDelimitedGroup(str, extendedWordCharacters = false) {
     return {
       success: true,
       withPeriod,
+      withSlash,
       word: match[0],
-      matchLength: match[0].length + (withPeriod ? 1 : 0)
+      matchLength: match[0].length + (withPeriod ? 1 : 0) + (withSlash ? 1 : 0)
     }
-  } else if (withPeriod) {
-    // if starts with a period, must have word next
+  } else if (withPeriod || withSlash) {
+    // if starts with a period or slash, must have word next
     return { success: false };
   }
 

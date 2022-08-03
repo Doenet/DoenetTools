@@ -13265,6 +13265,133 @@ describe('Copy Tag Tests', function () {
 
   });
 
+  it('dot and array notation, recurse to subnames of composite replacements', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>n: <mathinput name="n" prefill="2" /></p>
+
+    <map name="myMap">
+      <template newnamespace>
+        <p>The line through 
+          <m>P=<point name="P">($v+1,$v+2)</point></m> and <m>Q=<point name="Q">($v+4, $v-1)</point></m>
+          is <line name="l" through="$P $Q" />.</p>
+      </template>
+      <sources alias="v"><sequence from="1" to="$n" /></sources>
+    </map>
+
+    <p>Template number: <mathinput name="tn" prefill="1" /></p>
+    <p>Point number: <mathinput name="pn" prefill="1" /></p>
+    <p>Coordinate number: <mathinput name="cn" prefill="1" /></p>
+
+    <p name="pt">The points from template $tn are: $(myMap[$tn]/P) and <copy source="myMap[$tn]/Q"/>.</p>
+    <p name="pp">Point $pn from the line in that template is: $(myMap[$tn]/l.points[$pn]).</p>
+    <p name="pc">Coordinate $cn from that point is $(myMap[$tn]/l.points[$pn].xs[$cn]).</p>
+    <p name="pc2">Again, coordinate $cn from that point is <copy source="myMap[$tn]/l.points[$pn].xs[$cn]" />.</p>
+
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/_text1').should('have.text', 'a');
+
+    let Pxs = [2, 3, 4, 5, 6];
+    let Pys = [3, 4, 5, 6, 7];
+    let Qxs = [5, 6, 7, 8, 9];
+    let Qys = [0, 1, 2, 3, 4];
+
+    function checkResult(n, tn, pn, cn) {
+      if (!(n >= 1 && tn <= n)) {
+        // we have nothing
+        cy.get("#\\/pt").should("contain.text", "are:  and .")
+        cy.get("#\\/pp").should("contain.text", " from the line in that template is: .")
+        cy.get("#\\/pc").should('contain.text', "from that point is .")
+        cy.get("#\\/pc2").should('contain.text', "from that point is .")
+
+      } else {
+        cy.get("#\\/pt .mjx-mrow").should('contain.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
+        cy.get("#\\/pt .mjx-mrow").should('contain.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
+        cy.get("#\\/pt .mjx-mrow").eq(1).should('have.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
+        cy.get("#\\/pt .mjx-mrow").eq(4).should('have.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
+
+        if (pn === 1) {
+          cy.get("#\\/pp .mjx-mrow").should('contain.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
+          cy.get("#\\/pp .mjx-mrow").eq(1).should('have.text', `(${Pxs[tn - 1]},${Pys[tn - 1]})`);
+          if (cn === 1) {
+            cy.get("#\\/pc .mjx-mrow").should('contain.text', `${Pxs[tn - 1]}`);
+            cy.get("#\\/pc2 .mjx-mrow").should('contain.text', `${Pxs[tn - 1]}`);
+            cy.get("#\\/pc .mjx-mrow").eq(1).should('have.text', `${Pxs[tn - 1]}`);
+            cy.get("#\\/pc2 .mjx-mrow").eq(1).should('have.text', `${Pxs[tn - 1]}`);
+          } else if (cn === 2) {
+            cy.get("#\\/pc .mjx-mrow").should('contain.text', `${Pys[tn - 1]}`);
+            cy.get("#\\/pc2 .mjx-mrow").should('contain.text', `${Pys[tn - 1]}`);
+            cy.get("#\\/pc .mjx-mrow").eq(1).should('have.text', `${Pys[tn - 1]}`);
+            cy.get("#\\/pc2 .mjx-mrow").eq(1).should('have.text', `${Pys[tn - 1]}`);
+          } else {
+            cy.get("#\\/pc").should('contain.text', "from that point is .")
+            cy.get("#\\/pc2").should('contain.text', "from that point is .")
+          }
+        } else if (pn === 2) {
+          cy.get("#\\/pp .mjx-mrow").should('contain.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
+          cy.get("#\\/pp .mjx-mrow").eq(1).should('have.text', `(${Qxs[tn - 1]},${Qys[tn - 1]})`);
+          if (cn === 1) {
+            cy.get("#\\/pc .mjx-mrow").should('contain.text', `${Qxs[tn - 1]}`);
+            cy.get("#\\/pc2 .mjx-mrow").should('contain.text', `${Qxs[tn - 1]}`);
+            cy.get("#\\/pc .mjx-mrow").eq(1).should('have.text', `${Qxs[tn - 1]}`);
+            cy.get("#\\/pc2 .mjx-mrow").eq(1).should('have.text', `${Qxs[tn - 1]}`);
+          } else if (cn === 2) {
+            cy.get("#\\/pc .mjx-mrow").should('contain.text', `${Qys[tn - 1]}`);
+            cy.get("#\\/pc2 .mjx-mrow").should('contain.text', `${Qys[tn - 1]}`);
+            cy.get("#\\/pc .mjx-mrow").eq(1).should('have.text', `${Qys[tn - 1]}`);
+            cy.get("#\\/pc2 .mjx-mrow").eq(1).should('have.text', `${Qys[tn - 1]}`);
+          } else {
+            cy.get("#\\/pc").should('contain.text', "from that point is .")
+            cy.get("#\\/pc2").should('contain.text', "from that point is .")
+          }
+        } else {
+          cy.get("#\\/pp").should("contain.text", " from the line in that template is: .")
+          cy.get("#\\/pc").should('contain.text', "from that point is .")
+          cy.get("#\\/pc2").should('contain.text', "from that point is .")
+        }
+
+      }
+    }
+
+    checkResult(2, 1, 1, 1)
+
+    cy.get("#\\/tn textarea").type("{end}{backspace}2{enter}", { force: true })
+    checkResult(2, 2, 1, 1)
+
+    cy.get("#\\/tn textarea").type("{end}{backspace}3{enter}", { force: true })
+    checkResult(2, 3, 1, 1)
+
+    cy.get("#\\/n textarea").type("{end}{backspace}4{enter}", { force: true })
+    checkResult(4, 3, 1, 1)
+
+    cy.get("#\\/pn textarea").type("{end}{backspace}3{enter}", { force: true })
+    checkResult(4, 3, 3, 1)
+
+    cy.get("#\\/pn textarea").type("{end}{backspace}2{enter}", { force: true })
+    checkResult(4, 3, 2, 1)
+
+    cy.get("#\\/cn textarea").type("{end}{backspace}3{enter}", { force: true })
+    checkResult(4, 3, 2, 3)
+
+    cy.get("#\\/cn textarea").type("{end}{backspace}2{enter}", { force: true })
+    checkResult(4, 3, 2, 2)
+
+    cy.get("#\\/n textarea").type("{end}{backspace}3{enter}", { force: true })
+    checkResult(3, 3, 2, 2)
+
+    cy.get("#\\/n textarea").type("{end}{backspace}1{enter}", { force: true })
+    checkResult(1, 3, 2, 2)
+
+    cy.get("#\\/tn textarea").type("{end}{backspace}1{enter}", { force: true })
+    checkResult(1, 1, 2, 2)
+
+  });
+
   it('isPlainMacro and isPlainCopy', () => {
     cy.window().then(async (win) => {
       win.postMessage({
