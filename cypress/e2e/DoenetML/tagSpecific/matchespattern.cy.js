@@ -148,7 +148,7 @@ describe('MatchesPattern Tag Tests', function () {
         noperm: ["a", "x+x"],
         implicitIdents: ["a", "x+x"],
         requireNumeric: false,
-        requireVariable: ["a", "x+x"],
+        requireVariable: false,
         excludeX: false,
       },
       'b+xa': {
