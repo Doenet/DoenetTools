@@ -106,14 +106,13 @@ export default function PageViewer(props) {
   const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
 
   const [stage, setStage] = useState('initial');
-
   const [pageContentChanged, setPageContentChanged] = useState(false);
-
+  
   const [documentRenderer, setDocumentRenderer] = useState(null);
-
+  
   const initialCoreData = useRef({});
-
-
+  
+  
   const rendererClasses = useRef({});
   const coreInfo = useRef(null);
   const coreCreated = useRef(false);
@@ -248,6 +247,7 @@ export default function PageViewer(props) {
   function terminateCoreAndAnimations() {
     preventMoreAnimations.current = true;
     coreWorker.current.terminate();
+    coreWorker.current = null;
     for (let id in animationInfo.current) {
       cancelAnimationFrame(id);
     }
@@ -874,6 +874,9 @@ export default function PageViewer(props) {
 
   // Next time through will recalculate, after state variables are set
   if (changedState) {
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
+    }
     setStage('recalcParams')
     coreId.current = nanoid();
     setPageContentChanged(true);
