@@ -97,6 +97,7 @@ export default function PageViewer(props) {
           cancelAnimationFrame(e.data.args);
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
+          preventMoreAnimations.current = false;
           setStage("coreCreated");
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
@@ -177,7 +178,9 @@ export default function PageViewer(props) {
     });
   });
   function terminateCoreAndAnimations() {
+    preventMoreAnimations.current = true;
     coreWorker.current.terminate();
+    coreWorker.current = null;
     for (let id in animationInfo.current) {
       cancelAnimationFrame(id);
     }
@@ -558,11 +561,11 @@ export default function PageViewer(props) {
   }
   async function cancelAnimationFrame(animationId) {
     let animationInfoObj = animationInfo.current[animationId];
-    let timeoutId = animationInfoObj.timeoutId;
+    let timeoutId = animationInfoObj?.timeoutId;
     if (timeoutId !== void 0) {
       window.clearTimeout(timeoutId);
     }
-    let animationFrameID = animationInfoObj.animationFrameID;
+    let animationFrameID = animationInfoObj?.animationFrameID;
     if (animationFrameID !== void 0) {
       window.cancelAnimationFrame(animationFrameID);
     }
@@ -612,6 +615,9 @@ export default function PageViewer(props) {
     changedState = true;
   }
   if (changedState) {
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
+    }
     setStage("recalcParams");
     coreId.current = nanoid();
     setPageContentChanged(true);
