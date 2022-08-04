@@ -89,7 +89,7 @@ it('Assign Activity Test using Breadcrumbs',()=>{
 })
 
 
-it.only('animation stopped when click update button',()=>{
+it('animation stopped when click update button',()=>{
   const doenetMLString = `
   <number name="n">1</number>
 
