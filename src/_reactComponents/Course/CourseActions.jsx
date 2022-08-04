@@ -13,13 +13,14 @@ import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPane
 import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { fileByPageId, fileByCid } from '../../Tools/_framework/ToolHandlers/CourseToolHandler';
 import { UTCDateStringToDate } from '../../_utils/dateUtilityFunction';
+import { useValidateEmail } from '../../_utils/hooks/useValidateEmail';
 
 const peopleAtomByCourseId = atomFamily({
   key:"peopleAtomByCourseId",
   default:[],
   effects:courseId => [ ({setSelf, trigger})=>{
     if (trigger == 'get' && courseId){
-      axios.get('/api/getPeople.php', { params: { courseId } })
+      axios.get('/api/loadCoursePeople.php', { params: { courseId } })
       .then(resp=>{
         setSelf(resp.data.peopleArray)
       })
@@ -496,6 +497,7 @@ export const coursePermissionsAndSettingsByCourseId = selectorFamily({
     (courseId) =>
     ({ get }) => {
       let allpermissionsAndSettings = get(coursePermissionsAndSettings);
+      console.log('all perms', courseId, allpermissionsAndSettings.find((value) => value.courseId == courseId));
       return (
         allpermissionsAndSettings.find((value) => value.courseId == courseId) ??
         {}
@@ -518,24 +520,9 @@ export const coursePermissionsAndSettingsByCourseId = selectorFamily({
     },
 });
 
-//Could use pattern above
-export const courseUsersByCourseId = atomFamily({
-  key: 'courseUsersByCourseId',
-  effects: courseId => [
-    async ({ setSelf, trigger }) => {
-      if (trigger === 'get') {
-        const { data: {users} } = await axios.get(
-          '/api/loadCourseUsers.php', { params:{ courseId } }
-        );
-        setSelf(users);
-      }
-    },
-  ]
-})
 
-
-export const courseRolesByCourseId = atomFamily({
-  key: 'courseRolesByCourseId',
+const unfilteredCourseRolesByCourseId = atomFamily({
+  key: 'unfilteredCourseRolesByCourseId',
   effects: courseId => [
     async ({ setSelf, trigger }) => {
       if (trigger === 'get') {
@@ -544,32 +531,43 @@ export const courseRolesByCourseId = atomFamily({
         );
         setSelf(roles);
       }
-    },
-    async ({ getPromise, onSet,  setSelf}) => {
-      const permissonsAndSettings = await getPromise(coursePermissionsAndSettingsByCourseId(courseId));
-      onSet((newValue) => {
-        if (permissonsAndSettings['isOwner'] !== '1') {
-          let filteredRoles = newValue?.slice(0);
-
-          for(const key in permissonsAndSettings) {
-            //TODO: how to deal with temp permisson of isIncludedInGradebook.
-            if(permissonsAndSettings[key] === '0' && key != 'isIncludedInGradebook') {
-              filteredRoles = filteredRoles.filter(({[key]: permisson}) => ((permisson ?? '0') ===  '0'));
-              console.log('filtered', key, filteredRoles);
-            }
-            if (filteredRoles.length <= 1) break;
-          }
-          setSelf(filteredRoles);
-        }
-      })
     }
   ]
+})
+
+export const courseRolesByCourseId = selectorFamily({
+  key: 'filteredCourseRolesByCourseId',
+  get: courseId => ({get}) => {
+    const permissonsAndSettings = get(coursePermissionsAndSettingsByCourseId(courseId));
+    const roles = get(unfilteredCourseRolesByCourseId(courseId));
+    const ignoreKeys = ['isIncludedInGradebook', 'sectionPermissonOnly', 'dataAccessPermisson', 'roleId', 'roleLabel'];
+    let filteredRoles = roles?.filter((role) => {
+      console.group(role.roleLabel); 
+      let valid = 
+      role.roleId === permissonsAndSettings.roleId || 
+      !Object.keys(role).every((permKey) => {
+        console.log(permKey, 
+          role[permKey], permissonsAndSettings[permKey], 
+          role[permKey] === permissonsAndSettings[permKey], ignoreKeys.includes(permKey), role[permKey] === '1' && permissonsAndSettings[permKey] === '0' )
+        return (
+          role[permKey] === permissonsAndSettings[permKey] 
+          || ignoreKeys.includes(permKey) 
+          ||  role[permKey] === '1' && permissonsAndSettings[permKey] === '0'
+        )}
+      )
+        console.groupEnd()
+      return (valid)}
+    ) ?? [];
+    console.log(roles, filteredRoles);
+    return filteredRoles;
+
+  }
 })
 
 export const courseRolePermissonsByCourseIdRoleId = selectorFamily({
   key: 'courseRoleByCourseIdRoleId',
   get: ({courseId, roleId}) => ({get}) => {
-    return get(courseRolesByCourseId(courseId))?.find(({roleId: candidateRoleId}) => candidateRoleId === roleId) ?? {};
+    return get(unfilteredCourseRolesByCourseId(courseId))?.find(({roleId: candidateRoleId}) => candidateRoleId === roleId) ?? {};
   }
 })
 
@@ -1280,8 +1278,6 @@ export const useCourse = (courseId) => {
       },
   );
 
- 
-
   const modifyCourse = useRecoilCallback(
     ({ set }) =>
       async (
@@ -1304,10 +1300,61 @@ export const useCourse = (courseId) => {
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
       },
   );
+
+  const validateEmail = useValidateEmail();
+
+
+  const addUser = useRecoilCallback(({set}) => async (email, options, successCallback, failureCallback = defaultFailure) => {
+    try {
+      if (!validateEmail(email)) throw new Error('Invalid email, try again');
+      const {
+        data: { success, message, userData: serverUserData },
+      } = await axios.post('/api/addCourseUser.php', {
+        courseId,
+        email,
+        ...options,
+      });
+      if(success) {
+        set(peopleAtomByCourseId(courseId), (prev) => ([...prev, {...serverUserData}]));
+        successCallback();
+      } else {
+        throw new Error(message);
+      }
+    } catch (err) {
+      failureCallback(err.message);
+    }
+    
+  });
+
+  const modifyUserRole = useRecoilCallback(({set}) => async (email, roleId, successCallback, failureCallback = defaultFailure) => {
+    try {
+      const {
+        data: { success, message },
+      } = await axios.post('api/updateUserRole.php', {
+        courseId,
+        userEmail: email,
+        roleId
+      });
+      if(success) {
+        set(peopleAtomByCourseId(courseId), (prev) => {
+          const next = prev.slice(0);
+          const idx = prev.findIndex(({email: candidate}) => (candidate === email))
+          next[idx] = {...prev[idx], roleId}
+          return next
+        });
+        successCallback();
+      } else {
+        throw new Error(message);
+      }
+    } catch (err) {
+      failureCallback(err.message);
+    }
+    
+  });
 
   const modifyRolePermissions = useRecoilCallback(({set}) => 
     async (roleId, newPermissions, successCallback, failureCallback = defaultFailure) =>
@@ -1316,7 +1363,7 @@ export const useCourse = (courseId) => {
         const {data: {success, message}} = await axios.post('/api/updateRolePermissons.php', {courseId, roleId, permissions: {...newPermissions, label: newPermissions?.roleLabel}})
         if(success) {
           set(
-            courseRolesByCourseId(courseId), (prev => {
+            unfilteredCourseRolesByCourseId(courseId), (prev => {
               const idx = prev.findIndex(({roleId: candidateRoleId}) => candidateRoleId === roleId);
               const next = [...prev];
               next.splice(idx, 1, {...prev[idx], ...newPermissions})
@@ -1328,7 +1375,7 @@ export const useCourse = (courseId) => {
           throw new Error(message);
         }
       } catch (err) {
-        failureCallback(err);
+        failureCallback(err.message);
       }
     }, 
     [courseId, defaultFailure]
@@ -1348,7 +1395,7 @@ export const useCourse = (courseId) => {
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
       },
     [courseId, defaultFailure],
@@ -1392,7 +1439,7 @@ export const useCourse = (courseId) => {
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
   },
 [courseId, defaultFailure],
@@ -1419,7 +1466,7 @@ export const useCourse = (courseId) => {
         throw new Error(`response code: ${resp.status}`);
       }
       } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
       }
   },[courseId,defaultFailure]);
 
@@ -1503,7 +1550,7 @@ export const useCourse = (courseId) => {
             .map(x => contentToDoenetML({ content: x, indentLevel: 1 }))))
             .join("");
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
 
         let activityDoenetML = `<document${attributeString}>\n${childrenString}</document>`
@@ -1534,7 +1581,7 @@ export const useCourse = (courseId) => {
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
   });
 
@@ -1852,7 +1899,7 @@ export const useCourse = (courseId) => {
         throw new Error(`response code: ${resp.status}`);
       }
     } catch (err) {
-      failureCallback(err);
+      failureCallback(err.message);
     }
 
   });
@@ -2215,7 +2262,7 @@ export const useCourse = (courseId) => {
               throw new Error(`response code: ${resp.status}`);
             }
           } catch (err) {
-            failureCallback(err);
+            failureCallback(err.message);
           }
         }
 
@@ -2499,7 +2546,7 @@ export const useCourse = (courseId) => {
             throw new Error(`response code: ${resp.status}`);
           }
         } catch (err) {
-          failureCallback(err);
+          failureCallback(err.message);
         }
         }
 
@@ -2563,5 +2610,7 @@ export const useCourse = (courseId) => {
     cutItems,
     pasteItems,
     findPagesFromDoenetIds,
+    addUser,
+    modifyUserRole
    };
 };

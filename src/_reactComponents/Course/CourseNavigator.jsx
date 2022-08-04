@@ -103,7 +103,7 @@ function StudentCourseNavigation({
   let studentItemOrder = useRecoilValue(
     studentCourseItemOrderByCourseIdBySection({ courseId, sectionId }),
   );
-  console.log('studentItemOrder', studentItemOrder);
+  // console.log('studentItemOrder', studentItemOrder);
   let previousSections = useRef([]);
   let definedForSectionId = useRef('');
   //If sectionId changes clear out previousSections
@@ -291,7 +291,7 @@ function AuthorCourseNavigation({
   let authorItemOrder = useRecoilValue(
     authorCourseItemOrderByCourseIdBySection({ courseId, sectionId }),
   );
-  console.log('authorItemOrder', courseId, sectionId, authorItemOrder);
+  // console.log('authorItemOrder', courseId, sectionId, authorItemOrder);
 
   let previousSections = useRef([]);
   let definedForSectionId = useRef('');
@@ -1091,7 +1091,7 @@ function Row({
   return <>{activityJSX}</>;
 }
 
-export function getColumnsCSS(numberOfVisibleColumns) {
+function getColumnsCSS(numberOfVisibleColumns) {
   let columnsCSS = '250px repeat(4,1fr)'; //5 columns max
   if (numberOfVisibleColumns === 4) {
     columnsCSS = '250px repeat(3,1fr)';

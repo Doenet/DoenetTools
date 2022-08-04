@@ -6,8 +6,9 @@ import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import { peopleByCourseId } from '../../../_reactComponents/Course/CourseActions';
 import { AddUserWithOptions } from '../../../_reactComponents/Course/SettingComponents';
 import styled from 'styled-components';
-import { getColumnsCSS } from '../../../_reactComponents/Course/CourseNavigator';
 import Measure from 'react-measure';
+import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { useCourse } from '../../../_reactComponents/Course/CourseActions';
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -52,6 +53,7 @@ export default function People() {
     recoilMergeData,
     value: enrollmentTableData,
   } = useRecoilValue(peopleByCourseId(courseId));
+  const { modifyUserRole } = useCourse(courseId);
   let [showWithdrawn, setShowWithdrawn] = useState(false);
   // const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
   // const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
@@ -144,15 +146,21 @@ export default function People() {
           email,
           firstName,
           lastName,
+          screenName,
           dateEnrolled,
           roleId,
           withdrew,
-          ...rest
         }) => {
-          console.log(rest);
           const columnsJSX = [
             email,
-            roleId,
+            <RoleDropdown
+              key={'role'}
+              valueRoleId={roleId}
+              onChange={({ value: newRoleId }) => {
+                modifyUserRole(email, newRoleId, () => {});
+              }}
+              width="150px"
+            />,
             dateEnrolled,
             <Button
               key={'withdraw'}
@@ -170,7 +178,7 @@ export default function People() {
           return (
             <PeopleTableRow
               key={email}
-              label={`${firstName} ${lastName}`}
+              label={`${firstName} ${lastName} (${screenName})`}
               numberOfVisibleColumns={numberOfVisibleColumns}
               columnsJSX={columnsJSX}
             />
@@ -261,6 +269,7 @@ function PeopleTabelHeader({
               gridTemplateColumns: columnsCSS,
               gridTemplateRows: '1fr',
               alignContent: 'center',
+              gap: '4px',
             }}
           >
             <span>{columnLabels[0]}</span>
@@ -297,6 +306,7 @@ function PeopleTableRow({ numberOfVisibleColumns, label, columnsJSX = [] }) {
         color: 'var(--canvastext)',
         width: 'auto',
         // marginLeft: marginSize,
+        maxWidth: '850px',
       }}
     >
       <div
@@ -305,7 +315,7 @@ function PeopleTableRow({ numberOfVisibleColumns, label, columnsJSX = [] }) {
           gridTemplateColumns: columnsCSS,
           gridTemplateRows: '1fr',
           alignContent: 'center',
-          maxWidth: '850px',
+          gap: '4px',
         }}
       >
         <span className="navigationColumn1">
@@ -325,7 +335,7 @@ function PeopleTableRow({ numberOfVisibleColumns, label, columnsJSX = [] }) {
             <span
               key={idx}
               className={`navigationColumn${idx + 1}`}
-              style={{ textAlign: 'center' }}
+              style={{ textAlign: 'left' }}
             >
               {value}
             </span>
@@ -334,4 +344,9 @@ function PeopleTableRow({ numberOfVisibleColumns, label, columnsJSX = [] }) {
       </div>
     </div>
   );
+}
+
+function getColumnsCSS(numberOfVisibleColumns) {
+  let columnsCSS = `repeat(${numberOfVisibleColumns},minmax(150px, 1fr))`; //5 columns max
+  return columnsCSS;
 }

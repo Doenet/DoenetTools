@@ -21,11 +21,12 @@ import CheckboxButton from '../PanelHeaderComponents/Checkbox';
 import ColorImagePicker from '../PanelHeaderComponents/ColorImagePicker';
 import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
 import RelatedItems from '../PanelHeaderComponents/RelatedItems';
+import { RoleDropdown } from '../PanelHeaderComponents/RoleDropdown';
 import Textfield from '../PanelHeaderComponents/Textfield';
 import {
   courseRolePermissonsByCourseIdRoleId,
   courseRolesByCourseId,
-  courseUsersByCourseId,
+  peopleByCourseId,
   useCourse,
 } from './CourseActions';
 
@@ -132,7 +133,7 @@ export function EditDefaultRole({ courseId }) {
 }
 
 export function AddUser({ courseId }) {
-  const setCourseUsers = useSetRecoilState(courseUsersByCourseId(courseId));
+  const setCourseUsers = useSetRecoilState(peopleByCourseId(courseId));
   const addToast = useToast();
 
   const [emailInput, setEmailInput] = useState('');
@@ -203,10 +204,8 @@ const ButtonFlexContainer = styled.div`
 `;
 
 export function AddUserWithOptions({ courseId }) {
-  const setCourseUsers = useSetRecoilState(courseUsersByCourseId(courseId));
-  const { defaultRoleId } = useCourse(courseId);
+  const { defaultRoleId, addUser } = useCourse(courseId);
   const roles = useRecoilValue(courseRolesByCourseId(courseId));
-  const addToast = useToast();
 
   const [userData, setUserData] = useState({
     roleId: defaultRoleId,
@@ -224,14 +223,7 @@ export function AddUserWithOptions({ courseId }) {
 
   const handleEmailChange = async () => {
     if (isEmailValid) {
-      const {
-        data: { success, message, userData: serverUserData },
-      } = await axios.post('/api/addCourseUser.php', {
-        email: emailInput,
-        ...userData,
-      });
-      if (success) {
-        setCourseUsers((prev) => [...prev, { ...serverUserData }]);
+      addUser(emailInput, userData, () => {
         setEmailInput('');
         setUserData({
           roleId: defaultRoleId,
@@ -239,10 +231,27 @@ export function AddUserWithOptions({ courseId }) {
           lastName: '',
           empId: '',
         });
-      } else {
-        addToast(message, toastType.ERROR);
-      }
-      setEmailInput('');
+      });
+      // const {
+      //   data: { success, message, userData: serverUserData },
+      // } = await axios.post('/api/addCourseUser.php', {
+      //   courseId,
+      //   email: emailInput,
+      //   ...userData,
+      // });
+      // if (success) {
+      //   setCourseUsers((prev) => [...prev, { ...serverUserData }]);
+      //   setEmailInput('');
+      //   setUserData({
+      //     roleId: defaultRoleId,
+      //     firstName: '',
+      //     lastName: '',
+      //     empId: '',
+      //   });
+      // } else {
+      //   addToast(message, toastType.ERROR);
+      // }
+      // setEmailInput('');
     }
   };
 
@@ -319,35 +328,34 @@ export function AddUserWithOptions({ courseId }) {
 
 export function ManageUsers({ courseId, editable = false }) {
   const addToast = useToast();
-  const courseUsersRecoil = useRecoilValue(courseUsersByCourseId(courseId));
+  const { modifyUserRole } = useCourse(courseId);
+  const courseUsersRecoil = useRecoilValue(peopleByCourseId(courseId));
   const courseRolesRecoil = useRecoilValue(courseRolesByCourseId(courseId));
 
   const [selectedUserData, setSelectedUserData] = useState(null);
   const [selectedUserPermissons, setSelectedUserPermissons] = useState(null);
 
   const handleRoleChange = async () => {
-    const {
-      data: { success, message },
-    } = await axios.post('api/updateUserRole.php', {
-      courseId,
-      userEmail: selectedUserData?.email,
-      roleId: selectedUserPermissons?.roleId,
-    });
-    if (success) {
-      addToast(
-        `${selectedUserData.screenName} is now a ${selectedUserPermissons.roleLabel}`,
-      );
-      //TODO set call for courseUsers
-      setSelectedUserData((prev) => ({
-        ...prev,
-        roleId: selectedUserPermissons.roleId,
-        roleLabel: selectedUserPermissons.roleLabel,
-        permissions: selectedUserPermissons,
-      }));
-    } else {
-      addToast(message, toastType.ERROR);
-      setSelectedUserPermissons(selectedUserData.permissons);
-    }
+    modifyUserRole(
+      selectedUserData?.email,
+      selectedUserPermissons?.roleId,
+      () => {
+        addToast(
+          `${selectedUserData.screenName} is now a ${selectedUserPermissons.roleLabel}`,
+        );
+        //TODO set call for courseUsers
+        setSelectedUserData((prev) => ({
+          ...prev,
+          roleId: selectedUserPermissons.roleId,
+          roleLabel: selectedUserPermissons.roleLabel,
+          permissions: selectedUserPermissons,
+        }));
+      },
+      (err) => {
+        addToast(err, toastType.ERROR);
+        setSelectedUserPermissons(selectedUserData.permissons);
+      },
+    );
   };
 
   //TODO EMILIO csv add
@@ -373,16 +381,9 @@ export function ManageUsers({ courseId, editable = false }) {
         }}
         vertical
       />
-      <DropdownMenu
+      <RoleDropdown
         label="Assigned Role"
         title=""
-        items={
-          //TODO reduce to hide roles as needed
-          courseRolesRecoil?.map(({ roleLabel, roleId }) => [
-            roleId,
-            roleLabel,
-          ]) ?? []
-        }
         onChange={({ value: selectedRoleId }) => {
           setSelectedUserPermissons(
             courseRolesRecoil?.find(
@@ -390,11 +391,7 @@ export function ManageUsers({ courseId, editable = false }) {
             ) ?? null,
           );
         }}
-        valueIndex={
-          courseRolesRecoil.findIndex(
-            ({ roleId }) => roleId == selectedUserPermissons?.roleId,
-          ) + 1
-        }
+        valueRoleId={selectedUserPermissons?.roleId}
         disabled={selectedUserData?.permissons?.isOwner === '1' || !editable}
         vertical
       />
@@ -748,14 +745,15 @@ export function MangeRoles({ courseId }) {
 
 export function AddRole({ courseId }) {
   const addToast = useToast();
+  const roles = useRecoilValue(courseRolesByCourseId(courseId));
   const { modifyRolePermissions } = useCourse(courseId);
 
   const handleSave = () => {
     modifyRolePermissions(
       '',
-      { label: 'Untitled Role' },
+      { roleLabel: `Role ${roles.length}` },
       () => {
-        addToast(`Create a new role: Untitled Role`);
+        addToast(`Create a new role: Role ${roles.length}`);
       },
       (error) => {
         addToast(error.message, toastType.ERROR);
@@ -765,18 +763,6 @@ export function AddRole({ courseId }) {
 
   return (
     <ButtonGroup vertical>
-      {/* <Button
-              width="menu"
-              value="Reset Changes"
-              onClick={() => {
-                setEdited(false);
-              }}
-              onKeyDown={(e) => {
-                if (e.keyCode === 13) {
-                  setEdited(false);
-                }
-              }}
-            /> */}
       <Button
         width="menu"
         value="Create New Role"

@@ -1,13 +1,14 @@
 import React from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import {  coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
+import { effectiveRoleIdByCourseId, RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 export default function DriveInfoCap(){
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const tool = useRecoilValue(searchParamAtomFamily('tool'));
   let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  const [effectiveRoleId, setEffectiveRoleId] = useRecoilState(effectiveRoleIdByCourseId(courseId));
 
 if (!course || Object.keys(course).length == 0){
   return null;
@@ -41,7 +42,12 @@ let label = course.label;
     <div style={{ padding:'16px 12px' }}>
       <span style={{ marginBottom: "15px" }}>{label}</span> <br />
       <span style={{ marginBottom: "15px" }}>{role}</span> <br />
-      <RoleDropdown/>
+      <RoleDropdown
+        label="View as:"
+        onChange={({ value: roleId }) => setEffectiveRoleId(roleId)}
+        valueRoleId={effectiveRoleId ?? course.roleId}
+        vertical
+      />
     </div>
   </>
 }

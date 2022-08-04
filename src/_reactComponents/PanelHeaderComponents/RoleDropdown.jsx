@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  atomFamily,
-  selectorFamily,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil';
-import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
+import { atomFamily, selectorFamily, useRecoilValue } from 'recoil';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import {
   coursePermissionsAndSettingsByCourseId,
@@ -32,30 +26,35 @@ export const effectivePermissionsByCourseId = selectorFamily({
     },
 });
 
-//TODO deal with unmount defult index reset
-export function RoleDropdown() {
-  const { tool } = useRecoilValue(pageToolViewAtom);
+export function RoleDropdown({
+  label,
+  width = 'menu',
+  maxMenuHeight = '200px',
+  defaultRoleId,
+  valueRoleId,
+  onChange = () => {},
+  vertical,
+  disabled,
+}) {
   const courseId = useRecoilValue(searchParamAtomFamily('courseId')) ?? '';
-  const setEffectiveRoleId = useSetRecoilState(
-    effectiveRoleIdByCourseId(courseId),
-  );
   const roles = useRecoilValue(courseRolesByCourseId(courseId));
-
-  if (tool === 'enrollment') {
-    return null;
-  }
-
+  const valueIndex = valueRoleId
+    ? roles.findIndex(({ roleId }) => roleId === valueRoleId)
+    : null;
+  const defaultIndex = defaultRoleId
+    ? roles.findIndex(({ roleId }) => roleId === defaultRoleId)
+    : null;
   return (
-    <>
-      Role
-      <DropdownMenu
-        width="menu"
-        maxMenuHeight="200px"
-        items={roles.map(({ roleLabel, roleId }) => [roleId, roleLabel])}
-        title="Role"
-        defaultIndex={1}
-        onChange={({ value: roleId }) => setEffectiveRoleId(roleId)}
-      />
-    </>
+    <DropdownMenu
+      width={width}
+      maxMenuHeight={maxMenuHeight}
+      items={roles.map(({ roleLabel, roleId }) => [roleId, roleLabel])}
+      label={label}
+      defaultIndex={defaultIndex + 1}
+      valueIndex={valueIndex + 1}
+      onChange={onChange}
+      vertical={vertical}
+      disabled={disabled}
+    />
   );
 }

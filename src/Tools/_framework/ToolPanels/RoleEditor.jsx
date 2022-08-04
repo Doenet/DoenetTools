@@ -16,8 +16,8 @@ export default function RolesEditor() {
   return (
     <>
       <h2>Edit Role Permissons:</h2>
-      <MangeRoles courseId={courseId} />
       <AddRole courseId={courseId} />
+      <MangeRoles courseId={courseId} />
     </>
   );
 }
