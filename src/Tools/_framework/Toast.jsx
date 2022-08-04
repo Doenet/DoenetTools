@@ -114,7 +114,7 @@ export const recoilAddToast =
         {msg}
       </ToastMessage>,
     ]);
-    set(toastStackId, (prev) => prev++);
+    set(toastStackId, (prev) => prev + 1);
   };
 
 export const useToast = () => {
