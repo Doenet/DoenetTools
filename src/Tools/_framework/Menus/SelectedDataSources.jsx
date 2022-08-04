@@ -69,7 +69,7 @@ export default function SelectedDataSources() {
             let searchParamsText = assignedSelectedDoenetIds.join("&data=");
             const resp = await axios.get(`/api/createSecretCode.php?courseId=${courseId}`)
             const { secretCode } = resp.data
-            window.open(`https://doenet.shinyapps.io/analyzer/?data=${searchParamsText}&secretCode=${secretCode}`, '_blank');
+            window.open(`https://doenet.shinyapps.io/analyzer/?data=${searchParamsText}&code=${secretCode}`, '_blank');
             }
           }}
         />

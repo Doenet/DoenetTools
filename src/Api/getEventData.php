@@ -18,15 +18,15 @@ $doenetIds = array_map(function($item) use($conn) {
   return mysqli_real_escape_string($conn, $item);
 }, $_REQUEST["doenetId"]);
 
-$secretCodeRecieved = mysqli_real_escape_string($conn,$_REQUEST["secretCode"]);
+$secretCodeRecieved = mysqli_real_escape_string($conn,$_REQUEST["code"]);
 
 //In the last five minutes only
 $sql = "
 SELECT `timestamp`
 FROM eventSecretCodes
 WHERE secretCode = '$secretCodeRecieved'
-AND timestamp >= NOW() - INTERVAL 5 MINUTE
 ";
+// AND timestamp >= NOW() - INTERVAL 5 MINUTE
 $result = $conn->query($sql);
 
 
@@ -35,12 +35,12 @@ if ($result->num_rows > 0) {
 	$secretCodeMatches = 1;
 }
 
-//Keep the eventSecretCodes table small
-$sql = "
-DELETE FROM eventSecretCodes
-WHERE timestamp <= NOW() - INTERVAL 5 MINUTE
-";
-$result = $conn->query($sql);
+// //Keep the eventSecretCodes table small
+// $sql = "
+// DELETE FROM eventSecretCodes
+// WHERE timestamp <= NOW() - INTERVAL 5 MINUTE
+// ";
+// $result = $conn->query($sql);
 
 //Temporary log
 $joined_doenetIds = implode(",", $doenetIds);

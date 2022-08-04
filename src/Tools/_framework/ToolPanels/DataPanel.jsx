@@ -95,7 +95,7 @@ export default function DataPanel() {
             // console.log("Open Link to data for Pages",doenetId)
             const resp = await axios.get(`/api/createSecretCode.php?courseId=${courseId}`)
             const { secretCode } = resp.data
-            window.open(`https://doenet.shinyapps.io/analyzer/?data=${doenetId}&secretCode=${secretCode}`, '_blank');
+            window.open(`https://doenet.shinyapps.io/analyzer/?data=${doenetId}&code=${secretCode}`, '_blank');
 
         }
 
