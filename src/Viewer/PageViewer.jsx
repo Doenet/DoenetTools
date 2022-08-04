@@ -177,7 +177,7 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
         } else if (e.data.messageType === "terminated") {
-          coreWorker.current.terminate();
+          terminateCoreAndAnimations();
         }
       }
     }
@@ -243,6 +243,14 @@ export default function PageViewer(props) {
       }
     })
   })
+
+  function terminateCoreAndAnimations() {
+    coreWorker.current.terminate();
+    for (let id in animationInfo.current) {
+      cancelAnimationFrame(id);
+    }
+    animationInfo.current = {};
+  }
 
   async function callAction({ action, args, baseVariableValue, componentName, rendererType }) {
 
@@ -677,7 +685,7 @@ export default function PageViewer(props) {
 
     //Kill the current core if it exists
     if (coreWorker.current){
-      coreWorker.current.terminate();
+      terminateCoreAndAnimations();
     }
     // console.log(`send message to create core ${pageNumber}`)
     
@@ -903,7 +911,7 @@ export default function PageViewer(props) {
     // we've moved off this page, but core is still being initialized
     // kill the core worker
 
-    coreWorker.current.terminate();
+    terminateCoreAndAnimations()
     coreWorker.current = null;
 
     setStage('readyToCreateCore');
