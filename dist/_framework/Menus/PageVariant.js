@@ -39,6 +39,7 @@ export default function PageVariant(props) {
   return /* @__PURE__ */ React.createElement("div", {
     style
   }, warningVariantIsIgnored, /* @__PURE__ */ React.createElement("div", null, "Number of variants: ", allPossibleVariants.length), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Select variant Index ", /* @__PURE__ */ React.createElement("input", {
+    "data-test": "Variant Index Input",
     type: "text",
     value: variantPanel.index,
     onKeyDown: (e) => {
@@ -55,6 +56,7 @@ export default function PageVariant(props) {
       });
     }
   }))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "Select variant name", /* @__PURE__ */ React.createElement("select", {
+    "data-test": "Variant Name Input",
     style: {backgroundColor: "var(--canvas)", color: "var(--canvastext)", border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)"},
     value: variantPanel.index,
     onChange: (e) => {

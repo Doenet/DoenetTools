@@ -106,14 +106,13 @@ export default function PageViewer(props) {
   const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
 
   const [stage, setStage] = useState('initial');
-
   const [pageContentChanged, setPageContentChanged] = useState(false);
-
+  
   const [documentRenderer, setDocumentRenderer] = useState(null);
-
+  
   const initialCoreData = useRef({});
-
-
+  
+  
   const rendererClasses = useRef({});
   const coreInfo = useRef(null);
   const coreCreated = useRef(false);
@@ -149,6 +148,7 @@ export default function PageViewer(props) {
           cancelAnimationFrame(e.data.args);
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
+          preventMoreAnimations.current = false;
           setStage('coreCreated');
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
@@ -245,7 +245,9 @@ export default function PageViewer(props) {
   })
 
   function terminateCoreAndAnimations() {
+    preventMoreAnimations.current = true;
     coreWorker.current.terminate();
+    coreWorker.current = null;
     for (let id in animationInfo.current) {
       cancelAnimationFrame(id);
     }
@@ -419,8 +421,8 @@ export default function PageViewer(props) {
         cidFromText(doenetMLFromProps)
           .then(calcCid => {
             //Guard against the possiblity that parameters changed while waiting
-      
-            if (coreIdWhenCalled === coreId.current){
+
+            if (coreIdWhenCalled === coreId.current) {
               if (calcCid === cidFromProps) {
                 setDoenetML(doenetMLFromProps);
                 setCid(cidFromProps);
@@ -437,9 +439,9 @@ export default function PageViewer(props) {
         // if have doenetML and no cid, then calculate cid
         cidFromText(doenetMLFromProps)
           .then(cid => {
-      
+
             //Guard against the possiblity that parameters changed while waiting
-            if (coreIdWhenCalled === coreId.current){
+            if (coreIdWhenCalled === coreId.current) {
               setDoenetML(doenetMLFromProps);
               setCid(cid);
               setStage('continue');
@@ -452,8 +454,8 @@ export default function PageViewer(props) {
       retrieveTextFileForCid(cidFromProps, "doenet")
         .then(retrievedDoenetML => {
           //Guard against the possiblity that parameters changed while waiting
-    
-          if (coreIdWhenCalled === coreId.current){
+
+          if (coreIdWhenCalled === coreId.current) {
             setDoenetML(retrievedDoenetML);
             setCid(cidFromProps);
             setStage('continue');
@@ -461,8 +463,8 @@ export default function PageViewer(props) {
         })
         .catch(e => {
           //Guard against the possiblity that parameters changed while waiting
-    
-          if (coreIdWhenCalled === coreId.current){
+
+          if (coreIdWhenCalled === coreId.current) {
             if (props.setIsInErrorState) {
               props.setIsInErrorState(true)
             }
@@ -609,8 +611,8 @@ export default function PageViewer(props) {
     }
 
     //Guard against the possiblity that parameters changed while waiting
-    if (coreIdWhenCalled === coreId.current){
-        startCore();
+    if (coreIdWhenCalled === coreId.current) {
+      startCore();
     }
 
   }
@@ -684,11 +686,11 @@ export default function PageViewer(props) {
   function startCore() {
 
     //Kill the current core if it exists
-    if (coreWorker.current){
+    if (coreWorker.current) {
       terminateCoreAndAnimations();
     }
     // console.log(`send message to create core ${pageNumber}`)
-    
+
     coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : '/viewer/core.js', { type: 'module' });
 
     coreWorker.current.postMessage({
@@ -801,11 +803,11 @@ export default function PageViewer(props) {
   async function cancelAnimationFrame(animationId) {
 
     let animationInfoObj = animationInfo.current[animationId];
-    let timeoutId = animationInfoObj.timeoutId;
+    let timeoutId = animationInfoObj?.timeoutId;
     if (timeoutId !== undefined) {
       window.clearTimeout(timeoutId);
     }
-    let animationFrameID = animationInfoObj.animationFrameID;
+    let animationFrameID = animationInfoObj?.animationFrameID;
     if (animationFrameID !== undefined) {
       window.cancelAnimationFrame(animationFrameID);
     }
@@ -872,6 +874,9 @@ export default function PageViewer(props) {
 
   // Next time through will recalculate, after state variables are set
   if (changedState) {
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
+    }
     setStage('recalcParams')
     coreId.current = nanoid();
     setPageContentChanged(true);

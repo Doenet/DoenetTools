@@ -93,7 +93,7 @@ it('animation stopped when click update button',()=>{
   const doenetMLString = `
   <number name="n">1</number>
 
-  <animateFromSequence target="n" animationMode="increaseOnce" from="1" to="100" animationInterval="100" name="a" />
+  <animateFromSequence target="n" animationMode="increase once" from="1" to="100" animationInterval="100" name="a" />
 
   <p><callAction target="a" actionName="toggleAnimation" name="ca" >
     <label>Toggle animation</label>

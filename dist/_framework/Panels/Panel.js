@@ -135,7 +135,7 @@ export default function DragPanel({
   }, children), /* @__PURE__ */ React.createElement(DragHandle, {
     tabIndex: "0",
     ref: handle,
-    "data-cy": "panelDragHandle",
+    "data-test": "panelDragHandle",
     $vertical: direction.vertical,
     $rounding: direction.rounding,
     $handleSize: handleSize,

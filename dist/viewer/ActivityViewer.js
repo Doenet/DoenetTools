@@ -693,11 +693,11 @@ export default function ActivityViewer(props) {
   let pageControls = null;
   if (nPages > 1) {
     pageControls = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", {
-      "data-cy": "previous",
+      "data-test": "previous",
       disabled: currentPage === 1,
       onClick: clickPrevious
     }, "Previous page"), /* @__PURE__ */ React.createElement("button", {
-      "data-cy": "next",
+      "data-test": "next",
       disabled: currentPage === nPages,
       onClick: clickNext
     }, "Next page"), /* @__PURE__ */ React.createElement("p", null, "Page ", currentPage, " of ", nPages));

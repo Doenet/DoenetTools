@@ -37,6 +37,7 @@ export class MatrixInput extends Input {
   static componentType = "matrixInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static renderChildren = true;
 
@@ -2222,6 +2223,7 @@ export default class MatrixComponentInput extends BaseComponent {
   static rendererType = "mathInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
 
   static returnStateVariableDefinitions() {

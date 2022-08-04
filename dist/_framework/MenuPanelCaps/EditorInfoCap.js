@@ -9,7 +9,7 @@ export default function EditorInfoCap() {
   let {color, image, label: course_label} = useCourse(courseId);
   const pageInfo = useRecoilValue(itemByDoenetId(pageId));
   const activityInfo = useRecoilValue(itemByDoenetId(doenetId));
-  if (!pageInfo) {
+  if (!pageInfo || !image) {
     return null;
   }
   if (image != "none") {

@@ -16,6 +16,7 @@ export default React.memo(function UpdateValue(props) {
     id: name + "_button",
     onClick: () => callAction({action: actions.updateValue}),
     disabled: SVs.disabled,
-    value: SVs.label
+    value: SVs.label,
+    valueHasLatex: SVs.labelHasLatex
   }));
 });

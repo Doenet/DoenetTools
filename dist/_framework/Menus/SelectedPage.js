@@ -41,7 +41,7 @@ export default function SelectedPage() {
     }
   };
   let heading = /* @__PURE__ */ React.createElement("h2", {
-    "data-cy": "infoPanelItemLabel",
+    "data-test": "infoPanelItemLabel",
     style: {margin: "16px 5px"}
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCode
