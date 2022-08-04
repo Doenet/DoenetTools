@@ -355,7 +355,6 @@ CREATE TABLE `course_role` (
   `courseId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `roleId` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `label` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Untitled Role',
-  `canViewCourse` tinyint(1) NOT NULL DEFAULT '0',
   `isIncludedInGradebook` tinyint(1) NOT NULL DEFAULT '0',
   `canViewUnassignedContent` tinyint(1) NOT NULL DEFAULT '0',
   `canViewContentSource` tinyint(1) NOT NULL DEFAULT '0',
@@ -369,7 +368,7 @@ CREATE TABLE `course_role` (
   `dataAccessPermisson` varchar(15) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'None',
   `canViewUsers` tinyint(1) NOT NULL DEFAULT '0',
   `canManageUsers` tinyint(1) NOT NULL DEFAULT '0',
-  `canModifyRoles` tinyint(1) NOT NULL DEFAULT '0',
+  `isAdmin` tinyint(1) NOT NULL DEFAULT '0',
   `isOwner` tinyint(1) NOT NULL DEFAULT '0',
   `sectionPermissionOnly` int(255) DEFAULT NULL,
   PRIMARY KEY (`courseId`,`roleId`),
@@ -800,15 +799,12 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `userId` char(21) COLLATE utf8_unicode_ci NOT NULL,
-  `screenName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
+  `screenName` varchar(255) COLLATE utf8_unicode_ci DEFAULT 'New User' COMMENT 'full email address',
   `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL COMMENT 'full email address',
-  `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastName` varchar(255) COLLATE utf8_unicode_ci DEFAULT '',
+  `firstName` varchar(255) COLLATE utf8_unicode_ci DEFAULT '',
   `profilePicture` varchar(128) COLLATE utf8_unicode_ci DEFAULT NULL,
   `trackingConsent` tinyint(1) DEFAULT '0',
-  `roleStudent` tinyint(1) DEFAULT '1',
-  `roleInstructor` tinyint(1) DEFAULT '0',
-  `roleCourseDesigner` tinyint(1) DEFAULT '0',
   `roleWatchdog` tinyint(1) DEFAULT '0',
   `roleCommunityTA` tinyint(1) DEFAULT '0',
   `roleLiveDataCommunity` tinyint(1) DEFAULT '0',
@@ -962,4 +958,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-07-27 17:17:39
+-- Dump completed on 2022-08-03 20:19:13
