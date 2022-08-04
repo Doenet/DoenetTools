@@ -5801,7 +5801,7 @@ class ReplacementDependency extends Dependency {
 
 dependencyTypeArray.push(ReplacementDependency);
 
-class SourceCompositeDependency extends Dependency {
+class SourceCompositeStateVariableDependency extends Dependency {
   static dependencyType = "sourceCompositeStateVariable";
 
   setUpParameters() {
@@ -5925,7 +5925,7 @@ class SourceCompositeDependency extends Dependency {
 
 }
 
-dependencyTypeArray.push(SourceCompositeDependency);
+dependencyTypeArray.push(SourceCompositeStateVariableDependency);
 
 class SourceCompositeIdentityDependency extends Dependency {
   static dependencyType = "sourceCompositeIdentity";
@@ -6021,6 +6021,109 @@ class SourceCompositeIdentityDependency extends Dependency {
 
 dependencyTypeArray.push(SourceCompositeIdentityDependency);
 
+class ShadowSourceIdentityDependency extends Dependency {
+  static dependencyType = "shadowSourceIdentity";
+
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    this.returnSingleComponent = true;
+
+  }
+
+
+  async determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    if (!component.shadows) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let shadowSourceComponentName = component.shadows.componentName;
+    let shadowSource = this.dependencyHandler._components[shadowSourceComponentName];
+
+    if (!shadowSource) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+
+    return {
+      success: true,
+      downstreamComponentNames: [shadowSource.componentName],
+      downstreamComponentTypes: [shadowSource.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(ShadowSourceIdentityDependency);
 
 class AdapterSourceStateVariableDependency extends Dependency {
   static dependencyType = "adapterSourceStateVariable";
