@@ -4,17 +4,21 @@ import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js"
 export default React.memo(function Container(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRenderer(props);
   let onChangeVisibility = (isVisible) => {
-    callAction({
-      action: actions.recordVisibilityChange,
-      args: {isVisible}
-    });
+    if (actions.recordVisibilityChange) {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible}
+      });
+    }
   };
   useEffect(() => {
     return () => {
-      callAction({
-        action: actions.recordVisibilityChange,
-        args: {isVisible: false}
-      });
+      if (actions.recordVisibilityChange) {
+        callAction({
+          action: actions.recordVisibilityChange,
+          args: {isVisible: false}
+        });
+      }
     };
   }, []);
   if (SVs.hidden) {

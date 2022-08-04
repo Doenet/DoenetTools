@@ -15,6 +15,7 @@ export default React.memo(function TriggerSet(props) {
     id: name + "_button",
     onClick: () => callAction({action: actions.triggerActions}),
     disabled: SVs.disabled,
-    value: SVs.label
+    value: SVs.label,
+    valueHasLatex: SVs.labelHasLatex
   }));
 });

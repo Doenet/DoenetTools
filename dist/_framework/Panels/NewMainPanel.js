@@ -81,9 +81,11 @@ export default function MainPanel({
     contents.push(children);
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, hasNoHeaderPanel === true ? null : /* @__PURE__ */ React.createElement(ControlsWrapper, {
-    role: "navigation"
+    role: "navigation",
+    "data-test": "Main Panel Controls"
   }, controls), /* @__PURE__ */ React.createElement(ContentWrapper, {
     onClick: mpOnClick,
-    role: "main"
+    role: "main",
+    "data-test": "Main Panel"
   }, contents));
 }

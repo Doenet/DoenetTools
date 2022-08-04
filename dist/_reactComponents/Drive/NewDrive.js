@@ -872,11 +872,11 @@ function Folder(props) {
     borderSide = "8px solid #1A5A99";
   }
   let openCloseText = isOpen ? /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "folderToggleCloseIcon"
+    "data-test": "folderToggleCloseIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronDown
   })) : /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "folderToggleOpenIcon"
+    "data-test": "folderToggleOpenIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronRight
   }));
@@ -971,7 +971,7 @@ function Folder(props) {
     folder = /* @__PURE__ */ React.createElement("div", {
       role: "button",
       "data-doenet-driveinstanceid": props.driveInstanceId,
-      "data-cy": "driveItem",
+      "data-test": "driveItem",
       tabIndex: 0,
       className: "noselect nooutline",
       style: {
@@ -1059,11 +1059,11 @@ function Folder(props) {
     }, /* @__PURE__ */ React.createElement("div", {
       style: {display: "inline", margin: "0px"}
     }, openCloseButton, /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderIcon"
+      "data-test": "folderIcon"
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faFolder
     })), /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderLabel"
+      "data-test": "folderLabel"
     }, label))));
   } else if (props.driveObj && props.isNav) {
     let driveIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -1078,7 +1078,7 @@ function Folder(props) {
     folder = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
       role: "button",
       "data-doenet-driveinstanceid": props.driveInstanceId,
-      "data-cy": "navDriveHeader",
+      "data-test": "navDriveHeader",
       tabIndex: 0,
       className: "noselect nooutline",
       style: {
@@ -1298,7 +1298,7 @@ function Folder(props) {
     }
   }
   return /* @__PURE__ */ React.createElement("div", {
-    "data-cy": "drive"
+    "data-test": "drive"
   }, folder, items);
 }
 export const EmptyNode = React.memo(function Node() {
@@ -1315,7 +1315,7 @@ export const EmptyNode = React.memo(function Node() {
 export const DragShadow = React.memo(function Node2(props) {
   const indentPx = 30;
   return /* @__PURE__ */ React.createElement("div", {
-    "data-cy": "dragShadow",
+    "data-test": "dragShadow",
     style: {
       width: "100%",
       height: "33px",
@@ -1626,7 +1626,7 @@ export const DoenetML = React.memo(function DoenetML2(props) {
   let doenetMLJSX = /* @__PURE__ */ React.createElement("div", {
     "data-doenet-driveinstanceid": props.driveInstanceId,
     role: "button",
-    "data-cy": "driveItem",
+    "data-test": "driveItem",
     tabIndex: 0,
     className: "noselect nooutline",
     style: {
@@ -1696,11 +1696,11 @@ export const DoenetML = React.memo(function DoenetML2(props) {
   }, /* @__PURE__ */ React.createElement("p", {
     style: {display: "inline", margin: "0px"}
   }, /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "doenetMLIcon"
+    "data-test": "doenetMLIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faCode
   })), /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "doenetMLLabel"
+    "data-test": "doenetMLLabel"
   }, label, " ")), props.numColumns >= 2 ? column2 : null, props.numColumns >= 3 ? column3 : null, props.numColumns >= 4 ? column4 : null, props.numColumns >= 5 ? column5 : null));
   if (!props.isNav) {
     const onDragStartCallback = () => {
@@ -2008,7 +2008,7 @@ function useUpdateBreadcrumb(props) {
         }
       }
     }, /* @__PURE__ */ React.createElement(Link, {
-      "data-cy": "breadcrumbDriveColumn",
+      "data-test": "breadcrumbDriveColumn",
       style: breadcrumbItemStyle,
       to: driveDestinationLink
     }, props.driveLabel));
@@ -2088,7 +2088,7 @@ const DragGhost = ({id, element, numItems, copyMode = false}) => {
   }
   dragGhost = /* @__PURE__ */ React.createElement("div", {
     id,
-    "data-cy": "dragGhost",
+    "data-test": "dragGhost",
     style: containerStyle
   }, dragGhost);
   return dragGhost;

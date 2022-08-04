@@ -30,35 +30,34 @@ export default React.memo(function Image(props) {
   }, []);
   if (SVs.hidden)
     return null;
+  let outerStyle = {};
+  if (SVs.displayMode === "inline") {
+    outerStyle = {display: "inline-block", verticalAlign: "middle", margin: "12px 0"};
+  } else {
+    outerStyle = {display: "flex", justifyContent: SVs.horizontalAlign, margin: "12px 0"};
+  }
+  let imageStyle = {
+    maxWidth: "100%",
+    width: sizeToCSS(SVs.width),
+    aspectRatio: String(SVs.aspectRatio)
+  };
+  if (!(url || SVs.source)) {
+    imageStyle.border = "var(--mainBorder)";
+  }
   return /* @__PURE__ */ React.createElement(VisibilitySensor, {
     partialVisibility: true,
     onChange: onChangeVisibility
   }, /* @__PURE__ */ React.createElement("div", {
-    style: {margin: "12px 0"}
+    style: outerStyle
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), url || SVs.source ? /* @__PURE__ */ React.createElement("img", {
     id: name,
     src: url ? url : SVs.source ? SVs.source : "",
-    style: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      maxWidth: "850px"
-    },
-    width: sizeToCSS(SVs.width),
-    height: sizeToCSS(SVs.height),
+    style: imageStyle,
     alt: SVs.description
   }) : /* @__PURE__ */ React.createElement("div", {
     id: name,
-    style: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      maxWidth: "850px",
-      width: sizeToCSS(SVs.width),
-      height: sizeToCSS(SVs.height),
-      border: "var(--mainBorder)"
-    }
+    style: imageStyle
   }, SVs.description)));
 });

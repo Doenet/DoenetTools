@@ -125,7 +125,7 @@ export default function ContentPanel({main, support, hasNoHeaderPanel}) {
   }, main, !support?.props?.hide ? /* @__PURE__ */ React.createElement(DragHandle, {
     ref: dragHandleRef,
     onMouseDown,
-    "data-cy": "contentPanelDragHandle",
+    "data-test": "contentPanelDragHandle",
     key: `SupportHandle`
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faGripLinesVertical

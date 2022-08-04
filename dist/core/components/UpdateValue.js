@@ -1,3 +1,4 @@
+import { returnLabelStateVariableDefinitions } from '../utils/label.js';
 import { normalizeMathExpression } from '../utils/math.js';
 import InlineComponent from './abstract/InlineComponent.js';
 
@@ -11,11 +12,14 @@ export default class UpdateValue extends InlineComponent {
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
     attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "update value",
+      createComponentOfType: "label",
+    };
+
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true,
     };
 
     attributes.type = {
@@ -35,14 +39,14 @@ export default class UpdateValue extends InlineComponent {
     }
 
     attributes.componentIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
     };
 
     attributes.propIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
@@ -79,10 +83,23 @@ export default class UpdateValue extends InlineComponent {
   }
 
 
+  static returnChildGroups() {
+
+    return [{
+      group: "labels",
+      componentTypes: ["label"]
+    }]
+
+  }
+
 
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.target = {
       returnDependencies: () => ({
@@ -194,13 +211,20 @@ export default class UpdateValue extends InlineComponent {
             let thisTarget;
 
             if (stateValues.propName) {
+              let propIndex = stateValues.propIndex;
+              if (propIndex) {
+                // make propIndex be a shallow copy
+                // so that can detect if it changed
+                // when update dependencies
+                propIndex = [...propIndex]
+              }
               thisTarget = {
                 dependencyType: "stateVariable",
                 componentName: source.componentName,
                 variableName: stateValues.propName,
                 returnAsComponentObject: true,
                 variablesOptional: true,
-                propIndex: stateValues.propIndex,
+                propIndex,
                 caseInsensitiveVariableMatch: true,
                 publicStateVariablesOnly: true,
                 useMappedVariableNames: true,

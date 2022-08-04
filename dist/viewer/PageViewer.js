@@ -123,7 +123,7 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
         } else if (e.data.messageType === "terminated") {
-          coreWorker.current.terminate();
+          terminateCoreAndAnimations();
         }
       };
     }
@@ -176,6 +176,13 @@ export default function PageViewer(props) {
       }
     });
   });
+  function terminateCoreAndAnimations() {
+    coreWorker.current.terminate();
+    for (let id in animationInfo.current) {
+      cancelAnimationFrame(id);
+    }
+    animationInfo.current = {};
+  }
   async function callAction({action, args, baseVariableValue, componentName, rendererType}) {
     if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
       let actionId = nanoid();
@@ -464,7 +471,7 @@ export default function PageViewer(props) {
   }
   function startCore() {
     if (coreWorker.current) {
-      coreWorker.current.terminate();
+      terminateCoreAndAnimations();
     }
     coreWorker.current = new Worker(props.unbundledCore ? "core/CoreWorker.js" : "/viewer/core.js", {type: "module"});
     coreWorker.current.postMessage({
@@ -630,7 +637,7 @@ export default function PageViewer(props) {
   if (stage === "readyToCreateCore" && props.pageIsActive) {
     startCore();
   } else if (stage === "waitingOnCore" && !props.pageIsActive) {
-    coreWorker.current.terminate();
+    terminateCoreAndAnimations();
     coreWorker.current = null;
     setStage("readyToCreateCore");
   }
