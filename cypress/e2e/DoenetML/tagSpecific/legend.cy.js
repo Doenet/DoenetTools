@@ -550,5 +550,52 @@ describe('Legend Tag Tests', function () {
     })
   });
 
+  it('legend with forTargets, use names of shadow sources', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph>
+      <point name="p" labelIsName>(3,4)</point>
+      <point name="Q" styleNumber="2" labelIsName>(4,5)</point>
+      <legend>
+        <label forTarget="p">point p</label>
+        <label forTarget="Q">point Q</label>
+      </legend> 
+    </graph>
+    
+    
+    <graph>
+      $p
+      $Q
+      <legend>
+      <label forTarget="Q">point Q</label>
+      <label forTarget="p">point p</label>
+      </legend> 
+    </graph>
+  
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("marker")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("point p")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("marker")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("point Q")
+      expect(stateVariables['/_legend2'].stateValues.legendElements[0].swatchType).eq("marker")
+      expect(stateVariables['/_legend2'].stateValues.legendElements[0].label.value).eq("point Q")
+      expect(stateVariables['/_legend2'].stateValues.legendElements[1].swatchType).eq("marker")
+      expect(stateVariables['/_legend2'].stateValues.legendElements[1].label.value).eq("point p")
+
+
+    })
+  });
+
 
 });

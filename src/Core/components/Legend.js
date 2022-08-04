@@ -95,6 +95,11 @@ export default class Legend extends GraphicalComponent {
               dependencyType: "adapterSource",
               componentName: cName,
             }
+            dependencies[`graphicalElement${ind}ShadowSource`] = {
+              dependencyType: "shadowSourceIdentity",
+              componentName: cName,
+            }
+            
           }
         }
 
@@ -119,6 +124,14 @@ export default class Legend extends GraphicalComponent {
               // since that would be the name used in forTargetComponentName
               graphicalElement = { ...graphicalElement };
               graphicalElement.componentName = adapter.componentName;
+            }
+            if(graphicalElement.componentName.slice(0,3) === "/__") {
+              let shadowSource = dependencyValues[`graphicalElement${ind}ShadowSource`];
+              if(shadowSource) {
+              // if have shadow source, use that componentName instead,
+              graphicalElement = { ...graphicalElement };
+              graphicalElement.componentName = shadowSource.componentName;
+              }
             }
             graphicalDescendantsLeft.push(graphicalElement);
           }
