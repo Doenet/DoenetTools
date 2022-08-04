@@ -71,6 +71,29 @@ if ($success && array_key_exists('isOwner', $_POST['permissions'])) {
     $message = 'isOwner is only available on the owner role';
 }
 
+//Bail if role name is not unique withing the course
+if ($success && array_key_exists('label', $_POST['permissions'])) {
+    $newRoleLabel = mysqli_real_escape_string(
+        $conn,
+        $_POST['permissions']['label']
+    );
+    $result = $conn->query(
+        "SELECT label as roleLabel
+            FROM course_role
+            WHERE courseId = '$courseId' AND label = '$newRoleLabel'
+        "
+    );
+    if ($result->num_rows > 0) {
+        $success = false;
+        $row = $result->fetch_assoc();
+        $conflictLabel = $row['label'];
+        $message = "Role labels must be unique, please relable $conflictLabel first";
+    } else {
+        array_push($segments, "label = '$newRoleLabel'");
+        unset($_POST['permissions']['label']);
+    }
+}
+
 //enforce permisson pairs
 if ($success) {
     // editContent > viewContentSource && viewUnassignedContent

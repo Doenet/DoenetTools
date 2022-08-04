@@ -549,9 +549,8 @@ export function MangeRoles({ courseId }) {
         );
       },
       (error) => {
-        //TODO reset state
         setSelectedRolePermissons(selectedRolePermissons);
-        addToast(error.message, toastType.ERROR);
+        addToast(error, toastType.ERROR);
       },
     );
   };

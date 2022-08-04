@@ -497,7 +497,6 @@ export const coursePermissionsAndSettingsByCourseId = selectorFamily({
     (courseId) =>
     ({ get }) => {
       let allpermissionsAndSettings = get(coursePermissionsAndSettings);
-      console.log('all perms', courseId, allpermissionsAndSettings.find((value) => value.courseId == courseId));
       return (
         allpermissionsAndSettings.find((value) => value.courseId == courseId) ??
         {}
@@ -542,25 +541,16 @@ export const courseRolesByCourseId = selectorFamily({
     const roles = get(unfilteredCourseRolesByCourseId(courseId));
     const ignoreKeys = ['isIncludedInGradebook', 'sectionPermissonOnly', 'dataAccessPermisson', 'roleId', 'roleLabel'];
     let filteredRoles = roles?.filter((role) => {
-      console.group(role.roleLabel); 
       let valid = 
-      role.roleId === permissonsAndSettings.roleId || 
-      !Object.keys(role).every((permKey) => {
-        console.log(permKey, 
-          role[permKey], permissonsAndSettings[permKey], 
-          role[permKey] === permissonsAndSettings[permKey], ignoreKeys.includes(permKey), role[permKey] === '1' && permissonsAndSettings[permKey] === '0' )
-        return (
-          role[permKey] === permissonsAndSettings[permKey] 
-          || ignoreKeys.includes(permKey) 
-          ||  role[permKey] === '1' && permissonsAndSettings[permKey] === '0'
-        )}
-      )
-        console.groupEnd()
-      return (valid)}
-    ) ?? [];
-    console.log(roles, filteredRoles);
+        role.roleId === permissonsAndSettings.roleId 
+        || !Object.keys(role).every((permKey) => (
+              role[permKey] === permissonsAndSettings[permKey] 
+              || ignoreKeys.includes(permKey) 
+              ||  role[permKey] === '1' && permissonsAndSettings[permKey] === '0'
+          ))
+      return (valid)
+    }) ?? [];
     return filteredRoles;
-
   }
 })
 
@@ -1360,7 +1350,9 @@ export const useCourse = (courseId) => {
     async (roleId, newPermissions, successCallback, failureCallback = defaultFailure) =>
     {
       try {
-        const {data: {success, message}} = await axios.post('/api/updateRolePermissons.php', {courseId, roleId, permissions: {...newPermissions, label: newPermissions?.roleLabel}})
+        const {data: {success, message}} = await axios.post('/api/updateRolePermissons.php', {
+          courseId, roleId, permissions: {...newPermissions, label: newPermissions?.roleLabel}
+        })
         if(success) {
           set(
             unfilteredCourseRolesByCourseId(courseId), (prev => {
