@@ -26,9 +26,9 @@ $permissions = permissionsAndSettingsForOneCourseFunction(
     $courseId
 );
 
-if ($permissions['canViewUsers'] != '1') {
+if ($permissions == false) {
     $success = false;
-    $message = "You need permission to view a course's users";
+    $message = "You need permission to view a course's roles";
 }
 
 if ($success) {

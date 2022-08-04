@@ -31,6 +31,7 @@ if ($allowed) {
     $sql = "SELECT
 		u.firstName,
 		u.lastName,
+        u.screenName,
 		u.email,
 		cu.externalId,
         cu.roleId,
@@ -48,6 +49,7 @@ if ($allowed) {
             $learner = [
                 'firstName' => $row['firstName'],
                 'lastName' => $row['lastName'],
+                'screenName' => $row['screenName'],
                 'email' => $row['email'],
                 'externalId' => $row['externalId'],
                 'roleId' => $row['roleId'],
