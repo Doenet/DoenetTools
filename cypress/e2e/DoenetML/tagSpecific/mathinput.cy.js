@@ -4727,7 +4727,7 @@ describe('MathInput Tag Tests', function () {
     <mathinput name="mi" />
 
     <math simplify name="x">x</math>
-    <updateValue triggerWithTargets="mi" target="x" newValue="$x+$mi" />
+    <updateValue triggerWith="mi" target="x" newValue="$x+$mi" />
     `}, "*");
     });
 

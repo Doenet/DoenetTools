@@ -142,8 +142,8 @@ describe('TriggerSet Tag Tests', function () {
       <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
     </triggerSet>
 
-    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWithTargets="tset" />
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point"  triggerWithTargets="tset" >
+    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWith="tset" />
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point"  triggerWith="tset" >
       <point>(3,4)</point>
     </callAction>
     `}, "*");
@@ -256,7 +256,7 @@ describe('TriggerSet Tag Tests', function () {
       <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTargets="tset" >
+    <triggerSet label="perform updates" triggerWith="tset" >
       <updateValue target="n" newValue="$n+1" type="number"  />
       <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
         <point>(3,4)</point>
@@ -374,7 +374,7 @@ describe('TriggerSet Tag Tests', function () {
       <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTargets="tset in" >
+    <triggerSet label="perform updates" triggerWith="tset in" >
       <updateValue target="n" newValue="$n+1" type="number"  />
       <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
         <point>(3,4)</point>
@@ -611,7 +611,7 @@ describe('TriggerSet Tag Tests', function () {
   <math name="x">x</math>
   <math name="y">y</math>
   
-  <triggerSet triggerWhenTargetsClicked="P" >
+  <triggerSet triggerWhenObjectsClicked="P" >
     <updateValue name="trip" target="x" newValue="3$x" simplify />
     <updateValue name="quad" target="y" newValue="4$y" simplify />
   </triggerSet>
@@ -723,7 +723,7 @@ describe('TriggerSet Tag Tests', function () {
       <updateValue target="hello" newValue="$hello hello" type="text" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTargets="_triggerset1" triggerWhen="$(P.x)<0 and $(P.y)<0" >
+    <triggerSet label="perform updates" triggerWith="_triggerset1" triggerWhen="$(P.x)<0 and $(P.y)<0" >
       <updateValue target="n" newValue="$n+1" type="number"  />
       <updateValue target="m" newValue="$m-1" type="number"  />
     </triggerSet>
@@ -1076,8 +1076,8 @@ describe('TriggerSet Tag Tests', function () {
     <triggerSet label="perform updates" triggerWhen="$(P.x)>0 and $(P.y)>0">
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
-      <updateValue target="n" newValue="$n+1" type="number" triggerWithTargets="uv" />
-      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="uv" >
+      <updateValue target="n" newValue="$n+1" type="number" triggerWith="uv" />
+      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="uv" >
         <point>(3,4)</point>
       </callAction>
     </triggerSet>

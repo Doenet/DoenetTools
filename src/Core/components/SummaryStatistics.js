@@ -5,10 +5,14 @@ import { roundForDisplay } from '../utils/math';
 export default class SummaryStatistics extends BlockComponent {
   static componentType = "summaryStatistics";
 
-  static acceptTarget = true;
-
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
+
+    attributes.source = {
+      createPrimitiveOfType: "string",
+      createStateVariable: "source",
+      defaultValue: null,
+    }
 
     attributes.column = {
       createComponentOfType: "text",
@@ -150,7 +154,26 @@ export default class SummaryStatistics extends BlockComponent {
       },
     };
 
+    stateVariableDefinitions.sourceName = {
+      stateVariablesDeterminingDependencies: ["source"],
+      returnDependencies: ({stateValues}) => ({
+        sourceName: {
+          dependencyType: "expandTargetName",
+          target: stateValues.source
+        }
+      }),
+      definition({ dependencyValues }) {
+        let sourceName = null;
+        if (dependencyValues.sourceName) {
+          sourceName = dependencyValues.sourceName
+        }
+        return { setValue: { sourceName } }
+      }
+
+    }
+
     stateVariableDefinitions.dataColumn = {
+      stateVariablesDeterminingDependencies: ["sourceName"],
       additionalStateVariablesDefined: [{
         variableName: "columnName",
         public: true,
@@ -159,12 +182,13 @@ export default class SummaryStatistics extends BlockComponent {
         },
         forRenderer: true,
       }],
-      returnDependencies() {
+      returnDependencies({stateValues}) {
         return {
-          targetComponent: {
-            dependencyType: "targetComponent",
-            variableNames: ["dataFrame"],
-            variablesOptional: true
+          dataFrame: {
+            dependencyType: "stateVariable",
+            componentName: stateValues.sourceName,
+            variableName: "dataFrame",
+            variableOptional: true
           },
           desiredColumn: {
             dependencyType: "stateVariable",
@@ -176,8 +200,8 @@ export default class SummaryStatistics extends BlockComponent {
       definition({ dependencyValues }) {
 
         let dataColumn = null, columnName = null;
-        if (dependencyValues.targetComponent?.stateValues.dataFrame) {
-          let dataFrame = dependencyValues.targetComponent.stateValues.dataFrame;
+        if (dependencyValues.dataFrame) {
+          let dataFrame = dependencyValues.dataFrame;
           let colInd = dataFrame.columnNames.indexOf(dependencyValues.desiredColumn);
           if (colInd !== -1) {
             columnName = dependencyValues.desiredColumn;

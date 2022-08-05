@@ -1795,7 +1795,7 @@ describe('ChoiceInput Tag Tests', function () {
     </choiceinput>
 
     <text name="t"></text>
-    <updateValue triggerWithTargets="ci" target="t" newValue="$t $ci" type="text" />
+    <updateValue triggerWith="ci" target="t" newValue="$t $ci" type="text" />
     `}, "*");
     });
 

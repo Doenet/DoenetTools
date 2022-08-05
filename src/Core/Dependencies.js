@@ -3947,15 +3947,15 @@ class AttributeComponentDependency extends Dependency {
         }
       } else {
         let composite = this.dependencyHandler._components[shadows.compositeName];
-        if ("targetAttributesToIgnoreRecursively" in composite.state) {
-          let targetAttributesToIgnoreRecursively = await composite.stateValues.targetAttributesToIgnoreRecursively;
-          if (targetAttributesToIgnoreRecursively.includes(this.attributeName)) {
+        if ("sourceAttributesToIgnoreRecursively" in composite.state) {
+          let sourceAttributesToIgnoreRecursively = await composite.stateValues.sourceAttributesToIgnoreRecursively;
+          if (sourceAttributesToIgnoreRecursively.includes(this.attributeName)) {
             break;
           }
         }
-        if (shadows.firstLevelReplacement && "targetAttributesToIgnore" in composite.state) {
-          let targetAttributesToIgnore = await composite.stateValues.targetAttributesToIgnore;
-          if (targetAttributesToIgnore.includes(this.attributeName)) {
+        if (shadows.firstLevelReplacement && "sourceAttributesToIgnore" in composite.state) {
+          let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
+          if (sourceAttributesToIgnore.includes(this.attributeName)) {
             break;
           }
         }

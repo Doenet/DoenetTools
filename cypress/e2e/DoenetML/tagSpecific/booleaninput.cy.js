@@ -312,7 +312,7 @@ describe('BooleanInput Tag Tests', function () {
     <text>a</text>
     <booleaninput name="bi" />
     <number name="n">1</number>
-    <updateValue triggerWithTargets="bi" target="n" newValue="$n+1" type="number" />
+    <updateValue triggerWith="bi" target="n" newValue="$n+1" type="number" />
     `}, "*");
     });
 
@@ -507,7 +507,7 @@ describe('BooleanInput Tag Tests', function () {
     <p><booleanInput name="asToggleButton" labelIsName /></p>
     <p><booleanInput name="AnotherInput" asToggleButton="$asToggleButton" labelIsName /></p>
 
-    <boolean copyTarget="asToggleButton" name="v" />
+    <boolean copySource="asToggleButton" name="v" />
     `}, "*");
     });
 

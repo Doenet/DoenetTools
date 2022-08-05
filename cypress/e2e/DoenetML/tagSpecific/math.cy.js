@@ -87,7 +87,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<copy source="_math1" targetAttributesToIgnore="" /> + 5</math>
+    <math>3<copy source="_math1" sourceAttributesToIgnore="" /> + 5</math>
     `}, "*");
     });
 
@@ -1538,7 +1538,7 @@ describe('Math Tag Tests', function () {
 
   });
 
-  it('targetsAreFunctionSymbols', () => {
+  it('sourcesAreFunctionSymbols', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1548,8 +1548,8 @@ describe('Math Tag Tests', function () {
 
   <p><math>$f($x)</math></p>
   <p><math>$x($f)</math></p>
-  <p><math targetsAreFunctionSymbols="f">$f($x)</math></p>
-  <p><math targetsAreFunctionSymbols="f">$x($f)</math></p>
+  <p><math sourcesAreFunctionSymbols="f">$f($x)</math></p>
+  <p><math sourcesAreFunctionSymbols="f">$x($f)</math></p>
   `}, "*");
     });
 
@@ -1587,7 +1587,7 @@ describe('Math Tag Tests', function () {
 
   });
 
-  it('copy and overwrite targetsAreFunctionSymbols', () => {
+  it('copy and overwrite sourcesAreFunctionSymbols', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1595,12 +1595,12 @@ describe('Math Tag Tests', function () {
   <p><select assignNames="f">f g h k m n</select></p>
 
   <p><math name="m1">$f(x)</math></p>
-  <p><copy source="m1" targetsAreFunctionSymbols="f" assignNames="m2" /></p>
-  <p><copy source="m2" targetsAreFunctionSymbols="" assignNames="m3" /></p>
+  <p><copy source="m1" sourcesAreFunctionSymbols="f" assignNames="m2" /></p>
+  <p><copy source="m2" sourcesAreFunctionSymbols="" assignNames="m3" /></p>
 
-  <p><math name="m4" targetsAreFunctionSymbols="f">$f(x)</math></p>
-  <p><copy source="m4" targetsAreFunctionSymbols="" assignNames="m5" /></p>
-  <p><copy source="m5" targetsAreFunctionSymbols="f" assignNames="m6" /></p>
+  <p><math name="m4" sourcesAreFunctionSymbols="f">$f(x)</math></p>
+  <p><copy source="m4" sourcesAreFunctionSymbols="" assignNames="m5" /></p>
+  <p><copy source="m5" sourcesAreFunctionSymbols="f" assignNames="m6" /></p>
   `}, "*");
     });
 

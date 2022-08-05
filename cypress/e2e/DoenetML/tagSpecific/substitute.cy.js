@@ -1588,8 +1588,8 @@ describe('Substitute Tag Tests', function () {
       $orig
     </substitute></p>
     <p>
-      <math copyTarget="e1Dec4" name="e1Dig4a" displayDigits="4" />
-      <math copyTarget="e1Dig4" name="e1Dec4a" displayDecimals="4" />
+      <math copySource="e1Dec4" name="e1Dig4a" displayDigits="4" />
+      <math copySource="e1Dig4" name="e1Dec4a" displayDecimals="4" />
     </p>
 
 
@@ -1606,8 +1606,8 @@ describe('Substitute Tag Tests', function () {
       $origDig3
     </substitute></p>
     <p>
-      <math copyTarget="e2Dec4" name="e2Dig4a" displayDigits="4" />
-      <math copyTarget="e2Dig4" name="e2Dec4a" displayDecimals="4" />
+      <math copySource="e2Dec4" name="e2Dig4a" displayDigits="4" />
+      <math copySource="e2Dig4" name="e2Dec4a" displayDecimals="4" />
     </p>
 
     <p><substitute match="a" replacement="0.07394918" assignNames="e3">
@@ -1623,8 +1623,8 @@ describe('Substitute Tag Tests', function () {
       $origDec3
     </substitute></p>
     <p>
-      <math copyTarget="e3Dec4" name="e3Dig4a" displayDigits="4" />
-      <math copyTarget="e3Dig4" name="e3Dec4a" displayDecimals="4" />
+      <math copySource="e3Dec4" name="e3Dig4a" displayDigits="4" />
+      <math copySource="e3Dig4" name="e3Dec4a" displayDecimals="4" />
     </p>
 
     <p><substitute match="a" replacement="0.07394918" assignNames="e4">
@@ -1640,8 +1640,8 @@ describe('Substitute Tag Tests', function () {
       $origPad
     </substitute></p>
     <p>
-      <math copyTarget="e4Dec4" name="e4Dig4a" displayDigits="4" />
-      <math copyTarget="e4Dig4" name="e4Dec4a" displayDecimals="4" />
+      <math copySource="e4Dec4" name="e4Dig4a" displayDigits="4" />
+      <math copySource="e4Dig4" name="e4Dec4a" displayDecimals="4" />
     </p>
 
     `}, "*");

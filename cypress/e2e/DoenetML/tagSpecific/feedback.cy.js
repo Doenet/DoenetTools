@@ -1458,7 +1458,7 @@ describe('Feedback Tag Tests', function () {
     </award>
   </answer>
   
-  <feedback condition="$mi=y" updateWithTarget="ans" name="fback"><p>You typed y!</p></feedback>
+  <feedback condition="$mi=y" updateWith="ans" name="fback"><p>You typed y!</p></feedback>
   `}, "*");
     });
 
@@ -1502,8 +1502,8 @@ describe('Feedback Tag Tests', function () {
   
   <subsection>
     <title>Desired feedback behavior</title>
-    <feedback condition="$got1 and not $got2" updateWithTarget="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
-    <feedback condition="$got2 and not $got1" updateWithTarget="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
+    <feedback condition="$got1 and not $got2" updateWith="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
+    <feedback condition="$got2 and not $got1" updateWith="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
   </subsection>
   <subsection>
     <title>Default feedback behavior</title>

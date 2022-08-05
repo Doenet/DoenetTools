@@ -1916,7 +1916,7 @@ describe('Collect Tag Tests', function () {
       <text>public</text>
     </section>
     <p>Hidden by default: <collect componentTypes="text" source="_section1" /></p>
-    <p>Force to reveal: <collect componentTypes="text" source="_section1" targetAttributesToIgnore="hide" /></p>
+    <p>Force to reveal: <collect componentTypes="text" source="_section1" sourceAttributesToIgnore="hide" /></p>
 
     `}, "*");
     });
@@ -1944,7 +1944,7 @@ describe('Collect Tag Tests', function () {
       <copy source="theP3" assignNames="theP4" />
     </section>
     <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" source="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" source="_section1" sourceAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
     `}, "*");
     });
 
@@ -1977,7 +1977,7 @@ describe('Collect Tag Tests', function () {
       <copy source="theP3" assignNames="theP4" />
     </section>
     <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" source="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" source="_section1" sourceAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
     `}, "*");
     });
 

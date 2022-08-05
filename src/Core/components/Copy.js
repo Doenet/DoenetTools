@@ -80,15 +80,15 @@ export default class Copy extends CompositeComponent {
       defaultValue: null,
       public: true,
     };
-    attributes.targetAttributesToIgnore = {
+    attributes.sourceAttributesToIgnore = {
       createPrimitiveOfType: "stringArray",
-      createStateVariable: "targetAttributesToIgnore",
+      createStateVariable: "sourceAttributesToIgnore",
       defaultValue: ["hide"],
       public: true,
     };
-    attributes.targetAttributesToIgnoreRecursively = {
+    attributes.sourceAttributesToIgnoreRecursively = {
       createPrimitiveOfType: "stringArray",
-      createStateVariable: "targetAttributesToIgnoreRecursively",
+      createStateVariable: "sourceAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
     };
@@ -1544,14 +1544,14 @@ export default class Copy extends CompositeComponent {
     // if creating copy directly from the target component,
     // create a serialized copy of the entire component
 
-    let targetAttributesToIgnore = await component.stateValues.targetAttributesToIgnore;
-    let targetAttributesToIgnoreRecursively = await component.stateValues.targetAttributesToIgnoreRecursively;
+    let sourceAttributesToIgnore = await component.stateValues.sourceAttributesToIgnore;
+    let sourceAttributesToIgnoreRecursively = await component.stateValues.sourceAttributesToIgnoreRecursively;
 
     let serializedReplacements = [
       await replacementSourceComponent.serialize({
         copyAll: !link, copyVariants: !link,
-        targetAttributesToIgnore,
-        targetAttributesToIgnoreRecursively
+        sourceAttributesToIgnore,
+        sourceAttributesToIgnoreRecursively
       })
     ];
 

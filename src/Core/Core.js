@@ -2037,15 +2037,15 @@ export default class Core {
     // we'll copy the replacements of the shadowed composite
     // and make those be the replacements of the shadowing composite
     let serializedReplacements = [];
-    let targetAttributesToIgnore = await component.stateValues.targetAttributesToIgnore;
-    let targetAttributesToIgnoreRecursively = await component.stateValues.targetAttributesToIgnoreRecursively;
+    let sourceAttributesToIgnore = await component.stateValues.sourceAttributesToIgnore;
+    let sourceAttributesToIgnoreRecursively = await component.stateValues.sourceAttributesToIgnoreRecursively;
 
     for (let repl of shadowedComposite.replacements) {
       if (typeof repl === "object") {
         serializedReplacements.push(await repl.serialize(
           {
-            targetAttributesToIgnore,
-            targetAttributesToIgnoreRecursively
+            sourceAttributesToIgnore,
+            sourceAttributesToIgnoreRecursively
           }
         ))
       } else {
@@ -6734,16 +6734,16 @@ export default class Core {
         }
 
         let composite = this._components[shadowingParent.shadows.compositeName];
-        let targetAttributesToIgnore = await composite.stateValues.targetAttributesToIgnore;
-        let targetAttributesToIgnoreRecursively = await composite.stateValues.targetAttributesToIgnoreRecursively;
+        let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
+        let sourceAttributesToIgnoreRecursively = await composite.stateValues.sourceAttributesToIgnoreRecursively;
 
         let shadowingSerializeChildren = [];
         for (let child of newChildren) {
           if (typeof child === "object") {
             shadowingSerializeChildren.push(await child.serialize(
               {
-                targetAttributesToIgnore,
-                targetAttributesToIgnoreRecursively
+                sourceAttributesToIgnore,
+                sourceAttributesToIgnoreRecursively
               }
             ))
           } else {
@@ -7642,15 +7642,15 @@ export default class Core {
         let newSerializedReplacements = [];
 
         let compositeCreatingShadow = this._components[shadowingComponent.shadows.compositeName];
-        let targetAttributesToIgnore = await compositeCreatingShadow.stateValues.targetAttributesToIgnore;
-        let targetAttributesToIgnoreRecursively = await compositeCreatingShadow.stateValues.targetAttributesToIgnoreRecursively;
+        let sourceAttributesToIgnore = await compositeCreatingShadow.stateValues.sourceAttributesToIgnore;
+        let sourceAttributesToIgnoreRecursively = await compositeCreatingShadow.stateValues.sourceAttributesToIgnoreRecursively;
 
         for (let repl of replacementsToShadow) {
           if (typeof repl === "object") {
             newSerializedReplacements.push(await repl.serialize(
               {
-                targetAttributesToIgnore,
-                targetAttributesToIgnoreRecursively
+                sourceAttributesToIgnore,
+                sourceAttributesToIgnoreRecursively
               }
             ));
           } else {
