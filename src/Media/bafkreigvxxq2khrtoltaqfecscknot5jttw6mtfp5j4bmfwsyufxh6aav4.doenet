@@ -21,7 +21,7 @@
     </graph>
 
     <answer name="ans">
-      <award targetsAreResponses="P">
+      <award sourcesAreResponses="P">
         <when>
           $P = ($goalx, $goaly)
         </when>

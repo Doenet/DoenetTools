@@ -8047,6 +8047,21 @@ export default class Core {
       }
     }
 
+    if (!component && actionName === "recordVisibilityChange" && args?.isVisible === false) {
+      // We have an action to record that a component is no longer visible
+      // and the component has been deleted.
+      // Record a visibility changed event
+      // Note: don't know componentType, but componentType isn't preserved when summarize visibility events
+      this.requestRecordEvent({
+        verb: "visibilityChanged",
+        object: {
+          componentName,
+        },
+        result: { isVisible: false }
+      })
+      return this.resolveAction({ actionId: args.actionId });
+    }
+
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
 
   }

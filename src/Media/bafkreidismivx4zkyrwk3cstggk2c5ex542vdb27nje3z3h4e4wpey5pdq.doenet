@@ -455,10 +455,10 @@
       <updateValue target="previewShortcut" newValue="false" type="boolean" />
       <updateValue target="stepCompleted" newValue="0" />
     </triggerSet>
-    <callAction triggerWithTargets="resetTutorial" target="ans" actionName="submitAnswer" />
+    <callAction triggerWith="resetTutorial" target="ans" actionName="submitAnswer" />
     
     <updateValue label="Next" name="next" disabled="$stepCompleted < $step" target="step" newValue="$step+1" />
-    <callAction triggerWithTargets="next" target="ans" actionName="submitAnswer" />
+    <callAction triggerWith="next" target="ans" actionName="submitAnswer" />
 
     <answer name="ans" hide weight="$answerWeight">
       <award credit="$stepCompleted/6"><when>true</when></award>

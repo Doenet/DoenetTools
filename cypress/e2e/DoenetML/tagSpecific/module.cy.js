@@ -451,7 +451,7 @@ describe('Module Tag Tests', function () {
     <text>a</text>
 
     <section><title>First one</title>
-    <copy uri='doenet:cid=bafkreibrch5bxeapksiwnjzu6pkj5ulpfmgbk7l56pjnxdswd7urw34fhq' assignNames="m1" />
+    <copy uri='doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4' assignNames="m1" />
 
     <p>Submitted response for problem 1: <math name="sr1"><copy prop="submittedResponse" target="m1/ans" /></math></p>
     <p>Credit for problem 1: <copy prop="creditAchieved" target="m1/prob" assignNames="ca1" /></p>
@@ -462,7 +462,7 @@ describe('Module Tag Tests', function () {
     <p>Now, let's use initial point <m name="coordsa">(<math name="xa">-3</math>, <math name="ya">3</math>)</m> and the goal point <m name="coordsb">(<math name="xb">7</math>, <math name="yb">-5</math>)</m> </p>
 
     
-    <copy uri='doenet:cid=bafkreibrch5bxeapksiwnjzu6pkj5ulpfmgbk7l56pjnxdswd7urw34fhq' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" size="medium" aspectRatio="1" assignNames="m2" />
+    <copy uri='doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4' title="Find point again" goalX="$xb" GoaLy="$yb" initialX="$xa" initialy="$ya" size="medium" aspectRatio="1" assignNames="m2" />
     <p>Submitted response for problem 2: <math name="sr2"><copy prop="submittedResponse" target="m2/ans" /></math></p>
     <p>Credit for problem 2: <copy prop="creditAchieved" target="m2/prob" assignNames="ca2" /></p>
     </section>
@@ -577,7 +577,7 @@ describe('Module Tag Tests', function () {
     
       <p>Make the goal be <m>($a,$b)</m>.</p>
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
-      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreibrch5bxeapksiwnjzu6pkj5ulpfmgbk7l56pjnxdswd7urw34fhq" assignNames="extMod" />
+      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4" assignNames="extMod" />
     
       <p>Submitted response for problem: <math name="sr"><copy prop="submittedResponse" target="extMod/ans" /></math></p>
       <p>Credit for problem: <copy prop="creditAchieved" target="extMod/prob" assignNames="ca" /></p>
@@ -785,7 +785,7 @@ describe('Module Tag Tests', function () {
     
       <p>Make the goal be <m>($a,$b)</m>.</p>
       <p>Make the <m>x</m> value of the initial point be <m>$c</m>.</p>
-      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreibrch5bxeapksiwnjzu6pkj5ulpfmgbk7l56pjnxdswd7urw34fhq" assignNames="extMod" />
+      <copy size="$size" aspectRatio="$aspectRatio" goalx="$a" goaly="$b" iniTialX="$c" title="Embedded find point" uri="doenet:cid=bafkreigvxxq2khrtoltaqfecscknot5jttw6mtfp5j4bmfwsyufxh6aav4" assignNames="extMod" />
 
     </module>
     
