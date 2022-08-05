@@ -31,6 +31,9 @@ export default React.memo(function Graph(props) {
   const boardJustInitialized = useRef(false);
 
   const previousShowNavigation = useRef(false);
+  let previousXaxisWithLabel = useRef(null);
+  let previousYaxisWithLabel = useRef(null);
+
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -222,6 +225,12 @@ export default React.memo(function Graph(props) {
 
     if (SVs.displayXAxis) {
       if (xaxis.current) {
+        let xaxisWithLabel = Boolean(SVs.xlabel);
+
+        if (xaxisWithLabel !== previousXaxisWithLabel.current) {
+          xaxis.current.setAttribute({ withlabel: xaxisWithLabel });
+          previousXaxisWithLabel.current = xaxisWithLabel;
+        }
         xaxis.current.name = SVs.xlabel;
         xaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayXAxisTickLabels });
         if (xaxis.current.hasLabel) {
@@ -249,6 +258,12 @@ export default React.memo(function Graph(props) {
 
     if (SVs.displayYAxis) {
       if (yaxis.current) {
+        let yaxisWithLabel = Boolean(SVs.ylabel);
+
+        if (yaxisWithLabel !== previousYaxisWithLabel.current) {
+          yaxis.current.setAttribute({ withlabel: yaxisWithLabel });
+          previousYaxisWithLabel.current = yaxisWithLabel;
+        }
         yaxis.current.name = SVs.ylabel;
         yaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayYAxisTickLabels });
         if (yaxis.current.hasLabel) {
@@ -361,7 +376,12 @@ export default React.memo(function Graph(props) {
         anchorx,
         strokeColor: "var(--canvastext)"
       };
+      if (SVs.ylabelHasLatex) {
+        yaxisOptions.label.useMathJax = true;
+      }
     }
+    previousYaxisWithLabel.current = Boolean(SVs.ylabel);
+
     yaxisOptions.strokeColor = "var(--canvastext)";
     yaxisOptions.highlight = false;
 
@@ -509,7 +529,12 @@ export default React.memo(function Graph(props) {
         anchorx,
         strokeColor: "var(--canvastext)"
       };
+      if (SVs.xlabelHasLatex) {
+        xaxisOptions.label.useMathJax = true;
+      }
     }
+    previousXaxisWithLabel.current = Boolean(SVs.xlabel);
+
     xaxisOptions.ticks = {
       ticksDistance: 2,
       label: {
