@@ -539,7 +539,6 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.xmin = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -635,7 +634,6 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.xmax = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -743,7 +741,6 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.ymin = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -839,7 +836,6 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.ymax = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
