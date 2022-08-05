@@ -253,11 +253,19 @@ function substituteDeprecations(serializedComponents) {
   // Note: use lower case for keys
   let deprecatedPropertySubstitutions = {
     tname: "target",
-    triggerwithtnames: "triggerWithTargets",
-    updatewithtname: "updateWithTarget",
+    triggerwithtnames: "triggerWith",
+    updatewithtname: "updateWith",
     paginatortname: "paginator",
     randomizeorder: "shuffleOrder",
-    copytarget: "copySource"
+    copytarget: "copySource",
+    triggerwithtargets: "triggerWith",
+    triggerwhentargetsclicked: "triggerWhenObjectsClicked",
+    fortarget: "forObject",
+    targetattributestoignore: "sourceAttributesToIgnore",
+    targetattributestoignorerecursively: "sourceAttributesToIgnoreRecursively",
+    targetsareresponses: "sourcesAreResponses",
+    updatewithtarget: "updateWith",
+    targetsarefunctionsymbols: "sourcesAreFunctionSymbols",
   }
 
   // Note: use lower case for keys
@@ -269,6 +277,9 @@ function substituteDeprecations(serializedComponents) {
     collect: {
       target: "source",
       tname: "source",
+    },
+    summarystatistics: {
+      target: "source",
     }
   }
 

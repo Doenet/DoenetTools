@@ -8976,7 +8976,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <setup>
-    <award name="aw1" targetsAreResponses="_mathinput1 _mathinput2"><when>$_mathinput1+$_mathinput2 = 3x</when></award>
+    <award name="aw1" sourcesAreResponses="_mathinput1 _mathinput2"><when>$_mathinput1+$_mathinput2 = 3x</when></award>
     <award name="aw2" credit="0.5"><when>$_mathinput1+$_mathinput2 = 3</when></award>
   </setup>
 
@@ -10047,7 +10047,7 @@ describe('Answer Tag Tests', function () {
   Enter enter number larger than 5 or less than 2: 
   <answer>
   <mathinput name="m" />
-  <award targetsAreResponses="m"><when>$m > 5</when></award>
+  <award sourcesAreResponses="m"><when>$m > 5</when></award>
   <award><when>$m < <math>2</math></when></award>
   </answer>
   <p>Submitted response: <copy assignNames="sr" prop="submittedResponse" target="_answer1" /></p>
@@ -16130,7 +16130,7 @@ describe('Answer Tag Tests', function () {
         <p>Say hello: <textinput/></p>
         
         <answer name="a" matchpartial> 
-         <award targetsAreResponses="_mathinput1 _textinput1"><when>
+         <award sourcesAreResponses="_mathinput1 _textinput1"><when>
           $_mathinput1 > 1 
           and
           $_textinput1 = hello
@@ -16419,7 +16419,7 @@ describe('Answer Tag Tests', function () {
         <p>Enter value larger than $min: <mathinput name="val" /></p>
         
         <answer name="a"> 
-         <award targetsAreResponses="val"><when>$val > $min</when></award>
+         <award sourcesAreResponses="val"><when>$val > $min</when></award>
         </answer>
         
         <p>Current response <copy assignNames="cr" prop="currentResponses" target="a" createComponentOfType="math" /></p>
@@ -16669,14 +16669,14 @@ describe('Answer Tag Tests', function () {
   });
 
 
-  it('isResponse from targetsAreResponses is not copied', () => {
+  it('isResponse from sourcesAreResponses is not copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
         <p>a1: <mathinput name="mi" />
         <answer name="ans">
-          <award targetsAreResponses="mi">
+          <award sourcesAreResponses="mi">
             <when><copy prop="value" target="mi" assignNames="v" name="cm" /> = x</when>
           </award>
           <award credit="0.9">
@@ -16733,14 +16733,14 @@ describe('Answer Tag Tests', function () {
 
   });
 
-  it('isResponse from targetsAreResponses is not recursively copied', () => {
+  it('isResponse from sourcesAreResponses is not recursively copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
         <p>a1: <mathinput name="mi" />
         <answer name="ans">
-          <award targetsAreResponses="mi">
+          <award sourcesAreResponses="mi">
             <when><math name="m">$mi</math> = x</when>
           </award>
           <award credit="0.9">
@@ -16806,7 +16806,7 @@ describe('Answer Tag Tests', function () {
         <p>Enter value larger than 3: <mathinput name="val" /></p>
         
         <answer name="a"> 
-         <award targetsAreResponses="val"><when>$val > 3</when></award>
+         <award sourcesAreResponses="val"><when>$val > 3</when></award>
         </answer>
         
         <p>Current response: <copy assignNames="cr" prop="currentResponses" target="a" createComponentOfType="math" /></p>
@@ -17099,8 +17099,8 @@ describe('Answer Tag Tests', function () {
         <mathinput name="mi1" />
         <mathinput name="mi2" />
         <answer nAwardsCredited="$nawards" name="a">
-          <award feedbackText="First is greater than 3" credit="0.4" targetsAreResponses="mi1"><when>$mi1 > 3</when></award>
-          <award feedbackText="Second is greater than 3" credit="0.4" targetsAreResponses="mi2"><when>$mi2 > 3</when></award>
+          <award feedbackText="First is greater than 3" credit="0.4" sourcesAreResponses="mi1"><when>$mi1 > 3</when></award>
+          <award feedbackText="Second is greater than 3" credit="0.4" sourcesAreResponses="mi2"><when>$mi2 > 3</when></award>
           <award feedbackText="Distinct and greater than 3" credit="$creditForCombined"><when>$mi1 > 3 and $mi2 > 3 and $mi1 != $mi2</when></award>
           <award feedbackText="At least the first is a number" credit="0"><when><isNumber>$mi1</isNumber></when></award>
           <award feedbackText="At least the second is a number" credit="0"><when>isnumber($mi2)</when></award>
@@ -17556,9 +17556,9 @@ describe('Answer Tag Tests', function () {
         <mathinput name="mi2" />
         <mathinput name="mi3" />
         <answer nAwardsCredited="3" name="a">
-          <award feedbackText="First is positive" credit="0.2" targetsAreResponses="mi1"><when>$mi1 > 0</when></award>
-          <award feedbackText="Second is positive" credit="0.2" targetsAreResponses="mi2"><when>$mi2 > 0</when></award>
-          <award feedbackText="Third is positive" credit="0.2" targetsAreResponses="mi3"><when>$mi3 > 0</when></award>
+          <award feedbackText="First is positive" credit="0.2" sourcesAreResponses="mi1"><when>$mi1 > 0</when></award>
+          <award feedbackText="Second is positive" credit="0.2" sourcesAreResponses="mi2"><when>$mi2 > 0</when></award>
+          <award feedbackText="Third is positive" credit="0.2" sourcesAreResponses="mi3"><when>$mi3 > 0</when></award>
           <award feedbackText="First is larger than second" credit="0.1"><when>$mi1 > $mi2</when></award>
           <award feedbackText="First is larger than third" credit="0.1"><when>$mi1 > $mi3</when></award>
           <award feedbackText="Second is larger than third" credit="0.1"><when>$mi2 > $mi3</when></award>
@@ -17846,7 +17846,7 @@ describe('Answer Tag Tests', function () {
         <mathinput name="mi2" />
         <mathinput name="mi3" />
         <answer nAwardsCredited="3" name="a">
-          <award targetsAreResponses="mi1 mi2 mi3" matchPartial>
+          <award sourcesAreResponses="mi1 mi2 mi3" matchPartial>
             <when>$mi1=x and $mi2=y and $mi3=z</when>
           </award>
           <award credit="0" feedbackText="Nothing is in the right spot">
@@ -18780,24 +18780,24 @@ describe('Answer Tag Tests', function () {
 
   <p>Move point to <m>(3,4)</m>: </p>
   <p><answer>
-    <award targetsAreResponses="A">
+    <award sourcesAreResponses="A">
       <when>$A = (3,4)</when>
     </award>
   </answer></p>
   <p><answer disableAfterCorrect>
-    <award targetsAreResponses="A">
+    <award sourcesAreResponses="A">
       <when>$A = (3,4)</when>
     </award>
   </answer></p>
 
   <p>Move point to <m>(-5,6)</m>: </p>
   <p><answer>
-    <award targetsAreResponses="A">
+    <award sourcesAreResponses="A">
       <when>$A = (-5,6)</when>
     </award>
   </answer></p>
   <p><answer disableAfterCorrect>
-    <award targetsAreResponses="A">
+    <award sourcesAreResponses="A">
       <when>$A = (-5,6)</when>
     </award>
   </answer></p>
@@ -18806,18 +18806,18 @@ describe('Answer Tag Tests', function () {
 
   <p>Enter <m>x</m> in above blank.</p>
   <p><answer>
-    <award targetsAreResponses="mi"><when>$mi=x</when></award>
+    <award sourcesAreResponses="mi"><when>$mi=x</when></award>
   </answer></p>
   <p><answer disableAfterCorrect>
-    <award targetsAreResponses="mi"><when>$mi=x</when></award>
+    <award sourcesAreResponses="mi"><when>$mi=x</when></award>
   </answer></p>
 
   <p>Enter <m>y</m> in above blank.</p>
   <p><answer>
-    <award targetsAreResponses="mi"><when>$mi=y</when></award>
+    <award sourcesAreResponses="mi"><when>$mi=y</when></award>
   </answer></p>
   <p><answer disableAfterCorrect>
-    <award targetsAreResponses="mi"><when>$mi=y</when></award>
+    <award sourcesAreResponses="mi"><when>$mi=y</when></award>
   </answer></p>
 
    `}, "*");
@@ -19509,8 +19509,8 @@ describe('Answer Tag Tests', function () {
   <p>
   <mathinput name="mi" />
   <answer name="an">
-    <award name="aw" targetsAreResponses="mi"><when>$mi=1.1</when></award>
-    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" createComponentOfType="award" targetsAreResponses="" />
+    <award name="aw" sourcesAreResponses="mi"><when>$mi=1.1</when></award>
+    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" createComponentOfType="award" sourcesAreResponses="" />
   </answer></p>
   <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
   <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
@@ -20537,7 +20537,7 @@ describe('Answer Tag Tests', function () {
   </graph>
   <answer nAwardsCredited="2">
     <award credit="0.6"><math>x^2</math></award>
-    <award credit="0.4" targetsAreResponses="P">
+    <award credit="0.4" sourcesAreResponses="P">
       <when><copy prop="x" target="P"/> > 0</when>
     </award>
   </answer>

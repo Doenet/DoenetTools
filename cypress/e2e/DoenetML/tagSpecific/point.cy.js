@@ -567,12 +567,12 @@ describe('Point Tag Tests', function () {
     <point name="the_SiXiTH-Point" labelIsName>(9,0)</point>
   </graph>
 
-  <p><text copyTarget="the_first_point" copyProp="label" name="l1" /></p>
-  <p><label copyTarget="the-second-point" copyProp="label" name="l2" /></p>
-  <p><text copyTarget="theThirdPoint" copyProp="label" name="l3" /></p>
-  <p><label copyTarget="TheFourthPoint" copyProp="label" name="l4" /></p>
-  <p><text copyTarget="the-FIFTH_Point" copyProp="label" name="l5" /></p>
-  <p><label copyTarget="the_SiXiTH-Point" copyProp="label" name="l6" /></p>
+  <p><text copySource="the_first_point" copyProp="label" name="l1" /></p>
+  <p><label copySource="the-second-point" copyProp="label" name="l2" /></p>
+  <p><text copySource="theThirdPoint" copyProp="label" name="l3" /></p>
+  <p><label copySource="TheFourthPoint" copyProp="label" name="l4" /></p>
+  <p><text copySource="the-FIFTH_Point" copyProp="label" name="l5" /></p>
+  <p><label copySource="the_SiXiTH-Point" copyProp="label" name="l6" /></p>
     `}, "*");
     });
 
@@ -11607,7 +11607,7 @@ describe('Point Tag Tests', function () {
       </point>
     </graph>
     <graph>
-      <point name="Q" displayDigits="3" padZeros copyTarget="P">
+      <point name="Q" displayDigits="3" padZeros copySource="P">
         <label>No latex: x^<text><copy prop="x" target="Q"/></text> + y^<text><copy target="Q" prop="y" /></text></label>
       </point>
     </graph>
@@ -11695,26 +11695,26 @@ describe('Point Tag Tests', function () {
     <p><updateValue target="P1" prop="label" newValue="P1" type="text" name="revert1" >
       <label>Revert value 1</label>
     </updateValue></p>
-    <p>The label 1: <label copyTarget="P1" copyprop="label" name="theLabel1" /></p>
+    <p>The label 1: <label copySource="P1" copyprop="label" name="theLabel1" /></p>
 
     <p>Change label 2: <textinput bindValueTo="$(P2.label)" name="ti2" /></p>
     <p><updateValue target="P2" prop="label" newValue="P2" type="text" name="revert2" >
       <label>Revert value 2</label>
     </updateValue></p>
-    <p>The label 2: <label copyTarget="P2" copyprop="label" name="theLabel2" /></p>
+    <p>The label 2: <label copySource="P2" copyprop="label" name="theLabel2" /></p>
 
     <p>Change label 3: <textinput bindValueTo="$(P3.label)" name="ti3" /></p>
     <p><updateValue target="P3" prop="label" newValue="\\frac{P}{3}" type="text" name="revert3" >
       <label>Revert value 3</label>
     </updateValue></p>
-    <p>The label 3: <label copyTarget="P3" copyprop="label" name="theLabel3" /></p>
+    <p>The label 3: <label copySource="P3" copyprop="label" name="theLabel3" /></p>
     
 
     <p>Change label 4: <textinput bindValueTo="$(P4.label)" name="ti4" /></p>
     <p><updateValue target="P4" prop="label" newValue="\\frac{P}{4}" type="text" name="revert4" >
       <label>Revert value 4</label>
     </updateValue></p>
-    <p>The label 4: <label copyTarget="P4" copyprop="label" name="theLabel4" /></p>
+    <p>The label 4: <label copySource="P4" copyprop="label" name="theLabel4" /></p>
     
     `}, "*");
     });

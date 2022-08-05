@@ -1129,7 +1129,7 @@ describe('Module Tag Tests', function () {
 
   })
 
-  it('copy targetsAreResponses with parent namespace target', () => {
+  it('copy sourcesAreResponses with parent namespace target', () => {
 
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1159,7 +1159,7 @@ describe('Module Tag Tests', function () {
           </graph>
       
           <answer name="ans" newNamespace>
-            <award targetsAreResponses="../P">
+            <award sourcesAreResponses="../P">
               <when>
                 $(../P) = ($(../goalx), $(../goaly))
               </when>

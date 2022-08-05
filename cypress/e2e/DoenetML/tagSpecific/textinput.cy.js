@@ -912,7 +912,7 @@ describe('TextInput Tag Tests', function () {
     <copy prop="immediateValue" target="ti" assignNames="iv" />
 
     <text name="h">hello</text>
-    <updateValue triggerWithTargets="ti" target="h" newValue="$h$ti" type="text" />
+    <updateValue triggerWith="ti" target="h" newValue="$h$ti" type="text" />
     `}, "*");
     });
 

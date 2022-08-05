@@ -495,7 +495,7 @@ describe('UpdateValue Tag Tests', function () {
     <math name="y">y</math>
     
     <updateValue name="trip" target="x" newValue="3$x" label="update" simplify />
-    <updateValue name="quad" target="y" newValue="4$y" triggerWithTargets="trip" simplify />
+    <updateValue name="quad" target="y" newValue="4$y" triggerWith="trip" simplify />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -545,7 +545,7 @@ describe('UpdateValue Tag Tests', function () {
     
     <updateValue name="doub" target="z" newValue="2$z" label="update" simplify />
     <updateValue name="trip" target="x" newValue="3$x" label="update" simplify />
-    <updateValue name="quad" target="y" newValue="4$y" triggerWithTargets="doub trip" simplify />
+    <updateValue name="quad" target="y" newValue="4$y" triggerWith="doub trip" simplify />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -731,7 +731,7 @@ describe('UpdateValue Tag Tests', function () {
     </graph>
     <math name="x">x</math>
     
-    <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhenTargetsClicked="P" />
+    <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhenObjectsClicked="P" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -813,7 +813,7 @@ describe('UpdateValue Tag Tests', function () {
     <math name="y">y</math>
     
     <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhen="$(P.x)>0 and $(P.y)>0" />
-    <updateValue name="quad" target="y" newValue="4$y" simplify triggerWithTargets="trip"  />
+    <updateValue name="quad" target="y" newValue="4$y" simplify triggerWith="trip"  />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -962,7 +962,7 @@ describe('UpdateValue Tag Tests', function () {
     <math name="x">x</math>
     
     <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhen="$(P.x)>0 and $(P.y)>0" />
-    <updateValue name="quad" target="x" newValue="4$x" simplify triggerWithTargets="trip"  />
+    <updateValue name="quad" target="x" newValue="4$x" simplify triggerWith="trip"  />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -1083,7 +1083,7 @@ describe('UpdateValue Tag Tests', function () {
     <math name="y">y</math>
     
     <updateValue name="trip" target="x" newValue="3$x" simplify triggerWhen="$(P.x)>0 and $(P.y)>0" />
-    <updateValue name="quad" target="y" newValue="4$y" simplify triggerWithTargets="trip" triggerWhen="$(P.x)<0 and $(P.y)<0" />
+    <updateValue name="quad" target="y" newValue="4$y" simplify triggerWith="trip" triggerWhen="$(P.x)<0 and $(P.y)<0" />
     `}, "*");
     });
     cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
@@ -1274,7 +1274,7 @@ describe('UpdateValue Tag Tests', function () {
 
     </triggerSet>
 
-    <updateValue target="n" newValue="$n+1" type="number" triggerWithTargets="_triggerset1" />
+    <updateValue target="n" newValue="$n+1" type="number" triggerWith="_triggerset1" />
 
     `}, "*");
     });
@@ -1316,7 +1316,7 @@ describe('UpdateValue Tag Tests', function () {
       <updateValue target="hello" newValue="$hello hello" type="text" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTargets="_triggerset1" >
+    <triggerSet label="perform updates" triggerWith="_triggerset1" >
       <updateValue target="n" newValue="$n+1" type="number"  />
       <updateValue target="m" newValue="$m-1" type="number"  />
     </triggerSet>
@@ -1519,7 +1519,7 @@ describe('UpdateValue Tag Tests', function () {
       <updateValue target="hello" newValue="$hello hello" type="text" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTargets="_triggerset1" triggerWhen="$(P.x)<0 and $(P.y)<0" >
+    <triggerSet label="perform updates" triggerWith="_triggerset1" triggerWhen="$(P.x)<0 and $(P.y)<0" >
       <updateValue target="n" newValue="$n+1" type="number"  />
       <updateValue target="m" newValue="$m-1" type="number"  />
     </triggerSet>
@@ -1771,7 +1771,7 @@ describe('UpdateValue Tag Tests', function () {
     <triggerSet label="perform updates" triggerWhen="$(P.x)>0 and $(P.y)>0">
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
-      <updateValue target="n" newValue="$n+1" type="number" triggerWithTargets="uv" />
+      <updateValue target="n" newValue="$n+1" type="number" triggerWith="uv" />
     </triggerSet>
 
     <updateValue name="uv" target="m" newValue="$m-1" type="number" triggerWhen="$(P.x)<0 and $(P.y)<0" />
