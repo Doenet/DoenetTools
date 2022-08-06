@@ -1398,7 +1398,7 @@ describe('CobwebPolyline Tag Tests', function () {
     <function name="f">2x-x^2/3</function>
   </setup>
   
-  <copy uri="doenet:cid=bafkreibvb6qkf2slrdvetqvgmeavuounifmatugezfxj2hbqqmtyy55mhq" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
+  <copy uri="doenet:cid=bafkreidismivx4zkyrwk3cstggk2c5ex542vdb27nje3z3h4e4wpey5pdq" assignNames="cobwebTutorial" function="$f" xmin="-0.8" xmax="7" ymin="-1" ymax="4" width="320px" height="200px" attractThreshold="0.2" showNavigation="false" nIterationsRequired="3" initialValueDx="0.2" x0="1" />
  
   <p>Credit achieved: <copy source="_document1" prop="creditAchieved" assignNames="ca" /></p>
   `}, "*");

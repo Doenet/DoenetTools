@@ -276,7 +276,9 @@ export default function PageViewer(props) {
         args,
       }
 
-      coreWorker.current.postMessage({
+
+      // Note: it is possible that core has been terminated
+      coreWorker.current?.postMessage({
         messageType: "requestAction",
         args: actionArgs
       });
