@@ -597,6 +597,10 @@ export default React.memo(function Graph(props) {
     // (Other changes are simply to account for fact that
     // don't have access to Mat and Type)
     xaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
+
+      // First change from JSXgraph: increase minTickDistance for larger numbers
+      this.minTicksDistance = 2*Math.max(2.5, Math.log10(Math.abs(bounds.lower)), Math.log10(Math.abs(bounds.upper)));
+
       var tickPosition, eps2 = 1E-6, deltas,
         // Distance between two major ticks in user coordinates
         ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta), ev_it = true, ev_mt = 4;
@@ -610,7 +614,7 @@ export default React.memo(function Graph(props) {
       if (ev_it && this.minTicksDistance > 1E-6) {
         ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
 
-        // Only change from JSXgraph function:
+        // Second change from JSXgraph function:
         // check if ticksDelta is 2*10^n for some integer n
         let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
         if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
