@@ -8,7 +8,7 @@ function cesc(s) {
   return s;
 }
 
-describe('matches patterns answer tests', function () {
+describe('matching patterns answer tests', function () {
 
   beforeEach(() => {
     cy.clearIndexedDB();

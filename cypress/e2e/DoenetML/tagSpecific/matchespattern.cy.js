@@ -206,7 +206,6 @@ describe('MatchesPattern Tag Tests', function () {
 
   })
 
-
   it('match quadratic pattern, base test', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -494,6 +493,48 @@ describe('MatchesPattern Tag Tests', function () {
         }
       }
     }
+
+  })
+
+  it('handle case with no pattern specified', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><matchesPattern name="mp">hello</matchesPattern></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mp').should('have.text', 'false')
+
+  })
+
+  it('works with string or multiple children', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p><matchesPattern name="mps" pattern="()^()">e^(x+2)</matchesPattern></p>
+  <p>Matches: <copy source="mps.patternMatches" assignNames="mpsm1 mpsm2" /></p>
+  <p><matchesPattern name="mpm" pattern="()^()">e^(<math>x</math>+<math>2</math>)</matchesPattern></p>
+  <p>Matches: <copy source="mpm.patternMatches" assignNames="mpmm1 mpmm2" /></p>
+
+
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mps').should('have.text', 'true')
+    cy.get('#\\/mpsm1 .mjx-mrow').eq(0).should('have.text', 'e')
+    cy.get('#\\/mpsm2 .mjx-mrow').eq(0).should('have.text', 'x+2')
+    cy.get('#\\/mpm').should('have.text', 'true')
+    cy.get('#\\/mpmm1 .mjx-mrow').eq(0).should('have.text', 'e')
+    cy.get('#\\/mpmm2 .mjx-mrow').eq(0).should('have.text', 'x+2')
 
   })
 
