@@ -45,7 +45,7 @@ export default function SelectedBank() {
   };
 
   const addToast = useToast();
-  let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
+  let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
     <FontAwesomeIcon icon={faLayerGroup} /> {itemObj.label} 
   </h2>)
 

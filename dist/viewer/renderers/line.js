@@ -28,12 +28,8 @@ export default React.memo(function Line(props) {
       return;
     }
     let fixed = !SVs.draggable || SVs.fixed;
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
     var jsxLineAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -47,10 +43,11 @@ export default React.memo(function Line(props) {
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
       highlight: !fixed
     };
-    if (SVs.labelIsLatex) {
-      jsxLineAttributes.label = {useMathJax: true};
-    } else {
-      jsxLineAttributes.label = {};
+    jsxLineAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxLineAttributes.label.useMathJax = true;
     }
     if (SVs.applyStyleToLabel) {
       jsxLineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
@@ -63,7 +60,9 @@ export default React.memo(function Line(props) {
     ];
     let newLineJXG = board.create("line", through, jsxLineAttributes);
     newLineJXG.on("drag", function(e) {
-      dragged.current = true;
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
+      }
       calculatePointPositions(e);
       callAction({
         action: actions.moveLine,
@@ -89,6 +88,13 @@ export default React.memo(function Line(props) {
       } else if (SVs.switchable && !SVs.fixed) {
         callAction({
           action: actions.switchLine
+        });
+        callAction({
+          action: actions.lineClicked
+        });
+      } else {
+        callAction({
+          action: actions.lineClicked
         });
       }
     });
@@ -172,11 +178,7 @@ export default React.memo(function Line(props) {
       if (lineJXG.current.visProp.dash !== newDash) {
         lineJXG.current.visProp.dash = newDash;
       }
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      lineJXG.current.name = label;
+      lineJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
         lineJXG.current.setAttribute({withlabel});
@@ -202,7 +204,7 @@ export default React.memo(function Line(props) {
   if (SVs.hidden) {
     return null;
   }
-  let mathJaxify = "\\(" + me.fromAst(SVs.equation).toLatex() + "\\)";
+  let mathJaxify = "\\(" + SVs.latex + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {

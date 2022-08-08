@@ -8,6 +8,7 @@ module.exports = {
     'react-spring': '@react-spring/web',
   },
   mount: {
+    'cypress_php/api': '/cyapi',
     'src/Viewer': '/viewer',
     'src/Tools/temp': '/temp',
     'src/Tools/test': '/test',
@@ -42,6 +43,15 @@ module.exports = {
     //internal docker network mapping
     {
       src: '/api/.*',
+      dest: (req, res) => {
+        return proxy.web(req, res, {
+          hostname: 'apache',
+          port: 80,
+        });
+      },
+    },
+    {
+      src: '/cyapi/.*',
       dest: (req, res) => {
         return proxy.web(req, res, {
           hostname: 'apache',

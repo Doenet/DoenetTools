@@ -1,11 +1,26 @@
-import React, {useRef} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Section(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
@@ -189,21 +204,30 @@ export default React.memo(function Section(props) {
   }
   switch (SVs.containerTag) {
     case "aside":
-      return /* @__PURE__ */ React.createElement("aside", {
+      return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+        partialVisibility: true,
+        onChange: onChangeVisibility
+      }, /* @__PURE__ */ React.createElement("aside", {
         id: name,
         style: {margin: "12px 0"}
-      }, " ", content, " ");
+      }, " ", content, " "));
     case "div":
-      return /* @__PURE__ */ React.createElement("div", {
+      return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+        partialVisibility: true,
+        onChange: onChangeVisibility
+      }, /* @__PURE__ */ React.createElement("div", {
         id: name,
         style: {margin: "12px 0"}
-      }, " ", content, " ");
+      }, " ", content, " "));
     case "none":
       return /* @__PURE__ */ React.createElement(React.Fragment, null, content);
     default:
-      return /* @__PURE__ */ React.createElement("section", {
+      return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+        partialVisibility: true,
+        onChange: onChangeVisibility
+      }, /* @__PURE__ */ React.createElement("section", {
         id: name,
         style: {margin: "12px 0"}
-      }, " ", content, " ");
+      }, " ", content, " "));
   }
 });

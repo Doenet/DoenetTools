@@ -4,6 +4,7 @@ export default class CodeEditor extends BlockComponent {
   static componentType = "codeEditor";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static renderChildren = true;
 
@@ -288,6 +289,21 @@ export default class CodeEditor extends BlockComponent {
       definition: () => ({ setValue: { componentType: "text" } })
     }
 
+    stateVariableDefinitions.viewerChild = {
+      returnDependencies: () => ({
+        viewerChild: {
+          dependencyType: "child",
+          childGroups: ["codeViewers"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.viewerChild.length > 0) {
+          return { setValue: { viewerChild: dependencyValues.viewerChild } }
+        } else {
+          return { setValue: { viewerChild: null } }
+        }
+      }
+    }
 
     return stateVariableDefinitions;
 
@@ -395,10 +411,23 @@ export default class CodeEditor extends BlockComponent {
     }
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     updateImmediateValue: this.updateImmediateValue.bind(this),
     updateValue: this.updateValue.bind(this),
     updateComponents: this.updateComponents.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 }

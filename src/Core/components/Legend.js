@@ -40,36 +40,102 @@ export default class Legend extends GraphicalComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-
-    stateVariableDefinitions.legendElements = {
-      forRenderer: true,
+    stateVariableDefinitions.graphicalElementNames = {
       returnDependencies: () => ({
         graphAncestor: {
           dependencyType: "ancestor",
           componentType: "graph",
           variableNames: ["graphicalDescendants"]
         },
-        labelChildren: {
-          dependencyType: "child",
-          childGroups: ["labels"],
-          variableNames: ["value", "hasLatex", "forTargetComponentName"]
-        },
-        displayClosedSwatches: {
-          dependencyType: "stateVariable",
-          variableName: "displayClosedSwatches"
-        }
       }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.graphAncestor) {
+          return {
+            setValue: {
+              graphicalElementNames: dependencyValues.graphAncestor.stateValues.graphicalDescendants
+                .map(x => x.componentName)
+            }
+          }
+        } else {
+          return { setValue: { graphicalElementNames: null } }
+        }
+      }
+
+    }
+
+    stateVariableDefinitions.legendElements = {
+      forRenderer: true,
+      stateVariablesDeterminingDependencies: ["graphicalElementNames"],
+      returnDependencies: ({ stateValues }) => {
+
+        let dependencies = {
+          labelChildren: {
+            dependencyType: "child",
+            childGroups: ["labels"],
+            variableNames: ["value", "hasLatex", "forObjectComponentName"]
+          },
+          displayClosedSwatches: {
+            dependencyType: "stateVariable",
+            variableName: "displayClosedSwatches"
+          }
+        }
+
+        if (stateValues.graphicalElementNames) {
+          dependencies.numGraphicalElements = {
+            dependencyType: "value",
+            value: stateValues.graphicalElementNames.length
+          }
+          for (let [ind, cName] of stateValues.graphicalElementNames.entries()) {
+            dependencies[`graphicalElement${ind}`] = {
+              dependencyType: "multipleStateVariables",
+              componentName: cName,
+              variableNames: ["selectedStyle", "styleNumber"],
+            }
+            dependencies[`graphicalElement${ind}AdapterSource`] = {
+              dependencyType: "adapterSource",
+              componentName: cName,
+            }
+            dependencies[`graphicalElement${ind}ShadowSource`] = {
+              dependencyType: "shadowSourceIdentity",
+              componentName: cName,
+            }
+            
+          }
+        }
+
+        return dependencies;
+      },
       definition({ dependencyValues, componentInfoObjects }) {
 
         let legendElements = [];
 
-        if (dependencyValues.graphAncestor) {
+        if (dependencyValues.numGraphicalElements > 0) {
 
           let pointStyleNumbersFound = [];
           let closedPathStyleNumbersFound = [];
           let otherStyleNumbersFound = [];
 
-          let graphicalDescendantsLeft = [...dependencyValues.graphAncestor.stateValues.graphicalDescendants]
+          let graphicalDescendantsLeft = [];
+          for (let ind = 0; ind < dependencyValues.numGraphicalElements; ind++) {
+            let graphicalElement = dependencyValues[`graphicalElement${ind}`];
+            let adapter = dependencyValues[`graphicalElement${ind}AdapterSource`];
+            if (adapter) {
+              // if have adapter, use that componentName instead,
+              // since that would be the name used in forObjectComponentName
+              graphicalElement = { ...graphicalElement };
+              graphicalElement.componentName = adapter.componentName;
+            }
+            if(graphicalElement.componentName.slice(0,3) === "/__") {
+              let shadowSource = dependencyValues[`graphicalElement${ind}ShadowSource`];
+              if(shadowSource) {
+              // if have shadow source, use that componentName instead,
+              graphicalElement = { ...graphicalElement };
+              graphicalElement.componentName = shadowSource.componentName;
+              }
+            }
+            graphicalDescendantsLeft.push(graphicalElement);
+          }
+
           let graphicalDescendantComponentNamesLeft = graphicalDescendantsLeft.map(x => x.componentName);
 
 
@@ -80,13 +146,13 @@ export default class Legend extends GraphicalComponent {
               value: labelChild.stateValues.value,
               hasLatex: labelChild.stateValues.hasLatex
             }
-            if (labelChild.stateValues.forTargetComponentName) {
-              labelsByComponentName[labelChild.stateValues.forTargetComponentName] = labelInfo;
+            if (labelChild.stateValues.forObjectComponentName) {
+              labelsByComponentName[labelChild.stateValues.forObjectComponentName] = labelInfo;
 
               // in this first pass, we only mark the styleNumber as being taken
               // so that in the second pass, undesignated labels skip this style number
               // even if they come before this label
-              let ind = graphicalDescendantComponentNamesLeft.indexOf(labelChild.stateValues.forTargetComponentName);
+              let ind = graphicalDescendantComponentNamesLeft.indexOf(labelChild.stateValues.forObjectComponentName);
               if (ind !== -1) {
                 let comp = graphicalDescendantsLeft[ind];
                 if (componentInfoObjects.isInheritedComponentType({
@@ -104,7 +170,7 @@ export default class Legend extends GraphicalComponent {
             }
             labelsInOrder.push({
               labelInfo,
-              forTarget: labelChild.stateValues.forTargetComponentName
+              forObject: labelChild.stateValues.forObjectComponentName
             })
 
           }
@@ -114,8 +180,8 @@ export default class Legend extends GraphicalComponent {
 
           for (let label of labelsInOrder) {
             let componentForLabel;
-            if (label.forTarget) {
-              let ind = graphicalDescendantComponentNamesLeft.indexOf(label.forTarget);
+            if (label.forObject) {
+              let ind = graphicalDescendantComponentNamesLeft.indexOf(label.forObject);
               if (ind !== -1) {
                 componentForLabel = graphicalDescendantsLeft[ind];
                 graphicalDescendantsLeft.splice(ind, 1);

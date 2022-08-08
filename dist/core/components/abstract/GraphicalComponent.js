@@ -1,5 +1,6 @@
 import BaseComponent from './BaseComponent.js';
 import { returnSelectedStyleStateVariableDefinition } from '../../utils/style.js';
+import { returnLabelStateVariableDefinitions } from '../../utils/label.js';
 
 export default class GraphicalComponent extends BaseComponent {
   static componentType = "_graphical";
@@ -7,11 +8,13 @@ export default class GraphicalComponent extends BaseComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
     attributes.label = {
-      createComponentOfType: "_textOrLatexFromInline",
-      createStateVariable: "label",
-      defaultValue: "",
+      createComponentOfType: "label",
+    };
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true
     };
     attributes.showLabel = {
       createComponentOfType: "boolean",
@@ -39,6 +42,15 @@ export default class GraphicalComponent extends BaseComponent {
   }
 
 
+  static returnChildGroups() {
+
+    return [{
+      group: "labels",
+      componentTypes: ["label"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
@@ -47,19 +59,9 @@ export default class GraphicalComponent extends BaseComponent {
 
     Object.assign(stateVariableDefinitions, selectedStyleDefinition);
 
-    stateVariableDefinitions.labelIsLatex = {
-      forRenderer: true,
-      returnDependencies: () => ({
-        labelAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "label",
-          variableNames: ["isLatex"]
-        }
-      }),
-      definition({ dependencyValues }) {
-        return { setValue: { labelIsLatex: dependencyValues.labelAttr?.stateValues.isLatex === true } }
-      }
-    }
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     return stateVariableDefinitions;
   }

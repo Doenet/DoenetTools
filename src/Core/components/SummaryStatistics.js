@@ -5,10 +5,14 @@ import { roundForDisplay } from '../utils/math';
 export default class SummaryStatistics extends BlockComponent {
   static componentType = "summaryStatistics";
 
-  static acceptTarget = true;
-
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
+
+    attributes.source = {
+      createPrimitiveOfType: "string",
+      createStateVariable: "source",
+      defaultValue: null,
+    }
 
     attributes.column = {
       createComponentOfType: "text",
@@ -32,9 +36,6 @@ export default class SummaryStatistics extends BlockComponent {
 
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     }
     attributes.displaySmallAsZero = {
       createComponentOfType: "number",
@@ -59,6 +60,64 @@ export default class SummaryStatistics extends BlockComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
+      }
+    }
 
     stateVariableDefinitions.statisticsToDisplay = {
       public: true,
@@ -95,7 +154,26 @@ export default class SummaryStatistics extends BlockComponent {
       },
     };
 
+    stateVariableDefinitions.sourceName = {
+      stateVariablesDeterminingDependencies: ["source"],
+      returnDependencies: ({stateValues}) => ({
+        sourceName: {
+          dependencyType: "expandTargetName",
+          target: stateValues.source
+        }
+      }),
+      definition({ dependencyValues }) {
+        let sourceName = null;
+        if (dependencyValues.sourceName) {
+          sourceName = dependencyValues.sourceName
+        }
+        return { setValue: { sourceName } }
+      }
+
+    }
+
     stateVariableDefinitions.dataColumn = {
+      stateVariablesDeterminingDependencies: ["sourceName"],
       additionalStateVariablesDefined: [{
         variableName: "columnName",
         public: true,
@@ -104,12 +182,13 @@ export default class SummaryStatistics extends BlockComponent {
         },
         forRenderer: true,
       }],
-      returnDependencies() {
+      returnDependencies({stateValues}) {
         return {
-          targetComponent: {
-            dependencyType: "targetComponent",
-            variableNames: ["dataFrame"],
-            variablesOptional: true
+          dataFrame: {
+            dependencyType: "stateVariable",
+            componentName: stateValues.sourceName,
+            variableName: "dataFrame",
+            variableOptional: true
           },
           desiredColumn: {
             dependencyType: "stateVariable",
@@ -121,8 +200,8 @@ export default class SummaryStatistics extends BlockComponent {
       definition({ dependencyValues }) {
 
         let dataColumn = null, columnName = null;
-        if (dependencyValues.targetComponent?.stateValues.dataFrame) {
-          let dataFrame = dependencyValues.targetComponent.stateValues.dataFrame;
+        if (dependencyValues.dataFrame) {
+          let dataFrame = dependencyValues.dataFrame;
           let colInd = dataFrame.columnNames.indexOf(dependencyValues.desiredColumn);
           if (colInd !== -1) {
             columnName = dependencyValues.desiredColumn;
@@ -245,7 +324,7 @@ export default class SummaryStatistics extends BlockComponent {
       definition({ dependencyValues }) {
         let variance = null;
         if (dependencyValues.dataColumn) {
-          variance = me.math.var(dependencyValues.dataColumn)
+          variance = me.math.variance(dependencyValues.dataColumn)
         }
 
         return { setValue: { variance } };
@@ -594,5 +673,21 @@ export default class SummaryStatistics extends BlockComponent {
 
   }
 
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
 
 }

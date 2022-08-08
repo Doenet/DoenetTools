@@ -1,3 +1,4 @@
+import { returnLabelStateVariableDefinitions } from '../utils/label';
 import InlineComponent from './abstract/InlineComponent';
 
 export default class triggerSet extends InlineComponent {
@@ -8,11 +9,14 @@ export default class triggerSet extends InlineComponent {
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
     attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "update value",
+      createComponentOfType: "label",
+    };
+
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true,
     };
 
     attributes.triggerWhen = {
@@ -22,7 +26,11 @@ export default class triggerSet extends InlineComponent {
       triggerActionOnChange: "triggerActionsIfTriggerNewlyTrue"
     }
 
-    attributes.triggerWithTargets = {
+    attributes.triggerWith = {
+      createPrimitiveOfType: "string"
+    }
+
+    attributes.triggerWhenObjectsClicked = {
       createPrimitiveOfType: "string"
     }
 
@@ -34,6 +42,9 @@ export default class triggerSet extends InlineComponent {
     return [{
       group: "updateValuesCallActions",
       componentTypes: ["updateValue", "callAction"]
+    }, {
+      group: "labels",
+      componentTypes: ["label"]
     }]
 
   }
@@ -43,6 +54,10 @@ export default class triggerSet extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.updateValueAndActionsToTrigger = {
       returnDependencies: () => ({
@@ -60,11 +75,15 @@ export default class triggerSet extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.triggerWithTargets = {
+    stateVariableDefinitions.triggerWith = {
       returnDependencies: () => ({
-        triggerWithTargets: {
+        triggerWith: {
           dependencyType: "attributePrimitive",
-          attributeName: "triggerWithTargets"
+          attributeName: "triggerWith"
+        },
+        triggerWhenObjectsClicked: {
+          dependencyType: "attributePrimitive",
+          attributeName: "triggerWhenObjectsClicked"
         },
         triggerWhen: {
           dependencyType: "attributeComponent",
@@ -72,46 +91,73 @@ export default class triggerSet extends InlineComponent {
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen || dependencyValues.triggerWithTargets === null) {
-          return { setValue: { triggerWithTargets: null } }
+        if (dependencyValues.triggerWhen) {
+          return { setValue: { triggerWith: null } }
         } else {
-          return {
-            setValue: {
-              triggerWithTargets: dependencyValues.triggerWithTargets
-                .split(/\s+/).filter(s => s)
+          let triggerWith = [];
+          if (dependencyValues.triggerWith !== null) {
+            for (let target of dependencyValues.triggerWith.split(/\s+/).filter(s => s)) {
+              triggerWith.push({ target })
             }
           }
+          if (dependencyValues.triggerWhenObjectsClicked !== null) {
+            for (let target of dependencyValues.triggerWhenObjectsClicked.split(/\s+/).filter(s => s)) {
+              triggerWith.push({ target, triggeringAction: "click" })
+            }
+          }
+
+          if (triggerWith.length === 0) {
+            triggerWith = null;
+          }
+
+          return { setValue: { triggerWith } }
         }
       }
     }
 
-    stateVariableDefinitions.triggerWithTargetComponentNames = {
+    stateVariableDefinitions.triggerWithTargetIds = {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "triggerActions"
       },
-      stateVariablesDeterminingDependencies: ["triggerWithTargets"],
+      stateVariablesDeterminingDependencies: ["triggerWith"],
       returnDependencies({ stateValues }) {
-        let dependencies = {};
-        if (stateValues.triggerWithTargets) {
-          for (let [ind, target] of stateValues.triggerWithTargets.entries()) {
+        let dependencies = {
+          triggerWith: {
+            dependencyType: "stateVariable",
+            variableName: "triggerWith"
+          }
+        };
+        if (stateValues.triggerWith) {
+          for (let [ind, targetObj] of stateValues.triggerWith.entries()) {
 
             dependencies[`triggerWithTargetComponentName${ind}`] = {
               dependencyType: "expandTargetName",
-              target
+              target: targetObj.target
             }
           }
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
-        let triggerWithTargetComponentNames = [];
-        let n = Object.keys(dependencyValues).length - 1;
+        let triggerWithTargetIds = [];
 
-        for (let i = 0; i < n; i++) {
-          triggerWithTargetComponentNames.push(dependencyValues[`triggerWithTargetComponentName${i}`])
+        if (dependencyValues.triggerWith) {
+          for (let [ind, targetObj] of dependencyValues.triggerWith.entries()) {
+
+            let id = dependencyValues[`triggerWithTargetComponentName${ind}`];
+
+            if (targetObj.triggeringAction) {
+              id += "|" + targetObj.triggeringAction;
+            };
+
+            if (!triggerWithTargetIds.includes(id)) {
+              triggerWithTargetIds.push(id);
+            }
+
+          }
         }
 
-        return { setValue: { triggerWithTargetComponentNames } }
+        return { setValue: { triggerWithTargetIds } }
       },
       markStale() {
         return { updateActionChaining: true }
@@ -128,15 +174,15 @@ export default class triggerSet extends InlineComponent {
         dependencyType: "attributeComponent",
         attributeName: "triggerWhen"
       },
-        dependencies.triggerWithTargets = {
+        dependencies.triggerWith = {
           dependencyType: "stateVariable",
-          variableName: "triggerWithTargets"
+          variableName: "triggerWith"
         }
       return dependencies;
     }
 
     stateVariableDefinitions.hidden.definition = function (args) {
-      if (args.dependencyValues.triggerWhen || args.dependencyValues.triggerWithTargets) {
+      if (args.dependencyValues.triggerWhen || args.dependencyValues.triggerWith) {
         return { setValue: { hidden: true } }
       } else {
         return originalHiddenDefinition(args);

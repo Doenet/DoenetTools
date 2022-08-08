@@ -3,6 +3,7 @@ import { breakEmbeddedStringsIntoParensPieces } from './commonsugar/breakstrings
 
 export default class TupleList extends MathList {
   static componentType = "tupleList";
+  static rendererType = "mathList";
 
   static includeBlankStringChildren = false;
 

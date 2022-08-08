@@ -50,12 +50,13 @@ export default React.memo(function Point(props) {
     let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
 
     let fixed = !SVs.draggable || SVs.fixed;
+    let withlabel = SVs.showLabel && SVs.label !== "";
 
     //things to be passed to JSXGraph as attributes
     let jsxPointAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withlabel,
       fixed: true,
       layer: 10 * SVs.layer + 9,
       fillColor: fillColor,
@@ -69,7 +70,8 @@ export default React.memo(function Point(props) {
       highlight: !fixed
     };
 
-    if (SVs.showLabel && SVs.label !== "") {
+
+    if (withlabel) {
       let anchorx, anchory, offset;
       if (SVs.labelPosition === "upperright") {
         offset = [5, 5];
@@ -185,6 +187,13 @@ export default React.memo(function Point(props) {
         callAction({
           action: actions.switchPoint
         });
+        callAction({
+          action: actions.pointClicked
+        });
+      } else {
+        callAction({
+          action: actions.pointClicked
+        });
       }
       dragged.current = false;
 
@@ -238,6 +247,8 @@ export default React.memo(function Point(props) {
 
     pointJXG.current = newPointJXG;
     shadowPointJXG.current = newShadowPointJXG;
+    previousLabelPosition.current = SVs.labelPosition;
+    previousWithLabel.current = withlabel;
   }
 
 
@@ -422,7 +433,7 @@ export default React.memo(function Point(props) {
 
   //Render text coordinates when outside of graph
 
-  let mathJaxify = "\\(" + SVs.coordsLatex + "\\)";
+  let mathJaxify = "\\(" + SVs.latex + "\\)";
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 
 

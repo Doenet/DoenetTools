@@ -96,7 +96,9 @@ export function gatherDescendants({ ancestor, descendantTypes,
         // we explicitly will not ignore replacements of copies of external content
         checkChildForReplacements = !(
           child.componentType === "copy" &&
-          child.replacements?.[0]?.componentType === "externalContent"
+          (child.replacements?.[0]?.componentType === "externalContent"
+            || child.doenetAttributes.fromCopyFromURI
+          )
         );
       }
       if (checkChildForReplacements && componentInfoObjects.isInheritedComponentType({

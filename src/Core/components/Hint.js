@@ -155,9 +155,22 @@ export default class Hint extends BlockComponent {
     });
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     revealHint: this.revealHint.bind(this),
     closeHint: this.closeHint.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

@@ -101,7 +101,7 @@ const CourseInfoPanel = function({courseId}) {
     });
   };
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("h2", {
-    "data-cy": "infoPanelItemLabel"
+    "data-test": "infoPanelItemLabel"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChalkboard
   }), " ", panelDriveLabel), /* @__PURE__ */ React.createElement(Textfield, {

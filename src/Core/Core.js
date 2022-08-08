@@ -26,6 +26,7 @@ import axios from 'axios';
 export default class Core {
   constructor({ doenetML, doenetId, activityCid, pageNumber, attemptNumber = 1, itemNumber = 1,
     serverSaveId,
+    activityVariantIndex,
     requestedVariant, requestedVariantIndex,
     flags = {},
     stateVariableChanges = {},
@@ -39,6 +40,7 @@ export default class Core {
     this.pageNumber = pageNumber;
     this.attemptNumber = attemptNumber;
     this.itemNumber = itemNumber;
+    this.activityVariantIndex = activityVariantIndex;
 
     this.serverSaveId = serverSaveId;
     this.updateDataOnContentChange = updateDataOnContentChange;
@@ -91,6 +93,17 @@ export default class Core {
     this.requestedVariantIndex = requestedVariantIndex;
     this.requestedVariant = requestedVariant;
 
+    this.visibilityInfo = {
+      componentsCurrentlyVisible: {},
+      infoToSend: {},
+      timeLastSent: new Date(),
+      saveDelay: 60000,
+      saveTimerId: null,
+      suspendDelay: 3 * 60000,
+      suspendTimerId: null,
+      suspended: false
+    }
+
     // console.time('serialize doenetML');
 
     this.parameterStack = new ParameterStack();
@@ -123,8 +136,10 @@ export default class Core {
         }))
       .then(this.finishCoreConstruction)
       .catch(e => {
+        // throw e;
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: { errMsg: e.message }
         })
       })
@@ -302,6 +317,7 @@ export default class Core {
 
     this.resolveInitialized();
 
+    setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
 
   }
 
@@ -310,13 +326,15 @@ export default class Core {
 
     postMessage({
       messageType: "initializeRenderers",
+      coreId: this.coreId,
       args: {
         coreInfo: this.coreInfo,
       }
     });
 
     postMessage({
-      messageType: "coreCreated"
+      messageType: "coreCreated",
+      coreId: this.coreId
     });
 
   }
@@ -325,6 +343,7 @@ export default class Core {
 
     postMessage({
       messageType: "updateRenderers",
+      coreId: this.coreId,
       args,
       init
     })
@@ -1102,6 +1121,14 @@ export default class Core {
 
     if (serializedChildren !== undefined) {
 
+      if (componentClass.preprocessSerializedChildren) {
+        componentClass.preprocessSerializedChildren({
+          serializedChildren,
+          attributes: serializedComponent.attributes,
+          componentName,
+        });
+      }
+
       if (componentClass.setUpVariant) {
 
         let variantControlInd;
@@ -1398,10 +1425,10 @@ export default class Core {
     )
 
     for (let varDescription of variablesChanged) {
-      await this.recordActualChangeInStateVariable({
-        componentName: varDescription.componentName,
-        varName: varDescription.varName,
-      });
+      await this.markStateVariableAndUpstreamDependentsStale({
+        component: this._components[varDescription.componentName],
+        varName: varDescription.varName
+      })
     }
 
     await this.checkForStateVariablesUpdatesForNewComponent(componentName)
@@ -2010,15 +2037,15 @@ export default class Core {
     // we'll copy the replacements of the shadowed composite
     // and make those be the replacements of the shadowing composite
     let serializedReplacements = [];
-    let targetAttributesToIgnore = await component.stateValues.targetAttributesToIgnore;
-    let targetAttributesToIgnoreRecursively = await component.stateValues.targetAttributesToIgnoreRecursively;
+    let sourceAttributesToIgnore = await component.stateValues.sourceAttributesToIgnore;
+    let sourceAttributesToIgnoreRecursively = await component.stateValues.sourceAttributesToIgnoreRecursively;
 
     for (let repl of shadowedComposite.replacements) {
       if (typeof repl === "object") {
         serializedReplacements.push(await repl.serialize(
           {
-            targetAttributesToIgnore,
-            targetAttributesToIgnoreRecursively
+            sourceAttributesToIgnore,
+            sourceAttributesToIgnoreRecursively
           }
         ))
       } else {
@@ -2079,7 +2106,16 @@ export default class Core {
       let compositeMediatingTheShadow = this.components[nameOfCompositeMediatingTheShadow];
       let mediatingNewNamespace = compositeMediatingTheShadow.attributes.newNamespace?.primitive;
       let mediatingAssignNames = compositeMediatingTheShadow.doenetAttributes.assignNames;
-
+      let mediatingSubAssignNames = mediatingAssignNames?.some(Array.isArray);
+      let assignNewNamespaces = compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive;
+      let target = this._components[compositeMediatingTheShadow.doenetAttributes.targetComponentName];
+      let nonCompositeTargetWithNewNamespace;
+      if (target) {
+        nonCompositeTargetWithNewNamespace = !this.componentInfoObjects.isCompositeComponent({
+          componentType: target.componentType,
+          includeNonStandard: false
+        }) && target.attributes.newNamespace?.primitive;
+      }
 
       // Note: originalNamesAreConsistent means that processAssignNames should leave
       // the original names in the serializedComponents as is
@@ -2089,16 +2125,28 @@ export default class Core {
 
       // We set originalNamesAreConsistent to true if we can be sure
       // that we won't create any duplicate names.
-      // If the component begin shadowed has a newNamespace,
+      // If the component shadowing (or the original non-composite target) has a newNamespace,
+      // or the composite mediating the shadow is assigning new namespaces,
       // or we get a new namespace from the composite mediating the shadow, 
       // that will, in most cases, be enough to prevent name collisions.
-      // The one edge case is when the composite mediating the shadow also assigns names,
-      // in which case the assigned names could collide with the original names,
+
+      // One edge case is when the composite mediating the shadow also assigns names,
+      // in which case the assigned names could collide with the original names
+      // even if it makes a new namespace,
       // so we can't keep the original names.
 
+      // Another edge case is when the composite mediating the shadow
+      // assign names to sub-replacements.
+      // In that case, all bets are off and we cannot determine if those names
+      // could collide with existing names, so we can't keep the original names.
 
-      let originalNamesAreConsistent = newNamespace
-        || (mediatingNewNamespace && !mediatingAssignNames);
+
+      let originalNamesAreConsistent = !mediatingSubAssignNames && (
+        newNamespace || nonCompositeTargetWithNewNamespace
+        || (mediatingNewNamespace && !mediatingAssignNames)
+        || assignNewNamespaces
+      );
+
 
       let assignNames = component.doenetAttributes.assignNames;
       if (assignNames && await component.stateValues.addLevelToAssignNames) {
@@ -2112,9 +2160,39 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;
+
+      if (target?.componentName === shadowedComposite.componentName
+        && compositeMediatingTheShadow.doenetAttributes.fromCopyTarget
+      ) {
+
+        let newReplacements = deepClone(compositeMediatingTheShadow.serializedChildren);
+        let componentClass = this.componentInfoObjects.allComponentClasses[component.componentType];
+
+        if (!componentClass.includeBlankStringChildren) {
+          newReplacements = newReplacements.filter(
+            x => typeof x !== "string" || x.trim() !== ""
+          )
+        }
+
+        let processResult = serializeFunctions.processAssignNames({
+          assignNames,
+          serializedComponents: newReplacements,
+          parentName: component.componentName,
+          parentCreatesNewNamespace: compositeMediatingTheShadow.attributes.assignNewNamespaces?.primitive,
+          indOffset: serializedReplacements.length,
+          componentInfoObjects: this.componentInfoObjects,
+          originalNamesAreConsistent: true
+        });
+
+        serializedReplacements.push(...processResult.serializedComponents)
+
+      }
+
+
     } else {
       // since original names came from the targetComponent
       // we can use them only if we created a new namespace
@@ -2127,6 +2205,7 @@ export default class Core {
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects: this.componentInfoObjects,
         originalNamesAreConsistent,
+        shadowingComposite: true,
       });
 
       serializedReplacements = processResult.serializedComponents;
@@ -2587,12 +2666,13 @@ export default class Core {
           let haveParentValue = dependencyValues.parentValue !== undefined
             && dependencyValues.parentValue !== null;
           if (haveParentValue && !usedDefault.parentValue) {
-            return { setValue: { [varName]: dependencyValues.parentValue } }
+            return { setValue: { [varName]: dependencyValues.parentValue }, checkForActualChange: { [varName]: true } }
           } else {
             return {
               useEssentialOrDefaultValue: {
                 [varName]: true
-              }
+              },
+              checkForActualChange: { [varName]: true }
             }
           }
         }
@@ -2603,7 +2683,7 @@ export default class Core {
           attribute: attrName
         })
 
-        return { setValue: { [varName]: attributeValue } };
+        return { setValue: { [varName]: attributeValue }, checkForActualChange: { [varName]: true } };
       };
 
       if (!attributeSpecification.noInverse) {
@@ -2729,11 +2809,16 @@ export default class Core {
           return {
             useEssentialOrDefaultValue: {
               [varName]: true
-            }
+            },
+            checkForActualChange: { [varName]: true }
           };
         }
         else {
-          return { setValue: { [varName]: dependencyValues.adapterTargetVariable } };
+          return {
+            setValue: { [varName]: dependencyValues.adapterTargetVariable },
+            checkForActualChange: { [varName]: true }
+          };
+
         }
       };
 
@@ -2945,12 +3030,16 @@ export default class Core {
           let haveParentValue = dependencyValues.parentValue !== undefined
             && dependencyValues.parentValue !== null;
           if (haveParentValue && !usedDefault.parentValue) {
-            return { setValue: { [varName]: dependencyValues.parentValue } }
+            return {
+              setValue: { [varName]: dependencyValues.parentValue },
+              checkForActualChange: { [varName]: true }
+            }
           } else {
             return {
               useEssentialOrDefaultValue: {
                 [varName]: true
-              }
+              },
+              checkForActualChange: { [varName]: true }
             }
           }
 
@@ -2961,7 +3050,10 @@ export default class Core {
           attributeSpecification, attribute: attrName
         })
 
-        return { setValue: { [varName]: attributeValue } };
+        return {
+          setValue: { [varName]: attributeValue },
+          checkForActualChange: { [varName]: true }
+        };
       };
 
       if (!attributeSpecification.noInverse) {
@@ -3071,12 +3163,10 @@ export default class Core {
         if (stateDef.set) {
           stateDef.definition = function ({ dependencyValues, usedDefault }) {
             let valueFromTarget = stateDef.set(dependencyValues.targetVariable);
-            if (setDefault && usedDefault.targetVariable
-              && deepCompare(valueFromTarget, stateDef.defaultValue)
-            ) {
+            if (setDefault && usedDefault.targetVariable) {
               return {
                 useEssentialOrDefaultValue: {
-                  [primaryStateVariableForDefinition]: true
+                  [primaryStateVariableForDefinition]: { defaultValue: valueFromTarget }
                 },
                 alwaysShadow: [primaryStateVariableForDefinition],
               }
@@ -3090,12 +3180,10 @@ export default class Core {
           };
         } else {
           stateDef.definition = function ({ dependencyValues, usedDefault }) {
-            if (setDefault && usedDefault.targetVariable
-              && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
-            ) {
+            if (setDefault && usedDefault.targetVariable) {
               return {
                 useEssentialOrDefaultValue: {
-                  [primaryStateVariableForDefinition]: true
+                  [primaryStateVariableForDefinition]: { defaultValue: dependencyValues.targetVariable }
                 },
                 alwaysShadow: [primaryStateVariableForDefinition],
               }
@@ -3392,10 +3480,10 @@ export default class Core {
             }
           }
 
-          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential
-            && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
-          ) {
-            result.useEssentialOrDefaultValue = { [varName]: true }
+          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential) {
+            result.useEssentialOrDefaultValue = {
+              [varName]: { defaultValue: dependencyValues.targetVariable }
+            }
           } else {
             result.setValue = { [varName]: dependencyValues.targetVariable }
           }
@@ -3535,32 +3623,32 @@ export default class Core {
 
       if (stateVarObj.chainActionOnActionOfStateVariableTargets) {
         let chainInfo = stateVarObj.chainActionOnActionOfStateVariableTargets;
-        let targetNames = await stateVarObj.value;
+        let targetIds = await stateVarObj.value;
 
         let originObj = this.originsOfActionsChangedToActions[component.componentName];
 
-        let previousNames;
+        let previousIds;
         if (originObj) {
-          previousNames = originObj[varName];
+          previousIds = originObj[varName];
         }
 
-        if (!previousNames) {
-          previousNames = [];
+        if (!previousIds) {
+          previousIds = [];
         }
 
-        let newNames = [];
+        let newTargets = [];
 
-        if (Array.isArray(targetNames)) {
-          newNames = [...new Set(targetNames)];
-          for (let target of newNames) {
+        if (Array.isArray(targetIds)) {
+          newTargets = [...targetIds];
+          for (let id of newTargets) {
 
-            let indPrev = previousNames.indexOf(target);
+            let indPrev = previousIds.indexOf(id);
 
             if (indPrev === -1) {
-              // found a component that wasn't previously chained
-              let componentActionsChained = this.actionsChangedToActions[target];
+              // found a component/action that wasn't previously chained
+              let componentActionsChained = this.actionsChangedToActions[id];
               if (!componentActionsChained) {
-                componentActionsChained = this.actionsChangedToActions[target] = [];
+                componentActionsChained = this.actionsChangedToActions[id] = [];
               }
 
               componentActionsChained.push({
@@ -3572,17 +3660,17 @@ export default class Core {
             } else {
               // target was already chained
               // remove from previous names to indicate it should still be chained
-              previousNames.splice(indPrev, 1);
+              previousIds.splice(indPrev, 1);
             }
           }
 
 
         }
 
-        // if any names are left in previousNames,
+        // if any ids are left in previousIds,
         // then they should no longer be chained
-        for (let nameToNoLongerChain of previousNames) {
-          let componentActionsChained = this.actionsChangedToActions[nameToNoLongerChain];
+        for (let idToNoLongerChain of previousIds) {
+          let componentActionsChained = this.actionsChangedToActions[idToNoLongerChain];
           if (componentActionsChained) {
             let newComponentActionsChained = [];
 
@@ -3594,16 +3682,16 @@ export default class Core {
               }
             }
 
-            this.actionsChangedToActions[nameToNoLongerChain] = newComponentActionsChained;
+            this.actionsChangedToActions[idToNoLongerChain] = newComponentActionsChained;
 
           }
         }
 
-        if (newNames.length > 0) {
+        if (newTargets.length > 0) {
           if (!originObj) {
             originObj = this.originsOfActionsChangedToActions[component.componentName] = {};
           }
-          originObj[varName] = newNames;
+          originObj[varName] = newTargets;
         } else if (originObj) {
           delete originObj[varName];
 
@@ -4009,6 +4097,17 @@ export default class Core {
 
       if (!stateVarObj.getAllArrayKeys) {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten = true, desiredSize) {
+
+          function prependToAllKeys(keys, newStuff) {
+            for (let [ind, key] of keys.entries()) {
+              if (Array.isArray(key)) {
+                prependToAllKeys(key, newStuff)
+              } else {
+                keys[ind] = newStuff + "," + key
+              }
+            }
+          }
+
           function getAllArrayKeysSub(subArraySize) {
             if (subArraySize.length === 1) {
               // array of numbers from 0 to subArraySize[0], cast to strings
@@ -4021,7 +4120,9 @@ export default class Core {
                 if (flatten) {
                   subKeys.push(...subSubKeys.map(x => ind + "," + x))
                 } else {
-                  subKeys.push(subSubKeys.map(x => ind + "," + x))
+                  let newSubSubKeys = deepClone(subSubKeys);
+                  prependToAllKeys(newSubSubKeys, ind)
+                  subKeys.push(newSubSubKeys)
                 }
               }
               return subKeys;
@@ -4052,7 +4153,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + [Number(propIndex), ...Array(stateVarObj.nDimensions - 1).fill(1)].join('_')
+          return entryPrefixes[0] + [...propIndex.map(x => Math.round(Number(x))), ...Array(stateVarObj.nDimensions - propIndex.length).fill(1)].join('_')
         };
       }
 
@@ -4123,7 +4224,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + propIndex;
+          return entryPrefixes[0] + propIndex[0];
         };
       }
 
@@ -6066,6 +6167,9 @@ export default class Core {
         // save old value
         // mark stale by putting getter back in place to get a new value next time it is requested
         stateVarObj._previousValue = await stateVarObj.value;
+        if (Array.isArray(stateVarObj._previousValue)) {
+          stateVarObj._previousValue = [...stateVarObj._previousValue]
+        }
         delete stateVarObj.value;
         let getStateVar = this.getStateVariableValue;
         Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component, stateVariable: vName }), configurable: true });
@@ -6516,6 +6620,9 @@ export default class Core {
               // save old value
               // mark stale by putting getter back in place to get a new value next time it is requested
               stateVarObj._previousValue = await stateVarObj.value;
+              if (Array.isArray(stateVarObj._previousValue)) {
+                stateVarObj._previousValue = [...stateVarObj._previousValue]
+              }
               delete stateVarObj.value;
               Object.defineProperty(stateVarObj, 'value', { get: () => getStateVar({ component: upDepComponent, stateVariable: vName }), configurable: true });
             }
@@ -6627,16 +6734,16 @@ export default class Core {
         }
 
         let composite = this._components[shadowingParent.shadows.compositeName];
-        let targetAttributesToIgnore = await composite.stateValues.targetAttributesToIgnore;
-        let targetAttributesToIgnoreRecursively = await composite.stateValues.targetAttributesToIgnoreRecursively;
+        let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
+        let sourceAttributesToIgnoreRecursively = await composite.stateValues.sourceAttributesToIgnoreRecursively;
 
         let shadowingSerializeChildren = [];
         for (let child of newChildren) {
           if (typeof child === "object") {
             shadowingSerializeChildren.push(await child.serialize(
               {
-                targetAttributesToIgnore,
-                targetAttributesToIgnoreRecursively
+                sourceAttributesToIgnore,
+                sourceAttributesToIgnoreRecursively
               }
             ))
           } else {
@@ -7535,15 +7642,15 @@ export default class Core {
         let newSerializedReplacements = [];
 
         let compositeCreatingShadow = this._components[shadowingComponent.shadows.compositeName];
-        let targetAttributesToIgnore = await compositeCreatingShadow.stateValues.targetAttributesToIgnore;
-        let targetAttributesToIgnoreRecursively = await compositeCreatingShadow.stateValues.targetAttributesToIgnoreRecursively;
+        let sourceAttributesToIgnore = await compositeCreatingShadow.stateValues.sourceAttributesToIgnore;
+        let sourceAttributesToIgnoreRecursively = await compositeCreatingShadow.stateValues.sourceAttributesToIgnoreRecursively;
 
         for (let repl of replacementsToShadow) {
           if (typeof repl === "object") {
             newSerializedReplacements.push(await repl.serialize(
               {
-                targetAttributesToIgnore,
-                targetAttributesToIgnoreRecursively
+                sourceAttributesToIgnore,
+                sourceAttributesToIgnoreRecursively
               }
             ));
           } else {
@@ -7915,11 +8022,20 @@ export default class Core {
 
   }
 
-  async performAction({ componentName, actionName, args, event }) {
+  async performAction({ componentName, actionName, args, event, caseInsensitiveMatch }) {
 
     let component = this.components[componentName];
     if (component && component.actions) {
       let action = component.actions[actionName];
+      if (!action && caseInsensitiveMatch) {
+        let actionNameLower = actionName.toLowerCase();
+        for (let aName in component.actions) {
+          if (aName.toLowerCase() === actionNameLower) {
+            action = component.actions[aName];
+            break;
+          }
+        }
+      }
       if (action) {
         if (event) {
           this.requestRecordEvent(event);
@@ -7931,6 +8047,21 @@ export default class Core {
       }
     }
 
+    if (!component && actionName === "recordVisibilityChange" && args?.isVisible === false) {
+      // We have an action to record that a component is no longer visible
+      // and the component has been deleted.
+      // Record a visibility changed event
+      // Note: don't know componentType, but componentType isn't preserved when summarize visibility events
+      this.requestRecordEvent({
+        verb: "visibilityChanged",
+        object: {
+          componentName,
+        },
+        result: { isVisible: false }
+      })
+      return this.resolveAction({ actionId: args.actionId });
+    }
+
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
 
   }
@@ -7939,12 +8070,13 @@ export default class Core {
     if (actionId) {
       postMessage({
         messageType: "resolveAction",
+        coreId: this.coreId,
         args: { actionId }
       })
     }
   }
 
-  async triggerChainedActions({ componentName }) {
+  async triggerChainedActions({ componentName, triggeringAction }) {
 
     for (let cName in this.updateInfo.componentsToUpdateActionChaining) {
       await this.checkForActionChaining({
@@ -7955,9 +8087,13 @@ export default class Core {
 
     this.updateInfo.componentsToUpdateActionChaining = {};
 
+    let id = componentName;
+    if (triggeringAction) {
+      id += "|" + triggeringAction
+    }
 
-    if (this.actionsChangedToActions[componentName]) {
-      for (let chainedActionInstructions of this.actionsChangedToActions[componentName]) {
+    if (this.actionsChangedToActions[id]) {
+      for (let chainedActionInstructions of this.actionsChangedToActions[id]) {
         await this.performAction(chainedActionInstructions);
       }
     }
@@ -8191,20 +8327,28 @@ export default class Core {
 
     if (recordItemSubmissions.length > 0) {
 
-      let subitemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
+      let itemsSubmitted = [...new Set(recordItemSubmissions.map(x => x.itemNumber))];
+      let pageCreditAchieved = await this.document.stateValues.creditAchieved;
+      let itemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
 
       if (event) {
         if (!event.context) {
           event.context = {};
         }
-        if (!event.context.subitemCreditAchieved) {
-          event.context.subitemCreditAchieved = {};
+        event.context.item = itemsSubmitted[0];
+        event.context.itemCreditAchieved = itemCreditAchieved[itemsSubmitted[0] - 1];
+
+        // Just in case the code gets changed to that more than item can be submitted at once
+        // record credit achieved for any additional items
+        if (itemsSubmitted.length > 1) {
+          event.context.additionalItemCreditAchieved = {};
+          for (let itemNumber of itemsSubmitted) {
+            event.context.additionalItemCreditAchieved[itemNumber] = itemCreditAchieved[itemNumber - 1]
+          }
         }
-        event.context.itemCreditAchieved = await this.document.stateValues.creditAchieved;
+        event.context.pageCreditAchieved = await this.document.stateValues.creditAchieved;
       }
 
-      let itemCreditAchieved = await this.document.stateValues.creditAchieved;
-      let subitemCreditAchieved = await this.document.stateValues.itemCreditAchieved;
 
       let componentsSubmitted = [];
       for (let itemSubmission of recordItemSubmissions) {
@@ -8217,17 +8361,12 @@ export default class Core {
         });
       }
 
-      if (event) {
-        for (let subitemNumber of subitemsSubmitted) {
-          event.context.subitemCreditAchieved[subitemNumber] = subitemCreditAchieved[subitemNumber - 1]
-        }
-      }
 
       // if itemNumber is zero, it means this document wasn't given any weight,
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ itemCreditAchieved, componentsSubmitted });
+        this.saveSubmissions({ pageCreditAchieved, componentsSubmitted });
       }
 
     }
@@ -8301,6 +8440,13 @@ export default class Core {
   }
 
   requestRecordEvent(event) {
+
+    this.resumeVisibilityMeasuring();
+
+    if (event.verb === "visibilityChanged") {
+      return this.processVisibilityChangedEvent(event);
+    }
+
     return new Promise((resolve, reject) => {
 
       this.processQueue.push({
@@ -8321,8 +8467,6 @@ export default class Core {
       return;
     }
 
-    event.timestamp = new Date().toISOString().slice(0, 19).replace('T', ' ');
-
     if (!event.result) {
       event.result = {};
     }
@@ -8336,13 +8480,14 @@ export default class Core {
       pageCid: this.cid,
       pageNumber: this.pageNumber,
       attemptNumber: this.attemptNumber,
-      variantIndex: this.requestedVariant.index,
+      activityVariantIndex: this.activityVariantIndex,
+      pageVariantIndex: this.requestedVariant.index,
       verb: event.verb,
       object: JSON.stringify(event.object, serializeFunctions.serializedComponentsReplacer),
       result: JSON.stringify(removeFunctionsMathExpressionClass(event.result), serializeFunctions.serializedComponentsReplacer),
       context: JSON.stringify(event.context, serializeFunctions.serializedComponentsReplacer),
-      timestamp: event.timestamp,
-      version: "0.1.0",
+      timestamp: new Date().toISOString().slice(0, 19).replace('T', ' '),
+      version: "0.1.1",
     }
 
     axios.post('/api/recordEvent.php', payload)
@@ -8353,6 +8498,7 @@ export default class Core {
         console.error(`Error saving event: ${e.message}`);
         // postMessage({
         //   messageType: "sendToast",
+        //   coreId: this.coreId,
         //   args: {
         //     message: `Error saving event: ${e.message}`,
         //     toastType: toastType.ERROR
@@ -8362,6 +8508,112 @@ export default class Core {
 
 
     return Promise.resolve();
+  }
+
+  processVisibilityChangedEvent(event) {
+
+    let componentName = event.object.componentName;
+    let isVisible = event.result.isVisible;
+
+    if (isVisible) {
+      if (!this.visibilityInfo.componentsCurrentlyVisible[componentName]) {
+        this.visibilityInfo.componentsCurrentlyVisible[componentName] = new Date();
+      }
+    } else {
+      let begin = this.visibilityInfo.componentsCurrentlyVisible[componentName]
+      if (begin) {
+        delete this.visibilityInfo.componentsCurrentlyVisible[componentName];
+
+        let timeInSeconds = (new Date() - Math.max(begin, this.visibilityInfo.timeLastSent)) / 1000;
+
+        if (this.visibilityInfo.infoToSend[componentName]) {
+          this.visibilityInfo.infoToSend[componentName] += timeInSeconds;
+        } else {
+          this.visibilityInfo.infoToSend[componentName] = timeInSeconds;
+        }
+
+      }
+    }
+
+  }
+
+  sendVisibilityChangedEvents() {
+    let infoToSend = { ...this.visibilityInfo.infoToSend };
+    this.visibilityInfo.infoToSend = {};
+    let timeLastSent = this.visibilityInfo.timeLastSent;
+    this.visibilityInfo.timeLastSent = new Date();
+    let currentVisible = { ...this.visibilityInfo.componentsCurrentlyVisible };
+
+    for (let componentName in currentVisible) {
+      let timeInSeconds = (this.visibilityInfo.timeLastSent - Math.max(timeLastSent, currentVisible[componentName])) / 1000;
+      if (infoToSend[componentName]) {
+        infoToSend[componentName] += timeInSeconds;
+      } else {
+        infoToSend[componentName] = timeInSeconds;
+      }
+    }
+
+    for (let componentName in infoToSend) {
+      infoToSend[componentName] = Math.round(infoToSend[componentName])
+      if (!infoToSend[componentName]) {
+        // delete if rounded down to zero
+        delete infoToSend[componentName];
+      }
+    }
+
+    let promise;
+
+    if (Object.keys(infoToSend).length > 0) {
+      let event = {
+        object: { componentName: this.documentName, componentType: "document" },
+        verb: "isVisible",
+        result: infoToSend
+      }
+
+      promise = new Promise((resolve, reject) => {
+
+        this.processQueue.push({
+          type: "recordEvent", event, resolve, reject
+        })
+
+        if (!this.processing) {
+          this.processing = true;
+          this.executeProcesses();
+
+        }
+      })
+    }
+
+    if (!this.visibilityInfo.suspended) {
+      clearTimeout(this.visibilityInfo.saveTimerId);
+      this.visibilityInfo.saveTimerId = setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
+    }
+
+    return promise;
+
+  }
+
+  async suspendVisibilityMeasuring() {
+    clearTimeout(this.visibilityInfo.saveTimerId);
+    clearTimeout(this.visibilityInfo.suspendTimerId);
+    if (!this.visibilityInfo.suspended) {
+      this.visibilityInfo.suspended = true;
+      await this.sendVisibilityChangedEvents();
+    }
+  }
+
+  resumeVisibilityMeasuring() {
+    if (this.visibilityInfo.suspended) {
+      // restart visibility measuring
+      this.visibilityInfo.suspended = false;
+      this.visibilityInfo.timeLastSent = new Date();
+      clearTimeout(this.visibilityInfo.saveTimerId);
+      this.visibilityInfo.saveTimerId = setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay);
+    }
+
+    clearTimeout(this.visibilityInfo.suspendTimerId);
+    this.visibilityInfo.suspendTimerId = setTimeout(this.suspendVisibilityMeasuring.bind(this), this.visibilityInfo.suspendDelay);
+
   }
 
   async executeUpdateStateVariables(newStateVariableValues) {
@@ -8771,7 +9023,15 @@ export default class Core {
         }
       } else {
         for (let [ind, arrayKey] of inverseDefinitionArgs.arrayKeys.entries()) {
-          desiredValuesForArray[arrayKey] = instruction.value[ind];
+          if (Array.isArray(instruction.value)) {
+            desiredValuesForArray[arrayKey] = instruction.value[ind];
+          } else if (instruction.value instanceof me.class) {
+            try {
+              desiredValuesForArray[arrayKey] = instruction.value.get_component(ind);
+            } catch (e) {
+
+            }
+          }
         }
       }
       inverseDefinitionArgs.desiredStateVariableValues = { [arrayStateVariable]: desiredValuesForArray };
@@ -9367,7 +9627,8 @@ export default class Core {
     }
 
     postMessage({
-      messageType: "savedState"
+      messageType: "savedState",
+      coreId: this.coreId,
     })
 
     if (!this.flags.allowSaveState) {
@@ -9421,6 +9682,7 @@ export default class Core {
 
     // postMessage({
     //   messageType: "sendToast",
+    //   coreId: this.coreId,
     //   args: {
     //     message: "You're not connected to the internet. Changes are not saved. ",
     //     toastType: toastType.ERROR
@@ -9434,6 +9696,7 @@ export default class Core {
     } catch (e) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: "Error synchronizing data.  Changes not saved to the server.",
           toastType: toastType.ERROR
@@ -9447,6 +9710,7 @@ export default class Core {
     if (resp.status === null) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: `Error synchronizing data.  Changes not saved to the server.  Are you connected to the internet?`,
           toastType: toastType.ERROR
@@ -9460,6 +9724,7 @@ export default class Core {
     if (!data.success) {
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message: data.message,
           toastType: toastType.ERROR
@@ -9497,6 +9762,7 @@ export default class Core {
 
         postMessage({
           messageType: "resetPage",
+          coreId: this.coreId,
           args: {
             changedOnDevice: data.device,
             newCid: data.cid,
@@ -9507,6 +9773,7 @@ export default class Core {
         // if the cid changed without the attemptNumber changing, something went wrong
         postMessage({
           messageType: "inErrorState",
+          coreId: this.coreId,
           args: {
             errMsg: "Content changed unexpectedly!"
           }
@@ -9523,7 +9790,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ itemCreditAchieved, componentsSubmitted }) {
+  saveSubmissions({ pageCreditAchieved, componentsSubmitted }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -9532,7 +9799,7 @@ export default class Core {
     const payload = {
       doenetId: this.doenetId,
       attemptNumber: this.attemptNumber,
-      credit: itemCreditAchieved,
+      credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
       componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
     }
@@ -9546,6 +9813,7 @@ export default class Core {
         if (resp.status === null) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error.  Are you connected to the internet?`,
               toastType: toastType.ERROR
@@ -9554,6 +9822,7 @@ export default class Core {
         } else if (!resp.data.success) {
           postMessage({
             messageType: "sendToast",
+            coreId: this.coreId,
             args: {
               message: `Credit not saved due to error: ${resp.data.message}`,
               toastType: toastType.ERROR
@@ -9565,6 +9834,7 @@ export default class Core {
 
           postMessage({
             messageType: "updateCreditAchieved",
+            coreId: this.coreId,
             args: data
           })
 
@@ -9572,6 +9842,7 @@ export default class Core {
           if (data.viewedSolution) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since solution was viewed.',
                 toastType: toastType.INFO
@@ -9581,6 +9852,7 @@ export default class Core {
           if (data.timeExpired) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the time allowed has expired.',
                 toastType: toastType.INFO
@@ -9590,6 +9862,7 @@ export default class Core {
           if (data.pastDueDate) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since the due date has passed.',
                 toastType: toastType.INFO
@@ -9599,6 +9872,7 @@ export default class Core {
           if (data.exceededAttemptsAllowed) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'No credit awarded since no more attempts are allowed.',
                 toastType: toastType.INFO
@@ -9608,6 +9882,7 @@ export default class Core {
           if (data.databaseError) {
             postMessage({
               messageType: "sendToast",
+              coreId: this.coreId,
               args: {
                 message: 'Credit not saved due to database error.',
                 toastType: toastType.ERROR
@@ -9619,6 +9894,7 @@ export default class Core {
       .catch(e => {
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message: `Credit not saved due to error: ${e.message}`,
             toastType: toastType.ERROR
@@ -9755,6 +10031,7 @@ export default class Core {
         let message = `Cannot show solution due to error.  Are you connected to the internet?`;
         postMessage({
           messageType: "sendToast",
+          coreId: this.coreId,
           args: {
             message,
             toastType: toastType.ERROR
@@ -9776,6 +10053,7 @@ export default class Core {
 
       postMessage({
         messageType: "sendToast",
+        coreId: this.coreId,
         args: {
           message,
           toastType: toastType.ERROR
@@ -9797,6 +10075,7 @@ export default class Core {
   requestAnimationFrame(args) {
     postMessage({
       messageType: "requestAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }
@@ -9804,9 +10083,25 @@ export default class Core {
   cancelAnimationFrame(args) {
     postMessage({
       messageType: "cancelAnimationFrame",
+      coreId: this.coreId,
       args
     });
   }
+
+
+  handleVisibilityChange({ visible }) {
+    if (visible) {
+      this.resumeVisibilityMeasuring();
+    } else {
+      this.suspendVisibilityMeasuring();
+    }
+  }
+
+  async terminate() {
+    // suspend visibility measuring so that remaining times collected are saved
+    await this.suspendVisibilityMeasuring();
+  }
+
 }
 
 

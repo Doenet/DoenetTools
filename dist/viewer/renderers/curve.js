@@ -43,12 +43,8 @@ export default React.memo(function Curve(props) {
     if (SVs.curveType === "bezier" && SVs.numericalThroughPoints.length < 2) {
       return null;
     }
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
     var curveAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,
@@ -57,7 +53,8 @@ export default React.memo(function Curve(props) {
       strokeOpacity: SVs.selectedStyle.lineOpacity,
       strokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
-      highlight: false
+      highlight: false,
+      lineCap: "butt"
     };
     if (SVs.showLabel && SVs.label !== "") {
       let anchorx, offset, position;
@@ -97,9 +94,10 @@ export default React.memo(function Curve(props) {
       curveAttributes.label = {
         offset,
         position,
-        anchorx
+        anchorx,
+        highlight: false
       };
-      if (SVs.labelIsLatex) {
+      if (SVs.labelHasLatex) {
         curveAttributes.label.useMathJax = true;
       }
       if (SVs.applyStyleToLabel) {
@@ -108,8 +106,11 @@ export default React.memo(function Curve(props) {
         curveAttributes.label.strokeColor = "#000000";
       }
     } else {
-      if (SVs.labelIsLatex) {
-        curveAttributes.label = {useMathJax: true};
+      curveAttributes.label = {
+        highlight: false
+      };
+      if (SVs.labelHasLatex) {
+        curveAttributes.label.useMathJax = true;
       }
     }
     let newCurveJXG;
@@ -151,9 +152,15 @@ export default React.memo(function Curve(props) {
     draggedControlPoint.current = null;
     draggedThroughPoint.current = null;
     newCurveJXG.on("up", function(e) {
-      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null && SVs.switchable && !SVs.fixed) {
+      if (!updateSinceDown.current && draggedControlPoint.current === null && draggedThroughPoint.current === null) {
+        if (SVs.switchable && !SVs.fixed) {
+          callAction({
+            action: actions.switchCurve
+          });
+        }
         callAction({
-          action: actions.switchCurve
+          action: actions.curveClicked,
+          args: {name}
         });
       }
     });
@@ -463,11 +470,7 @@ export default React.memo(function Curve(props) {
       }
       updateSinceDown.current = true;
       let visible = !SVs.hidden;
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      curveJXG.current.name = label;
+      curveJXG.current.name = SVs.label;
       curveJXG.current.visProp["visible"] = visible;
       curveJXG.current.visPropCalc["visible"] = visible;
       let curveLayer = 10 * SVs.layer + 5;

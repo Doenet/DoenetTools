@@ -6,9 +6,11 @@ import me from '../../_snowpack/pkg/math-expressions.js';
 export default class Circle extends Curve {
   static componentType = "circle";
   static rendererType = "circle";
+  static representsClosedPath = true;
 
   actions = {
     moveCircle: this.moveCircle.bind(this),
+    circleClicked: this.circleClicked.bind(this),
   };
 
 
@@ -33,9 +35,7 @@ export default class Circle extends Curve {
   }
 
   static returnChildGroups() {
-
-    return []
-
+    return GraphicalComponent.returnChildGroups();
   }
 
 
@@ -148,7 +148,7 @@ export default class Circle extends Curve {
         if (borderStyleDescription) {
           borderStyleDescription += " ";
         }
-        
+
         borderStyleDescription += dependencyValues.selectedStyle.lineColorWord
 
         return { setValue: { borderStyleDescription } };
@@ -303,13 +303,19 @@ export default class Circle extends Curve {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "throughPoints") {
-          return "throughPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "throughPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 12) === "throughPoint") {
           // could be throughPoint or throughPointX
           let throughPointNum = Number(varName.slice(12));
           if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
-            return `throughPointX${throughPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${throughPointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -2370,6 +2376,16 @@ export default class Circle extends Curve {
 
   }
 
+  async circleClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 }
 
 function circleFromTwoNumericalPoints({ point1, point2 }) {

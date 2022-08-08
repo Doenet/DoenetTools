@@ -21,6 +21,7 @@ export default function ViewerUpdateButton(props) {
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
   }, /* @__PURE__ */ React.createElement(Button, {
+    "data-test": "Viewer Update Button",
     value: "Update",
     onClick: updateViewer
   }));

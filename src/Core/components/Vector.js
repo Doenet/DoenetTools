@@ -8,6 +8,7 @@ export default class Vector extends GraphicalComponent {
 
   actions = {
     moveVector: this.moveVector.bind(this),
+    vectorClicked: this.vectorClicked.bind(this),
   }
 
   static primaryStateVariableForDefinition = "displacementShadow";
@@ -97,7 +98,7 @@ export default class Vector extends GraphicalComponent {
     let sugarInstructions = super.returnSugarInstructions();
 
 
-    let breakIntoXsByCommas = function ({ matchedChildren }) {
+    let breakIntoXsByCommas = function ({ matchedChildren, componentInfoObjects }) {
       let childrenToComponentFunction = x => ({
         componentType: "math", children: x
       });
@@ -106,6 +107,59 @@ export default class Vector extends GraphicalComponent {
         childrenToComponentFunction,
         mustStripOffOuterParentheses: true
       })
+
+      // find index of first and last string
+      let cTypes = matchedChildren.map(x => typeof x)
+      let beginInd = cTypes.indexOf("string");
+      let lastInd = cTypes.lastIndexOf("string");
+
+      if (beginInd === -1) {
+        // if have no strings but have exactly one child that isn't in child group,
+        // (point, vector, label)
+        // use that for displacement
+
+        let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
+
+        let otherChildren = matchedChildren.filter(child => !(
+          componentIsSpecifiedType(child, "point")
+          || componentIsSpecifiedType(child, "vector")
+          || componentIsSpecifiedType(child, "label")
+        ));
+
+        if (otherChildren.length === 1) {
+          let mathChild = otherChildren[0];
+          let mathInd = matchedChildren.indexOf(mathChild);
+
+          let newChildren = [
+            ...matchedChildren.slice(0, mathInd),
+            ...matchedChildren.slice(mathInd + 1)
+          ];
+
+          return {
+            success: true,
+            newAttributes: {
+              displacement: {
+                component: {
+                  componentType: "math",
+                  children: otherChildren
+                }
+              }
+            },
+            newChildren
+          }
+
+        } else {
+          // no strings and don't have exactly one non child-group child
+          return { success: false }
+        }
+
+      }
+
+      let newChildren = [
+        ...matchedChildren.slice(0, beginInd),
+        ...matchedChildren.slice(lastInd + 1)
+      ]
+      matchedChildren = matchedChildren.slice(beginInd, lastInd + 1);
 
       let result = breakFunction({ matchedChildren });
 
@@ -121,30 +175,35 @@ export default class Vector extends GraphicalComponent {
                 children: matchedChildren
               }
             }
-          }
+          },
+          newChildren
         }
       }
 
       if (result.success) {
         // wrap xs around the x children
-        result.newAttributes = {
-          xs: {
-            component: {
-              componentType: "mathList",
-              children: result.newChildren,
-              skipSugar: true,
+        return {
+          success: true,
+          newAttributes: {
+            xs: {
+              component: {
+                componentType: "mathList",
+                children: result.newChildren,
+                skipSugar: true,
+              }
             }
-          }
-        },
-          delete result.newChildren;
+          },
+          newChildren
+        }
+      } else {
+        return { success: false }
       }
 
-      return result;
 
     };
 
     sugarInstructions.push({
-      childrenRegex: /s+(.*s)?/,
+      // childrenRegex: /s+(.*s)?/,
       replacementFunction: breakIntoXsByCommas
     })
 
@@ -1676,8 +1735,12 @@ export default class Vector extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.displacementCoordsLatex = {
+    stateVariableDefinitions.latex = {
       forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
+      },
       returnDependencies: () => ({
         displacementCoords: {
           dependencyType: "stateVariable",
@@ -1711,12 +1774,12 @@ export default class Vector extends GraphicalComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
-        let displacementCoordsLatex = roundForDisplay({
+        let latex = roundForDisplay({
           value: dependencyValues.displacementCoords,
           dependencyValues, usedDefault
         }).toLatex(params);
 
-        return { setValue: { displacementCoordsLatex } }
+        return { setValue: { latex } }
 
       }
     }
@@ -1937,6 +2000,17 @@ export default class Vector extends GraphicalComponent {
         }
       });
     }
+
+  }
+
+  async vectorClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

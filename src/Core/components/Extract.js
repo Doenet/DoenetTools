@@ -37,13 +37,13 @@ export default class Extract extends CompositeComponent {
       createPrimitiveOfType: "number",
     };
     attributes.componentIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
     };
     attributes.propIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
@@ -95,9 +95,18 @@ export default class Extract extends CompositeComponent {
 
         if (stateValues.componentIndex !== null) {
           componentIndex = Number(stateValues.componentIndex)
+          if (Number.isInteger(componentIndex)) {
+            childIndices = [componentIndex - 1];
+          } else {
+            childIndices = [];
+          }
         }
-        if (Number.isInteger(componentIndex)) {
-          childIndices = [componentIndex - 1];
+        let propIndex = stateValues.propIndex;
+        if (propIndex) {
+          // make propIndex be a shallow copy
+          // so that can detect if it changed
+          // when update dependencies
+          propIndex = [...propIndex]
         }
         return {
           children: {
@@ -106,8 +115,9 @@ export default class Extract extends CompositeComponent {
             variableNames: [stateValues.propName],
             variablesOptional: true,
             childIndices,
-            propIndex: stateValues.propIndex,
-            publicCaseInsensitiveVariableMatch: true,
+            propIndex,
+            caseInsensitiveVariableMatch: true,
+            publicStateVariablesOnly: true,
             useMappedVariableNames: true,
           },
           propName: {
@@ -127,7 +137,7 @@ export default class Extract extends CompositeComponent {
             propName = Object.keys(comp.stateValues)[0];
           }
           if (!propName) {
-            propName = dependencyValues.propName;
+            propName = "__prop_name_not_found";
           }
           effectivePropNameBySource.push(propName)
         }

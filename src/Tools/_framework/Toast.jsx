@@ -188,10 +188,11 @@ function ToastMessage({
   });
   return (
     <Message style={props}>
-      <Content ref={ref} key={tId} type={type}>
+      <Content ref={ref} key={tId} type={type} data-test="toast">
         <Life style={{ right: props.life }} />
         <p>{children}</p>
         <Button
+        data-test="toast cancel button"
           onClick={(e) => {
             e.stopPropagation();
             ref.current.cancel();

@@ -29,12 +29,8 @@ export default React.memo(function Circle(props) {
       return null;
     }
     let fixed = !SVs.draggable || SVs.fixed;
-    let label = SVs.label;
-    if (SVs.labelIsLatex) {
-      label = "\\(" + label + "\\)";
-    }
     var jsxCircleAttributes = {
-      name: label,
+      name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
       fixed,
@@ -55,10 +51,11 @@ export default React.memo(function Circle(props) {
     if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
       jsxCircleAttributes.hasInnerPoints = true;
     }
-    if (SVs.labelIsLatex) {
-      jsxCircleAttributes.label = {useMathJax: true};
-    } else {
-      jsxCircleAttributes.label = {};
+    jsxCircleAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxCircleAttributes.label.useMathJax = true;
     }
     if (SVs.showLabel && SVs.label !== "") {
       if (SVs.applyStyleToLabel) {
@@ -69,7 +66,9 @@ export default React.memo(function Circle(props) {
     }
     let newCircleJXG = board.create("circle", [[...SVs.numericalCenter], SVs.numericalRadius], jsxCircleAttributes);
     newCircleJXG.on("drag", function(e) {
-      dragged.current = true;
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
+      }
       centerCoords.current = calculateCenterPosition(e);
       callAction({
         action: actions.moveCircle,
@@ -92,6 +91,10 @@ export default React.memo(function Circle(props) {
             radius: radiusAtDown.current,
             throughAngles: throughAnglesAtDown.current
           }
+        });
+      } else {
+        callAction({
+          action: actions.circleClicked
         });
       }
     });
@@ -154,7 +157,7 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
         circleJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (circleJXG.current.visProp.dash !== newDash) {
         circleJXG.current.visProp.dash = newDash;
       }
@@ -171,11 +174,7 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
         circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
       }
-      let label = SVs.label;
-      if (SVs.labelIsLatex) {
-        label = "\\(" + label + "\\)";
-      }
-      circleJXG.current.name = label;
+      circleJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
         circleJXG.current.setAttribute({withlabel});

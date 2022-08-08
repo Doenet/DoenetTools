@@ -6,6 +6,7 @@ import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionBut
 import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {rendererState} from "./useDoenetRenderer.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
 const SliderContainer = styled.div`
     width: fit-content;
@@ -342,10 +343,18 @@ export default React.memo(function Slider(props) {
     }
     let myLabel2 = null;
     if (SVs.label) {
+      let label = SVs.label;
+      if (SVs.labelHasLatex) {
+        label = /* @__PURE__ */ React.createElement(MathJax, {
+          hideUntilTypeset: "first",
+          inline: true,
+          dynamic: true
+        }, label);
+      }
       if (SVs.showValue) {
-        myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label + " = " + SVs.valueForDisplay);
+        myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, label, " = " + SVs.valueForDisplay);
       } else {
-        myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label);
+        myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, label);
       }
     } else if (!SVs.label && SVs.showValue) {
       myLabel2 = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.valueForDisplay);
@@ -357,12 +366,15 @@ export default React.memo(function Slider(props) {
       noTicked: SVs.showTicks === false,
       ref: containerRef
     }, /* @__PURE__ */ React.createElement("div", {
+      id: `${name}-label`,
       style: {height: SVs.label || SVs.showValue ? "20px" : "0px"}
     }, myLabel2), /* @__PURE__ */ React.createElement(SubContainer2, null, /* @__PURE__ */ React.createElement(StyledSlider, {
-      width: `${SVs.width.size}px`
+      width: `${SVs.width.size}px`,
+      id: name
     }, /* @__PURE__ */ React.createElement(StyledThumb, {
       disabled: true,
-      style: {left: `${thumbXPos - 4}px`}
+      style: {left: `${thumbXPos - 4}px`},
+      id: `${name}-handle`
     }), ticksAndLabels2)), /* @__PURE__ */ React.createElement("div", {
       style: {height: SVs.showControls ? "20px" : "0px"}
     }, controls2));
@@ -546,11 +558,11 @@ export default React.memo(function Slider(props) {
     }, /* @__PURE__ */ React.createElement(ActionButton, {
       value: "Prev",
       onClick: (e) => handlePrevious(e),
-      "data-cy": `${name}-prevbutton`
+      id: `${name}-prevbutton`
     }), /* @__PURE__ */ React.createElement(ActionButton, {
       value: "Next",
       onClick: (e) => handleNext(e),
-      "data-cy": `${name}-nextbutton`
+      id: `${name}-nextbutton`
     }));
   } else {
     null;
@@ -563,10 +575,18 @@ export default React.memo(function Slider(props) {
   }
   let myLabel = null;
   if (SVs.label) {
+    let label = SVs.label;
+    if (SVs.labelHasLatex) {
+      label = /* @__PURE__ */ React.createElement(MathJax, {
+        hideUntilTypeset: "first",
+        inline: true,
+        dynamic: true
+      }, label);
+    }
     if (SVs.showValue) {
-      myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label + " = " + SVs.valueForDisplay);
+      myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, label, " = " + SVs.valueForDisplay);
     } else {
-      myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.label);
+      myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, label);
     }
   } else if (!SVs.label && SVs.showValue) {
     myLabel = /* @__PURE__ */ React.createElement(StyledValueLabel, null, SVs.valueForDisplay);
@@ -580,15 +600,16 @@ export default React.memo(function Slider(props) {
     onKeyDown: handleKeyDown,
     tabIndex: "0"
   }, /* @__PURE__ */ React.createElement("div", {
+    id: `${name}-label`,
     style: {height: SVs.label || SVs.showValue ? "20px" : "0px"}
   }, myLabel), /* @__PURE__ */ React.createElement(SubContainer2, {
     onMouseDown: handleDragEnter
   }, /* @__PURE__ */ React.createElement(StyledSlider, {
     width: `${SVs.width.size}px`,
-    "data-cy": `${name}`
+    id: name
   }, /* @__PURE__ */ React.createElement(StyledThumb, {
     style: {left: `${thumbXPos - 4}px`},
-    "data-cy": `${name}-handle`
+    id: `${name}-handle`
   }), ticksAndLabels)), /* @__PURE__ */ React.createElement("div", {
     style: {height: SVs.showControls ? "20px" : "0px"}
   }, controls));

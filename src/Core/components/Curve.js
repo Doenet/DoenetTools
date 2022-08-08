@@ -15,7 +15,8 @@ export default class Curve extends GraphicalComponent {
     moveControlVector: this.moveControlVector.bind(this),
     moveThroughPoint: this.moveThroughPoint.bind(this),
     changeVectorControlDirection: this.changeVectorControlDirection.bind(this),
-    switchCurve: this.switchCurve.bind(this)
+    switchCurve: this.switchCurve.bind(this),
+    curveClicked: this.curveClicked.bind(this)
   };
 
   static primaryStateVariableForDefinition = "fShadow";
@@ -120,12 +121,7 @@ export default class Curve extends GraphicalComponent {
 
     let breakNonLabelIntoFunctionsByCommas = function ({ matchedChildren, componentInfoObjects }) {
 
-      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: "label"
-      });
-
-      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.props?.componentType)
+      let componentIsLabel = x => componentInfoObjects.componentIsSpecifiedType(x, "label");
 
       // only apply if all children are strings, macros, or labels
       if (matchedChildren.length === 0 || !matchedChildren.every(child =>
@@ -443,7 +439,7 @@ export default class Curve extends GraphicalComponent {
           if (domain !== null) {
             domain = domain[0];
             try {
-              parMax = domain[1].evaluate_to_constant();
+              parMax = me.fromAst(domain.tree[1][2]).evaluate_to_constant();
               if (!Number.isFinite(parMax) && parMax !== Infinity) {
                 parMax = NaN;
               }
@@ -552,7 +548,7 @@ export default class Curve extends GraphicalComponent {
           if (domain !== null) {
             domain = domain[0];
             try {
-              parMin = domain[0].evaluate_to_constant();
+              parMin = me.fromAst(domain.tree[1][1]).evaluate_to_constant();
               if (!Number.isFinite(parMin) && parMin !== -Infinity) {
                 parMin = NaN;
               }
@@ -695,13 +691,19 @@ export default class Curve extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "throughPoints") {
-          return "throughPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "throughPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 12) === "throughPoint") {
           // could be throughPoint or throughPointX
           let throughPointNum = Number(varName.slice(12));
           if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
-            return `throughPointX${throughPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${throughPointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -2564,13 +2566,19 @@ export default class Curve extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "xCriticalPoints") {
-          return "xCriticalPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "xCriticalPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `xCriticalPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 14) === "xCriticalPoint") {
           // could be xCriticalPoint or xCriticalPointX
           let xCriticalPointNum = Number(varName.slice(14));
           if (Number.isInteger(xCriticalPointNum) && xCriticalPointNum > 0) {
-            return `xCriticalPointX${xCriticalPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `xCriticalPointX${xCriticalPointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -2782,13 +2790,19 @@ export default class Curve extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "yCriticalPoints") {
-          return "yCriticalPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "yCriticalPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `yCriticalPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 14) === "yCriticalPoint") {
           // could be yCriticalPoint or yCriticalPointX
           let yCriticalPointNum = Number(varName.slice(14));
           if (Number.isInteger(yCriticalPointNum) && yCriticalPointNum > 0) {
-            return `yCriticalPointX${yCriticalPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `yCriticalPointX${yCriticalPointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -3003,13 +3017,19 @@ export default class Curve extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "curvatureChangePoints") {
-          return "curvatureChangePoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "curvatureChangePoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `curvatureChangePointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 20) === "curvatureChangePoint") {
           // could be curvatureChangePoint or curvatureChangePointX
           let curvatureChangePointNum = Number(varName.slice(20));
           if (Number.isInteger(curvatureChangePointNum) && curvatureChangePointNum > 0) {
-            return `curvatureChangePointX${curvatureChangePointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `curvatureChangePointX${curvatureChangePointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -3256,6 +3276,16 @@ export default class Curve extends GraphicalComponent {
 
   }
 
+  async curveClicked({ actionId, name }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: name,  // use name rather than this.componentName to get original name if adapted
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 
 }
 
@@ -3284,12 +3314,23 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let x1AtLeftEndpoint, x2AtLeftEndpoint;
     if (parMin !== -Infinity) {
 
+      x1AtLeftEndpoint = parMin;
+      x2AtLeftEndpoint = f(parMin);
+
+      if (!Number.isFinite(x2AtLeftEndpoint)) {
+        // in case function was defined on an open interval
+        // check a point just to the right
+        let parMinAdjust = parMin * 0.99999 + parMax * 0.00001;
+        let x2AtLeftEndpointAdjust = f(parMinAdjust);
+        if (Number.isFinite(x2AtLeftEndpointAdjust)) {
+          x1AtLeftEndpoint = parMinAdjust;
+          x2AtLeftEndpoint = x2AtLeftEndpointAdjust;
+        }
+      }
       if (flipFunction) {
-        x1AtLeftEndpoint = f(parMin);
-        x2AtLeftEndpoint = parMin;
-      } else {
-        x1AtLeftEndpoint = parMin;
-        x2AtLeftEndpoint = f(parMin);
+        let temp = x1AtLeftEndpoint;
+        x1AtLeftEndpoint = x2AtLeftEndpoint;
+        x2AtLeftEndpoint = temp;
       }
 
     }
@@ -3297,12 +3338,24 @@ function getNearestPointFunctionCurve({ dependencyValues, numerics }) {
     let x1AtRightEndpoint, x2AtRightEndpoint;
     if (parMax !== Infinity) {
 
+      x1AtRightEndpoint = parMax;
+      x2AtRightEndpoint = f(parMax);
+
+      if (!Number.isFinite(x2AtRightEndpoint)) {
+        // in case function was defined on an open interval
+        // check a point just to the left
+        let parMaxAdjust = parMin * 0.00001 + parMax * 0.99999;
+        let x2AtRightEndpointAdjust = f(parMaxAdjust);
+        if (Number.isFinite(x2AtRightEndpointAdjust)) {
+          x1AtRightEndpoint = parMaxAdjust;
+          x2AtRightEndpoint = x2AtRightEndpointAdjust;
+        }
+      }
+
       if (flipFunction) {
-        x1AtRightEndpoint = f(parMax);
-        x2AtRightEndpoint = parMax;
-      } else {
-        x1AtRightEndpoint = parMax;
-        x2AtRightEndpoint = f(parMax);
+        let temp = x1AtRightEndpoint;
+        x1AtRightEndpoint = x2AtRightEndpoint;
+        x2AtRightEndpoint = temp;
       }
     }
 

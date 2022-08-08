@@ -793,15 +793,15 @@ export default class BaseComponent {
 
     let parametersForChildren = { ...parameters };
 
-    let targetAttributesToIgnore
-    if (parameters.targetAttributesToIgnoreRecursively) {
-      targetAttributesToIgnore = [...parameters.targetAttributesToIgnoreRecursively];
+    let sourceAttributesToIgnore
+    if (parameters.sourceAttributesToIgnoreRecursively) {
+      sourceAttributesToIgnore = [...parameters.sourceAttributesToIgnoreRecursively];
     } else {
-      targetAttributesToIgnore = [];
+      sourceAttributesToIgnore = [];
     }
-    if (parameters.targetAttributesToIgnore) {
-      targetAttributesToIgnore.push(...parameters.targetAttributesToIgnore);
-      delete parametersForChildren.targetAttributesToIgnore;
+    if (parameters.sourceAttributesToIgnore) {
+      sourceAttributesToIgnore.push(...parameters.sourceAttributesToIgnore);
+      delete parametersForChildren.sourceAttributesToIgnore;
     }
 
 
@@ -839,7 +839,7 @@ export default class BaseComponent {
         }
       } else {
         // copy others if copy all or not set to be ignored
-        if (!targetAttributesToIgnore.includes(attrName) || parameters.copyAll) {
+        if (!sourceAttributesToIgnore.includes(attrName) || parameters.copyAll) {
           serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
         }
       }
@@ -1029,12 +1029,14 @@ export default class BaseComponent {
       return { success: true, numberOfVariants };
     }
 
-    let descendantVariantComponents = gatherVariantComponents({
-      serializedComponents: serializedComponent.children,
-      componentInfoObjects
-    });
+    let descendantVariantComponents = [];
 
-
+    if (serializedComponent.children) {
+      descendantVariantComponents = gatherVariantComponents({
+        serializedComponents: serializedComponent.children,
+        componentInfoObjects
+      });
+    }
 
     if (serializedComponent.variants === undefined) {
       serializedComponent.variants = {};

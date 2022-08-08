@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Solution(props) {
   let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (SVs.hidden) {
     return null;
@@ -53,6 +70,7 @@ export default React.memo(function Solution(props) {
   }
 
   return (
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
     <aside id={name}  style={{ margin: "12px 0" }}>
       <a name={name} />
       <span
@@ -76,5 +94,6 @@ export default React.memo(function Solution(props) {
       </span>
       <span style={infoBlockStyle}>{childrenToRender}</span>
     </aside>
+    </VisibilitySensor>
   );
 })

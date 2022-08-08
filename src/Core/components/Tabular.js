@@ -202,7 +202,7 @@ export default class Tabular extends BlockComponent {
     //   },
     //   returnEntryDimensions: prefix => prefix === "range" ? 2 : 1,
     //   containsComponentNamesToCopy: true,
-    //   targetAttributesToIgnoreOnCopy: ["rowNum", "colNum"],
+    //   sourceAttributesToIgnoreOnCopy: ["rowNum", "colNum"],
     //   returnWrappingComponents(prefix) {
     //     if (prefix === "cell") {
     //       return [];
@@ -367,6 +367,22 @@ export default class Tabular extends BlockComponent {
 
     return stateVariableDefinitions;
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

@@ -1,6 +1,16 @@
 import React, {useEffect, useState, useRef, createContext} from "../../_snowpack/pkg/react.js";
 import {sizeToCSS} from "./utils/css.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import me from "../../_snowpack/pkg/math-expressions.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
+import cssesc from "../../_snowpack/pkg/cssesc.js";
+function cesc(s) {
+  s = cssesc(s, {isIdentifier: true});
+  if (s.slice(0, 2) === "\\#") {
+    s = s.slice(1);
+  }
+  return s;
+}
 export const BoardContext = createContext();
 export default React.memo(function Graph(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
@@ -11,24 +21,46 @@ export default React.memo(function Graph(props) {
   const yaxis = useRef(null);
   const settingBoundingBox = useRef(false);
   const boardJustInitialized = useRef(false);
+  const previousShowNavigation = useRef(false);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   useEffect(() => {
     let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
     previousBoundingbox.current = boundingbox;
     JXG.Options.layer.numlayers = 100;
     JXG.Options.navbar.highlightFillColor = "var(--canvastext)";
     JXG.Options.navbar.strokeColor = "var(--canvastext)";
-    let board2 = window.JXG.JSXGraph.initBoard(name, {
+    let haveFixedGrid = false;
+    if (Array.isArray(SVs.grid)) {
+      haveFixedGrid = true;
+      JXG.Options.grid.gridX = SVs.grid[0];
+      JXG.Options.grid.gridY = SVs.grid[1];
+    }
+    let newBoard = window.JXG.JSXGraph.initBoard(name, {
       boundingbox,
       axis: false,
       showCopyright: false,
       showNavigation: SVs.showNavigation && !SVs.fixAxes,
       zoom: {wheel: !SVs.fixAxes},
-      pan: {enabled: !SVs.fixAxes}
+      pan: {enabled: !SVs.fixAxes},
+      grid: haveFixedGrid
     });
-    board2.itemsRenderedLowQuality = {};
-    board2.on("boundingbox", () => {
+    newBoard.itemsRenderedLowQuality = {};
+    newBoard.on("boundingbox", () => {
       if (!settingBoundingBox.current) {
-        let newBoundingbox = board2.getBoundingBox();
+        let newBoundingbox = newBoard.getBoundingBox();
         let [xmin, ymax, xmax, ymin] = newBoundingbox;
         let xscale = Math.abs(xmax - xmin);
         let yscale = Math.abs(ymax - ymin);
@@ -42,113 +74,21 @@ export default React.memo(function Graph(props) {
         }
       }
     });
-    setBoard(board2);
+    setBoard(newBoard);
     previousDimensions.current = {
       width: parseFloat(sizeToCSS(SVs.width)),
       aspectRatio: SVs.aspectRatio
     };
     if (SVs.displayXAxis) {
-      let xaxisOptions = {};
-      if (SVs.xlabel) {
-        let position = "rt";
-        let offset = [5, 10];
-        let anchorx = "right";
-        if (SVs.xlabelPosition === "left") {
-          position = "lft";
-          anchorx = "left";
-          offset = [-5, 10];
-        }
-        xaxisOptions.name = SVs.xlabel;
-        xaxisOptions.withLabel = true;
-        xaxisOptions.label = {
-          position,
-          offset,
-          anchorx,
-          strokeColor: "var(--canvastext)"
-        };
-      }
-      xaxisOptions.ticks = {
-        ticksDistance: 2,
-        label: {
-          offset: [-5, -15],
-          layer: 2
-        },
-        minorTicks: 4,
-        precision: 4,
-        strokeColor: "var(--canvastext)",
-        drawLabels: SVs.displayXAxisTickLabels
-      };
-      xaxisOptions.strokeColor = "var(--canvastext)";
-      xaxisOptions.highlight = false;
-      if (SVs.grid === "dense") {
-        xaxisOptions.ticks.majorHeight = -1;
-        xaxisOptions.ticks.minorHeight = -1;
-      } else if (SVs.grid === "medium") {
-        xaxisOptions.ticks.majorHeight = -1;
-        xaxisOptions.ticks.minorHeight = 10;
-      } else {
-        xaxisOptions.ticks.majorHeight = 20;
-        xaxisOptions.ticks.minorHeight = 10;
-      }
-      if (!SVs.displayYAxis) {
-        xaxisOptions.ticks.drawZero = true;
-      }
-      xaxis.current = board2.create("axis", [[0, 0], [1, 0]], xaxisOptions);
+      createXAxis(newBoard);
     }
     if (SVs.displayYAxis) {
-      let yaxisOptions = {};
-      if (SVs.ylabel) {
-        let position = "rt";
-        let offset = [-10, -5];
-        let anchorx = "right";
-        if (SVs.ylabelPosition === "bottom") {
-          position = "lft";
-          offset[1] = 5;
-        }
-        if (SVs.ylabelAlignment === "right") {
-          anchorx = "left";
-          offset[0] = 10;
-        }
-        yaxisOptions.name = SVs.ylabel;
-        yaxisOptions.withLabel = true;
-        yaxisOptions.label = {
-          position,
-          offset,
-          anchorx,
-          strokeColor: "var(--canvastext)"
-        };
-      }
-      yaxisOptions.strokeColor = "var(--canvastext)";
-      yaxisOptions.highlight = false;
-      yaxisOptions.ticks = {
-        ticksDistance: 2,
-        label: {
-          offset: [12, -2],
-          layer: 2
-        },
-        minorTicks: 4,
-        precision: 4,
-        strokeColor: "var(--canvastext)",
-        drawLabels: SVs.displayYAxisTickLabels
-      };
-      if (SVs.grid === "dense") {
-        yaxisOptions.ticks.majorHeight = -1;
-        yaxisOptions.ticks.minorHeight = -1;
-      } else if (SVs.grid === "medium") {
-        yaxisOptions.ticks.majorHeight = -1;
-        yaxisOptions.ticks.minorHeight = 10;
-      } else {
-        yaxisOptions.ticks.majorHeight = 20;
-        yaxisOptions.ticks.minorHeight = 10;
-      }
-      if (!SVs.displayXAxis) {
-        yaxisOptions.ticks.drawZero = true;
-      }
-      yaxis.current = board2.create("axis", [[0, 0], [0, 1]], yaxisOptions);
+      createYAxis(newBoard);
     }
     boardJustInitialized.current = true;
+    previousShowNavigation.current = SVs.showNavigation;
     return () => {
-      board2.off("boundingbox");
+      newBoard.off("boundingbox");
     };
   }, []);
   const divStyle = {
@@ -156,25 +96,55 @@ export default React.memo(function Graph(props) {
     aspectRatio: String(SVs.aspectRatio),
     maxWidth: "100%"
   };
+  let outerStyle = {};
   if (SVs.hidden) {
     divStyle.display = "none";
+  } else if (SVs.displayMode === "inline") {
+    outerStyle = {display: "inline-block", verticalAlign: "middle"};
+  } else {
+    outerStyle = {display: "flex", justifyContent: SVs.horizontalAlign};
   }
   divStyle.border = "2px solid var(--canvastext)";
-  divStyle.margin = "12px";
+  divStyle.marginBottom = "12px";
+  divStyle.marginTop = "12px";
   divStyle.backgroundColor = "var(--canvas)";
   divStyle.color = "var(--canvastext)";
   if (!board) {
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+      partialVisibility: true,
+      onChange: onChangeVisibility
+    }, /* @__PURE__ */ React.createElement("div", {
+      style: outerStyle
+    }, /* @__PURE__ */ React.createElement("a", {
       name
     }), /* @__PURE__ */ React.createElement("div", {
       id: name,
       className: "jxgbox",
       style: divStyle
-    }));
+    })));
   }
   if (boardJustInitialized.current) {
     boardJustInitialized.current = false;
   } else {
+    if (Array.isArray(SVs.grid)) {
+      let gridParamsChanged = JXG.Options.grid.gridX !== SVs.grid[0] || JXG.Options.grid.gridY !== SVs.grid[1];
+      if (gridParamsChanged) {
+        JXG.Options.grid.gridX = SVs.grid[0];
+        JXG.Options.grid.gridY = SVs.grid[1];
+        if (board.grids.length > 0) {
+          board.removeObject(board.grids[0]);
+          board.grids = [];
+        }
+      }
+      if (board.grids.length === 0) {
+        board.create("grid", [], {gridX: SVs.grid[0], gridY: SVs.grid[1]});
+      }
+    } else {
+      if (board.grids.length > 0) {
+        board.removeObject(board.grids[0]);
+        board.grids = [];
+      }
+    }
     if (SVs.grid === "dense") {
       if (xaxis.current) {
         xaxis.current.defaultTicks.setAttribute({majorHeight: -1});
@@ -204,44 +174,69 @@ export default React.memo(function Graph(props) {
       }
     }
     if (SVs.displayXAxis) {
-      xaxis.current.name = SVs.xlabel;
-      xaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayXAxisTickLabels});
-      if (xaxis.current.hasLabel) {
-        let position = "rt";
-        let offset = [5, 10];
-        let anchorx = "right";
-        if (SVs.xlabelPosition === "left") {
-          position = "lft";
-          anchorx = "left";
-          offset = [-5, 10];
+      if (xaxis.current) {
+        xaxis.current.name = SVs.xlabel;
+        xaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayXAxisTickLabels});
+        if (xaxis.current.hasLabel) {
+          let position = "rt";
+          let offset = [5, 10];
+          let anchorx = "right";
+          if (SVs.xlabelPosition === "left") {
+            position = "lft";
+            anchorx = "left";
+            offset = [-5, 10];
+          }
+          xaxis.current.label.visProp.position = position;
+          xaxis.current.label.visProp.anchorx = anchorx;
+          xaxis.current.label.visProp.offset = offset;
+          xaxis.current.label.needsUpdate = true;
+          xaxis.current.label.fullUpdate();
         }
-        xaxis.current.label.visProp.position = position;
-        xaxis.current.label.visProp.anchorx = anchorx;
-        xaxis.current.label.visProp.offset = offset;
-        xaxis.current.label.needsUpdate = true;
-        xaxis.current.label.fullUpdate();
+      } else {
+        createXAxis(board);
       }
+    } else if (xaxis.current) {
+      board.removeObject(xaxis.current);
+      xaxis.current = null;
     }
     if (SVs.displayYAxis) {
-      yaxis.current.name = SVs.ylabel;
-      yaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayYAxisTickLabels});
-      if (yaxis.current.hasLabel) {
-        let position = "rt";
-        let offset = [-10, -5];
-        let anchorx = "right";
-        if (SVs.ylabelPosition === "bottom") {
-          position = "lft";
-          offset[1] = 5;
+      if (yaxis.current) {
+        yaxis.current.name = SVs.ylabel;
+        yaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayYAxisTickLabels});
+        if (yaxis.current.hasLabel) {
+          let position = "rt";
+          let offset = [-10, -5];
+          let anchorx = "right";
+          if (SVs.ylabelPosition === "bottom") {
+            position = "lft";
+            offset[1] = 5;
+          }
+          if (SVs.ylabelAlignment === "right") {
+            anchorx = "left";
+            offset[0] = 10;
+          }
+          yaxis.current.label.visProp.position = position;
+          yaxis.current.label.visProp.offset = offset;
+          yaxis.current.label.visProp.anchorx = anchorx;
+          yaxis.current.label.needsUpdate = true;
+          yaxis.current.label.fullUpdate();
         }
-        if (SVs.ylabelAlignment === "right") {
-          anchorx = "left";
-          offset[0] = 10;
-        }
-        yaxis.current.label.visProp.position = position;
-        yaxis.current.label.visProp.offset = offset;
-        yaxis.current.label.visProp.anchorx = anchorx;
-        yaxis.current.label.needsUpdate = true;
-        yaxis.current.label.fullUpdate();
+      } else {
+        createYAxis(board);
+      }
+    } else if (yaxis.current) {
+      board.removeObject(yaxis.current);
+      yaxis.current = null;
+    }
+    if (SVs.showNavigation) {
+      if (!previousShowNavigation.current) {
+        addNavigationButtons();
+        previousShowNavigation.current = true;
+      }
+    } else {
+      if (previousShowNavigation.current) {
+        removeNavigationButtons();
+        previousShowNavigation.current = false;
       }
     }
     let currentDimensions = {
@@ -263,7 +258,12 @@ export default React.memo(function Graph(props) {
       previousBoundingbox.current = boundingbox;
     }
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("div", {
+    style: outerStyle
+  }, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("div", {
     id: name,
@@ -271,5 +271,284 @@ export default React.memo(function Graph(props) {
     style: divStyle
   }), /* @__PURE__ */ React.createElement(BoardContext.Provider, {
     value: board
-  }, children));
+  }, children)));
+  function createYAxis(theBoard) {
+    let yaxisOptions = {};
+    if (SVs.ylabel) {
+      let position = "rt";
+      let offset = [-10, -5];
+      let anchorx = "right";
+      if (SVs.ylabelPosition === "bottom") {
+        position = "lft";
+        offset[1] = 5;
+      }
+      if (SVs.ylabelAlignment === "right") {
+        anchorx = "left";
+        offset[0] = 10;
+      }
+      yaxisOptions.name = SVs.ylabel;
+      yaxisOptions.withLabel = true;
+      yaxisOptions.label = {
+        position,
+        offset,
+        anchorx,
+        strokeColor: "var(--canvastext)"
+      };
+    }
+    yaxisOptions.strokeColor = "var(--canvastext)";
+    yaxisOptions.highlight = false;
+    yaxisOptions.ticks = {
+      ticksDistance: 2,
+      label: {
+        offset: [12, -2],
+        layer: 2
+      },
+      precision: 4,
+      strokeColor: "var(--canvastext)",
+      drawLabels: SVs.displayYAxisTickLabels
+    };
+    if (SVs.yTickScaleFactor !== null) {
+      let yTickScaleFactor = me.fromAst(SVs.yTickScaleFactor);
+      let scale = yTickScaleFactor.evaluate_to_constant();
+      if (scale > 0) {
+        let scaleSymbol = yTickScaleFactor.toString();
+        yaxisOptions.ticks.scale = scale;
+        yaxisOptions.ticks.scaleSymbol = scaleSymbol;
+      }
+    }
+    if (SVs.grid === "dense") {
+      yaxisOptions.ticks.majorHeight = -1;
+      yaxisOptions.ticks.minorHeight = -1;
+    } else if (SVs.grid === "medium") {
+      yaxisOptions.ticks.majorHeight = -1;
+      yaxisOptions.ticks.minorHeight = 10;
+    } else {
+      yaxisOptions.ticks.majorHeight = 20;
+      yaxisOptions.ticks.minorHeight = 10;
+    }
+    if (!SVs.displayXAxis) {
+      yaxisOptions.ticks.drawZero = true;
+    }
+    yaxis.current = theBoard.create("axis", [[0, 0], [0, 1]], yaxisOptions);
+    yaxis.current.defaultTicks.ticksFunction = function() {
+      var delta, b, dist;
+      b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), "ticksdistance");
+      dist = b.upper - b.lower;
+      delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
+      if (dist <= 6 * delta) {
+        delta *= 0.5;
+      }
+      return delta;
+    };
+    yaxis.current.defaultTicks.generateEquidistantTicks = function(coordsZero, bounds) {
+      var tickPosition, eps2 = 1e-6, deltas, ticksDelta = this.equidistant ? this.ticksFunction(1) : this.ticksDelta, ev_it = true, ev_mt = 4;
+      this.visProp.minorticks = 4;
+      deltas = this.getXandYdeltas();
+      ticksDelta *= this.visProp.scale;
+      if (ev_it && this.minTicksDistance > 1e-6) {
+        ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
+        let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
+        if (Math.abs(ticksDelta / mag - 2) < 1e-14) {
+          ev_mt = 3;
+          this.visProp.minorticks = 3;
+        }
+        ticksDelta /= ev_mt + 1;
+      } else if (!ev_it) {
+        ticksDelta /= ev_mt + 1;
+      }
+      this.ticksDelta = ticksDelta;
+      if (ticksDelta < 1e-6) {
+        return;
+      }
+      tickPosition = 0;
+      tickPosition = ticksDelta;
+      while (tickPosition <= bounds.upper + eps2) {
+        if (tickPosition >= bounds.lower - eps2) {
+          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+        }
+        tickPosition += ticksDelta;
+        if (bounds.upper - tickPosition > ticksDelta * 1e4) {
+          break;
+        }
+      }
+      tickPosition = -ticksDelta;
+      while (tickPosition >= bounds.lower - eps2) {
+        if (tickPosition <= bounds.upper + eps2) {
+          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+        }
+        tickPosition -= ticksDelta;
+        if (tickPosition - bounds.lower > ticksDelta * 1e4) {
+          break;
+        }
+      }
+    };
+  }
+  function createXAxis(theBoard) {
+    let xaxisOptions = {};
+    if (SVs.xlabel) {
+      let position = "rt";
+      let offset = [5, 10];
+      let anchorx = "right";
+      if (SVs.xlabelPosition === "left") {
+        position = "lft";
+        anchorx = "left";
+        offset = [-5, 10];
+      }
+      xaxisOptions.name = SVs.xlabel;
+      xaxisOptions.withLabel = true;
+      xaxisOptions.label = {
+        position,
+        offset,
+        anchorx,
+        strokeColor: "var(--canvastext)"
+      };
+    }
+    xaxisOptions.ticks = {
+      ticksDistance: 2,
+      label: {
+        offset: [-5, -15],
+        layer: 2
+      },
+      precision: 4,
+      strokeColor: "var(--canvastext)",
+      drawLabels: SVs.displayXAxisTickLabels
+    };
+    if (SVs.xTickScaleFactor !== null) {
+      let xTickScaleFactor = me.fromAst(SVs.xTickScaleFactor);
+      let scale = xTickScaleFactor.evaluate_to_constant();
+      if (scale > 0) {
+        let scaleSymbol = xTickScaleFactor.toString();
+        xaxisOptions.ticks.scale = scale;
+        xaxisOptions.ticks.scaleSymbol = scaleSymbol;
+      }
+    }
+    xaxisOptions.strokeColor = "var(--canvastext)";
+    xaxisOptions.highlight = false;
+    if (SVs.grid === "dense") {
+      xaxisOptions.ticks.majorHeight = -1;
+      xaxisOptions.ticks.minorHeight = -1;
+    } else if (SVs.grid === "medium") {
+      xaxisOptions.ticks.majorHeight = -1;
+      xaxisOptions.ticks.minorHeight = 10;
+    } else {
+      xaxisOptions.ticks.majorHeight = 20;
+      xaxisOptions.ticks.minorHeight = 10;
+    }
+    if (!SVs.displayYAxis) {
+      xaxisOptions.ticks.drawZero = true;
+    }
+    xaxis.current = theBoard.create("axis", [[0, 0], [1, 0]], xaxisOptions);
+    xaxis.current.defaultTicks.ticksFunction = function() {
+      var delta, b, dist;
+      b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), "ticksdistance");
+      dist = b.upper - b.lower;
+      delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
+      if (dist <= 6 * delta) {
+        delta *= 0.5;
+      }
+      return delta;
+    };
+    xaxis.current.defaultTicks.generateEquidistantTicks = function(coordsZero, bounds) {
+      var tickPosition, eps2 = 1e-6, deltas, ticksDelta = this.equidistant ? this.ticksFunction(1) : this.ticksDelta, ev_it = true, ev_mt = 4;
+      this.visProp.minorticks = 4;
+      deltas = this.getXandYdeltas();
+      ticksDelta *= this.visProp.scale;
+      if (ev_it && this.minTicksDistance > 1e-6) {
+        ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
+        let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
+        if (Math.abs(ticksDelta / mag - 2) < 1e-14) {
+          ev_mt = 3;
+          this.visProp.minorticks = 3;
+        }
+        ticksDelta /= ev_mt + 1;
+      } else if (!ev_it) {
+        ticksDelta /= ev_mt + 1;
+      }
+      this.ticksDelta = ticksDelta;
+      if (ticksDelta < 1e-6) {
+        return;
+      }
+      tickPosition = 0;
+      tickPosition = ticksDelta;
+      while (tickPosition <= bounds.upper + eps2) {
+        if (tickPosition >= bounds.lower - eps2) {
+          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+        }
+        tickPosition += ticksDelta;
+        if (bounds.upper - tickPosition > ticksDelta * 1e4) {
+          break;
+        }
+      }
+      tickPosition = -ticksDelta;
+      while (tickPosition >= bounds.lower - eps2) {
+        if (tickPosition <= bounds.upper + eps2) {
+          this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+        }
+        tickPosition -= ticksDelta;
+        if (tickPosition - bounds.lower > ticksDelta * 1e4) {
+          break;
+        }
+      }
+    };
+  }
+  function addNavigationButtons() {
+    let navigationBar = document.querySelector("#" + cesc(name) + `_navigationbar`);
+    let addEvent = function(obj, type, fn) {
+      var el = function() {
+        return fn.apply(board, arguments);
+      };
+      board["x_internal" + type] = board["x_internal" + type] || [];
+      board["x_internal" + type].push(el);
+      obj.addEventListener(type, el, false);
+    };
+    let cancelbubble = function(e) {
+      if (!e) {
+        e = window.event;
+      }
+      if (e.stopPropagation) {
+        e.stopPropagation();
+      } else {
+        e.cancelBubble = true;
+      }
+    };
+    let createButton = function(label, handler) {
+      var button;
+      button = document.createElement("span");
+      navigationBar.appendChild(button);
+      button.appendChild(document.createTextNode(label));
+      button.style.paddingLeft = "7px";
+      button.style.paddingRight = "7px";
+      if (button.classList !== void 0) {
+        button.classList.add("JXG_navigation_button");
+      }
+      addEvent(button, "click", function(e) {
+        handler.bind(board)();
+        return false;
+      }, board);
+      addEvent(button, "mouseup", cancelbubble);
+      addEvent(button, "mousedown", cancelbubble);
+      addEvent(button, "touchend", cancelbubble);
+      addEvent(button, "touchstart", cancelbubble);
+    };
+    if (board.attr.showzoom) {
+      createButton("–", board.zoomOut);
+      createButton("o", board.zoom100);
+      createButton("+", board.zoomIn);
+    }
+    createButton("←", board.clickLeftArrow);
+    createButton("↓", board.clickUpArrow);
+    createButton("↑", board.clickDownArrow);
+    createButton("→", board.clickRightArrow);
+  }
+  function removeNavigationButtons() {
+    for (let i = 7; i >= 1; i--) {
+      let button = document.querySelector("#" + cesc(name) + `_navigationbar > :first-child`);
+      button.remove();
+    }
+    board.internalclick = [];
+    board.internalmousedown = [];
+    board.internalmouseup = [];
+    board.internaltouchend = [];
+    board.internaltouchstart = [];
+  }
 });

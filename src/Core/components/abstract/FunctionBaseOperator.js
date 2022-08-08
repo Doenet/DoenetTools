@@ -12,12 +12,7 @@ export default class FunctionOperator extends Function {
     let wrapStringsAndMacros = function ({ matchedChildren, componentInfoObjects }) {
 
 
-      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: "label"
-      });
-
-      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.props?.componentType)
+      let componentIsLabel = x=> componentInfoObjects.componentIsSpecifiedType(x, "label");
 
       // only apply if all children are strings, macros, or labels
       if (matchedChildren.length === 0 || !matchedChildren.every(child =>
@@ -31,7 +26,7 @@ export default class FunctionOperator extends Function {
 
       // wrap first group of non-label children in <math>
 
-      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.props?.componentType));
+      let childIsLabel = matchedChildren.map(componentIsLabel);
 
       let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
 

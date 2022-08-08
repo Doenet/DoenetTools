@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLightbulb as lightOff } from '@fortawesome/free-solid-svg-icons';
 import { faLightbulb as lightOn } from '@fortawesome/free-regular-svg-icons';
 import { faCaretRight as twirlIsClosed } from '@fortawesome/free-solid-svg-icons';
 import { faCaretDown as twirlIsOpen } from '@fortawesome/free-solid-svg-icons';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Hint(props) {
   let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (!SVs.showHints) {
     return null;
@@ -57,6 +74,7 @@ export default React.memo(function Hint(props) {
   }
 
   return (
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
     <aside id={name} key={name}>
       <a name={name} />
       <span
@@ -78,5 +96,6 @@ export default React.memo(function Hint(props) {
       </span>
       <span style={infoBlockStyle}>{info}</span>
     </aside>
+    </VisibilitySensor>
   );
 })

@@ -1,7 +1,7 @@
-import { e as getListWithInsertedItems$2, f as getListWithRemovedItems$2, h as getListWithInsertedItems$3, i as getListWithRemovedItems$3, s as setCaretPosition, j as extend, k as TextEditor, S as SHORTCUTS_GROUP_NAVIGATION, l as stopImmediatePropagation, n as isDefined, o as addClass, p as getScrollbarWidth, q as outerWidth, t as textRenderer, u as stringify, v as getCaretPosition, w as getSelectionEndPosition, x as pivot, y as offset, z as outerHeight, A as getTrimmingContainer, D as arrayMap, E as stripTags, K as KEY_CODES, F as isPrintableChar, G as hasClass, B as BaseEditor, I as EventManager, J as isFunctionKey, L as deepExtend, H as Hooks, M as empty, N as removeClass, O as objectEach, P as fastInnerHTML, Q as EDITOR_STATE, R as _register, U as baseRenderer, V as isEmpty, W as SHORTCUTS_GROUP_EDITOR, X as isNumeric, Y as rangeEach, Z as _getEditorInstance, $ as _register$2, _ as _register$3, T as TextCellType, a0 as defineGetter, a1 as getPluginsNames, a2 as arrayEach, a3 as hasPlugin, a4 as hasItem, a5 as hasItem$1, a6 as hasItem$3, a7 as isObject, a8 as PhysicalIndexToValueMap, a9 as hasOwnProperty, aa as isPercentValue, ab as valueAccordingPercent, ac as ViewportColumnsCalculator, ad as arrayReduce, ae as arrayFilter, af as cancelAnimationFrame, ag as requestAnimationFrame, ah as isVisible, ai as getIncreasedIndexes, aj as getDecreasedIndexes, ak as IndexMap, al as warn, am as arrayUnique, an as fastInnerText, ao as LinkedPhysicalIndexToValueMap, ap as isRightClick, aq as IndexesSequence, ar as isUndefined, as as isFunction, at as toSingleLine, au as mixin, av as localHooks, aw as debounce, ax as closest, ay as deepClone, az as isChildOf, aA as CONTEXTMENU_ITEMS_EDIT_COMMENT, aB as CONTEXTMENU_ITEMS_ADD_COMMENT, aC as CONTEXTMENU_ITEMS_REMOVE_COMMENT, aD as CONTEXTMENU_ITEMS_READ_ONLY_COMMENT, aE as CONTEXTMENU_ITEMS_ALIGNMENT, aF as CONTEXTMENU_ITEMS_ALIGNMENT_LEFT, aG as CONTEXTMENU_ITEMS_ALIGNMENT_CENTER, aH as CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT, aI as CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY, aJ as CONTEXTMENU_ITEMS_ALIGNMENT_TOP, aK as CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE, aL as CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM, aM as CONTEXTMENU_ITEMS_CLEAR_COLUMN, aN as CONTEXTMENU_ITEMS_INSERT_LEFT, aO as CONTEXTMENU_ITEMS_INSERT_RIGHT, aP as CONTEXTMENU_ITEMS_READ_ONLY, aQ as CONTEXTMENU_ITEMS_REDO, aR as CONTEXTMENU_ITEMS_REMOVE_COLUMN, aS as transformSelectionToColumnDistance, aT as CONTEXTMENU_ITEMS_REMOVE_ROW, aU as transformSelectionToRowDistance, aV as CONTEXTMENU_ITEMS_ROW_ABOVE, aW as CONTEXTMENU_ITEMS_ROW_BELOW, aX as CONTEXTMENU_ITEMS_NO_ITEMS, aY as CONTEXTMENU_ITEMS_UNDO, aZ as getWindowScrollTop, a_ as getWindowScrollLeft, a$ as getParentWindow, b0 as isWindowsOS, b1 as isMobileBrowser, b2 as isIpadOS, C as Core, b3 as isInput, b4 as CONTEXTMENU_ITEMS_COPY, b5 as CONTEXTMENU_ITEMS_CUT, b6 as selectElementIfAllowed, b7 as stringify$1, b8 as _dataToHTML, b9 as sanitize, ba as htmlToGridSettings, bb as parse, bc as getSelectionText, bd as CONTEXTMENU_ITEMS_BORDERS_BOTTOM, be as CONTEXTMENU_ITEMS_BORDERS_LEFT, bf as CONTEXTMENU_ITEMS_REMOVE_BORDERS, bg as CONTEXTMENU_ITEMS_BORDERS_RIGHT, bh as CONTEXTMENU_ITEMS_BORDERS_TOP, bi as detectSelectionType, bj as normalizeSelectionFactory, bk as CONTEXTMENU_ITEMS_BORDERS, bl as clone, bm as substitute, bn as FILTERS_CONDITIONS_NONE, bo as FILTERS_CONDITIONS_EMPTY, bp as FILTERS_CONDITIONS_NOT_EMPTY, bq as FILTERS_CONDITIONS_EQUAL, br as FILTERS_CONDITIONS_NOT_EQUAL, bs as FILTERS_CONDITIONS_GREATER_THAN, bt as FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL, bu as FILTERS_CONDITIONS_LESS_THAN, bv as FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL, bw as FILTERS_CONDITIONS_AFTER, bx as FILTERS_CONDITIONS_BEFORE, by as FILTERS_CONDITIONS_BETWEEN, bz as FILTERS_CONDITIONS_NOT_BETWEEN, bA as FILTERS_CONDITIONS_BEGINS_WITH, bB as FILTERS_CONDITIONS_ENDS_WITH, bC as FILTERS_CONDITIONS_CONTAINS, bD as FILTERS_CONDITIONS_NOT_CONTAIN, bE as FILTERS_CONDITIONS_TOMORROW, bF as FILTERS_CONDITIONS_TODAY, bG as FILTERS_CONDITIONS_YESTERDAY, bH as getComparisonFunction, bI as FILTERS_LABELS_CONJUNCTION, bJ as FILTERS_LABELS_DISJUNCTION, bK as FILTERS_NAMESPACE, bL as FILTERS_BUTTONS_PLACEHOLDER_VALUE, bM as FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE, bN as FILTERS_CONDITIONS_NAMESPACE, bO as isKey, bP as FILTERS_BUTTONS_PLACEHOLDER_SEARCH, bQ as FILTERS_BUTTONS_SELECT_ALL, bR as FILTERS_BUTTONS_CLEAR, bS as partial, bT as dataRowToChangesArray, bU as FILTERS_VALUES_BLANK_CELLS, bV as FILTERS_BUTTONS_OK, bW as FILTERS_BUTTONS_CANCEL, bX as curry, bY as TrimmingMap, bZ as FILTERS_DIVS_FILTER_BY_CONDITION, b_ as FILTERS_DIVS_FILTER_BY_VALUE, b$ as isArrayOfArrays, c0 as error, c1 as toUpperCaseFirst, c2 as CONTEXTMENU_ITEMS_HIDE_COLUMN, c3 as CONTEXTMENU_ITEMS_SHOW_COLUMN, c4 as HidingMap, c5 as CONTEXTMENU_ITEMS_HIDE_ROW, c6 as CONTEXTMENU_ITEMS_SHOW_ROW, c7 as CONTEXTMENU_ITEMS_FREEZE_COLUMN, c8 as CONTEXTMENU_ITEMS_UNFREEZE_COLUMN, c9 as isDetached, ca as ViewportRowsCalculator, cb as rangeEachReverse, cc as CONTEXTMENU_ITEMS_UNMERGE_CELLS, cd as CONTEXTMENU_ITEMS_MERGE_CELLS, ce as HEADER_TYPE, cf as ACTIVE_HEADER_TYPE, cg as isLeftClick, ch as CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD, ci as CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD, cj as isArrayOfObjects, ck as isTouchSupported, cl as inherit, cm as registerPlugin } from '../common/textType-6fcd7426.js';
+import { e as getListWithInsertedItems$2, f as getListWithRemovedItems$2, h as getListWithInsertedItems$3, i as getListWithRemovedItems$3, s as setCaretPosition, j as extend, k as TextEditor, S as SHORTCUTS_GROUP_NAVIGATION, l as stopImmediatePropagation, n as isDefined, o as addClass, p as getScrollbarWidth, q as outerWidth, t as textRenderer, u as stringify, v as getCaretPosition, w as getSelectionEndPosition, x as pivot, y as getTrimmingContainer, z as offset, A as outerHeight, D as arrayMap, E as stripTags, K as KEY_CODES, F as isPrintableChar, G as hasClass, B as BaseEditor, I as EventManager, J as isFunctionKey, L as deepExtend, H as Hooks, M as empty, N as removeClass, O as objectEach, P as fastInnerHTML, Q as EDITOR_STATE, R as _register, U as baseRenderer, V as isEmpty, W as SHORTCUTS_GROUP_EDITOR, X as isNumeric, Y as rangeEach, Z as _getEditorInstance, $ as _register$2, _ as _register$3, T as TextCellType, a0 as defineGetter, a1 as getPluginsNames, a2 as arrayEach, a3 as hasPlugin, a4 as hasItem, a5 as hasItem$1, a6 as hasItem$3, a7 as isObject, a8 as PhysicalIndexToValueMap, a9 as hasOwnProperty, aa as isPercentValue, ab as valueAccordingPercent, ac as ViewportColumnsCalculator, ad as arrayReduce, ae as arrayFilter, af as cancelAnimationFrame, ag as requestAnimationFrame, ah as isVisible, ai as getIncreasedIndexes, aj as getDecreasedIndexes, ak as IndexMap, al as warn, am as arrayUnique, an as fastInnerText, ao as LinkedPhysicalIndexToValueMap, ap as isRightClick, aq as IndexesSequence, ar as isUndefined, as as isFunction, at as toSingleLine, au as mixin, av as localHooks, aw as debounce, ax as closest, ay as deepClone, az as isChildOf, aA as CONTEXTMENU_ITEMS_EDIT_COMMENT, aB as CONTEXTMENU_ITEMS_ADD_COMMENT, aC as CONTEXTMENU_ITEMS_REMOVE_COMMENT, aD as CONTEXTMENU_ITEMS_READ_ONLY_COMMENT, aE as CONTEXTMENU_ITEMS_ALIGNMENT, aF as CONTEXTMENU_ITEMS_ALIGNMENT_LEFT, aG as CONTEXTMENU_ITEMS_ALIGNMENT_CENTER, aH as CONTEXTMENU_ITEMS_ALIGNMENT_RIGHT, aI as CONTEXTMENU_ITEMS_ALIGNMENT_JUSTIFY, aJ as CONTEXTMENU_ITEMS_ALIGNMENT_TOP, aK as CONTEXTMENU_ITEMS_ALIGNMENT_MIDDLE, aL as CONTEXTMENU_ITEMS_ALIGNMENT_BOTTOM, aM as CONTEXTMENU_ITEMS_CLEAR_COLUMN, aN as CONTEXTMENU_ITEMS_INSERT_LEFT, aO as CONTEXTMENU_ITEMS_INSERT_RIGHT, aP as CONTEXTMENU_ITEMS_READ_ONLY, aQ as CONTEXTMENU_ITEMS_REDO, aR as CONTEXTMENU_ITEMS_REMOVE_COLUMN, aS as transformSelectionToColumnDistance, aT as CONTEXTMENU_ITEMS_REMOVE_ROW, aU as transformSelectionToRowDistance, aV as CONTEXTMENU_ITEMS_ROW_ABOVE, aW as CONTEXTMENU_ITEMS_ROW_BELOW, aX as CONTEXTMENU_ITEMS_NO_ITEMS, aY as CONTEXTMENU_ITEMS_UNDO, aZ as getWindowScrollTop, a_ as getWindowScrollLeft, a$ as getParentWindow, b0 as isWindowsOS, b1 as isMobileBrowser, b2 as isIpadOS, C as Core, b3 as isInput, b4 as CONTEXTMENU_ITEMS_COPY, b5 as CONTEXTMENU_ITEMS_CUT, b6 as selectElementIfAllowed, b7 as stringify$1, b8 as _dataToHTML, b9 as sanitize, ba as htmlToGridSettings, bb as parse, bc as getSelectionText, bd as CONTEXTMENU_ITEMS_BORDERS_BOTTOM, be as CONTEXTMENU_ITEMS_BORDERS_LEFT, bf as CONTEXTMENU_ITEMS_REMOVE_BORDERS, bg as CONTEXTMENU_ITEMS_BORDERS_RIGHT, bh as CONTEXTMENU_ITEMS_BORDERS_TOP, bi as detectSelectionType, bj as normalizeSelectionFactory, bk as CONTEXTMENU_ITEMS_BORDERS, bl as clone, bm as substitute, bn as FILTERS_CONDITIONS_NONE, bo as FILTERS_CONDITIONS_EMPTY, bp as FILTERS_CONDITIONS_NOT_EMPTY, bq as FILTERS_CONDITIONS_EQUAL, br as FILTERS_CONDITIONS_NOT_EQUAL, bs as FILTERS_CONDITIONS_GREATER_THAN, bt as FILTERS_CONDITIONS_GREATER_THAN_OR_EQUAL, bu as FILTERS_CONDITIONS_LESS_THAN, bv as FILTERS_CONDITIONS_LESS_THAN_OR_EQUAL, bw as FILTERS_CONDITIONS_AFTER, bx as FILTERS_CONDITIONS_BEFORE, by as FILTERS_CONDITIONS_BETWEEN, bz as FILTERS_CONDITIONS_NOT_BETWEEN, bA as FILTERS_CONDITIONS_BEGINS_WITH, bB as FILTERS_CONDITIONS_ENDS_WITH, bC as FILTERS_CONDITIONS_CONTAINS, bD as FILTERS_CONDITIONS_NOT_CONTAIN, bE as FILTERS_CONDITIONS_TOMORROW, bF as FILTERS_CONDITIONS_TODAY, bG as FILTERS_CONDITIONS_YESTERDAY, bH as getComparisonFunction, bI as FILTERS_LABELS_CONJUNCTION, bJ as FILTERS_LABELS_DISJUNCTION, bK as FILTERS_NAMESPACE, bL as FILTERS_BUTTONS_PLACEHOLDER_VALUE, bM as FILTERS_BUTTONS_PLACEHOLDER_SECOND_VALUE, bN as FILTERS_CONDITIONS_NAMESPACE, bO as isKey, bP as FILTERS_BUTTONS_PLACEHOLDER_SEARCH, bQ as FILTERS_BUTTONS_SELECT_ALL, bR as FILTERS_BUTTONS_CLEAR, bS as partial, bT as dataRowToChangesArray, bU as FILTERS_VALUES_BLANK_CELLS, bV as FILTERS_BUTTONS_OK, bW as FILTERS_BUTTONS_CANCEL, bX as curry, bY as TrimmingMap, bZ as FILTERS_DIVS_FILTER_BY_CONDITION, b_ as FILTERS_DIVS_FILTER_BY_VALUE, b$ as isArrayOfArrays, c0 as error, c1 as toUpperCaseFirst, c2 as CONTEXTMENU_ITEMS_HIDE_COLUMN, c3 as CONTEXTMENU_ITEMS_SHOW_COLUMN, c4 as HidingMap, c5 as CONTEXTMENU_ITEMS_HIDE_ROW, c6 as CONTEXTMENU_ITEMS_SHOW_ROW, c7 as CONTEXTMENU_ITEMS_FREEZE_COLUMN, c8 as CONTEXTMENU_ITEMS_UNFREEZE_COLUMN, c9 as isDetached, ca as ViewportRowsCalculator, cb as rangeEachReverse, cc as CONTEXTMENU_ITEMS_UNMERGE_CELLS, cd as CONTEXTMENU_ITEMS_MERGE_CELLS, ce as HEADER_TYPE, cf as ACTIVE_HEADER_TYPE, cg as isLeftClick, ch as CONTEXTMENU_ITEMS_NESTED_ROWS_INSERT_CHILD, ci as CONTEXTMENU_ITEMS_NESTED_ROWS_DETACH_CHILD, cj as isArrayOfObjects, ck as isTouchSupported, cl as inherit, cm as registerPlugin } from '../common/textType-eccd4edc.js';
 import { r as requireObjectCoercible, l as getMethod, m as functionCall, t as toString_1, n as anObject, ad as collection, f as functionUncurryThis, h as fails, _ as _export } from '../common/es.function.name-3b0da0e4.js';
 import { f as fixRegexpWellKnownSymbolLogic, r as regexpExecAbstract, c as collectionWeak } from '../common/es.string.starts-with-96c3abce.js';
-import { h as hooks } from '../common/moment-640234e6.js';
+import { h as hooks } from '../common/moment-82250e2c.js';
 import { c as createCommonjsModule, a as commonjsGlobal, d as commonjsRequire } from '../common/_commonjsHelpers-f5d70792.js';
 import { _ as _register$1, h as hasItem$2, s as staticRegister } from '../common/registry-09f449b9.js';
 import '../common/es.string.ends-with-176c3fe0.js';
@@ -53,7 +53,7 @@ function _createClass(Constructor, protoProps, staticProps) {
 }
 function _get() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get = Reflect.get;
+    _get = Reflect.get.bind();
   } else {
     _get = function _get2(target, property, receiver) {
       var base = _superPropBase(target, property);
@@ -86,7 +86,7 @@ function _inherits(subClass, superClass) {
     _setPrototypeOf(subClass, superClass);
 }
 function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -135,7 +135,7 @@ function _isNativeReflectConstruct() {
   }
 }
 function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf(o);
@@ -376,7 +376,7 @@ function _createClass$1(Constructor, protoProps, staticProps) {
 }
 function _get$1() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$1 = Reflect.get;
+    _get$1 = Reflect.get.bind();
   } else {
     _get$1 = function _get2(target, property, receiver) {
       var base = _superPropBase$1(target, property);
@@ -409,7 +409,7 @@ function _inherits$1(subClass, superClass) {
     _setPrototypeOf$1(subClass, superClass);
 }
 function _setPrototypeOf$1(o, p) {
-  _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -458,7 +458,7 @@ function _isNativeReflectConstruct$1() {
   }
 }
 function _getPrototypeOf$1(o) {
-  _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$1(o);
@@ -688,19 +688,18 @@ var AutocompleteEditor = /* @__PURE__ */ function(_HandsontableEditor) {
   }, {
     key: "flipDropdownIfNeeded",
     value: function flipDropdownIfNeeded() {
+      var trimmingContainer = getTrimmingContainer(this.hot.view._wt.wtTable.TABLE);
+      var isWindowAsScrollableElement = trimmingContainer === this.hot.rootWindow;
+      var preventOverflow = this.cellProperties.preventOverflow;
+      if (isWindowAsScrollableElement || !isWindowAsScrollableElement && (preventOverflow || preventOverflow === "horizontal")) {
+        return false;
+      }
       var textareaOffset = offset(this.TEXTAREA);
       var textareaHeight = outerHeight(this.TEXTAREA);
       var dropdownHeight = this.getDropdownHeight();
-      var trimmingContainer = getTrimmingContainer(this.hot.view._wt.wtTable.TABLE);
       var trimmingContainerScrollTop = trimmingContainer.scrollTop;
       var headersHeight = outerHeight(this.hot.view._wt.wtTable.THEAD);
-      var containerOffset = {
-        row: 0,
-        col: 0
-      };
-      if (trimmingContainer !== this.hot.rootWindow) {
-        containerOffset = offset(trimmingContainer);
-      }
+      var containerOffset = offset(trimmingContainer);
       var spaceAbove = textareaOffset.top - containerOffset.top - headersHeight + trimmingContainerScrollTop;
       var spaceBelow = trimmingContainer.scrollHeight - spaceAbove - headersHeight - textareaHeight;
       var flipNeeded = dropdownHeight > spaceBelow && spaceAbove > spaceBelow;
@@ -887,7 +886,7 @@ function _inherits$2(subClass, superClass) {
     _setPrototypeOf$2(subClass, superClass);
 }
 function _setPrototypeOf$2(o, p) {
-  _setPrototypeOf$2 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$2 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -936,7 +935,7 @@ function _isNativeReflectConstruct$2() {
   }
 }
 function _getPrototypeOf$2(o) {
-  _getPrototypeOf$2 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$2 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$2(o);
@@ -1085,8 +1084,8 @@ var pikaday = createCommonjsModule(function (module, exports) {
 
     isLeapYear = function(year)
     {
-        // solution by Matti Virkkunen: http://stackoverflow.com/a/4881951
-        return year % 4 === 0 && year % 100 !== 0 || year % 400 === 0;
+        // solution lifted from date.js (MIT license): https://github.com/datejs/Datejs
+        return ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0);
     },
 
     getDaysInMonth = function(year, month)
@@ -1169,7 +1168,7 @@ var pikaday = createCommonjsModule(function (module, exports) {
         // automatically show/hide the picker on `field` focus (default `true` if `field` is set)
         bound: undefined,
 
-        // data-attribute on the input field with an aria assistance tekst (only applied when `bound` is set)
+        // data-attribute on the input field with an aria assistance text (only applied when `bound` is set)
         ariaLabel: 'Use the arrow keys to pick a date',
 
         // position of the datepicker, relative to the field (default to bottom & left)
@@ -1197,6 +1196,10 @@ var pikaday = createCommonjsModule(function (module, exports) {
 
         // first day of week (0: Sunday, 1: Monday etc)
         firstDay: 0,
+
+        // minimum number of days in the week that gets week number one
+        // default ISO 8601, week 01 is the week with the first Thursday (4)
+        firstWeekOfYearMinDays: 4,
 
         // the default flag for moment's strict date parsing
         formatStrict: false,
@@ -1335,11 +1338,35 @@ var pikaday = createCommonjsModule(function (module, exports) {
                '</td>';
     },
 
-    renderWeek = function (d, m, y) {
-        // Lifted from http://javascript.about.com/library/blweekyear.htm, lightly modified.
-        var onejan = new Date(y, 0, 1),
-            weekNum = Math.ceil((((new Date(y, m, d) - onejan) / 86400000) + onejan.getDay()+1)/7);
-        return '<td class="pika-week">' + weekNum + '</td>';
+    isoWeek = function(date, firstWeekOfYearMinDays) {
+        // Ensure we're at the start of the day.
+        date.setHours(0, 0, 0, 0);
+
+        // Thursday in current week decides the year because January 4th
+        // is always in the first week according to ISO8601.
+        var yearDay        = date.getDate(),
+            weekDay        = date.getDay(),
+            dayInFirstWeek = firstWeekOfYearMinDays,
+            dayShift       = dayInFirstWeek - 1, // counting starts at 0
+            daysPerWeek    = 7,
+            prevWeekDay    = function(day) { return (day + daysPerWeek - 1) % daysPerWeek; };
+
+        // Adjust to Thursday in week 1 and count number of weeks from date to week 1.
+        date.setDate(yearDay + dayShift - prevWeekDay(weekDay));
+
+        var jan4th      = new Date(date.getFullYear(), 0, dayInFirstWeek),
+            msPerDay    = 24 * 60 * 60 * 1000,
+            daysBetween = (date.getTime() - jan4th.getTime()) / msPerDay,
+            weekNum     = 1 + Math.round((daysBetween - dayShift + prevWeekDay(jan4th.getDay())) / daysPerWeek);
+
+        return weekNum;
+    },
+
+    renderWeek = function (d, m, y, firstWeekOfYearMinDays) {
+        var date = new Date(y, m, d),
+            week = hasMoment ? moment(date).isoWeek() : isoWeek(date, firstWeekOfYearMinDays);
+
+        return '<td class="pika-week">' + week + '</td>';
     },
 
     renderRow = function(days, isRTL, pickWholeWeek, isRowSelected)
@@ -1379,7 +1406,7 @@ var pikaday = createCommonjsModule(function (module, exports) {
         for (arr = [], i = 0; i < 12; i++) {
             arr.push('<option value="' + (year === refYear ? i - c : 12 + i - c) + '"' +
                 (i === month ? ' selected="selected"': '') +
-                ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? 'disabled="disabled"' : '') + '>' +
+                ((isMinYear && i < opts.minMonth) || (isMaxYear && i > opts.maxMonth) ? ' disabled="disabled"' : '') + '>' +
                 opts.i18n.months[i] + '</option>');
         }
 
@@ -1510,7 +1537,6 @@ var pikaday = createCommonjsModule(function (module, exports) {
                         }
                         break;
                     case 37:
-                        e.preventDefault();
                         self.adjustDate('subtract', 1);
                         break;
                     case 38:
@@ -1522,7 +1548,23 @@ var pikaday = createCommonjsModule(function (module, exports) {
                     case 40:
                         self.adjustDate('add', 7);
                         break;
+                    case 8:
+                    case 46:
+                        self.setDate(null);
+                        break;
                 }
+            }
+        };
+
+        self._parseFieldValue = function()
+        {
+            if (opts.parse) {
+                return opts.parse(opts.field.value, opts.format);
+            } else if (hasMoment) {
+                var date = moment(opts.field.value, opts.format, opts.formatStrict);
+                return (date && date.isValid()) ? date.toDate() : null;
+            } else {
+                return new Date(Date.parse(opts.field.value));
             }
         };
 
@@ -1533,15 +1575,7 @@ var pikaday = createCommonjsModule(function (module, exports) {
             if (e.firedBy === self) {
                 return;
             }
-            if (opts.parse) {
-                date = opts.parse(opts.field.value, opts.format);
-            } else if (hasMoment) {
-                date = moment(opts.field.value, opts.format, opts.formatStrict);
-                date = (date && date.isValid()) ? date.toDate() : null;
-            }
-            else {
-                date = new Date(Date.parse(opts.field.value));
-            }
+            date = self._parseFieldValue();
             if (isDate(date)) {
               self.setDate(date);
             }
@@ -1626,11 +1660,7 @@ var pikaday = createCommonjsModule(function (module, exports) {
             addEvent(opts.field, 'change', self._onInputChange);
 
             if (!opts.defaultDate) {
-                if (hasMoment && opts.field.value) {
-                    opts.defaultDate = moment(opts.field.value, opts.format).toDate();
-                } else {
-                    opts.defaultDate = new Date(Date.parse(opts.field.value));
-                }
+                opts.defaultDate = self._parseFieldValue();
                 opts.setDefaultDate = true;
             }
         }
@@ -1812,6 +1842,14 @@ var pikaday = createCommonjsModule(function (module, exports) {
         },
 
         /**
+         * clear and reset the date
+         */
+        clear: function()
+        {
+            this.setDate(null);
+        },
+
+        /**
          * change view to a specific date
          */
         gotoDate: function(date)
@@ -1990,9 +2028,8 @@ var pikaday = createCommonjsModule(function (module, exports) {
                 }
             }
 
-            randId = 'pika-title-' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 2);
-
             for (var c = 0; c < opts.numberOfMonths; c++) {
+                randId = 'pika-title-' + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 2);
                 html += '<div class="pika-lendar">' + renderTitle(this, c, this.calendars[c].year, this.calendars[c].month, this.calendars[0].year, randId) + this.render(this.calendars[c].year, this.calendars[c].month, randId) + '</div>';
             }
 
@@ -2160,7 +2197,7 @@ var pikaday = createCommonjsModule(function (module, exports) {
 
                 if (++r === 7) {
                     if (opts.showWeekNumber) {
-                        row.unshift(renderWeek(i - before, month, year));
+                        row.unshift(renderWeek(i - before, month, year, opts.firstWeekOfYearMinDays));
                     }
                     data.push(renderRow(row, opts.isRTL, opts.pickWholeWeek, isWeekSelected));
                     row = [];
@@ -2199,9 +2236,12 @@ var pikaday = createCommonjsModule(function (module, exports) {
                 if (this._o.bound) {
                     removeEvent(document, 'click', this._onClick);
                 }
-                this.el.style.position = 'static'; // reset
-                this.el.style.left = 'auto';
-                this.el.style.top = 'auto';
+
+                if (!this._o.container) {
+                    this.el.style.position = 'static'; // reset
+                    this.el.style.left = 'auto';
+                    this.el.style.top = 'auto';
+                }
                 addClass(this.el, 'is-hidden');
                 this._v = false;
                 if (v !== undefined && typeof this._o.onClose === 'function') {
@@ -2276,7 +2316,7 @@ function _createClass$3(Constructor, protoProps, staticProps) {
 }
 function _get$2() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$2 = Reflect.get;
+    _get$2 = Reflect.get.bind();
   } else {
     _get$2 = function _get2(target, property, receiver) {
       var base = _superPropBase$2(target, property);
@@ -2309,7 +2349,7 @@ function _inherits$3(subClass, superClass) {
     _setPrototypeOf$3(subClass, superClass);
 }
 function _setPrototypeOf$3(o, p) {
-  _setPrototypeOf$3 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$3 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -2358,7 +2398,7 @@ function _isNativeReflectConstruct$3() {
   }
 }
 function _getPrototypeOf$3(o) {
-  _getPrototypeOf$3 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$3 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$3(o);
@@ -2590,7 +2630,7 @@ function _createClass$4(Constructor, protoProps, staticProps) {
 }
 function _get$3() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$3 = Reflect.get;
+    _get$3 = Reflect.get.bind();
   } else {
     _get$3 = function _get2(target, property, receiver) {
       var base = _superPropBase$3(target, property);
@@ -2623,7 +2663,7 @@ function _inherits$4(subClass, superClass) {
     _setPrototypeOf$4(subClass, superClass);
 }
 function _setPrototypeOf$4(o, p) {
-  _setPrototypeOf$4 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$4 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -2672,7 +2712,7 @@ function _isNativeReflectConstruct$4() {
   }
 }
 function _getPrototypeOf$4(o) {
-  _getPrototypeOf$4 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$4 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$4(o);
@@ -2751,7 +2791,7 @@ function _inherits$5(subClass, superClass) {
     _setPrototypeOf$5(subClass, superClass);
 }
 function _setPrototypeOf$5(o, p) {
-  _setPrototypeOf$5 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$5 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -2800,7 +2840,7 @@ function _isNativeReflectConstruct$5() {
   }
 }
 function _getPrototypeOf$5(o) {
-  _getPrototypeOf$5 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$5 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$5(o);
@@ -2855,7 +2895,7 @@ function _createClass$6(Constructor, protoProps, staticProps) {
 }
 function _get$4() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$4 = Reflect.get;
+    _get$4 = Reflect.get.bind();
   } else {
     _get$4 = function _get2(target, property, receiver) {
       var base = _superPropBase$4(target, property);
@@ -2888,7 +2928,7 @@ function _inherits$6(subClass, superClass) {
     _setPrototypeOf$6(subClass, superClass);
 }
 function _setPrototypeOf$6(o, p) {
-  _setPrototypeOf$6 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$6 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -2937,7 +2977,7 @@ function _isNativeReflectConstruct$6() {
   }
 }
 function _getPrototypeOf$6(o) {
-  _getPrototypeOf$6 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$6 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$6(o);
@@ -3006,7 +3046,7 @@ function _createClass$7(Constructor, protoProps, staticProps) {
 }
 function _get$5() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$5 = Reflect.get;
+    _get$5 = Reflect.get.bind();
   } else {
     _get$5 = function _get2(target, property, receiver) {
       var base = _superPropBase$5(target, property);
@@ -3039,7 +3079,7 @@ function _inherits$7(subClass, superClass) {
     _setPrototypeOf$7(subClass, superClass);
 }
 function _setPrototypeOf$7(o, p) {
-  _setPrototypeOf$7 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$7 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -3088,7 +3128,7 @@ function _isNativeReflectConstruct$7() {
   }
 }
 function _getPrototypeOf$7(o) {
-  _getPrototypeOf$7 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$7 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$7(o);
@@ -3305,7 +3345,7 @@ function _createClass$8(Constructor, protoProps, staticProps) {
 }
 function _get$6() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$6 = Reflect.get;
+    _get$6 = Reflect.get.bind();
   } else {
     _get$6 = function _get2(target, property, receiver) {
       var base = _superPropBase$6(target, property);
@@ -3338,7 +3378,7 @@ function _inherits$8(subClass, superClass) {
     _setPrototypeOf$8(subClass, superClass);
 }
 function _setPrototypeOf$8(o, p) {
-  _setPrototypeOf$8 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$8 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -3387,7 +3427,7 @@ function _isNativeReflectConstruct$8() {
   }
 }
 function _getPrototypeOf$8(o) {
-  _getPrototypeOf$8 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$8 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$8(o);
@@ -5004,7 +5044,7 @@ function _createClass$c(Constructor, protoProps, staticProps) {
 }
 function _get$7() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$7 = Reflect.get;
+    _get$7 = Reflect.get.bind();
   } else {
     _get$7 = function _get2(target, property, receiver) {
       var base = _superPropBase$7(target, property);
@@ -5037,7 +5077,7 @@ function _inherits$9(subClass, superClass) {
     _setPrototypeOf$9(subClass, superClass);
 }
 function _setPrototypeOf$9(o, p) {
-  _setPrototypeOf$9 = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$9 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -5086,7 +5126,7 @@ function _isNativeReflectConstruct$9() {
   }
 }
 function _getPrototypeOf$9(o) {
-  _getPrototypeOf$9 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$9 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$9(o);
@@ -5718,7 +5758,7 @@ function _createClass$d(Constructor, protoProps, staticProps) {
 }
 function _get$8() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$8 = Reflect.get;
+    _get$8 = Reflect.get.bind();
   } else {
     _get$8 = function _get2(target, property, receiver) {
       var base = _superPropBase$8(target, property);
@@ -5751,7 +5791,7 @@ function _inherits$a(subClass, superClass) {
     _setPrototypeOf$a(subClass, superClass);
 }
 function _setPrototypeOf$a(o, p) {
-  _setPrototypeOf$a = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$a = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -5800,7 +5840,7 @@ function _isNativeReflectConstruct$a() {
   }
 }
 function _getPrototypeOf$a(o) {
-  _getPrototypeOf$a = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$a = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$a(o);
@@ -6280,7 +6320,7 @@ function _createClass$e(Constructor, protoProps, staticProps) {
 }
 function _get$9() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$9 = Reflect.get;
+    _get$9 = Reflect.get.bind();
   } else {
     _get$9 = function _get2(target, property, receiver) {
       var base = _superPropBase$9(target, property);
@@ -6313,7 +6353,7 @@ function _inherits$b(subClass, superClass) {
     _setPrototypeOf$b(subClass, superClass);
 }
 function _setPrototypeOf$b(o, p) {
-  _setPrototypeOf$b = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$b = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -6362,7 +6402,7 @@ function _isNativeReflectConstruct$b() {
   }
 }
 function _getPrototypeOf$b(o) {
-  _getPrototypeOf$b = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$b = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$b(o);
@@ -6789,7 +6829,7 @@ function _createClass$f(Constructor, protoProps, staticProps) {
 }
 function _get$a() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$a = Reflect.get;
+    _get$a = Reflect.get.bind();
   } else {
     _get$a = function _get2(target, property, receiver) {
       var base = _superPropBase$a(target, property);
@@ -6822,7 +6862,7 @@ function _inherits$c(subClass, superClass) {
     _setPrototypeOf$c(subClass, superClass);
 }
 function _setPrototypeOf$c(o, p) {
-  _setPrototypeOf$c = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$c = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -6871,7 +6911,7 @@ function _isNativeReflectConstruct$c() {
   }
 }
 function _getPrototypeOf$c(o) {
-  _getPrototypeOf$c = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$c = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$c(o);
@@ -6972,7 +7012,7 @@ function _createClass$g(Constructor, protoProps, staticProps) {
 }
 function _get$b() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$b = Reflect.get;
+    _get$b = Reflect.get.bind();
   } else {
     _get$b = function _get2(target, property, receiver) {
       var base = _superPropBase$b(target, property);
@@ -7005,7 +7045,7 @@ function _inherits$d(subClass, superClass) {
     _setPrototypeOf$d(subClass, superClass);
 }
 function _setPrototypeOf$d(o, p) {
-  _setPrototypeOf$d = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$d = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -7054,7 +7094,7 @@ function _isNativeReflectConstruct$d() {
   }
 }
 function _getPrototypeOf$d(o) {
-  _getPrototypeOf$d = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$d = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$d(o);
@@ -7126,7 +7166,7 @@ function _createClass$h(Constructor, protoProps, staticProps) {
 }
 function _get$c() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$c = Reflect.get;
+    _get$c = Reflect.get.bind();
   } else {
     _get$c = function _get2(target, property, receiver) {
       var base = _superPropBase$c(target, property);
@@ -7159,7 +7199,7 @@ function _inherits$e(subClass, superClass) {
     _setPrototypeOf$e(subClass, superClass);
 }
 function _setPrototypeOf$e(o, p) {
-  _setPrototypeOf$e = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$e = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -7208,7 +7248,7 @@ function _isNativeReflectConstruct$e() {
   }
 }
 function _getPrototypeOf$e(o) {
-  _getPrototypeOf$e = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$e = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$e(o);
@@ -7348,7 +7388,7 @@ function _createClass$i(Constructor, protoProps, staticProps) {
 }
 function _get$d() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$d = Reflect.get;
+    _get$d = Reflect.get.bind();
   } else {
     _get$d = function _get2(target, property, receiver) {
       var base = _superPropBase$d(target, property);
@@ -7381,7 +7421,7 @@ function _inherits$f(subClass, superClass) {
     _setPrototypeOf$f(subClass, superClass);
 }
 function _setPrototypeOf$f(o, p) {
-  _setPrototypeOf$f = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$f = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -7430,7 +7470,7 @@ function _isNativeReflectConstruct$f() {
   }
 }
 function _getPrototypeOf$f(o) {
-  _getPrototypeOf$f = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$f = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$f(o);
@@ -8714,7 +8754,7 @@ function _createClass$l(Constructor, protoProps, staticProps) {
 }
 function _get$e() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$e = Reflect.get;
+    _get$e = Reflect.get.bind();
   } else {
     _get$e = function _get2(target, property, receiver) {
       var base = _superPropBase$e(target, property);
@@ -8747,7 +8787,7 @@ function _inherits$g(subClass, superClass) {
     _setPrototypeOf$g(subClass, superClass);
 }
 function _setPrototypeOf$g(o, p) {
-  _setPrototypeOf$g = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$g = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -8796,7 +8836,7 @@ function _isNativeReflectConstruct$g() {
   }
 }
 function _getPrototypeOf$g(o) {
-  _getPrototypeOf$g = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$g = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$g(o);
@@ -9658,7 +9698,7 @@ function _createClass$n(Constructor, protoProps, staticProps) {
 }
 function _get$f() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$f = Reflect.get;
+    _get$f = Reflect.get.bind();
   } else {
     _get$f = function _get2(target, property, receiver) {
       var base = _superPropBase$f(target, property);
@@ -9691,7 +9731,7 @@ function _inherits$h(subClass, superClass) {
     _setPrototypeOf$h(subClass, superClass);
 }
 function _setPrototypeOf$h(o, p) {
-  _setPrototypeOf$h = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$h = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -9740,7 +9780,7 @@ function _isNativeReflectConstruct$h() {
   }
 }
 function _getPrototypeOf$h(o) {
-  _getPrototypeOf$h = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$h = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$h(o);
@@ -10076,8 +10116,8 @@ var CommentEditor = /* @__PURE__ */ function() {
     key: "getSize",
     value: function getSize() {
       return {
-        width: outerWidth(this.editor),
-        height: outerHeight(this.editor)
+        width: outerWidth(this.getInputElement()),
+        height: outerHeight(this.getInputElement())
       };
     }
   }, {
@@ -10456,7 +10496,7 @@ function _createClass$q(Constructor, protoProps, staticProps) {
 }
 function _get$g() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$g = Reflect.get;
+    _get$g = Reflect.get.bind();
   } else {
     _get$g = function _get2(target, property, receiver) {
       var base = _superPropBase$g(target, property);
@@ -10489,7 +10529,7 @@ function _inherits$i(subClass, superClass) {
     _setPrototypeOf$i(subClass, superClass);
 }
 function _setPrototypeOf$i(o, p) {
-  _setPrototypeOf$i = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$i = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -10538,7 +10578,7 @@ function _isNativeReflectConstruct$i() {
   }
 }
 function _getPrototypeOf$i(o) {
-  _getPrototypeOf$i = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$i = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$i(o);
@@ -10774,49 +10814,48 @@ var Comments = /* @__PURE__ */ function(_BasePlugin) {
       var renderableColumn = columnIndexMapper.getRenderableFromVisualIndex(visualColumn);
       var targetingPreviousRow = renderableRow === null;
       if (renderableRow === null) {
-        renderableRow = rowIndexMapper.getRenderableFromVisualIndex(rowIndexMapper.getFirstNotHiddenIndex(visualRow, -1));
+        renderableRow = rowIndexMapper.getRenderableFromVisualIndex(rowIndexMapper.getNearestNotHiddenIndex(visualRow, -1));
       }
       if (renderableColumn === null) {
-        renderableColumn = columnIndexMapper.getRenderableFromVisualIndex(columnIndexMapper.getFirstNotHiddenIndex(visualColumn, -1));
+        renderableColumn = columnIndexMapper.getRenderableFromVisualIndex(columnIndexMapper.getNearestNotHiddenIndex(visualColumn, -1));
       }
       var isBeforeRenderedRows = renderableRow === null;
       var isBeforeRenderedColumns = renderableColumn === null;
       renderableRow = (_renderableRow = renderableRow) !== null && _renderableRow !== void 0 ? _renderableRow : 0;
       renderableColumn = (_renderableColumn = renderableColumn) !== null && _renderableColumn !== void 0 ? _renderableColumn : 0;
       var _this$hot2 = this.hot, rootWindow = _this$hot2.rootWindow, wt = _this$hot2.view._wt;
-      var wtTable = wt.wtTable, wtOverlays = wt.wtOverlays, wtViewport = wt.wtViewport;
-      var scrollableElement = wtOverlays.scrollableElement;
+      var wtTable = wt.wtTable;
       var TD = wtTable.getCell({
         row: renderableRow,
         col: renderableColumn
       });
-      var cellOffset = offset(TD);
-      var lastColWidth = isBeforeRenderedColumns ? 0 : wtTable.getStretchedColumnWidth(renderableColumn);
-      var lastRowHeight = targetingPreviousRow && !isBeforeRenderedRows ? outerHeight(TD) : 0;
-      var cellTopOffset = cellOffset.top;
-      var cellLeftOffset = cellOffset.left;
-      if (wtViewport.hasVerticalScroll() && scrollableElement !== rootWindow) {
-        cellTopOffset -= wtOverlays.topOverlay.getScrollPosition();
-      }
-      if (wtViewport.hasHorizontalScroll() && scrollableElement !== rootWindow) {
-        cellLeftOffset -= wtOverlays.inlineStartOverlay.getScrollPosition() * (this.hot.isRtl() ? -1 : 1);
-      }
-      var y = cellTopOffset + lastRowHeight;
-      var x = cellLeftOffset;
-      if (this.hot.isRtl()) {
-        x -= this.editor.getSize().width;
-      } else {
-        x += lastColWidth;
-      }
       var commentStyle = this.getCommentMeta(visualRow, visualColumn, META_STYLE);
-      var readOnly = this.getCommentMeta(visualRow, visualColumn, META_READONLY);
       if (commentStyle) {
         this.editor.setSize(commentStyle.width, commentStyle.height);
       } else {
         this.editor.resetSize();
       }
-      this.editor.setReadOnlyState(readOnly);
+      var lastColWidth = isBeforeRenderedColumns ? 0 : wtTable.getStretchedColumnWidth(renderableColumn);
+      var lastRowHeight = targetingPreviousRow && !isBeforeRenderedRows ? outerHeight(TD) : 0;
+      var _TD$getBoundingClient = TD.getBoundingClientRect(), left = _TD$getBoundingClient.left, top = _TD$getBoundingClient.top, cellWidth = _TD$getBoundingClient.width, cellHeight = _TD$getBoundingClient.height;
+      var _this$editor$getSize = this.editor.getSize(), editorWidth = _this$editor$getSize.width, editorHeight = _this$editor$getSize.height;
+      var _this$hot$rootWindow = this.hot.rootWindow, innerWidth = _this$hot$rootWindow.innerWidth, innerHeight = _this$hot$rootWindow.innerHeight;
+      var documentElement = this.hot.rootDocument.documentElement;
+      var x = left + rootWindow.scrollX + lastColWidth;
+      var y = top + rootWindow.scrollY + lastRowHeight;
+      if (this.hot.isRtl()) {
+        x -= editorWidth + lastColWidth;
+      }
+      if (this.hot.isLtr() && left + cellWidth + editorWidth > innerWidth) {
+        x = left + rootWindow.scrollX - editorWidth - 1;
+      } else if (this.hot.isRtl() && x < -(documentElement.scrollWidth - documentElement.clientWidth)) {
+        x = left + rootWindow.scrollX + lastColWidth + 1;
+      }
+      if (top + editorHeight > innerHeight) {
+        y -= editorHeight - cellHeight + 1;
+      }
       this.editor.setPosition(x, y);
+      this.editor.setReadOnlyState(this.getCommentMeta(visualRow, visualColumn, META_READONLY));
     }
   }, {
     key: "checkSelectionCommentsConsistency",
@@ -12896,7 +12935,7 @@ function _createClass$v(Constructor, protoProps, staticProps) {
 }
 function _get$h() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$h = Reflect.get;
+    _get$h = Reflect.get.bind();
   } else {
     _get$h = function _get2(target, property, receiver) {
       var base = _superPropBase$h(target, property);
@@ -12929,7 +12968,7 @@ function _inherits$j(subClass, superClass) {
     _setPrototypeOf$j(subClass, superClass);
 }
 function _setPrototypeOf$j(o, p) {
-  _setPrototypeOf$j = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$j = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -12978,7 +13017,7 @@ function _isNativeReflectConstruct$j() {
   }
 }
 function _getPrototypeOf$j(o) {
-  _getPrototypeOf$j = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$j = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$j(o);
@@ -13543,7 +13582,7 @@ function _createClass$z(Constructor, protoProps, staticProps) {
 }
 function _get$i() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$i = Reflect.get;
+    _get$i = Reflect.get.bind();
   } else {
     _get$i = function _get2(target, property, receiver) {
       var base = _superPropBase$i(target, property);
@@ -13576,7 +13615,7 @@ function _inherits$k(subClass, superClass) {
     _setPrototypeOf$k(subClass, superClass);
 }
 function _setPrototypeOf$k(o, p) {
-  _setPrototypeOf$k = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$k = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -13625,7 +13664,7 @@ function _isNativeReflectConstruct$k() {
   }
 }
 function _getPrototypeOf$k(o) {
-  _getPrototypeOf$k = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$k = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$k(o);
@@ -14389,7 +14428,7 @@ function _createClass$A(Constructor, protoProps, staticProps) {
 }
 function _get$j() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$j = Reflect.get;
+    _get$j = Reflect.get.bind();
   } else {
     _get$j = function _get2(target, property, receiver) {
       var base = _superPropBase$j(target, property);
@@ -14422,7 +14461,7 @@ function _inherits$l(subClass, superClass) {
     _setPrototypeOf$l(subClass, superClass);
 }
 function _setPrototypeOf$l(o, p) {
-  _setPrototypeOf$l = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$l = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -14471,7 +14510,7 @@ function _isNativeReflectConstruct$l() {
   }
 }
 function _getPrototypeOf$l(o) {
-  _getPrototypeOf$l = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$l = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$l(o);
@@ -15008,7 +15047,7 @@ function _createClass$B(Constructor, protoProps, staticProps) {
 }
 function _get$k() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$k = Reflect.get;
+    _get$k = Reflect.get.bind();
   } else {
     _get$k = function _get2(target, property, receiver) {
       var base = _superPropBase$k(target, property);
@@ -15041,7 +15080,7 @@ function _inherits$m(subClass, superClass) {
     _setPrototypeOf$m(subClass, superClass);
 }
 function _setPrototypeOf$m(o, p) {
-  _setPrototypeOf$m = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$m = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -15090,7 +15129,7 @@ function _isNativeReflectConstruct$m() {
   }
 }
 function _getPrototypeOf$m(o) {
-  _getPrototypeOf$m = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$m = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$m(o);
@@ -15295,7 +15334,7 @@ function _createClass$C(Constructor, protoProps, staticProps) {
 }
 function _get$l() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$l = Reflect.get;
+    _get$l = Reflect.get.bind();
   } else {
     _get$l = function _get2(target, property, receiver) {
       var base = _superPropBase$l(target, property);
@@ -15328,7 +15367,7 @@ function _inherits$n(subClass, superClass) {
     _setPrototypeOf$n(subClass, superClass);
 }
 function _setPrototypeOf$n(o, p) {
-  _setPrototypeOf$n = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$n = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -15377,7 +15416,7 @@ function _isNativeReflectConstruct$n() {
   }
 }
 function _getPrototypeOf$n(o) {
-  _getPrototypeOf$n = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$n = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$n(o);
@@ -15574,6 +15613,7 @@ var DropdownMenu = /* @__PURE__ */ function(_BasePlugin) {
       }
       var button = this.hot.rootDocument.createElement("button");
       button.className = BUTTON_CLASS_NAME;
+      button.type = "button";
       button.onclick = function() {
         return false;
       };
@@ -15916,7 +15956,7 @@ function _inherits$o(subClass, superClass) {
     _setPrototypeOf$o(subClass, superClass);
 }
 function _setPrototypeOf$o(o, p) {
-  _setPrototypeOf$o = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$o = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -15965,7 +16005,7 @@ function _isNativeReflectConstruct$o() {
   }
 }
 function _getPrototypeOf$o(o) {
-  _getPrototypeOf$o = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$o = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$o(o);
@@ -16098,7 +16138,7 @@ function _inherits$p(subClass, superClass) {
     _setPrototypeOf$p(subClass, superClass);
 }
 function _setPrototypeOf$p(o, p) {
-  _setPrototypeOf$p = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$p = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -16147,7 +16187,7 @@ function _isNativeReflectConstruct$p() {
   }
 }
 function _getPrototypeOf$p(o) {
-  _getPrototypeOf$p = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$p = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$p(o);
@@ -17691,7 +17731,7 @@ function _createClass$J(Constructor, protoProps, staticProps) {
 }
 function _get$m() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$m = Reflect.get;
+    _get$m = Reflect.get.bind();
   } else {
     _get$m = function _get2(target, property, receiver) {
       var base = _superPropBase$m(target, property);
@@ -17724,7 +17764,7 @@ function _inherits$q(subClass, superClass) {
     _setPrototypeOf$q(subClass, superClass);
 }
 function _setPrototypeOf$q(o, p) {
-  _setPrototypeOf$q = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$q = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -17773,7 +17813,7 @@ function _isNativeReflectConstruct$q() {
   }
 }
 function _getPrototypeOf$q(o) {
-  _getPrototypeOf$q = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$q = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$q(o);
@@ -17886,7 +17926,7 @@ function _createClass$K(Constructor, protoProps, staticProps) {
 }
 function _get$n() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$n = Reflect.get;
+    _get$n = Reflect.get.bind();
   } else {
     _get$n = function _get2(target, property, receiver) {
       var base = _superPropBase$n(target, property);
@@ -17919,7 +17959,7 @@ function _inherits$r(subClass, superClass) {
     _setPrototypeOf$r(subClass, superClass);
 }
 function _setPrototypeOf$r(o, p) {
-  _setPrototypeOf$r = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$r = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -17968,7 +18008,7 @@ function _isNativeReflectConstruct$r() {
   }
 }
 function _getPrototypeOf$r(o) {
-  _getPrototypeOf$r = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$r = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$r(o);
@@ -18196,7 +18236,7 @@ function _createClass$L(Constructor, protoProps, staticProps) {
 }
 function _get$o() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$o = Reflect.get;
+    _get$o = Reflect.get.bind();
   } else {
     _get$o = function _get2(target, property, receiver) {
       var base = _superPropBase$o(target, property);
@@ -18229,7 +18269,7 @@ function _inherits$s(subClass, superClass) {
     _setPrototypeOf$s(subClass, superClass);
 }
 function _setPrototypeOf$s(o, p) {
-  _setPrototypeOf$s = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$s = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -18278,7 +18318,7 @@ function _isNativeReflectConstruct$s() {
   }
 }
 function _getPrototypeOf$s(o) {
-  _getPrototypeOf$s = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$s = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$s(o);
@@ -18510,7 +18550,7 @@ function _createClass$M(Constructor, protoProps, staticProps) {
 }
 function _get$p() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$p = Reflect.get;
+    _get$p = Reflect.get.bind();
   } else {
     _get$p = function _get2(target, property, receiver) {
       var base = _superPropBase$p(target, property);
@@ -18543,7 +18583,7 @@ function _inherits$t(subClass, superClass) {
     _setPrototypeOf$t(subClass, superClass);
 }
 function _setPrototypeOf$t(o, p) {
-  _setPrototypeOf$t = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$t = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -18592,7 +18632,7 @@ function _isNativeReflectConstruct$t() {
   }
 }
 function _getPrototypeOf$t(o) {
-  _getPrototypeOf$t = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$t = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$t(o);
@@ -18712,7 +18752,7 @@ function _inherits$u(subClass, superClass) {
     _setPrototypeOf$u(subClass, superClass);
 }
 function _setPrototypeOf$u(o, p) {
-  _setPrototypeOf$u = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$u = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -18761,7 +18801,7 @@ function _isNativeReflectConstruct$u() {
   }
 }
 function _getPrototypeOf$u(o) {
-  _getPrototypeOf$u = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$u = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$u(o);
@@ -18949,7 +18989,7 @@ function _createClass$O(Constructor, protoProps, staticProps) {
 }
 function _get$q() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$q = Reflect.get;
+    _get$q = Reflect.get.bind();
   } else {
     _get$q = function _get2(target, property, receiver) {
       var base = _superPropBase$q(target, property);
@@ -18982,7 +19022,7 @@ function _inherits$v(subClass, superClass) {
     _setPrototypeOf$v(subClass, superClass);
 }
 function _setPrototypeOf$v(o, p) {
-  _setPrototypeOf$v = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$v = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -19031,7 +19071,7 @@ function _isNativeReflectConstruct$v() {
   }
 }
 function _getPrototypeOf$v(o) {
-  _getPrototypeOf$v = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$v = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$v(o);
@@ -19142,7 +19182,7 @@ function _createClass$P(Constructor, protoProps, staticProps) {
 }
 function _get$r() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$r = Reflect.get;
+    _get$r = Reflect.get.bind();
   } else {
     _get$r = function _get2(target, property, receiver) {
       var base = _superPropBase$r(target, property);
@@ -19175,7 +19215,7 @@ function _inherits$w(subClass, superClass) {
     _setPrototypeOf$w(subClass, superClass);
 }
 function _setPrototypeOf$w(o, p) {
-  _setPrototypeOf$w = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$w = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -19224,7 +19264,7 @@ function _isNativeReflectConstruct$w() {
   }
 }
 function _getPrototypeOf$w(o) {
-  _getPrototypeOf$w = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$w = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$w(o);
@@ -19573,7 +19613,7 @@ function _createClass$Q(Constructor, protoProps, staticProps) {
 }
 function _get$s() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$s = Reflect.get;
+    _get$s = Reflect.get.bind();
   } else {
     _get$s = function _get2(target, property, receiver) {
       var base = _superPropBase$s(target, property);
@@ -19606,7 +19646,7 @@ function _inherits$x(subClass, superClass) {
     _setPrototypeOf$x(subClass, superClass);
 }
 function _setPrototypeOf$x(o, p) {
-  _setPrototypeOf$x = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$x = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -19655,7 +19695,7 @@ function _isNativeReflectConstruct$x() {
   }
 }
 function _getPrototypeOf$x(o) {
-  _getPrototypeOf$x = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$x = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$x(o);
@@ -19854,7 +19894,7 @@ function _inherits$y(subClass, superClass) {
     _setPrototypeOf$y(subClass, superClass);
 }
 function _setPrototypeOf$y(o, p) {
-  _setPrototypeOf$y = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$y = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -19903,7 +19943,7 @@ function _isNativeReflectConstruct$y() {
   }
 }
 function _getPrototypeOf$y(o) {
-  _getPrototypeOf$y = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$y = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$y(o);
@@ -20586,7 +20626,7 @@ function _createClass$V(Constructor, protoProps, staticProps) {
 }
 function _get$t() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$t = Reflect.get;
+    _get$t = Reflect.get.bind();
   } else {
     _get$t = function _get2(target, property, receiver) {
       var base = _superPropBase$t(target, property);
@@ -20619,7 +20659,7 @@ function _inherits$z(subClass, superClass) {
     _setPrototypeOf$z(subClass, superClass);
 }
 function _setPrototypeOf$z(o, p) {
-  _setPrototypeOf$z = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$z = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -20668,7 +20708,7 @@ function _isNativeReflectConstruct$z() {
   }
 }
 function _getPrototypeOf$z(o) {
-  _getPrototypeOf$z = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$z = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$z(o);
@@ -21605,7 +21645,7 @@ function _createClass$W(Constructor, protoProps, staticProps) {
 }
 function _get$u() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$u = Reflect.get;
+    _get$u = Reflect.get.bind();
   } else {
     _get$u = function _get2(target, property, receiver) {
       var base = _superPropBase$u(target, property);
@@ -21638,7 +21678,7 @@ function _inherits$A(subClass, superClass) {
     _setPrototypeOf$A(subClass, superClass);
 }
 function _setPrototypeOf$A(o, p) {
-  _setPrototypeOf$A = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$A = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -21687,7 +21727,7 @@ function _isNativeReflectConstruct$A() {
   }
 }
 function _getPrototypeOf$A(o) {
-  _getPrototypeOf$A = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$A = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$A(o);
@@ -22518,10 +22558,9 @@ function hideColumnItem(hiddenColumnsPlugin) {
       for (var visualColumn = start; visualColumn <= end; visualColumn += 1) {
         columnsToHide.push(visualColumn);
       }
-      var firstHiddenColumn = columnsToHide[0];
-      var lastHiddenColumn = columnsToHide[columnsToHide.length - 1];
-      var columnToSelect = this.columnIndexMapper.getFirstNotHiddenIndex(lastHiddenColumn + 1, 1, true, firstHiddenColumn - 1);
       hiddenColumnsPlugin.hideColumns(columnsToHide);
+      var lastHiddenColumn = columnsToHide[columnsToHide.length - 1];
+      var columnToSelect = this.columnIndexMapper.getNearestNotHiddenIndex(lastHiddenColumn, 1, true);
       if (Number.isInteger(columnToSelect) && columnToSelect >= 0) {
         this.selectColumns(columnToSelect);
       } else {
@@ -22587,8 +22626,8 @@ function showColumnItem(hiddenColumnsPlugin) {
       }
       var startVisualColumn = columns[0];
       var endVisualColumn = columns[columns.length - 1];
-      startVisualColumn = (_this$columnIndexMapp = this.columnIndexMapper.getFirstNotHiddenIndex(startVisualColumn - 1, -1)) !== null && _this$columnIndexMapp !== void 0 ? _this$columnIndexMapp : 0;
-      endVisualColumn = (_this$columnIndexMapp2 = this.columnIndexMapper.getFirstNotHiddenIndex(endVisualColumn + 1, 1)) !== null && _this$columnIndexMapp2 !== void 0 ? _this$columnIndexMapp2 : this.countCols() - 1;
+      startVisualColumn = (_this$columnIndexMapp = this.columnIndexMapper.getNearestNotHiddenIndex(startVisualColumn - 1, -1)) !== null && _this$columnIndexMapp !== void 0 ? _this$columnIndexMapp : 0;
+      endVisualColumn = (_this$columnIndexMapp2 = this.columnIndexMapper.getNearestNotHiddenIndex(endVisualColumn + 1, 1)) !== null && _this$columnIndexMapp2 !== void 0 ? _this$columnIndexMapp2 : this.countCols() - 1;
       hiddenColumnsPlugin.showColumns(columns);
       this.render();
       this.view.adjustElementsSize(true);
@@ -22630,7 +22669,7 @@ function showColumnItem(hiddenColumnsPlugin) {
         physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$7(notTrimmedColumnIndexes.slice(0, this.countCols())));
       } else {
         var lastVisualIndex = this.countCols() - 1;
-        var lastRenderableIndex = columnIndexMapper.getRenderableFromVisualIndex(columnIndexMapper.getFirstNotHiddenIndex(lastVisualIndex, -1));
+        var lastRenderableIndex = columnIndexMapper.getRenderableFromVisualIndex(columnIndexMapper.getNearestNotHiddenIndex(lastVisualIndex, -1));
         if (renderableEndColumn === lastRenderableIndex && lastVisualIndex > visualEndColumn) {
           physicalColumnIndexes.push.apply(physicalColumnIndexes, _toConsumableArray$7(notTrimmedColumnIndexes.slice(visualEndColumn + 1)));
         }
@@ -22676,7 +22715,7 @@ function _createClass$X(Constructor, protoProps, staticProps) {
 }
 function _get$v() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$v = Reflect.get;
+    _get$v = Reflect.get.bind();
   } else {
     _get$v = function _get2(target, property, receiver) {
       var base = _superPropBase$v(target, property);
@@ -22709,7 +22748,7 @@ function _inherits$B(subClass, superClass) {
     _setPrototypeOf$B(subClass, superClass);
 }
 function _setPrototypeOf$B(o, p) {
-  _setPrototypeOf$B = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$B = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -22758,7 +22797,7 @@ function _isNativeReflectConstruct$B() {
   }
 }
 function _getPrototypeOf$B(o) {
-  _getPrototypeOf$B = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$B = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$B(o);
@@ -23195,10 +23234,9 @@ function hideRowItem(hiddenRowsPlugin) {
       for (var visualRow = start; visualRow <= end; visualRow += 1) {
         rowsToHide.push(visualRow);
       }
-      var firstHiddenRow = rowsToHide[0];
-      var lastHiddenRow = rowsToHide[rowsToHide.length - 1];
-      var rowToSelect = this.rowIndexMapper.getFirstNotHiddenIndex(lastHiddenRow + 1, 1, true, firstHiddenRow - 1);
       hiddenRowsPlugin.hideRows(rowsToHide);
+      var lastHiddenRow = rowsToHide[rowsToHide.length - 1];
+      var rowToSelect = this.rowIndexMapper.getNearestNotHiddenIndex(lastHiddenRow, 1, true);
       if (Number.isInteger(rowToSelect) && rowToSelect >= 0) {
         this.selectRows(rowToSelect);
       } else {
@@ -23264,8 +23302,8 @@ function showRowItem(hiddenRowsPlugin) {
       }
       var startVisualRow = rows[0];
       var endVisualRow = rows[rows.length - 1];
-      startVisualRow = (_this$rowIndexMapper$ = this.rowIndexMapper.getFirstNotHiddenIndex(startVisualRow - 1, -1)) !== null && _this$rowIndexMapper$ !== void 0 ? _this$rowIndexMapper$ : 0;
-      endVisualRow = (_this$rowIndexMapper$2 = this.rowIndexMapper.getFirstNotHiddenIndex(endVisualRow + 1, 1)) !== null && _this$rowIndexMapper$2 !== void 0 ? _this$rowIndexMapper$2 : this.countRows() - 1;
+      startVisualRow = (_this$rowIndexMapper$ = this.rowIndexMapper.getNearestNotHiddenIndex(startVisualRow - 1, -1)) !== null && _this$rowIndexMapper$ !== void 0 ? _this$rowIndexMapper$ : 0;
+      endVisualRow = (_this$rowIndexMapper$2 = this.rowIndexMapper.getNearestNotHiddenIndex(endVisualRow + 1, 1)) !== null && _this$rowIndexMapper$2 !== void 0 ? _this$rowIndexMapper$2 : this.countRows() - 1;
       hiddenRowsPlugin.showRows(rows);
       this.render();
       this.view.adjustElementsSize(true);
@@ -23307,7 +23345,7 @@ function showRowItem(hiddenRowsPlugin) {
         physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$8(notTrimmedRowIndexes.slice(0, this.countRows())));
       } else {
         var lastVisualIndex = this.countRows() - 1;
-        var lastRenderableIndex = rowIndexMapper.getRenderableFromVisualIndex(rowIndexMapper.getFirstNotHiddenIndex(lastVisualIndex, -1));
+        var lastRenderableIndex = rowIndexMapper.getRenderableFromVisualIndex(rowIndexMapper.getNearestNotHiddenIndex(lastVisualIndex, -1));
         if (renderableEndRow === lastRenderableIndex && lastVisualIndex > visualEndRow) {
           physicalRowIndexes.push.apply(physicalRowIndexes, _toConsumableArray$8(notTrimmedRowIndexes.slice(visualEndRow + 1)));
         }
@@ -23353,7 +23391,7 @@ function _createClass$Y(Constructor, protoProps, staticProps) {
 }
 function _get$w() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$w = Reflect.get;
+    _get$w = Reflect.get.bind();
   } else {
     _get$w = function _get2(target, property, receiver) {
       var base = _superPropBase$w(target, property);
@@ -23386,7 +23424,7 @@ function _inherits$C(subClass, superClass) {
     _setPrototypeOf$C(subClass, superClass);
 }
 function _setPrototypeOf$C(o, p) {
-  _setPrototypeOf$C = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$C = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -23435,7 +23473,7 @@ function _isNativeReflectConstruct$C() {
   }
 }
 function _getPrototypeOf$C(o) {
-  _getPrototypeOf$C = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$C = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$C(o);
@@ -23991,7 +24029,7 @@ function _createClass$Z(Constructor, protoProps, staticProps) {
 }
 function _get$x() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$x = Reflect.get;
+    _get$x = Reflect.get.bind();
   } else {
     _get$x = function _get2(target, property, receiver) {
       var base = _superPropBase$x(target, property);
@@ -24024,7 +24062,7 @@ function _inherits$D(subClass, superClass) {
     _setPrototypeOf$D(subClass, superClass);
 }
 function _setPrototypeOf$D(o, p) {
-  _setPrototypeOf$D = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$D = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -24073,11 +24111,15 @@ function _isNativeReflectConstruct$D() {
   }
 }
 function _getPrototypeOf$D(o) {
-  _getPrototypeOf$D = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$D = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$D(o);
 }
+Hooks.getSingleton().register("beforeColumnFreeze");
+Hooks.getSingleton().register("afterColumnFreeze");
+Hooks.getSingleton().register("beforeColumnUnfreeze");
+Hooks.getSingleton().register("afterColumnUnfreeze");
 var PLUGIN_KEY$j = "manualColumnFreeze";
 var PLUGIN_PRIORITY$i = 110;
 var privatePool$a = new WeakMap();
@@ -24132,28 +24174,38 @@ var ManualColumnFreeze = /* @__PURE__ */ function(_BasePlugin) {
     value: function freezeColumn(column) {
       var priv = privatePool$a.get(this);
       var settings = this.hot.getSettings();
+      var freezePerformed = settings.fixedColumnsStart < this.hot.countCols() && column > settings.fixedColumnsStart - 1;
       if (!priv.afterFirstUse) {
         priv.afterFirstUse = true;
       }
-      if (settings.fixedColumnsStart === this.hot.countCols() || column <= settings.fixedColumnsStart - 1) {
+      var beforeColumnFreezeHook = this.hot.runHooks("beforeColumnFreeze", column, freezePerformed);
+      if (beforeColumnFreezeHook === false) {
         return;
       }
-      this.hot.columnIndexMapper.moveIndexes(column, settings.fixedColumnsStart);
-      settings._fixedColumnsStart += 1;
+      if (freezePerformed) {
+        this.hot.columnIndexMapper.moveIndexes(column, settings.fixedColumnsStart);
+        settings._fixedColumnsStart += 1;
+      }
+      this.hot.runHooks("afterColumnFreeze", column, freezePerformed);
     }
   }, {
     key: "unfreezeColumn",
     value: function unfreezeColumn(column) {
       var priv = privatePool$a.get(this);
       var settings = this.hot.getSettings();
+      var unfreezePerformed = settings.fixedColumnsStart > 0 && column <= settings.fixedColumnsStart - 1;
       if (!priv.afterFirstUse) {
         priv.afterFirstUse = true;
       }
-      if (settings.fixedColumnsStart <= 0 || column > settings.fixedColumnsStart - 1) {
+      var beforeColumnUnfreezeHook = this.hot.runHooks("beforeColumnUnfreeze", column, unfreezePerformed);
+      if (beforeColumnUnfreezeHook === false) {
         return;
       }
-      settings._fixedColumnsStart -= 1;
-      this.hot.columnIndexMapper.moveIndexes(column, settings.fixedColumnsStart);
+      if (unfreezePerformed) {
+        settings._fixedColumnsStart -= 1;
+        this.hot.columnIndexMapper.moveIndexes(column, settings.fixedColumnsStart);
+      }
+      this.hot.runHooks("afterColumnUnfreeze", column, unfreezePerformed);
     }
   }, {
     key: "addContextMenuEntry",
@@ -24355,7 +24407,7 @@ function _createClass$$(Constructor, protoProps, staticProps) {
 }
 function _get$y() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$y = Reflect.get;
+    _get$y = Reflect.get.bind();
   } else {
     _get$y = function _get2(target, property, receiver) {
       var base = _superPropBase$y(target, property);
@@ -24388,7 +24440,7 @@ function _inherits$E(subClass, superClass) {
     _setPrototypeOf$E(subClass, superClass);
 }
 function _setPrototypeOf$E(o, p) {
-  _setPrototypeOf$E = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$E = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -24437,7 +24489,7 @@ function _isNativeReflectConstruct$E() {
   }
 }
 function _getPrototypeOf$E(o) {
-  _getPrototypeOf$E = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$E = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$E(o);
@@ -24493,7 +24545,7 @@ function _createClass$10(Constructor, protoProps, staticProps) {
 }
 function _get$z() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$z = Reflect.get;
+    _get$z = Reflect.get.bind();
   } else {
     _get$z = function _get2(target, property, receiver) {
       var base = _superPropBase$z(target, property);
@@ -24526,7 +24578,7 @@ function _inherits$F(subClass, superClass) {
     _setPrototypeOf$F(subClass, superClass);
 }
 function _setPrototypeOf$F(o, p) {
-  _setPrototypeOf$F = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$F = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -24575,7 +24627,7 @@ function _isNativeReflectConstruct$F() {
   }
 }
 function _getPrototypeOf$F(o) {
-  _getPrototypeOf$F = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$F = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$F(o);
@@ -24631,7 +24683,7 @@ function _createClass$11(Constructor, protoProps, staticProps) {
 }
 function _get$A() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$A = Reflect.get;
+    _get$A = Reflect.get.bind();
   } else {
     _get$A = function _get2(target, property, receiver) {
       var base = _superPropBase$A(target, property);
@@ -24664,7 +24716,7 @@ function _inherits$G(subClass, superClass) {
     _setPrototypeOf$G(subClass, superClass);
 }
 function _setPrototypeOf$G(o, p) {
-  _setPrototypeOf$G = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$G = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -24713,7 +24765,7 @@ function _isNativeReflectConstruct$G() {
   }
 }
 function _getPrototypeOf$G(o) {
-  _getPrototypeOf$G = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$G = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$G(o);
@@ -24927,8 +24979,10 @@ var ManualColumnMove = /* @__PURE__ */ function(_BasePlugin) {
     key: "refreshPositions",
     value: function refreshPositions() {
       var priv = privatePool$b.get(this);
-      var firstVisible = this.hot.view._wt.wtTable.getFirstVisibleColumn();
-      var lastVisible = this.hot.view._wt.wtTable.getLastVisibleColumn();
+      var firstVisible = this.hot.view.getFirstFullyVisibleColumn();
+      if (this.isFixedColumnsStart(priv.hoveredColumn) && firstVisible > 0) {
+        this.hot.scrollViewportTo(void 0, this.hot.columnIndexMapper.getNearestNotHiddenIndex(firstVisible - 1, -1));
+      }
       var wtTable = this.hot.view._wt.wtTable;
       var scrollableElement = this.hot.view._wt.wtOverlays.scrollableElement;
       var scrollStart = typeof scrollableElement.scrollX === "number" ? scrollableElement.scrollX : scrollableElement.scrollLeft;
@@ -24964,17 +25018,8 @@ var ManualColumnMove = /* @__PURE__ */ function(_BasePlugin) {
         var newCoordsCol = priv.hoveredColumn >= priv.countCols ? priv.countCols - 1 : priv.hoveredColumn;
         priv.target.col = newCoordsCol + 1;
         tdOffsetStart += priv.target.TD.offsetWidth;
-        if (priv.target.col > lastVisible && lastVisible < priv.countCols) {
-          this.hot.scrollViewportTo(void 0, lastVisible + 1, void 0, true);
-        }
       } else {
         priv.target.col = priv.hoveredColumn;
-        if (priv.target.col <= firstVisible && priv.target.col >= priv.fixedColumnsStart && firstVisible > 0) {
-          this.hot.scrollViewportTo(void 0, firstVisible - 1);
-        }
-      }
-      if (priv.target.col <= firstVisible && priv.target.col >= priv.fixedColumnsStart && firstVisible > 0) {
-        this.hot.scrollViewportTo(void 0, firstVisible - 1);
       }
       var backlightStart = mouseOffsetStart;
       var guidelineStart = tdOffsetStart;
@@ -25203,7 +25248,7 @@ function _createClass$12(Constructor, protoProps, staticProps) {
 }
 function _get$B() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$B = Reflect.get;
+    _get$B = Reflect.get.bind();
   } else {
     _get$B = function _get2(target, property, receiver) {
       var base = _superPropBase$B(target, property);
@@ -25236,7 +25281,7 @@ function _inherits$H(subClass, superClass) {
     _setPrototypeOf$H(subClass, superClass);
 }
 function _setPrototypeOf$H(o, p) {
-  _setPrototypeOf$H = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$H = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -25285,7 +25330,7 @@ function _isNativeReflectConstruct$H() {
   }
 }
 function _getPrototypeOf$H(o) {
-  _getPrototypeOf$H = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$H = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$H(o);
@@ -25873,7 +25918,7 @@ function _createClass$14(Constructor, protoProps, staticProps) {
 }
 function _get$C() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$C = Reflect.get;
+    _get$C = Reflect.get.bind();
   } else {
     _get$C = function _get2(target, property, receiver) {
       var base = _superPropBase$C(target, property);
@@ -25906,7 +25951,7 @@ function _inherits$I(subClass, superClass) {
     _setPrototypeOf$I(subClass, superClass);
 }
 function _setPrototypeOf$I(o, p) {
-  _setPrototypeOf$I = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$I = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -25955,7 +26000,7 @@ function _isNativeReflectConstruct$I() {
   }
 }
 function _getPrototypeOf$I(o) {
-  _getPrototypeOf$I = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$I = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$I(o);
@@ -26011,7 +26056,7 @@ function _createClass$15(Constructor, protoProps, staticProps) {
 }
 function _get$D() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$D = Reflect.get;
+    _get$D = Reflect.get.bind();
   } else {
     _get$D = function _get2(target, property, receiver) {
       var base = _superPropBase$D(target, property);
@@ -26044,7 +26089,7 @@ function _inherits$J(subClass, superClass) {
     _setPrototypeOf$J(subClass, superClass);
 }
 function _setPrototypeOf$J(o, p) {
-  _setPrototypeOf$J = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$J = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -26093,7 +26138,7 @@ function _isNativeReflectConstruct$J() {
   }
 }
 function _getPrototypeOf$J(o) {
-  _getPrototypeOf$J = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$J = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$J(o);
@@ -26149,7 +26194,7 @@ function _createClass$16(Constructor, protoProps, staticProps) {
 }
 function _get$E() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$E = Reflect.get;
+    _get$E = Reflect.get.bind();
   } else {
     _get$E = function _get2(target, property, receiver) {
       var base = _superPropBase$E(target, property);
@@ -26182,7 +26227,7 @@ function _inherits$K(subClass, superClass) {
     _setPrototypeOf$K(subClass, superClass);
 }
 function _setPrototypeOf$K(o, p) {
-  _setPrototypeOf$K = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$K = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -26231,7 +26276,7 @@ function _isNativeReflectConstruct$K() {
   }
 }
 function _getPrototypeOf$K(o) {
-  _getPrototypeOf$K = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$K = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$K(o);
@@ -26419,7 +26464,7 @@ var ManualRowMove = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "isFixedRowBottom",
     value: function isFixedRowBottom(row) {
-      return row > this.hot.getSettings().fixedRowsBottom;
+      return row > this.hot.countRows() - 1 - this.hot.getSettings().fixedRowsBottom;
     }
   }, {
     key: "persistentStateSave",
@@ -26454,15 +26499,14 @@ var ManualRowMove = /* @__PURE__ */ function(_BasePlugin) {
     value: function refreshPositions() {
       var priv = privatePool$d.get(this);
       var coords = priv.target.coords;
-      var firstVisible = this.hot.view._wt.wtTable.getFirstVisibleRow();
-      var lastVisible = this.hot.view._wt.wtTable.getLastVisibleRow();
-      var fixedRows = this.hot.getSettings().fixedRowsTop;
+      var firstVisible = this.hot.view.getFirstFullyVisibleRow();
+      var lastVisible = this.hot.view.getLastFullyVisibleRow();
       var countRows = this.hot.countRows();
-      if (coords.row < fixedRows && firstVisible > 0) {
-        this.hot.scrollViewportTo(firstVisible - 1);
+      if (this.isFixedRowTop(coords.row) && firstVisible > 0) {
+        this.hot.scrollViewportTo(this.hot.rowIndexMapper.getNearestNotHiddenIndex(firstVisible - 1, -1));
       }
-      if (coords.row >= lastVisible && lastVisible < countRows) {
-        this.hot.scrollViewportTo(lastVisible + 1, void 0, true);
+      if (this.isFixedRowBottom(coords.row) && lastVisible < countRows) {
+        this.hot.scrollViewportTo(this.hot.rowIndexMapper.getNearestNotHiddenIndex(lastVisible + 1, 1), void 0, true);
       }
       var wtTable = this.hot.view._wt.wtTable;
       var TD = priv.target.TD;
@@ -26493,13 +26537,6 @@ var ManualRowMove = /* @__PURE__ */ function(_BasePlugin) {
       }
       if (tdOffsetTop >= hiderHeight - 1) {
         guidelineTop = hiderHeight - 1;
-      }
-      var topOverlayHeight = 0;
-      if (this.hot.view._wt.wtOverlays.topOverlay) {
-        topOverlayHeight = this.hot.view._wt.wtOverlays.topOverlay.clone.wtTable.TABLE.offsetHeight;
-      }
-      if (coords.row >= fixedRows && guidelineTop - wtTable.holder.scrollTop < topOverlayHeight) {
-        this.hot.scrollViewportTo(coords.row);
       }
       this.backlight.setPosition(backlightTop);
       this.guideline.setPosition(guidelineTop);
@@ -26701,7 +26738,7 @@ function _createClass$17(Constructor, protoProps, staticProps) {
 }
 function _get$F() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$F = Reflect.get;
+    _get$F = Reflect.get.bind();
   } else {
     _get$F = function _get2(target, property, receiver) {
       var base = _superPropBase$F(target, property);
@@ -26734,7 +26771,7 @@ function _inherits$L(subClass, superClass) {
     _setPrototypeOf$L(subClass, superClass);
 }
 function _setPrototypeOf$L(o, p) {
-  _setPrototypeOf$L = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$L = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -26783,7 +26820,7 @@ function _isNativeReflectConstruct$L() {
   }
 }
 function _getPrototypeOf$L(o) {
-  _getPrototypeOf$L = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$L = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$L(o);
@@ -27605,7 +27642,7 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
     key: "isFirstRenderableMergedCell",
     value: function isFirstRenderableMergedCell(row, column) {
       var mergeParent = this.get(row, column);
-      return mergeParent && this.hot.rowIndexMapper.getFirstNotHiddenIndex(mergeParent.row, 1) === row && this.hot.columnIndexMapper.getFirstNotHiddenIndex(mergeParent.col, 1) === column;
+      return mergeParent && this.hot.rowIndexMapper.getNearestNotHiddenIndex(mergeParent.row, 1) === row && this.hot.columnIndexMapper.getNearestNotHiddenIndex(mergeParent.col, 1) === column;
     }
   }, {
     key: "getFirstRenderableCoords",
@@ -27614,8 +27651,8 @@ var MergedCellsCollection = /* @__PURE__ */ function() {
       if (!mergeParent || this.isFirstRenderableMergedCell(row, column)) {
         return this.hot._createCellCoords(row, column);
       }
-      var firstRenderableRow = this.hot.rowIndexMapper.getFirstNotHiddenIndex(mergeParent.row, 1);
-      var firstRenderableColumn = this.hot.columnIndexMapper.getFirstNotHiddenIndex(mergeParent.col, 1);
+      var firstRenderableRow = this.hot.rowIndexMapper.getNearestNotHiddenIndex(mergeParent.row, 1);
+      var firstRenderableColumn = this.hot.columnIndexMapper.getNearestNotHiddenIndex(mergeParent.col, 1);
       return this.hot._createCellCoords(firstRenderableRow, firstRenderableColumn);
     }
   }, {
@@ -28318,7 +28355,7 @@ function _createClass$1c(Constructor, protoProps, staticProps) {
 }
 function _get$G() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$G = Reflect.get;
+    _get$G = Reflect.get.bind();
   } else {
     _get$G = function _get2(target, property, receiver) {
       var base = _superPropBase$G(target, property);
@@ -28351,7 +28388,7 @@ function _inherits$M(subClass, superClass) {
     _setPrototypeOf$M(subClass, superClass);
 }
 function _setPrototypeOf$M(o, p) {
-  _setPrototypeOf$M = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$M = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -28400,7 +28437,7 @@ function _isNativeReflectConstruct$M() {
   }
 }
 function _getPrototypeOf$M(o) {
-  _getPrototypeOf$M = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$M = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$M(o);
@@ -28636,7 +28673,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
       if (!currentRange) {
         return;
       }
-      currentRange.setDirection("NW-SE");
+      currentRange.setDirection(this.hot.isRtl() ? "NE-SW" : "NW-SE");
       var from = currentRange.from, to = currentRange.to;
       this.toggleMerge(currentRange);
       this.hot.selectCell(from.row, from.col, to.row, to.col, false);
@@ -28648,7 +28685,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
       if (!cellRange) {
         return;
       }
-      cellRange.setDirection("NW-SE");
+      cellRange.setDirection(this.hot.isRtl() ? "NE-SW" : "NW-SE");
       var from = cellRange.from, to = cellRange.to;
       this.unmergeRange(cellRange, true);
       this.mergeRange(cellRange);
@@ -28913,8 +28950,8 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
         var renderedColumnIndex = columnMapper.getRenderableFromVisualIndex(col);
         var maxRowSpan = lastMergedRowIndex - renderedRowIndex + 1;
         var maxColSpan = lastMergedColumnIndex - renderedColumnIndex + 1;
-        mergedCellCopy.row = rowMapper.getFirstNotHiddenIndex(mergedCellCopy.row, 1);
-        mergedCellCopy.col = columnMapper.getFirstNotHiddenIndex(mergedCellCopy.col, 1);
+        mergedCellCopy.row = rowMapper.getNearestNotHiddenIndex(mergedCellCopy.row, 1);
+        mergedCellCopy.col = columnMapper.getNearestNotHiddenIndex(mergedCellCopy.col, 1);
         mergedCellCopy.rowspan = Math.min(mergedCellCopy.rowspan, maxRowSpan);
         mergedCellCopy.colspan = Math.min(mergedCellCopy.colspan, maxColSpan);
       }
@@ -28981,7 +29018,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
       for (var visualColumnIndex = 0; visualColumnIndex < nrOfColumns; visualColumnIndex += 1) {
         var mergeParentForViewportStart = this.mergedCellsCollection.get(visualStartRow, visualColumnIndex);
         if (isObject(mergeParentForViewportStart)) {
-          var renderableIndexAtMergeStart = rowMapper.getRenderableFromVisualIndex(rowMapper.getFirstNotHiddenIndex(mergeParentForViewportStart.row, 1));
+          var renderableIndexAtMergeStart = rowMapper.getRenderableFromVisualIndex(rowMapper.getNearestNotHiddenIndex(mergeParentForViewportStart.row, 1));
           if (renderableIndexAtMergeStart < calc.startRow) {
             calc.startRow = renderableIndexAtMergeStart;
             this.modifyViewportRowStart(calc, nrOfColumns);
@@ -28999,7 +29036,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
         var mergeParentForViewportEnd = this.mergedCellsCollection.get(visualEndRow, visualColumnIndex);
         if (isObject(mergeParentForViewportEnd)) {
           var mergeEnd = mergeParentForViewportEnd.row + mergeParentForViewportEnd.rowspan - 1;
-          var renderableIndexAtMergeEnd = rowMapper.getRenderableFromVisualIndex(rowMapper.getFirstNotHiddenIndex(mergeEnd, -1));
+          var renderableIndexAtMergeEnd = rowMapper.getRenderableFromVisualIndex(rowMapper.getNearestNotHiddenIndex(mergeEnd, -1));
           if (renderableIndexAtMergeEnd > calc.endRow) {
             calc.endRow = renderableIndexAtMergeEnd;
             this.modifyViewportRowEnd(calc, nrOfColumns);
@@ -29023,7 +29060,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
       for (var visualRowIndex = 0; visualRowIndex < nrOfRows; visualRowIndex += 1) {
         var mergeParentForViewportStart = this.mergedCellsCollection.get(visualRowIndex, visualStartCol);
         if (isObject(mergeParentForViewportStart)) {
-          var renderableIndexAtMergeStart = columnMapper.getRenderableFromVisualIndex(columnMapper.getFirstNotHiddenIndex(mergeParentForViewportStart.col, 1));
+          var renderableIndexAtMergeStart = columnMapper.getRenderableFromVisualIndex(columnMapper.getNearestNotHiddenIndex(mergeParentForViewportStart.col, 1));
           if (renderableIndexAtMergeStart < calc.startColumn) {
             calc.startColumn = renderableIndexAtMergeStart;
             this.modifyViewportColumnStart(calc, nrOfRows);
@@ -29041,7 +29078,7 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
         var mergeParentForViewportEnd = this.mergedCellsCollection.get(visualRowIndex, visualEndCol);
         if (isObject(mergeParentForViewportEnd)) {
           var mergeEnd = mergeParentForViewportEnd.col + mergeParentForViewportEnd.colspan - 1;
-          var renderableIndexAtMergeEnd = columnMapper.getRenderableFromVisualIndex(columnMapper.getFirstNotHiddenIndex(mergeEnd, -1));
+          var renderableIndexAtMergeEnd = columnMapper.getRenderableFromVisualIndex(columnMapper.getNearestNotHiddenIndex(mergeEnd, -1));
           if (renderableIndexAtMergeEnd > calc.endColumn) {
             calc.endColumn = renderableIndexAtMergeEnd;
             this.modifyViewportColumnEnd(calc, nrOfRows);
@@ -29057,14 +29094,14 @@ var MergeCells = /* @__PURE__ */ function(_BasePlugin) {
       var firstNonHiddenRow;
       var firstNonHiddenColumn;
       if (rowspan === 0) {
-        firstNonHiddenRow = rowMapper.getFirstNotHiddenIndex(parentRow, 1);
+        firstNonHiddenRow = rowMapper.getNearestNotHiddenIndex(parentRow, 1);
       } else {
-        firstNonHiddenRow = rowMapper.getFirstNotHiddenIndex(parentRow + rowspan - 1, -1);
+        firstNonHiddenRow = rowMapper.getNearestNotHiddenIndex(parentRow + rowspan - 1, -1);
       }
       if (colspan === 0) {
-        firstNonHiddenColumn = columnMapper.getFirstNotHiddenIndex(parentColumn, 1);
+        firstNonHiddenColumn = columnMapper.getNearestNotHiddenIndex(parentColumn, 1);
       } else {
-        firstNonHiddenColumn = columnMapper.getFirstNotHiddenIndex(parentColumn + colspan - 1, -1);
+        firstNonHiddenColumn = columnMapper.getNearestNotHiddenIndex(parentColumn + colspan - 1, -1);
       }
       var renderableRow = parentRow >= 0 ? rowMapper.getRenderableFromVisualIndex(firstNonHiddenRow) : parentRow;
       var renderableColumn = parentColumn >= 0 ? columnMapper.getRenderableFromVisualIndex(firstNonHiddenColumn) : parentColumn;
@@ -29312,7 +29349,7 @@ function _createClass$1d(Constructor, protoProps, staticProps) {
 }
 function _get$H() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$H = Reflect.get;
+    _get$H = Reflect.get.bind();
   } else {
     _get$H = function _get2(target, property, receiver) {
       var base = _superPropBase$H(target, property);
@@ -29345,7 +29382,7 @@ function _inherits$N(subClass, superClass) {
     _setPrototypeOf$N(subClass, superClass);
 }
 function _setPrototypeOf$N(o, p) {
-  _setPrototypeOf$N = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$N = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -29394,7 +29431,7 @@ function _isNativeReflectConstruct$N() {
   }
 }
 function _getPrototypeOf$N(o) {
-  _getPrototypeOf$N = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$N = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$N(o);
@@ -29550,7 +29587,7 @@ function _createClass$1e(Constructor, protoProps, staticProps) {
 }
 function _get$I() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$I = Reflect.get;
+    _get$I = Reflect.get.bind();
   } else {
     _get$I = function _get2(target, property, receiver) {
       var base = _superPropBase$I(target, property);
@@ -29583,7 +29620,7 @@ function _inherits$O(subClass, superClass) {
     _setPrototypeOf$O(subClass, superClass);
 }
 function _setPrototypeOf$O(o, p) {
-  _setPrototypeOf$O = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$O = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -29632,7 +29669,7 @@ function _isNativeReflectConstruct$O() {
   }
 }
 function _getPrototypeOf$O(o) {
-  _getPrototypeOf$O = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$O = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$O(o);
@@ -31366,55 +31403,67 @@ function _defineProperty$h(obj, key, value) {
   return obj;
 }
 var GhostTable$1 = /* @__PURE__ */ function() {
-  function GhostTable2(plugin) {
+  function GhostTable2(hot, nestedHeaderSettingsGetter) {
     _classCallCheck$1j(this, GhostTable2);
-    _defineProperty$h(this, "nestedHeaders", void 0);
+    _defineProperty$h(this, "hot", void 0);
+    _defineProperty$h(this, "nestedHeaderSettingsGetter", void 0);
+    _defineProperty$h(this, "layersCount", 0);
     _defineProperty$h(this, "container", void 0);
-    _defineProperty$h(this, "widthsCache", []);
-    this.nestedHeaders = plugin;
+    _defineProperty$h(this, "widthsMap", void 0);
+    this.hot = hot;
+    this.nestedHeaderSettingsGetter = nestedHeaderSettingsGetter;
+    this.widthsMap = this.hot.columnIndexMapper.createAndRegisterIndexMap("nestedHeaders.widthsMap", "physicalIndexToValue");
   }
   _createClass$1j(GhostTable2, [{
-    key: "buildWidthsMapper",
-    value: function buildWidthsMapper() {
-      this.container = this.nestedHeaders.hot.rootDocument.createElement("div");
-      this.buildGhostTable(this.container);
-      this.nestedHeaders.hot.rootElement.appendChild(this.container);
+    key: "setLayersCount",
+    value: function setLayersCount(layersCount) {
+      this.layersCount = layersCount;
+      return this;
+    }
+  }, {
+    key: "getWidth",
+    value: function getWidth(visualColumn) {
+      return this.widthsMap.getValueAtIndex(this.hot.toPhysicalColumn(visualColumn));
+    }
+  }, {
+    key: "buildWidthsMap",
+    value: function buildWidthsMap() {
+      this.container = this.hot.rootDocument.createElement("div");
+      this.container.classList.add("handsontable", "htGhostTable", "htAutoSize");
+      this._buildGhostTable(this.container);
+      this.hot.rootDocument.body.appendChild(this.container);
       var columns = this.container.querySelectorAll("tr:last-of-type th");
       var maxColumns = columns.length;
-      this.widthsCache.length = 0;
-      for (var i = 0; i < maxColumns; i++) {
-        this.widthsCache.push(columns[i].offsetWidth);
+      this.widthsMap.clear();
+      for (var column = 0; column < maxColumns; column++) {
+        var visualColumnsIndex = this.hot.columnIndexMapper.getVisualFromRenderableIndex(column);
+        var physicalColumnIndex = this.hot.toPhysicalColumn(visualColumnsIndex);
+        this.widthsMap.setValueAtIndex(physicalColumnIndex, columns[column].offsetWidth);
       }
       this.container.parentNode.removeChild(this.container);
       this.container = null;
-      this.nestedHeaders.hot.render();
     }
   }, {
-    key: "buildGhostTable",
-    value: function buildGhostTable(container) {
-      var rootDocument = this.nestedHeaders.hot.rootDocument;
+    key: "_buildGhostTable",
+    value: function _buildGhostTable(container) {
+      var _this$hot = this.hot, rootDocument = _this$hot.rootDocument, columnIndexMapper = _this$hot.columnIndexMapper;
       var fragment = rootDocument.createDocumentFragment();
       var table = rootDocument.createElement("table");
-      var lastRowColspan = false;
-      var isDropdownEnabled = !!this.nestedHeaders.hot.getSettings().dropdownMenu;
-      var maxRows = this.nestedHeaders.getLayersCount();
-      var maxCols = this.nestedHeaders.hot.countCols();
-      var lastRowIndex = maxRows - 1;
-      for (var row = 0; row < maxRows; row++) {
+      var isDropdownEnabled = !!this.hot.getSettings().dropdownMenu;
+      var maxRenderedCols = columnIndexMapper.getRenderableIndexesLength();
+      for (var row = 0; row < this.layersCount; row++) {
         var tr = rootDocument.createElement("tr");
-        lastRowColspan = false;
-        for (var col = 0; col < maxCols; col++) {
+        for (var col = 0; col < maxRenderedCols; col++) {
+          var visualColumnsIndex = columnIndexMapper.getVisualFromRenderableIndex(col);
+          if (visualColumnsIndex === null) {
+            visualColumnsIndex = col;
+          }
           var th = rootDocument.createElement("th");
-          var headerSettings = this.nestedHeaders.getHeaderSettings(row, col);
-          if (headerSettings && !headerSettings.isPlaceholder) {
+          var headerSettings = this.nestedHeaderSettingsGetter(row, visualColumnsIndex);
+          if (headerSettings && (!headerSettings.isPlaceholder || headerSettings.isHidden)) {
             var label = headerSettings.label;
-            if (row === lastRowIndex) {
-              if (headerSettings.colspan > 1) {
-                lastRowColspan = true;
-              }
-              if (isDropdownEnabled) {
-                label += '<button class="changeType"></button>';
-              }
+            if (isDropdownEnabled) {
+              label += '<button class="changeType"></button>';
             }
             fastInnerHTML(th, label);
             th.colSpan = headerSettings.colspan;
@@ -31423,24 +31472,14 @@ var GhostTable$1 = /* @__PURE__ */ function() {
         }
         table.appendChild(tr);
       }
-      if (lastRowColspan) {
-        {
-          var _tr = rootDocument.createElement("tr");
-          for (var _col = 0; _col < maxCols; _col++) {
-            var td = rootDocument.createElement("th");
-            _tr.appendChild(td);
-          }
-          table.appendChild(_tr);
-        }
-      }
       fragment.appendChild(table);
       container.appendChild(fragment);
     }
   }, {
     key: "clear",
     value: function clear() {
+      this.widthsMap.clear();
       this.container = null;
-      this.widthsCache.length = 0;
     }
   }]);
   return GhostTable2;
@@ -31486,7 +31525,7 @@ function _createClass$1k(Constructor, protoProps, staticProps) {
 }
 function _get$J() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$J = Reflect.get;
+    _get$J = Reflect.get.bind();
   } else {
     _get$J = function _get2(target, property, receiver) {
       var base = _superPropBase$J(target, property);
@@ -31519,7 +31558,7 @@ function _inherits$P(subClass, superClass) {
     _setPrototypeOf$P(subClass, superClass);
 }
 function _setPrototypeOf$P(o, p) {
-  _setPrototypeOf$P = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$P = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -31568,7 +31607,7 @@ function _isNativeReflectConstruct$P() {
   }
 }
 function _getPrototypeOf$P(o) {
-  _getPrototypeOf$P = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$P = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$P(o);
@@ -31643,7 +31682,9 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
       writable: true,
       value: null
     });
-    _defineProperty$i(_assertThisInitialized$P(_this), "ghostTable", new GhostTable$1(_assertThisInitialized$P(_this)));
+    _defineProperty$i(_assertThisInitialized$P(_this), "ghostTable", new GhostTable$1(_this.hot, function(row, column) {
+      return _this.getHeaderSettings(row, column);
+    }));
     _defineProperty$i(_assertThisInitialized$P(_this), "detectedOverlappedHeaders", false);
     return _this;
   }
@@ -31723,9 +31764,10 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
               _classPrivateFieldGet$7(_this3, _stateManager).triggerColumnModification(actionName, columnIndex);
             }
           });
+          _this3.ghostTable.buildWidthsMap();
         }));
       }
-      this.ghostTable.buildWidthsMapper();
+      this.ghostTable.setLayersCount(this.getLayersCount()).buildWidthsMap();
       _get$J(_getPrototypeOf$P(NestedHeaders2.prototype), "updatePlugin", this).call(this);
     }
   }, {
@@ -31938,7 +31980,7 @@ var NestedHeaders = /* @__PURE__ */ function(_BasePlugin) {
   }, {
     key: "onModifyColWidth",
     value: function onModifyColWidth(width, column) {
-      var cachedWidth = this.ghostTable.widthsCache[column];
+      var cachedWidth = this.ghostTable.getWidth(column);
       return width > cachedWidth ? width : cachedWidth;
     }
   }, {
@@ -32612,7 +32654,7 @@ function _inherits$Q(subClass, superClass) {
     _setPrototypeOf$Q(subClass, superClass);
 }
 function _setPrototypeOf$Q(o, p) {
-  _setPrototypeOf$Q = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$Q = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -32661,7 +32703,7 @@ function _isNativeReflectConstruct$Q() {
   }
 }
 function _getPrototypeOf$Q(o) {
-  _getPrototypeOf$Q = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$Q = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$Q(o);
@@ -32818,7 +32860,7 @@ function _inherits$R(subClass, superClass) {
     _setPrototypeOf$R(subClass, superClass);
 }
 function _setPrototypeOf$R(o, p) {
-  _setPrototypeOf$R = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$R = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -32867,7 +32909,7 @@ function _isNativeReflectConstruct$R() {
   }
 }
 function _getPrototypeOf$R(o) {
-  _getPrototypeOf$R = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$R = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$R(o);
@@ -33261,7 +33303,7 @@ function _inherits$S(subClass, superClass) {
     _setPrototypeOf$S(subClass, superClass);
 }
 function _setPrototypeOf$S(o, p) {
-  _setPrototypeOf$S = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$S = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -33310,7 +33352,7 @@ function _isNativeReflectConstruct$S() {
   }
 }
 function _getPrototypeOf$S(o) {
-  _getPrototypeOf$S = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$S = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$S(o);
@@ -33689,7 +33731,7 @@ function _createClass$1r(Constructor, protoProps, staticProps) {
 }
 function _get$K() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$K = Reflect.get;
+    _get$K = Reflect.get.bind();
   } else {
     _get$K = function _get2(target, property, receiver) {
       var base = _superPropBase$K(target, property);
@@ -33722,7 +33764,7 @@ function _inherits$T(subClass, superClass) {
     _setPrototypeOf$T(subClass, superClass);
 }
 function _setPrototypeOf$T(o, p) {
-  _setPrototypeOf$T = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$T = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -33771,7 +33813,7 @@ function _isNativeReflectConstruct$T() {
   }
 }
 function _getPrototypeOf$T(o) {
-  _getPrototypeOf$T = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$T = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$T(o);
@@ -34192,7 +34234,7 @@ function _createClass$1t(Constructor, protoProps, staticProps) {
 }
 function _get$L() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$L = Reflect.get;
+    _get$L = Reflect.get.bind();
   } else {
     _get$L = function _get2(target, property, receiver) {
       var base = _superPropBase$L(target, property);
@@ -34225,7 +34267,7 @@ function _inherits$U(subClass, superClass) {
     _setPrototypeOf$U(subClass, superClass);
 }
 function _setPrototypeOf$U(o, p) {
-  _setPrototypeOf$U = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$U = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -34274,7 +34316,7 @@ function _isNativeReflectConstruct$U() {
   }
 }
 function _getPrototypeOf$U(o) {
-  _getPrototypeOf$U = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$U = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$U(o);
@@ -34439,7 +34481,7 @@ function _createClass$1u(Constructor, protoProps, staticProps) {
 }
 function _get$M() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$M = Reflect.get;
+    _get$M = Reflect.get.bind();
   } else {
     _get$M = function _get2(target, property, receiver) {
       var base = _superPropBase$M(target, property);
@@ -34472,7 +34514,7 @@ function _inherits$V(subClass, superClass) {
     _setPrototypeOf$V(subClass, superClass);
 }
 function _setPrototypeOf$V(o, p) {
-  _setPrototypeOf$V = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$V = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -34521,7 +34563,7 @@ function _isNativeReflectConstruct$V() {
   }
 }
 function _getPrototypeOf$V(o) {
-  _getPrototypeOf$V = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$V = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$V(o);
@@ -34741,7 +34783,7 @@ function _createClass$1v(Constructor, protoProps, staticProps) {
 }
 function _get$N() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$N = Reflect.get;
+    _get$N = Reflect.get.bind();
   } else {
     _get$N = function _get2(target, property, receiver) {
       var base = _superPropBase$N(target, property);
@@ -34774,7 +34816,7 @@ function _inherits$W(subClass, superClass) {
     _setPrototypeOf$W(subClass, superClass);
 }
 function _setPrototypeOf$W(o, p) {
-  _setPrototypeOf$W = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$W = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -34823,7 +34865,7 @@ function _isNativeReflectConstruct$W() {
   }
 }
 function _getPrototypeOf$W(o) {
-  _getPrototypeOf$W = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$W = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$W(o);
@@ -35000,7 +35042,7 @@ function _createClass$1w(Constructor, protoProps, staticProps) {
 }
 function _get$O() {
   if (typeof Reflect !== "undefined" && Reflect.get) {
-    _get$O = Reflect.get;
+    _get$O = Reflect.get.bind();
   } else {
     _get$O = function _get2(target, property, receiver) {
       var base = _superPropBase$O(target, property);
@@ -35033,7 +35075,7 @@ function _inherits$X(subClass, superClass) {
     _setPrototypeOf$X(subClass, superClass);
 }
 function _setPrototypeOf$X(o, p) {
-  _setPrototypeOf$X = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$X = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -35082,7 +35124,7 @@ function _isNativeReflectConstruct$X() {
   }
 }
 function _getPrototypeOf$X(o) {
-  _getPrototypeOf$X = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$X = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$X(o);
@@ -35301,7 +35343,7 @@ function _inherits$Y(subClass, superClass) {
     _setPrototypeOf$Y(subClass, superClass);
 }
 function _setPrototypeOf$Y(o, p) {
-  _setPrototypeOf$Y = Object.setPrototypeOf || function _setPrototypeOf2(o2, p2) {
+  _setPrototypeOf$Y = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf2(o2, p2) {
     o2.__proto__ = p2;
     return o2;
   };
@@ -35350,7 +35392,7 @@ function _isNativeReflectConstruct$Y() {
   }
 }
 function _getPrototypeOf$Y(o) {
-  _getPrototypeOf$Y = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf2(o2) {
+  _getPrototypeOf$Y = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf2(o2) {
     return o2.__proto__ || Object.getPrototypeOf(o2);
   };
   return _getPrototypeOf$Y(o);

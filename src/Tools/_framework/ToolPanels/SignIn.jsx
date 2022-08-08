@@ -265,7 +265,7 @@ export default function SignIn(props) {
               // type="text"
               ref={codeRef}
               value={nineCode}
-              data-cy="signinCodeInput"
+              data-test="signinCodeInput"
               alert={signInAlert}
               onKeyDown={(e) => {
                 // Trying to make it so the user can copy and paste a correct code --> enable sign-in button
@@ -302,7 +302,7 @@ export default function SignIn(props) {
                 setSignInStage('check code');
               }
             }}
-            data-cy="signInButton"
+            data-test="signInButton"
             value="Sign In"
           ></Button>
         </div>
@@ -342,7 +342,7 @@ export default function SignIn(props) {
                 ref={emailRef}
                 value={email}
                 alert={sendEmailAlert}
-                data-cy="signinEmailInput"
+                data-test="signinEmailInput"
                 onKeyDown={(e) => {
                   validateEmail(email);
                   if (e.key === 'Enter' && validEmail) {
@@ -384,7 +384,7 @@ export default function SignIn(props) {
                   setSignInStage('enter code');
                 }
               }}
-              data-cy="sendEmailButton"
+              data-test="sendEmailButton"
               value="Send Email"
             ></Button>
           </div>

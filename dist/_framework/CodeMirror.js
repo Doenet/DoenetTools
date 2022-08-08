@@ -227,7 +227,6 @@ let parserWithMetadata = parser.configure({
     indentNodeProp.add({
       Element(context) {
         let closed = /^\s*<\//.test(context.textAfter);
-        console.log("youuuhj", context.state.doc.lineAt(context.node.from));
         return context.lineIndent(context.node.from) + (closed ? 0 : context.unit);
       },
       "OpenTag CloseTag SelfClosingTag"(context) {

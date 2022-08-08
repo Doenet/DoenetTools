@@ -1,3 +1,4 @@
+import axios from "../../_snowpack/pkg/axios.js";
 import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 import {useRecoilCallback, useRecoilValue} from "../../_snowpack/pkg/recoil.js";
 import {
@@ -38,19 +39,21 @@ export default function SelectedDataSources() {
   }, [selectedDoenetIds]);
   const addToast = useToast();
   let heading = /* @__PURE__ */ React.createElement("h2", {
-    "data-cy": "selectedDataSourcesHeading",
+    "data-test": "selectedDataSourcesHeading",
     style: {margin: "16px 5px"}
   }, "Event Data");
   return /* @__PURE__ */ React.createElement(React.Fragment, null, heading, /* @__PURE__ */ React.createElement("div", null, assignedSelectedDoenetIds.length, " ", assignedSelectedDoenetIds.length == 1 ? "Activity" : "Activities"), /* @__PURE__ */ React.createElement("br", null), /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "View on Shiny",
     disabled: assignedSelectedDoenetIds.length == 0,
-    onClick: () => {
+    onClick: async () => {
       if (assignedSelectedDoenetIds.length == 0) {
         addToast(`No activities found`, toastType.INFO);
       } else {
         let searchParamsText = assignedSelectedDoenetIds.join("&data=");
-        window.open(`https://doenet.shinyapps.io/analyzer/?data=${searchParamsText}`, "_blank");
+        const resp = await axios.get(`/api/createSecretCode.php?courseId=${courseId}`);
+        const {secretCode} = resp.data;
+        window.open(`https://doenet.shinyapps.io/analyzer/?data=${searchParamsText}&code=${secretCode}`, "_blank");
       }
     }
   }));

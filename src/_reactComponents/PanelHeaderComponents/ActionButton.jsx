@@ -132,6 +132,7 @@ export default function ActionButton(props) {
           aria-labelledby={label} 
           aria-label={actionButton.value}
           id={props.id}
+          data-test={props['data-test']}
           style={actionButton}
           alert={alert}
           onClick={(e) => {

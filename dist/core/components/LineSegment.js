@@ -7,6 +7,7 @@ export default class LineSegment extends GraphicalComponent {
 
   actions = {
     moveLineSegment: this.moveLineSegment.bind(this),
+    lineSegmentClicked: this.lineSegmentClicked.bind(this),
   };
 
   static createAttributesObject() {
@@ -188,13 +189,19 @@ export default class LineSegment extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "endpoints") {
-          return "endpoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "endpoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `endpointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 8) === "endpoint") {
           // could be endpoint or endpointX
           let endpointNum = Number(varName.slice(8));
           if (Number.isInteger(endpointNum) && endpointNum > 0) {
-            return `endpointX${endpointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `endpointX${endpointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -549,6 +556,18 @@ export default class LineSegment extends GraphicalComponent {
         }
       });
     }
+
+  }
+
+
+  async lineSegmentClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 
