@@ -120,10 +120,10 @@ function Crumb({setRef,i,label=null,onClick,icon=null}){
   }
 
 
-  return <BreadcrumbItem ref={crumbRef} data-test={`Crumb ${i}`>
-  <BreadcrumbSpan onClick={onClick} aria-label={label}>{iconJSX}<CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
+  return (<BreadcrumbItem ref={crumbRef} data-test={`Crumb ${i}`}>
+    <BreadcrumbSpan onClick={onClick} aria-label={label}>{iconJSX}<CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
 
-  </BreadcrumbItem>
+  </BreadcrumbItem>)
 }
 //crumb 
 //label: the label which shows in the span
