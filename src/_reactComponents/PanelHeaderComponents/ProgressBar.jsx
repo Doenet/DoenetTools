@@ -109,8 +109,8 @@ export default function ProgressBar(props) {
   }, [props.progress, props.showProgress, barWidth]);
 
   return (
-    <Container align={align} alignItems={alignItems}>
-      <Label labelVisible={labelVisible} align={align}>{label}</Label>
+    <Container align={align} alignItems={alignItems} aria-labelledby="progress-bar-label" aria-label={"progress bar" + percent}>
+      <Label id="progress-bar-label" labelVisible={labelVisible} align={align}>{label}</Label>
       <Svg width={barWidth} height={height}>
         <Rect id="main" fill="var(--mainGray)" width={barWidth} height={height} radius={radius} aria-label={ariaLabel}/>
         <Rect id="moving" fill="var(--mainBlue)" width={fillWidth} height={height} radius={radius}/>

@@ -156,8 +156,10 @@ export default function ToggleButton(props) {
   return (
     <>
       <div style={container}>
-        <p style={label}>{label.value}</p>
+        <p id="toggle-button-label" style={label}>{label.value}</p>
         <Button
+          aria-labelledby="toggle-button-label"
+          aria-checked={props.isSelected}
           id={props.id}
           style={toggleButton}
           disabled={disabled}
