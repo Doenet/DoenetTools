@@ -3,7 +3,7 @@
   "scripts": {
     "start": "docker compose up",
     "start:ci": "docker compose up -d",
-    "start:dev": "npm install --no-optional && npx snowpack dev",
+    "start:dev": "npm install --omit=optional && npx snowpack dev",
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
     "dev:cmd": "docker compose exec dev",
     "dev:restart": "docker compose restart dev",
@@ -74,7 +74,6 @@
     "react-dom": "^17.0.2",
     "react-dropzone": "^11.4.2",
     "react-is": "^17.0.2",
-    "react-mathjax": "^1.0.1",
     "react-mathjax2": "0.0.2",
     "react-mathquill": "^1.0.2",
     "react-measure": "^2.5.2",
