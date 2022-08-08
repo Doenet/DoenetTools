@@ -18,5 +18,5 @@ export default function DarkmodeController({ children }) {
   // const defaultDark = useMediaQuery('(prefers-color-scheme: dark)');
   const atomPrefernce = useRecoilValue(darkModeAtom);
 
-  return <div data-theme={atomPrefernce ? 'dark' : 'light'}>{children}</div>;
+  return <div data-theme={atomPrefernce}>{children}</div>;
 }
