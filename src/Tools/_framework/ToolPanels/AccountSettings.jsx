@@ -7,9 +7,8 @@ import {
 import styled from "styled-components";
 import { pageToolViewAtom, profileAtom } from '../NewToolRoot';
 import { a } from '@react-spring/web'
-import InfiniteSlider from '../temp/InfiniteSlider'
+// import InfiniteSlider from '../temp/InfiniteSlider'
 import "../doenet.css";
-import Textinput from "../Textinput";
 import Switch from "../Switch";
 import axios from "axios";
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
@@ -65,7 +64,7 @@ export default function DoenetProfile(props) {
     const loadProfile = useRecoilValueLoadable(profileAtom);
     let profile = loadProfile.contents;
 
-    const [initPhoto, setInitPhoto] = useState(profile.profilePicture)
+    // const [initPhoto, setInitPhoto] = useState(profile.profilePicture)
     const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
 
@@ -79,20 +78,20 @@ export default function DoenetProfile(props) {
 
     //console.log(">>> translate arr ", translateArray([1, 2, 3, 4, 5], 1))
 
-    const translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
+    // const translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
 
     // if(initPhoto){
     //   translatednames = translateArray(PROFILE_PICTURES, PROFILE_PICTURES.indexOf(initPhoto))
     // }
 
-    const translateditems = translatednames.map(picture => `/media/profile_pictures_copy/${picture}.jpg`)
+    // const translateditems = translatednames.map(picture => `/media/profile_pictures_copy/${picture}.jpg`)
 
     if (profile.signedIn === '0') {
       return (<div style = {props.style}>
               <div
                 style={{
                   ...props.style,
-                  border: '1px solid grey',
+                  border: '1px solid var(--mainGray)',
                   borderRadius: '20px',
                   margin: 'auto',
                   marginTop: '10%',
@@ -109,10 +108,10 @@ export default function DoenetProfile(props) {
                 >
                   <h2>You are not signed in</h2>
                   <h2>Account Settings currently requires sign in for use</h2>
-                  <button style={{ background: '#1a5a99', borderRadius: '5px' }}>
+                  <button style={{ background: 'var(--mainBlue)', borderRadius: '5px' }}>
                     <a
                       href="/#/signin"
-                      style={{ color: 'white', textDecoration: 'none' }}
+                      style={{ color: 'var(--canvas)', textDecoration: 'none' }}
                     >
                       Sign in with this link
                     </a>
@@ -124,198 +123,33 @@ export default function DoenetProfile(props) {
     }
 
     return (<div style = {props.style}>
-        
-              <div style = {{...props.style, margin: "auto", width: "70%"}}>
-                <div style = {{margin: "auto", width: "fit-content", marginTop: "20px"}}>
-                  <div style = {{width: "150px", height: "150px", margin: "auto"}}>
-                
-                  <InfiniteSlider fileNames = {translateditems} showButtons={true} showCounter={false} callBack = {(i) => {
-                    //console.log(translatednames[i])
-                    let data = {...profile}
-                    if(data.profilePicture !== translatednames[i]){
-                      data.profilePicture = translatednames[i]
-                      setProfile(data)
-                    }
-                    //setPic(translatednames[i])
-                  }}>
-                    {({ css }, i) => {
-                      // console.log(">>> pic index ", i);
-                      
-                      // setPicIndex(i)
-                      return (
-                        <Content>
-                          <Image style={{ backgroundImage: css, borderRadius: '50%' }} />
-                        </Content>
-                      )
-                    }}
-                  </InfiniteSlider>
-                  </div>
-                  {/* <Textinput   // TODO : Remove
-                      style={{ width: '300px' }}
-                      id="screen name"
-                      label="Screen Name"
-                      value = {profile.screenName}
-                      onChange = {e => {}}
-                      onBlur = {e => {
-                        let data = {...profile}
-                        data.screenName = e.target.value
-                        setProfile(data)
-                      }}
-                      onKeyDown = {e => {
-                        if(e.key === 'Enter'){
-                          let data = {...profile}
-                          data.screenName = e.target.value
-                          setProfile(data)
-                        }
-                      }}
-                  ></Textinput> */}
-                  
-                  <Textfield label="Screen Name" 
-                  style={{ width: '300px' }}
-                  id="screen name"
-                  value={profile.screenName} 
-                  onChange={e =>{
-                    if(e.key === 'Enter'){
-                      let data = {...profile}
-                      data.screenName = e.target.value
-                      setProfile(data)
-                    }
-                  }}/>
-                  {/* <Textinput       // TODO : Remove
-                    style={{ width: '300px' }}
-                    id="firstName"
-                    label="First Name"
-                    value = {profile.firstName}
-                    onChange = {e => {}}
-                    onBlur={e => {
-                      let data = {...profile}
-                      data.firstName = e.target.value
-                      setProfile(data)
-                    }}
-                    onKeyDown = {e => {
-                      if(e.key === 'Enter'){
-                        let data = {...profile}
-                        data.firstName = e.target.value
-                        setProfile(data)
-                      }
-                    }}
-                  > 
-                     {profile.firstName} 
-                   </Textinput> */}
+       <p>Email Address: {profile.email}</p>
 
-                     <Textfield label="First Name" 
-                     style={{ width: '300px' }}
-                  id="firstName"
-                  value = {profile.firstName}
-                  onChange={e =>{
-                    if(e.key === 'Enter'){
-                      let data = {...profile}
-                      data.firstName = e.target.value
-                      setProfile(data)
-                    }
-                  }}/>
-                 
-                   {/* <Textinput            // TODO : Remove
-                    style={{ width: '300px' }}
-                    id="lastName"
-                    label="Last Name"
-                    value = {profile.lastName}
-                    onChange = {e => {}}
-                    onBlur={e => {
-                      let data = {...profile}
-                      data.lastName = e.target.value
-                      setProfile(data)
-                    }}
-                    onKeyDown = {e => {
-                      if(e.key === 'Enter'){
-                        let data = {...profile}
-                        data.lastName = e.target.value
-                        setProfile(data)
-                      }
-                    }}
-                  >
-                     {profile.lastName} 
-                  </Textinput>  */}
+<Button value={"Sign out"} onClick={() =>{setPageToolView({page: 'signout', tool: '', view: ''})}}/>
+<br/>
+{/* <Switch
+  id="trackingConsent"
+  onChange={e => {
+    let data = {...profile}
+    data.trackingConsent = boolToString(e.target.checked)
+    setProfile(data)
+  }}
+  checked={profile.trackingConsent}
+>
+</Switch>
 
-                  <Textfield label="Last Name" 
-                  style={{ width: '300px' }}
-                  id="lastName"
-                  value = {profile.lastName}
-                  onChange={e =>{
-                    if(e.key === 'Enter'){
-                      let data = {...profile}
-                      data.lastName = e.target.value
-                      setProfile(data)
-                    }
-                  }}/>
-                </div>
-
-                <p>Email Address: {profile.email}</p>
-
-                <Switch
-                  id="trackingConsent"
-                  onChange={e => {
-                    let data = {...profile}
-                    data.trackingConsent = boolToString(e.target.checked)
-                    setProfile(data)
-                  }}
-                  checked={profile.trackingConsent}
-                >
-                </Switch>
-                <p>I consent to the use of tracking technologies.</p>
-
-                <p>
-                  "I consent to the tracking of my progress and my activity on
-                  educational websites which participate in Doenet; my data will be
-                  used to provide my instructor with my grades on course assignments,
-                  and anonymous data may be provided to content authors to improve the
-                  educational effectiveness."
-                  <br />
-                  <br />
-                  <em>
-                    Revoking your consent may impact your ability to recieve credit
-                    for coursework.
-                  </em>
-                </p>
-
-                <SectionHeader>Your Roles</SectionHeader>
-                <p>Student</p>
-                <Switch
-                  id="student"
-                  onChange={e => {
-                    let data = {...profile}
-                    data.roleStudent= boolToString(e.target.checked)
-                    setProfile(data)
-                  }} // updates immediately
-                  checked={profile.roleStudent}
-                >
-                </Switch>
-                <p>Instructor</p>
-                <Switch
-                  id="instructor"
-                  onChange={e => {
-                    let data = {...profile}
-                    data.roleInstructor= boolToString(e.target.checked)
-                    setProfile(data)
-                  }} // updates immediately
-                  checked={profile.roleInstructor}
-                >
-                </Switch>
-                <p>Course Designer</p>
-                <Switch
-                  id="course_designer"
-                  onChange={e => {
-                    let data = {...profile}
-                    data.roleCourseDesigner= boolToString(e.target.checked)
-                    setProfile(data)
-                  }}
-                  checked={profile.roleCourseDesigner}
-                >
-                </Switch>
-                <br/>
-                <Button value={"Sign out"} onClick={() =>{setPageToolView({page: 'signout', tool: '', view: ''})}}/>
-
-              </div>
-              </div>
-    )
+<p>
+  "I consent to the tracking of my progress and my activity on
+  educational websites which participate in Doenet; my data will be
+  used to provide my instructor with my grades on course assignments,
+  and anonymous data may be provided to content authors to improve the
+  educational effectiveness."
+  <br />
+  <br />
+  <em>
+    Revoking your consent may impact your ability to recieve credit
+    for coursework.
+  </em>
+</p> */}
+</div>)
 }

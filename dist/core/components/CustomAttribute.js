@@ -7,8 +7,8 @@ export default class CustomAttribute extends CompositeComponent {
 
   static assignNamesToReplacements = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.componentType = {
       createPrimitiveOfType: "string",
@@ -35,7 +35,7 @@ export default class CustomAttribute extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         let componentNameForAttributes = dependencyValues.parentVariableContainingName;
-        return { newValues: { componentNameForAttributes } }
+        return { setValue: { componentNameForAttributes } }
       }
     }
 
@@ -47,7 +47,7 @@ export default class CustomAttribute extends CompositeComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { attributeName: dependencyValues.attribute } }
+        return { setValue: { attributeName: dependencyValues.attribute } }
       }
     }
 
@@ -63,7 +63,7 @@ export default class CustomAttribute extends CompositeComponent {
         }
       }),
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -73,19 +73,13 @@ export default class CustomAttribute extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, components, workspace,
+  static async createSerializedReplacements({ component, components, workspace,
     componentInfoObjects, flags,
   }) {
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
-    let componentTypeLowerCaseMapping = {};
-
-    for (let cType in componentInfoObjects.allComponentClasses) {
-      componentTypeLowerCaseMapping[cType.toLowerCase()] = cType;
-    }
-
-    let componentType = componentTypeLowerCaseMapping[component.attributes.componentType.primitive.toLowerCase()];
+    let componentType = componentInfoObjects.componentTypeLowerCaseMapping[component.attributes.componentType.primitive.toLowerCase()];
     let componentClass = componentInfoObjects.allComponentClasses[componentType];
 
     if (!componentClass) {
@@ -93,13 +87,15 @@ export default class CustomAttribute extends CompositeComponent {
       return { replacements: [] };
     }
 
-    let componentForAttribute = components[component.stateValues.componentNameForAttributes];
+    let componentForAttribute = components[await component.stateValues.componentNameForAttributes];
     let attributeLowerCaseMapping = {};
 
     for (let attrName in componentForAttribute.attributes) {
       attributeLowerCaseMapping[attrName.toLowerCase()] = attrName;
     }
-    let attributeName = attributeLowerCaseMapping[component.stateValues.attributeName.toLowerCase()];
+
+    let SVattributeName = await component.stateValues.attributeName;
+    let attributeName = attributeLowerCaseMapping[SVattributeName.toLowerCase()];
 
     let attributeValue = componentForAttribute.attributes[attributeName];
 
@@ -116,10 +112,10 @@ export default class CustomAttribute extends CompositeComponent {
     // check if have attribute name is already defined for componentForAttribute's class
     // in which case setting via custom attributes won't work
     let containerClass = componentForAttribute.constructor;
-    let containerAttrNames = Object.keys(containerClass.createAttributesObject({ flags })).map(x => x.toLowerCase());
-    containerAttrNames.push("name", "tname", "assignnames")
-    if (containerAttrNames.includes(component.stateValues.attributeName.toLowerCase())) {
-      console.warn(`Cannot add attribute ${component.stateValues.attributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`)
+    let containerAttrNames = Object.keys(containerClass.createAttributesObject()).map(x => x.toLowerCase());
+    containerAttrNames.push("name", "target", "assignnames")
+    if (containerAttrNames.includes(SVattributeName.toLowerCase())) {
+      console.warn(`Cannot add attribute ${SVattributeName} of a ${containerClass.componentType} as it already exists in ${containerClass.componentType} class`)
       return { replacements: [] }
     }
 
@@ -136,14 +132,14 @@ export default class CustomAttribute extends CompositeComponent {
 
 
     if (serializedComponent.children) {
-      serializedComponent.children = serializeFunctions.applyMacros(serializedComponent.children, componentInfoObjects);
+      serializeFunctions.applyMacros(serializedComponent.children, componentInfoObjects);
       if (newNamespace) {
-        // modify tNames to go back one namespace
+        // modify targets to go back one namespace
         for (let child of serializedComponent.children) {
           if (child.componentType === "copy") {
-            let tName = child.doenetAttributes.tName;
-            if (/[a-zA-Z_]/.test(tName[0])) {
-              child.doenetAttributes.tName = "../" + tName;
+            let target = child.doenetAttributes.target;
+            if (/[a-zA-Z_]/.test(target[0])) {
+              child.doenetAttributes.target = "../" + target;
             }
           }
         }

@@ -8,6 +8,7 @@ $remoteuser = 'devuser';
 if (
     $_SERVER['HTTP_HOST'] == 'localhost' ||
     $_SERVER['HTTP_HOST'] == 'localhost:3000' ||
+    $_SERVER['HTTP_HOST'] == 'localhost:8080' ||
     $_SERVER['HTTP_HOST'] == 'apache' ||
     $_SERVER['HTTP_HOST'] == 'localhost:81'
 ) {
@@ -24,6 +25,7 @@ $database = $ini_array['database'];
 
 if (
     $_SERVER['HTTP_HOST'] == 'localhost' ||
+    $_SERVER['HTTP_HOST'] == 'localhost:8080' ||
     $_SERVER['HTTP_HOST'] == 'apache' ||
     $_SERVER['HTTP_HOST'] == 'localhost:81'
 ) {
@@ -36,9 +38,14 @@ if ($_SERVER['HTTP_HOST'] == 'localhost:3000') {
     $password = 'root';
 }
 
-$conn = mysqli_connect($dbhost, $username, $password, $database);
-// Check connection
-if (!$conn) {
+
+$conn = new mysqli();
+
+
+// Note: use MYSQLI_CLIENT_FOUND_ROWS
+// so that can check rows_affected to determine if UPDATE queries match any records
+// even if they didn't change any records
+if (!$conn->real_connect($dbhost, $username, $password, $database, 3306, null, MYSQLI_CLIENT_FOUND_ROWS)) {
     die('Database Connection failed: ' . mysqli_connect_error());
 }
 

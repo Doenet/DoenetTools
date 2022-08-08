@@ -2,8 +2,6 @@ import MathComponent from './Math';
 import subsets, { buildSubsetFromMathExpression } from '../utils/subset-of-reals';
 import { renameStateVariable } from '../utils/stateVariables';
 import me from 'math-expressions';
-import { deepCompare } from '../utils/deepFunctions';
-
 export default class SubsetOfReals extends MathComponent {
 
   static componentType = "subsetOfReals";
@@ -12,8 +10,8 @@ export default class SubsetOfReals extends MathComponent {
   // used when creating new component via adapter or copy prop
   static primaryStateVariableForDefinition = "subsetValue";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.createIntervals.defaultValue = true;
 
     attributes.variable = {
@@ -48,7 +46,7 @@ export default class SubsetOfReals extends MathComponent {
       newName: "unnormalizedValuePreliminary"
     });
 
-    stateVariableDefinitions.value.componentType = "math";
+    stateVariableDefinitions.value.shadowingInstructions.createComponentOfType = "math";
 
     stateVariableDefinitions.haveSingleSubsetChild = {
       returnDependencies: () => ({
@@ -68,7 +66,7 @@ export default class SubsetOfReals extends MathComponent {
           })
         ).length === 1;
 
-        return { newValues: { haveSingleSubsetChild } }
+        return { setValue: { haveSingleSubsetChild } }
       }
     }
 
@@ -113,7 +111,7 @@ export default class SubsetOfReals extends MathComponent {
           )
         }
 
-        return { newValues: { subsetValue } }
+        return { setValue: { subsetValue } }
       },
       async inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
 
@@ -165,7 +163,7 @@ export default class SubsetOfReals extends MathComponent {
 
         let unnormalizedValue = mathExpressionFromSubsetValue(dependencyValues);
 
-        return { newValues: { unnormalizedValue } }
+        return { setValue: { unnormalizedValue } }
 
 
       },

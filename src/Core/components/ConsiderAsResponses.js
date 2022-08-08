@@ -1,6 +1,6 @@
-import BlockComponent from './abstract/BlockComponent';
+import BaseComponent from './abstract/BaseComponent';
 
-export default class ConsiderAsResponses extends BlockComponent {
+export default class ConsiderAsResponses extends BaseComponent {
   static componentType = "considerAsResponses";
   static rendererType = undefined;
 
@@ -27,7 +27,7 @@ export default class ConsiderAsResponses extends BlockComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { childrenWithNValues: dependencyValues.children }
+        setValue: { childrenWithNValues: dependencyValues.children }
       })
     }
 
@@ -41,7 +41,7 @@ export default class ConsiderAsResponses extends BlockComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { childrenAsResponses: dependencyValues.children }
+        setValue: { childrenAsResponses: dependencyValues.children }
       })
     }
 

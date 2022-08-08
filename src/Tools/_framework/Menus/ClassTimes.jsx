@@ -7,9 +7,11 @@ import {
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { classTimesAtom } from '../Widgets/Next7Days';
 import DropdownMenu from '../../../_reactComponents/PanelHeaderComponents/DropdownMenu';
-// import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
+import DateTime from '../../../_reactComponents/PanelHeaderComponents/DateTime';
 import axios from 'axios';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const TimeEntry = ({parentValue,valueCallback=()=>{}})=>{
   let [time,setTime] = useState(parentValue);
@@ -75,7 +77,6 @@ function sortClassTimes(classTimesArray){
 
 export default function ClassTimes(){
   const timesObj = useRecoilValue(classTimesAtom);
-
   const addClassTime = useRecoilCallback(({set,snapshot})=> async ()=>{
 
     let was = await snapshot.getPromise(classTimesAtom);
@@ -89,8 +90,7 @@ export default function ClassTimes(){
     newArr = sortClassTimes(newArr);
     set(classTimesAtom,newArr);
 
-    let path = await snapshot.getPromise(searchParamAtomFamily('path'));
-    let [driveId] = path.split(':');
+    let courseId = await snapshot.getPromise(searchParamAtomFamily('courseId'));
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -101,7 +101,7 @@ export default function ClassTimes(){
 
     }
 
-    let { data } = await axios.post('/api/updateClassTimes.php',{driveId,dotwIndexes,startTimes,endTimes})
+    let { data } = await axios.post('/api/updateClassTimes.php',{driveId: courseId,dotwIndexes,startTimes,endTimes})
     console.log(">>>>data",data)
   })
 
@@ -113,8 +113,7 @@ export default function ClassTimes(){
     newArr = sortClassTimes(newArr);
     set(classTimesAtom,newArr);
 
-     let path = await snapshot.getPromise(searchParamAtomFamily('path'));
-    let [driveId] = path.split(':');
+     let courseId = await snapshot.getPromise(searchParamAtomFamily('courseId'));
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -125,7 +124,7 @@ export default function ClassTimes(){
 
     }
 
-    let { data } = await axios.post('/api/updateClassTimes.php',{driveId,dotwIndexes,startTimes,endTimes})
+    let { data } = await axios.post('/api/updateClassTimes.php',{driveId: courseId,dotwIndexes,startTimes,endTimes})
     console.log(">>>>data",data)
    })
 
@@ -137,8 +136,7 @@ export default function ClassTimes(){
     newArr = sortClassTimes(newArr);
     set(classTimesAtom,newArr);
 
-     let path = await snapshot.getPromise(searchParamAtomFamily('path'));
-    let [driveId] = path.split(':');
+     let courseId = await snapshot.getPromise(searchParamAtomFamily('courseId'));
     let dotwIndexes = [];
     let startTimes = [];
     let endTimes = [];
@@ -149,7 +147,7 @@ export default function ClassTimes(){
 
     }
 
-    let { data } = await axios.post('/api/updateClassTimes.php',{driveId,dotwIndexes,startTimes,endTimes})
+    let { data } = await axios.post('/api/updateClassTimes.php',{driveId: courseId,dotwIndexes,startTimes,endTimes})
     console.log(">>>>data",data)
    })
 
@@ -174,23 +172,31 @@ export default function ClassTimes(){
       updateClassTime({index,newClassTime})
     }}
     /></td>
-      <td  style={{width:"40px"}} rowSpan="2"><Button value='x' alert onClick={()=>{deleteClassTime({index})}} /> </td>
+      <Button icon={<FontAwesomeIcon icon={faTimes}/>} alert onClick={()=>{deleteClassTime({index})}} />
       </tr>)
-      timesJSX.push(<tr>
-        <td style={{width:"190px",textAlign:"center"}} ><TimeEntry parentValue={timeObj.startTime} valueCallback={(value)=>{
-           let newClassTime = {...timeObj}
-           newClassTime.startTime = value;
-         updateClassTime({index,newClassTime})
-        }}/> - <TimeEntry parentValue={timeObj.endTime} valueCallback={(value)=>{
-          let newClassTime = {...timeObj}
-          newClassTime.endTime = value;
-        updateClassTime({index,newClassTime})
-        }}/></td>
-        </tr>)
-
+      timesJSX.push(<div>
+        <tr style={{width:"190px", display: "flex", alignItems: "center"}}>
+          <td><DateTime datePicker={false} width="74px" parentValue={timeObj.startTime} 
+            valueCallback={(value)=>{
+              let newClassTime = {...timeObj}
+              newClassTime.startTime = value;
+              updateClassTime({index,newClassTime})}}
+            />
+          </td> 
+          <td style={{marginLeft: "6px", marginRight: "6px"}}>-</td>
+          {/* In the menu panel, the right-side time picker's dropdown is shifted with --menuPanelMargin so that it's not cut off */}
+          <td style={{["--menuPanelMargin"]: '-62px'}}><DateTime datePicker={false} width="74px" parentValue={timeObj.endTime} 
+            valueCallback={(value)=>{
+              let newClassTime = {...timeObj}
+              newClassTime.endTime = value;
+              updateClassTime({index,newClassTime})}}
+            />
+          </td>
+        </tr>
+        <div style={{margin: "10px"}}></div>
+        </div>)
   }
 
-  
   let classTimesTable = <div>No times set.</div>
   
   if (timesJSX.length > 0){
@@ -199,8 +205,7 @@ export default function ClassTimes(){
   </table>
   }
   return <>
-  {/* <DateTime datePicker={false} width="50px" /> */}
   {classTimesTable}
-    <Button width='menu' value='Add' onClick={()=>addClassTime()}/>
+    <Button icon={<FontAwesomeIcon icon={faPlus}/>} style={{margin: "auto"}} onClick={()=>addClassTime()}/>
   </>
 }

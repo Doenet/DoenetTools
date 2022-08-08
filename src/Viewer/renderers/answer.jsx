@@ -1,158 +1,182 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faLevelDownAlt, faTimes, faCloud } from '@fortawesome/free-solid-svg-icons'
+import styled from 'styled-components';
 
 
-export default class Answer extends DoenetRenderer {
+// Moved most of checkWorkStyle styling into Button
+const Button = styled.button`
+  position: relative;
+  height: 24px;
+  display: inline-block;
+  color: white;
+  background-color: var(--mainBlue);
+  /* padding: 2px; */
+  /* border: var(--mainBorder); */
+  border: none;
+  border-radius: var(--mainBorderRadius);
+  margin: 0px 10px 12px 10px;
 
-  render() {
+  &:hover {
+    background-color: var(--lightBlue);
+    color: black;
+  };
+`;
 
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    let disabled = this.doenetSvData.disabled;
-
-    let submitAnswer = this.actions.submitAnswer;
-    if (this.doenetSvData.submitAllAnswersAtAncestor) {
-      submitAnswer = this.actions.submitAllAnswers;
-    }
-
-    // BADBADBAD: need to redo how getting the input child
-    // without using the internal guts of componentInstructions
-    // is just asking for trouble
-
-    let inputChildrenToRender = null;
-    if (this.doenetSvData.inputChildren.length > 0) {
-      let inputChildNames = this.doenetSvData.inputChildren.map(x => x.componentName);
-      inputChildrenToRender = this.children.filter(
-        child => typeof child !== "string" && inputChildNames.includes(child.props.componentInstructions.componentName)
-      )
-    }
+export default React.memo(function Answer(props) {
+  let { name, SVs, actions, children, callAction } = useDoenetRender(props);
 
 
-    if (!this.doenetSvData.delegateCheckWork) {
-
-      let validationState = "unvalidated";
-      if (this.doenetSvData.justSubmitted || this.doenetSvData.numberOfAttemptsLeft < 1) {
-        if (this.doenetSvData.creditAchieved === 1) {
-          validationState = "correct";
-        } else if (this.doenetSvData.creditAchieved === 0) {
-          validationState = "incorrect";
-        } else {
-          validationState = "partialcorrect";
-        }
-      }
-
-      let checkWorkStyle = {
-        height: "23px",
-        display: "inline-block",
-        backgroundColor: "rgb(2, 117, 216)",
-        padding: "1px 6px 1px 6px",
-        color: "white",
-        fontWeight: "bold",
-        //marginBottom: "30px",  //Space after check work
-      }
-
-      if (disabled) {
-        checkWorkStyle.backgroundColor = "rgb(200,200,200)";
-      }
-
-      let checkWorkText = "Check Work";
-      if (!this.doenetSvData.showCorrectness) {
-        checkWorkText = "Submit Response";
-      }
-      let checkworkComponent = (
-        <button id={this.componentName + "_submit"}
-          tabIndex="0"
-          disabled={disabled}
-          style={checkWorkStyle}
-          onClick={submitAnswer}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter') {
-              submitAnswer();
-            }
-          }}
-        >
-          <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-          &nbsp;
-          {checkWorkText}
-        </button>);
-
-      if (this.doenetSvData.showCorrectness) {
-        if (validationState === "correct") {
-          checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-          checkworkComponent = (
-            <span id={this.componentName + "_correct"}
-              style={checkWorkStyle}
-            >
-              <FontAwesomeIcon icon={faCheck} />
-              &nbsp;
-              Correct
-            </span>);
-        } else if (validationState === "incorrect") {
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-          checkworkComponent = (
-            <span id={this.componentName + "_incorrect"}
-              style={checkWorkStyle}
-            >
-              <FontAwesomeIcon icon={faTimes} />
-              &nbsp;
-              Incorrect
-            </span>);
-        } else if (validationState === "partialcorrect") {
-          checkWorkStyle.backgroundColor = "#efab34";
-          let percent = Math.round(this.doenetSvData.creditAchieved * 100);
-          let partialCreditContents = `${percent}% Correct`;
-
-          checkworkComponent = (
-            <span id={this.componentName + "_partial"}
-              style={checkWorkStyle}
-            >
-              {partialCreditContents}
-            </span>);
-        }
-      } else {
-        // showCorrectness is false
-        if (validationState !== "unvalidated") {
-          checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-          checkworkComponent = (
-            <span id={this.componentName + "_saved"}
-              style={checkWorkStyle}
-            >
-              <FontAwesomeIcon icon={faCloud} />
-              &nbsp;
-              Response Saved
-            </span>);
-        }
-      }
-
-      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
-        checkworkComponent = <>
-          {checkworkComponent}
-          <span>
-            (no attempts remaining)
-          </span>
-        </>
-      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
-
-        checkworkComponent = <>
-          {checkworkComponent}
-          <span>
-            (attempts remaining: {this.doenetSvData.numberOfAttemptsLeft})
-          </span>
-        </>
-      }
-
-      return <span id={this.componentName}>
-        <a name={this.componentName} />
-        {inputChildrenToRender}
-        {checkworkComponent}
-      </span>;
-    } else {
-      return <span id={this.componentName}><a name={this.componentName} />{inputChildrenToRender}</span>;
-    }
-
+  if (SVs.hidden) {
+    return null;
   }
-}
+
+  let disabled = SVs.disabled;
+
+  let submitAnswer = () => callAction({
+    action: actions.submitAnswer
+  })
+  if (SVs.submitAllAnswersAtAncestor) {
+    submitAnswer = () => callAction({
+      action: actions.submitAllAnswers
+    })
+  }
+
+  // BADBADBAD: need to redo how getting the input child
+  // without using the internal guts of componentInstructions
+  // is just asking for trouble
+
+  let inputChildrenToRender = null;
+  if (SVs.inputChildren.length > 0) {
+    let inputChildNames = SVs.inputChildren.map(x => x.componentName);
+    inputChildrenToRender = children.filter(
+      child => typeof child !== "string" && inputChildNames.includes(child.props.componentInstructions.componentName)
+    )
+  }
+
+
+  if (!SVs.delegateCheckWork) {
+
+    let validationState = "unvalidated";
+    if (SVs.justSubmitted || SVs.numberOfAttemptsLeft < 1) {
+      if (SVs.creditAchieved === 1) {
+        validationState = "correct";
+      } else if (SVs.creditAchieved === 0) {
+        validationState = "incorrect";
+      } else {
+        validationState = "partialcorrect";
+      }
+    }
+
+    let checkWorkStyle = {
+      cursor: 'pointer',
+    }
+
+
+    if (disabled) {
+      checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+    }
+
+    let checkWorkText = SVs.submitLabel;
+    if (!SVs.showCorrectness) {
+      checkWorkText = SVs.submitLabelNoCorrectness;
+    }
+    let checkworkComponent = (
+      <Button id={name + "_submit"}
+        tabIndex="0"
+        disabled={disabled}
+        style={checkWorkStyle}
+        onClick={submitAnswer}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            submitAnswer();
+          }
+        }}
+      >
+        <FontAwesomeIcon style={{ marginRight: "4px", paddingLeft: "2px" }} icon={faLevelDownAlt} transform={{ rotate: 90 }} />
+        &nbsp;
+        {checkWorkText}
+      </Button>);
+
+    if (SVs.showCorrectness) {
+      if (validationState === "correct") {
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
+        checkworkComponent = (
+          <Button id={name + "_correct"}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faCheck} />
+            &nbsp;
+            Correct
+          </Button>);
+      } else if (validationState === "incorrect") {
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+        checkworkComponent = (
+          <Button id={name + "_incorrect"}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faTimes} />
+            &nbsp;
+            Incorrect
+          </Button>);
+      } else if (validationState === "partialcorrect") {
+        checkWorkStyle.backgroundColor = "#efab34";
+        let percent = Math.round(SVs.creditAchieved * 100);
+        let partialCreditContents = `${percent}% Correct`;
+
+        checkworkComponent = (
+          <Button id={name + "_partial"}
+            style={checkWorkStyle}
+          >
+            {partialCreditContents}
+          </Button>);
+      }
+    } else {
+      // showCorrectness is false
+      if (validationState !== "unvalidated") {
+        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkworkComponent = (
+          <Button id={name + "_saved"}
+            style={checkWorkStyle}
+          >
+            <FontAwesomeIcon icon={faCloud} />
+            &nbsp;
+            Response Saved
+          </Button>);
+      }
+    }
+
+    if (SVs.numberOfAttemptsLeft < 0) {
+      checkworkComponent = <>
+        {checkworkComponent}
+        <span>
+          (no attempts remaining)
+        </span>
+      </>
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkworkComponent = <>
+        {checkworkComponent}
+        <span>
+          (1 attempt remaining)
+        </span>
+      </>
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+      checkworkComponent = <>
+        {checkworkComponent}
+        <span>
+          ({SVs.numberOfAttemptsLeft} attempts remaining)
+        </span>
+      </>
+    }
+
+    return <span id={name} style={{ display: "flex" }}>
+      <a name={name} />
+      {inputChildrenToRender}
+      {checkworkComponent}
+    </span>;
+  } else {
+    return <span id={name} style={{ marginBottom: "12px" }}><a name={name} />{inputChildrenToRender}</span>;
+  }
+
+})

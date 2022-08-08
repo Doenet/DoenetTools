@@ -1,16 +1,13 @@
-import BaseComponent from './abstract/BaseComponent.js';
+import InlineComponent from './abstract/InlineComponent.js';
 import { breakEmbeddedStringsIntoParensPieces } from './commonsugar/breakstrings.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
 
-export default class BezierControls extends BaseComponent {
+export default class BezierControls extends InlineComponent {
   static componentType = "bezierControls";
-  static rendererType = "container";
+  static rendererType = "containerInline";
 
-  static get stateVariablesShadowedForReference() { return ["controls"] };
-
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.alwaysVisible = {
       createComponentOfType: "boolean",
@@ -41,7 +38,7 @@ export default class BezierControls extends BaseComponent {
       return {
         success: true,
         newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || piece[0].componentType === "string") {
+          if (piece.length > 1 || typeof piece[0] === "string") {
             return {
               componentType: "controlVectors",
               children: [{
@@ -93,7 +90,7 @@ export default class BezierControls extends BaseComponent {
         if (!(Number.isInteger(nControls) && nControls >= 0)) {
           nControls = 0;
         }
-        return { newValues: { nControls } }
+        return { setValue: { nControls } }
       }
     }
 
@@ -119,14 +116,15 @@ export default class BezierControls extends BaseComponent {
           pointIndMap[currentPointInd] = controlInd;
         }
 
-        return { newValues: { pointIndMap } }
+        return { setValue: { pointIndMap } }
       }
     }
 
     stateVariableDefinitions.directions = {
       isArray: true,
       entryPrefixes: ["direction"],
-      defaultEntryValue: "none",
+      hasEssential: true,
+      defaultValueByArrayKey: () => "none",
       stateVariablesDeterminingDependencies: ["pointIndMap"],
       returnArraySizeDependencies: () => ({
         nControls: {
@@ -167,15 +165,13 @@ export default class BezierControls extends BaseComponent {
           if (controlChild && controlChild.length === 1) {
             directions[arrayKey] = controlChild[0].stateValues.direction;
           } else {
-            essentialDirections[arrayKey] = {
-              variablesToCheck: [{ variableName: "directions", arrayIndex: arrayKey }]
-            }
+            essentialDirections[arrayKey] = true
           }
 
         }
 
         return {
-          newValues: { directions },
+          setValue: { directions },
           useEssentialOrDefaultValue: { directions: essentialDirections }
         }
       },
@@ -210,7 +206,7 @@ export default class BezierControls extends BaseComponent {
 
         if (Object.keys(newDirectionValues).length > 0) {
           instructions.push({
-            setStateVariable: "directions",
+            setEssentialValue: "directions",
             value: newDirectionValues
           })
         }
@@ -226,7 +222,8 @@ export default class BezierControls extends BaseComponent {
     stateVariableDefinitions.hiddenControls = {
       isArray: true,
       entryPrefixes: ["hiddenControl"],
-      defaultEntryValue: false,
+      hasEssential: true,
+      defaultValueByArrayKey: () => false,
       stateVariablesDeterminingDependencies: ["pointIndMap"],
       returnArraySizeDependencies: () => ({
         nControls: {
@@ -267,15 +264,13 @@ export default class BezierControls extends BaseComponent {
           if (controlChild && controlChild.length === 1) {
             hiddenControls[arrayKey] = controlChild[0].stateValues.hide;
           } else {
-            essentialHiddenControls[arrayKey] = {
-              variablesToCheck: [{ variableName: "hiddenControls", arrayIndex: arrayKey }]
-            }
+            essentialHiddenControls[arrayKey] = true
           }
 
         }
 
         return {
-          newValues: { hiddenControls },
+          setValue: { hiddenControls },
           useEssentialOrDefaultValue: { hiddenControls: essentialHiddenControls }
         }
       },
@@ -310,7 +305,7 @@ export default class BezierControls extends BaseComponent {
 
         if (Object.keys(newHiddenControlValues).length > 0) {
           instructions.push({
-            setStateVariable: "hiddenControls",
+            setEssentialValue: "hiddenControls",
             value: newHiddenControlValues
           })
         }
@@ -340,7 +335,7 @@ export default class BezierControls extends BaseComponent {
         }
 
         return {
-          newValues: { nDimensions },
+          setValue: { nDimensions },
           checkForActualChange: { nDimensions: true }
         }
 
@@ -353,7 +348,8 @@ export default class BezierControls extends BaseComponent {
       isArray: true,
       entryPrefixes: ["essentialSymmetricControl"],
       nDimensions: 2,
-      defaultEntryValue: me.fromAst(1),
+      hasEssential: true,
+      defaultValueByArrayKey: () => me.fromAst(1),
       returnArraySizeDependencies: () => ({
         nControls: {
           dependencyType: "stateVariable",
@@ -375,9 +371,7 @@ export default class BezierControls extends BaseComponent {
         for (let arrayKey of arrayKeys) {
           let arrayIndices = arrayKey.split(",").map(x => Number(x));
 
-          essentialControls[arrayKey] = {
-            variablesToCheck: [{ variableName: "essentialSymmetricControls", arrayIndex: arrayIndices }]
-          }
+          essentialControls[arrayKey] = true
 
         }
 
@@ -398,7 +392,7 @@ export default class BezierControls extends BaseComponent {
 
         if (Object.keys(newControlValues).length > 0) {
           instructions.push({
-            setStateVariable: "essentialSymmetricControls",
+            setEssentialValue: "essentialSymmetricControls",
             value: newControlValues
           })
         }
@@ -415,7 +409,9 @@ export default class BezierControls extends BaseComponent {
       isArray: true,
       entryPrefixes: ["control"],
       nDimensions: 3,
-      defaultEntryValue: me.fromAst(1),
+      hasEssential: true,
+      shadowVariable: true,
+      defaultValueByArrayKey: () => me.fromAst(1),
       stateVariablesDeterminingDependencies: ["pointIndMap", "directions"],
       returnArraySizeDependencies: () => ({
         nControls: {
@@ -500,14 +496,7 @@ export default class BezierControls extends BaseComponent {
 
           if (arrayIndices[1] === 0) {
             if (direction === "none" || direction === "next") {
-              // Note: use essential controls, which will be ignored,
-              // rather than setting to null
-              // as setting to null in the case of no control child,
-              // will set the essential value to null, leading to a null
-              // control vector if the direction is changed away from none/next
-              essentialControls[arrayKey] = {
-                variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
-              }
+              newControlValues[arrayKey] = null;
             } else {
               let controlChild = dependencyValuesByKey[arrayKey].controlChild;
               let useEssential = true;
@@ -527,22 +516,13 @@ export default class BezierControls extends BaseComponent {
                 if (direction === "symmetric") {
                   newControlValues[arrayKey] = dependencyValuesByKey[arrayKey].essentialSymmetricControl
                 } else {
-                  essentialControls[arrayKey] = {
-                    variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
-                  }
+                  essentialControls[arrayKey] = true
                 }
               }
             }
           } else if (arrayIndices[1] === 1) {
             if (direction === "none" || direction === "previous") {
-              // Note: use essential controls, which will be ignored,
-              // rather than setting to null
-              // as setting to null in the case of no control child,
-              // will set the essential value to null, leading to a null
-              // control vector if the direction is changed away from none/previous
-              essentialControls[arrayKey] = {
-                variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
-              }
+              newControlValues[arrayKey] = null;
             } else {
               let controlChild = dependencyValuesByKey[arrayKey].controlChild;
               let useEssential = true;
@@ -580,9 +560,7 @@ export default class BezierControls extends BaseComponent {
                     newControlValues[arrayKey] = me.fromAst(-dependencyValuesByKey[arrayKey].essentialSymmetricControl.tree)
                   }
                 } else {
-                  essentialControls[arrayKey] = {
-                    variablesToCheck: [{ variableName: "controls", arrayIndex: arrayIndices }]
-                  }
+                  essentialControls[arrayKey] = true
                 }
               }
 
@@ -590,13 +568,12 @@ export default class BezierControls extends BaseComponent {
           }
         }
         return {
-          newValues: {
+          setValue: {
             controls: newControlValues
           },
           useEssentialOrDefaultValue: {
             controls: essentialControls,
           },
-          // makeEssential: ["controls"],
         }
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -706,7 +683,7 @@ export default class BezierControls extends BaseComponent {
 
         if (Object.keys(newControlValues).length > 0) {
           instructions.push({
-            setStateVariable: "controls",
+            setEssentialValue: "controls",
             value: newControlValues
           })
         }

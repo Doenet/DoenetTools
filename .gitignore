@@ -19,6 +19,7 @@ node_modules
 .env.production.local
 .env.development
 .env.production
+.cache
 
 npm-debug.log*
 yarn-debug.log*
@@ -37,7 +38,6 @@ cypress/screenshots
 
 src/tempcodes
 
-
 # Docker testing environment
 docker\ deb/
 docker\ alp/
@@ -49,4 +49,6 @@ doenet_docker/volumes/db/*
 
 src/API/vendor
 
-.cache/
+src/Media/bydoenetid/
+
+src/Media/byPageId/

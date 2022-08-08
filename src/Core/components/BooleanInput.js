@@ -5,9 +5,7 @@ export default class BooleanInput extends Input {
     super(args);
 
     this.actions = {
-      updateBoolean: this.updateBoolean.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateBoolean: this.updateBoolean.bind(this)
     };
 
     this.externalActions = {};
@@ -33,12 +31,8 @@ export default class BooleanInput extends Input {
 
   static variableForPlainMacro = "value";
 
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.prefill = {
       createComponentOfType: "boolean",
       createStateVariable: "prefill",
@@ -46,26 +40,91 @@ export default class BooleanInput extends Input {
       public: true,
     };
     attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "",
+      createComponentOfType: "label",
+    };
+    attributes.asToggleButton = {
+      createComponentOfType: "boolean",
+      createStateVariable: "asToggleButton",
+      defaultValue: false,
       forRenderer: true,
       public: true,
-    };
+    }
     attributes.bindValueTo = {
       createComponentOfType: "boolean"
     };
     return attributes;
   }
 
+
+  static returnChildGroups() {
+
+    return [{
+      group: "labels",
+      componentTypes: ["label"]
+    }]
+
+  }
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.label = {
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "label",
+      },
+      hasEssential: true,
+      defaultValue: "",
+      additionalStateVariablesDefined: [{
+        variableName: "labelHasLatex",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        labelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "label",
+          variableNames: ["value", "hasLatex"]
+        },
+        labelChild: {
+          dependencyType: "child",
+          childGroups: ["labels"],
+          variableNames: ["value", "hasLatex"]
+        },
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.labelChild.length > 0) {
+          return {
+            setValue: {
+              label: dependencyValues.labelChild[0].stateValues.value,
+              labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.labelAttr) {
+          return {
+            setValue: {
+              label: dependencyValues.labelAttr.stateValues.value,
+              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { label: true },
+            setValue: { labelHasLatex: false }
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -82,13 +141,12 @@ export default class BooleanInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               value: {
-                variablesToCheck: "value",
                 defaultValue: dependencyValues.prefill
               }
             }
           }
         }
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -102,11 +160,11 @@ export default class BooleanInput extends Input {
             }]
           };
         }
-        // no children, so value is essential and give it the desired value
+
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value
           }]
         };
@@ -115,7 +173,9 @@ export default class BooleanInput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -123,13 +183,13 @@ export default class BooleanInput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value ? "true" : "false" } }
+        return { setValue: { text: dependencyValues.value ? "true" : "false" } }
       }
     }
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "boolean" } })
+      definition: () => ({ setValue: { componentType: "boolean" } })
     }
 
 
@@ -137,7 +197,7 @@ export default class BooleanInput extends Input {
 
   }
 
-  async updateBoolean({ boolean }) {
+  async updateBoolean({ boolean, actionId }) {
     if (!await this.stateValues.disabled) {
       let updateInstructions = [{
         updateType: "updateValue",
@@ -169,6 +229,7 @@ export default class BooleanInput extends Input {
       await this.coreFunctions.performUpdate({
         updateInstructions,
         event,
+        actionId,
       });
 
       return await this.coreFunctions.triggerChainedActions({
@@ -176,6 +237,8 @@ export default class BooleanInput extends Input {
       });
 
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

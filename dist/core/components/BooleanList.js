@@ -17,8 +17,8 @@ export default class BooleanList extends InlineComponent {
   // don't required composite replacements
   static descendantCompositesMustHaveAReplacement = false;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.unordered = {
       createComponentOfType: "boolean",
       createStateVariable: "unordered",
@@ -28,7 +28,7 @@ export default class BooleanList extends InlineComponent {
     attributes.maximumNumber = {
       createComponentOfType: "number",
       createStateVariable: "maximumNumber",
-      defaultValue: undefined,
+      defaultValue: null,
       public: true,
     };
     return attributes;
@@ -83,13 +83,15 @@ export default class BooleanList extends InlineComponent {
     // so that can't have a list with partially hidden components
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { overrideChildHide: true } })
+      definition: () => ({ setValue: { overrideChildHide: true } })
     }
 
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
@@ -140,7 +142,7 @@ export default class BooleanList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponents, childIndexByArrayKey },
+          setValue: { nComponents, childIndexByArrayKey },
           checkForActualChange: { nComponents: true }
         }
       }
@@ -148,7 +150,9 @@ export default class BooleanList extends InlineComponent {
 
     stateVariableDefinitions.booleans = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       isArray: true,
       entryPrefixes: ["boolean"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
@@ -213,7 +217,7 @@ export default class BooleanList extends InlineComponent {
 
         }
 
-        return { newValues: { booleans } }
+        return { setValue: { booleans } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
@@ -304,17 +308,14 @@ export default class BooleanList extends InlineComponent {
           componentNamesInList = componentNamesInList.slice(0, maxNum)
         }
 
-        return { newValues: { componentNamesInList } }
+        return { setValue: { componentNamesInList } }
 
       }
     }
 
 
     stateVariableDefinitions.nComponentsToDisplayByChild = {
-      additionalStateVariablesDefined: [{
-        variableName: "nChildrenToDisplay",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["nChildrenToRender"],
       returnDependencies: () => ({
         nComponents: {
           dependencyType: "stateVariable",
@@ -349,13 +350,13 @@ export default class BooleanList extends InlineComponent {
         let nComponentsToDisplayByChild = {};
 
         let nComponentsSoFar = 0;
-        let nChildrenToDisplay = 0;
+        let nChildrenToRender = 0;
 
         let nBooleanLists = 0;
         for (let child of dependencyValues.booleanAndBooleanListChildren) {
           let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
           if (nComponentsLeft > 0) {
-            nChildrenToDisplay++;
+            nChildrenToRender++;
           }
           if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
@@ -378,9 +379,10 @@ export default class BooleanList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponentsToDisplayByChild, nChildrenToDisplay },
+          setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
-      }
+      },
+      markStale: () => ({ updateRenderedChildren: true }),
     }
 
     return stateVariableDefinitions;

@@ -19,18 +19,8 @@ export default class MathList extends InlineComponent {
   // don't required composite replacements
   static descendantCompositesMustHaveAReplacement = false;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
-    attributes.simplify = {
-      propagateToDescendants: true,
-      createComponentOfType: "text",
-      createStateVariable: "simplify",
-      defaultValue: "none",
-      public: true,
-      toLowerCase: true,
-      valueTransformations: { "true": "full" },
-      validValues: ["none", "full", "numbers", "numberspreserveorder"]
-    };
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.unordered = {
       createComponentOfType: "boolean",
@@ -69,6 +59,12 @@ export default class MathList extends InlineComponent {
       defaultValue: 0,
       public: true,
     };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
+    };
 
     return attributes;
   }
@@ -89,8 +85,12 @@ export default class MathList extends InlineComponent {
         matchedChildren, isAttributeComponent = false, createdFromMacro = false,
       }) {
         if (isAttributeComponent && !createdFromMacro) {
+          // if in attribute not created by a macros,
+          // then group expressions like 3$x+3 into a single match by wrapping with a math
           return groupIntoMathsSeparatedBySpaces({ matchedChildren });
         } else {
+          // otherwise, just break strings into pieces and wrap each piece with a math,
+          // leaving all othe components alone
           return breakStringsIntoMathsBySpaces({ matchedChildren })
         }
       }
@@ -122,22 +122,25 @@ export default class MathList extends InlineComponent {
     // so that can't have a list with partially hidden components
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { overrideChildHide: true } })
+      definition: () => ({ setValue: { overrideChildHide: true } })
     }
 
     stateVariableDefinitions.mathsShadow = {
       defaultValue: null,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          mathsShadow: { variablesToCheck: ["mathsShadow"] }
+          mathsShadow: true
         }
       }),
     }
 
     stateVariableDefinitions.mergeMathLists = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         mergeMathListsPreliminary: {
           dependencyType: "stateVariable",
@@ -161,7 +164,7 @@ export default class MathList extends InlineComponent {
             dependencyValues.mathListChildren.length === 0
             && dependencyValues.mathChildren.length === 1
           );
-        return { newValues: { mergeMathLists } }
+        return { setValue: { mergeMathLists } }
       }
 
     }
@@ -169,7 +172,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["mergeMathLists"],
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies({ stateValues }) {
@@ -278,7 +283,7 @@ export default class MathList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponents, childIndexByArrayKey },
+          setValue: { nComponents, childIndexByArrayKey },
           checkForActualChange: { nComponents: true }
         }
       }
@@ -287,7 +292,10 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.maths = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       isArray: true,
       entryPrefixes: ["math"],
       stateVariablesDeterminingDependencies: ["mergeMathLists", "childIndexByArrayKey"],
@@ -371,7 +379,7 @@ export default class MathList extends InlineComponent {
 
         }
 
-        return { newValues: { maths } }
+        return { setValue: { maths } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,
@@ -423,6 +431,33 @@ export default class MathList extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      returnDependencies: () => ({
+        maths: {
+          dependencyType: "stateVariable",
+          variableName: "maths"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let math;
+        if (dependencyValues.maths.length === 0) {
+          math = me.fromAst("\uff3f");
+        } else if (dependencyValues.maths.length === 1) {
+          math = dependencyValues.maths[0]
+        } else {
+          math = me.fromAst(["list", ...dependencyValues.maths.map(x => x.tree)]);
+        }
+
+        return { setValue: { math } }
+
+      }
+    }
+
     stateVariableDefinitions.nValues = {
       isAlias: true,
       targetVariableName: "nComponents"
@@ -436,7 +471,9 @@ export default class MathList extends InlineComponent {
     stateVariableDefinitions.latex = {
       additionalStateVariablesDefined: ["latexs"],
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         mathAndMathListChildren: {
@@ -469,10 +506,23 @@ export default class MathList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
         },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         let latexs = [];
-
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
         if (dependencyValues.mathAndMathListChildren.length > 0) {
           for (let child of dependencyValues.mathAndMathListChildren) {
 
@@ -482,7 +532,7 @@ export default class MathList extends InlineComponent {
 
               if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
                 for (let i = 0; i < childValue.tree.length - 1; i++) {
-                  latexs.push(childValue.get_component(i).toLatex());
+                  latexs.push(childValue.get_component(i).toLatex(params));
                 }
               } else {
                 latexs.push(child.stateValues.latex);
@@ -497,7 +547,7 @@ export default class MathList extends InlineComponent {
             roundForDisplay({
               value: x,
               dependencyValues, usedDefault
-            }).toLatex())
+            }).toLatex(params))
 
         }
 
@@ -509,7 +559,7 @@ export default class MathList extends InlineComponent {
 
         let latex = latexs.join(', ');
 
-        return { newValues: { latex, latexs } }
+        return { setValue: { latex, latexs } }
 
       }
     }
@@ -517,7 +567,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: ["texts"],
       returnDependencies: () => ({
         mathAndMathListChildren: {
@@ -572,7 +624,7 @@ export default class MathList extends InlineComponent {
 
         let text = texts.join(', ');
 
-        return { newValues: { text, texts } }
+        return { setValue: { text, texts } }
 
       }
     }
@@ -611,16 +663,13 @@ export default class MathList extends InlineComponent {
           componentNamesInList = componentNamesInList.slice(0, maxNum)
         }
 
-        return { newValues: { componentNamesInList } }
+        return { setValue: { componentNamesInList } }
 
       }
     }
 
     stateVariableDefinitions.nComponentsToDisplayByChild = {
-      additionalStateVariablesDefined: [{
-        variableName: "nChildrenToDisplay",
-        forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["nChildrenToRender"],
       returnDependencies: () => ({
         nComponents: {
           dependencyType: "stateVariable",
@@ -655,13 +704,13 @@ export default class MathList extends InlineComponent {
         let nComponentsToDisplayByChild = {};
 
         let nComponentsSoFar = 0;
-        let nChildrenToDisplay = 0;
+        let nChildrenToRender = 0;
 
         let nMathLists = 0;
         for (let child of dependencyValues.mathAndMathListChildren) {
           let nComponentsLeft = Math.max(0, nComponentsToDisplay - nComponentsSoFar);
           if (nComponentsLeft > 0) {
-            nChildrenToDisplay++;
+            nChildrenToRender++;
           }
           if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
@@ -684,12 +733,21 @@ export default class MathList extends InlineComponent {
         }
 
         return {
-          newValues: { nComponentsToDisplayByChild, nChildrenToDisplay },
+          setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
-      }
+      },
+      markStale: () => ({ updateRenderedChildren: true }),
     }
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "math",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+    },
+    "text"
+  ];
 
 }

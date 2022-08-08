@@ -1,287 +1,438 @@
-import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
+import React, {useEffect, useState, useRef, createContext} from "../../_snowpack/pkg/react.js";
 import {sizeToCSS} from "./utils/css.js";
-export default class Graph extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-    this.setAllBoardsToStayLowQuality = this.setAllBoardsToStayLowQuality.bind(this);
-    this.setAllBoardsToHighQualityAndUpdate = this.setAllBoardsToHighQualityAndUpdate.bind(this);
-  }
-  static initializeChildrenOnConstruction = false;
-  componentDidMount() {
-    this.drawBoard();
-    this.forceUpdate();
-  }
-  drawBoard() {
-    let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
+import useDoenetRender from "./useDoenetRenderer.js";
+import me from "../../_snowpack/pkg/math-expressions.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
+export const BoardContext = createContext();
+export default React.memo(function Graph(props) {
+  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  const [board, setBoard] = useState(null);
+  const previousDimensions = useRef(null);
+  const previousBoundingbox = useRef(null);
+  const xaxis = useRef(null);
+  const yaxis = useRef(null);
+  const settingBoundingBox = useRef(false);
+  const boardJustInitialized = useRef(false);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
+  useEffect(() => {
+    let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
+    previousBoundingbox.current = boundingbox;
     JXG.Options.layer.numlayers = 100;
-    this.board = window.JXG.JSXGraph.initBoard(this.componentName, {
+    JXG.Options.navbar.highlightFillColor = "var(--canvastext)";
+    JXG.Options.navbar.strokeColor = "var(--canvastext)";
+    let haveFixedGrid = false;
+    if (Array.isArray(SVs.grid)) {
+      haveFixedGrid = true;
+      JXG.Options.grid.gridX = SVs.grid[0];
+      JXG.Options.grid.gridY = SVs.grid[1];
+    }
+    let board2 = window.JXG.JSXGraph.initBoard(name, {
       boundingbox,
       axis: false,
       showCopyright: false,
-      showNavigation: this.doenetSvData.showNavigation && !this.doenetSvData.fixAxes,
-      keepAspectRatio: this.doenetSvData.identicalAxisScales,
-      zoom: {wheel: !this.doenetSvData.fixAxes},
-      pan: {enabled: !this.doenetSvData.fixAxes}
+      showNavigation: SVs.showNavigation && !SVs.fixAxes,
+      zoom: {wheel: !SVs.fixAxes},
+      pan: {enabled: !SVs.fixAxes},
+      grid: haveFixedGrid
     });
-    if (this.doenetSvData.displayXAxis) {
+    board2.itemsRenderedLowQuality = {};
+    board2.on("boundingbox", () => {
+      if (!settingBoundingBox.current) {
+        let newBoundingbox = board2.getBoundingBox();
+        let [xmin, ymax, xmax, ymin] = newBoundingbox;
+        let xscale = Math.abs(xmax - xmin);
+        let yscale = Math.abs(ymax - ymin);
+        let diffs = newBoundingbox.map((v, i) => Math.abs(v - previousBoundingbox.current[i]));
+        if (Math.max(diffs[0] / xscale, diffs[1] / yscale, diffs[2] / xscale, diffs[3] / yscale) > 1e-12) {
+          previousBoundingbox.current = newBoundingbox;
+          callAction({
+            action: actions.changeAxisLimits,
+            args: {xmin, xmax, ymin, ymax}
+          });
+        }
+      }
+    });
+    setBoard(board2);
+    previousDimensions.current = {
+      width: parseFloat(sizeToCSS(SVs.width)),
+      aspectRatio: SVs.aspectRatio
+    };
+    if (SVs.displayXAxis) {
       let xaxisOptions = {};
-      if (this.doenetSvData.xlabel) {
+      if (SVs.xlabel) {
         let position = "rt";
         let offset = [5, 10];
         let anchorx = "right";
-        if (this.doenetSvData.xlabelPosition === "left") {
+        if (SVs.xlabelPosition === "left") {
           position = "lft";
           anchorx = "left";
           offset = [-5, 10];
         }
-        xaxisOptions.name = this.doenetSvData.xlabel;
+        xaxisOptions.name = SVs.xlabel;
         xaxisOptions.withLabel = true;
         xaxisOptions.label = {
           position,
           offset,
-          anchorx
+          anchorx,
+          strokeColor: "var(--canvastext)"
         };
       }
       xaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
-          offset: [-5, -15]
+          offset: [-5, -15],
+          layer: 2
         },
-        minorTicks: 4,
-        precision: 4
+        precision: 4,
+        strokeColor: "var(--canvastext)",
+        drawLabels: SVs.displayXAxisTickLabels
       };
-      if (this.doenetSvData.grid === "dense") {
+      if (SVs.xTickScaleFactor !== null) {
+        let xTickScaleFactor = me.fromAst(SVs.xTickScaleFactor);
+        let scale = xTickScaleFactor.evaluate_to_constant();
+        if (scale > 0) {
+          let scaleSymbol = xTickScaleFactor.toString();
+          xaxisOptions.ticks.scale = scale;
+          xaxisOptions.ticks.scaleSymbol = scaleSymbol;
+        }
+      }
+      xaxisOptions.strokeColor = "var(--canvastext)";
+      xaxisOptions.highlight = false;
+      if (SVs.grid === "dense") {
         xaxisOptions.ticks.majorHeight = -1;
         xaxisOptions.ticks.minorHeight = -1;
-      } else if (this.doenetSvData.grid === "medium") {
+      } else if (SVs.grid === "medium") {
         xaxisOptions.ticks.majorHeight = -1;
         xaxisOptions.ticks.minorHeight = 10;
       } else {
         xaxisOptions.ticks.majorHeight = 20;
         xaxisOptions.ticks.minorHeight = 10;
       }
-      if (!this.doenetSvData.displayYAxis) {
+      if (!SVs.displayYAxis) {
         xaxisOptions.ticks.drawZero = true;
       }
-      this.xaxis = this.board.create("axis", [[0, 0], [1, 0]], xaxisOptions);
+      xaxis.current = board2.create("axis", [[0, 0], [1, 0]], xaxisOptions);
+      xaxis.current.defaultTicks.ticksFunction = function() {
+        var delta, b, dist;
+        b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), "ticksdistance");
+        dist = b.upper - b.lower;
+        delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
+        if (dist <= 6 * delta) {
+          delta *= 0.5;
+        }
+        return delta;
+      };
+      xaxis.current.defaultTicks.generateEquidistantTicks = function(coordsZero, bounds) {
+        var tickPosition, eps2 = 1e-6, deltas, ticksDelta = this.equidistant ? this.ticksFunction(1) : this.ticksDelta, ev_it = true, ev_mt = 4;
+        this.visProp.minorticks = 4;
+        deltas = this.getXandYdeltas();
+        ticksDelta *= this.visProp.scale;
+        if (ev_it && this.minTicksDistance > 1e-6) {
+          ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
+          let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
+          if (Math.abs(ticksDelta / mag - 2) < 1e-14) {
+            ev_mt = 3;
+            this.visProp.minorticks = 3;
+          }
+          ticksDelta /= ev_mt + 1;
+        } else if (!ev_it) {
+          ticksDelta /= ev_mt + 1;
+        }
+        this.ticksDelta = ticksDelta;
+        if (ticksDelta < 1e-6) {
+          return;
+        }
+        tickPosition = 0;
+        tickPosition = ticksDelta;
+        while (tickPosition <= bounds.upper + eps2) {
+          if (tickPosition >= bounds.lower - eps2) {
+            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          }
+          tickPosition += ticksDelta;
+          if (bounds.upper - tickPosition > ticksDelta * 1e4) {
+            break;
+          }
+        }
+        tickPosition = -ticksDelta;
+        while (tickPosition >= bounds.lower - eps2) {
+          if (tickPosition <= bounds.upper + eps2) {
+            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          }
+          tickPosition -= ticksDelta;
+          if (tickPosition - bounds.lower > ticksDelta * 1e4) {
+            break;
+          }
+        }
+      };
     }
-    if (this.doenetSvData.displayYAxis) {
+    if (SVs.displayYAxis) {
       let yaxisOptions = {};
-      if (this.doenetSvData.ylabel) {
+      if (SVs.ylabel) {
         let position = "rt";
         let offset = [-10, -5];
         let anchorx = "right";
-        if (this.doenetSvData.ylabelPosition === "bottom") {
+        if (SVs.ylabelPosition === "bottom") {
           position = "lft";
           offset[1] = 5;
         }
-        if (this.doenetSvData.ylabelAlignment === "right") {
+        if (SVs.ylabelAlignment === "right") {
           anchorx = "left";
           offset[0] = 10;
         }
-        yaxisOptions.name = this.doenetSvData.ylabel;
+        yaxisOptions.name = SVs.ylabel;
         yaxisOptions.withLabel = true;
         yaxisOptions.label = {
           position,
           offset,
-          anchorx
+          anchorx,
+          strokeColor: "var(--canvastext)"
         };
       }
+      yaxisOptions.strokeColor = "var(--canvastext)";
+      yaxisOptions.highlight = false;
       yaxisOptions.ticks = {
         ticksDistance: 2,
         label: {
-          offset: [12, -2]
+          offset: [12, -2],
+          layer: 2
         },
-        minorTicks: 4,
-        precision: 4
+        precision: 4,
+        strokeColor: "var(--canvastext)",
+        drawLabels: SVs.displayYAxisTickLabels
       };
-      if (this.doenetSvData.grid === "dense") {
+      if (SVs.yTickScaleFactor !== null) {
+        let yTickScaleFactor = me.fromAst(SVs.yTickScaleFactor);
+        let scale = yTickScaleFactor.evaluate_to_constant();
+        if (scale > 0) {
+          let scaleSymbol = yTickScaleFactor.toString();
+          yaxisOptions.ticks.scale = scale;
+          yaxisOptions.ticks.scaleSymbol = scaleSymbol;
+        }
+      }
+      if (SVs.grid === "dense") {
         yaxisOptions.ticks.majorHeight = -1;
         yaxisOptions.ticks.minorHeight = -1;
-      } else if (this.doenetSvData.grid === "medium") {
+      } else if (SVs.grid === "medium") {
         yaxisOptions.ticks.majorHeight = -1;
         yaxisOptions.ticks.minorHeight = 10;
       } else {
         yaxisOptions.ticks.majorHeight = 20;
         yaxisOptions.ticks.minorHeight = 10;
       }
-      if (!this.doenetSvData.displayXAxis) {
+      if (!SVs.displayXAxis) {
         yaxisOptions.ticks.drawZero = true;
       }
-      this.yaxis = this.board.create("axis", [[0, 0], [0, 1]], yaxisOptions);
+      yaxis.current = board2.create("axis", [[0, 0], [0, 1]], yaxisOptions);
+      yaxis.current.defaultTicks.ticksFunction = function() {
+        var delta, b, dist;
+        b = this.getLowerAndUpperBounds(this.getZeroCoordinates(), "ticksdistance");
+        dist = b.upper - b.lower;
+        delta = Math.pow(10, Math.floor(Math.log(0.2 * dist) / Math.LN10));
+        if (dist <= 6 * delta) {
+          delta *= 0.5;
+        }
+        return delta;
+      };
+      yaxis.current.defaultTicks.generateEquidistantTicks = function(coordsZero, bounds) {
+        var tickPosition, eps2 = 1e-6, deltas, ticksDelta = this.equidistant ? this.ticksFunction(1) : this.ticksDelta, ev_it = true, ev_mt = 4;
+        this.visProp.minorticks = 4;
+        deltas = this.getXandYdeltas();
+        ticksDelta *= this.visProp.scale;
+        if (ev_it && this.minTicksDistance > 1e-6) {
+          ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
+          let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
+          if (Math.abs(ticksDelta / mag - 2) < 1e-14) {
+            ev_mt = 3;
+            this.visProp.minorticks = 3;
+          }
+          ticksDelta /= ev_mt + 1;
+        } else if (!ev_it) {
+          ticksDelta /= ev_mt + 1;
+        }
+        this.ticksDelta = ticksDelta;
+        if (ticksDelta < 1e-6) {
+          return;
+        }
+        tickPosition = 0;
+        tickPosition = ticksDelta;
+        while (tickPosition <= bounds.upper + eps2) {
+          if (tickPosition >= bounds.lower - eps2) {
+            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          }
+          tickPosition += ticksDelta;
+          if (bounds.upper - tickPosition > ticksDelta * 1e4) {
+            break;
+          }
+        }
+        tickPosition = -ticksDelta;
+        while (tickPosition >= bounds.lower - eps2) {
+          if (tickPosition <= bounds.upper + eps2) {
+            this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
+          }
+          tickPosition -= ticksDelta;
+          if (tickPosition - bounds.lower > ticksDelta * 1e4) {
+            break;
+          }
+        }
+      };
     }
-    this.board.itemsRenderedLowQuality = {};
-    this.board.on("boundingbox", () => {
-      if (!(this.settingBoundingBox || this.resizingBoard)) {
-        this.previousBoundingbox = this.board.getBoundingBox();
-        let [xmin, ymax, xmax, ymin] = this.previousBoundingbox;
-        this.actions.changeAxisLimits({
-          xmin,
-          xmax,
-          ymin,
-          ymax
-        });
-      }
-    });
-    this.doenetPropsForChildren = {board: this.board};
-    this.initializeChildren();
-    this.previousBoundingbox = boundingbox;
-    this.previousDimensions = {
-      width: parseFloat(sizeToCSS(this.doenetSvData.width)),
-      height: parseFloat(sizeToCSS(this.doenetSvData.height))
+    boardJustInitialized.current = true;
+    return () => {
+      board2.off("boundingbox");
     };
+  }, []);
+  const divStyle = {
+    width: sizeToCSS(SVs.width),
+    aspectRatio: String(SVs.aspectRatio),
+    maxWidth: "100%"
+  };
+  if (SVs.hidden) {
+    divStyle.display = "none";
   }
-  update() {
-    if (!this.board) {
-      return;
-    }
-    if (this.doenetSvData.grid === "dense") {
-      if (this.xaxis) {
-        this.xaxis.defaultTicks.setAttribute({majorHeight: -1});
-        this.xaxis.defaultTicks.setAttribute({minorHeight: -1});
+  divStyle.border = "2px solid var(--canvastext)";
+  divStyle.marginBottom = "12px";
+  divStyle.marginTop = "12px";
+  divStyle.backgroundColor = "var(--canvas)";
+  divStyle.color = "var(--canvastext)";
+  if (!board) {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+      name
+    }), /* @__PURE__ */ React.createElement("div", {
+      id: name,
+      className: "jxgbox",
+      style: divStyle
+    }));
+  }
+  if (boardJustInitialized.current) {
+    boardJustInitialized.current = false;
+  } else {
+    if (Array.isArray(SVs.grid)) {
+      let gridParamsChanged = JXG.Options.grid.gridX !== SVs.grid[0] || JXG.Options.grid.gridY !== SVs.grid[1];
+      if (gridParamsChanged) {
+        JXG.Options.grid.gridX = SVs.grid[0];
+        JXG.Options.grid.gridY = SVs.grid[1];
+        if (board.grids.length > 0) {
+          board.removeObject(board.grids[0]);
+          board.grids = [];
+        }
       }
-      if (this.yaxis) {
-        this.yaxis.defaultTicks.setAttribute({majorHeight: -1});
-        this.yaxis.defaultTicks.setAttribute({minorHeight: -1});
-      }
-    } else if (this.doenetSvData.grid === "medium") {
-      if (this.xaxis) {
-        this.xaxis.defaultTicks.setAttribute({majorHeight: -1});
-        this.xaxis.defaultTicks.setAttribute({minorHeight: 10});
-      }
-      if (this.yaxis) {
-        this.yaxis.defaultTicks.setAttribute({majorHeight: -1});
-        this.yaxis.defaultTicks.setAttribute({minorHeight: 10});
+      if (board.grids.length === 0) {
+        board.create("grid", [], {gridX: SVs.grid[0], gridY: SVs.grid[1]});
       }
     } else {
-      if (this.xaxis) {
-        this.xaxis.defaultTicks.setAttribute({majorHeight: 20});
-        this.xaxis.defaultTicks.setAttribute({minorHeight: 10});
-      }
-      if (this.yaxis) {
-        this.yaxis.defaultTicks.setAttribute({majorHeight: 20});
-        this.yaxis.defaultTicks.setAttribute({minorHeight: 10});
+      if (board.grids.length > 0) {
+        board.removeObject(board.grids[0]);
+        board.grids = [];
       }
     }
-    if (this.doenetSvData.displayXAxis) {
-      this.xaxis.name = this.doenetSvData.xlabel;
-      if (this.xaxis.hasLabel) {
+    if (SVs.grid === "dense") {
+      if (xaxis.current) {
+        xaxis.current.defaultTicks.setAttribute({majorHeight: -1});
+        xaxis.current.defaultTicks.setAttribute({minorHeight: -1});
+      }
+      if (yaxis.current) {
+        yaxis.current.defaultTicks.setAttribute({majorHeight: -1});
+        yaxis.current.defaultTicks.setAttribute({minorHeight: -1});
+      }
+    } else if (SVs.grid === "medium") {
+      if (xaxis.current) {
+        xaxis.current.defaultTicks.setAttribute({majorHeight: -1});
+        xaxis.current.defaultTicks.setAttribute({minorHeight: 10});
+      }
+      if (yaxis.current) {
+        yaxis.current.defaultTicks.setAttribute({majorHeight: -1});
+        yaxis.current.defaultTicks.setAttribute({minorHeight: 10});
+      }
+    } else {
+      if (xaxis.current) {
+        xaxis.current.defaultTicks.setAttribute({majorHeight: 20});
+        xaxis.current.defaultTicks.setAttribute({minorHeight: 10});
+      }
+      if (yaxis.current) {
+        yaxis.current.defaultTicks.setAttribute({majorHeight: 20});
+        yaxis.current.defaultTicks.setAttribute({minorHeight: 10});
+      }
+    }
+    if (SVs.displayXAxis) {
+      xaxis.current.name = SVs.xlabel;
+      xaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayXAxisTickLabels});
+      if (xaxis.current.hasLabel) {
         let position = "rt";
         let offset = [5, 10];
         let anchorx = "right";
-        if (this.doenetSvData.xlabelPosition === "left") {
+        if (SVs.xlabelPosition === "left") {
           position = "lft";
           anchorx = "left";
           offset = [-5, 10];
         }
-        this.xaxis.label.visProp.position = position;
-        this.xaxis.label.visProp.anchorx = anchorx;
-        this.xaxis.label.visProp.offset = offset;
-        this.xaxis.label.needsUpdate = true;
-        this.xaxis.label.fullUpdate();
+        xaxis.current.label.visProp.position = position;
+        xaxis.current.label.visProp.anchorx = anchorx;
+        xaxis.current.label.visProp.offset = offset;
+        xaxis.current.label.needsUpdate = true;
+        xaxis.current.label.fullUpdate();
       }
     }
-    if (this.doenetSvData.displayYAxis) {
-      this.yaxis.name = this.doenetSvData.ylabel;
-      if (this.yaxis.hasLabel) {
+    if (SVs.displayYAxis) {
+      yaxis.current.name = SVs.ylabel;
+      yaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayYAxisTickLabels});
+      if (yaxis.current.hasLabel) {
         let position = "rt";
         let offset = [-10, -5];
         let anchorx = "right";
-        if (this.doenetSvData.ylabelPosition === "bottom") {
+        if (SVs.ylabelPosition === "bottom") {
           position = "lft";
           offset[1] = 5;
         }
-        if (this.doenetSvData.ylabelAlignment === "right") {
+        if (SVs.ylabelAlignment === "right") {
           anchorx = "left";
           offset[0] = 10;
         }
-        this.yaxis.label.visProp.position = position;
-        this.yaxis.label.visProp.offset = offset;
-        this.yaxis.label.visProp.anchorx = anchorx;
-        this.yaxis.label.needsUpdate = true;
-        this.yaxis.label.fullUpdate();
+        yaxis.current.label.visProp.position = position;
+        yaxis.current.label.visProp.offset = offset;
+        yaxis.current.label.visProp.anchorx = anchorx;
+        yaxis.current.label.needsUpdate = true;
+        yaxis.current.label.fullUpdate();
       }
     }
     let currentDimensions = {
-      width: parseFloat(sizeToCSS(this.doenetSvData.width)),
-      height: parseFloat(sizeToCSS(this.doenetSvData.height))
+      width: parseFloat(sizeToCSS(SVs.width)),
+      aspectRatio: SVs.aspectRatio
     };
-    if ((currentDimensions.width !== this.previousDimensions.width || currentDimensions.height !== this.previousDimensions.height) && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.height)) {
-      this.resizingBoard = true;
-      this.board.resizeContainer(currentDimensions.width, currentDimensions.height);
-      this.resizingBoard = false;
-      this.previousDimensions = currentDimensions;
+    if ((currentDimensions.width !== previousDimensions.current.width || currentDimensions.aspectRatio !== previousDimensions.current.aspectRatio) && Number.isFinite(currentDimensions.width) && Number.isFinite(currentDimensions.aspectRatio)) {
+      previousDimensions.current = currentDimensions;
     }
-    let boundingbox = [this.doenetSvData.xmin, this.doenetSvData.ymax, this.doenetSvData.xmax, this.doenetSvData.ymin];
-    if (boundingbox.some((v, i) => v !== this.previousBoundingbox[i])) {
-      this.settingBoundingBox = true;
-      this.board.setBoundingBox(boundingbox);
-      this.settingBoundingBox = false;
-      this.board.fullUpdate();
-      if (this.board.updateQuality === this.board.BOARD_QUALITY_LOW) {
-        this.board.itemsRenderedLowQuality[this.componentName] = this.board;
+    let boundingbox = [SVs.xmin, SVs.ymax, SVs.xmax, SVs.ymin];
+    if (boundingbox.some((v, i) => v !== previousBoundingbox.current[i])) {
+      settingBoundingBox.current = true;
+      board.setBoundingBox(boundingbox);
+      settingBoundingBox.current = false;
+      board.fullUpdate();
+      if (board.updateQuality === board.BOARD_QUALITY_LOW) {
+        board.itemsRenderedLowQuality[name] = board;
       }
-      this.previousBoundingbox = boundingbox;
-    }
-    super.update();
-  }
-  setToLowQualityRender({stayLowQuality} = {}) {
-    if (this.board !== void 0) {
-      this.board.updateQuality = this.board.BOARD_QUALITY_LOW;
-      if (stayLowQuality !== void 0) {
-        this.stayLowQuality = stayLowQuality;
-      }
+      previousBoundingbox.current = boundingbox;
     }
   }
-  setToHighQualityRenderAndUpdate({overrideStayLowQuality = false} = {}) {
-    if (this.stayLowQuality && !overrideStayLowQuality) {
-      return;
-    }
-    if (this.board === void 0) {
-      return;
-    }
-    this.stayLowQuality = false;
-    this.board.updateQuality = this.board.BOARD_QUALITY_HIGH;
-    let updatedItem = false;
-    for (let key in this.board.itemsRenderedLowQuality) {
-      let item = this.board.itemsRenderedLowQuality[key];
-      item.needsUpdate = true;
-      item.update();
-      updatedItem = true;
-    }
-    if (updatedItem) {
-      this.board.updateRenderer();
-    }
-    this.board.itemsRenderedLowQuality = {};
-  }
-  setAllBoardsToStayLowQuality() {
-    for (let renderer of this.graphRenderComponents) {
-      renderer.setToLowQualityRender({stayLowQuality: true});
-    }
-  }
-  setAllBoardsToHighQualityAndUpdate() {
-    for (let renderer of this.graphRenderComponents) {
-      renderer.setToHighQualityRenderAndUpdate({overrideStayLowQuality: true});
-    }
-  }
-  componentWillUnmount() {
-    this.board.off("boundingbox");
-  }
-  render() {
-    const divStyle = {
-      width: sizeToCSS(this.doenetSvData.width),
-      height: sizeToCSS(this.doenetSvData.height)
-    };
-    if (this.doenetSvData.hidden) {
-      divStyle.display = "none";
-    }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), /* @__PURE__ */ React.createElement("div", {
-      id: this.componentName,
-      className: "jxgbox",
-      style: divStyle
-    }), this.children);
-  }
-}
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), /* @__PURE__ */ React.createElement("div", {
+    id: name,
+    className: "jxgbox",
+    style: divStyle
+  }), /* @__PURE__ */ React.createElement(BoardContext.Provider, {
+    value: board
+  }, children));
+});

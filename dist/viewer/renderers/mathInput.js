@@ -1,273 +1,251 @@
-import React from "../../_snowpack/pkg/react.js";
-import ReactDOM from "../../_snowpack/pkg/react-dom.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-import me from "../../_snowpack/pkg/math-expressions.js";
+import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
+import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
+import {
+  faCheck,
+  faLevelDownAlt,
+  faTimes,
+  faCloud
+} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import mathquill from "../../_snowpack/pkg/react-mathquill.js";
-import {getFromLatex, normalizeLatexString} from "../../core/utils/math.js";
 mathquill.addStyles();
 let EditableMathField = mathquill.EditableMathField;
-export default class MathInput extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-    this.state = {latex: ""};
-    this.handlePressEnter = this.handlePressEnter.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
-    this.onChangeHandler = this.onChangeHandler.bind(this);
-    this.mathExpression = this.doenetSvData.valueForDisplay;
-    if (this.doenetSvData.rawRendererValue !== null) {
-      this.latexValue = this.doenetSvData.rawRendererValue;
-    } else {
-      this.latexValue = stripLatex(this.doenetSvData.valueForDisplay.toLatex());
-      this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
-        transient: false
-      });
-    }
-    this.latexValueSetInRender = true;
-    this.valueToRevertTo = this.doenetSvData.value;
-    this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
-    if (this.latexValue === "＿") {
-      this.latexValue = "";
-    }
-  }
-  static initializeChildrenOnConstruction = false;
-  componentDidMount() {
-  }
-  calculateMathExpressionFromLatex(text) {
-    let expression;
-    text = normalizeLatexString(text, {unionFromU: this.doenetSvData.unionFromU});
-    text = text.replace(/\^(\w)/g, "^{$1}");
-    let fromLatex = getFromLatex({
-      functionSymbols: this.doenetSvData.functionSymbols,
-      splitSymbols: this.doenetSvData.splitSymbols
-    });
-    try {
-      expression = fromLatex(text);
-    } catch (e) {
-      expression = me.fromAst("＿");
-    }
-    return expression;
-  }
-  updateImmediateValueFromLatex(text) {
-    let currentMathExpressionNormalized = this.calculateMathExpressionFromLatex(this.latexValue);
-    let newMathExpression = this.calculateMathExpressionFromLatex(text);
-    let rawValueChanged = text !== this.latexValue || this.latexValueSetFromValueForDisplay;
-    let transientForRaw = !this.latexValueSetInRender;
-    let actuallyUpdate = !newMathExpression.equalsViaSyntax(currentMathExpressionNormalized) || !this.latexValueSetInRender && text !== this.latexValue;
-    this.latexValue = text;
-    this.latexValueSetInRender = false;
-    this.latexValueSetFromValueForDisplay = false;
-    if (actuallyUpdate) {
-      this.mathExpression = newMathExpression;
-      this.actions.updateImmediateValue({
-        mathExpression: newMathExpression,
-        rawRendererValue: this.latexValue,
-        transient: true,
-        skippable: true
-      });
-    } else if (rawValueChanged) {
-      this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
-        transient: transientForRaw,
-        skippable: transientForRaw
-      });
-    }
-  }
-  updateValidationState() {
-    this.validationState = "unvalidated";
-    if (this.doenetSvData.valueHasBeenValidated || this.doenetSvData.numberOfAttemptsLeft < 1) {
-      if (this.doenetSvData.creditAchieved === 1) {
-        this.validationState = "correct";
-      } else if (this.doenetSvData.creditAchieved === 0) {
-        this.validationState = "incorrect";
-      } else {
-        this.validationState = "partialcorrect";
-      }
-    }
-  }
-  async handlePressEnter(e) {
-    this.valueToRevertTo = this.doenetSvData.immediateValue;
-    this.valueForDisplayToRevertTo = this.mathExpression;
-    if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
-      await this.actions.updateValue();
-    } else {
-      await this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
-        transient: false
-      });
-    }
-    if (this.doenetSvData.includeCheckWork && this.validationState === "unvalidated") {
-      await this.actions.submitAnswer();
-    }
-    this.forceUpdate();
-  }
-  handleFocus(e) {
-    this.focused = true;
-    this.forceUpdate();
-  }
-  async handleBlur(e) {
-    this.focused = false;
-    this.valueToRevertTo = this.doenetSvData.immediateValue;
-    this.valueForDisplayToRevertTo = this.mathExpression;
-    if (!this.doenetSvData.value.equalsViaSyntax(this.doenetSvData.immediateValue)) {
-      await this.actions.updateValue();
-    } else {
-      await this.actions.updateRawValue({
-        rawRendererValue: this.latexValue,
-        transient: false
-      });
-    }
-    this.forceUpdate();
-  }
-  async onChangeHandler(e) {
-    this.updateImmediateValueFromLatex(e);
-    this.forceUpdate();
-  }
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    this.updateValidationState();
-    let disabled = this.doenetSvData.disabled;
-    let surroundingBorderColor = "#efefef";
-    if (this.focused) {
-      surroundingBorderColor = "#82a5ff";
-    }
-    if (!this.valueForDisplayToRevertTo.equalsViaSyntax(this.doenetSvData.valueForDisplay)) {
-      this.mathExpression = this.doenetSvData.valueForDisplay;
-      this.latexValue = stripLatex(this.mathExpression.toLatex());
-      if (this.latexValue === "＿") {
-        this.latexValue = "";
-      }
-      this.latexValueSetInRender = true;
-      this.latexValueSetFromValueForDisplay = true;
-      this.valueToRevertTo = this.doenetSvData.value;
-      this.valueForDisplayToRevertTo = this.doenetSvData.valueForDisplay;
-    }
-    let checkWorkStyle = {
-      position: "relative",
-      width: "30px",
-      height: "24px",
-      fontSize: "20px",
-      fontWeight: "bold",
-      color: "#ffffff",
-      display: "inline-block",
-      textAlign: "center",
-      top: "3px",
-      padding: "2px",
-      zIndex: "0"
+import {
+  focusedMathField,
+  focusedMathFieldReturn,
+  focusedMathFieldID,
+  palletRef,
+  handleRef
+} from "../../_framework/Footers/MathInputSelector.js";
+import {useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import {rendererState} from "./useDoenetRenderer.js";
+const Button = styled.button`
+    position: relative;
+    width: 24px;
+    height: 24px;
+    color: #ffffff;
+    background-color: var(--mainBlue);
+    display: inline-block;
+    text-align: center;
+    padding: 2px;
+    z-index: 0;
+    /* border: var(--mainBorder); */
+    border: none;
+    border-radius: var(--mainBorderRadius);
+    margin: 0px 10px 12px 10px;
+
+    &:hover {
+      background-color: var(--lightBlue);
+      color: black;
     };
-    let checkWorkButton = null;
-    if (this.doenetSvData.includeCheckWork) {
-      if (this.validationState === "unvalidated") {
-        if (disabled) {
-          checkWorkStyle.backgroundColor = "rgb(200,200,200)";
-        } else {
-          checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
-        }
-        checkWorkButton = /* @__PURE__ */ React.createElement("button", {
-          id: this.componentName + "_submit",
-          tabIndex: "0",
-          disabled,
-          ref: (c) => {
-            this.target = c && ReactDOM.findDOMNode(c);
-          },
-          style: checkWorkStyle,
-          onClick: this.actions.submitAnswer,
-          onKeyPress: (e) => {
-            if (e.key === "Enter") {
-              this.actions.submitAnswer();
-            }
-          }
-        }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-          icon: faLevelDownAlt,
-          transform: {rotate: 90}
-        }));
+  `;
+export default function MathInput(props) {
+  let {name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
+  MathInput.baseStateVariable = "rawRendererValue";
+  const [mathField, setMathField] = useState(null);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
+  let rendererValue = useRef(SVs.rawRendererValue);
+  let includeCheckWork = useRef(SVs.includeCheckWork);
+  includeCheckWork.current = SVs.includeCheckWork;
+  if (!ignoreUpdate) {
+    rendererValue.current = SVs.rawRendererValue;
+  }
+  let validationState = useRef(null);
+  const setFocusedField = useSetRecoilState(focusedMathField);
+  const setFocusedFieldID = useSetRecoilState(focusedMathFieldID);
+  const focusedFieldID = useRecoilValue(focusedMathFieldID);
+  const setFocusedFieldReturn = useSetRecoilState(focusedMathFieldReturn);
+  const containerRef = useRecoilValue(palletRef);
+  const dragHandleRef = useRecoilValue(handleRef);
+  const updateValidationState = () => {
+    validationState.current = "unvalidated";
+    if (SVs.valueHasBeenValidated) {
+      if (SVs.creditAchieved === 1) {
+        validationState.current = "correct";
+      } else if (SVs.creditAchieved === 0) {
+        validationState.current = "incorrect";
       } else {
-        if (this.doenetSvData.showCorrectness) {
-          if (this.validationState === "correct") {
-            checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
-            checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-              id: this.componentName + "_correct",
-              style: checkWorkStyle,
-              ref: (c) => {
-                this.target = c && ReactDOM.findDOMNode(c);
-              }
-            }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-              icon: faCheck
-            }));
-          } else if (this.validationState === "partialcorrect") {
-            let percent = Math.round(this.doenetSvData.creditAchieved * 100);
-            let partialCreditContents = `${percent} %`;
-            checkWorkStyle.width = "50px";
-            checkWorkStyle.backgroundColor = "#efab34";
-            checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-              id: this.componentName + "_partial",
-              style: checkWorkStyle,
-              ref: (c) => {
-                this.target = c && ReactDOM.findDOMNode(c);
-              }
-            }, partialCreditContents);
-          } else {
-            checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
-            checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-              id: this.componentName + "_incorrect",
-              style: checkWorkStyle,
-              ref: (c) => {
-                this.target = c && ReactDOM.findDOMNode(c);
-              }
-            }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-              icon: faTimes
-            }));
+        validationState.current = "partialcorrect";
+      }
+    }
+  };
+  const handleVirtualKeyboardClick = (text) => {
+    mathField.focus();
+    if (!text) {
+      console.log("Empty value");
+      return;
+    }
+    if (text.split(" ")[0] == "cmd") {
+      mathField.cmd(text.split(" ")[1]);
+    } else if (text.split(" ")[0] == "write") {
+      mathField.write(text.split(" ")[1]);
+    } else if (text.split(" ")[0] == "keystroke") {
+      mathField.keystroke(text.split(" ")[1]);
+    } else if (text.split(" ")[0] == "type") {
+      mathField.typedText(text.split(" ")[1]);
+    }
+  };
+  const handleDefaultVirtualKeyboardClick = (text) => {
+    console.log("no mathinput field focused");
+  };
+  const handleDefaultVirtualKeyboardReturn = (text) => {
+    console.log("no mathinput field focused");
+  };
+  const handlePressEnter = (e) => {
+    callAction({
+      action: actions.updateValue,
+      baseVariableValue: rendererValue.current
+    });
+    if (includeCheckWork.current && validationState.current === "unvalidated") {
+      callAction({
+        action: actions.submitAnswer
+      });
+    }
+  };
+  const handleFocus = (e) => {
+    setFocusedField(() => handleVirtualKeyboardClick);
+    setFocusedFieldReturn(() => handlePressEnter);
+    setFocusedFieldID(mathField.id);
+  };
+  const handleBlur = (e) => {
+    if (containerRef?.current?.contains(e.relatedTarget)) {
+      setTimeout(() => {
+        mathField.focus();
+      }, 100);
+    } else if (dragHandleRef?.current?.contains(e.relatedTarget)) {
+      setTimeout(() => {
+        mathField.focus();
+      }, 100);
+    } else {
+      callAction({
+        action: actions.updateValue,
+        baseVariableValue: rendererValue.current
+      });
+      setFocusedField(() => handleDefaultVirtualKeyboardClick);
+      setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
+      setFocusedFieldID(null);
+    }
+  };
+  const onChangeHandler = (text) => {
+    if (text.replace(/\s/g, "").replace(/\^{(\w)}/g, "^$1") !== rendererValue.current?.replace(/\s/g, "").replace(/\^{(\w)}/g, "^$1")) {
+      rendererValue.current = text;
+      setRendererState((was) => {
+        let newObj = {...was};
+        newObj.ignoreUpdate = true;
+        return newObj;
+      });
+      callAction({
+        action: actions.updateRawValue,
+        args: {
+          rawRendererValue: text
+        },
+        baseVariableValue: text
+      });
+    }
+  };
+  if (SVs.hidden) {
+    return null;
+  }
+  updateValidationState();
+  let checkWorkButton = null;
+  if (SVs.includeCheckWork) {
+    let checkWorkStyle = {
+      cursor: "pointer"
+    };
+    if (validationState.current === "unvalidated") {
+      if (SVs.disabled) {
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        checkWorkStyle.cursor = "not-allowed";
+      }
+      checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+        id: name + "_submit",
+        tabIndex: "0",
+        disabled: SVs.disabled,
+        style: checkWorkStyle,
+        onClick: () => callAction({
+          action: actions.submitAnswer
+        }),
+        onKeyPress: (e) => {
+          if (e.key === "Enter") {
+            callAction({
+              action: actions.submitAnswer
+            });
           }
-        } else {
-          checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
-          checkWorkButton = /* @__PURE__ */ React.createElement("span", {
-            id: this.componentName + "_saved",
-            style: checkWorkStyle,
-            ref: (c) => {
-              this.target = c && ReactDOM.findDOMNode(c);
-            }
+        }
+      }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+        icon: faLevelDownAlt,
+        transform: {rotate: 90}
+      }));
+    } else {
+      if (SVs.showCorrectness) {
+        if (validationState.current === "correct") {
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+            id: name + "_correct",
+            style: checkWorkStyle
           }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-            icon: faCloud
+            icon: faCheck
+          }));
+        } else if (validationState.current === "partialcorrect") {
+          let percent = Math.round(SVs.creditAchieved * 100);
+          let partialCreditContents = `${percent} %`;
+          checkWorkStyle.width = "50px";
+          checkWorkStyle.backgroundColor = "#efab34";
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+            id: name + "_partial",
+            style: checkWorkStyle
+          }, partialCreditContents);
+        } else {
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
+          checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+            id: name + "_incorrect",
+            style: checkWorkStyle
+          }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+            icon: faTimes
           }));
         }
-      }
-      if (this.doenetSvData.numberOfAttemptsLeft < 0) {
-        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
-      } else if (this.doenetSvData.numberOfAttemptsLeft < Infinity) {
-        checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", this.doenetSvData.numberOfAttemptsLeft, ")"));
+      } else {
+        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkButton = /* @__PURE__ */ React.createElement(Button, {
+          id: name + "_saved",
+          style: checkWorkStyle
+        }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+          icon: faCloud
+        }));
       }
     }
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), /* @__PURE__ */ React.createElement("span", {
-      className: "textInputSurroundingBox",
-      id: this.componentName
-    }, /* @__PURE__ */ React.createElement("span", {
-      style: {margin: "10px"}
-    }, /* @__PURE__ */ React.createElement(EditableMathField, {
-      latex: this.latexValue,
-      config: {
-        autoCommands: "sqrt pi theta integral infinity",
-        autoOperatorNames: "arg deg det dim exp gcd hom ker lg lim ln log max min Pr sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth sin cos tan sec cosec csc cotan cot ctg arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg sinh cosh tanh sech cosech csch cotanh coth ctgh arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh",
-        handlers: {
-          enter: this.handlePressEnter
-        }
-      },
-      onChange: (mathField) => {
-        this.onChangeHandler(mathField.latex());
-      },
-      onBlur: this.handleBlur,
-      onFocus: this.handleFocus
-    })), checkWorkButton));
+    if (SVs.numberOfAttemptsLeft < 0) {
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(no attempts remaining)"));
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(1 attempt remaining)"));
+    } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
+      checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(", SVs.numberOfAttemptsLeft, " attempts remaining)"));
+    }
   }
-}
-function stripLatex(latex) {
-  let s = latex.replaceAll(`\\,`, "").replaceAll(/\\var{([^{}]*)}/g, "$1");
-  return s;
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), /* @__PURE__ */ React.createElement("span", {
+    className: "textInputSurroundingBox",
+    id: name,
+    style: {marginBottom: "12px"}
+  }, /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement(EditableMathField, {
+    style: {border: "var(--mainBorder)"},
+    latex: rendererValue.current,
+    config: {
+      autoCommands: "alpha beta gamma delta epsilon zeta eta mu nu xi omega rho sigma tau phi chi psi omega iota kappa lambda Gamma Delta Xi Omega Sigma Phi Psi Omega Lambda sqrt pi Pi theta Theta integral infinity",
+      autoOperatorNames: "arg deg det dim exp gcd hom ker lg lim ln log max min Pr sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth sin cos tan sec cosec csc cotan cot ctg arcsin arccos arctan arcsec arccosec arccsc arccotan arccot arcctg sinh cosh tanh sech cosech csch cotanh coth ctgh arsinh arcosh artanh arsech arcosech arcsch arcotanh arcoth arctgh arcsinh arccosh arctanh arcsech arccosech arccsch arccotanh arccoth arcctgh",
+      handlers: {
+        enter: handlePressEnter
+      }
+    },
+    onChange: (mField) => {
+      onChangeHandler(mField.latex());
+    },
+    onBlur: handleBlur,
+    onFocus: handleFocus,
+    mathquillDidMount: (mf) => {
+      setMathField(mf);
+    }
+  })), checkWorkButton));
 }

@@ -14,8 +14,8 @@ export class M extends InlineComponent {
   static returnChildGroups() {
 
     return [{
-      group: "stringsTextsAndMaths",
-      componentTypes: ["string", "text", "math", "mathList", "m", "mathInput"]
+      group: "inline",
+      componentTypes: ["_inline"]
     }]
 
   }
@@ -27,39 +27,42 @@ export class M extends InlineComponent {
 
     stateVariableDefinitions.latex = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       defaultValue: "",
+      hasEssential: true,
       returnDependencies: () => ({
-        stringTextMathChildren: {
+        inlineChildren: {
           dependencyType: "child",
-          childGroups: ["stringsTextsAndMaths"],
+          childGroups: ["inline"],
           variableNames: ["latex", "text"],
           variablesOptional: true,
         },
       }),
-      definition: function ({ dependencyValues, componentInfoObjects }) {
+      definition: function ({ dependencyValues }) {
 
-        if (dependencyValues.stringTextMathChildren.length === 0) {
+        if (dependencyValues.inlineChildren.length === 0) {
           return {
             useEssentialOrDefaultValue: {
-              latex: { variablesToCheck: "latex" }
+              latex: true
             }
           }
         }
 
         let latex = "";
 
-        for (let child of dependencyValues.stringTextMathChildren) {
-          if(typeof child === "string") {
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child !== "object") {
             latex += child;
-          } else if (child.stateValues.latex) {
+          } else if (typeof child.stateValues.latex === "string") {
             latex += child.stateValues.latex
-          } else if (child.stateValues.text) {
+          } else if (typeof child.stateValues.text === "string") {
             latex += child.stateValues.text
           }
         }
 
-        return { newValues: { latex } }
+        return { setValue: { latex } }
 
       }
 
@@ -68,9 +71,9 @@ export class M extends InlineComponent {
     stateVariableDefinitions.latexWithInputChildren = {
       forRenderer: true,
       returnDependencies: () => ({
-        stringTextMathChildren: {
+        inlineChildren: {
           dependencyType: "child",
-          childGroups: ["stringsTextsAndMaths"],
+          childGroups: ["inline"],
           variableNames: ["latex", "text"],
           variablesOptional: true,
         },
@@ -81,9 +84,9 @@ export class M extends InlineComponent {
       }),
       definition: function ({ dependencyValues, componentInfoObjects }) {
 
-        if (dependencyValues.stringTextMathChildren.length === 0) {
+        if (dependencyValues.inlineChildren.length === 0) {
           return {
-            newValues: {
+            setValue: {
               latexWithInputChildren: [dependencyValues.latex]
             }
           }
@@ -92,12 +95,12 @@ export class M extends InlineComponent {
         let latexWithInputChildren = [];
         let lastLatex = "";
         let inputInd = 0;
-        for (let child of dependencyValues.stringTextMathChildren) {
-          if(typeof child === "string") {
+        for (let child of dependencyValues.inlineChildren) {
+          if (typeof child !== "object") {
             lastLatex += child;
           } else if (componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: child.componentType,
-            baseComponentType: "mathInput"
+            baseComponentType: "input"
           })) {
             if (lastLatex.length > 0) {
               latexWithInputChildren.push(lastLatex);
@@ -106,9 +109,9 @@ export class M extends InlineComponent {
             latexWithInputChildren.push(inputInd);
             inputInd++;
           } else {
-            if (child.stateValues.latex) {
+            if (typeof child.stateValues.latex === "string") {
               lastLatex += child.stateValues.latex
-            } else if (child.stateValues.text) {
+            } else if (typeof child.stateValues.text === "string") {
               lastLatex += child.stateValues.text
             }
           }
@@ -117,7 +120,7 @@ export class M extends InlineComponent {
           latexWithInputChildren.push(lastLatex);
         }
 
-        return { newValues: { latexWithInputChildren } }
+        return { setValue: { latexWithInputChildren } }
 
       }
 
@@ -127,7 +130,7 @@ export class M extends InlineComponent {
     stateVariableDefinitions.renderMode = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { renderMode: "inline" } })
+      definition: () => ({ setValue: { renderMode: "inline" } })
     }
 
 
@@ -144,9 +147,9 @@ export class M extends InlineComponent {
           expression = me.fromAst(latexToAst.convert(dependencyValues.latex));
         } catch (e) {
           // just return latex if can't parse with math-expressions
-          return { newValues: { text: dependencyValues.latex } };
+          return { setValue: { text: dependencyValues.latex } };
         }
-        return { newValues: { text: expression.toString() } };
+        return { setValue: { text: expression.toString() } };
       }
     }
 
@@ -167,7 +170,7 @@ export class Me extends M {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.renderMode.definition = () => ({
-      newValues: { renderMode: "display" }
+      setValue: { renderMode: "display" }
     });
     return stateVariableDefinitions;
   }
@@ -181,12 +184,14 @@ export class Men extends M {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.renderMode.definition = () => ({
-      newValues: { renderMode: "numbered" }
+      setValue: { renderMode: "numbered" }
     });
 
     stateVariableDefinitions.equationTag = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         equationCounter: {
@@ -196,7 +201,7 @@ export class Men extends M {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { equationTag: String(dependencyValues.equationCounter) }
+          setValue: { equationTag: String(dependencyValues.equationCounter) }
         }
       }
     }

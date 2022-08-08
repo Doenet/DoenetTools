@@ -1,38 +1,53 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
-export default class Figure extends DoenetRenderer {
+import React, { useEffect } from 'react';
+import useDoenetRender from './useDoenetRenderer';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
-  render() {
+export default React.memo(function Figure(props) {
+  let {name, SVs, children, actions, callAction} = useDoenetRender(props);
 
-    if (this.doenetSvData.hidden) {
-      return null;
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
     }
+  }, [])
 
+  if (SVs.hidden || !children) {
+    return null;
+  }
 
-    let childrenToRender = [...this.children];
-
-    // BADBADBAD: need to redo how getting the caption child
+  // BADBADBAD: need to redo how getting the caption child
     // getting it using the internal guts of componentInstructions
     // is just asking for trouble
+    let childrenToRender = children;
 
     let caption;
-    if (this.doenetSvData.captionChildName) {
+    if (SVs.captionChildName) {
       let captionChildInd;
-      for (let [ind, child] of this.children.entries()) {
-        if (typeof child !== "string" && child.props.componentInstructions.componentName === this.doenetSvData.captionChildName) {
+      for (let [ind, child] of children.entries()) {
+        if (typeof child !== "string" && child.props.componentInstructions.componentName === SVs.captionChildName) {
           captionChildInd = ind;
           break;
         }
       }
-      caption = this.children[captionChildInd]
+      caption = children[captionChildInd]
       childrenToRender.splice(captionChildInd, 1); // remove caption
     } else {
-      caption = this.doenetSvData.caption;
+      caption = SVs.caption;
     }
 
 
-    if (!this.doenetSvData.suppressFigureNameInCaption) {
-      let figureName = <strong>{this.doenetSvData.figureName}</strong>
+    if (!SVs.suppressFigureNameInCaption) {
+      let figureName = <strong>{SVs.figureName}</strong>
       if (caption) {
         caption = <>{figureName}: {caption}</>
       } else {
@@ -40,10 +55,14 @@ export default class Figure extends DoenetRenderer {
       }
     }
 
-    return <div id={this.componentName} >
-      <a name={this.componentName} />
-      {childrenToRender}
-      <div id={ this.componentName + "_caption" }>{caption}</div>
-    </div>
-  }
-}
+    return (
+      <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+      <figure id={name} style={{ margin: "12px 0" }}>
+        <a name={name} />
+        {childrenToRender}
+        <figcaption id={ name + "_caption" }>{caption}</figcaption>
+      </figure>
+      </VisibilitySensor>
+    )
+})
+

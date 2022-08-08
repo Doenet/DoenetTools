@@ -1,6 +1,6 @@
-import { r as react } from '../common/index-61a7c514.js';
-import { r as reactDom } from '../common/index-f174fb43.js';
-import '../common/_commonjsHelpers-b3efd043.js';
+import { r as react } from '../common/index-61623f21.js';
+import { r as reactDom } from '../common/index-eaf9e997.js';
+import '../common/_commonjsHelpers-f5d70792.js';
 
 let updateQueue = makeQueue();
 const raf = fn => schedule(fn, updateQueue);
@@ -28,7 +28,7 @@ raf.setTimeout = (handler, ms) => {
   let cancel = () => {
     let i = timeouts.findIndex(t => t.cancel == cancel);
     if (~i) timeouts.splice(i, 1);
-    __raf.count -= ~i ? 1 : 0;
+    pendingCount -= ~i ? 1 : 0;
   };
 
   let timeout = {
@@ -37,7 +37,7 @@ raf.setTimeout = (handler, ms) => {
     cancel
   };
   timeouts.splice(findTimeout(time), 0, timeout);
-  __raf.count += 1;
+  pendingCount += 1;
   start();
   return timeout;
 };
@@ -45,8 +45,11 @@ raf.setTimeout = (handler, ms) => {
 let findTimeout = time => ~(~timeouts.findIndex(t => t.time > time) || ~timeouts.length);
 
 raf.cancel = fn => {
+  onStartQueue.delete(fn);
+  onFrameQueue.delete(fn);
   updateQueue.delete(fn);
   writeQueue.delete(fn);
+  onFinishQueue.delete(fn);
 };
 
 raf.sync = fn => {
@@ -101,6 +104,7 @@ raf.advance = () => {
 };
 
 let ts = -1;
+let pendingCount = 0;
 let sync = false;
 
 function schedule(fn, queue) {
@@ -123,6 +127,10 @@ function start() {
   }
 }
 
+function stop() {
+  ts = -1;
+}
+
 function loop() {
   if (~ts) {
     nativeRaf(loop);
@@ -137,7 +145,7 @@ function update() {
 
   if (count) {
     eachSafely(timeouts.splice(0, count), t => t.handler());
-    __raf.count -= count;
+    pendingCount -= count;
   }
 
   onStartQueue.flush();
@@ -145,6 +153,10 @@ function update() {
   onFrameQueue.flush();
   writeQueue.flush();
   onFinishQueue.flush();
+
+  if (!pendingCount) {
+    stop();
+  }
 }
 
 function makeQueue() {
@@ -152,21 +164,21 @@ function makeQueue() {
   let current = next;
   return {
     add(fn) {
-      __raf.count += current == next && !next.has(fn) ? 1 : 0;
+      pendingCount += current == next && !next.has(fn) ? 1 : 0;
       next.add(fn);
     },
 
     delete(fn) {
-      __raf.count -= current == next && next.has(fn) ? 1 : 0;
+      pendingCount -= current == next && next.has(fn) ? 1 : 0;
       return next.delete(fn);
     },
 
     flush(arg) {
       if (current.size) {
         next = new Set();
-        __raf.count -= current.size;
+        pendingCount -= current.size;
         eachSafely(current, fn => fn(arg) && next.add(fn));
-        __raf.count += next.size;
+        pendingCount += next.size;
         current = next;
       }
     }
@@ -183,22 +195,6 @@ function eachSafely(values, each) {
     }
   });
 }
-
-const __raf = {
-  count: 0,
-
-  clear() {
-    ts = -1;
-    timeouts = [];
-    onStartQueue = makeQueue();
-    updateQueue = makeQueue();
-    onFrameQueue = makeQueue();
-    writeQueue = makeQueue();
-    onFinishQueue = makeQueue();
-    __raf.count = 0;
-  }
-
-};
 
 function noop() {}
 const defineHidden = (obj, key, value) => Object.defineProperty(obj, key, {
@@ -229,6 +225,14 @@ function isEqual(a, b) {
 }
 const each = (obj, fn) => obj.forEach(fn);
 function eachProp(obj, fn, ctx) {
+  if (is.arr(obj)) {
+    for (let i = 0; i < obj.length; i++) {
+      fn.call(ctx, obj[i], `${i}`);
+    }
+
+    return;
+  }
+
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
       fn.call(ctx, obj[key], key);
@@ -244,6 +248,7 @@ function flush(queue, iterator) {
   }
 }
 const flushCalls = (queue, ...args) => flush(queue, fn => fn(...args));
+const isSSR = () => typeof window === 'undefined' || !window.navigator || /ServerSideRendering|^Deno\//.test(window.navigator.userAgent);
 
 let createStringInterpolator$1;
 let to;
@@ -785,14 +790,54 @@ const setHidden = (target, key, value) => Object.defineProperty(target, key, {
 
 const numberRegex = /[+\-]?(?:0|[1-9]\d*)(?:\.\d*)?(?:[eE][+\-]?\d+)?/g;
 const colorRegex = /(#(?:[0-9a-f]{2}){2,4}|(#[0-9a-f]{3})|(rgb|hsl)a?\((-?\d+%?[,\s]+){2,3}\s*[\d\.]+%?\))/gi;
-let namedColorRegex;
+const unitRegex = new RegExp(`(${numberRegex.source})(%|[a-z]+)`, 'i');
 const rgbaRegex = /rgba\(([0-9\.-]+), ([0-9\.-]+), ([0-9\.-]+), ([0-9\.-]+)\)/gi;
+const cssVariableRegex = /var\((--[a-zA-Z0-9-_]+),? ?([a-zA-Z0-9 ()%#.,-]+)?\)/;
+
+const variableToRgba = input => {
+  const [token, fallback] = parseCSSVariable(input);
+
+  if (!token || isSSR()) {
+    return input;
+  }
+
+  const value = window.getComputedStyle(document.documentElement).getPropertyValue(token);
+
+  if (value) {
+    return value.trim();
+  } else if (fallback && fallback.startsWith('--')) {
+    const _value = window.getComputedStyle(document.documentElement).getPropertyValue(fallback);
+
+    if (_value) {
+      return _value;
+    } else {
+      return input;
+    }
+  } else if (fallback && cssVariableRegex.test(fallback)) {
+    return variableToRgba(fallback);
+  } else if (fallback) {
+    return fallback;
+  }
+
+  return input;
+};
+
+const parseCSSVariable = current => {
+  const match = cssVariableRegex.exec(current);
+  if (!match) return [,];
+  const [, token, fallback] = match;
+  return [token, fallback];
+};
+
+let namedColorRegex;
 
 const rgbaRound = (_, p1, p2, p3, p4) => `rgba(${Math.round(p1)}, ${Math.round(p2)}, ${Math.round(p3)}, ${p4})`;
 
 const createStringInterpolator = config => {
   if (!namedColorRegex) namedColorRegex = colors$1 ? new RegExp(`(${Object.keys(colors$1).join('|')})(?!\\w)`, 'g') : /^\b$/;
-  const output = config.output.map(value => getFluidValue(value).replace(colorRegex, colorToRgba).replace(namedColorRegex, colorToRgba));
+  const output = config.output.map(value => {
+    return getFluidValue(value).replace(cssVariableRegex, variableToRgba).replace(colorRegex, colorToRgba).replace(namedColorRegex, colorToRgba);
+  });
   const keyframes = output.map(value => value.match(numberRegex).map(Number));
   const outputRanges = keyframes[0].map((_, i) => keyframes.map(values => {
     if (!(i in values)) {
@@ -805,8 +850,11 @@ const createStringInterpolator = config => {
     output
   })));
   return input => {
+    var _output$find;
+
+    const missingUnit = !unitRegex.test(output[0]) && ((_output$find = output.find(value => unitRegex.test(value))) == null ? void 0 : _output$find.replace(numberRegex, ''));
     let i = 0;
-    return output[0].replace(numberRegex, () => String(interpolators[i++](input))).replace(rgbaRegex, rgbaRound);
+    return output[0].replace(numberRegex, () => `${interpolators[i++](input)}${missingUnit || ''}`).replace(rgbaRegex, rgbaRound);
   };
 };
 
@@ -838,31 +886,30 @@ function deprecateDirectCall() {
 }
 
 function isAnimatedString(value) {
-  return is.str(value) && (value[0] == '#' || /\d/.test(value) || value in (colors$1 || {}));
+  return is.str(value) && (value[0] == '#' || /\d/.test(value) || !isSSR() && cssVariableRegex.test(value) || value in (colors$1 || {}));
 }
 
-const useOnce = effect => react.useEffect(effect, emptyDeps);
-const emptyDeps = [];
+const useLayoutEffect = typeof window !== 'undefined' && window.document && window.document.createElement ? react.useLayoutEffect : react.useEffect;
+
+const useIsMounted = () => {
+  const isMounted = react.useRef(false);
+  useLayoutEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+  return isMounted;
+};
 
 function useForceUpdate() {
   const update = react.useState()[1];
-  const mounted = react.useState(makeMountedRef)[0];
-  useOnce(mounted.unmount);
+  const isMounted = useIsMounted();
   return () => {
-    if (mounted.current) {
-      update({});
+    if (isMounted.current) {
+      update(Math.random());
     }
   };
-}
-
-function makeMountedRef() {
-  const mounted = {
-    current: true,
-    unmount: () => () => {
-      mounted.current = false;
-    }
-  };
-  return mounted;
 }
 
 function useMemoOne(getResult, inputs) {
@@ -911,6 +958,9 @@ function areInputsEqual(next, prev) {
   return true;
 }
 
+const useOnce = effect => react.useEffect(effect, emptyDeps);
+const emptyDeps = [];
+
 function usePrev(value) {
   const prevRef = react.useRef();
   react.useEffect(() => {
@@ -918,8 +968,6 @@ function usePrev(value) {
   });
   return prevRef.current;
 }
-
-const useLayoutEffect = typeof window !== 'undefined' && window.document && window.document.createElement ? react.useLayoutEffect : react.useEffect;
 
 const $node = Symbol.for('Animated:node');
 const isAnimated = value => !!value && value[$node] === value;
@@ -1192,14 +1240,14 @@ const withAnimated = (Component, host) => {
     const observer = new PropsObserver(callback, deps);
     const observerRef = react.useRef();
     useLayoutEffect(() => {
-      const lastObserver = observerRef.current;
       observerRef.current = observer;
       each(deps, dep => addFluidObserver(dep, observer));
-
-      if (lastObserver) {
-        each(lastObserver.deps, dep => removeFluidObserver(dep, lastObserver));
-        raf.cancel(lastObserver.update);
-      }
+      return () => {
+        if (observerRef.current) {
+          each(observerRef.current.deps, dep => removeFluidObserver(dep, observerRef.current));
+          raf.cancel(observerRef.current.update);
+        }
+      };
     });
     react.useEffect(callback, []);
     useOnce(() => () => {
@@ -1443,8 +1491,8 @@ function useChain(refs, timeSteps, timeFrame = 1000) {
 
               props.delay = key => delay + callProp(memoizedDelayProp || 0, key);
             });
-            ctrl.start();
           });
+          ref.start();
         }
       });
     } else {
@@ -1460,7 +1508,7 @@ function useChain(refs, timeSteps, timeFrame = 1000) {
           });
           p = p.then(() => {
             each(controllers, (ctrl, i) => each(queues[i] || [], update => ctrl.queue.push(update)));
-            return ref.start();
+            return Promise.all(ref.start());
           });
         }
       });
@@ -1494,13 +1542,65 @@ const config = {
     friction: 120
   }
 };
+const c1 = 1.70158;
+const c2 = c1 * 1.525;
+const c3 = c1 + 1;
+const c4 = 2 * Math.PI / 3;
+const c5 = 2 * Math.PI / 4.5;
 
-const linear = t => t;
+const bounceOut = x => {
+  const n1 = 7.5625;
+  const d1 = 2.75;
+
+  if (x < 1 / d1) {
+    return n1 * x * x;
+  } else if (x < 2 / d1) {
+    return n1 * (x -= 1.5 / d1) * x + 0.75;
+  } else if (x < 2.5 / d1) {
+    return n1 * (x -= 2.25 / d1) * x + 0.9375;
+  } else {
+    return n1 * (x -= 2.625 / d1) * x + 0.984375;
+  }
+};
+
+const easings = {
+  linear: x => x,
+  easeInQuad: x => x * x,
+  easeOutQuad: x => 1 - (1 - x) * (1 - x),
+  easeInOutQuad: x => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2,
+  easeInCubic: x => x * x * x,
+  easeOutCubic: x => 1 - Math.pow(1 - x, 3),
+  easeInOutCubic: x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2,
+  easeInQuart: x => x * x * x * x,
+  easeOutQuart: x => 1 - Math.pow(1 - x, 4),
+  easeInOutQuart: x => x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2,
+  easeInQuint: x => x * x * x * x * x,
+  easeOutQuint: x => 1 - Math.pow(1 - x, 5),
+  easeInOutQuint: x => x < 0.5 ? 16 * x * x * x * x * x : 1 - Math.pow(-2 * x + 2, 5) / 2,
+  easeInSine: x => 1 - Math.cos(x * Math.PI / 2),
+  easeOutSine: x => Math.sin(x * Math.PI / 2),
+  easeInOutSine: x => -(Math.cos(Math.PI * x) - 1) / 2,
+  easeInExpo: x => x === 0 ? 0 : Math.pow(2, 10 * x - 10),
+  easeOutExpo: x => x === 1 ? 1 : 1 - Math.pow(2, -10 * x),
+  easeInOutExpo: x => x === 0 ? 0 : x === 1 ? 1 : x < 0.5 ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2,
+  easeInCirc: x => 1 - Math.sqrt(1 - Math.pow(x, 2)),
+  easeOutCirc: x => Math.sqrt(1 - Math.pow(x - 1, 2)),
+  easeInOutCirc: x => x < 0.5 ? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2 : (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2,
+  easeInBack: x => c3 * x * x * x - c1 * x * x,
+  easeOutBack: x => 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2),
+  easeInOutBack: x => x < 0.5 ? Math.pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2) / 2 : (Math.pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2,
+  easeInElastic: x => x === 0 ? 0 : x === 1 ? 1 : -Math.pow(2, 10 * x - 10) * Math.sin((x * 10 - 10.75) * c4),
+  easeOutElastic: x => x === 0 ? 0 : x === 1 ? 1 : Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * c4) + 1,
+  easeInOutElastic: x => x === 0 ? 0 : x === 1 ? 1 : x < 0.5 ? -(Math.pow(2, 20 * x - 10) * Math.sin((20 * x - 11.125) * c5)) / 2 : Math.pow(2, -20 * x + 10) * Math.sin((20 * x - 11.125) * c5) / 2 + 1,
+  easeInBounce: x => 1 - bounceOut(1 - x),
+  easeOutBounce: bounceOut,
+  easeInOutBounce: x => x < 0.5 ? (1 - bounceOut(1 - 2 * x)) / 2 : (1 + bounceOut(2 * x - 1)) / 2
+};
 
 const defaults = _extends$2({}, config.default, {
   mass: 1,
   damping: 1,
-  easing: linear,
+  easing: easings.linear,
   clamp: false
 });
 
@@ -1635,7 +1735,8 @@ function scheduleProps(callId, {
     }
 
     function onResume() {
-      if (delay > 0) {
+      if (delay > 0 && !globals.skipAnimation) {
+        state.delayed = true;
         timeout = raf.setTimeout(onStart, delay);
         state.pauseQueue.add(onPause);
         state.timeouts.add(timeout);
@@ -1645,6 +1746,10 @@ function scheduleProps(callId, {
     }
 
     function onStart() {
+      if (state.delayed) {
+        state.delayed = false;
+      }
+
       state.pauseQueue.delete(onPause);
       state.timeouts.delete(timeout);
 
@@ -1912,6 +2017,7 @@ class SpringValue extends FrameValue {
     this.defaultProps = {};
     this._state = {
       paused: false,
+      delayed: false,
       pauseQueue: new Set(),
       resumeQueue: new Set(),
       timeouts: new Set()
@@ -1957,6 +2063,10 @@ class SpringValue extends FrameValue {
 
   get isPaused() {
     return isPaused(this);
+  }
+
+  get isDelayed() {
+    return this._state.delayed;
   }
 
   advance(dt) {
@@ -2162,7 +2272,11 @@ class SpringValue extends FrameValue {
       this.queue = [];
     }
 
-    return Promise.all(queue.map(props => this._update(props))).then(results => getCombinedResult(this, results));
+    return Promise.all(queue.map(props => {
+      const up = this._update(props);
+
+      return up;
+    })).then(results => getCombinedResult(this, results));
   }
 
   stop(cancel) {
@@ -2695,7 +2809,9 @@ class Controller {
   }
 
   get idle() {
-    return !this._state.asyncTo && Object.values(this.springs).every(spring => spring.idle);
+    return !this._state.asyncTo && Object.values(this.springs).every(spring => {
+      return spring.idle && !spring.isDelayed && !spring.isPaused;
+    });
   }
 
   get item() {
@@ -3269,6 +3385,7 @@ function useTransition(data, props, deps) {
     sort,
     trail = 0,
     expires = true,
+    exitBeforeEnter = false,
     onDestroyed,
     ref: propsRef,
     config: propsConfig
@@ -3281,14 +3398,28 @@ function useTransition(data, props, deps) {
   useLayoutEffect(() => {
     usedTransitions.current = transitions;
   });
-  useOnce(() => () => each(usedTransitions.current, t => {
-    if (t.expired) {
-      clearTimeout(t.expirationId);
-    }
+  useOnce(() => {
+    each(usedTransitions.current, t => {
+      var _t$ctrl$ref;
 
-    detachRefs(t.ctrl, ref);
-    t.ctrl.stop(true);
-  }));
+      (_t$ctrl$ref = t.ctrl.ref) == null ? void 0 : _t$ctrl$ref.add(t.ctrl);
+      const change = changes.get(t);
+
+      if (change) {
+        t.ctrl.start(change.payload);
+      }
+    });
+    return () => {
+      each(usedTransitions.current, t => {
+        if (t.expired) {
+          clearTimeout(t.expirationId);
+        }
+
+        detachRefs(t.ctrl, ref);
+        t.ctrl.stop(true);
+      });
+    };
+  });
   const keys = getKeys(items, propsFn ? propsFn() : props, prevTransitions);
   const expired = reset && usedTransitions.current || [];
   useLayoutEffect(() => each(expired, ({
@@ -3348,6 +3479,8 @@ function useTransition(data, props, deps) {
   const forceUpdate = useForceUpdate();
   const defaultProps = getDefaultProps(props);
   const changes = new Map();
+  const exitingTransitions = react.useRef(new Map());
+  const forceChange = react.useRef(false);
   each(transitions, (t, i) => {
     const key = t.key;
     const prevPhase = t.phase;
@@ -3433,30 +3566,53 @@ function useTransition(data, props, deps) {
         }
 
         if (idle && transitions.some(t => t.expired)) {
+          exitingTransitions.current.delete(t);
+
+          if (exitBeforeEnter) {
+            forceChange.current = true;
+          }
+
           forceUpdate();
         }
       }
     };
 
     const springs = getSprings(t.ctrl, payload);
-    changes.set(t, {
-      phase,
-      springs,
-      payload
-    });
+
+    if (phase === TransitionPhase.LEAVE && exitBeforeEnter) {
+      exitingTransitions.current.set(t, {
+        phase,
+        springs,
+        payload
+      });
+    } else {
+      changes.set(t, {
+        phase,
+        springs,
+        payload
+      });
+    }
   });
   const context = react.useContext(SpringContext);
   const prevContext = usePrev(context);
   const hasContext = context !== prevContext && hasProps(context);
   useLayoutEffect(() => {
-    if (hasContext) each(transitions, t => {
-      t.ctrl.start({
-        default: context
+    if (hasContext) {
+      each(transitions, t => {
+        t.ctrl.start({
+          default: context
+        });
       });
-    });
+    }
   }, [context]);
+  each(changes, (_, t) => {
+    if (exitingTransitions.current.size) {
+      const ind = transitions.findIndex(state => state.key === t.key);
+      transitions.splice(ind, 1);
+    }
+  });
   useLayoutEffect(() => {
-    each(changes, ({
+    each(exitingTransitions.current.size ? exitingTransitions.current : changes, ({
       phase,
       payload
     }, t) => {
@@ -3475,10 +3631,14 @@ function useTransition(data, props, deps) {
       if (payload) {
         replaceRef(ctrl, payload.ref);
 
-        if (ctrl.ref) {
+        if (ctrl.ref && !forceChange.current) {
           ctrl.update(payload);
         } else {
           ctrl.start(payload);
+
+          if (forceChange.current) {
+            forceChange.current = false;
+          }
         }
       }
     });

@@ -2,20 +2,162 @@ import Polyline from './Polyline';
 
 export default class Polygon extends Polyline {
   static componentType = "polygon";
+  static representsClosedPath = true;
 
   actions = {
-    movePolygon: this.movePolygon.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
+    movePolygon: this.movePolygon.bind(this),
+    polygonClicked: this.polygonClicked.bind(this)
   };
 
   get movePolygon() {
     return this.movePolyline;
   }
 
+  get polygonClicked() {
+    return this.polylineClicked;
+  }
+
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.styleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescription = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord;
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " border";
+          } else {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescriptionWithNoun;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescriptionWithNoun = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+            + " polygon";
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " polygon with a " + borderDescription + " border";
+          } else {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " polygon with a " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+
+    stateVariableDefinitions.borderStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let borderStyleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderStyleDescription) {
+            borderStyleDescription += " ";
+          }
+          borderStyleDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        if (borderStyleDescription) {
+          borderStyleDescription += " ";
+        }
+
+        borderStyleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { borderStyleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.fillStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let fillStyleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          fillStyleDescription = "unfilled";
+        } else {
+          fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;
+        }
+
+        return { setValue: { fillStyleDescription } };
+      }
+    }
 
     // overwrite nearestPoint so that it includes 
     // segement between first and last vertex
@@ -33,50 +175,23 @@ export default class Polygon extends Polyline {
           dependencyType: "stateVariable",
           variableName: "nVertices"
         },
-        graphXmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmin"
-        },
-        graphXmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphXmax"
-        },
-        graphYmin: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmin"
-        },
-        graphYmax: {
-          dependencyType: "stateVariable",
-          variableName: "graphYmax"
-        },
       }),
       definition({ dependencyValues }) {
         let nDimensions = dependencyValues.nDimensions;
         let nVertices = dependencyValues.nVertices;
         let numericalVertices = dependencyValues.numericalVertices;
 
-        let xscale = 1, yscale = 1;
-        if (dependencyValues.graphXmin !== null &&
-          dependencyValues.graphXmax !== null &&
-          dependencyValues.graphYmin !== null &&
-          dependencyValues.graphYmax !== null
-        ) {
-          xscale = dependencyValues.graphXmax - dependencyValues.graphXmin;
-          yscale = dependencyValues.graphYmax - dependencyValues.graphYmin;
-        }
-
-
         let vals = [];
         let prPtx, prPty;
-        let nxPtx = numericalVertices[nVertices - 1][0];
-        let nxPty = numericalVertices[nVertices - 1][1];
+        let nxPtx = numericalVertices[nVertices - 1]?.[0];
+        let nxPty = numericalVertices[nVertices - 1]?.[1];
 
         for (let i = 0; i < nVertices; i++) {
           prPtx = nxPtx;
           prPty = nxPty;
 
-          nxPtx = numericalVertices[i][0];
-          nxPty = numericalVertices[i][1];
+          nxPtx = numericalVertices[i]?.[0];
+          nxPty = numericalVertices[i]?.[1];
 
           // only implement for constants
           if (!(Number.isFinite(prPtx) && Number.isFinite(prPty) &&
@@ -84,22 +199,24 @@ export default class Polygon extends Polyline {
             vals.push(null);
           } else {
 
-            let BA1 = (nxPtx - prPtx) / xscale;
-            let BA2 = (nxPty - prPty) / yscale;
-            let denom = (BA1 * BA1 + BA2 * BA2);
+            let BA1sub = (nxPtx - prPtx);
+            let BA2sub = (nxPty - prPty);
 
-            if (denom === 0) {
+            if (BA1sub === 0 && BA2sub === 0) {
               vals.push(null);
             } else {
-              vals.push([BA1, BA2, denom]);
+              vals.push([BA1sub, BA2sub]);
             }
           }
         }
 
 
         return {
-          newValues: {
-            nearestPoint: function (variables) {
+          setValue: {
+            nearestPoint: function ({ variables, scales }) {
+
+              let xscale = scales[0];
+              let yscale = scales[1];
 
               // only implemented in 2D for now
               if (nDimensions !== 2 || nVertices === 0) {
@@ -109,8 +226,8 @@ export default class Polygon extends Polyline {
               let closestDistance2 = Infinity;
               let closestResult = {};
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
               let prevPtx, prevPty;
               let nextPtx = numericalVertices[nVertices - 1][0];
@@ -128,8 +245,9 @@ export default class Polygon extends Polyline {
                   continue;
                 }
 
-                let [BA1, BA2, denom] = val;
-
+                let BA1 = val[0] / xscale;
+                let BA2 = val[1] / yscale;
+                let denom = (BA1 * BA1 + BA2 * BA2);
 
                 let t = ((x1 - prevPtx) / xscale * BA1 + (x2 - prevPty) / yscale * BA2) / denom;
 
@@ -169,5 +287,6 @@ export default class Polygon extends Polyline {
     }
     return stateVariableDefinitions;
   }
+
 
 }

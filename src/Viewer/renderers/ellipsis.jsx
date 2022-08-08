@@ -1,15 +1,12 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
+export default React.memo(function Ellipsis(props) {
+  let {name, SVs} = useDoenetRender(props);
 
-export default class Ellipsis extends DoenetRenderer {
-
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <>&hellip;</>
+  if (SVs.hidden) {
+    return null;
   }
-}
+  
+  return <><a name={name} />&hellip;</>;
+})

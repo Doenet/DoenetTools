@@ -1,6 +1,7 @@
 import BaseComponent from './abstract/BaseComponent.js';
-import { getVariantsForDescendants } from '../utils/variants.js';
+import { getVariantsForDescendantsForUniqueVariants } from '../utils/variants.js';
 import { returnStyleDefinitionStateVariables } from '../utils/style.js';
+import { returnFeedbackDefinitionStateVariables } from '../utils/feedback.js';
 import { numberToLetters } from '../utils/sequence.js';
 
 export default class Document extends BaseComponent {
@@ -10,10 +11,8 @@ export default class Document extends BaseComponent {
 
   static createsVariants = true;
 
-  static alwaysSetUpVariant = true;
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     delete attributes.hide;
     delete attributes.disabled;
@@ -28,14 +27,38 @@ export default class Document extends BaseComponent {
       defaultValue: false,
       public: true,
     };
-    attributes.feedbackDefinitions = {
-      createComponentOfType: "feedbackDefinitions",
-      createStateVariable: "feedbackDefinitions",
-      get defaultValue() { return returnDefaultFeedbackDefinitions() },
-      propagateToDescendants: true,
-      mergeArrayWithDefault: true,
+    attributes.submitLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabel",
+      defaultValue: "Check Work",
       public: true,
-    };
+      forRenderer: true,
+    }
+    attributes.submitLabelNoCorrectness = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabelNoCorrectness",
+      defaultValue: "Submit Response",
+      public: true,
+      forRenderer: true,
+    }
+
+    attributes.displayDigitsForCreditAchieved = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigitsForCreditAchieved",
+      defaultValue: 3,
+      public: true
+    }
+
+    // at this point, we are creating these attributes
+    // so that having them in the doenetML is valid
+    // Do we want to do something with these attributes?
+    attributes.xmlns = {
+      createPrimitiveOfType: "string"
+    }
+    attributes.type = {
+      createPrimitiveOfType: "string"
+    }
+
     return attributes;
   }
 
@@ -52,10 +75,7 @@ export default class Document extends BaseComponent {
       componentTypes: ["description"]
     }, {
       group: "setups",
-      componentTypes: ["setup"]
-    }, {
-      group: "styleDefinitions",
-      componentTypes: ["styleDefinitions"]
+      componentTypes: ["setup"],
     }, {
       group: "anything",
       componentTypes: ["_base"]
@@ -69,8 +89,11 @@ export default class Document extends BaseComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     let styleDefinitionStateVariables = returnStyleDefinitionStateVariables();
-
     Object.assign(stateVariableDefinitions, styleDefinitionStateVariables);
+
+    let feedbackDefinitionStateVariables = returnFeedbackDefinitionStateVariables();
+    Object.assign(stateVariableDefinitions, feedbackDefinitionStateVariables);
+
 
     stateVariableDefinitions.titleChildName = {
       forRenderer: true,
@@ -86,7 +109,7 @@ export default class Document extends BaseComponent {
           titleChildName = dependencyValues.titleChild[0].componentName
         }
         return {
-          newValues: { titleChildName }
+          setValue: { titleChildName }
         }
       }
     }
@@ -94,7 +117,9 @@ export default class Document extends BaseComponent {
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
@@ -105,9 +130,9 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.titleChild.length === 0) {
-          return { newValues: { title: "" } };
+          return { setValue: { title: "" } };
         } else {
-          return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
         }
       }
     }
@@ -115,8 +140,9 @@ export default class Document extends BaseComponent {
 
     stateVariableDefinitions.description = {
       public: true,
-      componentType: "text",
-      forRenderer: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         descriptionChild: {
           dependencyType: "child",
@@ -126,9 +152,9 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.descriptionChild.length === 0) {
-          return { newValues: { description: "" } };
+          return { setValue: { description: "" } };
         } else {
-          return { newValues: { description: dependencyValues.descriptionChild[0].stateValues.text } };
+          return { setValue: { description: dependencyValues.descriptionChild[0].stateValues.text } };
         }
       }
     }
@@ -136,22 +162,23 @@ export default class Document extends BaseComponent {
     stateVariableDefinitions.level = {
       forRenderer: true,
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { level: 0 } })
+      definition: () => ({ setValue: { level: 0 } })
     }
 
     stateVariableDefinitions.viewedSolution = {
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          viewedSolution: { variablesToCheck: ["viewedSolution"] }
+          viewedSolution: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "viewedSolution",
+            setEssentialValue: "viewedSolution",
             value: desiredStateVariableValues.viewedSolution
           }]
         }
@@ -162,7 +189,7 @@ export default class Document extends BaseComponent {
       returnDependencies: () => ({
         scoredDescendants: {
           dependencyType: "descendant",
-          componentTypes: ["_sectioningComponent", "answer"],
+          componentTypes: ["_sectioningComponent", "answer", "setup"],
           variableNames: [
             "scoredDescendants",
             "aggregateScores",
@@ -175,6 +202,10 @@ export default class Document extends BaseComponent {
       definition({ dependencyValues }) {
         let scoredDescendants = [];
         for (let descendant of dependencyValues.scoredDescendants) {
+          // added setup just so that can skip them
+          if (descendant.componentType === "setup") {
+            continue;
+          }
           if (descendant.stateValues.aggregateScores ||
             descendant.stateValues.scoredDescendants === undefined
           ) {
@@ -184,7 +215,7 @@ export default class Document extends BaseComponent {
           }
         }
 
-        return { newValues: { scoredDescendants } }
+        return { setValue: { scoredDescendants } }
 
       }
 
@@ -199,7 +230,7 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nScoredDescendants: dependencyValues.scoredDescendants.length
           }
         }
@@ -245,7 +276,7 @@ export default class Document extends BaseComponent {
           itemCreditAchieved[arrayKey] = dependencyValuesByKey[arrayKey].creditAchieved;
         }
 
-        return { newValues: { itemCreditAchieved } }
+        return { setValue: { itemCreditAchieved } }
 
       }
 
@@ -288,7 +319,7 @@ export default class Document extends BaseComponent {
           }
         }
 
-        return { newValues: { itemNumberByAnswerName } }
+        return { setValue: { itemNumberByAnswerName } }
 
       }
 
@@ -332,7 +363,7 @@ export default class Document extends BaseComponent {
           itemVariantInfo[arrayKey] = dependencyValuesByKey[arrayKey].generatedVariantInfo;
         }
 
-        return { newValues: { itemVariantInfo } }
+        return { setValue: { itemVariantInfo } }
 
       }
 
@@ -348,7 +379,7 @@ export default class Document extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { answerDescendants: dependencyValues.answerDescendants } }
+        return { setValue: { answerDescendants: dependencyValues.answerDescendants } }
       }
     }
 
@@ -362,7 +393,7 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             justSubmitted:
               dependencyValues.answerDescendants.every(x => x.stateValues.justSubmitted)
           }
@@ -380,30 +411,33 @@ export default class Document extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         let showCorrectness = dependencyValues.showCorrectnessFlag !== false;
-        return { newValues: { showCorrectness } }
+        return { setValue: { showCorrectness } }
       }
     }
 
 
-    stateVariableDefinitions.displayDigitsForCreditAchieved = {
-      returnDependencies: () => ({}),
-      definition: () => ({ newValues: { displayDigitsForCreditAchieved: 3 } })
-    }
-
     stateVariableDefinitions.creditAchieved = {
       public: true,
-      componentType: "number",
       forRenderer: true,
       defaultValue: 0,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigitsForCreditAchieved",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForCreditAchieved",
+          }
+        },
       },
       additionalStateVariablesDefined: [{
         variableName: "percentCreditAchieved",
         public: true,
-        componentType: "number",
-        stateVariablesPrescribingAdditionalAttributes: {
-          displayDigits: "displayDigitsForCreditAchieved",
+        shadowingInstructions: {
+          createComponentOfType: "number",
+          addAttributeComponentsShadowingStateVariables: {
+            displayDigits: {
+              stateVariableToShadow: "displayDigitsForCreditAchieved",
+            }
+          }
         }
       }],
       returnDependencies: () => ({
@@ -437,7 +471,7 @@ export default class Document extends BaseComponent {
 
         let percentCreditAchieved = creditAchieved * 100;
 
-        return { newValues: { creditAchieved, percentCreditAchieved } }
+        return { setValue: { creditAchieved, percentCreditAchieved } }
 
       }
     }
@@ -475,7 +509,7 @@ export default class Document extends BaseComponent {
         }
         let creditAchievedIfSubmit = creditSum / totalWeight;
 
-        return { newValues: { creditAchievedIfSubmit } }
+        return { setValue: { creditAchievedIfSubmit } }
 
       }
     }
@@ -494,7 +528,7 @@ export default class Document extends BaseComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",
@@ -502,25 +536,16 @@ export default class Document extends BaseComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMatchedComposites: true,
-        },
-        variants: {
-          dependencyType: "variants",
+          ignoreReplacementsOfEncounteredComposites: true,
         },
       }),
       definition({ dependencyValues, componentName, previousValues }) {
-
-        let subvariantsSpecified = Boolean(
-          dependencyValues.variants.desiredVariant &&
-          dependencyValues.variants.desiredVariant.subvariants
-        )
 
         let generatedVariantInfo = {
           index: dependencyValues.variantIndex,
           name: dependencyValues.variantName,
           meta: {
             createdBy: componentName,
-            subvariantsSpecified
           },
         }
 
@@ -539,14 +564,14 @@ export default class Document extends BaseComponent {
           if (!subvar.subvariants && previousValues.generatedVariantInfo) {
             // check if previously had subvariants
             let previousSubvariants = previousValues.generatedVariantInfo.subvariants;
-            if (previousSubvariants[ind].subvariants) {
+            if (previousSubvariants[ind]?.subvariants) {
               subvariants[ind] = Object.assign({}, subvariants[ind]);
               subvariants[ind].subvariants = previousSubvariants[ind].subvariants;
             }
           }
         }
 
-        return { newValues: { generatedVariantInfo } }
+        return { setValue: { generatedVariantInfo } }
 
       }
     }
@@ -573,7 +598,7 @@ export default class Document extends BaseComponent {
           suppressAnswerSubmitButtons = true
         }
 
-        return { newValues: { createSubmitAllButton, suppressAnswerSubmitButtons } }
+        return { setValue: { createSubmitAllButton, suppressAnswerSubmitButtons } }
       }
     }
 
@@ -582,9 +607,10 @@ export default class Document extends BaseComponent {
 
   actions = {
     submitAllAnswers: this.submitAllAnswers.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this)
   }
 
-  async submitAllAnswers() {
+  async submitAllAnswers({ actionId }) {
 
     this.coreFunctions.requestRecordEvent({
       verb: "submitted",
@@ -595,19 +621,33 @@ export default class Document extends BaseComponent {
     });
 
 
-    for (let answer of this.stateValues.answerDescendants) {
-      if (!answer.stateValues.justSubmitted) {
+    for (let answer of await this.stateValues.answerDescendants) {
+      if (!await answer.stateValues.justSubmitted) {
         await this.coreFunctions.performAction({
           componentName: answer.componentName,
           actionName: "submitAnswer"
         })
       }
     }
+
+    this.coreFunctions.resolveAction({ actionId });
+
   }
 
-  static setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
-    descendantVariantComponents,
-    allComponentClasses }) {
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  static async setUpVariant({ serializedComponent, sharedParameters, definingChildrenSoFar,
+    descendantVariantComponents }) {
 
     // console.log("****Variant for document*****")
 
@@ -624,13 +664,58 @@ export default class Document extends BaseComponent {
       // with variant names a, b, c, ...
       // and seeds 1,2,3,...
 
-      let nVariants = 100;
+      let nVariants;
+      let variantNames;
 
-      // if (serializedComponent.variants.uniqueVariants) {
-      //   nVariants = serializedComponent.variants.numberOfVariants;
-      // }
+      if (serializedComponent.variants.variantsFromChild) {
+        nVariants = serializedComponent.variants.numberOfVariantsPreIgnore;
 
-      sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
+        if (serializedComponent.variants.variantNames) {
+
+          variantNames = [...serializedComponent.variants.variantNames];
+
+          if (variantNames.length >= nVariants) {
+            variantNames = variantNames.slice(0, nVariants);
+          } else {
+            let originalVariantNames = [...variantNames];
+            let variantNumber = variantNames.length;
+            let variantValue = variantNumber;
+            let variantString;
+            while (variantNumber < nVariants) {
+              variantNumber++;
+              variantValue++;
+              variantString = indexToLowercaseLetters(variantValue);
+              while (originalVariantNames.includes(variantString)) {
+                variantValue++;
+                variantString = indexToLowercaseLetters(variantValue);
+              }
+              variantNames.push(variantString);
+            }
+
+          }
+
+
+          sharedParameters.allPossibleVariants = variantNames;
+
+        } else {
+
+          sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
+
+        }
+
+        sharedParameters.variantIndicesToIgnore = serializedComponent.variants.indicesToIgnore;
+
+      } else {
+
+        nVariants = 100;
+        if (serializedComponent.variants?.numberOfVariantsPreIgnore <= 100) {
+          nVariants = serializedComponent.variants.numberOfVariantsPreIgnore;
+        }
+
+        sharedParameters.allPossibleVariants = [...Array(nVariants).keys()].map(x => indexToLowercaseLetters(x + 1));
+        sharedParameters.variantIndicesToIgnore = [];
+
+      }
 
       let variantIndex;
       // check if desiredVariant was specified
@@ -652,18 +737,6 @@ export default class Document extends BaseComponent {
             }
             variantIndex = indexFrom0 + 1;
           }
-        } else if (desiredVariant.name !== undefined) {
-          if (typeof desiredVariant.name === "string") {
-            // want case insensitive test, so convert to lower case
-            let desiredNumber = sharedParameters.allPossibleVariants.indexOf(desiredVariant.name.toLowerCase());
-            if (desiredNumber !== -1) {
-              variantIndex = desiredNumber + 1;
-            }
-          }
-          if (variantIndex === undefined) {
-            console.warn("Variant name " + desiredVariant.name + " is not valid");
-            variantIndex = 1;
-          }
         }
       }
 
@@ -674,22 +747,23 @@ export default class Document extends BaseComponent {
 
       sharedParameters.variantSeed = variantIndex.toString();
       sharedParameters.variantIndex = variantIndex;
-      sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
-      sharedParameters.selectRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
+      if (variantNames) {
+        sharedParameters.variantName = variantNames[variantIndex - 1];
+      } else {
+        sharedParameters.variantName = indexToLowercaseLetters(variantIndex);
+      }
+      sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
 
 
     } else {
       // get parameters from variant control child
-      sharedParameters.variantSeed = variantControlChild.state.selectedSeed.value;
-      sharedParameters.variantName = variantControlChild.state.selectedVariantName.value;
-      sharedParameters.variantIndex = variantControlChild.state.selectedVariantIndex.value;
-      sharedParameters.selectRng = variantControlChild.state.selectRng.value;
-      sharedParameters.allPossibleVariants = variantControlChild.state.variantNames.value;
+      sharedParameters.variantSeed = await variantControlChild.state.selectedSeed.value;
+      sharedParameters.variantName = await variantControlChild.state.selectedVariantName.value;
+      sharedParameters.variantIndex = await variantControlChild.state.selectedVariantIndex.value;
+      sharedParameters.variantRng = await variantControlChild.state.variantRng.value;
+      sharedParameters.allPossibleVariants = await variantControlChild.state.variantNames.value;
+      sharedParameters.variantIndicesToIgnore = await variantControlChild.state.variantIndicesToIgnore.value;
     }
-
-    // seed rng for random numbers predictably from variant using selectRng
-    let seedForRandomNumbers = Math.floor(sharedParameters.selectRng() * 1000000).toString()
-    sharedParameters.rng = new sharedParameters.rngClass(seedForRandomNumbers);
 
     // console.log("Document variant name: " + sharedParameters.variantName);
 
@@ -699,18 +773,6 @@ export default class Document extends BaseComponent {
       desiredVariant = {};
     }
 
-    // // if subvariants aren't defined but we have uniqueVariants specified
-    // // then calculate variant information for the descendant variant component
-    // if (desiredVariant.subvariants === undefined && serializedComponent.variants.uniqueVariants) {
-    //   let variantInfo = this.getUniqueVariant({
-    //     serializedComponent: serializedComponent,
-    //     variantIndex: sharedParameters.variantIndex,
-    //     allComponentClasses: allComponentClasses,
-    //   })
-    //   if (variantInfo.success) {
-    //     Object.assign(desiredVariant, variantInfo.desiredVariant);
-    //   }
-    // }
 
     if (desiredVariant.subvariants && descendantVariantComponents) {
       for (let ind in desiredVariant.subvariants) {
@@ -721,6 +783,11 @@ export default class Document extends BaseComponent {
         }
         variantComponent.variants.desiredVariant = subvariant;
       }
+    } else if (serializedComponent.variants.variantsFromChild && descendantVariantComponents?.length === 1) {
+      // copy desired variant to child
+      descendantVariantComponents[0].variants.desiredVariant = desiredVariant;
+      descendantVariantComponents[0].variants.desiredVariantFromDocument = true;
+
     }
 
     // console.log("Desired variant for document");
@@ -728,89 +795,82 @@ export default class Document extends BaseComponent {
 
   }
 
-  static determineNumberOfUniqueVariants({ serializedComponent }) {
+  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
-      return { success: true, numberOfVariants: 1 };
+      return { success: true, numberOfVariants: 1, numberOfVariantsPreIgnore: 1 };
     }
 
-    let variantControlInd;
-    let variantControlChild
-    for (let [ind, child] of serializedComponent.children.entries()) {
-      if (child.componentType === "variantControl" || (
-        child.createdComponent && components[child.componentName].componentType === "variantControl"
-      )) {
-        variantControlInd = ind;
+    let variantControlChild;
+    for (let child of serializedComponent.children) {
+      if (child.componentType === "variantControl") {
         variantControlChild = child;
         break;
       }
     }
 
-    // Find number of variants from variantControl, if it exists
-    let numberOfVariants = 100;
-    if (variantControlInd !== undefined && variantControlChild.attributes &&
-      variantControlChild.attributes.nVariants !== undefined
-    ) {
-      let nVariantsComp = variantControlChild.attributes.nVariants;
-      // calculate nVariants only if has its value set directly 
-      // or if has a single child that is a string
-      let foundValid = false;
-      if (nVariantsComp.state !== undefined && nVariantsComp.state.value !== undefined) {
-        numberOfVariants = Math.round(Number(nVariantsComp.state.value));
-        foundValid = true;
-      }
-      // children overwrite state
-      if (nVariantsComp.children !== undefined && nVariantsComp.children.length === 1 &&
-        nVariantsComp.children[0].componentType === "string") {
-        numberOfVariants = Math.round(Number(nVariantsComp.children[0].state.value));
-        foundValid = true;
-      }
-      if (!foundValid) {
+    if (!variantControlChild) {
+
+      // if don't have variant control, check to see if have 100 or fewer unique variants
+
+      let result = super.determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects });
+
+      if (result.success && result.numberOfVariants <= 100) {
+        let numberOfVariants = result.numberOfVariants;
+        let numberOfVariantsPreIgnore = result.numberOfVariants;
+        return { success: true, numberOfVariants, numberOfVariantsPreIgnore }
+      } else {
         return { success: false }
       }
     }
 
-    let uniqueVariantData;
+    let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;
 
-    // max number of variants is the product of 
-    // number of variants for each descendantVariantComponent
-    let maxNumberOfVariants = 1;
-    let numberOfVariantsByDescendant = []
-    if (serializedComponent.variants.descendantVariantComponents !== undefined) {
-      numberOfVariantsByDescendant = serializedComponent.variants.descendantVariantComponents
-        .map(x => x.variants.numberOfVariants);
-      maxNumberOfVariants = numberOfVariantsByDescendant.reduce((a, c) => a * c, 1);
-      uniqueVariantData = {
-        numberOfVariantsByDescendant: numberOfVariantsByDescendant,
-      }
+    if (numberOfVariants === undefined) {
+      numberOfVariants = 100;
     }
 
-    numberOfVariants = Math.min(maxNumberOfVariants, numberOfVariants)
+    if (!variantControlChild.attributes.uniqueVariants?.primitive) {
+      return { success: true, numberOfVariants, numberOfVariantsPreIgnore: numberOfVariants }
+    }
+
+
+    let result = super.determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects });
+
+    if (!result.success) {
+      return result;
+    }
+
+    numberOfVariants = Math.min(result.numberOfVariants, numberOfVariants);
+
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariants;
+
+    // console.log("Actual number of variants for document is " + numberOfVariants)
 
     return {
       success: true,
-      numberOfVariants: numberOfVariants,
-      uniqueVariantData: uniqueVariantData,
-    }
+      numberOfVariants,
+      numberOfVariantsPreIgnore: numberOfVariants
+    };
+
 
   }
 
-  static getUniqueVariant({ serializedComponent, variantIndex, allComponentClasses }) {
-    if (serializedComponent.variants === undefined) {
-      return { succes: false }
-    }
-    let numberOfVariants = serializedComponent.variants.numberOfVariants;
+  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
     if (numberOfVariants === undefined) {
       return { success: false }
     }
 
-    if (!Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= numberOfVariants) {
+    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
       return { success: false }
     }
 
-    let result = getVariantsForDescendants({
-      variantIndex: variantIndex,
-      serializedComponent: serializedComponent,
-      allComponentClasses: allComponentClasses
+    let result = getVariantsForDescendantsForUniqueVariants({
+      variantIndex,
+      serializedComponent,
+      componentInfoObjects
     })
 
     if (!result.success) {
@@ -819,7 +879,13 @@ export default class Document extends BaseComponent {
       return { success: false }
     }
 
-    return { success: true, desiredVariant: { subvariants: result.desiredVariants } }
+    return {
+      success: true,
+      desiredVariant: {
+        index: variantIndex,
+        subvariants: result.desiredVariants
+      }
+    }
   }
 
   static includeBlankStringChildren = true;
@@ -832,24 +898,4 @@ function indexToLowercaseLetters(index) {
 }
 
 
-function returnDefaultFeedbackDefinitions() {
-  return [
-    {
-      feedbackCode: 'numericalerror',
-      feedbackText: `Credit reduced because numbers in your answer weren't quite right.  Did you round too much?`
-    },
-    {
-      feedbackCode: 'goodjob',
-      feedbackText: `Good job!`
-    },
-    {
-      feedbackCode: 'onesignerror',
-      feedbackText: `Credit reduced because it appears that you made a sign error.`
-    },
-    {
-      feedbackCode: 'twosignerrors',
-      feedbackText: `Credit reduced because it appears that you made two sign errors.`
-    },
-  ]
-}
 

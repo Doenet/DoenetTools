@@ -2,11 +2,11 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Column extends BaseComponent {
   static componentType = "column";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.colNum = {
       createComponentOfType: "text",
       createStateVariable: "colNum",
@@ -39,7 +39,7 @@ export default class Column extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             prescribedCellsWithRowNum: dependencyValues.cellChildren
           }
         }
@@ -150,7 +150,7 @@ export default class Column extends BaseComponent {
     //         }
 
     //         return {
-    //           newValues: { cellMaths: dependencyValues.cellChildren.map(x => x.stateValues.math) }
+    //           setValue: { cellMaths: dependencyValues.cellChildren.map(x => x.stateValues.math) }
     //         }
     //       }
 
@@ -161,7 +161,7 @@ export default class Column extends BaseComponent {
     //           newCellMaths[arrayKey] = dependencyValues.cellChildren[arrayKey].stateValues.math;
     //         }
     //       }
-    //       return { newValues: { cellMaths: newCellMaths } }
+    //       return { setValue: { cellMaths: newCellMaths } }
     //     } else {
 
     //       // have arrayKey
@@ -173,7 +173,7 @@ export default class Column extends BaseComponent {
     //           cellMath = dependencyValues.cellChild[0].stateValues.math;
     //         }
     //         return {
-    //           newValues: {
+    //           setValue: {
     //             cellMaths: {
     //               [arrayKey]: cellMath
     //             }
@@ -336,7 +336,7 @@ export default class Column extends BaseComponent {
     //         }
 
     //         return {
-    //           newValues: { cellNumbers: dependencyValues.cellChildren.map(x => x.stateValues.number) }
+    //           setValue: { cellNumbers: dependencyValues.cellChildren.map(x => x.stateValues.number) }
     //         }
     //       }
 
@@ -347,7 +347,7 @@ export default class Column extends BaseComponent {
     //           newcellNumbers[arrayKey] = dependencyValues.cellChildren[arrayKey].stateValues.number;
     //         }
     //       }
-    //       return { newValues: { cellNumbers: newcellNumbers } }
+    //       return { setValue: { cellNumbers: newcellNumbers } }
     //     } else {
 
     //       // have arrayKey
@@ -359,7 +359,7 @@ export default class Column extends BaseComponent {
     //           cellNumber = dependencyValues.cellChild[0].stateValues.number;
     //         }
     //         return {
-    //           newValues: {
+    //           setValue: {
     //             cellNumbers: {
     //               [arrayKey]: cellNumber
     //             }
@@ -522,7 +522,7 @@ export default class Column extends BaseComponent {
     //         }
 
     //         return {
-    //           newValues: { cellTexts: dependencyValues.cellChildren.map(x => x.stateValues.text) }
+    //           setValue: { cellTexts: dependencyValues.cellChildren.map(x => x.stateValues.text) }
     //         }
     //       }
 
@@ -533,7 +533,7 @@ export default class Column extends BaseComponent {
     //           newcellTexts[arrayKey] = dependencyValues.cellChildren[arrayKey].stateValues.text;
     //         }
     //       }
-    //       return { newValues: { cellTexts: newcellTexts } }
+    //       return { setValue: { cellTexts: newcellTexts } }
     //     } else {
 
     //       // have arrayKey
@@ -545,7 +545,7 @@ export default class Column extends BaseComponent {
     //           cellText = dependencyValues.cellChild[0].stateValues.text;
     //         }
     //         return {
-    //           newValues: {
+    //           setValue: {
     //             cellTexts: {
     //               [arrayKey]: cellText
     //             }

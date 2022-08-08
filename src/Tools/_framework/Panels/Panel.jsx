@@ -1,10 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { animated, useSpring } from '@react-spring/web';
 import { useGesture } from '@use-gesture/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGripLinesVertical, faGripLines } from '@fortawesome/free-solid-svg-icons';
-import { useRecoilState, atomFamily } from 'recoil';
+import {
+  faGripLinesVertical,
+  faGripLines,
+  faKeyboard,
+} from '@fortawesome/free-solid-svg-icons';
+import { useRecoilState, atomFamily, useSetRecoilState } from 'recoil';
+import { handleRef } from '../Footers/MathInputSelector';
 
 export const handleDirection = {
   LEFT: {
@@ -38,7 +43,7 @@ const Wrapper = styled(animated.div)`
   display: flex;
   flex-direction: ${({ $flexDir }) => $flexDir};
   align-items: center;
-  overflow: hidden;
+  // overflow: ${(props) => (props.id === 'keyboard' ? 'visible' : 'hidden')};
 `;
 
 const Background = styled.div`
@@ -47,27 +52,39 @@ const Background = styled.div`
   height: ${({ $vertical }) => ($vertical ? '100%' : '')};
   width: ${({ $vertical }) => ($vertical ? '' : '100%')};
   border-radius: 4px;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
 `;
+
+// const Notch = styled.div`
+//   width: 40px;
+//   border-radius: 20px 20px 0 0;
+//   background-color: #1a5a99;
+//   flex: 0 0 20px;
+//   padding-top: 3px;
+//   font-size: 14px;
+//   color: rgb(246, 248, 255);
+//   cursor: ${({ $vertical }) => ($vertical ? 'ew-resize' : 'ns-resize')};
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// `;
 
 const DragHandle = styled.div`
   flex: 0 0 ${({ $handleSize }) => $handleSize}px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  color: rgb(246, 248, 255);
-  font-size: 12px;
+  color: white;
+  font-size: ${(props) => (props.id === 'keyboard' ? 16 : 12)};
   padding: 0;
   cursor: ${({ $vertical }) => ($vertical ? 'ew-resize' : 'ns-resize')};
-  background-color: #1a5a99;
-  // border-radius: ${({ $rounding }) => $rounding};
-  height: ${({ $vertical }) => ($vertical ? '25%' : '')};
+  background-color: var(--mainBlue);
+  height: ${({ $vertical }) => ($vertical ? '23%' : '')};
   width: ${({ $vertical }) => ($vertical ? '' : '25%')};
   box-sizing: border-box;
   touch-action: none;
 `;
 
-const panelOpen = atomFamily({
+export const panelOpen = atomFamily({
   key: 'panelOpenAtom',
   default: false,
 });
@@ -77,10 +94,12 @@ export default function DragPanel({
   direction,
   id,
   gridArea = 'auto',
-  handleSize = 10,
+  handleSize = 12,
   panelSize = 240,
   isInitOpen = false,
 }) {
+  const setHandleRef = useSetRecoilState(handleRef);
+  const handle = useRef(null);
   const [open, setOpen] = useRecoilState(panelOpen(id));
   const [{ dir }, api] = useSpring(
     () => ({
@@ -91,6 +110,7 @@ export default function DragPanel({
 
   useEffect(() => {
     setOpen(isInitOpen);
+    setHandleRef({ ...handle });
   }, [isInitOpen, setOpen]);
 
   // Set the drag hook and define component movement based on gesture data
@@ -158,19 +178,36 @@ export default function DragPanel({
       $gridArea={gridArea}
       $flexDir={direction.flexDir}
       style={direction.drag[0] === 'x' ? { width: dir } : { height: dir }}
+      id={id}
     >
       <Background $vertical={direction.vertical}>{children}</Background>
       <DragHandle
-        data-cy="panelDragHandle"
+        tabIndex="0"
+        ref={handle}
+        data-test="panelDragHandle"
         $vertical={direction.vertical}
         $rounding={direction.rounding}
         $handleSize={handleSize}
         {...bindX()}
-      >
+        onClick={() => {
+          setOpen(!open)
+        }}
+        >
         <FontAwesomeIcon
-          icon={direction.vertical ? faGripLinesVertical : faGripLines}
+          icon={
+            id === 'keyboard'
+              ? faKeyboard
+              : direction.vertical
+              ? faGripLinesVertical
+              : faGripLines
+          }
         />
       </DragHandle>
+      {/* {id === 'keyboard' ? (
+        <Notch {...bindX()}>
+          <FontAwesomeIcon icon={faKeyboard} />
+        </Notch>
+      ) : null} */}
     </Wrapper>
   );
 }

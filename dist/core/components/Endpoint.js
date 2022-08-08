@@ -4,8 +4,8 @@ export default class Endpoint extends Point {
   static componentType = "endpoint";
   static rendererType = "point";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.open = {
       createComponentOfType: "boolean",
@@ -27,15 +27,16 @@ export default class Endpoint extends Point {
   }
 
 
-  switchPoint() {
-    if (this.stateValues.switchable) {
-      return this.coreFunctions.performUpdate({
+  async switchPoint({ actionId, }) {
+    if (await this.stateValues.switchable) {
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "open",
-          value: !this.stateValues.open,
+          value: !await this.stateValues.open,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -43,10 +44,12 @@ export default class Endpoint extends Point {
             componentType: this.componentType,
           },
           result: {
-            open: !this.stateValues.open
+            open: !await this.stateValues.open
           }
         }
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }

@@ -18,15 +18,38 @@ export default class Integer extends NumberComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         valuePreRound: {
           dependencyType: "stateVariable",
           variableName: "valuePreRound"
         }
       }),
+      set: function (value) {
+        // this function is called when
+        // - definition is overridden by a copy prop
+        // - when processing new state variable values
+        //   (which could be from outside sources)
+        if (value === null) {
+          return NaN;
+        }
+        let number = Number(value);
+        if (Number.isNaN(number)) {
+          try {
+            number = me.fromAst(textToAst.convert(value)).evaluate_to_constant();
+            if (number === null) {
+              number = NaN;
+            }
+          } catch (e) {
+            number = NaN;
+          }
+        }
+        return Math.round(number);
+      },
       definition({ dependencyValues }) {
-        return { newValues: { value: Math.round(dependencyValues.valuePreRound) } }
+        return { setValue: { value: Math.round(dependencyValues.valuePreRound) } }
       },
       inverseDefinition({desiredStateVariableValues}) {
         let desiredValue = desiredStateVariableValues.value;

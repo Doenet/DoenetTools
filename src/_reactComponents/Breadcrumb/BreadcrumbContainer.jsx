@@ -1,7 +1,7 @@
 import React from 'react'
 import { faTh } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { drivePathSyncFamily, folderDictionary, fetchDrivesQuery } from '../Drive/NewDrive';
+import { drivePathSyncFamily, folderDictionary, fetchCoursesQuery } from '../Drive/NewDrive';
 import { useRecoilValue, useRecoilState, atomFamily, selectorFamily } from 'recoil';
 
 const breadcrumbItemAtomFamily = atomFamily({
@@ -26,7 +26,7 @@ const breadcrumbItemAtomFamily = atomFamily({
         })
         folderId = folderInfo.folderInfo.parentFolderId;
       }
-      const drivesInfo = get(fetchDrivesQuery);
+      const drivesInfo = get(fetchCoursesQuery);
       let driveObj = {type:"Drive",folderId:driveId}
       for (let drive of drivesInfo.driveIdsAndLabels){
         if (drive.driveId === driveId){

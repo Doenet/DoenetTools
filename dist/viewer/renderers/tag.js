@@ -1,19 +1,19 @@
 import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class Tag extends DoenetRenderer {
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    let open = "<";
-    let close = ">";
-    if (this.doenetSvData.selfClosed) {
-      close = "/>";
-    }
-    return /* @__PURE__ */ React.createElement("code", {
-      id: this.componentName
-    }, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), open, this.children, close);
+import useDoenetRender from "./useDoenetRenderer.js";
+export default React.memo(function Tag(props) {
+  let {name, SVs, children} = useDoenetRender(props);
+  if (SVs.hidden) {
+    return null;
   }
-}
+  let open = "<";
+  let close = ">";
+  if (SVs.selfClosed) {
+    close = "/>";
+  }
+  return /* @__PURE__ */ React.createElement("code", {
+    id: name,
+    style: {color: "var(--mainGreen)"}
+  }, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), open, children, close);
+});

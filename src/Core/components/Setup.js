@@ -9,6 +9,9 @@ export default class Setup extends CompositeComponent {
       group: "styleDefinitions",
       componentTypes: ["styleDefinitions"]
     }, {
+      group: "feedbackDefinitions",
+      componentTypes: ["feedbackDefinitions"]
+    }, {
       group: "anything",
       componentTypes: ["_base"]
     }]
@@ -30,7 +33,7 @@ export default class Setup extends CompositeComponent {
         if (dependencyValues.sourceCompositeIdentity) {
           componentNameForAttributes = dependencyValues.sourceCompositeIdentity.componentName;
         }
-        return { newValues: { componentNameForAttributes } }
+        return { setValue: { componentNameForAttributes } }
       }
     }
 
@@ -38,7 +41,7 @@ export default class Setup extends CompositeComponent {
       returnDependencies: () => ({}),
       definition() {
         return {
-          newValues: { readyToExpandWhenResolved: true }
+          setValue: { readyToExpandWhenResolved: true }
         }
       }
     }

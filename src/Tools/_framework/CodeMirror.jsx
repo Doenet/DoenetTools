@@ -1,14 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { basicSetup } from '@codemirror/basic-setup';
 import { EditorState, Transaction, StateEffect } from '@codemirror/state';
 import { selectLine, deleteLine, cursorLineUp } from '@codemirror/commands';
 import { EditorView, keymap } from '@codemirror/view';
-import { styleTags, defaultHighlightStyle, tags as t } from "@codemirror/highlight";
-import { lineNumbers } from "@codemirror/gutter";
-import { LezerLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp } from '@codemirror/language';
+import { styleTags, tags as t } from "@codemirror/highlight";
+import { gutter, lineNumbers } from "@codemirror/gutter";
+import { LRLanguage, LanguageSupport, syntaxTree, indentNodeProp, foldNodeProp, } from '@codemirror/language';
+import {HighlightStyle } from '@codemirror/highlight';
 import { completeFromSchema } from '@codemirror/lang-xml';
 import { parser } from "../../Parser/doenet";
 import { atom, useRecoilValue } from "recoil";
+import { getRenderer } from 'handsontable/renderers';
 
 const editorConfigStateAtom = atom({
     key: 'editorConfigStateAtom',
@@ -18,14 +20,60 @@ const editorConfigStateAtom = atom({
 });
 
 let view;
-export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
+
+export default function CodeMirror({setInternalValue,onBeforeChange,readOnly,onBlur,onFocus}){
     if(readOnly === undefined){
         readOnly = false;
     }
 
+    let colorTheme = EditorView.theme({
+        "&": {
+          color: "var(--canvastext)",
+          //backgroundColor: "var(--canvas)",
+        },
+        ".cm-content": {
+          caretColor: "#0e9",
+          borderDownColor: "var(--canvastext)"
+         
+         
+        },
+        ".cm-editor": {
+            caretColor: "#0e9",
+            backgroundColor: "var(--canvas)",
+           
+          },
+        "&.cm-focused .cm-cursor": {
+          backgroundColor:"var(--lightBlue)",
+          borderLeftColor: "var(--canvastext)",
+          
+        },
+        "&.cm-focused .cm-selectionBackground, ::selection": {
+          backgroundColor: "var(--lightBlue)",
+         
+        },
+        "&.cm-focused":{
+            color:"var(--canvastext)",
+        },
+        "cm-selectionLayer":{
+            backgroundColor: "var(--mainGreen)"
+        },
+        ".cm-gutters": {
+          backgroundColor: "var(--mainGray)",
+          color: "black",
+          border: "none",
+        },
+        ".cm-activeLine":{
+            backgroundColor: "var(--lightBlue)",
+            color:"black",
+        }
+       
+      })
+      
+
     let editorConfig = useRecoilValue(editorConfigStateAtom);
     view = useRef(null);
     let parent = useRef(null);
+    const [count,setCount] = useState(0)
 
     const changeFunc = useCallback((tr) => {
         if(tr.docChanged){
@@ -37,14 +85,47 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
         //eslint-disable-next-line
     },[]);
 
+    //Make sure readOnly takes affect
+    //TODO: Do this is a smarter way - async await?
+    if (readOnly && view.current?.state?.facet(EditorView.editable)){
+        const disabledExtensions = [
+            EditorView.editable.of(false),
+            lineNumbers(),
+        ]
+        view.current.dispatch({
+            effects: StateEffect.reconfigure.of(disabledExtensions)
+        });
+    }
+
+    //Fires when the editor losses focus
+    const onBlurExtension = EditorView.domEventHandlers({
+        blur(){
+            if (onBlur){
+                onBlur();
+            }
+        }
+    })
+
+    //Fires when the editor receives focus
+    const onFocusExtension = EditorView.domEventHandlers({
+        focus(){
+            if (onFocus){
+                onFocus();
+            }
+        }
+    })
+
 
     const doenetExtensions = useMemo(() => [
         basicSetup,
         doenet(doenetSchema),
         EditorView.lineWrapping,
+        colorTheme,
         tabExtension,
         cutExtension,
         copyExtension,
+        onBlurExtension,
+        onFocusExtension,
         EditorState.changeFilter.of(changeFunc)
     ],[changeFunc]); 
 
@@ -88,13 +169,20 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
     useEffect(() => {
         if(view.current === null && parent.current !== null){
             view.current = new EditorView({state, parent: parent.current});
+
+            if(readOnly && view.current.state.facet(EditorView.editable)){
+                //Force a refresh
+                setCount((old)=>{return old+1})
+            }
         }
     });
     
     useEffect(() => {
         if(view.current !== null && parent.current !== null){
+     
             if(readOnly && view.current.state.facet(EditorView.editable)){
                 // console.log(">>>read only has been set, changing");
+                //NOTE: WHY DOESN'T THIS WORK?
                 const disabledExtensions = [
                     EditorView.editable.of(false),
                     lineNumbers(),
@@ -138,7 +226,7 @@ export default function CodeMirror({setInternalValue,onBeforeChange,readOnly}){
     //should rewrite using compartments once a more formal config component is established
     return (
         <>
-        <div ref={parent} ></div>
+        <div ref={parent} style={{paddingBottom: "50vh"}}></div>
         </>
     )
 }
@@ -218,7 +306,8 @@ props : [
         //the indent wont have time to update and you're going right back to the left side of the screen.
         Element(context) {
             let closed = /^\s*<\//.test(context.textAfter)
-            return context.lineIndent(context.state.doc.lineAt(context.node.from)) + (closed ? 0 : context.unit)
+            console.log("youuuhj",context.state.doc.lineAt(context.node.from))
+            return context.lineIndent(context.node.from) + (closed ? 0 : context.unit)
         },
         "OpenTag CloseTag SelfClosingTag"(context) {
 
@@ -248,12 +337,13 @@ props : [
         Is: t.definitionOperator,
         "EntityReference CharacterReference": t.character,
         Comment: t.blockComment,
-        Macro: t.macroName
+        Macro: t.macroName,
+        
         })
 ]
 });
 
-const doenetLanguage = LezerLanguage.define({
+const doenetLanguage = LRLanguage.define({
     parser: parserWithMetadata,
     languageData: {
         commentTokens: {block: {open: "<!--", close: "-->"}},

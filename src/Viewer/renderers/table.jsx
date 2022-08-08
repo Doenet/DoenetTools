@@ -1,38 +1,55 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
-export default class Table extends DoenetRenderer {
+import React, { useEffect } from 'react';
+import useDoenetRender from './useDoenetRenderer';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
-  render() {
+export default React.memo(function Table(props) {
+  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
 
-    if (this.doenetSvData.hidden) {
-      return null;
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
     }
+  }, [])
+
+  if (SVs.hidden) {
+    return null;
+  }
 
     let heading = null;
 
-    let childrenToRender = [...this.children];
+    let childrenToRender = [...children];
 
     // BADBADBAD: need to redo how getting the title child
     // getting it using the internal guts of componentInstructions
     // is just asking for trouble
 
     let title;
-    if (this.doenetSvData.titleChildName) {
+    if (SVs.titleChildName) {
       let titleChildInd;
-      for (let [ind, child] of this.children.entries()) {
-        if (typeof child !== "string" && child.props.componentInstructions.componentName === this.doenetSvData.titleChildName) {
+      for (let [ind, child] of children.entries()) {
+        if (typeof child !== "string" && child.props.componentInstructions.componentName === SVs.titleChildName) {
           titleChildInd = ind;
           break;
         }
       }
-      title = this.children[titleChildInd];
+      title = children[titleChildInd];
       childrenToRender.splice(titleChildInd, 1); // remove title
     } else {
-      title = this.doenetSvData.title;
+      title = SVs.title;
     }
 
-    if (!this.doenetSvData.suppressTableNameInCaption) {
-      let tableName = <strong>{this.doenetSvData.tableName}</strong>
+    if (!SVs.suppressTableNameInTitle) {
+      let tableName = <strong>{SVs.tableName}</strong>
       if (title) {
         title = <>{tableName}: {title}</>
       } else {
@@ -40,12 +57,15 @@ export default class Table extends DoenetRenderer {
       }
     }
 
-    heading = <div id={this.componentName + "_title"}>{title}</div>
+    heading = <div id={name + "_title"}>{title}</div>
 
-    return <div id={this.componentName} >
-      <a name={this.componentName} />
-      {heading}
-      {childrenToRender}
-    </div>
-  }
-}
+    return (
+      <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+      <div id={name} style={{ margin: "12px 0" }}>
+        <a name={name} />
+        {heading}
+        {childrenToRender}
+      </div>
+      </VisibilitySensor>
+    )
+})

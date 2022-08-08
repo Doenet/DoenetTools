@@ -65,7 +65,9 @@ export default class BooleanOperator extends BooleanComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         booleanChildren: {
@@ -76,7 +78,7 @@ export default class BooleanOperator extends BooleanComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             value: constructor.applyBooleanOperator(
               dependencyValues.booleanChildren
                 .map(x => x.stateValues.value)

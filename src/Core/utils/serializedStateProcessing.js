@@ -2,155 +2,34 @@ import me from 'math-expressions';
 import { createUniqueName } from './naming';
 import { flattenDeep } from './array';
 import { deepClone } from './deepFunctions';
-import readOnlyProxyHandler from '../ReadOnlyProxyHandler';
 import { breakEmbeddedStringByCommas } from '../components/commonsugar/breakstrings';
-import sha256 from 'crypto-js/sha256';
-import Hex from 'crypto-js/enc-hex'
+import { parseAndCompile } from '../../Parser/parser';
 import subsets from './subset-of-reals';
-
-export function scrapeOffAllDoumentRelated(serializedComponents) {
-
-  if (serializedComponents.length === 1 && serializedComponents[0].componentType === "document") {
-    serializedComponents = serializedComponents[0].children;
-  }
-
-  for (let ind = serializedComponents.length - 1; ind >= 0; ind--) {
-    let component = serializedComponents[ind];
-
-    // delete any title or meta components
-    if (["title", "meta"].includes(component.componentType)) {
-      let numberToDelete = 1;
-      let followingComponent = serializedComponents[ind + 1];
-      if (typeof followingComponent === "string" && followingComponent.trim() === "") {
-        numberToDelete = 2;
-      }
-      serializedComponents.splice(ind, numberToDelete);
-    }
-  }
-
-  // strip off any blank strings at beginning or end
-  let firstNonblankInd, lastNonblankInd;
-  for (let [ind, component] of serializedComponents.entries()) {
-    if (typeof component !== "string" || component.trim() !== "") {
-      if (firstNonblankInd === undefined) {
-        firstNonblankInd = ind;
-      }
-      lastNonblankInd = ind;
-    }
-  }
-  serializedComponents = serializedComponents.slice(firstNonblankInd, lastNonblankInd + 1);
-
-  return serializedComponents;
-
-}
-
-function findNextTag(text) {
-  let tagRegEx = /<\/?\w+((\s+\w+(\s*=\s*(?:".*?"|'.*?'|[\^'">\s]+))?)+\s*|\s*)\/?>/;
-  let matchObj = tagRegEx.exec(text);
-  if (matchObj === null) { return false; } //no tags so return
-  let tagString = matchObj[0];
-  //make tags lower case
-  tagString = tagString.toLowerCase();
-  let tagIndex = matchObj.index;
-
-  //Find tagType
-  let parts = tagString.split(" ");
-  let tagType = parts[0].substring(1, parts[0].length - 1);
-  if (parts.length > 1) {
-    tagType = parts[0].substring(1, parts[0].length);
-  }
-  if (tagType.substring(tagType.length - 1, tagType.length) === '/') {
-    tagType = tagType.substring(0, tagType.length - 1);
-  }
-
-  let tagPropsString = matchObj[1];
-  tagPropsString = tagPropsString.trim();
-  let tagProps = {};
-
-  //Process Double Quoted Props
-  let startPropDoubleRegEx = /\w+\s*=\s*["]/;
-  matchObj = "not null";
-  while (matchObj !== null) {
-    matchObj = startPropDoubleRegEx.exec(tagPropsString);
-    if (matchObj !== null) {
-      let followingCode = tagPropsString.substring(matchObj.index + matchObj[0].length - 1, tagPropsString.length);
-      let doubleQuoteRegEx = /"[^"\\]*(?:\\.[^"\\]*)*"/;
-      let doubleMatchObj = doubleQuoteRegEx.exec(followingCode);
-      let insideDoubleQuotes = doubleMatchObj[0].substring(1, doubleMatchObj[0].length - 1);
-      let nameParts = matchObj[0].split('=');
-      let propName = nameParts[0].trim();
-      if (propName.substring(0, 1) === '_') {
-        throw Error("The prop " + propName + " is reserved for internal use only.");
-      }
-      insideDoubleQuotes = insideDoubleQuotes.replace(/\\"/g, '"');
-      if (propName in tagProps) {
-        throw Error("Duplicate attribute " + propName + " in tag " + tagType);
-      }
-      tagProps[propName] = insideDoubleQuotes;
-      tagPropsString = tagPropsString.substring(0, matchObj.index) +
-        tagPropsString.substring(matchObj.index + matchObj[0].length +
-          doubleMatchObj[0].length, tagPropsString.length);
-    }
-  }
-
-  //Process Single Quoted Props
-  let startPropSingleRegEx = /\w+\s*=\s*[']/;
-  matchObj = "not null";
-  while (matchObj !== null) {
-    matchObj = startPropSingleRegEx.exec(tagPropsString);
-    if (matchObj !== null) {
-      let followingCode = tagPropsString.substring(matchObj.index + matchObj[0].length - 1, tagPropsString.length);
-      let singleQuoteRegEx = /'[^'\\]*(?:\\.[^'\\]*)*'/;
-      let singleMatchObj = singleQuoteRegEx.exec(followingCode);
-      let insideSingleQuotes = singleMatchObj[0].substring(1, singleMatchObj[0].length - 1);
-      let nameParts = matchObj[0].split('=');
-      let propName = nameParts[0].trim();
-      if (propName.substring(0, 1) === '_') {
-        throw Error("The prop " + propName + " is reserved for internal use only.");
-      }
-      insideSingleQuotes = insideSingleQuotes.replace(/\\'/g, "'");
-      if (propName in tagProps) {
-        throw Error("Duplicate attribute " + propName + " in tag " + tagType);
-      }
-      tagProps[propName] = insideSingleQuotes;
-      tagPropsString = tagPropsString.substring(0, matchObj.index) +
-        tagPropsString.substring(matchObj.index + matchObj[0].length +
-          singleMatchObj[0].length, tagPropsString.length);
-
-    }
-  }
-
-  //Process Unquoted Props
-  if (/\S/.test(tagPropsString)) {
-    let unquotedParts = tagPropsString.split(" ");
-    for (let propName of unquotedParts) {
-      if (/\S/.test(propName)) {
-        tagProps[propName] = true;
-      }
-    }
-  }
-  return { tagString: tagString, tagType: tagType, tagIndex: tagIndex, tagProps: tagProps };
-}
+import { retrieveTextFileForCid } from './retrieveTextFile';
 
 export async function expandDoenetMLsToFullSerializedComponents({
-  contentIds, doenetMLs,
-  componentInfoObjects, flags, contentIdsToDoenetMLs
+  cids, doenetMLs,
+  componentInfoObjects,
 }) {
 
   let arrayOfSerializedComponents = [];
-  let contentIdComponents = {};
+  let cidComponents = {};
 
   for (let doenetML of doenetMLs) {
 
-    let serializedComponents = doenetMLToSerializedComponents(doenetML);
+    let serializedComponents = parseAndCompile(doenetML);
+
+    serializedComponents = cleanIfHaveJustDocument(serializedComponents);
 
     substituteDeprecations(serializedComponents);
 
     correctComponentTypeCapitalization(serializedComponents, componentInfoObjects.componentTypeLowerCaseMapping);
 
-    createAttributesFromProps(serializedComponents, componentInfoObjects, flags);
+    copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, componentInfoObjects.isCompositeComponent);
 
-    serializedComponents = applyMacros(serializedComponents, componentInfoObjects, flags);
+    createAttributesFromProps(serializedComponents, componentInfoObjects);
+
+    applyMacros(serializedComponents, componentInfoObjects);
 
     // remove blank string children after applying macros,
     // as applying macros could create additional blank string children
@@ -164,42 +43,35 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
     let newContentComponents = findContentCopies({ serializedComponents });
 
-    for (let contentId in newContentComponents.contentIdComponents) {
-      if (contentIdComponents[contentId] === undefined) {
-        contentIdComponents[contentId] = []
+    for (let cid in newContentComponents.cidComponents) {
+      if (cidComponents[cid] === undefined) {
+        cidComponents[cid] = []
       }
-      contentIdComponents[contentId].push(...newContentComponents.contentIdComponents[contentId])
+      cidComponents[cid].push(...newContentComponents.cidComponents[cid])
     }
   }
 
-  let contentIdList = Object.keys(contentIdComponents);
-  if (contentIdList.length > 0) {
-    // found copies with contentIds 
-    // so look up those contentIds
+  let cidList = Object.keys(cidComponents);
+  if (cidList.length > 0) {
+    // found copies with cids
+    // so look up those cids
     // convert to doenetMLs, and recurse on those doenetMLs
 
-    let { newDoenetMLs, newContentIds } = await contentIdsToDoenetMLs(contentIdList);
+    let { newDoenetMLs, newCids } = await cidsToDoenetMLs(cidList);
 
-    // check to see if got the contentIds requested
-    for (let [ind, contentId] of contentIdList.entries()) {
-      if (newContentIds[ind] && newContentIds[ind].substring(0, contentId.length) !== contentId) {
-        return Promise.reject(new Error(`Requested contentId ${contentId} but got back ${newContentIds[ind]}!`));
+    // check to see if got the cids requested
+    for (let [ind, cid] of cidList.entries()) {
+      if (newCids[ind] && newCids[ind].substring(0, cid.length) !== cid) {
+        return Promise.reject(new Error(`Requested cid ${cid} but got back ${newCids[ind]}!`));
       }
     }
 
-    // check to see if the doenetMLs hash to the contentIds
-    let expectedN = contentIdList.length;
+    let expectedN = cidList.length;
     for (let ind = 0; ind < expectedN; ind++) {
-      let contentId = newContentIds[ind];
-      if (contentId) {
-        let doenetML = newDoenetMLs[ind];
-        let calculatedContentId = Hex.stringify(sha256(doenetML));
-        if (contentId !== calculatedContentId) {
-          return Promise.reject(new Error(`Incorrect DoenetML returned for contentId: ${contentId}`));
-        }
-      } else {
+      let cid = newCids[ind];
+      if (!cid) {
         // wasn't able to retrieve content
-        console.warn(`Unable to retrieve content with contentId = ${contentIdList[ind]}`)
+        console.warn(`Unable to retrieve content with cid = ${cidList[ind]}`)
         newDoenetMLs[ind] = "";
       }
     }
@@ -207,24 +79,53 @@ export async function expandDoenetMLsToFullSerializedComponents({
     // recurse to additional doenetMLs
     let { fullSerializedComponents } = await expandDoenetMLsToFullSerializedComponents({
       doenetMLs: newDoenetMLs,
-      contentIds: newContentIds,
-      componentInfoObjects, flags,
-      contentIdsToDoenetMLs
+      cids: newCids,
+      componentInfoObjects,
     });
 
-    for (let [ind, contentId] of contentIdList.entries()) {
-      let serializedComponentsForContentId = fullSerializedComponents[ind];
+    for (let [ind, cid] of cidList.entries()) {
+      let serializedComponentsForCid = fullSerializedComponents[ind];
 
-      for (let originalCopyWithUri of contentIdComponents[contentId]) {
+      for (let originalCopyWithUri of cidComponents[cid]) {
         if (originalCopyWithUri.children === undefined) {
           originalCopyWithUri.children = [];
         }
-        originalCopyWithUri.children.push({
-          componentType: "externalContent",
-          children: JSON.parse(JSON.stringify(serializedComponentsForContentId)),
-          attributes: { newNamespace: { primitive: true } },
-          doenetAttributes: { createUniqueName: true }
-        });
+        if (originalCopyWithUri.doenetAttributes?.fromCopyFromURI) {
+
+          // remove blank string children
+          let newComponents = JSON.parse(JSON.stringify(serializedComponentsForCid))
+            .filter(x => typeof x !== "string" || x.trim());
+
+          if (newComponents.length === 1) {
+            let comp = newComponents[0];
+            if (originalCopyWithUri.children) {
+              // append children of original copy to children of the first component
+              if (!comp.children) {
+                comp.children = [];
+              }
+              comp.children.push(...originalCopyWithUri.children);
+            }
+
+            if (!comp.attributes) {
+              comp.attributes = {};
+            }
+
+            originalCopyWithUri.doenetAttributes.keptNewNamespaceOfSingleChild = Boolean(comp.attributes.newNamespace?.primitive);
+
+            comp.attributes.newNamespace = { primitive: true };
+
+            originalCopyWithUri.children = newComponents;
+
+          }
+
+        } else {
+          originalCopyWithUri.children.push({
+            componentType: "externalContent",
+            children: JSON.parse(JSON.stringify(serializedComponentsForCid)),
+            attributes: { newNamespace: { primitive: true } },
+            doenetAttributes: { createUniqueName: true }
+          });
+        }
       }
     }
 
@@ -232,121 +133,42 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
 
   return {
-    contentIds,
+    cids,
     fullSerializedComponents: arrayOfSerializedComponents,
   };
 
 }
 
-export function doenetMLToSerializedComponents(doenetML, init = true) {
-  if (doenetML === undefined) { return []; }
-  if (init) {
+function cidsToDoenetMLs(cids) {
+  let promises = [];
+  let newCids = cids;
 
-    let startCommentIndex = doenetML.search('<!--');
-    while (startCommentIndex !== -1) {
-      let endCommentIndex = doenetML.search('-->');
-      //if no end comment then the rest of the doenetML is commented out
-      if (endCommentIndex === -1) { endCommentIndex = doenetML.length; } else { endCommentIndex = endCommentIndex + 3 }
-      doenetML = doenetML.substring(0, startCommentIndex) + doenetML.substring(endCommentIndex, doenetML.length);
-      startCommentIndex = doenetML.search('<!--');
-    }
-
+  for (let cid of cids) {
+    promises.push(retrieveTextFileForCid(cid, "doenet"));
   }
-  let json = [];
 
-  //starting and ending index candidates
-  let stringBeforeCode = "";
-  let betweenTagsCode = "";
-  while (doenetML.length > 0) {
+  return Promise.all(promises).then((newDoenetMLs) => {
 
-    let startTag = findNextTag(doenetML);
+    // console.log({ newDoenetMLs, newCids })
+    return Promise.resolve({ newDoenetMLs, newCids });
 
-    if (startTag === false) {
-      //just text remains so return it if it has something in it
-      if (doenetML.length > 0) {
-        json.push(doenetML);
-      }
-      return json;
-    }
+  }).catch(err => {
 
-    let lastCharactorInsideStartTag =
-      startTag.tagString.substring(startTag.tagString.length - 2, startTag.tagString.length - 1);
-    if (lastCharactorInsideStartTag === '/') {
-      //empty tag
-      stringBeforeCode = doenetML.substring(0, startTag.tagIndex);
-      betweenTagsCode = "";
-      doenetML = doenetML.substring(startTag.tagIndex + startTag.tagString.length, doenetML.length);
+    let message;
+    if (newCids.length === 1) {
+      message = `Could not retrieve cid ${newCids[0]}`
     } else {
-      //find the matching end tag
-      let numStarts = 1;
-      let numEnds = 0;
-      let nextTag = JSON.parse(JSON.stringify(startTag));
-      let searchForNextTagBeginingAtIndex = 0;
-      let afterStartCode = "";
-
-      while (numStarts > numEnds) {
-        // console.log(numStarts+" --- "+numEnds);
-        searchForNextTagBeginingAtIndex = Number(searchForNextTagBeginingAtIndex) + Number(nextTag.tagString.length) + Number(nextTag.tagIndex);
-        afterStartCode = doenetML.substring(searchForNextTagBeginingAtIndex, doenetML.length);
-        nextTag = findNextTag(afterStartCode);
-        if (nextTag === false) {
-          throw Error("No matching </" + startTag.tagType + "> end tag")
-        }
-        if (nextTag.tagType === startTag.tagType) { numStarts++; }
-        if (nextTag.tagType === "/" + startTag.tagType) { numEnds++; }
-      }
-
-      stringBeforeCode = doenetML.substring(0, startTag.tagIndex);
-      let startBetweenIndex = Number(startTag.tagIndex) + Number(startTag.tagString.length);
-      let endBetweenIndex = Number(searchForNextTagBeginingAtIndex) + Number(nextTag.tagIndex);
-      betweenTagsCode = doenetML.substring(startBetweenIndex, endBetweenIndex);
-      doenetML = doenetML.substring(Number(endBetweenIndex) + Number(nextTag.tagString.length), doenetML.length);
+      message = `Could not retrieve cids ${newCids.join(',')}`
     }
 
-    if (/\S/.test(stringBeforeCode)) {
-      // have non-blank string before code
-      json.push(stringBeforeCode);
+    message += ": " + err.message;
 
-    } else if (stringBeforeCode.length > 0) {
-      json.push(stringBeforeCode);
-    }
+    console.error(message)
 
+    return Promise.reject(new Error(message));
 
-    let children = [];
+  })
 
-    if (betweenTagsCode.length > 0) {
-      children = doenetMLToSerializedComponents(betweenTagsCode, false);
-    }
-
-    json.push({ componentType: startTag.tagType, children: children, props: startTag.tagProps });
-
-    if (!/\S/.test(doenetML)) {
-      if (doenetML.length > 0) {
-        json.push(doenetML);
-      }
-
-      if (init) {
-        // if this is the initial call, strip off any blank strings
-        // at beginning or end
-        let firstNonblankInd, lastNonblankInd;
-        for (let [ind, component] of json.entries()) {
-          if (typeof component !== "string" || component.trim() !== "") {
-            if (firstNonblankInd === undefined) {
-              firstNonblankInd = ind;
-            }
-            lastNonblankInd = ind;
-          }
-        }
-        json = json.slice(firstNonblankInd, lastNonblankInd + 1);
-      }
-
-
-      return json;
-    }
-
-  }
-
-  return json;
 }
 
 export function removeBlankStringChildren(serializedComponents, componentInfoObjects) {
@@ -376,9 +198,9 @@ export function removeBlankStringChildren(serializedComponents, componentInfoObj
 
 }
 
-export function findContentCopies({ serializedComponents }) {
+function findContentCopies({ serializedComponents }) {
 
-  let contentIdComponents = {};
+  let cidComponents = {};
   for (let serializedComponent of serializedComponents) {
     if (serializedComponent.componentType === "copy") {
       if (serializedComponent.attributes && serializedComponent.attributes.uri) {
@@ -386,13 +208,13 @@ export function findContentCopies({ serializedComponents }) {
 
         if (uri && uri.substring(0, 7).toLowerCase() === "doenet:") {
 
-          let result = uri.match(/[:&]contentid=([^&]+)/i);
+          let result = uri.match(/[:&]cid=([^&]+)/i);
           if (result) {
-            let contentId = result[1];
-            if (contentIdComponents[contentId] === undefined) {
-              contentIdComponents[contentId] = [];
+            let cid = result[1];
+            if (cidComponents[cid] === undefined) {
+              cidComponents[cid] = [];
             }
-            contentIdComponents[contentId].push(serializedComponent);
+            cidComponents[cid].push(serializedComponent);
           }
 
         }
@@ -401,17 +223,17 @@ export function findContentCopies({ serializedComponents }) {
       if (serializedComponent.children !== undefined) {
         let results = findContentCopies({ serializedComponents: serializedComponent.children })
 
-        // append results on to contentIdComponents
-        for (let contentId in results.contentIdComponents) {
-          if (contentIdComponents[contentId] === undefined) {
-            contentIdComponents[contentId] = [];
+        // append results on to cidComponents
+        for (let cid in results.cidComponents) {
+          if (cidComponents[cid] === undefined) {
+            cidComponents[cid] = [];
           }
-          contentIdComponents[contentId].push(...results.contentIdComponents[contentId]);
+          cidComponents[cid].push(...results.cidComponents[cid]);
         }
       }
     }
   }
-  return { contentIdComponents };
+  return { cidComponents };
 }
 
 export function addDocumentIfItsMissing(serializedComponents) {
@@ -429,7 +251,8 @@ function substituteDeprecations(serializedComponents) {
     tname: "target",
     triggerwithtnames: "triggerWithTargets",
     updatewithtname: "updateWithTarget",
-    paginatortname: "paginator"
+    paginatortname: "paginator",
+    randomizeorder: "shuffleOrder"
   }
 
   for (let component of serializedComponents) {
@@ -470,8 +293,22 @@ function substituteDeprecations(serializedComponents) {
 
 }
 
-export function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {
+function cleanIfHaveJustDocument(serializedComponents) {
+  let componentsWithoutBlankStrings = serializedComponents.filter(
+    x => typeof x !== "string" || x.trim() !== ""
+  )
 
+  if (componentsWithoutBlankStrings.length === 1 && componentsWithoutBlankStrings[0].componentType === 'document') {
+    return componentsWithoutBlankStrings;
+  } else {
+    return serializedComponents
+  }
+}
+
+function correctComponentTypeCapitalization(serializedComponents, componentTypeLowerCaseMapping) {
+
+  //special case for macros before application
+  // componentTypeLowerCaseMapping["macro"] = "macro";
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
@@ -482,7 +319,7 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
     if (componentTypeFixed) {
       component.componentType = componentTypeFixed;
     } else {
-      throw Error(`Invalid component type: ${component.componentType}`);
+      throw Error(`Invalid component type${indexRangeString(component)}: ${component.componentType}`);
     }
 
     if (component.children) {
@@ -493,15 +330,107 @@ export function correctComponentTypeCapitalization(serializedComponents, compone
 
 }
 
+function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, isCompositeComponent) {
+  for (let component of serializedComponents) {
+    if (component.props) {
+      let foundCopyTarget = false;
+      let foundCopyFromURI = false;
+      let foundAssignNames = false;
+      let originalType = component.componentType;
+      let haveComposite = isCompositeComponent({
+        componentType: originalType,
+        includeNonStandard: false
+      });
+      let haveAnyComposite = isCompositeComponent({
+        componentType: originalType,
+        includeNonStandard: true
+      });
+      for (let prop of Object.keys(component.props)) {
+        let lowerCaseProp = prop.toLowerCase();
+        if (lowerCaseProp === "copytarget") {
+          if (foundCopyTarget) {
+            throw Error(`Cannot repeat attribute ${prop}.  Found in component type ${originalType}${indexRangeString(component)}`)
+          } else if (foundCopyFromURI) {
+            throw Error(`Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(component)}`)
+          } else if (foundAssignNames) {
+            if(haveAnyComposite) {
+              throw Error(`A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(component)}.`)
+            } else {
+              throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+            }
+          }
+          foundCopyTarget = true;
+          if (!component.doenetAttributes) {
+            component.doenetAttributes = {};
+          }
+          if (!haveComposite) {
+            component.props.createComponentOfType = originalType;
+            component.doenetAttributes.nameBecomesAssignNames = true;
+          }
+          component.componentType = "copy";
+          component.props.target = component.props[prop];
+          if (typeof component.props.target !== "string") {
+            throw Error(`Must specify value for copyTarget.  Found in component of type ${originalType}${indexRangeString(component)}`)
+          }
+          delete component.props[prop];
 
-export function createAttributesFromProps(serializedComponents, componentInfoObjects, flags) {
+          component.doenetAttributes.fromCopyTarget = true;
+          component.doenetAttributes.createNameFromComponentType = originalType;
+        } else if (lowerCaseProp === "copyfromuri") {
+          if (foundCopyFromURI) {
+            throw Error(`Cannot repeat attribute ${prop}.  Found in component type ${originalType}${indexRangeString(component)}`)
+          } else if (foundCopyTarget) {
+            throw Error(`Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(component)}`)
+          } else if (foundAssignNames) {
+            if(haveAnyComposite) {
+              throw Error(`A component of type ${originalType} cannot have both assignNames and copyFromURI.  Found${indexRangeString(component)}.`)
+            } else {
+              throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+            }
+          }
+          foundCopyFromURI = true;
+          if (!component.doenetAttributes) {
+            component.doenetAttributes = {};
+          }
+          if (!haveComposite) {
+            component.props.createComponentOfType = originalType;
+            component.doenetAttributes.nameBecomesAssignNames = true;
+          }
+          component.componentType = "copy";
+          component.props.uri = component.props[prop];
+          if (typeof component.props.uri !== "string") {
+            throw Error(`Must specify value for copyFromURI.  Found in component of type ${originalType}${indexRangeString(component)}`)
+          }
+          delete component.props[prop];
+          component.doenetAttributes.fromCopyFromURI = true;
+          component.doenetAttributes.createNameFromComponentType = originalType;
+        } else if (lowerCaseProp === "assignnames" && !haveComposite) {
+          if (foundCopyTarget || foundCopyFromURI) {
+            if(haveAnyComposite) {
+              throw Error(`A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(component)}.`)
+            } else {
+              throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
+            }
+          }
+          foundAssignNames = true;
+        }
+      }
+    }
+
+    if (component.children) {
+      copyTargetOrFromURIAttributeCreatesCopyComponent(component.children, isCompositeComponent);
+    }
+  }
+}
+
+function createAttributesFromProps(serializedComponents, componentInfoObjects) {
   for (let component of serializedComponents) {
     if (typeof component !== "object") {
       continue;
     }
 
     let componentClass = componentInfoObjects.allComponentClasses[component.componentType];
-    let classAttributes = componentClass.createAttributesObject({ flags });
+    let classAttributes = componentClass.createAttributesObject();
 
     let attributeLowerCaseMapping = {};
 
@@ -522,7 +451,7 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
         if (attrObj) {
 
           if (propName in attributes) {
-            throw Error(`Cannot repeat prop ${propName}`)
+            throw Error(`Cannot repeat attribute ${propName}.  Found in component type ${component.componentType}${indexRangeString(component)}`)
           }
 
           attributes[propName] = componentFromAttribute({
@@ -530,7 +459,6 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
             value: component.props[prop],
             originalComponentProps,
             componentInfoObjects,
-            flags
           });
           delete component.props[prop];
         } else if (!["name", "assignnames", "target"].includes(prop.toLowerCase())) {
@@ -540,10 +468,9 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
               value: component.props[prop],
               originalComponentProps,
               componentInfoObjects,
-              flags
             });
           } else {
-            throw Error(`Invalid attribute for component of type ${component.componentType}: ${prop}`);
+            throw Error(`Invalid attribute ${prop} for component of type ${component.componentType}${indexRangeString(component)}`)
           }
 
         }
@@ -563,7 +490,6 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
           originalComponentProps,
           value: attrObj.defaultPrimitiveValue.toString(),
           componentInfoObjects,
-          flags
         });
       }
     }
@@ -572,20 +498,23 @@ export function createAttributesFromProps(serializedComponents, componentInfoObj
 
     //recurse on children
     if (component.children !== undefined) {
-      createAttributesFromProps(component.children, componentInfoObjects, flags);
+      createAttributesFromProps(component.children, componentInfoObjects);
     }
   }
 }
 
 export function componentFromAttribute({ attrObj, value, originalComponentProps,
-  componentInfoObjects, flags
+  componentInfoObjects
 }) {
   if (typeof value !== "object") {
     // typically this would mean value is a string.
     // However, if had an attribute with no value, would get true.
-    // Also, when get stateVariablesPrescribingAdditionalAttributes,
+    // Also, when get addAttributeComponentsShadowingStateVariables,
     // it is possible their values are not strings
     value = { rawString: value.toString() }
+  } else if (value === null) {
+    // could get null from addAttributeComponentsShadowingStateVariables
+    value = { rawString: "" }
   }
 
   if (attrObj && attrObj.createComponentOfType) {
@@ -621,6 +550,9 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
         componentType: attrObj.createComponentOfType,
         children
       };
+
+      removeBlankStringChildren([newComponent], componentInfoObjects)
+
     }
 
     if (attrObj.attributesForCreatedComponent || attrObj.copyComponentAttributesForCreatedComponent) {
@@ -639,7 +571,7 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
 
       }
 
-      createAttributesFromProps([newComponent], componentInfoObjects, flags)
+      createAttributesFromProps([newComponent], componentInfoObjects)
     }
 
     return { component: newComponent };
@@ -652,6 +584,10 @@ export function componentFromAttribute({ attrObj, value, originalComponentProps,
       newPrimitive = Number(value.rawString);
     } else if (attrObj.createPrimitiveOfType === "integer") {
       newPrimitive = Math.round(Number(value.rawString));
+    } else if (attrObj.createPrimitiveOfType === "stringArray") {
+      newPrimitive = value.rawString.trim().split(/\s+/);
+    } else if (attrObj.createPrimitiveOfType === "numberArray") {
+      newPrimitive = value.rawString.split(/\s+/).map(Number);
     } else {
       // else assume string
       newPrimitive = value.rawString;
@@ -692,12 +628,11 @@ function findPreSugarIndsAndMarkFromSugar(components) {
   return preSugarIndsFound;
 }
 
-
-export function applyMacros(serializedComponents, componentInfoObjects, flags) {
+export function applyMacros(serializedComponents, componentInfoObjects) {
 
   for (let component of serializedComponents) {
     if (component.children) {
-      component.children = applyMacros(component.children, componentInfoObjects, flags);
+      applyMacros(component.children, componentInfoObjects);
     }
     if (component.attributes) {
       for (let attrName in component.attributes) {
@@ -705,22 +640,20 @@ export function applyMacros(serializedComponents, componentInfoObjects, flags) {
         if (attribute.component) {
           let comp = attribute.component;
           if (comp.children) {
-            comp.children = applyMacros(comp.children, componentInfoObjects, flags);
+            applyMacros(comp.children, componentInfoObjects);
           }
         } else if (attribute.childrenForComponent) {
-          attribute.childrenForComponent = applyMacros(attribute.childrenForComponent, componentInfoObjects, flags);
+          applyMacros(attribute.childrenForComponent, componentInfoObjects);
         }
       }
     }
   }
 
-  serializedComponents = substituteMacros(serializedComponents, componentInfoObjects, flags);
-
-  return serializedComponents;
+  substituteMacros(serializedComponents, componentInfoObjects);
 
 }
 
-function substituteMacros(serializedComponents, componentInfoObjects, flags) {
+function substituteMacros(serializedComponents, componentInfoObjects) {
 
   for (let componentInd = 0; componentInd < serializedComponents.length; componentInd++) {
     let component = serializedComponents[componentInd];
@@ -746,12 +679,30 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
         if (result.additionalAttributes) {
           let newDoenetML = `<copy target="${result.targetName}" ${result.additionalAttributes} />`;
 
-          let newComponents = doenetMLToSerializedComponents(newDoenetML);
-          createAttributesFromProps(newComponents, componentInfoObjects, flags);
+          let newComponents;
+
+          try {
+            newComponents = parseAndCompile(newDoenetML);
+          } catch (e) {
+            let strWithError = str.slice(firstIndMatched, firstIndMatched + matchLength);
+            let startInd = firstIndMatched;
+            if (componentInd > 0 && serializedComponents[componentInd - 1].range) {
+              let previousRange = serializedComponents[componentInd - 1].range;
+              if (previousRange.closeEnd) {
+                startInd += previousRange.closeEnd;
+              } else if (previousRange.selfCloseEnd) {
+                startInd += previousRange.selfCloseBegin;
+              }
+            }
+
+            throw Error(`Error in macro at indices ${startInd}-${startInd + matchLength}.  Found: ${strWithError}`)
+          }
+
+          createAttributesFromProps(newComponents, componentInfoObjects);
           markCreatedFromMacro(newComponents);
 
           // recurse in case there were more macros in the additionalAttributes
-          newComponents = applyMacros(newComponents, componentInfoObjects)
+          applyMacros(newComponents, componentInfoObjects)
 
           componentsFromMacro = newComponents;
 
@@ -848,14 +799,14 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
 
         if (firstIndMatched > 0) {
           // increment componentInd because we now have to skip
-          // over two components 
-          // (the component made from the beginning of the string 
+          // over two components
+          // (the component made from the beginning of the string
           // as well as the component made from the macro)
           componentInd++;
         }
 
         // break out of loop processing string,
-        // as finished current one 
+        // as finished current one
         // (possibly breaking it into pieces, so will address remainder as other component)
 
         break;
@@ -863,52 +814,10 @@ function substituteMacros(serializedComponents, componentInfoObjects, flags) {
       }
     }
 
-    if (component.componentType === "award" && component.children) {
-      let targetsAreResponses = component.attributes.targetsAreResponses;
-      if (targetsAreResponses) {
-        let targetNames = targetsAreResponses.primitive.split(/\s+/).filter(s => s);
-        for (let target of targetNames) {
-          addResponsesToDescendantsWithTarget(component.children, target);
-        }
-
-      }
-
-    }
-
-  }
-
-  return serializedComponents;
-
-}
-
-function addResponsesToDescendantsWithTarget(components, target) {
-
-  for (let component of components) {
-    let propsOrDAttrs = component.props;
-    if (!propsOrDAttrs) {
-      propsOrDAttrs = component.doenetAttributes;
-    }
-    if (propsOrDAttrs) {
-      for (let prop in propsOrDAttrs) {
-        if (prop.toLowerCase() === "target" && propsOrDAttrs[prop] === target) {
-          if (!component.attributes) {
-            component.attributes = {};
-          }
-          let foundIsResponse = Object.keys(component.attributes).map(x => x.toLowerCase()).includes("isresponse");
-          if (!foundIsResponse) {
-            component.attributes.isResponse = true;
-          }
-        }
-      }
-
-    }
-
-    if (component.children) {
-      addResponsesToDescendantsWithTarget(component.children, target)
-    }
   }
 
 }
+
 
 function findFirstFullMacroInString(str) {
 
@@ -1097,9 +1006,9 @@ function createEvaluateIfFindMatchedClosingParens({
   let breakResults = breakEmbeddedStringByCommas({ childrenList: remainingComponents });
 
   // recurse on pieces
-  let pieces = breakResults.pieces.map(x => applyMacros(x, componentInfoObjects));
+  breakResults.pieces.forEach(x => applyMacros(x, componentInfoObjects));
 
-  let inputArray = pieces.map(x => {
+  let inputArray = breakResults.pieces.map(x => {
     if (x.length === 1 && typeof x[0] !== "string") {
       return x[0]
     } else {
@@ -1182,7 +1091,7 @@ function findFirstUnmatchedClosingParens(components) {
   return { success: false }
 }
 
-export function decodeXMLEntities(serializedComponents) {
+function decodeXMLEntities(serializedComponents) {
 
   function replaceEntities(s) {
     return s
@@ -1255,8 +1164,6 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
       }
     }
 
-    componentAttributes = new Proxy(componentAttributes, readOnlyProxyHandler);
-
     if (component.children) {
 
       let newParentParametersFromSugar = {};
@@ -1265,9 +1172,9 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
 
         for (let [sugarInd, sugarInstruction] of componentClass.returnSugarInstructions().entries()) {
 
-          if (component.children.length === 0) {
-            break;
-          }
+          // if (component.children.length === 0) {
+          //   break;
+          // }
 
           let childTypes = component.children
             .map(x => typeof x === "string" ? "s" : "n")
@@ -1408,13 +1315,12 @@ export function applySugar({ serializedComponents, parentParametersFromSugar = {
   }
 }
 
-
-// function lowercaseDeep(arr1) {
-//   return arr1.map(val => Array.isArray(val) ? lowercaseDeep(val) : val.toLowerCase());
-// }
-
-
 function breakStringInPiecesBySpacesOrParens(string) {
+
+  if (typeof string !== "string") {
+    return { success: false }
+  }
+
   let Nparens = 0;
   let pieces = [];
 
@@ -1491,6 +1397,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
   doenetAttributesByTargetComponentName,
   indOffset = 0,
   createNameContext = "",
+  initWithoutShadowingComposite = false,
 }) {
 
   if (namespaceStack.length === 0) {
@@ -1521,6 +1428,9 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       attributes = serializedComponent.attributes = {};
     }
 
+    if (doenetAttributes.createNameFromComponentType) {
+      componentType = doenetAttributes.createNameFromComponentType;
+    }
 
     let prescribedName = doenetAttributes.prescribedName;
     let assignNames = doenetAttributes.assignNames;
@@ -1538,7 +1448,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
 
     let newNamespace;
-    if (attributes.newNamespace && attributes.newNamespace.primitive ||
+    if (attributes.newNamespace?.primitive ||
       (useOriginalNames && serializedComponent.originalAttributes
         && serializedComponent.originalAttributes.newNamespace)
     ) {
@@ -1560,7 +1470,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             prescribedName = props[key];
             delete props[key];
           } else {
-            throw Error("Cannot define name twice for a component");
+            throw Error(`Cannot define name twice.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
           }
         } else if (lowercaseKey === "assignnames") {
           if (assignNames === undefined) {
@@ -1568,18 +1478,21 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
             if (result.success) {
               assignNames = result.pieces;
             } else {
-              throw Error("Invalid format for assignnames");
+              throw Error(`Invalid format for assignnames.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
             }
             delete props[key];
           } else {
-            throw Error("Cannot define assignNames twice for a component");
+            throw Error(`Cannot define assignNames twice for a component.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
           }
         } else if (lowercaseKey === "target") {
           if (target === undefined) {
+            if (typeof props[key] !== "string") {
+              throw Error(`Must specify value for target.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
+            }
             target = props[key].trim();
             delete props[key];
           } else {
-            throw Error("Cannot define target twice for a component");
+            throw Error(`Cannot define target twice for a component.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
           }
         }
       }
@@ -1591,10 +1504,10 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (!prescribedNameFromDoenetAttributes && !doenetAttributes.createdFromSugar) {
 
         if (!(/[a-zA-Z]/.test(prescribedName.substring(0, 1)))) {
-          throw Error(`Invalid component name: ${prescribedName}.  Component name must begin with a letter`);
+          throw Error(`Invalid component name: ${prescribedName}.  Component name must begin with a letter.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
         }
         if (!(/^[a-zA-Z0-9_\-]+$/.test(prescribedName))) {
-          throw Error(`Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores`);
+          throw Error(`Invalid component name: ${prescribedName}.  Component name can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
         }
       }
 
@@ -1625,7 +1538,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
       let assignNamesToReplacements = componentClass.assignNamesToReplacements;
       if (!assignNamesToReplacements) {
-        throw Error("Cannot assign names for component type " + serializedComponent.componentType);
+        throw Error(`Cannot assign names for component type ${componentType}${indexRangeString(serializedComponent)}`);
       }
 
       // assignNames was specified
@@ -1633,18 +1546,20 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       doenetAttributes.assignNames = assignNames;
 
       if (!doenetAttributes.createUniqueAssignNames) {
-        let flattedNames = flattenDeep(assignNames);
-        for (let name of flattedNames) {
-          if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
-            throw Error("All assigned names must begin with a letter");
-          }
-          if (!(/^[a-zA-Z0-9_\-]+$/.test(name))) {
-            throw Error("Assigned names can contain only letters, numbers, hyphens, and underscores");
+        let flattenedNames = flattenDeep(assignNames);
+        if (!doenetAttributes.fromCopyTarget && !doenetAttributes.fromCopyFromURI) {
+          for (let name of flattenedNames) {
+            if (!(/[a-zA-Z]/.test(name.substring(0, 1)))) {
+              throw Error(`All assigned names must begin with a letter.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`);
+            }
+            if (!(/^[a-zA-Z0-9_\-]+$/.test(name))) {
+              throw Error(`Assigned names can contain only letters, numbers, hyphens, and underscores.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`);
+            }
           }
         }
         // check if unique names
-        if (flattedNames.length !== new Set(flattedNames).size) {
-          throw Error("Duplicate assigned names");
+        if (flattenedNames.length !== new Set(flattenedNames).size) {
+          throw Error(`Duplicate assigned names.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`);
         }
       }
     }
@@ -1689,12 +1604,40 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       }
     }
 
+    if (doenetAttributes.nameBecomesAssignNames) {
+      if (newNamespace) {
+        // delete newNamespace from target but make it assignNewNamespaces
+        attributes.assignNewNamespaces = { primitive: true };
+        delete attributes.newNamespace;
+        newNamespace = false;
+      }
+      assignNames = doenetAttributes.assignNames = [prescribedName];
+
+      // delete nameBecomesAssignNames so that copies
+      // or further applications of createComponentNames
+      // do not repeat this process and make assignNames be the randomly generated name
+      delete doenetAttributes.nameBecomesAssignNames;
+
+      // create unique name for copy
+      let longNameId = parentName + "|createUniqueName|";
+      doenetAttributes.createUniqueName = true;
+      delete doenetAttributes.prescribedName;
+
+      if (serializedComponent.downstreamDependencies) {
+        longNameId += JSON.stringify(serializedComponent.downstreamDependencies);
+      } else {
+        longNameId += componentInd + "|" + indOffset + "|" + createNameContext;
+      }
+
+      prescribedName = createUniqueName("copy", longNameId);
+    }
+
     componentName += prescribedName;
 
     serializedComponent.componentName = componentName;
     if (prescribedName) {
       if (prescribedName in currentNamespace.namesUsed) {
-        throw Error("Duplicate component name " + componentName)
+        throw Error(`Duplicate component name ${componentName}.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
       }
       currentNamespace.namesUsed[prescribedName] = true;
     }
@@ -1705,7 +1648,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
       if (assignNames) {
         for (let name of flattenDeep(assignNames)) {
           if (name in currentNamespace.namesUsed) {
-            throw Error(`Duplicate component name (from assignNames of ${componentName}): ${name}`)
+            throw Error(`Duplicate component name ${name} (from assignNames of ${componentName}).  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
           }
           currentNamespace.namesUsed[name] = true;
         }
@@ -1750,11 +1693,11 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
     if (target) {
       if (!componentClass.acceptTarget) {
-        throw Error(`Component type ${componentType} does not accept a target attribute`);
+        throw Error(`Component type ${componentType} does not accept a target attribute.   Found in component ${componentName}${indexRangeString(serializedComponent)}`);
       }
 
       if (target.includes('|')) {
-        throw Error('target cannot include |')
+        throw Error(`target cannot include |.  Found in component of type ${componentType}${indexRangeString(serializedComponent)}`)
       }
 
       // convert target to full name
@@ -1775,7 +1718,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
       // recurse on child, creating new namespace if specified
 
-      if (!newNamespace) {
+      if (!(newNamespace || attributes.assignNewNamespaces?.primitive)) {
         createComponentNames({
           serializedComponents: serializedComponent.children,
           namespaceStack,
@@ -1796,18 +1739,71 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
           flattenDeep(assignNames).forEach(x => namesUsed[x] = true);
         }
 
+
         let newNamespaceInfo = { namespace: prescribedName, componentCounts: {}, namesUsed };
-        namespaceStack.push(newNamespaceInfo);
-        createComponentNames({
-          serializedComponents: serializedComponent.children,
-          namespaceStack,
-          componentInfoObjects,
-          parentDoenetAttributes: doenetAttributes,
-          parentName: componentName,
-          useOriginalNames,
-          doenetAttributesByTargetComponentName,
-        });
-        namespaceStack.pop();
+
+        if (doenetAttributes.haveNewNamespaceOnlyFromShadow) {
+
+          // if the parent component only has newNamespace from the fact that it is a shadow,
+          // as opposed to explicitly getting it from assignNewNamespaces,
+          // then, if a child is marked to ignore parent's newNamespace, it ignores it
+          // Note: ignoreParentNewNamespace is only added when have fromCopyTarget
+
+          let addingNewNamespace = true;
+          let remainingChildren = [...serializedComponent.children];
+
+          while (remainingChildren.length > 0) {
+            let nextChildren = [];
+
+            for (let child of remainingChildren) {
+              if (Boolean(child.doenetAttributes?.ignoreParentNewNamespace) === addingNewNamespace) {
+                break;
+              }
+              nextChildren.push(child);
+            }
+
+            remainingChildren.splice(0, nextChildren.length);
+
+            if (addingNewNamespace) {
+              namespaceStack.push(newNamespaceInfo);
+            } else if(initWithoutShadowingComposite) {
+              // if this is the first time through and we aren't shadowing a composite
+              // it is possible that ignoring the namespace will lead to name conflicts,
+              // so give the child a unique name
+              nextChildren.forEach(child => child.doenetAttributes.createUniqueName = true)
+            }
+
+            createComponentNames({
+              serializedComponents: nextChildren,
+              namespaceStack,
+              componentInfoObjects,
+              parentDoenetAttributes: doenetAttributes,
+              parentName: componentName,
+              useOriginalNames,
+              doenetAttributesByTargetComponentName,
+            });
+
+            if (addingNewNamespace) {
+              namespaceStack.pop();
+            }
+
+            addingNewNamespace = !addingNewNamespace;
+          }
+        } else {
+          namespaceStack.push(newNamespaceInfo);
+          createComponentNames({
+            serializedComponents: serializedComponent.children,
+            namespaceStack,
+            componentInfoObjects,
+            parentDoenetAttributes: doenetAttributes,
+            parentName: componentName,
+            useOriginalNames,
+            doenetAttributesByTargetComponentName,
+          });
+          namespaceStack.pop();
+        }
+
+
       }
     }
 
@@ -1867,7 +1863,6 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
   return serializedComponents;
 
 }
-
 
 function createNewAssignNamesAndRenameMatchingTNames({
   originalAssignNames, longNameIdBase,
@@ -1990,12 +1985,23 @@ export function serializedComponentsReviver(key, value) {
 
 export function gatherVariantComponents({ serializedComponents, componentInfoObjects }) {
 
-  // a list of lists of variantComponents
-  // where each component is a list of variantComponents 
-  // of corresponding serializedComponent
+  // returns a list of serialized components who are variant components,
+  // where the components are selected from serializedComponents themselves,
+  // or, if a particular component isn't a variant component, 
+  // then recurse to find descendant variant components
+
+  // Also, as a side effect, mark each found variant component as a variant component
+  // directly in the variants attribute of that component
+
   let variantComponents = [];
 
   for (let serializedComponent of serializedComponents) {
+
+    if (serializedComponent.variants?.isVariantComponent) {
+      variantComponents.push(serializedComponent);
+      continue;
+    }
+
     let componentType = serializedComponent.componentType;
 
     if (componentType in componentInfoObjects.componentTypesCreatingVariants) {
@@ -2020,26 +2026,8 @@ export function gatherVariantComponents({ serializedComponents, componentInfoObj
       variantComponents.push(serializedComponent);
       continue;
     }
-    // if class has have setUpVariantUnlessAttributePrimitive
-    // component doesn't have the attribute set to true
-    // is a variant component
-    if (componentInfoObjects.allComponentClasses[serializedComponent.componentType]
-      .setUpVariantUnlessAttributePrimitive) {
-      let attribute = componentInfoObjects.allComponentClasses[serializedComponent.componentType]
-        .setUpVariantUnlessAttributePrimitive;
 
-      if (!(serializedComponent.attributes && serializedComponent.attributes[attribute]
-        && serializedComponent.attributes[attribute].primitive)) {
-        serializedComponent.variants = {
-          isVariantComponent: true
-        }
-        variantComponents.push(serializedComponent);
-        continue;
-      }
-
-    }
-
-    // recurse on children
+    // if a component isn't a variant component, then recurse on children
 
     let descendantVariantComponents = gatherVariantComponents({
       serializedComponents: serializedComponent.children,
@@ -2054,110 +2042,172 @@ export function gatherVariantComponents({ serializedComponents, componentInfoObj
 
       variantComponents.push(...descendantVariantComponents)
 
-      // // if have a variant control child
-      // // check if it specifies remove duplicates
-      // // if so, then attempt determine number of variants available
-      // if (variantControlChild !== undefined) {
-      //   let uniqueVariants = false;
-      //   if (variantControlChild.state !== undefined &&
-      //     variantControlChild.state.uniqueVariants !== undefined) {
-      //     uniqueVariants = variantControlChild.state.uniqueVariants;
-      //   }
-      //   if (variantControlChild.attributes &&
-      //     variantControlChild.attributes.uniqueVariants !== undefined
-      //   ) {
-      //     let uniqueVariantsComp = variantControlChild.attributes.uniqueVariants;
-
-      //     if (uniqueVariantsComp.state !== undefined) {
-      //       if (uniqueVariantsComp.state.value !== undefined) {
-      //         uniqueVariants = uniqueVariantsComp.state.value;
-      //       }
-      //     }
-      //     if (uniqueVariantsComp.children !== undefined) {
-      //       for (let grandchild of uniqueVariantsComp.children) {
-      //         if (grandchild.componentType === "string") {
-      //           uniqueVariants = grandchild.state.value;
-      //           break;
-      //         }
-      //       }
-      //     }
-      //   }
-      //   if (typeof uniqueVariants === "string") {
-      //     if (uniqueVariants.trim().toLowerCase() === "true") {
-      //       uniqueVariants = true;
-      //     } else {
-      //       uniqueVariants = false;
-      //     }
-      //   }
-
-      //   if (uniqueVariants) {
-      //     serializedComponent.variants.uniqueVariants = true;
-      //     determineNumVariants({ serializedComponent, allComponentClasses });
-      //   }
-      // }
     }
   }
 
   return variantComponents;
 }
 
-export function determineNumVariants({ serializedComponent, allComponentClasses }) {
-  let childVariantProduct = 1;
-  if (serializedComponent.children !== undefined) {
-    for (let child of serializedComponent.children) {
-      if (child.variants !== undefined) {
-        if (child.variants.isVariantComponent ||
-          child.variants.descendantVariantComponents !== undefined) {
-          let result = determineNumVariants({ serializedComponent: child, allComponentClasses });
-          if (!result.success) {
-            return { success: false }
-          }
-          childVariantProduct *= result.numberOfVariants;
-        }
-      }
-    }
-  }
-  let numberOfVariants;
+export function getNumberOfVariants({ serializedComponent, componentInfoObjects }) {
 
-  if (serializedComponent.variants === undefined) {
+  // get number of variants from document (or other sectioning component)
+
+  if (!serializedComponent.variants) {
     serializedComponent.variants = {};
   }
 
-  let compClass = allComponentClasses[serializedComponent.componentType];
-  if (compClass.determineNumberOfUniqueVariants !== undefined) {
+  let variantControlChild
+  for (let child of serializedComponent.children) {
+    if (child.componentType === "variantControl") {
+      variantControlChild = child;
+      break;
+    }
+  }
 
-    let result = compClass.determineNumberOfUniqueVariants({
-      serializedComponent: serializedComponent,
-    })
-    if (!result.success) {
+  if (!variantControlChild) {
+
+    if (serializedComponent.componentType === "document") {
+      // if have a single child that is a section, use variants from that section
+
+      let nonBlankChildren = serializedComponent.children.filter(x => x.componentType || x.trim() !== "");
+
+      if (nonBlankChildren.length === 1 && componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: nonBlankChildren[0].componentType,
+        baseComponentType: "_sectioningComponent"
+      })) {
+
+        let results = getNumberOfVariants({
+          serializedComponent: nonBlankChildren[0],
+          componentInfoObjects
+        });
+
+
+        if (results.success) {
+          serializedComponent.variants.numberOfVariants = results.numberOfVariants;
+          serializedComponent.variants.variantNames = results.variantNames;
+          serializedComponent.variants.variantsFromChild = true;
+          serializedComponent.variants.numberOfVariantsPreIgnore = results.numberOfVariantsPreIgnore;
+          serializedComponent.variants.indicesToIgnore = results.indicesToIgnore;
+
+          return results;
+
+        }
+
+      }
+
+      // either didn't have a single section child or get number of varants wan't successful
+
+      let numberOfVariants = 100;
+      let numberOfVariantsPreIgnore = 100;
+
+      // check if have one unique variant
+      let compClass = componentInfoObjects.allComponentClasses[serializedComponent.componentType];
+      let result = compClass.determineNumberOfUniqueVariants({
+        serializedComponent, componentInfoObjects
+      })
+
+      // if have 100 or fewer unique variants, set to unique
+      if (result.success && result.numberOfVariantsPreIgnore <= 100) {
+        numberOfVariantsPreIgnore = result.numberOfVariantsPreIgnore;
+        numberOfVariants = result.numberOfVariants;
+        serializedComponent.variants.uniqueVariants = true;
+      }
+
+      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
+      serializedComponent.variants.numberOfVariants = numberOfVariants;
+      serializedComponent.variants.indicesToIgnore = [];
+
+      return {
+        success: true,
+        numberOfVariants,
+        numberOfVariantsPreIgnore,
+        indicesToIgnore: []
+      };
+
+    } else {
+      // if are a section without a variant control, it doesn't determine variants
       return { success: false }
     }
-    numberOfVariants = result.numberOfVariants;
-    serializedComponent.variants.uniqueVariantData = result.uniqueVariantData;
-  }
-  if (numberOfVariants === undefined) {
-    numberOfVariants = childVariantProduct;
-    // serializedComponent.variants.uniqueVariantData = {
-    //   numberOfVariantsByChild: numberOfVariantsByChild,
-    // }
+
   }
 
-  serializedComponent.variants.numberOfVariants = numberOfVariants;
-  // console.log("For " + serializedComponent.componentType +
-  //   " numberOfVariants is " + numberOfVariants)
-  return { success: true, numberOfVariants: numberOfVariants }
+  let numberOfVariants = variantControlChild.attributes.nVariants?.primitive;
+
+  if (numberOfVariants === undefined) {
+    numberOfVariants = 100;
+  }
+
+  let variantNames = variantControlChild.attributes.variantNames?.component?.children
+    .map(x => x.toLowerCase().substring(0, 1000));
+
+  let indicesToIgnore = [];
+  if (variantControlChild.attributes.variantIndicesToIgnore) {
+    indicesToIgnore = variantControlChild.attributes.variantIndicesToIgnore.component
+      .children.map(Number)
+      .filter(x => Number.isInteger(x) && x >= 1 && x <= numberOfVariants)
+      .sort((a, b) => a - b);
+  }
+
+  let numberOfVariantsPreIgnore = numberOfVariants;
+
+  if (!variantControlChild.attributes.uniqueVariants?.primitive) {
+    if (indicesToIgnore.length > 0) {
+      serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
+      serializedComponent.variants.indicesToIgnore = indicesToIgnore;
+      numberOfVariants -= indicesToIgnore.length;
+    }
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    return {
+      success: true,
+      numberOfVariants,
+      variantNames,
+      numberOfVariantsPreIgnore,
+      indicesToIgnore,
+    }
+  }
+
+  // have unique variants so it is more complicated!
+
+  let compClass = componentInfoObjects.allComponentClasses[serializedComponent.componentType];
+
+  let result = compClass.determineNumberOfUniqueVariants({
+    serializedComponent, componentInfoObjects
+  })
+
+  if (result.success) {
+    numberOfVariantsPreIgnore = result.numberOfVariantsPreIgnore;
+    numberOfVariants = result.numberOfVariants;
+    serializedComponent.variants.uniqueVariants = true;
+
+    indicesToIgnore = indicesToIgnore.filter(x => x <= numberOfVariantsPreIgnore);
+
+    // don't have to add to serializedComponent.variants.numberOfVariants 
+    // as determineNumberOfUniqueVariants does it in this case
+  } else {
+    serializedComponent.variants.numberOfVariantsPreIgnore = numberOfVariantsPreIgnore;
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+  }
+
+  return {
+    success: true,
+    numberOfVariants,
+    variantNames,
+    numberOfVariantsPreIgnore,
+    indicesToIgnore,
+  };
 
 }
 
-
 export function processAssignNames({
   assignNames = [],
+  assignNewNamespaces = false,
   serializedComponents,
   parentName,
   parentCreatesNewNamespace,
   componentInfoObjects,
   indOffset = 0,
   originalNamesAreConsistent = false,
+  shadowingComposite = false,
 }) {
 
 
@@ -2274,6 +2324,13 @@ export function processAssignNames({
       }
     }
 
+    if (assignNewNamespaces) {
+      if (!component.attributes) {
+        component.attributes = {};
+      }
+      component.attributes.newNamespace = { primitive: true }
+    }
+
     if (Array.isArray(name)) {
 
       if (componentInfoObjects.allComponentClasses[
@@ -2309,7 +2366,7 @@ export function processAssignNames({
 
 
     if (!name) {
-      if (originalNamesAreConsistent && component.originalName) {
+      if (originalNamesAreConsistent && component.originalName && !component.doenetAttributes?.createUniqueName) {
         name = component.originalName.slice(originalNamespace.length + 1);
       } else {
         let longNameId = parentName + "|assignName|" + (indForNames).toString();
@@ -2337,6 +2394,7 @@ export function processAssignNames({
       parentCreatesNewNamespace, componentInfoObjects,
       doenetAttributesByTargetComponentName,
       originalNamesAreConsistent,
+      shadowingComposite,
     });
 
     processedComponents.push(component);
@@ -2356,6 +2414,7 @@ function createComponentNamesFromParentName({
   parentCreatesNewNamespace, componentInfoObjects,
   doenetAttributesByTargetComponentName,
   originalNamesAreConsistent,
+  shadowingComposite,
 }) {
 
 
@@ -2396,7 +2455,7 @@ function createComponentNamesFromParentName({
 
 
   let useOriginalNames;
-  if (component.attributes.newNamespace && component.attributes.newNamespace.primitive
+  if (component.attributes.newNamespace?.primitive
     || originalNamesAreConsistent
   ) {
     useOriginalNames = true;
@@ -2432,13 +2491,13 @@ function createComponentNamesFromParentName({
     useOriginalNames,
     doenetAttributesByTargetComponentName,
     indOffset: ind,
+    initWithoutShadowingComposite: !shadowingComposite,
   });
 
   // console.log(`result of create componentName`)
   // console.log(deepClone(component))
 
 }
-
 
 function setTargetsOutsideNamespaceToAbsoluteAndRecordAllTargetComponentNames({ namespace, components, doenetAttributesByTargetComponentName }) {
 
@@ -2481,7 +2540,6 @@ function renameMatchingTNames(component, doenetAttributesByTargetComponentName, 
 
   if (component.originalName &&
     doenetAttributesByTargetComponentName
-
     && component.componentName !== component.originalName) {
     // we have a component who has been named and there are other components
     // whose targetComponentName refers to this component
@@ -2509,7 +2567,6 @@ function renameMatchingTNames(component, doenetAttributesByTargetComponentName, 
   }
 }
 
-
 function moveComponentNamesToOriginalNames(components) {
   for (let component of components) {
     if (component.componentName) {
@@ -2532,7 +2589,7 @@ function moveComponentNamesToOriginalNames(components) {
   }
 }
 
-function markToCreateAllUniqueNames(components) {
+export function markToCreateAllUniqueNames(components) {
   for (let component of components) {
     if (typeof component !== "object") {
       continue;
@@ -2542,18 +2599,22 @@ function markToCreateAllUniqueNames(components) {
       component.doenetAttributes = {};
     }
     component.doenetAttributes.createUniqueName = true;
-    if (component.doenetAttributes.assignNames) {
-      component.doenetAttributes.createUniqueAssignNames = true;
-      component.doenetAttributes.originalAssignNames = component.doenetAttributes.assignNames;
-      delete component.doenetAttributes.assignNames;
-    } else if (component.originalDoenetAttributes && component.originalDoenetAttributes.assignNames) {
-      component.doenetAttributes.createUniqueAssignNames = true;
-      component.doenetAttributes.originalAssignNames = component.originalDoenetAttributes.assignNames;
-    }
     delete component.doenetAttributes.prescribedName;
-    if (component.children) {
-      markToCreateAllUniqueNames(component.children);
+
+    if (!component.attributes?.newNamespace?.primitive) {
+      if (component.doenetAttributes.assignNames) {
+        component.doenetAttributes.createUniqueAssignNames = true;
+        component.doenetAttributes.originalAssignNames = component.doenetAttributes.assignNames;
+        delete component.doenetAttributes.assignNames;
+      } else if (component.originalDoenetAttributes && component.originalDoenetAttributes.assignNames) {
+        component.doenetAttributes.createUniqueAssignNames = true;
+        component.doenetAttributes.originalAssignNames = component.originalDoenetAttributes.assignNames;
+      }
+      if (component.children) {
+        markToCreateAllUniqueNames(component.children);
+      }
     }
+
     if (component.attributes) {
       for (let attrName in component.attributes) {
         let attribute = component.attributes[attrName];
@@ -2593,8 +2654,7 @@ export function setTNamesToAbsolute(components) {
   }
 }
 
-
-export function restrictTNamesToNamespace({ components, namespace, parentNamespace, parentIsCopy = false }) {
+export function restrictTNamesToNamespace({ components, namespace, parentNamespace, parentIsCopy = false, invalidateReferencesToBaseNamespace = false }) {
 
   if (parentNamespace === undefined) {
     parentNamespace = namespace;
@@ -2609,9 +2669,43 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
 
       if (target[0] === "/") {
         if (target.substring(0, nSpace) !== namespace) {
-          let targetComponentName = namespace + target.substring(1);
+          // if left part of target matches the left part of the namespace, delete matched part from larget
+          // else if left part of target matches the right part of the namespace, delete matched part
+
+          let namespaceParts = namespace.split("/").slice(1);
+          let targetParts = target.split("/").slice(1);;
+          let foundAMatch = false;
+          let targetComponentName = namespace + target.slice(1);
+
+          while (namespaceParts.length > 0 && namespaceParts[0] === targetParts[0]) {
+            namespaceParts = namespaceParts.slice(1);
+            targetParts = targetParts.slice(1);
+            foundAMatch = true;
+          }
+
+          if (foundAMatch) {
+            targetComponentName = namespace + targetParts.join("/");
+          } else {
+
+            let namespaceParts = namespace.split("/").slice(1);
+            for (let ind = 1; ind < namespaceParts.length; ind++) {
+              let namespacePiece = "/" + namespaceParts.slice(ind).join("/");
+              if (target.substring(0, namespacePiece.length) === namespacePiece) {
+                targetComponentName = "/" + namespaceParts.slice(0, ind).join("/") + target;
+                break;
+              }
+            }
+
+          }
+
           component.doenetAttributes.target = targetComponentName;
           component.doenetAttributes.targetComponentName = targetComponentName;
+        } else if (invalidateReferencesToBaseNamespace) {
+          let lastSlash = target.lastIndexOf("/");
+          if (target.slice(0, lastSlash + 1) === namespace) {
+            component.doenetAttributes.target = "";
+            component.doenetAttributes.targetComponentName = "";
+          }
         }
       } else if (target.substring(0, 3) === "../") {
         let tNamePart = target;
@@ -2631,7 +2725,14 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
             break;
           }
         }
-
+        if (invalidateReferencesToBaseNamespace) {
+          let targetComponentName = component.doenetAttributes.targetComponentName;
+          let lastSlash = targetComponentName.lastIndexOf("/");
+          if (targetComponentName.slice(0, lastSlash + 1) === namespace) {
+            component.doenetAttributes.target = "";
+            component.doenetAttributes.targetComponentName = "";
+          }
+        }
 
       }
     }
@@ -2644,14 +2745,15 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
         adjustedNamespace = component.componentName + "/";
       }
       let namespaceForChildren = parentNamespace;
-      if (component.attributes && component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+      if (component.attributes && component.attributes.newNamespace?.primitive) {
         namespaceForChildren = component.componentName;
       }
       restrictTNamesToNamespace({
         components: component.children,
         namespace: adjustedNamespace,
         parentNamespace: namespaceForChildren,
-        parentIsCopy: component.componentType === "copy"
+        parentIsCopy: component.componentType === "copy",
+        invalidateReferencesToBaseNamespace
       })
     }
     if (component.attributes) {
@@ -2659,14 +2761,34 @@ export function restrictTNamesToNamespace({ components, namespace, parentNamespa
         let attribute = component.attributes[attrName];
         if (attribute.component) {
           restrictTNamesToNamespace({
-            components: [attribute.component], namespace, parentNamespace
+            components: [attribute.component], namespace, parentNamespace,
+            invalidateReferencesToBaseNamespace
           })
         } else if (attribute.childrenForComponent) {
           restrictTNamesToNamespace({
-            components: attribute.childrenForComponent, namespace, parentNamespace
+            components: attribute.childrenForComponent, namespace, parentNamespace,
+            invalidateReferencesToBaseNamespace
           })
         }
       }
     }
   }
+}
+
+function indexRangeString(serializedComponent) {
+  let message = "";
+  if (serializedComponent.range) {
+    let indBegin, indEnd;
+    if (serializedComponent.range.selfCloseBegin !== undefined) {
+      indBegin = serializedComponent.range.selfCloseBegin;
+      indEnd = serializedComponent.range.selfCloseEnd;
+    } else if (serializedComponent.range.openBegin !== undefined) {
+      indBegin = serializedComponent.range.openBegin;
+      indEnd = serializedComponent.range.openEnd;
+    }
+    if (indBegin !== undefined) {
+      message += ` at indices ${indBegin}-${indEnd}`;
+    }
+  }
+  return message;
 }

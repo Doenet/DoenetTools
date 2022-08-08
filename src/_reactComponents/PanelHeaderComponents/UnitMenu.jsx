@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import styled, { css } from "styled-components";
 import "./theme.css";
 
 const Textfield = styled.input`
-  border-radius: 5px;
+  border-radius: var(--mainBorderRadius);
   border: ${props => props.alert};
   z-index: 0;
   height: 24px;
@@ -12,7 +12,7 @@ const Textfield = styled.input`
   padding: 0px 36px 0px 2px;
   text-align: center;
   resize: none;
-  cursor: ${props => props.disabled ? 'not-allowed' : 'default'}
+  cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
 `;
 
 const Label = styled.p`
@@ -37,48 +37,51 @@ const LabelContainer = styled.div`
 `;
 
 const Units = styled.button`
-  background-color: ${props => props.disabled ? '#e2e2e2' : '#1a5a99'};
+  background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
   border-radius: 0px 3px 3px 0px;
   border: 2px hidden;
   height: 24px;
   width: 34px;
   position: relative;
-  color: ${props => props.disabled ? 'black' : 'white'};
+  color: ${props => props.disabled ? 'var(--canvastext)' : 'var(--canvas)'};
   font-size: 12px;
   right: 36px;
-  :hover {
+
+  &:hover { // Button color lightens on hover
+    color: var(--canvastext);
+    background-color: ${props => props.disabled ? 'none' : 'var(--lightBlue)'};
     cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
-  }
+  };
 `;
 
 const Unit = styled.div`
   display: none;
   position: relative;
-  background-color: #e2e2e2;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  background-color: var(--mainGray);
+  box-shadow: 0px 8px 16px 0px var(--mainGray);
   z-index: 9999;
-  border: 2px black;
-  border-radius: 5px;
+  border: var(--mainBorder);
+  border-radius: var(--mainBorderRadius);
   ${Units}:hover & {
     display: ${props => props.disabled ? 'none' : 'block'};
-  }
+  };
 `;
 
 const Unitoption = styled.button`
-  background-color: #e2e2e2;
+  background-color: var(--mainGray);
   display: block;
   width: 48px;
   height: 24px;
-  border: 1px black solid;
+  border: 1px var(--canvastext) solid;
   :hover {
     cursor: pointer;
-  }
+  };
   ${(props) =>
     props.selected === "True" &&
     css`
-      background: #8fb8de;
-      color: black;
-    `};
+      background: var(--solidLightBlue);
+      color: var(--canvastext);
+  `};
 `;
 
 export default function UnitMenu(props) {
@@ -96,47 +99,48 @@ export default function UnitMenu(props) {
     const [currentValue, setCurrentValue] = useState(props.value ? props.value : '');
     const [moveCursor, setMoveCursor] = useState(false);
     let initialClickLabelPosition = useRef(null);
+
     var align = 'flex';
     if (props.vertical) {
       align = 'static';
-    }
+    };
 
     const updateValueDuringDrag = (e) => {
       // setCurrentValue(findNewValueDuringDrag(e, initialClickLabelPosition));
-      setCurrentValue(incrementUsingCurrentValue(e, initialClickLabelPosition, currentValue))
+      setCurrentValue(incrementUsingCurrentValue(e, initialClickLabelPosition, currentValue));
       // setMoveCursor(false);
     };
 
     function incrementUsingCurrentValue(ev, initialClickLabelPosition, currentValue) {
-      return (Number(findNewValueDuringDrag(ev, initialClickLabelPosition)) + Number(currentValue))
-    }
+      return (Number(findNewValueDuringDrag(ev, initialClickLabelPosition)) + Number(currentValue));
+    };
 
     function findNewValueDuringDrag(ev, initialClickLabelPosition) {
-      var abX = ev.clientX - initialClickLabelPosition.current[0]
-      var abY = ev.clientY - initialClickLabelPosition.current[1]
-      var calcDist = Math.sqrt((abX ** 2) + (abY ** 2))
+      var abX = ev.clientX - initialClickLabelPosition.current[0];
+      var abY = ev.clientY - initialClickLabelPosition.current[1];
+      var calcDist = Math.sqrt((abX ** 2) + (abY ** 2));
       if (calcDist > 100) {
-        calcDist = calcDist * 1.5
-      }
+        calcDist = calcDist * 1.5;
+      };
       if (calcDist > 200) {
-        calcDist = calcDist * 2
-      }
+        calcDist = calcDist * 2;
+      };
       if (calcDist > 500) {
-        calcDist = calcDist * 2.5
-      }
+        calcDist = calcDist * 2.5;
+      };
       if (calcDist > 1000) {
-        calcDist = calcDist * 3
-      }
+        calcDist = calcDist * 3;
+      };
       if (calcDist > 10000) {
-        calcDist = calcDist * 4
-      }
+        calcDist = calcDist * 4;
+      };
       if (abX < 0) {
-        var newVal = Math.round(calcDist * -1)
+        var newVal = Math.round(calcDist * -1);
       } else {
-        newVal = Math.round(calcDist)
-      }
-      return newVal
-    }
+        newVal = Math.round(calcDist);
+      };
+      return newVal;
+    };
 
     function start() {
       setMoveCursor(true);
@@ -145,21 +149,21 @@ export default function UnitMenu(props) {
         window.removeEventListener("mouseup", updateValueDuringDrag);
         window.removeEventListener("mousemove", updateValueDuringDrag);
       });
-    }
+    };
     
     function displayUnit(value) {
       if (listOfUnits.includes(value)) {
         setCurrentUnit(value);
         if (listOfDefaults && listOfDefaults.includes(currentValue)) {
             setCurrentValue('');
-          }
-      }
+        };
+      };
       if (listOfDefaults && listOfDefaults.includes(value)) {
         setCurrentUnit("-");
         setCurrentValue(value);
-      }
+      };
       setUnitIndex(listOfOptions.indexOf(value));
-    }
+    };
     
     function updateUnit() {
       //changes display based on user input
@@ -169,29 +173,29 @@ export default function UnitMenu(props) {
       if (listOfUnits.includes(unit.toUpperCase())) {
         displayUnit(unit.toUpperCase());
         setCurrentValue(valueArray[1]);
-      }
+      };
       if (listOfDefaults && listOfDefaults.includes(unit.charAt(0).toUpperCase() + unit.slice(1))) {
         setCurrentUnit("-");
         setCurrentValue(unit.charAt(0).toUpperCase() + unit.slice(1));
         if (props.onChange) props.onChange('')
-      }
-    }
+      };
+    };
     
     function changeValue(e) {
       setCurrentValue(e.target.value);
-      if (props.onChange) props.onChange(e.target.value + ' ' + currentUnit)
-    }
+      if (props.onChange) props.onChange(e.target.value + ' ' + currentUnit);
+    };
 
     function enterKey(e, textfield) {
       var code = e.keyCode ? e.keyCode : e.which;
       if (code === 13) {
         updateUnit();
-      }
-    }
+      };
+    };
   
     if (props.label) {
       labelvalue = props.label;
-    }
+    };
   
     var unitComponents = [];
     for (let i = 0; i < listOfOptions.length; i++) {
@@ -206,17 +210,17 @@ export default function UnitMenu(props) {
           {listOfOptions[i]}
         </Unitoption>
       );
-    }
+    };
 
-    var alert = '2px solid black';
+    var alert = 'var(--mainBorder)';
     if (props.alert) {
-      alert = '2px solid #C1292E';
-    }
+      alert = '2px solid var(--mainRed)';
+    };
 
     var disabled = false;
-  if (props.disabled) {
-    disabled = true;
-  }
+    if (props.disabled) {
+      disabled = true;
+    };
   
     return (
       <>
@@ -255,4 +259,4 @@ export default function UnitMenu(props) {
         </LabelContainer>
       </>
     );
-  }
+};

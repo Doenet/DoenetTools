@@ -1,22 +1,20 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 const Container = styled.div`
   display: ${(props) => props.vertical ? 'static' : 'flex'};
   // margin: 2px 0px 2px 0px
- ;
-`
+`;
 
 export default function ButtonGroup(props) {
     const buttonGroup = {
-        margin: "0px 2px 0px 2px",
+        margin: '0px 2px 0px 2px',
         borderRadius: '0',
         padding: '0px 12px 0px 10px'
-      }; 
+    }; 
 
     const verticalButtonGroup = {
-      margin: "4px 4px 4px 4px",
+      margin: '4px 4px 4px 4px',
       borderRadius: '0',
       padding: '0px 10px 0px 10px'
     }; 
@@ -40,7 +38,7 @@ export default function ButtonGroup(props) {
       </Container>
       
     )
-  }
+  };
 // export default function ButtonGroup(props) {
 //     const defaultValue = props.data.filter(d => d.default)[0].value;
 //     let [currentValue, setCurrentValue] = useState(defaultValue);

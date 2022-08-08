@@ -21,7 +21,9 @@ export default class P extends BlockComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
@@ -34,19 +36,37 @@ export default class P extends BlockComponent {
 
         let text = ""
         for (let child of dependencyValues.inlineChildren) {
-          if (typeof child.stateValues.text === "string") {
+          if (typeof child !== "object") {
+            text += child.toString();
+          } else if (typeof child.stateValues.text === "string") {
             text += child.stateValues.text;
           } else {
             text += " ";
           }
         }
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 
     return stateVariableDefinitions;
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

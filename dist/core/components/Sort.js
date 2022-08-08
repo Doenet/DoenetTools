@@ -9,8 +9,8 @@ export default class Sort extends CompositeComponent {
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
   static assignNamesToReplacements = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
@@ -68,7 +68,7 @@ export default class Sort extends CompositeComponent {
           }
         }
 
-        return { newValues: { componentNamesForValues } }
+        return { setValue: { componentNamesForValues } }
       }
     }
 
@@ -155,7 +155,7 @@ export default class Sort extends CompositeComponent {
             } else {
               compValue = component.stateValues[`tailX${dependencyValues.sortByComponent}`];
             }
-            if(compValue) {
+            if (compValue) {
               numericalValue = compValue.evaluate_to_constant();
               if (numericalValue === null) {
                 numericalValue = NaN;
@@ -171,7 +171,7 @@ export default class Sort extends CompositeComponent {
         allValues.sort((a, b) => a.numericalValue - b.numericalValue)
 
         return {
-          newValues: {
+          setValue: {
             sortedValues: allValues
           }
         }
@@ -187,7 +187,7 @@ export default class Sort extends CompositeComponent {
       }),
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     }
 
@@ -195,7 +195,7 @@ export default class Sort extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, components,
+  static async createSerializedReplacements({ component, components,
     componentInfoObjects, workspace
   }) {
 
@@ -203,7 +203,7 @@ export default class Sort extends CompositeComponent {
 
     let componentsCopied = [];
 
-    for (let valueObj of component.stateValues.sortedValues) {
+    for (let valueObj of await component.stateValues.sortedValues) {
       let replacementSource;
 
       if (valueObj.listInd === undefined) {
@@ -217,7 +217,9 @@ export default class Sort extends CompositeComponent {
 
         componentsCopied.push(replacementSource.componentName);
 
-        replacements.push(replacementSource.serialize({ forLink: true }))
+        replacements.push(await replacementSource.serialize({
+          targetAttributesToIgnoreRecursively: ["isResponse"]
+        }))
       }
     }
 
@@ -232,7 +234,7 @@ export default class Sort extends CompositeComponent {
       assignNames: component.doenetAttributes.assignNames,
       serializedComponents: replacements,
       parentName: component.componentName,
-      parentCreatesNewNamespace: component.stateValues.newNamespace,
+      parentCreatesNewNamespace: await component.stateValues.newNamespace,
       componentInfoObjects,
     });
 
@@ -243,13 +245,13 @@ export default class Sort extends CompositeComponent {
 
   }
 
-  static calculateReplacementChanges({ component, components,
+  static async calculateReplacementChanges({ component, components,
     componentInfoObjects, workspace
   }) {
 
     let componentsToCopy = [];
 
-    for (let valueObj of component.stateValues.sortedValues) {
+    for (let valueObj of await component.stateValues.sortedValues) {
       let replacementSource;
 
       if (valueObj.listInd === undefined) {
@@ -271,10 +273,10 @@ export default class Sort extends CompositeComponent {
     }
 
     // for now, just recreated
-    let replacements = this.createSerializedReplacements({
+    let replacements = (await this.createSerializedReplacements({
       component, components,
       componentInfoObjects, workspace
-    }).replacements;
+    })).replacements;
 
     let replacementChanges = [{
       changeType: "add",

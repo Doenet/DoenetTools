@@ -1,7 +1,9 @@
-import readOnlyProxyHandler from '../../ReadOnlyProxyHandler.js';
 import createStateProxyHandler from '../../StateProxyHandler.js';
 import { flattenDeep, mapDeep } from '../../utils/array.js';
 import { deepClone } from '../../utils/deepFunctions.js';
+import { enumerateCombinations } from '../../utils/enumeration.js';
+import { gatherVariantComponents } from '../../utils/serializedStateProcessing.js';
+import { returnDefaultGetArrayKeysFromVarName } from '../../utils/stateVariables.js';
 
 export default class BaseComponent {
   constructor({
@@ -51,8 +53,10 @@ export default class BaseComponent {
     }
     this.stateValues = new Proxy(this.state, createStateProxyHandler());
 
+    this.essentialState = {};
+
     if (serializedComponent.state) {
-      this.potentialEssentialState = new Proxy(serializedComponent.state, readOnlyProxyHandler);
+      this.essentialState = deepClone(serializedComponent.state);
     }
 
     this.doenetAttributes = {};
@@ -74,6 +78,14 @@ export default class BaseComponent {
 
   get componentType() {
     return this.constructor.componentType;
+  }
+
+  get componentOrAdaptedName() {
+    if (this.adaptedFrom) {
+      return this.adaptedFrom.componentOrAdaptedName
+    } else {
+      return this.componentName;
+    }
   }
 
   get rendererType() {
@@ -140,9 +152,13 @@ export default class BaseComponent {
     // recurse to all children
     for (let childName in this.allChildren) {
       let child = this.allChildren[childName].component;
-      for (let rendererType of child.allPotentialRendererTypes) {
-        if (!allPotentialRendererTypes.includes(rendererType)) {
-          allPotentialRendererTypes.push(rendererType);
+      if (typeof child !== "object") {
+        continue;
+      } else {
+        for (let rendererType of child.allPotentialRendererTypes) {
+          if (!allPotentialRendererTypes.includes(rendererType)) {
+            allPotentialRendererTypes.push(rendererType);
+          }
         }
       }
     }
@@ -151,7 +167,6 @@ export default class BaseComponent {
 
   }
 
-  readOnlyProxyHandler = readOnlyProxyHandler;
 
   potentialRendererTypesFromSerializedComponents(serializedComponents) {
     let potentialRendererTypes = [];
@@ -168,14 +183,14 @@ export default class BaseComponent {
         // created from a public state variable
 
         let stateVariableDescriptions = compClass.returnStateVariableInfo(
-          { onlyPublic: true, flags: this.flags }
+          { onlyPublic: true }
         ).stateVariableDescriptions;
 
 
         for (let varName in stateVariableDescriptions) {
           let stateDescrip = stateVariableDescriptions[varName];
 
-          let componentTypes = stateDescrip.componentType;
+          let componentTypes = stateDescrip.shadowingInstructions?.createComponentOfType;
           if (!Array.isArray(componentTypes)) {
             componentTypes = [componentTypes]
           }
@@ -235,7 +250,7 @@ export default class BaseComponent {
   }
 
 
-  static createAttributesObject({ flags = {} } = {}) {
+  static createAttributesObject() {
 
     return {
       hide: {
@@ -246,14 +261,9 @@ export default class BaseComponent {
       },
       disabled: {
         createComponentOfType: "boolean",
-        createStateVariable: "disabledPreliminary",
-        defaultValue: null,//flags.readOnly ? true : false,
-        // public: true,
       },
-      disabledIgnoresParentReadOnly: {
+      fixed: {
         createComponentOfType: "boolean",
-        createStateVariable: "disabledIgnoresParentReadOnly",
-        defaultValue: false,
       },
       modifyIndirectly: {
         createComponentOfType: "boolean",
@@ -262,29 +272,24 @@ export default class BaseComponent {
         public: true,
         propagateToProps: true,
       },
-      fixed: {
-        createComponentOfType: "boolean",
-        createStateVariable: "fixedPreliminary",
-        defaultValue: null, //false,
-        // public: true,
-        // forRenderer: true,
-      },
       styleNumber: {
         createComponentOfType: "number",
         createStateVariable: "styleNumber",
         defaultValue: 1,
         public: true,
-        propagateToDescendants: true
+        fallBackToParentStateVariable: "styleNumber",
       },
       isResponse: {
-        createComponentOfType: "boolean",
+        createPrimitiveOfType: "boolean",
         createStateVariable: "isResponse",
         defaultValue: false,
         public: true,
       },
-
       newNamespace: {
-        createPrimitiveOfType: "boolean"
+        createPrimitiveOfType: "boolean",
+        createStateVariable: "newNamespace",
+        defaultValue: false,
+        public: true,
       }
     };
   }
@@ -354,7 +359,9 @@ export default class BaseComponent {
 
     stateVariableDefinitions.hidden = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         hide: {
@@ -376,39 +383,37 @@ export default class BaseComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
-          hidden:  // check === true so null gives false
-            dependencyValues.parentHidden === true
-            || dependencyValues.sourceCompositeHidden === true
-            || dependencyValues.adapterSourceHidden === true
-            || dependencyValues.hide === true
+        setValue: {
+          hidden: Boolean(
+            dependencyValues.parentHidden
+            || dependencyValues.sourceCompositeHidden
+            || dependencyValues.adapterSourceHidden
+            || dependencyValues.hide
+          )
         }
-      })
+      }),
+      markStale: () => ({ updateParentRenderedChildren: true }),
+
     }
 
     stateVariableDefinitions.disabled = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
-      neverShadow: true,
+      hasEssential: true,
+      doNotShadowEssential: true,
+      defaultValue: false,
       returnDependencies: () => ({
-        disabledPreliminary: {
-          dependencyType: "stateVariable",
-          variableName: "disabledPreliminary",
-          variablesOptional: true,
-        },
         disabledAttr: {
           dependencyType: "attributeComponent",
           attributeName: "disabled",
+          variableNames: ["value"],
         },
         readOnly: {
           dependencyType: "flag",
           flagName: "readOnly"
-        },
-        disabledIgnoresParentReadOnly: {
-          dependencyType: "stateVariable",
-          variableName: "disabledIgnoresParentReadOnly",
-          variablesOptional: true,
         },
         parentDisabled: {
           dependencyType: "parentStateVariable",
@@ -425,16 +430,14 @@ export default class BaseComponent {
       }),
       definition({ dependencyValues, usedDefault }) {
 
-        if (dependencyValues.readOnly && !dependencyValues.disabledIgnoresParentReadOnly) {
-          return { newValues: { disabled: true } }
+        if (dependencyValues.readOnly) {
+          return { setValue: { disabled: true } }
         }
 
-        if (dependencyValues.disabledPreliminary !== null &&
-          dependencyValues.disabledAttr !== null
-        ) {
+        if (dependencyValues.disabledAttr !== null) {
           return {
-            newValues: {
-              disabled: dependencyValues.disabledPreliminary
+            setValue: {
+              disabled: dependencyValues.disabledAttr.stateValues.value
             }
           }
         }
@@ -442,7 +445,7 @@ export default class BaseComponent {
         let disabled = false;
         let useEssential = true;
 
-        if (!dependencyValues.disabledIgnoresParentReadOnly && dependencyValues.parentDisabled !== null && !usedDefault.parentDisabled) {
+        if (dependencyValues.parentDisabled !== null && !usedDefault.parentDisabled) {
           disabled = disabled || dependencyValues.parentDisabled;
           useEssential = false;
         }
@@ -455,43 +458,32 @@ export default class BaseComponent {
           useEssential = false;
         }
 
-        // disabled wasn't supplied by parent/sourceComposite/adapterSource,
-        // was specified as a non-default from disabledPreliminary,
-        // but wasn't specified via an attribute component
-        // It must have been specified from a target shadowing
-        // or from an essential state variable
-        if (useEssential && dependencyValues.disabledPreliminary !== null && !usedDefault.disabledPreliminary) {
-          useEssential = false;
-          disabled = dependencyValues.disabledPreliminary
-        }
-
         if (useEssential) {
           return {
             useEssentialOrDefaultValue: {
-              disabled: { defaultValue: false }
+              disabled: true
             }
           }
         } else {
-          return { newValues: { disabled } }
+          return { setValue: { disabled } }
         }
       },
     }
 
     stateVariableDefinitions.fixed = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
-      neverShadow: true,
+      hasEssential: true,
+      doNotShadowEssential: true,
       returnDependencies: () => ({
-        fixedPreliminary: {
-          dependencyType: "stateVariable",
-          variableName: "fixedPreliminary",
-          variablesOptional: true,
-        },
         fixedAttr: {
           dependencyType: "attributeComponent",
           attributeName: "fixed",
+          variableNames: ["value"],
         },
         parentFixed: {
           dependencyType: "parentStateVariable",
@@ -507,12 +499,10 @@ export default class BaseComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.fixedPreliminary !== null &&
-          dependencyValues.fixedAttr !== null
-        ) {
+        if (dependencyValues.fixedAttr !== null) {
           return {
-            newValues: {
-              fixed: dependencyValues.fixedPreliminary
+            setValue: {
+              fixed: dependencyValues.fixedAttr.stateValues.value
             }
           }
         }
@@ -533,44 +523,33 @@ export default class BaseComponent {
           useEssential = false;
         }
 
-        // fixed wasn't supplied by parent/sourceComposite/adapterSource,
-        // was specified as a non-default from fixedPreliminary,
-        // but wasn't specified via an attribute component
-        // It must have been specified from a target shadowing
-        // or from an essential state variable
-        if (useEssential && dependencyValues.fixedPreliminary !== null && !usedDefault.fixedPreliminary) {
-          useEssential = false;
-          fixed = dependencyValues.fixedPreliminary
-        }
-
         if (useEssential) {
           return {
             useEssentialOrDefaultValue: {
-              fixed: { variablesToCheck: [] }
+              fixed: true
             }
           }
         }
         else {
-          return { newValues: { fixed } }
+          return { setValue: { fixed } }
         }
       }
     }
 
     stateVariableDefinitions.isInactiveCompositeReplacement = {
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          isInactiveCompositeReplacement: {
-            variablesToCheck: ["isInactiveCompositeReplacement"]
-          }
+          isInactiveCompositeReplacement: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: {
+            setEssentialValue: {
               variableName: "isInactiveCompositeReplacement",
               value: desiredStateVariableValues.isInactiveCompositeReplacement
             }
@@ -616,6 +595,8 @@ export default class BaseComponent {
       "markStale", "getPreviousDependencyValuesForMarkStale",
       "determineDependenciesImmediately",
       "createWorkspace", "workspace",
+      "provideEssentialValuesInDefinition",
+      "providePreviousValuesInDefinition",
     ];
 
     let stateVariableDefinitions = {};
@@ -666,19 +647,37 @@ export default class BaseComponent {
 
   }
 
-  static returnStateVariableInfo({ onlyPublic = false, flags }) {
-    let attributeObject = this.createAttributesObject({ flags });
+  static returnStateVariableInfo({ onlyPublic = false, onlyForRenderer = false } = {}) {
+    let attributeObject = this.createAttributesObject();
 
     let stateVariableDescriptions = {};
     let arrayEntryPrefixes = {};
     let aliases = {};
 
-    for (let varName in attributeObject) {
-      let componentTypeOverride = attributeObject[varName].componentType;
-      stateVariableDescriptions[varName] = {
-        componentType: componentTypeOverride ? componentTypeOverride : varName,
-        public: true,
-
+    for (let attrName in attributeObject) {
+      let attrObj = attributeObject[attrName];
+      let varName = attrObj.createStateVariable;
+      if (varName) {
+        if ((!onlyPublic || attrObj.public) && (!onlyForRenderer || attrObj.forRenderer)) {
+          if (attrObj.public) {
+            let attributeFromPrimitive = !attrObj.createComponentOfType;
+            let createComponentOfType;
+            if (attributeFromPrimitive) {
+              createComponentOfType = attrObj.createPrimitiveOfType;
+              if (createComponentOfType === "string") {
+                createComponentOfType = "text";
+              }
+            } else {
+              createComponentOfType = attrObj.createComponentOfType;
+            }
+            stateVariableDescriptions[varName] = {
+              createComponentOfType,
+              public: true,
+            }
+          } else {
+            stateVariableDescriptions[varName] = {}
+          }
+        }
       }
 
     }
@@ -691,24 +690,36 @@ export default class BaseComponent {
         aliases[varName] = theStateDef.targetVariableName;
         continue;
       }
-      if (!onlyPublic || theStateDef.public) {
-        stateVariableDescriptions[varName] = {
-          componentType: theStateDef.componentType,
-          public: theStateDef.public,
-          containsComponentNamesToCopy: theStateDef.containsComponentNamesToCopy,
-        };
+      if ((!onlyPublic || theStateDef.public) && (!onlyForRenderer || theStateDef.forRenderer)) {
+        if (theStateDef.public) {
+          stateVariableDescriptions[varName] = {
+            createComponentOfType: theStateDef.shadowingInstructions.createComponentOfType,
+            public: true,
+          };
+        } else {
+          stateVariableDescriptions[varName] = {}
+        }
         if (theStateDef.isArray) {
           stateVariableDescriptions[varName].isArray = true;
           stateVariableDescriptions[varName].nDimensions = theStateDef.nDimensions === undefined ? 1 : theStateDef.nDimensions;
-          stateVariableDescriptions[varName].wrappingComponents = theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents() : [];
+          stateVariableDescriptions[varName].wrappingComponents = theStateDef.shadowingInstructions?.returnWrappingComponents ? theStateDef.shadowingInstructions.returnWrappingComponents() : [];
+          let entryPrefixes;
           if (theStateDef.entryPrefixes) {
-            for (let prefix of theStateDef.entryPrefixes) {
-              arrayEntryPrefixes[prefix] = {
-                arrayVariableName: varName,
-                nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
-                wrappingComponents: theStateDef.returnWrappingComponents ? theStateDef.returnWrappingComponents(prefix) : []
-              }
+            entryPrefixes = theStateDef.entryPrefixes;
+          } else {
+            entryPrefixes = [varName];
+          }
+          for (let prefix of entryPrefixes) {
+            arrayEntryPrefixes[prefix] = {
+              arrayVariableName: varName,
+              nDimensions: theStateDef.returnEntryDimensions ? theStateDef.returnEntryDimensions(prefix) : 1,
+              wrappingComponents: theStateDef.shadowingInstructions?.returnWrappingComponents ? theStateDef.shadowingInstructions.returnWrappingComponents(prefix) : []
             }
+          }
+          if (theStateDef.getArrayKeysFromVarName) {
+            stateVariableDescriptions[varName].getArrayKeysFromVarName = theStateDef.getArrayKeysFromVarName;
+          } else {
+            stateVariableDescriptions[varName].getArrayKeysFromVarName = returnDefaultGetArrayKeysFromVarName(stateVariableDescriptions[varName].nDimensions)
           }
         }
       }
@@ -759,15 +770,12 @@ export default class BaseComponent {
   }
 
 
-  static useChildrenForReference = true;
-
-  static get stateVariablesShadowedForReference() { return [] };
 
   // returnSerializeInstructions() {
   //   return {};
   // }
 
-  serialize(parameters = {}) {
+  async serialize(parameters = {}) {
     // TODO: this function is converted only for the case with the parameter
     // forLink set
 
@@ -776,18 +784,6 @@ export default class BaseComponent {
     let includeDefiningChildren = true;
     // let stateVariablesToInclude = [];
 
-    if (parameters.forLink) {
-      includeDefiningChildren = true;//this.constructor.useChildrenForReference;
-    } else {
-      // let instructions = this.returnSerializeInstructions();
-      // if (instructions.skipChildren) {
-      //   includeDefiningChildren = false;
-      // }
-      // if (instructions.stateVariables) {
-      //   stateVariablesToInclude = instructions.stateVariables;
-      // }
-
-    }
 
     let serializedComponent = {
       componentType: this.componentType,
@@ -795,18 +791,33 @@ export default class BaseComponent {
 
     let serializedChildren = [];
 
+    let parametersForChildren = { ...parameters };
+
+    let targetAttributesToIgnore
+    if (parameters.targetAttributesToIgnoreRecursively) {
+      targetAttributesToIgnore = [...parameters.targetAttributesToIgnoreRecursively];
+    } else {
+      targetAttributesToIgnore = [];
+    }
+    if (parameters.targetAttributesToIgnore) {
+      targetAttributesToIgnore.push(...parameters.targetAttributesToIgnore);
+      delete parametersForChildren.targetAttributesToIgnore;
+    }
+
+
     if (includeDefiningChildren) {
 
       for (let child of this.definingChildren) {
-        serializedChildren.push(child.serialize(parameters));
+        if (typeof child !== "object") {
+          serializedChildren.push(child)
+        } else {
+          serializedChildren.push(await child.serialize(parametersForChildren));
+        }
       }
 
       if (this.serializedChildren !== undefined) {
         for (let child of this.serializedChildren) {
-          serializedChildren.push(this.copySerializedComponent({
-            serializedComponent: child,
-            parameters: parameters
-          }));
+          serializedChildren.push(this.copySerializedComponent(child));
         }
       }
 
@@ -816,50 +827,36 @@ export default class BaseComponent {
 
     }
 
-    let attributesObject = this.constructor.createAttributesObject({ flags: this.flags });
 
     serializedComponent.attributes = {};
 
     for (let attrName in this.attributes) {
       let attribute = this.attributes[attrName];
       if (attribute.component) {
-        // only copy attribute components if attributes object specifies
-        // or if not linked
-        let attrInfo = attributesObject[attrName];
-        if (attrInfo.copyComponentOnReference || !parameters.forLink) {
-          serializedComponent.attributes[attrName] = { component: attribute.component.serialize(parameters) };
+        // only copy attribute components if copy all
+        if (parameters.copyAll) {
+          serializedComponent.attributes[attrName] = { component: await attribute.component.serialize(parametersForChildren) };
         }
       } else {
-        // always copy others
-        // TODO: for now not copying isResponse if linked
-        // but not sure if that is the right thing to do
-        if (attrName !== "isResponse" || !parameters.forLink) {
+        // copy others if copy all or not set to be ignored
+        if (!targetAttributesToIgnore.includes(attrName) || parameters.copyAll) {
           serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
         }
       }
     }
 
-
-    if (!parameters.forLink) {
-      let additionalState = {};
-      for (let item in this.state) {
-        // evaluate state variable first so that 
-        // essential and usedDefault attribute are populated
-        let value = this.state[item].value;
-
-        if (this.state[item].essential || this.state[item].alwaysShadow) {// || stateVariablesToInclude.includes(item)) {
-          if (!this.state[item].usedDefault) {
-            additionalState[item] = value;
-          }
-        }
-      }
-
-      if (Object.keys(additionalState).length > 0) {
-        serializedComponent.state = additionalState;
-      }
-
+    // always copy essential state
+    if (this.essentialState && Object.keys(this.essentialState).length > 0) {
+      serializedComponent.state = deepClone(this.essentialState);
     }
 
+    if (parameters.copyVariants) {
+      if (this.state.generatedVariantInfo) {
+        serializedComponent.variants = {
+          desiredVariant: await this.stateValues.generatedVariantInfo
+        }
+      }
+    }
 
     serializedComponent.originalName = this.componentName;
     serializedComponent.originalDoenetAttributes = deepClone(this.doenetAttributes);
@@ -874,15 +871,16 @@ export default class BaseComponent {
 
   }
 
-  copySerializedComponent({ serializedComponent, parameters }) {
+  copySerializedComponent(serializedComponent) {
+
+    if (typeof serializedComponent !== "object") {
+      return serializedComponent;
+    }
 
     let serializedChildren = [];
     if (serializedComponent.children !== undefined) {
       for (let child of serializedComponent.children) {
-        serializedChildren.push(this.copySerializedComponent({
-          serializedComponent: child,
-          parameters: parameters
-        }));
+        serializedChildren.push(this.copySerializedComponent(child));
       }
     }
 
@@ -895,8 +893,7 @@ export default class BaseComponent {
       doenetAttributes: {},
     }
 
-    if (//parameters.forLink !== true &&
-      serializedComponent.doenetAttributes !== undefined) {
+    if (serializedComponent.doenetAttributes !== undefined) {
       serializedCopy.originalDoenetAttributes = deepClone(serializedComponent.doenetAttributes);
       serializedCopy.doenetAttributes = deepClone(serializedComponent.doenetAttributes);
       serializedCopy.originalAttributes = deepClone(serializedComponent.attributes);
@@ -932,6 +929,7 @@ export default class BaseComponent {
     let adapterStateVariable;
     let adapterComponentType;
     let substituteForPrimaryStateVariable;
+    let stateVariablesToShadow;
 
     // adapter could be either 
     // - a string specifying a public state variable, or
@@ -943,6 +941,7 @@ export default class BaseComponent {
       adapterStateVariable = adapter.stateVariable;
       adapterComponentType = adapter.componentType;
       substituteForPrimaryStateVariable = adapter.substituteForPrimaryStateVariable;
+      stateVariablesToShadow = adapter.stateVariablesToShadow;
     }
 
     // look in state for matching public value
@@ -954,7 +953,7 @@ export default class BaseComponent {
 
     if (adapterComponentType === undefined) {
       // if didn't override componentType, use componentType from state variable
-      adapterComponentType = stateFromAdapter.componentType;
+      adapterComponentType = stateFromAdapter.shadowingInstructions.createComponentOfType;
     }
 
     return {
@@ -967,7 +966,8 @@ export default class BaseComponent {
             componentName: this.componentName,
             componentType: this.componentType,
           },
-          substituteForPrimaryStateVariable
+          substituteForPrimaryStateVariable,
+          stateVariablesToShadow
         }]
       }
     }
@@ -997,7 +997,7 @@ export default class BaseComponent {
     }
 
     if (adapterComponentType === undefined) {
-      // if didn't override componentType, use componentType from state variable
+      // if didn't override componentType, use createComponentType from state variable
 
       let stateVarInfo = publicStateVariableInfo[this.componentType]
 
@@ -1007,7 +1007,7 @@ export default class BaseComponent {
           + this.componentType);
       }
 
-      adapterComponentType = varInfo.componentType;
+      adapterComponentType = varInfo.createComponentOfType;
 
       if (!adapterComponentType) {
         throw Error(`Couldn't get adapter component type for ${adapterStateVariable} of componentType ${this.componentType}`)
@@ -1015,6 +1015,117 @@ export default class BaseComponent {
     }
 
     return adapterComponentType;
+
+  }
+
+
+  static determineNumberOfUniqueVariants({
+    serializedComponent, componentInfoObjects
+  }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+
+    if (numberOfVariants !== undefined) {
+      return { success: true, numberOfVariants };
+    }
+
+    let descendantVariantComponents = [];
+
+    if (serializedComponent.children) {
+      descendantVariantComponents = gatherVariantComponents({
+        serializedComponents: serializedComponent.children,
+        componentInfoObjects
+      });
+    }
+
+    if (serializedComponent.variants === undefined) {
+      serializedComponent.variants = {};
+    }
+
+    serializedComponent.variants.descendantVariantComponents = descendantVariantComponents;
+
+
+    // number of variants is the product of 
+    // number of variants for each descendantVariantComponent
+    numberOfVariants = 1;
+
+    let numberOfVariantsByDescendant = [];
+    for (let descendant of descendantVariantComponents) {
+      let descendantClass = componentInfoObjects.allComponentClasses[descendant.componentType];
+      let result = descendantClass.determineNumberOfUniqueVariants({
+        serializedComponent: descendant,
+        componentInfoObjects
+      })
+      if (!result.success) {
+        return { success: false }
+      }
+      numberOfVariantsByDescendant.push(result.numberOfVariants);
+      numberOfVariants *= result.numberOfVariants;
+    }
+
+
+    serializedComponent.variants.numberOfVariants = numberOfVariants;
+    serializedComponent.variants.uniqueVariantData = { numberOfVariantsByDescendant };
+
+    return { success: true, numberOfVariants }
+
+  }
+
+  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+    if (numberOfVariants === undefined) {
+      return { success: false }
+    }
+
+    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
+      return { success: false }
+    }
+
+    let haveNontrivialSubvariants = false;
+
+    let numberOfVariantsByDescendant = serializedComponent.variants.uniqueVariantData.numberOfVariantsByDescendant;
+    let descendantVariantComponents = serializedComponent.variants.descendantVariantComponents;
+
+    let subvariants = [];
+
+    if (descendantVariantComponents.length > 0) {
+
+      let indicesForEachDescendant = enumerateCombinations({
+        numberOfOptionsByIndex: numberOfVariantsByDescendant,
+        maxNumber: variantIndex,
+      })[variantIndex - 1].map(x => x + 1);
+
+      // for each descendant, get unique variant corresponding
+      // to the selected variant number and include that as a subvariant
+
+
+      for (let descendantNum = 0; descendantNum < numberOfVariantsByDescendant.length; descendantNum++) {
+        if (numberOfVariantsByDescendant[descendantNum] > 1) {
+          let descendant = descendantVariantComponents[descendantNum];
+          let compClass = componentInfoObjects.allComponentClasses[descendant.componentType];
+          let result = compClass.getUniqueVariant({
+            serializedComponent: descendant,
+            variantIndex: indicesForEachDescendant[descendantNum],
+            componentInfoObjects,
+          });
+          if (!result.success) {
+            return { success: false }
+          }
+          subvariants.push(result.desiredVariant);
+          haveNontrivialSubvariants = true;
+        } else {
+          subvariants.push({});
+        }
+      }
+    }
+
+    let desiredVariant = { index: variantIndex };
+    if (haveNontrivialSubvariants) {
+      desiredVariant.subvariants = subvariants;
+    }
+
+    return { success: true, desiredVariant }
 
   }
 

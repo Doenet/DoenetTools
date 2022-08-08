@@ -6,35 +6,10 @@ import subsets, { buildSubsetFromMathExpression } from '../utils/subset-of-reals
 export default class SubsetOfRealsInput extends BlockComponent {
   static componentType = "subsetOfRealsInput";
 
-  actions = {
-    addPoint: this.addPoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    deletePoint: this.deletePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    movePoint: this.movePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    togglePoint: this.togglePoint.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    toggleInterval: this.toggleInterval.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    clear: this.clear.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-    setToR: this.setToR.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    )
-  };
-
-
   static variableForPlainMacro = "subsetValue";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.xmin = {
       createComponentOfType: "number",
       createStateVariable: "xmin",
@@ -85,6 +60,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
       createComponentOfType: "variable",
       createStateVariable: "variable",
       defaultValue: me.fromAst("x"),
+      public: true,
     }
     attributes.format = {
       createComponentOfType: "text",
@@ -112,7 +88,10 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
     stateVariableDefinitions.subsetValue = {
       public: true,
-      componentType: "subsetOfReals",
+      shadowingInstructions: {
+        createComponentOfType: "subsetOfReals",
+      },
+      hasEssential: true,
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -138,7 +117,6 @@ export default class SubsetOfRealsInput extends BlockComponent {
           return {
             useEssentialOrDefaultValue: {
               subsetValue: {
-                variablesToCheck: "subsetValue",
                 get defaultValue() {
                   return parseValueIntoSubset({
                     inputString: dependencyValues.prefill,
@@ -152,7 +130,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
         }
 
 
-        return { newValues: { subsetValue: dependencyValues.bindValueTo.stateValues.subsetValue } };
+        return { setValue: { subsetValue: dependencyValues.bindValueTo.stateValues.subsetValue } };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
 
@@ -171,7 +149,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "subsetValue",
+            setEssentialValue: "subsetValue",
             value: desiredStateVariableValues.subsetValue
           }]
         };
@@ -270,18 +248,19 @@ export default class SubsetOfRealsInput extends BlockComponent {
         pointsFromSubset.sort((a, b) => a.value - b.value);
         intervalsFromSubset.sort((a, b) => a[0] - b[0]);
 
-        return { newValues: { pointsFromSubset, intervalsFromSubset } };
+        return { setValue: { pointsFromSubset, intervalsFromSubset } };
 
       }
     }
 
     stateVariableDefinitions.additionalPoints = {
       defaultValue: [],
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition() {
         return {
           useEssentialOrDefaultValue: {
-            additionalPoints: { variablesToCheck: ["additionalPoints"] }
+            additionalPoints: true
           }
         }
       },
@@ -290,7 +269,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
           return {
             success: true,
             instructions: [{
-              setStateVariable: "additionalPoints",
+              setEssentialValue: "additionalPoints",
               value: [...desiredStateVariableValues.additionalPoints].sort((a, b) => a - b)
             }]
           }
@@ -399,7 +378,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
         points = points.slice(0, points.length - 1);
 
         return {
-          newValues: { points, intervals }
+          setValue: { points, intervals }
         }
 
 
@@ -409,20 +388,20 @@ export default class SubsetOfRealsInput extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  addPoint(value) {
+  async addPoint({ value, actionId }) {
 
-    let dx = this.stateValues.dx;
+    let dx = await this.stateValues.dx;
     let roundedValue = Math.round(
-      Math.max(this.stateValues.xmin, Math.min(this.stateValues.xmax, value))
+      Math.max(await this.stateValues.xmin, Math.min(await this.stateValues.xmax, value))
       / dx) * dx;
 
     // add point only if not equal to another point
     // (which could happen due to rounding)
 
 
-    let pointsFromSubset = [...this.stateValues.pointsFromSubset];
-    let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
-    let additionalPoints = [...this.stateValues.additionalPoints];
+    let pointsFromSubset = [...await this.stateValues.pointsFromSubset];
+    let intervalsFromSubset = [...await this.stateValues.intervalsFromSubset];
+    let additionalPoints = [...await this.stateValues.additionalPoints];
 
     if (!additionalPoints.includes(roundedValue)) {
 
@@ -443,13 +422,14 @@ export default class SubsetOfRealsInput extends BlockComponent {
         if (insideInterval) {
           // if point is inside an interval, make it an additional point
           additionalPoints.push(roundedValue);
-          return this.coreFunctions.performUpdate({
+          return await this.coreFunctions.performUpdate({
             updateInstructions: [{
               componentName: this.componentName,
               updateType: "updateValue",
               stateVariable: "additionalPoints",
               value: additionalPoints
             }],
+            actionId,
             event: {
               verb: "interacted",
               object: {
@@ -469,15 +449,16 @@ export default class SubsetOfRealsInput extends BlockComponent {
             inSubset: true,
           })
 
-          let updateInstructions = this.createUpdateInstructions({
+          let updateInstructions = await this.createUpdateInstructions({
             intervalsFromSubset,
             pointsFromSubset,
             modifiedAdditionalPoints: false,
             additionalPoints
           });
 
-          return this.coreFunctions.performUpdate({
+          return await this.coreFunctions.performUpdate({
             updateInstructions,
+            actionId,
             event: {
               verb: "interacted",
               object: {
@@ -497,26 +478,27 @@ export default class SubsetOfRealsInput extends BlockComponent {
       }
     }
 
-    return { success: true, instructions: [] }
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 
-  deletePoint(pointInd) {
+  async deletePoint({ pointInd, actionId }) {
 
-    let point = this.stateValues.points[pointInd];
-    let additionalPoints = [...this.stateValues.additionalPoints];
-    let pointsFromSubset = [...this.stateValues.pointsFromSubset];
-    let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
+    let point = await this.stateValues.points[pointInd];
+    let additionalPoints = [...await this.stateValues.additionalPoints];
+    let pointsFromSubset = [...await this.stateValues.pointsFromSubset];
+    let intervalsFromSubset = [...await this.stateValues.intervalsFromSubset];
 
     if (point.isAdditional) {
       additionalPoints.splice(point.additionalPointInd, 1);
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           componentName: this.componentName,
           updateType: "updateValue",
           stateVariable: "additionalPoints",
           value: additionalPoints
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -557,7 +539,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
           // interval on the left but not on the right
           // remove the interval on the left
 
-          let leftPoint = this.stateValues.points[pointInd - 1];
+          let leftPoint = (await this.stateValues.points)[pointInd - 1];
           if (leftPoint && leftPoint.isAdditional) {
             // shorten the interval to end at the additional point
             // and turn the additional point to a subset point
@@ -601,7 +583,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
           // interval on the right but not on the left
           // remove the interval on the right
 
-          let rightPoint = this.stateValues.points[pointInd + 1];
+          let rightPoint = (await this.stateValues.points)[pointInd + 1];
           if (rightPoint && rightPoint.isAdditional) {
             // shorten the interval to end at the additional point
             // and turn the additional point to a subset point
@@ -643,15 +625,16 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
       }
 
-      let updateInstructions = this.createUpdateInstructions({
+      let updateInstructions = await this.createUpdateInstructions({
         intervalsFromSubset,
         pointsFromSubset,
         modifiedAdditionalPoints,
         additionalPoints
       });
 
-      return this.coreFunctions.performUpdate({
+      return await this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -669,11 +652,11 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
   }
 
-  createUpdateInstructions({ intervalsFromSubset, pointsFromSubset,
+  async createUpdateInstructions({ intervalsFromSubset, pointsFromSubset,
     modifiedAdditionalPoints, additionalPoints
   }) {
 
-    let dx = this.stateValues.dx;
+    let dx = await this.stateValues.dx;
     let roundValue = x => Math.round(x / dx) * dx;
 
     // rebuild subset
@@ -714,35 +697,37 @@ export default class SubsetOfRealsInput extends BlockComponent {
     return updateInstructions;
   }
 
-  movePoint({ pointInd, value, transient }) {
+  async movePoint({ pointInd, value, transient, actionId }) {
 
-    let dx = this.stateValues.dx;
+    let dx = await this.stateValues.dx;
 
     let roundedValue = Math.round(
-      Math.max(this.stateValues.xmin, Math.min(this.stateValues.xmax, value))
+      Math.max(await this.stateValues.xmin, Math.min(await this.stateValues.xmax, value))
       / dx) * dx;
 
-    let point = this.stateValues.points[pointInd];
+
+    let points = await this.stateValues.points;;
+    let point = points[pointInd];
 
     // value cannot cross another point
-    let leftPoint = this.stateValues.points[pointInd - 1]
+    let leftPoint = points[pointInd - 1]
     if (leftPoint) {
       roundedValue = Math.max(roundedValue, leftPoint.value + dx)
     }
-    let rightPoint = this.stateValues.points[pointInd + 1]
+    let rightPoint = points[pointInd + 1]
     if (rightPoint) {
       roundedValue = Math.min(roundedValue, rightPoint.value - dx)
     }
 
-    let additionalPoints = [...this.stateValues.additionalPoints];
-    let pointsFromSubset = [...this.stateValues.pointsFromSubset];
-    let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
+    let additionalPoints = [...await this.stateValues.additionalPoints];
+    let pointsFromSubset = [...await this.stateValues.pointsFromSubset];
+    let intervalsFromSubset = [...await this.stateValues.intervalsFromSubset];
 
 
     if (point.isAdditional) {
       additionalPoints[point.additionalPointInd] = roundedValue;
       if (transient) {
-        return this.coreFunctions.performUpdate({
+        return await this.coreFunctions.performUpdate({
           updateInstructions: [{
             componentName: this.componentName,
             updateType: "updateValue",
@@ -750,15 +735,17 @@ export default class SubsetOfRealsInput extends BlockComponent {
             value: additionalPoints
           }],
           transient: true,
+          actionId,
         });
       } else {
-        return this.coreFunctions.performUpdate({
+        return await this.coreFunctions.performUpdate({
           updateInstructions: [{
             componentName: this.componentName,
             updateType: "updateValue",
             stateVariable: "additionalPoints",
             value: additionalPoints
           }],
+          actionId,
           event: {
             verb: "interacted",
             object: {
@@ -791,20 +778,22 @@ export default class SubsetOfRealsInput extends BlockComponent {
         intervalsFromSubset[rightIntervalInd] = [roundedValue, intervalsFromSubset[rightIntervalInd][1]];
       }
 
-      let updateInstructions = this.createUpdateInstructions({
+      let updateInstructions = await this.createUpdateInstructions({
         intervalsFromSubset,
         pointsFromSubset,
         modifiedAdditionalPoints: false,
       });
 
       if (transient) {
-        return this.coreFunctions.performUpdate({
+        return await this.coreFunctions.performUpdate({
           updateInstructions,
           transient: true,
+          actionId,
         });
       } else {
-        return this.coreFunctions.performUpdate({
+        return await this.coreFunctions.performUpdate({
           updateInstructions,
+          actionId,
           event: {
             verb: "interacted",
             object: {
@@ -823,13 +812,13 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
   }
 
-  togglePoint(pointInd) {
+  async togglePoint({ pointInd, actionId }) {
 
-    let point = this.stateValues.points[pointInd];
+    let point = (await this.stateValues.points)[pointInd];
 
-    let pointsFromSubset = [...this.stateValues.pointsFromSubset];
-    let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
-    let additionalPoints = [...this.stateValues.additionalPoints];
+    let pointsFromSubset = [...await this.stateValues.pointsFromSubset];
+    let intervalsFromSubset = [...await this.stateValues.intervalsFromSubset];
+    let additionalPoints = [...await this.stateValues.additionalPoints];
 
     let modifiedAdditionalPoints = false;
 
@@ -923,15 +912,16 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
     }
 
-    let updateInstructions = this.createUpdateInstructions({
+    let updateInstructions = await this.createUpdateInstructions({
       intervalsFromSubset,
       pointsFromSubset,
       modifiedAdditionalPoints,
       additionalPoints
     });
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -947,16 +937,17 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
   }
 
-  toggleInterval(intervalInd) {
+  async toggleInterval({ intervalInd, actionId }) {
 
-    let interval = this.stateValues.intervals[intervalInd];
+    let interval = (await this.stateValues.intervals)[intervalInd];
 
-    let leftPoint = this.stateValues.points[intervalInd - 1];
-    let rightPoint = this.stateValues.points[intervalInd];
+    let points = await this.stateValues.points;
+    let leftPoint = points[intervalInd - 1];
+    let rightPoint = points[intervalInd];
 
-    let pointsFromSubset = [...this.stateValues.pointsFromSubset];
-    let intervalsFromSubset = [...this.stateValues.intervalsFromSubset];
-    let additionalPoints = [...this.stateValues.additionalPoints];
+    let pointsFromSubset = [...await this.stateValues.pointsFromSubset];
+    let intervalsFromSubset = [...await this.stateValues.intervalsFromSubset];
+    let additionalPoints = [...await this.stateValues.additionalPoints];
 
     let modifiedAdditionalPoints = false;
 
@@ -1286,15 +1277,16 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
     }
 
-    let updateInstructions = this.createUpdateInstructions({
+    let updateInstructions = await this.createUpdateInstructions({
       intervalsFromSubset,
       pointsFromSubset,
       modifiedAdditionalPoints,
       additionalPoints
     });
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -1310,16 +1302,17 @@ export default class SubsetOfRealsInput extends BlockComponent {
 
   }
 
-  clear() {
-    let updateInstructions = this.createUpdateInstructions({
+  async clear({ actionId }) {
+    let updateInstructions = await this.createUpdateInstructions({
       intervalsFromSubset: [],
       pointsFromSubset: [],
       modifiedAdditionalPoints: true,
       additionalPoints: []
     });
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -1336,16 +1329,17 @@ export default class SubsetOfRealsInput extends BlockComponent {
     });
   }
 
-  setToR() {
-    let updateInstructions = this.createUpdateInstructions({
+  async setToR({ actionId }) {
+    let updateInstructions = await this.createUpdateInstructions({
       intervalsFromSubset: [[-Infinity, Infinity]],
       pointsFromSubset: [],
       modifiedAdditionalPoints: true,
       additionalPoints: []
     });
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions,
+      actionId,
       event: {
         verb: "interacted",
         object: {
@@ -1362,6 +1356,28 @@ export default class SubsetOfRealsInput extends BlockComponent {
     });
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    addPoint: this.addPoint.bind(this),
+    deletePoint: this.deletePoint.bind(this),
+    movePoint: this.movePoint.bind(this),
+    togglePoint: this.togglePoint.bind(this),
+    toggleInterval: this.toggleInterval.bind(this),
+    clear: this.clear.bind(this),
+    setToR: this.setToR.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  };
 
 }
 

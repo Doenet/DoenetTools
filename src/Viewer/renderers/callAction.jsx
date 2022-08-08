@@ -1,19 +1,24 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
+import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 
-export default class CallAction extends DoenetRenderer {
+export default React.memo(function CallAction(props) {
+  let { name, SVs, actions, callAction } = useDoenetRender(props);
 
-  static initializeChildrenOnConstruction = false;
-
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <span id={this.componentName}><a name={this.componentName} />
-    <button id={this.componentName + "_button"} onClick={this.actions.callAction} disabled={this.doenetSvData.disabled}>{this.doenetSvData.label}</button>
-    </span>;
-
+  if (SVs.hidden) {
+    return null;
   }
-}
+
+  return (
+    <div id={name} style={{ margin: "12px 0", display: "inline-block" }}>
+      <a name={name} />
+      <Button
+        id={name + "_button"}
+        onClick={() => callAction({ action: actions.callAction })}
+        disabled={SVs.disabled}
+        value={SVs.label}
+        valueHasLatex={SVs.labelHasLatex}
+      />
+    </div>
+  )
+})

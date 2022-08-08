@@ -1,14 +1,32 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRenderer from './useDoenetRenderer';
+import VisibilitySensor from 'react-visibility-sensor-v2';
+import { useEffect } from 'react';
 
-export default class P extends DoenetRenderer {
+export default React.memo(function P(props) {
+  let { name, SVs, children, actions, callAction } = useDoenetRenderer(props);
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <p id={this.componentName}><a name={this.componentName} />{this.children}</p>
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
   }
-}
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
+
+  if (SVs.hidden) {
+    return null;
+  }
+
+  return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+    <p id={name}><a name={name} />{children}</p>
+  </VisibilitySensor>
+})

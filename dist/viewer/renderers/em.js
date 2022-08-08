@@ -1,14 +1,13 @@
 import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class Em extends DoenetRenderer {
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    return /* @__PURE__ */ React.createElement("em", {
-      id: this.componentName
-    }, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), this.children);
+import useDoenetRender from "./useDoenetRenderer.js";
+export default React.memo(function Em(props) {
+  let {name, SVs, children} = useDoenetRender(props);
+  if (SVs.hidden) {
+    return null;
   }
-}
+  return /* @__PURE__ */ React.createElement("em", {
+    id: name
+  }, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), children);
+});

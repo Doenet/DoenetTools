@@ -1,13 +1,17 @@
 import BaseComponent from './abstract/BaseComponent';
 import me from 'math-expressions';
 import { evaluateLogic } from '../utils/booleanLogic';
+import { getNamespaceFromName } from '../utils/naming';
 
 export default class Award extends BaseComponent {
   static componentType = "award";
   static rendererType = undefined;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static includeBlankStringChildren = true;
+  static removeBlankStringChildrenPostSugar = true;
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.credit = {
       createComponentOfType: "number",
@@ -21,21 +25,21 @@ export default class Award extends BaseComponent {
       createStateVariable: "matchPartial",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "matchPartial",
     };
     attributes.symbolicEquality = {
       createComponentOfType: "boolean",
       createStateVariable: "symbolicEquality",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "symbolicEquality",
     };
     attributes.expandOnCompare = {
       createComponentOfType: "boolean",
       createStateVariable: "expandOnCompare",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "expandOnCompare",
     };
     attributes.simplifyOnCompare = {
       createComponentOfType: "text",
@@ -45,106 +49,201 @@ export default class Award extends BaseComponent {
       valueTransformations: { "": "full", "true": "full" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"],
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "simplifyOnCompare",
     };
     attributes.unorderedCompare = {
       createComponentOfType: "boolean",
       createStateVariable: "unorderedCompare",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "unorderedCompare",
     };
     attributes.matchByExactPositions = {
       createComponentOfType: "boolean",
       createStateVariable: "matchByExactPositions",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "matchByExactPositions",
     };
     attributes.allowedErrorInNumbers = {
       createComponentOfType: "number",
       createStateVariable: "allowedErrorInNumbers",
       defaultValue: 0,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "allowedErrorInNumbers",
     };
     attributes.includeErrorInNumberExponents = {
       createComponentOfType: "boolean",
       createStateVariable: "includeErrorInNumberExponents",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "includeErrorInNumberExponents",
     };
     attributes.allowedErrorIsAbsolute = {
       createComponentOfType: "boolean",
       createStateVariable: "allowedErrorIsAbsolute",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "allowedErrorIsAbsolute",
     };
     attributes.nSignErrorsMatched = {
       createComponentOfType: "number",
       createStateVariable: "nSignErrorsMatched",
       defaultValue: 0,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "nSignErrorsMatched",
     };
     attributes.nPeriodicSetMatchesRequired = {
       createComponentOfType: "integer",
       createStateVariable: "nPeriodicSetMatchesRequired",
       defaultValue: 3,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "nPeriodicSetMatchesRequired",
+    };
+    attributes.caseInsensitiveMatch = {
+      createComponentOfType: "boolean",
+      createStateVariable: "caseInsensitiveMatch",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "caseInsensitiveMatch",
+    };
+    attributes.matchBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchBlanks",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "matchBlanks",
     };
     attributes.feedbackCodes = {
       createComponentOfType: "textList",
       createStateVariable: "feedbackCodes",
       defaultValue: [],
       public: true,
-      propagateToDescendants: true,
     };
     attributes.feedbackText = {
       createComponentOfType: "text",
       createStateVariable: "feedbackText",
       defaultValue: null,
       public: true,
-      propagateToDescendants: true,
     };
     attributes.targetsAreResponses = {
       createPrimitiveOfType: "string"
+    }
+
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      public: true,
+      fallBackToParentStateVariable: "splitSymbols",
     }
 
     return attributes;
 
   }
 
+  static preprocessSerializedChildren({ serializedChildren, attributes, componentName }) {
+    if (attributes.targetsAreResponses) {
+      let targetNames = attributes.targetsAreResponses.primitive.split(/\s+/).filter(s => s);
+      let nameSpace;
+      if (attributes.newNamespace?.primitive) {
+        nameSpace = componentName + "/";
+      } else {
+        nameSpace = getNamespaceFromName(componentName);
+      }
+      for (let target of targetNames) {
+        let absoluteTarget;
+        if (target[0] === "/") {
+          absoluteTarget = target;
+        } else if (target.slice(0, 3) === "../") {
+          let adjustedNameSpace = getNamespaceFromName(nameSpace.slice(0, nameSpace.length - 1))
+          let adjustedTarget = target.slice(3);
+          while (adjustedTarget.slice(0, 3) === "../") {
+            if (adjustedNameSpace === "/") {
+              absoluteTarget = null;
+              break;
+            }
+            adjustedNameSpace = getNamespaceFromName(adjustedNameSpace.slice(0, adjustedNameSpace.length - 1))
+            adjustedTarget = adjustedTarget.slice(3);
+          }
+          if (absoluteTarget !== null) {
+            absoluteTarget = adjustedNameSpace + adjustedTarget;
+          }
+        } else {
+          absoluteTarget = nameSpace + target;
+        }
+        addResponsesToDescendantsWithTarget(serializedChildren, target, absoluteTarget);
+      }
+
+    }
+  }
 
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let replaceStringsAndMacros = function ({ matchedChildren, parentAttributes }) {
-      // if chidren are strings and macros
-      // wrap with award and type
+    let wrapWithComponentTypeIfNeeded = function ({ matchedChildren, parentAttributes, componentInfoObjects }) {
 
-      if (!matchedChildren.every(child =>
-        typeof child === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
-      )) {
+      // wrap with componentType if have more than one child or a single string
+
+      // remove any blank string children from beginning or end of children
+      while (typeof matchedChildren[0] === "string" && matchedChildren[0].trim() === "") {
+        matchedChildren = matchedChildren.slice(1);
+      }
+      let nChildren = matchedChildren.length;
+      while (typeof matchedChildren[nChildren - 1] === "string" && matchedChildren[nChildren - 1].trim() === "") {
+        matchedChildren = matchedChildren.slice(0, nChildren - 1);
+        nChildren = matchedChildren.length;
+      }
+
+      if (matchedChildren.length === 1 && typeof matchedChildren[0] === "object") {
         return { success: false }
+      }
+
+      let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
+
+      let foundMath = false, foundText = false, foundBoolean = false;
+
+      for (let child of matchedChildren) {
+        if (typeof child !== "object") {
+          continue;
+        } else if (componentIsSpecifiedType(child, "math")
+          || componentIsSpecifiedType(child, "number")
+          || componentIsSpecifiedType(child, "mathList")
+          || componentIsSpecifiedType(child, "numberList")
+        ) {
+          foundMath = true;
+        } else if (componentIsSpecifiedType(child, "text")
+          || componentIsSpecifiedType(child, "textList")
+        ) {
+          foundText = true;
+        } else if (componentIsSpecifiedType(child, "boolean")
+          || componentIsSpecifiedType(child, "booleanList")
+        ) {
+          foundBoolean = true;
+        }
       }
 
       let type;
       if (parentAttributes.type) {
         type = parentAttributes.type
+        if (!["math", "text", "boolean"].includes(type)) {
+          console.warn(`Invalid type ${type}`);
+          type = "math";
+        }
       } else {
-        type = "math";
+        if (foundMath) {
+          type = "math"
+        } else if (foundText) {
+          type = "text"
+        } else if (foundBoolean) {
+          // TODO: if have multiple booleans,
+          // it doesn't make sense to wrap in one big boolean.
+          // What is a better solution?
+          type = "boolean"
+        } else {
+          type = "math"
+        }
       }
-
-      if (!["math", "text", "boolean"].includes(type)) {
-        console.warn(`Invalid type ${type}`);
-        type = "math";
-      }
-
 
       return {
         success: true,
@@ -156,7 +255,7 @@ export default class Award extends BaseComponent {
     }
 
     sugarInstructions.push({
-      replacementFunction: replaceStringsAndMacros
+      replacementFunction: wrapWithComponentTypeIfNeeded
     })
 
 
@@ -173,6 +272,9 @@ export default class Award extends BaseComponent {
       group: "maths",
       componentTypes: ["math"]
     }, {
+      group: "numbers",
+      componentTypes: ["number"]
+    }, {
       group: "texts",
       componentTypes: ["text"]
     }, {
@@ -182,11 +284,17 @@ export default class Award extends BaseComponent {
       group: "mathLists",
       componentTypes: ["mathList"]
     }, {
+      group: "numberLists",
+      componentTypes: ["numberList"]
+    }, {
       group: "textLists",
       componentTypes: ["textList"]
     }, {
       group: "booleanLists",
       componentTypes: ["booleanList"]
+    }, {
+      group: "otherComparableTypes",
+      componentTypes: ["orbitalDiagram"]
     }]
 
   }
@@ -202,11 +310,10 @@ export default class Award extends BaseComponent {
         whenChild: {
           dependencyType: "child",
           childGroups: ["whens"],
-          variableNames: ["fractionSatisfied"]
         },
         typeChildren: {
           dependencyType: "child",
-          childGroups: ["maths", "texts", "booleans", "mathLists", "textLists", "booleanLists"],
+          childGroups: ["maths", "numbers", "texts", "booleans", "mathLists", "numberLists", "textLists", "booleanLists", "otherComparableTypes"],
         },
       }),
       definition: function ({ dependencyValues }) {
@@ -223,17 +330,21 @@ export default class Award extends BaseComponent {
           parsedExpression = me.fromAst(["=", "comp1", "comp2"]);
         }
 
-        return { newValues: { parsedExpression, requireInputInAnswer } };
+        return { setValue: { parsedExpression, requireInputInAnswer } };
       }
     };
 
-    stateVariableDefinitions.creditAchieved = {
+    stateVariableDefinitions.creditAchievedIfSubmit = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: [{
-        variableName: "fractionSatisfied",
+        variableName: "fractionSatisfiedIfSubmit",
         public: true,
-        componentType: "number"
+        shadowingInstructions: {
+          createComponentOfType: "number",
+        },
       }],
       returnDependencies: () => ({
         credit: {
@@ -250,6 +361,11 @@ export default class Award extends BaseComponent {
           childGroups: ["maths"],
           variableNames: ["value", "unordered"]
         },
+        numberChild: {
+          dependencyType: "child",
+          childGroups: ["numbers"],
+          variableNames: ["value"]
+        },
         textChild: {
           dependencyType: "child",
           childGroups: ["texts"],
@@ -265,6 +381,11 @@ export default class Award extends BaseComponent {
           childGroups: ["mathLists"],
           variableNames: ["maths", "unordered"]
         },
+        numberListChild: {
+          dependencyType: "child",
+          childGroups: ["numberLists"],
+          variableNames: ["numbers", "unordered"]
+        },
         textListChild: {
           dependencyType: "child",
           childGroups: ["textLists"],
@@ -274,6 +395,11 @@ export default class Award extends BaseComponent {
           dependencyType: "child",
           childGroups: ["booleanLists"],
           variableNames: ["booleans", "unordered"]
+        },
+        otherComparableChild: {
+          dependencyType: "child",
+          childGroups: ["otherComparableTypes"],
+          variableNames: ["value"]
         },
         answerInput: {
           dependencyType: "parentStateVariable",
@@ -327,54 +453,64 @@ export default class Award extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "nPeriodicSetMatchesRequired",
         },
+        caseInsensitiveMatch: {
+          dependencyType: "stateVariable",
+          variableName: "caseInsensitiveMatch",
+        },
+        matchBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "matchBlanks",
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
 
-        let fractionSatisfied;
+        let fractionSatisfiedIfSubmit;
 
         if (dependencyValues.whenChild.length > 0) {
-          fractionSatisfied = dependencyValues.whenChild[0].stateValues.fractionSatisfied;
+          fractionSatisfiedIfSubmit = dependencyValues.whenChild[0].stateValues.fractionSatisfied;
         } else {
           if (!dependencyValues.answerInput || !dependencyValues.parsedExpression) {
             return {
-              newValues: {
-                creditAchieved: 0,
-                fractionSatisfied: 0,
+              setValue: {
+                creditAchievedIfSubmit: 0,
+                fractionSatisfiedIfSubmit: 0,
               }
             }
           }
 
-          fractionSatisfied = evaluateLogicDirectlyFromChildren({
+          fractionSatisfiedIfSubmit = evaluateLogicDirectlyFromChildren({
             dependencyValues, usedDefault
           });
 
         }
 
-        fractionSatisfied = Math.max(0, Math.min(1, fractionSatisfied));
+        fractionSatisfiedIfSubmit = Math.max(0, Math.min(1, fractionSatisfiedIfSubmit));
 
-        let creditAchieved = 0;
+        let creditAchievedIfSubmit = 0;
         if (Number.isFinite(dependencyValues.credit)) {
-          creditAchieved = Math.max(0, Math.min(1, dependencyValues.credit)) * fractionSatisfied;
+          creditAchievedIfSubmit = Math.max(0, Math.min(1, dependencyValues.credit)) * fractionSatisfiedIfSubmit;
         }
         return {
-          newValues: {
-            fractionSatisfied, creditAchieved,
+          setValue: {
+            fractionSatisfiedIfSubmit, creditAchievedIfSubmit,
           }
         }
       }
 
     }
 
-    stateVariableDefinitions.awarded = {
+
+    stateVariableDefinitions.fractionSatisfied = {
       public: true,
-      componentType: "boolean",
-      defaultValue: false,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
+      defaultValue: 0,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          awarded: {
-            variablesToCheck: "awarded",
-          }
+          fractionSatisfied: true
         }
       }),
       inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
@@ -385,7 +521,65 @@ export default class Award extends BaseComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "awarded",
+            setEssentialValue: "fractionSatisfied",
+            value: desiredStateVariableValues.fractionSatisfied
+          }]
+        };
+      }
+
+    }
+
+    stateVariableDefinitions.creditAchieved = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
+      defaultValue: 0,
+      hasEssential: true,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          creditAchieved: true
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
+        if (!initialChange) {
+          return { success: false }
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "creditAchieved",
+            value: desiredStateVariableValues.creditAchieved
+          }]
+        };
+      }
+
+    }
+
+    stateVariableDefinitions.awarded = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      defaultValue: false,
+      hasEssential: true,
+      returnDependencies: () => ({}),
+      definition: () => ({
+        useEssentialOrDefaultValue: {
+          awarded: true
+        }
+      }),
+      inverseDefinition: function ({ desiredStateVariableValues, initialChange }) {
+        if (!initialChange) {
+          return { success: false }
+        }
+
+        return {
+          success: true,
+          instructions: [{
+            setEssentialValue: "awarded",
             value: desiredStateVariableValues.awarded
           }]
         };
@@ -404,9 +598,9 @@ export default class Award extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "feedbackCodes",
         },
-        feedbackDefinitions: {
-          dependencyType: "parentStateVariable",
-          variableName: "feedbackDefinitions"
+        feedbackDefinitionAncestor: {
+          dependencyType: "ancestor",
+          variableNames: ["feedbackDefinitions"]
         },
         awarded: {
           dependencyType: "stateVariable",
@@ -416,18 +610,18 @@ export default class Award extends BaseComponent {
       definition: function ({ dependencyValues }) {
 
         if (!dependencyValues.awarded) {
-          return { newValues: { allFeedbacks: [] } }
+          return { setValue: { allFeedbacks: [] } }
         }
 
         let allFeedbacks = [];
 
+        let feedbackDefinitions = dependencyValues.feedbackDefinitionAncestor.stateValues.feedbackDefinitions;
+
         for (let feedbackCode of dependencyValues.feedbackCodes) {
           let code = feedbackCode.toLowerCase();
-          for (let feedbackDefinition of dependencyValues.feedbackDefinitions) {
-            if (code === feedbackDefinition.feedbackCode) {
-              allFeedbacks.push(feedbackDefinition.feedbackText);
-              break;  // just take first match
-            }
+          let feedbackText = feedbackDefinitions[code];
+          if (feedbackText) {
+            allFeedbacks.push(feedbackText);
           }
         }
 
@@ -435,14 +629,16 @@ export default class Award extends BaseComponent {
           allFeedbacks.push(dependencyValues.feedbackText);
         }
 
-        return { newValues: { allFeedbacks } }
+        return { setValue: { allFeedbacks } }
 
       }
     };
 
     stateVariableDefinitions.numberFeedbacks = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         allFeedbacks: {
           dependencyType: "stateVariable",
@@ -451,7 +647,7 @@ export default class Award extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { numberFeedbacks: dependencyValues.allFeedbacks.length },
+          setValue: { numberFeedbacks: dependencyValues.allFeedbacks.length },
           checkForActualChange: { numberFeedbacks: true }
         }
       }
@@ -459,7 +655,9 @@ export default class Award extends BaseComponent {
 
     stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedback",
+      shadowingInstructions: {
+        createComponentOfType: "feedback",
+      },
       isArray: true,
       entryPrefixes: ["feedback"],
       returnArraySizeDependencies: () => ({
@@ -492,7 +690,7 @@ export default class Award extends BaseComponent {
           feedbacks[arrayKey] = globalDependencyValues.allFeedbacks[arrayKey];
         }
 
-        return { newValues: { feedbacks } }
+        return { setValue: { feedbacks } }
       }
 
     }
@@ -531,6 +729,7 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
     textListChildrenByCode: {},
     booleanChildrenByCode: {},
     booleanListChildrenByCode: {},
+    otherChildrenByCode: {},
   };
 
   Object.assign(dependenciesForEvaluateLogic, dependencyValues);
@@ -541,14 +740,20 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
     dependenciesForEvaluateLogic.textChildrenByCode.comp2 = dependencyValues.textChild[0];
   } else if (dependencyValues.mathChild.length > 0) {
     dependenciesForEvaluateLogic.mathChildrenByCode.comp2 = dependencyValues.mathChild[0];
+  } else if (dependencyValues.numberChild.length > 0) {
+    dependenciesForEvaluateLogic.numberChildrenByCode.comp2 = dependencyValues.numberChild[0];
   } else if (dependencyValues.booleanChild.length > 0) {
     dependenciesForEvaluateLogic.booleanChildrenByCode.comp2 = dependencyValues.booleanChild[0];
   } else if (dependencyValues.textListChild.length > 0) {
     dependenciesForEvaluateLogic.textListChildrenByCode.comp2 = dependencyValues.textListChild[0];
   } else if (dependencyValues.mathListChild.length > 0) {
     dependenciesForEvaluateLogic.mathListChildrenByCode.comp2 = dependencyValues.mathListChild[0];
+  } else if (dependencyValues.numberListChild.length > 0) {
+    dependenciesForEvaluateLogic.numberListChildrenByCode.comp2 = dependencyValues.numberListChild[0];
   } else if (dependencyValues.booleanListChild.length > 0) {
     dependenciesForEvaluateLogic.booleanListChildrenByCode.comp2 = dependencyValues.booleanListChild[0];
+  } else if (dependencyValues.otherComparableChild.length > 0) {
+    dependenciesForEvaluateLogic.otherChildrenByCode.comp2 = dependencyValues.otherComparableChild[0];
   }
 
   let answerValue = dependencyValues.answerInput.stateValues.immediateValue;
@@ -576,3 +781,35 @@ function evaluateLogicDirectlyFromChildren({ dependencyValues, usedDefault }) {
 
 }
 
+function addResponsesToDescendantsWithTarget(components, target, absoluteTarget) {
+
+  for (let component of components) {
+    let propsOrDAttrs = component.props;
+    if (!propsOrDAttrs || Object.keys(propsOrDAttrs).length === 0) {
+      propsOrDAttrs = component.doenetAttributes;
+    }
+    if (propsOrDAttrs) {
+      for (let prop in propsOrDAttrs) {
+        if (
+          (prop.toLowerCase() === "target" && propsOrDAttrs[prop] === target)
+          ||
+          (prop.toLowerCase() === "targetcomponentname" && propsOrDAttrs[prop] === absoluteTarget)
+        ) {
+          if (!component.attributes) {
+            component.attributes = {};
+          }
+          let foundIsResponse = Object.keys(component.attributes).map(x => x.toLowerCase()).includes("isresponse");
+          if (!foundIsResponse) {
+            component.attributes.isResponse = true;
+          }
+        }
+      }
+
+    }
+
+    if (component.children) {
+      addResponsesToDescendantsWithTarget(component.children, target, absoluteTarget)
+    }
+  }
+
+}

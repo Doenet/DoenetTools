@@ -53,7 +53,9 @@ export default class Seeds extends InlineComponent {
 
     stateVariableDefinitions.nSeeds = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         stringChildren: {
           dependencyType: "child",
@@ -61,13 +63,15 @@ export default class Seeds extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { nSeeds: dependencyValues.stringChildren.length } }
+        return { setValue: { nSeeds: dependencyValues.stringChildren.length } }
       }
     }
 
     stateVariableDefinitions.seeds = {
       public: true,
-      componentType: "seed",
+      shadowingInstructions: {
+        createComponentOfType: "seed",
+      },
       isArray: true,
       entryPrefixes: ["seed"],
       returnArraySizeDependencies: () => ({
@@ -100,7 +104,7 @@ export default class Seeds extends InlineComponent {
             seeds[arrayKey] = dependencyValuesByKey[arrayKey].stringChild[0]
           }
         }
-        return { newValues: { seeds } }
+        return { setValue: { seeds } }
       }
     }
 

@@ -5,8 +5,8 @@ import { applyConstraintFromComponentConstraints } from '../utils/constraints.js
 export default class AttractToConstraint extends ConstraintComponent {
   static componentType = "attractToConstraint";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.threshold = {
       createComponentOfType: "number",
       createStateVariable: "threshold",
@@ -48,23 +48,24 @@ export default class AttractToConstraint extends ConstraintComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
-          applyConstraint: function (variables) {
+        setValue: {
+          applyConstraint: function ({ variables, scales }) {
 
             let constraintResult;
 
             let constraintChild = dependencyValues.constraintChild[0];
 
-            if(!constraintChild) {
+            if (!constraintChild) {
               return {};
             }
 
             if (constraintChild.stateValues.applyConstraint) {
-              constraintResult = constraintChild.stateValues.applyConstraint(variables);
+              constraintResult = constraintChild.stateValues.applyConstraint({ variables, scales });
             } else {
               constraintResult = applyConstraintFromComponentConstraints({
                 variables,
-                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint
+                applyComponentConstraint: constraintChild.stateValues.applyComponentConstraint,
+                scales
               })
             }
 

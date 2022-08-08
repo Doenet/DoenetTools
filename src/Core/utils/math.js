@@ -10,7 +10,7 @@ export var appliedFunctionSymbolsDefault = [
   'arg',
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
-  'sum', 'prod', 'var', 'std',
+  'sum', 'prod', 'variance', 'std',
   'count', 'mod'
 ];
 
@@ -103,11 +103,12 @@ export function findFiniteNumericalValue(value) {
 
 
 export function convertValueToMathExpression(value) {
-  if (value === undefined || value === null) {
-    return me.fromAst('\uFF3F');  // long underscore
-  } else if (value instanceof me.class) {
+  if (value instanceof me.class) {
     return value;
   } else if (typeof value === "number" || typeof value === "string") {
+    // let value be math-expression based on value
+    return me.fromAst(value);
+  } else if (Array.isArray(value)) {
     // let value be math-expression based on value
     return me.fromAst(value);
   } else {
@@ -199,29 +200,91 @@ export function returnNVariables(n, variablesSpecified) {
 }
 
 
-export function mergeVectorsForInverseDefinition({ desiredVector, currentVector, workspace, workspaceKey }) {
+export async function preprocessMathInverseDefinition({ desiredValue,
+  stateValues, variableName = "value", arrayKey,
+  workspace }) {
 
-  if (desiredVector.tree[0] === "vector" && currentVector.tree[0] === "vector") {
+  if ((desiredValue.tree[0] !== "tuple" && desiredValue.tree[0] !== "vector")
+    || !desiredValue.tree.includes()
+  ) {
+    return { desiredValue };
+  }
 
-    let vectorAst;
-    if (workspace[workspaceKey]) {
-      vectorAst = workspace[workspaceKey].slice(0);
-    } else {
-      vectorAst = currentVector.tree.slice(0);
+  // have a desiredValue that is a vector that is missing some entries
+
+  let valueAst;
+
+  let workspaceKey = variableName + "Ast";
+  if (arrayKey !== undefined) {
+    workspaceKey += `_${arrayKey}`;
+  }
+
+  if (workspace[workspaceKey]) {
+    // if have value from workspace
+    // we will merge components from desired value into workspace value
+    valueAst = workspace[workspaceKey].slice(0, desiredValue.tree.length);
+  } else {
+
+    let currentValue = await stateValues[variableName];
+
+    if (currentValue && arrayKey !== undefined) {
+      // TODO: generalize to multi-dimensional arrays?
+      currentValue = currentValue[arrayKey]
     }
 
-    for (let [ind, value] of desiredVector.tree.entries()) {
-      if (value !== undefined) {
-        vectorAst[ind] = value;
+    if (currentValue && (currentValue.tree[0] === "tuple" || currentValue.tree[0] === "vector")) {
+
+      // if we have a currentValue that is a vector
+      // we will merge components from desired value into current value
+      valueAst = currentValue.tree.slice(0, desiredValue.tree.length);
+    }
+  }
+
+
+  if (valueAst) {
+    // have a vector that we'll merge desiredValue into
+
+    let vectorComponentsNotAffected = [];
+    let foundNotAffected = false;
+    for (let [ind, value] of desiredValue.tree.entries()) {
+      if (value === undefined) {
+        foundNotAffected = true;
+        vectorComponentsNotAffected.push(ind);
+      } else {
+        valueAst[ind] = value;
+      }
+    }
+    desiredValue = me.fromAst(valueAst);
+    workspace[workspaceKey] = valueAst;
+
+    if (foundNotAffected) {
+      return {
+        desiredValue,
+        vectorComponentsNotAffected
+      }
+    } else {
+      return { desiredValue };
+    }
+  } else {
+
+    // don't have a vector to merge desiredValue into
+    // but desiredValue has undefined entries
+    // desired expression could have undefined entries
+    // fill in with \uff3f
+    let desiredOperands = [];
+    for (let val of desiredValue.tree.slice(1)) {
+      if (val === undefined) {
+        desiredOperands.push('\uff3f');
+      } else {
+        desiredOperands.push(val)
       }
     }
 
-    desiredVector = me.fromAst(vectorAst);
-    workspace[workspaceKey] = vectorAst;
+    desiredValue = me.fromAst([desiredValue.tree[0], ...desiredOperands])
 
+    return { desiredValue };
   }
 
-  return desiredVector;
 }
 
 export function normalizeLatexString(latexString, { unionFromU = false } = {}) {
@@ -311,7 +374,7 @@ export function normalizeLatexString(latexString, { unionFromU = false } = {}) {
   latexString = latexString.replaceAll(/(\b|\\ )or(\b|\\ )/g, "$1\\lor$2")
   latexString = latexString.replaceAll(/(\b|\\ )and(\b|\\ )/g, "$1\\land$2")
 
-  if(unionFromU) {
+  if (unionFromU) {
     latexString = latexString.replaceAll(/(\b|\\ )U(\b|\\ )/g, "$1\\cup$2")
 
   }
@@ -355,7 +418,7 @@ export function mathStateVariableFromNumberStateVariable({
       },
     }),
     definition: function ({ dependencyValues }) {
-      return { newValues: { [mathVariableName]: me.fromAst(dependencyValues.number) } };
+      return { setValue: { [mathVariableName]: me.fromAst(dependencyValues.number) } };
     },
     inverseDefinition: function ({ desiredStateVariableValues }) {
 
@@ -376,7 +439,7 @@ export function mathStateVariableFromNumberStateVariable({
 
   if (isPublic) {
     mathDef.public = true;
-    mathDef.componentType = "math"
+    mathDef.shadowingInstructions = { createComponentOfType: "math" };
   }
 
   return mathDef;
@@ -386,17 +449,22 @@ export function mathStateVariableFromNumberStateVariable({
 export function roundForDisplay({ value, dependencyValues, usedDefault }) {
   let rounded;
 
-  if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-    if (Number.isFinite(dependencyValues.displayDecimals)) {
-      rounded = me.round_numbers_to_decimals(value, dependencyValues.displayDecimals);
-    } else {
-      rounded = value;
-    }
+  // displayDigits takes precedence
+  // use displayDecimals only if 
+  // - didn't specify displayDigits or specified invalid displayDigits, and
+  // - specified a valid displayDecimals
+  if (
+    (usedDefault.displayDigits || !(dependencyValues.displayDigits >= 1))
+    && !usedDefault.displayDecimals
+    && Number.isFinite(dependencyValues.displayDecimals)
+  ) {
+    rounded = me.round_numbers_to_decimals(value, dependencyValues.displayDecimals);
   } else {
     if (dependencyValues.displayDigits >= 1) {
       rounded = me.round_numbers_to_precision(value, dependencyValues.displayDigits);
     } else {
-      rounded = value;
+      // default behavior is round to 10 digits
+      rounded = me.round_numbers_to_precision(value, 10);
     }
     if (dependencyValues.displaySmallAsZero > 0) {
       rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: dependencyValues.displaySmallAsZero });
@@ -502,13 +570,14 @@ function wrapWordIncludingNumberWithVarSub(string) {
 
   let newString = "";
 
-  let regex = /([^a-zA-Z0-9]?)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
+  let regex = /([^a-zA-Z0-9\s]?\s*)([a-zA-Z][a-zA-Z0-9]*[0-9][a-zA-Z0-9]*)([^a-zA-Z0-9]?)/;
   let match = string.match(regex);
   while (match) {
     let beginMatch = match.index;
     let endMatch = beginMatch + match[0].length - match[3].length;
-    if (match[1] === "\\") {
-      // start with backslash, so skip
+    if (match[1] === "\\" || match[1][0] === "^") {
+      // start with backslash or with a ^ and optional space
+      // so skip
       newString += string.substring(0, endMatch);
       string = string.substring(endMatch);
     } else {
@@ -526,3 +595,30 @@ function wrapWordIncludingNumberWithVarSub(string) {
   return newString;
 
 }
+
+export function stripLatex(latex) {
+  return latex.replaceAll(`\\,`, '').replaceAll(/\\var{([^{}]*)}/g, '$1');
+}
+
+export const mathjaxConfig = {
+  showProcessingMessages: false,
+  "fast-preview": {
+    disabled: true
+  },
+  jax: ["input/TeX", "output/CommonHTML"],
+  extensions: ["tex2jax.js", "MathMenu.js", "MathZoom.js", "AssistiveMML.js", "a11y/accessibility-menu.js"],
+  TeX: {
+    extensions: ["AMSmath.js", "AMSsymbols.js", "noErrors.js", "noUndefined.js"],
+    equationNumbers: {
+      autoNumber: "AMS"
+    },
+    Macros: {
+      lt: '<', gt: '>', amp: '&', var: ['\\mathrm{#1}', 1],
+      csch: '\\operatorname{csch}',
+      sech: '\\operatorname{sech}'
+    }
+  },
+  tex2jax: {
+    displayMath: [['\\[', '\\]']]
+  }
+};

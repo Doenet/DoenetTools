@@ -1,59 +1,99 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useEffect } from 'react';
+import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
-export default class Solution extends DoenetRenderer {
+export default React.memo(function Solution(props) {
+  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
 
-  render() {
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
 
-    if (this.doenetSvData.hidden) {
-      return null;
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
     }
+  }, [])
 
-    let icon;
-    let childrenToRender = null;
-    let infoBlockStyle = { display: "none" };
+  if (SVs.hidden) {
+    return null;
+  }
 
-    let onClickFunction;
-    let cursorStyle;
+  let icon;
+  let childrenToRender = null;
+  let infoBlockStyle = { display: 'none' };
 
-    if (this.doenetSvData.open) {
-      icon = <FontAwesomeIcon icon={puzzle} />
+  let onClickFunction;
+  let cursorStyle;
 
-      childrenToRender = this.children;
-      infoBlockStyle = { display: "block", margin: "0px 4px 4px 4px", padding: "6px", border: "1px solid #ebebeb", backgroundColor: "#fcfcfc" };
+  if (SVs.open) {
+    icon = <FontAwesomeIcon icon={puzzle} />;
 
-      if (this.doenetSvData.canBeClosed) {
-        cursorStyle = "pointer";
-        onClickFunction = this.actions.closeSolution;
-      } else {
-        onClickFunction = null;
-      }
+    childrenToRender = children;
+    infoBlockStyle = {
+      display: 'block',
+      margin: '0px 4px 12px 4px',
+      padding: '6px',
+      border: '2px solid var(--canvastext)',
+      borderTop: '0px',
+      borderBottomLeftRadius: '5px',
+      borderBottomRightRadius: '5px',
+      backgroundColor: 'var(--canvas)',
+    };
 
+    if (SVs.canBeClosed) {
+      cursorStyle = 'pointer';
+      onClickFunction = () => {
+        callAction({
+          action: actions.closeSolution,
+        });
+      };
     } else {
-      icon = <FontAwesomeIcon icon={puzzle} rotation={90} />
-      cursorStyle = "pointer";
-      onClickFunction = this.actions.revealSolution;
+      onClickFunction = () => {};
     }
+  } else {
+    icon = <FontAwesomeIcon icon={puzzle} rotation={90} />;
+    cursorStyle = 'pointer';
+    onClickFunction = () => {
+      callAction({
+        action: actions.revealSolution,
+      });
+    };
+  }
 
-    return <aside id={this.componentName}>
-      <a name={this.componentName} />
-      <span id={this.componentName + "_button"} style={{
-        display: "block",
-        margin: "4px 4px 0px 4px",
-        padding: "6px", border: "1px solid #ebebeb",
-        backgroundColor: "#ebebeb",
-        cursor: cursorStyle
-      }}
+  return (
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+    <aside id={name}  style={{ margin: "12px 0" }}>
+      <a name={name} />
+      <span
+        id={name + '_button'}
+        style={{
+          display: 'block',
+          margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',
+          padding: '6px',
+          border: '2px solid var(--canvastext)',
+          borderTopLeftRadius: '5px',
+          borderTopRightRadius: '5px',
+          borderBottomLeftRadius: SVs.open ? '0px' : '5px',
+          borderBottomRightRadius: SVs.open ? '0px' : '5px',
+          backgroundColor: 'var(--mainGray)',
+          cursor: 'pointer',
+        
+        }}
         onClick={onClickFunction}
       >
-        {icon} Solution {this.doenetSvData.message}
+        {icon} Solution {SVs.message}
       </span>
-      <span style={infoBlockStyle}>
-        {childrenToRender}
-      </span>
+      <span style={infoBlockStyle}>{childrenToRender}</span>
     </aside>
-
-  }
-}
+    </VisibilitySensor>
+  );
+})

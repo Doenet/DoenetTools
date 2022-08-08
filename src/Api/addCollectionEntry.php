@@ -79,8 +79,8 @@ if ($success) {
     }
 
     if ($success) {
-        //retrive contentId from content table
-        $sql = "SELECT contentId
+        //retrive cid from content table
+        $sql = "SELECT cid
         FROM content
         WHERE doenetId = '$entryDoenetId'
         AND isReleased = '1'
@@ -88,7 +88,7 @@ if ($success) {
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $entryContentId = $row['contentId'];
+            $entryContentId = $row['cid'];
 
             $sql = "INSERT INTO collection
             (doenetId, entryId, entryDoenetId, entryContentId, entryVariant)

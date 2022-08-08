@@ -2,12 +2,12 @@ import BaseComponent from './abstract/BaseComponent';
 
 export default class Sources extends BaseComponent {
   static componentType = "sources";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.alias = {
       createPrimitiveOfType: "string",
       validationFunction: function (value) {
@@ -58,7 +58,7 @@ export default class Sources extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { alias: dependencyValues.alias } }
+        return { setValue: { alias: dependencyValues.alias } }
       }
     }
 
@@ -70,7 +70,7 @@ export default class Sources extends BaseComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { indexAlias: dependencyValues.indexAlias } }
+        return { setValue: { indexAlias: dependencyValues.indexAlias } }
       }
     }
 
@@ -87,7 +87,7 @@ export default class Sources extends BaseComponent {
         let numberOfChildren = dependencyValues.children.length;
         let childComponentNames = dependencyValues.children.map(x => x.componentName);
         return {
-          newValues: {
+          setValue: {
             numberOfChildren,
             childComponentNames,
             childIdentities: dependencyValues.children,

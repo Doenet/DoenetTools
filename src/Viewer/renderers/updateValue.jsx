@@ -1,19 +1,25 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
+import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 
-export default class UpdateValue extends DoenetRenderer {
 
-  static initializeChildrenOnConstruction = false;
+export default React.memo(function UpdateValue(props) {
+  let { name, SVs, actions, callAction } = useDoenetRender(props,false);
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <span id={this.componentName}><a name={this.componentName} />
-    <button id={this.componentName + "_button"} onClick={this.actions.updateValue} disabled={this.doenetSvData.disabled}>{this.doenetSvData.label}</button>
-    </span>;
-
+  if (SVs.hidden) {
+    return null;
   }
-}
+
+  return (
+    <div id={name} margin="12px 0" style={{display:"inline-block"}}>
+      <a name={name} />
+      <Button
+        id={name + "_button"} 
+        onClick={()=>callAction({ action:actions.updateValue })} 
+        disabled={SVs.disabled}
+        value={SVs.label}
+        valueHasLatex={SVs.labelHasLatex}
+      />
+    </div>
+  )
+})

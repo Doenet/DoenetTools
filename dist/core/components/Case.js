@@ -3,12 +3,8 @@ import Template from './Template.js';
 export default class Case extends Template {
   static componentType = "case";
 
-  static get stateVariablesShadowedForReference() {
-    return ["conditionSatisfied"]
-  }
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.condition = {
       createComponentOfType: "boolean",
@@ -24,7 +20,9 @@ export default class Case extends Template {
 
     stateVariableDefinitions.conditionSatisfied = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         condition: {
           dependencyType: "attributeComponent",
@@ -41,7 +39,7 @@ export default class Case extends Template {
           conditionSatisfied = dependencyValues.condition.stateValues.value;
         }
 
-        return { newValues: { conditionSatisfied } }
+        return { setValue: { conditionSatisfied } }
       }
     };
 

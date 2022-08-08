@@ -18,7 +18,7 @@ const BreadcrumbItem = styled.li`
   &:last-of-type span {
     border-radius: 0px 15px 15px 0px;
     padding: 0px 25px 0px 45px;
-    background: hsl(209, 54%, 82%);
+    background: var(--lightBlue);
     color: black;
   }
   &:first-of-type span {
@@ -27,16 +27,16 @@ const BreadcrumbItem = styled.li`
   &:only-child span {
     border-radius: 15px;
     padding: 0px 30px 0px 30px;
-    background: hsl(209, 54%, 82%);
+    background: var(--lightBlue);
     color: black;
   }
 `;
 const CrumbMenuItem = styled.div`
   padding: 4px;
   cursor: pointer;
-  color: black;
-  background: white;
-  border: 2px solid black;
+  color: var(--canvastext);
+  background: var(--canvas);
+  border: 2px solid var(--canvastext);
   border-radius: ${props => props.radius};
   margin: -2px 0px -2px 0px;
   border-left: 0px;
@@ -50,7 +50,7 @@ const CrumbMenuItem = styled.div`
   text-overflow: ellipsis;
   height: 21.6px;
   &:hover {
-    background-color: hsl(209,54%,82%);
+    background-color: var(--lightBlue);
     color:black;
   }
 `
@@ -60,7 +60,7 @@ const BreadcrumbSpan = styled.span`
   position: relative;
   float: left;
   color: white;
-  background: #1a5a99;
+  background: var(--mainBlue);
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
   &::after {
@@ -69,7 +69,7 @@ const BreadcrumbSpan = styled.span`
     height: 0;
     border-top: 50px solid transparent;
     border-bottom: 50px solid transparent;
-    border-left: 30px solid #1a5a99;
+    border-left: 30px solid var(--mainBlue);
     position: absolute;
     top: 50%;
     margin-top: -50px;
@@ -119,7 +119,7 @@ function Crumb({setRef,i,label=null,onClick,icon=null}){
     label = '_'
   }
 
-  return <BreadcrumbItem ref={crumbRef}>
+  return <BreadcrumbItem ref={crumbRef} data-test={`Crumb ${i}`}>
   <BreadcrumbSpan onClick={onClick}>{iconJSX}<CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
   </BreadcrumbItem>
 }
@@ -277,7 +277,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
   }
 
   if (numHidden > 0){crumbsJSX[1] = <BreadcrumbItem ref={elipseItemRef} key={`breadcrumbitem1`}>
-  <BreadcrumbSpan  onClick={()=>{setMenuVisible((was)=>!was)}}>...</BreadcrumbSpan>
+  <BreadcrumbSpan data-test="Crumb Menu" onClick={()=>{setMenuVisible((was)=>!was)}}>...</BreadcrumbSpan>
   </BreadcrumbItem>}
 
   let breadcrumbMenu = null;
@@ -289,6 +289,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
       
       crumMenuItemsJSX.push(<CrumbMenuItem 
         key={`breadcrumbitem${i}`} 
+        data-test={`Crumb Menu Item ${i}`}
         radius={'0px'}
         onClick={onClick}>{icon}{label}</CrumbMenuItem>)
     }
@@ -309,8 +310,8 @@ export function BreadCrumb({crumbs=[],offset=0}){
         zIndex:"20",
         top:"31px",
         position:"absolute",
-        backgroundColor: 'white',
-        border: '2px solid black',
+        backgroundColor: 'var(--canvas)',
+        border: '2px solid var(--canvastext)',
         borderRadius: '5px',
         // maxHeight: "86.4px",
         maxHeight: "121px",
@@ -327,7 +328,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
   }
   
   return <>
-  <BreadCrumbContainer ref={containerRef}> 
+  <BreadCrumbContainer ref={containerRef} > 
   {crumbsJSX}
   {breadcrumbMenu}
    </BreadCrumbContainer>

@@ -1,19 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 import me from 'math-expressions';
-
 import styled from "styled-components";
 // import { Spring } from '@react-spring/web';
 import useDoenetRender from './useDoenetRenderer';
-import Button from "../../_reactComponents/PanelHeaderComponents/Button";
-import ButtonGroup from "../../_reactComponents/PanelHeaderComponents/ButtonGroup";
-import { doenetComponentForegroundActive, doenetComponentForegroundInactive, doenetLightGray } from "../../_reactComponents/PanelHeaderComponents/theme"
-
+import ActionButton from "../../_reactComponents/PanelHeaderComponents/ActionButton";
+import ActionButtonGroup from "../../_reactComponents/PanelHeaderComponents/ActionButtonGroup";
+import { useSetRecoilState } from 'recoil';
+import { rendererState } from './useDoenetRenderer';
+import { MathJax } from "better-react-mathjax";
 
 let round_to_decimals = (x, n) => me.round_numbers_to_decimals(x, n).tree;
 
 const SliderContainer = styled.div`
     width: fit-content;
     height: ${props => (props.labeled && props.noTicked) ? "60px" : props.labeled ? "80px" : props.noTicked ? "40px" : "60px"};
+    margin-bottom: 12px;
     &:focus {outline: 0;};
 `;
 
@@ -25,8 +26,8 @@ const SubContainer2 = styled.div`
 const StyledSlider = styled.div`
   position: relative;
   border-radius: 3px;
-  background: #888888 ;
-  height: 1px;
+  background: black; // black?
+  height: 2px;
   width: ${props => props.width};
   user-select: none;
 `;
@@ -43,16 +44,16 @@ const StyledThumb = styled.div`
   position: relative;
   top: -4px;
   opacity: 1;
-  background: ${props => props.disabled ? "#404040" : `${doenetComponentForegroundActive}`};
+  background: ${props => props.disabled ? "var(--mainGray)" : "var(--mainBlue)"}; // var(--mainBlue)?
   cursor: pointer;
 `;
 
 const Tick = styled.div`
     position: absolute;
-    border-left: 2px solid  ${doenetLightGray};
+    border-left: 2px solid var(--mainGray);
     height: 10px;
-    top:1px;
-    z-Index:-2;
+    top: 1px;
+    z-Index: -2;
     left: ${props => props.x};
     user-select: none;
 `;
@@ -60,9 +61,9 @@ const Tick = styled.div`
 const Label = styled.p`
     position: absolute;
     left: ${props => props.x};
-    color: ${doenetComponentForegroundInactive};
+    color: black;
     font-size: 12px;
-    top:1px;
+    top: 1px;
     user-select: none;
 `;
 
@@ -163,7 +164,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       let maxAbs = Math.max(Math.abs(SVs.firstItem), Math.abs(SVs.lastItem));
       let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
       let roundDecimalsForTickSpacing = 1 - magnitudeOfMaxAbs;
-      let dTick = round_to_decimals(desiredDTick, roundDecimalsForTickSpacing)
+      let dTick = Math.max(round_to_decimals(desiredDTick, roundDecimalsForTickSpacing), 10 ** -roundDecimalsForTickSpacing);
       let numberOfTicks = Math.floor(tickSpan / dTick) + 1;
 
       let roundDecimals = 5 - magnitudeOfMaxAbs;
@@ -174,8 +175,7 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       tickValues = tickValues.map(x => round_to_decimals(x, roundDecimals));
 
     } else {
-
-      let desiredNumberOfTicks = Math.floor(SVs.width.size / maxValueWidth);
+      let desiredNumberOfTicks = Math.max(2, Math.floor(SVs.width.size / maxValueWidth));
       let dIndex = Math.ceil((SVs.nItems - 1) / (desiredNumberOfTicks - 1) - 1E-10);
       let numberOfTicks = Math.floor((SVs.nItems - 1) / dIndex + 1E-10) + 1;
 
@@ -185,7 +185,6 @@ function generateNumericLabels(points, div_width, point_start_val, SVs) {
       let magnitudeOfMaxAbs = Math.round(Math.log(maxAbs) / Math.log(10));
       let roundDecimals = 2 - magnitudeOfMaxAbs;
       tickValues = tickIndices.map(x => round_to_decimals(points[x], roundDecimals))
-
     }
 
     return (
@@ -308,25 +307,29 @@ function nearestValue(refval, points, SVs) {
 
 }
 
-export default function Slider(props) {
-  let [name, SVs, actions] = useDoenetRender(props);
-  // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index);
+export default React.memo(function Slider(props) {
+  let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index, "ignoreUpdate", ignoreUpdate);
   // console.log(SVs)
+
+  Slider.baseStateVariable = 'index';
 
   const containerRef = useRef(null);
   // console.log("SVs",SVs);
   // let sorted_points = [...SVs.items].sort((p1, p2) => p1 - p2);
 
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
+
   const [thumbXPos, setThumbXPos] = useState(0);
-  const [thumbValue, setThumbValue] = useState(SVs.firstItem);
-  const [isMouseDown, setIsMouseDown] = useState(0);
+  // const [thumbValue, setThumbValue] = useState(SVs.firstItem);
+  const isMouseDown = useRef(false);
   const [offsetLeft, setOffsetLeft] = useState(0);
   const startValue = (SVs.type === "text") ? 0 : SVs.firstItem;
   // const endValue = (SVs.type === "text") ? 0 : SVs.lastItem;
   let divisionWidth = SVs.width.size / (SVs.nItems - 1);
 
   const [index, setIndex] = useState(0);
-  const width = (SVs.width.size);
+  // const width = (SVs.width.size);
   useEffect(() => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
@@ -336,8 +339,8 @@ export default function Slider(props) {
 
   useEffect(() => {
     //console.log("ran");
-    if (!isMouseDown) {
-      setThumbValue(SVs.value);
+    if (!isMouseDown.current && !ignoreUpdate) {
+      // setThumbValue(SVs.value);
       setIndex(SVs.index);
       if (!(SVs.type === "text")) {
 
@@ -355,16 +358,16 @@ export default function Slider(props) {
 
   if (SVs.disabled) {
     let controls = '';
+
+    // Imported ActionButton and ActionButtonGroup from PanelHeaderComponents
     if (SVs.showControls) {
-      controls = <ButtonGroup
+      controls = <ActionButtonGroup style={{marginBottom: "12px"}}
       >
-        <Button
-          style={{ marginTop: '-20px' }}
+        <ActionButton
           value="Prev" onClick={(e) => handlePrevious(e)} disabled />
-        <Button
-          style={{ marginTop: '-20px' }}
+        <ActionButton
           value="Next" onClick={(e) => handleNext(e)} disabled />
-      </ButtonGroup>
+      </ActionButtonGroup>
     } else {
       controls = null;
     }
@@ -380,18 +383,37 @@ export default function Slider(props) {
     } else {
       ticksAndLabels = labels;
     }
+
+    // Conditional label and showValue attributes
+    let myLabel = null;
+    if (SVs.label) {
+      let label = SVs.label;
+      if(SVs.labelHasLatex) {
+        label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+      }
+      if (SVs.showValue) {
+        myLabel = <StyledValueLabel>{label}{' = ' + SVs.valueForDisplay}</StyledValueLabel>
+      } else {
+        myLabel = <StyledValueLabel>{label}</StyledValueLabel>
+      }
+    } else if (!SVs.label && SVs.showValue) {
+      myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
+    } else {
+      myLabel = null;
+    }
+
     return (
       <SliderContainer
         labeled={SVs.showControls || SVs.label}
         noTicked={SVs.showTicks === false}
         ref={containerRef}
       >
-        <div style={{ height: SVs.label ? '20px' : '0px' }}>
-          {SVs.label ? <StyledValueLabel>{SVs.label}</StyledValueLabel> : null}
+        <div id={`${name}-label`} style={{ height: SVs.label || SVs.showValue ? '20px' : '0px' }}>
+          {myLabel}
         </div>
         <SubContainer2>
-          <StyledSlider width={`${SVs.width.size}px`}>
-            <StyledThumb disabled style={{ left: `${thumbXPos - 4}px` }} />
+          <StyledSlider width={`${SVs.width.size}px`} id={name}>
+            <StyledThumb disabled style={{ left: `${thumbXPos - 4}px` }} id={`${name}-handle`} />
             {ticksAndLabels}
           </StyledSlider>
         </SubContainer2>
@@ -403,7 +425,17 @@ export default function Slider(props) {
   }
 
   function handleDragEnter(e) {
-    setIsMouseDown(true);
+
+    isMouseDown.current = true;
+
+    document.addEventListener(
+      'mousemove',
+      handleDragThrough
+    )
+    document.addEventListener(
+      'mouseup',
+      handleDragExit
+    )
 
     setThumbXPos(e.nativeEvent.clientX - offsetLeft);
 
@@ -412,35 +444,63 @@ export default function Slider(props) {
 
       let valindexpair = nearestValue(refval, SVs.items, SVs);
 
-      setThumbValue(valindexpair[0]);
+      // setThumbValue(valindexpair[0]);
       setIndex(valindexpair[1]);
 
 
-
-      // actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true });
-      actions.changeValue({ value: valindexpair[0], transient: true });
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: valindexpair[0], transient: true },
+        baseVariableValue: valindexpair[1],
+      })
     } else {
       let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
       setIndex(i);
-      setThumbValue(SVs.items[i]);
+      // setThumbValue(SVs.items[i]);
 
-      actions.changeValue({ value: SVs.items[i], transient: true });
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: SVs.items[i], transient: true },
+        baseVariableValue: i,
+      })
+
     }
   }
 
   function handleDragExit(e) {
-    if (!isMouseDown) {
+
+    document.removeEventListener(
+      'mousemove',
+      handleDragThrough
+    )
+    document.removeEventListener(
+      'mouseup',
+      handleDragExit
+
+    )
+
+    if (!isMouseDown.current) {
       return;
     }
 
-    setIsMouseDown(false);
+    isMouseDown.current = false;
 
     if (!(SVs.type === "text")) {
       //Find the new index based on clientX and total width
-      // const ratio = (e.nativeEvent.clientX - offsetLeft) / SVs.width.size;
+      // const ratio = (e.clientX - offsetLeft) / SVs.width.size;
       // const selectedIndex = Math.min(Math.max(Math.round(ratio * SVs.nItems), 0), SVs.nItems - 1)
 
-      let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+      let refval = xPositionToValue(e.clientX - offsetLeft, divisionWidth, startValue);
 
       function xPositionToValue(ref, div_width, start_val) {
         return (start_val + (ref / div_width));
@@ -448,45 +508,84 @@ export default function Slider(props) {
 
       let valindexpair = nearestValue(refval, SVs.items, SVs);
 
-      setThumbValue(valindexpair[0]);
+      // setThumbValue(valindexpair[0]);
       setIndex(valindexpair[1]);
 
       setThumbXPos(valindexpair[1] * divisionWidth);
 
-      actions.changeValue({ value: valindexpair[0] });
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: valindexpair[0] },
+        baseVariableValue: valindexpair[1]
+      })
+
     } else {
-      let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
+      let i = Math.round((e.clientX - offsetLeft) / divisionWidth);
       i = Math.max(0, Math.min(SVs.nItems - 1, i));
 
       setIndex(i);
-      setThumbValue(SVs.items[i]);
+      // setThumbValue(SVs.items[i]);
 
       setThumbXPos(i * divisionWidth);
 
-      actions.changeValue({ value: SVs.items[i] });
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
+      callAction({
+        action: actions.changeValue,
+        args: { value: SVs.items[i] },
+        baseVariableValue: i
+      })
+
 
     }
   }
 
   function handleDragThrough(e) {
-    if (isMouseDown) {
+    if (isMouseDown.current) {
 
-      setThumbXPos(Math.max(0, Math.min(SVs.width.size, e.nativeEvent.clientX - offsetLeft)));
+      setThumbXPos(Math.max(0, Math.min(SVs.width.size, e.clientX - offsetLeft)));
       if (!(SVs.type === "text")) {
-        let refval = xPositionToValue(e.nativeEvent.clientX - offsetLeft, divisionWidth, startValue);
+        let refval = xPositionToValue(e.clientX - offsetLeft, divisionWidth, startValue);
 
         let valindexpair = nearestValue(refval, SVs.items, SVs);
-        setThumbValue(valindexpair[0]);
+        // setThumbValue(valindexpair[0]);
         setIndex(valindexpair[1]);
 
-        actions.changeValue({ value: valindexpair[0], transient: true, skippable: true });
-        // actions.changeValue({ value: SVs.items[valindexpair[1]], transient: true });
-      } else {
-        let i = Math.round((e.nativeEvent.clientX - offsetLeft) / divisionWidth);
-        setIndex(i);
-        setThumbValue(SVs.items[i]);
+        setRendererState((was) => {
+          let newObj = { ...was };
+          newObj.ignoreUpdate = true;
+          return newObj;
+        })
+        callAction({
+          action: actions.changeValue,
+          args: { value: valindexpair[0], transient: true, skippable: true },
+          baseVariableValue: valindexpair[1]
+        })
 
-        actions.changeValue({ value: SVs.items[i], transient: true, skippable: true });
+      } else {
+        let i = Math.round((e.clientX - offsetLeft) / divisionWidth);
+        setIndex(i);
+        // setThumbValue(SVs.items[i]);
+
+        setRendererState((was) => {
+          let newObj = { ...was };
+          newObj.ignoreUpdate = true;
+          return newObj;
+        })
+        callAction({
+          action: actions.changeValue,
+          args: { value: SVs.items[i], transient: true, skippable: true },
+          baseVariableValue: i
+        })
+
       }
     }
   }
@@ -504,8 +603,18 @@ export default function Slider(props) {
       val = SVs.items[index + 1];
     }
 
-    actions.changeValue({ value: val });
-    setThumbValue(val);
+    setRendererState((was) => {
+      let newObj = { ...was };
+      newObj.ignoreUpdate = true;
+      return newObj;
+    })
+    callAction({
+      action: actions.changeValue,
+      args: { value: val },
+      baseVariableValue: index + 1
+    })
+
+    // setThumbValue(val);
     setIndex(index + 1);
 
   }
@@ -523,9 +632,18 @@ export default function Slider(props) {
       val = SVs.items[index - 1];
     }
 
-    actions.changeValue({ value: val });
+    setRendererState((was) => {
+      let newObj = { ...was };
+      newObj.ignoreUpdate = true;
+      return newObj;
+    })
+    callAction({
+      action: actions.changeValue,
+      args: { value: val },
+      baseVariableValue: index - 1
+    })
 
-    setThumbValue(val);
+    // setThumbValue(val);
     setIndex(index - 1);
   }
 
@@ -549,41 +667,59 @@ export default function Slider(props) {
   } else {
     ticksAndLabels = labels;
   }
+
+  // Imported ActionButton and ActionButtonGroup from PanelHeaderComponents
   let controls = '';
   if (SVs.showControls) {
-    controls = <ButtonGroup >
-      <Button
-        style={{ marginTop: '-20px' }}
+    controls = <ActionButtonGroup style={{marginBottom: "12px"}}>
+      <ActionButton
         value="Prev"
         onClick={(e) => handlePrevious(e)}
-        data-cy={`${name}-prevbutton`}
-      ></Button>
-      <Button
-        style={{ marginTop: '-20px' }}
+        id={`${name}-prevbutton`}
+      ></ActionButton>
+      <ActionButton
         value="Next"
         onClick={(e) => handleNext(e)}
-        data-cy={`${name}-nextbutton`}
-      ></Button>
-    </ButtonGroup>
+        id={`${name}-nextbutton`}
+      ></ActionButton>
+    </ActionButtonGroup>
   } else {
     null
   }
 
-  // let valueDisplay = null;
-  // if (SVs.showValue) {
-  //   valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, position: "relative", userSelect: "none" }}>{SVs.valueForDisplay} </span>
-  // }
+  let valueDisplay = null;
+  if (SVs.showValue) {
+    valueDisplay = <span style={{ left: `${thumbXPos - 4}px`, userSelect: "none" }}>{SVs.valueForDisplay} </span>
+  }
+
+  // Conditional label and showValue attributes
+  let myLabel = null;
+  if (SVs.label) {
+    let label = SVs.label;
+    if(SVs.labelHasLatex) {
+      label = <MathJax hideUntilTypeset={"first"} inline dynamic >{label}</MathJax>
+    }
+    if (SVs.showValue) {
+      myLabel = <StyledValueLabel>{label}{' = ' + SVs.valueForDisplay}</StyledValueLabel>
+    } else {
+      myLabel = <StyledValueLabel>{label}</StyledValueLabel>
+    }
+  } else if (!SVs.label && SVs.showValue) {
+    myLabel = <StyledValueLabel>{SVs.valueForDisplay}</StyledValueLabel>
+  } else {
+    myLabel = null;
+  }
 
   return (
     <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
-      <div style={{ height: (SVs.label) ? "20px" : "0px" }}>
-        {SVs.label ? <StyledValueLabel>{SVs.label + ' = ' + SVs.valueForDisplay}</StyledValueLabel> : null}
+      <div id={`${name}-label`} style={{ height: (SVs.label)  || (SVs.showValue) ? "20px" : "0px" }}>
+        {myLabel}
       </div>
-      <SubContainer2 onMouseDown={handleDragEnter} onMouseUp={handleDragExit} onMouseMove={handleDragThrough} onMouseLeave={handleDragExit}>
-        <StyledSlider width={(`${SVs.width.size}px`)} data-cy="slider1">
+      <SubContainer2 onMouseDown={handleDragEnter}>
+        <StyledSlider width={(`${SVs.width.size}px`)} id={name}>
           {/* {valueDisplay} */}
           <StyledThumb style={{ left: `${thumbXPos - 4}px` }}
-            data-cy={`${name}-handle`} />
+            id={`${name}-handle`} />
           {ticksAndLabels}
         </StyledSlider>
       </SubContainer2>
@@ -594,4 +730,4 @@ export default function Slider(props) {
     </SliderContainer>
   );
 
-}
+})

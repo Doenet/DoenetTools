@@ -1,19 +1,19 @@
 import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class CallAction extends DoenetRenderer {
-  static initializeChildrenOnConstruction = false;
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    return /* @__PURE__ */ React.createElement("span", {
-      id: this.componentName
-    }, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), /* @__PURE__ */ React.createElement("button", {
-      id: this.componentName + "_button",
-      onClick: this.actions.callAction,
-      disabled: this.doenetSvData.disabled
-    }, this.doenetSvData.label));
+import useDoenetRender from "./useDoenetRenderer.js";
+import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
+export default React.memo(function CallAction(props) {
+  let {name, SVs, actions, callAction} = useDoenetRender(props);
+  if (SVs.hidden) {
+    return null;
   }
-}
+  return /* @__PURE__ */ React.createElement("div", {
+    style: {margin: "12px 0", display: "inline-block"}
+  }, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), /* @__PURE__ */ React.createElement(Button, {
+    id: name + "_button",
+    onClick: () => callAction({action: actions.callAction}),
+    disabled: SVs.disabled,
+    value: SVs.label
+  }));
+});

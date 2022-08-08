@@ -1,19 +1,12 @@
 import BlockComponent from './abstract/BlockComponent';
 
 export default class Solution extends BlockComponent {
-  constructor(args) {
-    super(args);
-
-    this.revealSolution = this.revealSolution.bind(this);
-    this.finishRevealSolution = this.finishRevealSolution.bind(this);
-
-  }
   static componentType = "solution";
   static renderChildren = true;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.hide = {
       createComponentOfType: "boolean"
     }
@@ -62,9 +55,12 @@ export default class Solution extends BlockComponent {
 
     stateVariableDefinitions.hide = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({
         hideAttr: {
           dependencyType: "attributeComponent",
@@ -78,17 +74,17 @@ export default class Solution extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "none") {
-          return { newValues: { hide: true } }
+          return { setValue: { hide: true } }
         } else if (dependencyValues.hideAttr !== null) {
           return {
-            newValues: {
+            setValue: {
               hide: dependencyValues.hideAttr.stateValues.value
             }
           }
         } else {
           return {
             useEssentialOrDefaultValue: {
-              hide: { variablesToCheck: ["hide"] }
+              hide: true
             }
           }
         }
@@ -119,9 +115,12 @@ export default class Solution extends BlockComponent {
 
     stateVariableDefinitions.open = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({
         displayMode: {
           dependencyType: "flag",
@@ -130,15 +129,13 @@ export default class Solution extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "displayed") {
-          return { newValues: { open: true } }
+          return { setValue: { open: true } }
         } else if (dependencyValues.displayMode === "none") {
-          return { newValues: { open: false } }
+          return { setValue: { open: false } }
         } else {
           return {
             useEssentialOrDefaultValue: {
-              open: {
-                variablesToCheck: ["open"]
-              }
+              open: true
             }
           }
         }
@@ -155,7 +152,7 @@ export default class Solution extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "open",
+            setEssentialValue: "open",
             value: desiredStateVariableValues.open
           }]
         }
@@ -173,31 +170,32 @@ export default class Solution extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.displayMode === "button") {
-          return { newValues: { canBeClosed: true } }
+          return { setValue: { canBeClosed: true } }
         } else {
-          return { newValues: { canBeClosed: false } }
+          return { setValue: { canBeClosed: false } }
         }
       }
     }
 
     stateVariableDefinitions.message = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       defaultValue: "",
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition: () => ({
         useEssentialOrDefaultValue: {
-          message: {
-            variablesToCheck: ["message"]
-          }
+          message: true
         }
       }),
       inverseDefinition({ desiredStateVariableValues }) {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "message",
+            setEssentialValue: "message",
             value: desiredStateVariableValues.message
           }]
         }
@@ -209,7 +207,10 @@ export default class Solution extends BlockComponent {
   }
 
 
-  async finishRevealSolution({ allowView, message, scoredComponent }) {
+  async revealSolution({ actionId }) {
+
+    let { allowView, message, scoredComponent } = await this.coreFunctions.recordSolutionView();
+
 
     let updateInstructions = [{
       updateType: "updateValue",
@@ -242,28 +243,15 @@ export default class Solution extends BlockComponent {
       }
     }
 
-    return await this.coreFunctions.requestUpdate({
-      updateInstructions,
+    return await this.coreFunctions.performUpdate({
+      updateInstructions, actionId,
       event,
       overrideReadOnly: true,
     })
 
   }
 
-
-  async revealSolution() {
-    let { scoredItemNumber, scoredComponent } = await this.coreFunctions.calculateScoredItemNumberOfContainer(this.componentName);
-
-    await this.coreFunctions.recordSolutionView({
-      itemNumber: scoredItemNumber,
-      scoredComponent: scoredComponent,
-    });
-    
-    return await this.finishRevealSolution()
-
-  }
-
-  async closeSolution() {
+  async closeSolution({ actionId }) {
 
     return await this.coreFunctions.performUpdate({
       updateInstructions: [{
@@ -272,6 +260,7 @@ export default class Solution extends BlockComponent {
         stateVariable: "open",
         value: false
       }],
+      actionId,
       event: {
         verb: "closed",
         object: {
@@ -283,10 +272,22 @@ export default class Solution extends BlockComponent {
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
 
   actions = {
     revealSolution: this.revealSolution.bind(this),
     closeSolution: this.closeSolution.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

@@ -4,10 +4,13 @@ export function gatherDescendants({ ancestor, descendantTypes,
   includeNonActiveChildren = false,
   skipOverAdapters = false,
   ignoreReplacementsOfMatchedComposites = false,
+  ignoreReplacementsOfEncounteredComposites = false,
   init = true,
   componentInfoObjects,
 }) {
 
+  // Note: ignoreReplacementsOfEncounteredComposites means ignore replacements
+  // of all composites except copies of external content
 
   let matchChildToTypes = child =>
     descendantTypes.some(ct => componentInfoObjects.isInheritedComponentType({
@@ -30,7 +33,7 @@ export function gatherDescendants({ ancestor, descendantTypes,
         composite: ancestor,
         componentInfoObjects,
         includeComposites: includeNonActiveChildren,
-      }))
+      }).filter(x => typeof x === "object"));
     }
 
   } else {
@@ -63,7 +66,7 @@ export function gatherDescendants({ ancestor, descendantTypes,
               childIsAdapter = true;
             }
             break;
-          } else if(aChild.adaptedFrom && achild.adaptedFrom.placeholderInd === childName) {
+          } else if (aChild.adaptedFrom && achild.adaptedFrom.placeholderInd === childName) {
             child = aChild.adaptedFrom;
             break;
           }
@@ -71,24 +74,32 @@ export function gatherDescendants({ ancestor, descendantTypes,
 
       }
 
-      if(child) {
-        if(childIsAdapter && skipOverAdapters) {
-          if(!childrenToCheck.includes(child.adaptedFrom)) {
+      if (child) {
+        if (childIsAdapter && skipOverAdapters) {
+          if (!childrenToCheck.includes(child.adaptedFrom)) {
             childrenToCheck.push(child.adaptedFrom)
           }
-        } else if(childIsActive|| includeNonActiveChildren) {
+        } else if (childIsActive || includeNonActiveChildren) {
           childrenToCheck.push(child);
         }
       }
     }
   }
 
-  if (ignoreReplacementsOfMatchedComposites) {
+
+  if (ignoreReplacementsOfMatchedComposites || ignoreReplacementsOfEncounteredComposites) {
     // first check if have matched any composites, so can ignore their replacements
     let namesToIgnore = [];
     for (let child of childrenToCheck) {
-      let matchedChild = matchChildToTypes(child);
-      if (matchedChild && componentInfoObjects.isInheritedComponentType({
+      let checkChildForReplacements = matchChildToTypes(child);
+      if (ignoreReplacementsOfEncounteredComposites && !checkChildForReplacements) {
+        // we explicitly will not ignore replacements of copies of external content
+        checkChildForReplacements = !(
+          child.componentType === "copy" &&
+          child.replacements?.[0]?.componentType === "externalContent"
+        );
+      }
+      if (checkChildForReplacements && componentInfoObjects.isInheritedComponentType({
         inheritedComponentType: child.componentType,
         baseComponentType: "_composite"
       })) {
@@ -96,7 +107,8 @@ export function gatherDescendants({ ancestor, descendantTypes,
           ...namesToIgnore,
           ...replacementsForComposites({
             composite: child, componentInfoObjects, includeComposites: true
-          }).map(x => x.componentName ? x.componentName : x.placeholderInd)
+          }).filter(x => typeof x === "object")
+            .map(x => x.componentName ? x.componentName : x.placeholderInd)
         ]
       }
     }
@@ -111,7 +123,6 @@ export function gatherDescendants({ ancestor, descendantTypes,
 
 
   let descendants = [];
-  let replacementNamesOfMatchedComposites = [];
 
   for (let child of childrenToCheck) {
     let matchedChild = matchChildToTypes(child);
@@ -133,15 +144,12 @@ export function gatherDescendants({ ancestor, descendantTypes,
         includeNonActiveChildren,
         skipOverAdapters,
         ignoreReplacementsOfMatchedComposites,
+        ignoreReplacementsOfEncounteredComposites,
         init: false,
         componentInfoObjects,
       });
       descendants.push(...additionalDescendants);
     }
-  }
-
-  if (ignoreReplacementsOfMatchedComposites) {
-    descendants = descendants.filter(x => !replacementNamesOfMatchedComposites.includes(x))
   }
 
   return descendants;

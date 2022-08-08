@@ -2,7 +2,7 @@ import BlockComponent from './abstract/BlockComponent';
 
 export default class Caption extends BlockComponent {
   static componentType = "caption";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
 
   static renderChildren = true;
 
@@ -25,7 +25,9 @@ export default class Caption extends BlockComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
@@ -47,12 +49,28 @@ export default class Caption extends BlockComponent {
           }
         }
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 
     return stateVariableDefinitions;
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

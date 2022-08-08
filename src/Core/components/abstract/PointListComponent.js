@@ -3,7 +3,7 @@ import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstring
 
 export default class PointListComponent extends BaseComponent {
   static componentType = "_pointListComponent";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
   static returnSugarInstructions() {
@@ -69,7 +69,7 @@ export default class PointListComponent extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: { nPoints: dependencyValues.pointChildren.length },
+          setValue: { nPoints: dependencyValues.pointChildren.length },
           checkForActualChange: { nPoints: true }
         }
       }
@@ -100,7 +100,7 @@ export default class PointListComponent extends BaseComponent {
           }
         }
         return {
-          newValues: { nDimensions },
+          setValue: { nDimensions },
           checkForActualChange: { nDimensions: true }
         }
       }
@@ -124,9 +124,9 @@ export default class PointListComponent extends BaseComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -134,11 +134,18 @@ export default class PointListComponent extends BaseComponent {
           }
         } else {
           // point3 is all components of the third point
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          let pointInd = Number(varEnding) - 1;
-          if (Number.isInteger(pointInd) && pointInd >= 0 && pointInd < arraySize[0]) {
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
             // array of "pointInd,i", where i=0, ..., arraySize[1]-1
             return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
@@ -146,6 +153,19 @@ export default class PointListComponent extends BaseComponent {
           }
         }
 
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "points") {
+          return "point" + propIndex;
+        }
+        if (varName.slice(0, 5) === "point") {
+          // could be point or pointX
+          let pointNum = Number(varName.slice(5));
+          if (Number.isInteger(pointNum) && pointNum > 0) {
+            return `pointX${pointNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nPoints: {
@@ -197,7 +217,7 @@ export default class PointListComponent extends BaseComponent {
         // console.log("result")
         // console.log(JSON.parse(JSON.stringify(points)));
 
-        return { newValues: { points } }
+        return { setValue: { points } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,

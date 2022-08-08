@@ -5,8 +5,8 @@ export default class SolutionContainer extends Template {
 
   static stateVariableToEvaluateAfterReplacements = "open";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     delete attributes.rendered;
     return attributes;
   }
@@ -26,7 +26,7 @@ export default class SolutionContainer extends Template {
       markStale: () => ({ updateReplacements: true }),
       definition({ dependencyValues }) {
         let rendered = Boolean(dependencyValues.parentOpen);
-        return { newValues: { rendered } };
+        return { setValue: { rendered } };
       }
     }
 
@@ -35,13 +35,13 @@ export default class SolutionContainer extends Template {
   }
 
 
-  static calculateReplacementChanges({ component, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, componentInfoObjects }) {
 
     // if this is the first time rendered, then create the replacements
-    if (component.stateValues.rendered && component.replacements.length === 0) {
-      let replacements = this.createSerializedReplacements({
+    if (await component.stateValues.rendered && component.replacements.length === 0) {
+      let replacements = (await this.createSerializedReplacements({
         component, componentInfoObjects
-      }).replacements;
+      })).replacements;
 
       let replacementInstruction = {
         changeType: "add",

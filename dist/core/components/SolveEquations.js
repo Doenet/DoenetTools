@@ -11,8 +11,8 @@ export default class SolveEquations extends InlineComponent {
   static rendererType = undefined;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.variables = {
       createComponentOfType: "variables"
@@ -48,7 +48,7 @@ export default class SolveEquations extends InlineComponent {
 
       // only apply if all children are strings or macros
       if (!matchedChildren.every(child =>
-        child.componentType === "string" ||
+        typeof child === "string" ||
         child.doenetAttributes && child.doenetAttributes.createdFromMacro
       )) {
         return { success: false }
@@ -56,7 +56,7 @@ export default class SolveEquations extends InlineComponent {
 
       // don't apply to a single macro
       if (matchedChildren.length === 1 &&
-        matchedChildren[0].componentType !== "string"
+        typeof matchedChildren[0] !== "string"
       ) {
         return { success: false }
       }
@@ -99,7 +99,9 @@ export default class SolveEquations extends InlineComponent {
     stateVariableDefinitions.variables = {
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["variable"],
       returnArraySizeDependencies: () => ({
         // nInputs: {
@@ -127,7 +129,7 @@ export default class SolveEquations extends InlineComponent {
           variablesSpecified = globalDependencyValues.variablesAttr.stateValues.variables;
         }
         return {
-          newValues: {
+          setValue: {
             variables: returnNVariables(arraySize[0], variablesSpecified)
           }
         }
@@ -166,14 +168,14 @@ export default class SolveEquations extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.mathChild.length === 0) {
-          return { newValues: { allSolutions: [] } }
+          return { setValue: { allSolutions: [] } }
         }
 
         let expression = dependencyValues.mathChild[0].stateValues.value;
 
 
         if (!(Array.isArray(expression.tree) && expression.tree.length === 3 && expression.tree[0] === "=")) {
-          return { newValues: { allSolutions: [] } }
+          return { setValue: { allSolutions: [] } }
         }
 
         let minVar = dependencyValues.minVar;
@@ -288,7 +290,7 @@ export default class SolveEquations extends InlineComponent {
         }
 
         if (minVar > maxVar) {
-          return { newValues: { allSolutions: [] } }
+          return { setValue: { allSolutions: [] } }
         }
 
         // let boundaryPoints = [minVar, ...originalNumerical, maxVar];
@@ -500,14 +502,16 @@ export default class SolveEquations extends InlineComponent {
         // allSolutions.push(...nonNumericalSolutions)
 
 
-        return { newValues: { allSolutions } }
+        return { setValue: { allSolutions } }
 
       }
     }
 
     stateVariableDefinitions.numberSolutions = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         allSolutions: {
           dependencyType: "stateVariable",
@@ -515,14 +519,16 @@ export default class SolveEquations extends InlineComponent {
         }
       }),
       definition({ dependencyValues }) {
-        return { newValues: { numberSolutions: dependencyValues.allSolutions.length } };
+        return { setValue: { numberSolutions: dependencyValues.allSolutions.length } };
       }
     }
 
 
     stateVariableDefinitions.solutions = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       isArray: true,
       entryPrefixes: ["solution"],
       returnArraySizeDependencies: () => ({
@@ -553,7 +559,7 @@ export default class SolveEquations extends InlineComponent {
           solutions[key] = globalDependencyValues.allSolutions[key];
         }
 
-        return { newValues: { solutions } }
+        return { setValue: { solutions } }
       }
     }
 

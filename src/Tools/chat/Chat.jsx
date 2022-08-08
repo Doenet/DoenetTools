@@ -7,7 +7,7 @@ import Tool from '@Tool';
 import { v4 as uuidV4 } from 'uuid';
 
 const ChatContainer = styled.div`
-  border: solid black 1px;
+  border: solid var(--canvastext) 1px;
 `;
 
 const ChatForm = styled.form``;
@@ -16,8 +16,8 @@ const ChatInput = styled.input``;
 
 const ChatSend = styled.button`
   border: none;
-  background: black;
-  color: white;
+  background: var(--canvastext);
+  color: var(--canvas);
 `;
 
 const MessageLogContainer = styled.div`
@@ -27,7 +27,7 @@ const MessageLogContainer = styled.div`
 `;
 
 const MessageElement = styled.div`
-  border: 1px solid black;
+  border: 1px solid var(--canvastext);
   margin: 1em 0;
 `;
 
@@ -42,8 +42,8 @@ const RoomInput = styled.input``;
 
 const RoomJoin = styled.button`
   border: none;
-  background: black;
-  color: white;
+  background: var(--canvastext);
+  color: var(--canvas);
 `;
 
 const NameLabel = styled.label``;

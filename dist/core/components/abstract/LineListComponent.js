@@ -2,7 +2,7 @@ import BaseComponent from './BaseComponent.js';
 
 export default class LineListComponent extends BaseComponent {
   static componentType = "_lineListComponent";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
 
@@ -14,14 +14,14 @@ export default class LineListComponent extends BaseComponent {
       // break any string by white space and wrap pieces with line
 
       let newChildren = matchedChildren.reduce(function (a, c) {
-        if (c.componentType === "string") {
+        if (typeof c === "string") {
           return [
             ...a,
-            ...c.state.value.split(/\s+/)
+            ...c.split(/\s+/)
               .filter(s => s)
               .map(s => ({
                 componentType: "line",
-                children: [{ componentType: "string", state: { value: s } }]
+                children: [s]
               }))
           ]
         } else {
@@ -69,7 +69,7 @@ export default class LineListComponent extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: { nLines: dependencyValues.lineChildren.length },
+          setValue: { nLines: dependencyValues.lineChildren.length },
           checkForActualChange: { nLines: true }
         }
       }
@@ -114,7 +114,7 @@ export default class LineListComponent extends BaseComponent {
           }
         }
 
-        return { newValues: { lineNames } }
+        return { setValue: { lineNames } }
 
       }
     }

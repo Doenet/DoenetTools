@@ -7,8 +7,8 @@ export default class TextList extends InlineComponent {
   // use the texts state variable to populate that attribute
   static stateVariableForAttributeValue = "texts";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.unordered = { default: false };
     attributes.maximumNumber = { default: null };
     return attributes;
@@ -83,7 +83,9 @@ export default class TextList extends InlineComponent {
 
     stateVariableDefinitions.texts = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       isArray: true,
       entryPrefixes: ["text"],
       returnDependencies: () => ({
@@ -116,14 +118,16 @@ export default class TextList extends InlineComponent {
           }
         }
 
-        return { newValues: { texts } }
+        return { setValue: { texts } }
 
       }
     }
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         texts: {
           dependencyType: "stateVariable",
@@ -131,13 +135,15 @@ export default class TextList extends InlineComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { text: dependencyValues.texts.join(", ") }
+        setValue: { text: dependencyValues.texts.join(", ") }
       })
     }
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         texts: {
           dependencyType: "stateVariable",
@@ -145,7 +151,7 @@ export default class TextList extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { nComponents: dependencyValues.texts.length } }
+        return { setValue: { nComponents: dependencyValues.texts.length } }
       }
     }
 
@@ -201,7 +207,7 @@ export default class TextList extends InlineComponent {
         childrenToRender = childrenToRender.slice(0, numChildren)
 
 
-        return { newValues: { childrenToRender } }
+        return { setValue: { childrenToRender } }
 
       }
     }

@@ -1,12 +1,29 @@
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
-import {globalSelectedNodesAtom} from "../../_reactComponents/Drive/NewDrive.js";
 import {useRecoilCallback} from "../../_snowpack/pkg/recoil.js";
+import {itemByDoenetId, copiedCourseItems, cutCourseItems, selectedCourseItems} from "../../_reactComponents/Course/CourseActions.js";
 export default function NavigationLeave() {
-  console.log(">>>===NavigationLeave");
-  const setSelections = useRecoilCallback(({set}) => () => {
+  const clearSelections = useRecoilCallback(({set, snapshot}) => async () => {
+    let selectedDoenentIds = await snapshot.getPromise(selectedCourseItems);
+    for (let doenetId of selectedDoenentIds) {
+      set(itemByDoenetId(doenetId), (prev) => {
+        let next = {...prev};
+        next.isSelected = false;
+        return next;
+      });
+    }
+    set(selectedCourseItems, []);
     set(selectedMenuPanelAtom, "");
-    set(globalSelectedNodesAtom, []);
+    let cutObjs = await snapshot.getPromise(cutCourseItems);
+    for (let cutObj of cutObjs) {
+      set(itemByDoenetId(cutObj.doenetId), (prev) => {
+        let next = {...prev};
+        next["isBeingCut"] = false;
+        return next;
+      });
+    }
+    set(cutCourseItems, []);
+    set(copiedCourseItems, []);
   });
-  setSelections();
+  clearSelections();
   return null;
 }

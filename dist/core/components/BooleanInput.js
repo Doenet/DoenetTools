@@ -5,9 +5,7 @@ export default class BooleanInput extends Input {
     super(args);
 
     this.actions = {
-      updateBoolean: this.updateBoolean.bind(
-        new Proxy(this, this.readOnlyProxyHandler)
-      )
+      updateBoolean: this.updateBoolean.bind(this)
     };
 
     this.externalActions = {};
@@ -15,10 +13,11 @@ export default class BooleanInput extends Input {
     //Complex because the stateValues isn't defined until later
     Object.defineProperty(this.externalActions, 'submitAnswer', {
       enumerable: true,
-      get: function () {
-        if (this.stateValues.answerAncestor !== null) {
+      get: async function () {
+        let answerAncestor = await this.stateValues.answerAncestor;
+        if (answerAncestor !== null) {
           return {
-            componentName: this.stateValues.answerAncestor.componentName,
+            componentName: (answerAncestor).componentName,
             actionName: "submitAnswer"
           }
         } else {
@@ -32,12 +31,8 @@ export default class BooleanInput extends Input {
 
   static variableForPlainMacro = "value";
 
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.prefill = {
       createComponentOfType: "boolean",
       createStateVariable: "prefill",
@@ -51,6 +46,13 @@ export default class BooleanInput extends Input {
       forRenderer: true,
       public: true,
     };
+    attributes.asToggleButton = {
+      createComponentOfType: "boolean",
+      createStateVariable: "asToggleButton",
+      defaultValue: false,
+      forRenderer: true,
+      public: true,
+    }
     attributes.bindValueTo = {
       createComponentOfType: "boolean"
     };
@@ -63,8 +65,12 @@ export default class BooleanInput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         bindValueTo: {
           dependencyType: "attributeComponent",
@@ -81,13 +87,12 @@ export default class BooleanInput extends Input {
           return {
             useEssentialOrDefaultValue: {
               value: {
-                variablesToCheck: "value",
                 defaultValue: dependencyValues.prefill
               }
             }
           }
         }
-        return { newValues: { value: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { value: dependencyValues.bindValueTo.stateValues.value } };
       },
       inverseDefinition: function ({ desiredStateVariableValues, dependencyValues }) {
 
@@ -101,11 +106,11 @@ export default class BooleanInput extends Input {
             }]
           };
         }
-        // no children, so value is essential and give it the desired value
+
         return {
           success: true,
           instructions: [{
-            setStateVariable: "value",
+            setEssentialValue: "value",
             value: desiredStateVariableValues.value
           }]
         };
@@ -114,7 +119,9 @@ export default class BooleanInput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -122,13 +129,13 @@ export default class BooleanInput extends Input {
         }
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { text: dependencyValues.value ? "true" : "false" } }
+        return { setValue: { text: dependencyValues.value ? "true" : "false" } }
       }
     }
 
     stateVariableDefinitions.componentType = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { componentType: "boolean" } })
+      definition: () => ({ setValue: { componentType: "boolean" } })
     }
 
 
@@ -136,8 +143,8 @@ export default class BooleanInput extends Input {
 
   }
 
-  updateBoolean({ boolean }) {
-    if (!this.stateValues.disabled) {
+  async updateBoolean({ boolean, actionId }) {
+    if (!await this.stateValues.disabled) {
       let updateInstructions = [{
         updateType: "updateValue",
         componentName: this.componentName,
@@ -157,21 +164,27 @@ export default class BooleanInput extends Input {
         }
       }
 
-      if (this.stateValues.answerAncestor) {
+      let answerAncestor = await this.stateValues.answerAncestor;
+      if (answerAncestor) {
         event.context = {
-          answerAncestor: this.stateValues.answerAncestor.componentName
+          answerAncestor: answerAncestor.componentName
         }
       }
 
 
-      return this.coreFunctions.performUpdate({
+      await this.coreFunctions.performUpdate({
         updateInstructions,
         event,
-      }).then(() => this.coreFunctions.triggerChainedActions({
+        actionId,
+      });
+
+      return await this.coreFunctions.triggerChainedActions({
         componentName: this.componentName,
-      }));
+      });
 
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

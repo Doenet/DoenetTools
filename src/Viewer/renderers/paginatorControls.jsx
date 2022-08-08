@@ -1,27 +1,24 @@
+
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class PaginatorControls extends DoenetRenderer {
+export default React.memo(function PaginatorControls(props) {
+  let { name, SVs, actions, callAction } = useDoenetRender(props,false);
 
-  static initializeChildrenOnConstruction = false;
-
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <p id={this.componentName}><a name={this.componentName} />
-      <button id={this.componentName + "_previous"}
-        onClick={() => this.actions.setPage({ number: this.doenetSvData.currentPage - 1 })}
-        disabled={this.doenetSvData.disabled || !(this.doenetSvData.currentPage > 1)}
-      >{this.doenetSvData.previousLabel}</button>
-      {" " + this.doenetSvData.pageLabel} {this.doenetSvData.currentPage} of {this.doenetSvData.nPages + " "}
-      <button id={this.componentName + "_next"}
-        onClick={() => this.actions.setPage({ number: this.doenetSvData.currentPage + 1 })}
-        disabled={this.doenetSvData.disabled || !(this.doenetSvData.currentPage < this.doenetSvData.nPages)}
-      >{this.doenetSvData.nextLabel}</button>
-    </p>;
-
+  if (SVs.hidden) {
+    return null;
   }
-}
+
+  return <p id={name}><a name={name} />
+      <button id={name + "_previous"}
+        onClick={() => {callAction({action:actions.setPage, args:{ number: SVs.currentPage - 1 }})}}
+        disabled={SVs.disabled || !(SVs.currentPage > 1)}
+      >{SVs.previousLabel}</button>
+      {" " + SVs.pageLabel} {SVs.currentPage} of {SVs.nPages + " "}
+      <button id={name + "_next"}
+        onClick={() => {callAction({action:actions.setPage, args:{ number: SVs.currentPage + 1 }})}}
+        disabled={SVs.disabled || !(SVs.currentPage < SVs.nPages)}
+      >{SVs.nextLabel}</button>
+    </p>;
+})
+

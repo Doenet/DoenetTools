@@ -12,97 +12,107 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {faSort, faSortUp, faSortDown} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-import {pageToolViewAtom, searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
+import {
+  faSort,
+  faSortUp,
+  faSortDown
+} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
+import {
+  pageToolViewAtom,
+  searchParamAtomFamily,
+  suppressMenusAtom
+} from "../NewToolRoot.js";
 import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
 export const Styles = styled.div`
   padding: 1rem;
   table {
     border-collapse: collapse;
     border-spacing: 0;
-    
+
     thead {
-        position: sticky;
-        top: 0;
-        box-shadow: 0 2px 0 0px #000000;
+      position: sticky;
+      top: 0;
+      box-shadow: 0 2px 0 0px var(--canvastext);
     }
-    
+
     a {
-        text-decoration: #1A5A99 underline;
+      text-decoration: var(--mainBlue) underline;
     }
 
     .sortIcon {
-        padding-left: 4px;
+      padding-left: 4px;
     }
-  
-    tbody tr:not(:last-child) {border-bottom: 1px solid #e2e2e2;}
- 
+
+    tbody tr:not(:last-child) {
+      border-bottom: 1px solid var(--mainGray);
+    }
+
     td:first-child {
-        text-align: left;
-        max-width: 15rem;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
+      text-align: left;
+      max-width: 15rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
     th {
-        position: sticky;
-        top: 0;
-        background: white;
-        user-select: none;
-        max-width: 4rem;
-        //word-wrap: break-word;
-        padding: 2px;
-        max-height: 10rem;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
+      position: sticky;
+      top: 0;
+      background: var(--canvas);
+      user-select: none;
+      max-width: 4rem;
+      //word-wrap: break-word;
+      padding: 2px;
+      max-height: 10rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
-    
+
     th:first-child {
-        vertical-align: bottom;
-        max-width: 15rem;
-        p {
-            margin: 5px;
-        }
+      vertical-align: bottom;
+      max-width: 15rem;
+      p {
+        margin: 5px;
+      }
     }
 
     th > p {
-        height: 100%;
+      height: 100%;
     }
 
-    tr:not(:first-child) th:not(:first-child) > p{
-        writing-mode: vertical-rl;
-        text-align: left;
-        transform: rotate(180deg);
+    tr:not(:first-child) th:not(:first-child) > p {
+      writing-mode: vertical-rl;
+      text-align: left;
+      transform: rotate(180deg);
     }
 
-    thead tr:only-child th:not(:first-child) > p{
-        writing-mode: vertical-rl;
-        text-align: left;
-        transform: rotate(180deg);
+    thead tr:only-child th:not(:first-child) > p {
+      writing-mode: vertical-rl;
+      text-align: left;
+      transform: rotate(180deg);
     }
-    
+
     td {
-        /* user-select: none; */
-        text-align: center;
-        max-width: 5rem;
+      /* user-select: none; */
+      text-align: center;
+      max-width: 5rem;
     }
-    td, th {
-        border-right: 2px solid black;
-        :last-child {
-            border-right: 0;
-        }
+    td,
+    th {
+      border-right: 2px solid var(--canvastext);
+      :last-child {
+        border-right: 0;
+      }
     }
 
     tfoot {
-        font-weight: bolder;
-        position: sticky;
-        bottom: 0;
-        background-color: white;
-        box-shadow: inset 0 2px 0 #000000;
-      }
-
+      font-weight: bolder;
+      position: sticky;
+      bottom: 0;
+      background-color: var(--canvas);
+      box-shadow: inset 0 2px 0 var(--canvastext);
+    }
   }
 `;
 export const driveId = atom({
@@ -137,8 +147,8 @@ const assignmentDataQuerry = atom({
     key: "assignmentDataQuerry/Default",
     get: async ({get}) => {
       try {
-        const driveId2 = get(searchParamAtomFamily("driveId"));
-        const driveIdPayload = {params: {driveId: driveId2}};
+        const courseId = get(searchParamAtomFamily("courseId"));
+        const driveIdPayload = {params: {driveId: courseId}};
         const {data} = await axios.get("/api/loadAssignments.php", driveIdPayload);
         return data;
       } catch (error) {
@@ -175,13 +185,13 @@ export const studentDataQuerry = atom({
   default: selector({
     key: "studentDataQuerry/Default",
     get: async ({get}) => {
-      const driveId2 = get(searchParamAtomFamily("driveId"));
-      const driveIdPayload = {params: {driveId: driveId2}};
+      const courseId = get(searchParamAtomFamily("courseId"));
+      const driveIdPayload = {params: {driveId: courseId}};
       try {
         const {data} = await axios.get("/api/loadGradebookEnrollment.php", driveIdPayload);
         return data;
       } catch (error) {
-        console.log("No students associated with course ID: ", get(driveId2), error);
+        console.log("No students associated with course ID: ", get(driveId), error);
         return {};
       }
     }
@@ -220,8 +230,8 @@ export const overViewDataQuerry = atom({
     key: "overViewDataQuerry/Default",
     get: async ({get}) => {
       try {
-        const driveId2 = get(searchParamAtomFamily("driveId"));
-        const driveIdPayload = {params: {driveId: driveId2}};
+        const courseId = get(searchParamAtomFamily("courseId"));
+        const driveIdPayload = {params: {driveId: courseId}};
         let {data} = await axios.get("/api/loadGradebookOverview.php", driveIdPayload);
         return data;
       } catch (error) {
@@ -248,11 +258,7 @@ export const overViewData = selector({
     }
     let data = get(overViewDataQuerry);
     for (let userAssignment in data) {
-      let [
-        doenetId,
-        credit,
-        userId
-      ] = data[userAssignment];
+      let [doenetId, credit, userId] = data[userAssignment];
       if (overView[userId]) {
         overView[userId].assignments[doenetId] = credit;
       }
@@ -435,7 +441,7 @@ function DefaultColumnFilter({
       setFilter(e.target.value || void 0);
     },
     placeholder: `Search ${count} records...`,
-    style: {border: "2px solid black", borderRadius: "5px"}
+    style: {border: "2px solid var(--canvastext)", borderRadius: "5px"}
   });
 }
 function GradebookOverview() {
@@ -457,19 +463,10 @@ function GradebookOverview() {
     return null;
   }
   let gradeCategories = [
-    {
-      category: "Gateway",
-      scaleFactor: 0
-    },
+    {category: "Gateway", scaleFactor: 0},
     {category: "Exams"},
-    {
-      category: "Quizzes",
-      maximumNumber: 10
-    },
-    {
-      category: "Problem sets",
-      maximumNumber: 30
-    },
+    {category: "Quizzes", maximumNumber: 10},
+    {category: "Problem sets", maximumNumber: 30},
     {category: "Projects"},
     {category: "Participation"}
   ];
@@ -484,13 +481,19 @@ function GradebookOverview() {
     Footer: "Possible Points"
   });
   possiblePointRow["name"] = "Possible Points";
-  for (let {category, scaleFactor = 1, maximumNumber = Infinity} of gradeCategories) {
+  for (let {
+    category,
+    scaleFactor = 1,
+    maximumNumber = Infinity
+  } of gradeCategories) {
     let allpossiblepoints = [];
+    let hasAssignments = false;
     for (let doenetId in assignments.contents) {
       let inCategory = assignments.contents[doenetId].category;
       if (inCategory.toLowerCase() !== category.toLowerCase()) {
         continue;
       }
+      hasAssignments = true;
       let possiblepoints = assignments.contents[doenetId].totalPointsOrPercent * 1;
       allpossiblepoints.push(possiblepoints);
       overviewTable.headers.push({
@@ -498,7 +501,13 @@ function GradebookOverview() {
         columns: [
           {
             Header: /* @__PURE__ */ React.createElement("a", {
-              style: {fontWeight: "normal"},
+              style: {
+                display: "block",
+                fontWeight: "normal",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                textOverflow: "ellipsis"
+              },
               onClick: (e) => {
                 setPageToolView({
                   page: "course",
@@ -531,12 +540,26 @@ function GradebookOverview() {
         style: {fontSize: ".7em"}
       }, "(Based on rescaling by ", scaleFactor * 100, "%)");
     }
-    overviewTable.headers.push({
-      Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
-      accessor: category,
-      Footer: categoryPossiblePoints,
-      disableFilters: true
-    });
+    if (hasAssignments) {
+      overviewTable.headers.push({
+        Header: category,
+        columns: [
+          {
+            Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
+            accessor: category,
+            Footer: categoryPossiblePoints,
+            disableFilters: true
+          }
+        ]
+      });
+    } else {
+      overviewTable.headers.push({
+        Header: /* @__PURE__ */ React.createElement("div", null, `${category} Total`, " ", description, " "),
+        accessor: category,
+        Footer: categoryPossiblePoints,
+        disableFilters: true
+      });
+    }
   }
   overviewTable.headers.push({
     Header: /* @__PURE__ */ React.createElement("div", null, "Course Total"),
@@ -563,7 +586,11 @@ function GradebookOverview() {
       }
     }, " ", name, " ");
     let totalScore = 0;
-    for (let {category, scaleFactor = 1, maximumNumber = Infinity} of gradeCategories) {
+    for (let {
+      category,
+      scaleFactor = 1,
+      maximumNumber = Infinity
+    } of gradeCategories) {
       let scores = [];
       for (let doenetId in assignments.contents) {
         let inCategory = assignments.contents[doenetId].category;
@@ -581,7 +608,12 @@ function GradebookOverview() {
               page: "course",
               tool: "gradebookStudentAssignment",
               view: "",
-              params: {driveId: driveIdValue, doenetId, userId, previousCrumb: "student"}
+              params: {
+                driveId: driveIdValue,
+                doenetId,
+                userId,
+                previousCrumb: "student"
+              }
             });
           }
         }, score);
@@ -604,6 +636,6 @@ function GradebookOverview() {
 }
 export default function Gradebook(props) {
   const setDriveId = useSetRecoilState(driveId);
-  setDriveId(useRecoilValue(searchParamAtomFamily("driveId")));
+  setDriveId(useRecoilValue(searchParamAtomFamily("courseId")));
   return /* @__PURE__ */ React.createElement(GradebookOverview, null);
 }

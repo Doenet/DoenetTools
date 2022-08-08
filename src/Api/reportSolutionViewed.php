@@ -8,8 +8,8 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
-$examUserId = $jwtArray['examineeUserId'];
-$examDoenetId = $jwtArray['doenetId'];
+$examUserId = array_key_exists("examineeUserId",$jwtArray) ? $jwtArray['examineeUserId'] : "";
+$examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] : "";
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
@@ -54,7 +54,7 @@ $result = $conn->query($sql);
 
   if ($result->num_rows < 1){
     $sql = "UPDATE user_assignment_attempt_item
-        SET viewedSolution = '1', viewedSolutionDate = NOW()
+        SET viewedSolution = '1', viewedSolutionDate = CONVERT_TZ(NOW(), @@session.time_zone, '+00:00')
         WHERE doenetId = '$doenetId'
         AND attemptNumber = '$attemptNumber'
         AND itemNumber = '$itemNumber'

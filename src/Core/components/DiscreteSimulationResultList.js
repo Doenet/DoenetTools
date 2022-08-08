@@ -6,12 +6,8 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   static componentType = "DiscreteSimulationResultList";
   static rendererType = "spreadsheet";
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["cells", "height"] };
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.width = {
       createComponentOfType: "_componentSize",
       createStateVariable: "width",
@@ -125,6 +121,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     stateVariableDefinitions.cells = {
       forRenderer: true,
+      shadowVariable: true,
       returnDependencies: () => ({
         allIterates: {
           dependencyType: "stateVariable",
@@ -193,7 +190,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           cells.push(cell)
         }
 
-        return { newValues: { cells } };
+        return { setValue: { cells } };
       }
     }
 
@@ -201,7 +198,9 @@ export default class DiscreteSimulationResultList extends BlockComponent {
 
     stateVariableDefinitions.numRows = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumRows: {
           dependencyType: "stateVariable",
@@ -218,13 +217,15 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           numRows = 4;
         }
         numRows = Math.max(numRows, dependencyValues.cells.length);
-        return { newValues: { numRows } }
+        return { setValue: { numRows } }
       }
     }
 
     stateVariableDefinitions.numColumns = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumColumns: {
           dependencyType: "stateVariable",
@@ -245,14 +246,16 @@ export default class DiscreteSimulationResultList extends BlockComponent {
             numColumns = Math.max(numColumns, row.length);
           }
         }
-        return { newValues: { numColumns } }
+        return { setValue: { numColumns } }
       }
     }
 
 
     stateVariableDefinitions.height = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         heightAttr: {
@@ -276,10 +279,10 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           } else {
             height = 130;  // value if numRows = 4
           }
-          return { newValues: { height: { size: height, isAbsolute: true } } }
+          return { setValue: { height: { size: height, isAbsolute: true } } }
         }
 
-        return { newValues: { height: dependencyValues.heightAttr.stateValues.componentSize } }
+        return { setValue: { height: dependencyValues.heightAttr.stateValues.componentSize } }
 
       }
     }
@@ -290,7 +293,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
   }
 
 
-  async onChange({ changes, source }) {
+  async onChange({ changes, source, actionId, }) {
 
     if (source !== "loadData") {
       let cellChanges = {};
@@ -306,6 +309,7 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           stateVariable: "cells",
           value: cellChanges,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -315,17 +319,29 @@ export default class DiscreteSimulationResultList extends BlockComponent {
           result: cellChanges
         }
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
 
   }
 
-  actions = {
-    onChange: this.onChange.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
-  };
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
 
+  actions = {
+    onChange: this.onChange.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  };
 
 
 }

@@ -6,8 +6,8 @@ export default class FunctionIterates extends InlineComponent {
   static rendererType = undefined;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.nIterates = {
       createComponentOfType: "integer",
       createStateVariable: "nIterates",
@@ -46,7 +46,9 @@ export default class FunctionIterates extends InlineComponent {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         functionAttr: {
           dependencyType: "attributeComponent",
@@ -56,14 +58,14 @@ export default class FunctionIterates extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         if (!dependencyValues.functionAttr) {
-          return { newValues: { nDimensions: 0 } }
+          return { setValue: { nDimensions: 0 } }
         } else if (dependencyValues.functionAttr.stateValues.nInputs !==
           dependencyValues.functionAttr.stateValues.nOutputs
         ) {
           console.warn(`Function iterates are possible only if the number of inputs is equal to the number of outputs`)
-          return { newValues: { nDimensions: 0 } }
+          return { setValue: { nDimensions: 0 } }
         } else {
-          return { newValues: { nDimensions: dependencyValues.functionAttr.stateValues.nInputs } }
+          return { setValue: { nDimensions: dependencyValues.functionAttr.stateValues.nInputs } }
         }
       }
     }
@@ -72,7 +74,9 @@ export default class FunctionIterates extends InlineComponent {
 
     stateVariableDefinitions.allIterates = {
       public: true,
-      componentType: "mathList",
+      shadowingInstructions: {
+        createComponentOfType: "mathList",
+      },
       returnDependencies: () => ({
         functionAttr: {
           dependencyType: "attributeComponent",
@@ -118,7 +122,7 @@ export default class FunctionIterates extends InlineComponent {
           )
         ) {
           allIterates = Array(nIterates).fill(me.fromAst('\uff3f'));
-          return { newValues: { allIterates } };
+          return { setValue: { allIterates } };
         }
 
         if (symbolic) {
@@ -169,14 +173,16 @@ export default class FunctionIterates extends InlineComponent {
           }
         }
 
-        return { newValues: { allIterates } };
+        return { setValue: { allIterates } };
 
       }
     }
 
     stateVariableDefinitions.allIteratesWithInitial = {
       public: true,
-      componentType: "mathList",
+      shadowingInstructions: {
+        createComponentOfType: "mathList",
+      },
       returnDependencies: () => ({
         initialValue: {
           dependencyType: "stateVariable",
@@ -189,7 +195,7 @@ export default class FunctionIterates extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             allIteratesWithInitial: [
               dependencyValues.initialValue, ...dependencyValues.allIterates
             ]
@@ -202,7 +208,9 @@ export default class FunctionIterates extends InlineComponent {
     stateVariableDefinitions.iterates = {
       isArray: true,
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       entryPrefixes: ["iterate"],
       returnArraySizeDependencies: () => ({
         nIterates: {
@@ -232,14 +240,16 @@ export default class FunctionIterates extends InlineComponent {
           iterates[ind] = globalDependencyValues.allIterates[ind];
         }
 
-        return { newValues: { iterates } }
+        return { setValue: { iterates } }
       }
 
     }
 
     stateVariableDefinitions.finalIterate = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       stateVariablesDeterminingDependencies: ["nIterates"],
       returnDependencies({ stateValues }) {
         if (!Number.isFinite(stateValues.nIterates) || stateValues.nIterates < 0) {
@@ -264,7 +274,7 @@ export default class FunctionIterates extends InlineComponent {
         }
       },
       definition({ dependencyValues }) {
-        return { newValues: { finalIterate: dependencyValues.finalIterate } }
+        return { setValue: { finalIterate: dependencyValues.finalIterate } }
       }
     }
 

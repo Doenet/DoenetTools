@@ -2,37 +2,33 @@
 
 entity {
   Text |
-  EntityReference |
-  CharacterReference |
   Element |
   Comment |
   MismatchedCloseTag |
-  Macro |
   incompleteStartCloseTag
 }
 
 Element {
-  OpenTag entity* CloseTag |
+  OpenTag entity* (CloseTag | MissingCloseTag) |
   SelfClosingTag
 }
 
 topLevel {
   Text |
   Comment |
-  Macro |
   Element
 }
 
-OpenTag[closedBy=CloseTag] {
-  StartTag TagName Attribute* endTag
+OpenTag[closedBy="CloseTag MissingCloseTag"] {
+  StartTag TagName ws* Attribute* endTag
 }
 
 SelfClosingTag {
-  StartTag TagName Attribute* selfCloseEndTag
+  StartTag TagName ws* Attribute* selfCloseEndTag
 }
 
 CloseTag[openedBy=OpenTag] {
-  StartCloseTag TagName  endTag
+  StartCloseTag ws* TagName ws* endTag
 }
 
 MismatchedCloseTag {
@@ -40,27 +36,33 @@ MismatchedCloseTag {
 }
 
 Attribute {
-  AttributeName |
-  AttributeName Is AttributeValue
+  AttributeName ws* |
+   AttributeName ws* Is ws* AttributeValue ws*
 }
 
-AttributeValue { "\"" (attributeContent | EntityReference | CharacterReference | Macro)* "\"" }
+AttributeValue {singleQuoteAttributeValue | doubleQuoteAttributeValue}
 
-Comment { "<!--" commentContent* "-->" }
+Comment { beginComment commentContent* "-->" }
 
 @context elementContext from "./tokens.js"
 
 @external tokens startTag from "./tokens.js" {
   StartTag[closedBy="SelfCloseEndTag EndTag"]
   StartCloseTag
+  MissingCloseTag
   mismatchedStartCloseTag[@name=StartCloseTag]
   incompleteStartCloseTag[@name=StartCloseTag]
 }
 
 @external tokens commentContent from "./tokens.js" { commentContent }
 
+singleQuoteAttributeValue { "'" attributeContentSingleQuote* "'" }
+doubleQuoteAttributeValue { "\"" attributeContentDoubleQuote* "\"" }
+
 @tokens {
   endTag { ">" }
+  
+  beginComment { "<!--" }
 
   selfCloseEndTag { "/>" }
 
@@ -72,30 +74,17 @@ Comment { "<!--" commentContent* "-->" }
 
   TagName { identifier }
 
-  Macro { "$" identifier}
-
   AttributeName { identifier }
 
-  attributeContent { "$" |  !["&$ \t\r\n]  !["&$]* }
+  attributeContentSingleQuote { ![']+ }
 
-  EntityReference { "&" ![#; ]+ ";" }
-
-  CharacterReference { "&#" ![; ]+ ";" }
+  attributeContentDoubleQuote { !["]+ }
 
   Is { "=" }
 
-  Text { ![<&$] ![<&$]* }
+  Text { ("< " | "<=" | "<\n" | ![<])+  }
 
-  space { std.whitespace+ }
-
-  @precedence {Macro, attributeContent}
-
-  @precedence {attributeContent, space}
-
-  @precedence {space, Text}
+  ws { std.whitespace+ }
 
 }
-
-@skip { space }
-
 @detectDelim

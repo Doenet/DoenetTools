@@ -1,16 +1,20 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { deepClone } from '../utils/deepFunctions';
-import { processAssignNames } from '../utils/serializedStateProcessing';
+import { gatherVariantComponents, markToCreateAllUniqueNames, processAssignNames } from '../utils/serializedStateProcessing';
+import { convertAttributesForComponentType } from '../utils/copy';
+import { setUpVariantSeedAndRng } from '../utils/variants';
 
 export default class Map extends CompositeComponent {
   static componentType = "map";
 
   static assignNamesToReplacements = true;
 
+  static createsVariants = true;
+
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
@@ -57,7 +61,7 @@ export default class Map extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             nSources: dependencyValues.sourcesChildren.length,
             sourcesNames: dependencyValues.sourcesChildren.map(x => x.componentName),
             sourceAliases: dependencyValues.sourcesChildren.map(x => x.stateValues.alias),
@@ -85,7 +89,7 @@ export default class Map extends CompositeComponent {
 
         let sourcesChildNames = dependencyValues.sourcesChildren.map(x => [...x.stateValues.childComponentNames]);
 
-        return { newValues: { nIterates, minNIterates, sourcesChildNames } };
+        return { setValue: { nIterates, minNIterates, sourcesChildNames } };
       }
 
     }
@@ -104,7 +108,7 @@ export default class Map extends CompositeComponent {
         let templateChild = dependencyValues.templateChild[0];
         if (!templateChild) {
           return {
-            newValues: { template: null }
+            setValue: { template: null }
           }
         }
         let childrenOfTemplate = templateChild.stateValues.serializedChildren;
@@ -118,7 +122,7 @@ export default class Map extends CompositeComponent {
           template.attributes = { newNamespace: { primitive: true } }
         }
         return {
-          newValues: {
+          setValue: {
             template
           }
         }
@@ -152,7 +156,7 @@ export default class Map extends CompositeComponent {
           validBehavior = false;
         }
 
-        return { newValues: { validBehavior } };
+        return { setValue: { validBehavior } };
       }
     }
 
@@ -172,15 +176,71 @@ export default class Map extends CompositeComponent {
       definition: function () {
         // even with invalid behavior, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
+
+
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.generatedVariantInfo = {
+      returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
+        variantSeed: {
+          dependencyType: "value",
+          value: sharedParameters.variantSeed,
+        },
+        variantDescendants: {
+          dependencyType: "descendant",
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
+          variableNames: [
+            "isVariantComponent",
+            "generatedVariantInfo",
+          ],
+          useReplacementsForComposites: true,
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfEncounteredComposites: true,
+        },
+
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let generatedVariantInfo = {
+          seed: dependencyValues.variantSeed,
+          meta: {
+            createdBy: componentName,
+          }
+        };
+
+
+        let subvariants = generatedVariantInfo.subvariants = [];
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+          }
+        }
+
+        return {
+          setValue: {
+            generatedVariantInfo,
+          }
+        }
+
+      }
+    }
+
 
     return stateVariableDefinitions;
 
   }
 
-  static async createSerializedReplacements({ component, workspace, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, workspace, componentInfoObjects, flags }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`);
 
@@ -211,7 +271,7 @@ export default class Map extends CompositeComponent {
     if (await component.stateValues.behavior === "parallel") {
       for (let iter = 0; iter < await component.stateValues.minNIterates; iter++) {
         replacements.push(
-          ...await this.parallelReplacement({ component, iter, componentInfoObjects })
+          ...await this.parallelReplacement({ component, iter, componentInfoObjects, flags })
         );
       }
     } else {
@@ -222,7 +282,8 @@ export default class Map extends CompositeComponent {
         component,
         sourcesNumber: 0,
         iterateNumber: -1,
-        componentInfoObjects
+        componentInfoObjects,
+        flags
       });
       replacements = results.replacements;
 
@@ -234,10 +295,32 @@ export default class Map extends CompositeComponent {
     return { replacements };
   }
 
-  static async parallelReplacement({ component, iter, componentInfoObjects }) {
+  static async parallelReplacement({ component, iter, componentInfoObjects, flags }) {
 
     let replacements = [deepClone(await component.stateValues.template)];
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
+
+
+    if ("isResponse" in component.attributes) {
+      // pass isResponse to replacements
+
+      let attributesFromComposite = convertAttributesForComponentType({
+        attributes: { isResponse: component.attributes.isResponse },
+        componentType: repl.componentType,
+        componentInfoObjects,
+        compositeCreatesNewNamespace: newNamespace,
+        flags
+      })
+      if (!replacements[0].attributes) {
+        replacements[0].attributes = {};
+      }
+
+      Object.assign(replacements[0].attributes, attributesFromComposite)
+    }
+
+    if (!replacements[0].attributes?.newNamespace?.primitive && replacements[0].children) {
+      markToCreateAllUniqueNames(replacements[0].children)
+    }
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -258,14 +341,17 @@ export default class Map extends CompositeComponent {
 
 
   static async recurseThroughCombinations({ component, sourcesNumber,
-    childnumberArray = [], iterateNumber, componentInfoObjects }) {
+    childnumberArray = [], iterateNumber, componentInfoObjects, flags
+  }) {
     let replacements = [];
     let newChildnumberArray = [...childnumberArray, 0];
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let nIterates = await component.stateValues.nIterates;
     let nSources = await component.stateValues.nSources;
     let template = await component.stateValues.template;
+
+    let compositeAttributesObj = this.createAttributesObject();
 
     for (let iter = 0; iter < nIterates[sourcesNumber]; iter++) {
       newChildnumberArray[sourcesNumber] = iter;
@@ -273,6 +359,30 @@ export default class Map extends CompositeComponent {
         iterateNumber++;
 
         let serializedComponents = [deepClone(template)];
+
+        // pass isResponse to template
+        // (only isResponse will be copied, as it is only attribute with leaveRaw)
+
+        let attributesFromComposite = {};
+
+        attributesFromComposite = convertAttributesForComponentType({
+          attributes: component.attributes,
+          componentType: serializedComponents[0].componentType,
+          componentInfoObjects,
+          compositeAttributesObj,
+          compositeCreatesNewNamespace: newNamespace,
+          flags
+        })
+
+        if (!serializedComponents[0].attributes) {
+          serializedComponents[0].attributes = {};
+        }
+
+        Object.assign(serializedComponents[0].attributes, attributesFromComposite)
+
+        if (!serializedComponents[0].attributes.newNamespace?.primitive && serializedComponents[0].children) {
+          markToCreateAllUniqueNames(serializedComponents[0].children)
+        }
 
         let processResult = processAssignNames({
           assignNames: component.doenetAttributes.assignNames,
@@ -295,7 +405,8 @@ export default class Map extends CompositeComponent {
           sourcesNumber: sourcesNumber + 1,
           childnumberArray: newChildnumberArray,
           iterateNumber,
-          componentInfoObjects
+          componentInfoObjects,
+          flags
         });
         replacements.push(...results.replacements);
         iterateNumber = results.iterateNumber
@@ -305,7 +416,7 @@ export default class Map extends CompositeComponent {
     return { replacements, iterateNumber };
   }
 
-  static async calculateReplacementChanges({ component, components, workspace, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, components, workspace, componentInfoObjects, flags }) {
 
     // console.log(`calculate replacement changes for ${component.componentName}`)
 
@@ -416,7 +527,7 @@ export default class Map extends CompositeComponent {
 
     if (recreateReplacements) {
       let newSerializedReplacements = await this.createSerializedReplacements({
-        component, workspace, componentInfoObjects
+        component, workspace, componentInfoObjects, flags
       }).replacements;
 
       let replacementInstruction = {
@@ -560,7 +671,7 @@ export default class Map extends CompositeComponent {
 
         for (let iter = prevMinNIterates; iter < currentMinNIterates; iter++) {
           replacements.push(
-            ...await this.parallelReplacement({ component, iter, componentInfoObjects })
+            ...await this.parallelReplacement({ component, iter, componentInfoObjects, flags })
           );
         }
 
@@ -598,10 +709,79 @@ export default class Map extends CompositeComponent {
     return replacementChanges;
   }
 
-  static determineNumberOfUniqueVariants({ serializedComponent }) {
-    // TODO: if template has only one unique variant
-    // could treat as a normal component
+  static async setUpVariant({
+    serializedComponent, sharedParameters,
+    descendantVariantComponents,
+  }) {
+
+    setUpVariantSeedAndRng({
+      serializedComponent, sharedParameters,
+      descendantVariantComponents
+    });
+
+  }
+
+
+  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+
+    if (numberOfVariants !== undefined) {
+      return { success: true, numberOfVariants };
+    }
+
+    let descendantVariantComponents = gatherVariantComponents({
+      serializedComponents: serializedComponent.children,
+      componentInfoObjects
+    });
+
+
+    let numberOfVariantsByDescendant = [];
+    for (let descendant of descendantVariantComponents) {
+      let descendantClass = componentInfoObjects.allComponentClasses[descendant.componentType];
+      let result = descendantClass.determineNumberOfUniqueVariants({
+        serializedComponent: descendant,
+        componentInfoObjects
+      })
+      if (!result.success) {
+        return { success: false }
+      }
+      numberOfVariantsByDescendant.push(result.numberOfVariants);
+    }
+
+
+    if (numberOfVariantsByDescendant.length === 1 && numberOfVariantsByDescendant[0] === 1) {
+      // just have a template with one variant
+      // so will have a single variant even if don't know how many times the template is repeated
+      serializedComponent.variants.numberOfVariants = 1;
+
+      return {
+        success: true,
+        numberOfVariants: 1
+      }
+    }
+
     return { success: false };
+  }
+
+  static getUniqueVariant({ serializedComponent, variantIndex, componentInfoObjects }) {
+
+    let numberOfVariants = serializedComponent.variants?.numberOfVariants;
+    if (numberOfVariants === undefined) {
+      return { success: false }
+    }
+
+    if (!Number.isInteger(variantIndex) || variantIndex < 1 || variantIndex > numberOfVariants) {
+      return { success: false }
+    }
+
+    // so far, only have case where don't have any variants
+    // so variantIndex will be one and we don't have subvariants
+
+    let desiredVariant = { index: variantIndex };
+    return { success: true, desiredVariant }
+
+
   }
 
 }

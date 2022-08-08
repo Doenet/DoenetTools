@@ -9,14 +9,14 @@ export default class When extends BooleanComponent {
 
   static stateVariableForAttributeValue = "conditionSatisfied";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.matchPartial = {
       createComponentOfType: "boolean",
       createStateVariable: "matchPartial",
       defaultValue: false,
       public: true,
-      propagateToDescendants: true,
+      fallBackToParentStateVariable: "matchPartial",
     };
 
     for (let attrName of ["symbolicEquality", "expandOnCompare",
@@ -26,8 +26,7 @@ export default class When extends BooleanComponent {
       "nSignErrorsMatched",
       "nPeriodicSetMatchesRequired"
     ]) {
-      delete attributes[attrName].ignorePropagationFromAncestors;
-      attributes[attrName].propagateToDescendants = true;
+      attributes[attrName].fallBackToParentStateVariable = attrName;
     }
 
     return attributes;
@@ -41,16 +40,22 @@ export default class When extends BooleanComponent {
     // condition satisfied is just an alias to value
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       additionalStateVariablesDefined: [
         {
           variableName: "fractionSatisfied",
           public: true,
-          componentType: "number"
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
         }, {
           variableName: "conditionSatisfied",
           public: true,
-          componentType: "boolean"
+          shadowingInstructions: {
+            createComponentOfType: "boolean",
+          },
         }
       ],
       returnDependencies: () => ({
@@ -134,6 +139,10 @@ export default class When extends BooleanComponent {
           dependencyType: "stateVariable",
           variableName: "numberListChildrenByCode",
         },
+        otherChildrenByCode: {
+          dependencyType: "stateVariable",
+          variableName: "otherChildrenByCode",
+        },
       }),
       definition({ dependencyValues, usedDefault }) {
 
@@ -144,7 +153,7 @@ export default class When extends BooleanComponent {
           // (which could occur if have no children or if have invalid form)
           // return false
           return {
-            newValues: {
+            setValue: {
               conditionSatisfied: false,
               value: false,
               fractionSatisfied: 0,
@@ -163,7 +172,7 @@ export default class When extends BooleanComponent {
         let conditionSatisfied = fractionSatisfied === 1;
 
         return {
-          newValues: { fractionSatisfied, conditionSatisfied, value: conditionSatisfied }
+          setValue: { fractionSatisfied, conditionSatisfied, value: conditionSatisfied }
         }
 
       }

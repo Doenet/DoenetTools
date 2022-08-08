@@ -1,29 +1,31 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class Row extends DoenetRenderer {
+export default React.memo(function Row(props) {
+  let { name, SVs, children } = useDoenetRender(props);
 
-  render() {
+  if (SVs.hidden) {
+    return null;
+  }
 
-    if (this.doenetSvData.hidden) {
-      return null;
+  let style = {};
+
+    if (SVs.valign !== null) {
+      style.verticalAlign = SVs.valign;
     }
-
-    let props = { style: {} };
-
-    if (this.doenetSvData.valign !== null) {
-      props.style.verticalAlign =this.doenetSvData.valign;
-    }
-    if (this.doenetSvData.left !== "none") {
-      props.style.borderLeftStyle = "solid";
-      if (this.doenetSvData.left === "minor") {
-        props.style.borderLeftWidth = "thin";
-      } else if (this.doenetSvData.left === "medium") {
-        props.style.borderLeftWidth = "medium";
+    if (SVs.left !== "none") {
+      style.borderLeftStyle = "solid";
+      if (SVs.left === "minor") {
+        style.borderLeftWidth = "thin";
+      } else if (SVs.left === "medium") {
+        style.borderLeftWidth = "medium";
       } else {
-        props.style.borderLeftWidth = "thick";
+        style.borderLeftWidth = "thick";
       }
     }
-    return <tr id={this.componentName} {...props}>{this.children}</tr>
-  }
-}
+    return <tr id={name} style={style}>{children}</tr>
+
+
+})
+
+

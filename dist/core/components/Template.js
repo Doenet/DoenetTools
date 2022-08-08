@@ -2,6 +2,7 @@ import CompositeComponent from './abstract/CompositeComponent.js';
 import { deepClone } from '../utils/deepFunctions.js';
 import { processAssignNames } from '../utils/serializedStateProcessing.js';
 import { convertAttributesForComponentType } from '../utils/copy.js';
+import { setUpVariantSeedAndRng } from '../utils/variants.js';
 
 export default class Template extends CompositeComponent {
   static componentType = "template";
@@ -11,7 +12,8 @@ export default class Template extends CompositeComponent {
   static renderedDefault = false;
 
   static assignNamesToReplacements = true;
-  static originalNamesAreConsistent = true;
+
+  static createsVariants = true;
 
 
   static keepChildrenSerialized({ serializedComponent }) {
@@ -22,8 +24,8 @@ export default class Template extends CompositeComponent {
     }
   }
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.rendered = {
       createComponentOfType: "boolean",
       createStateVariable: "rendered",
@@ -54,7 +56,7 @@ export default class Template extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             serializedChildren: dependencyValues.serializedChildren
           }
         }
@@ -70,7 +72,7 @@ export default class Template extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             newNamespace: dependencyValues.newNamespace
           }
         }
@@ -80,44 +82,105 @@ export default class Template extends CompositeComponent {
     stateVariableDefinitions.readyToExpandWhenResolved = {
       returnDependencies: () => ({}),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
+
+
+
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isVariantComponent: true } })
+    }
+
+
+    stateVariableDefinitions.generatedVariantInfo = {
+      returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
+        variantSeed: {
+          dependencyType: "value",
+          value: sharedParameters.variantSeed,
+        },
+        variantDescendants: {
+          dependencyType: "descendant",
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
+          variableNames: [
+            "isVariantComponent",
+            "generatedVariantInfo",
+          ],
+          useReplacementsForComposites: true,
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfEncounteredComposites: true,
+        },
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let generatedVariantInfo = {
+          seed: dependencyValues.variantSeed,
+          meta: {
+            createdBy: componentName,
+          }
+        };
+
+
+        let subvariants = generatedVariantInfo.subvariants = [];
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+          }
+        }
+
+        return {
+          setValue: {
+            generatedVariantInfo,
+          }
+        }
+
+      }
+    }
 
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, componentInfoObjects, alwaysCreateReplacements }) {
+  static async createSerializedReplacements({ component, componentInfoObjects,
+    alwaysCreateReplacements, flags
+  }) {
     // console.log(`create serialized replacements for ${component.componentName}`)
-    // console.log(component.stateValues.rendered);
+    // console.log(await component.stateValues.rendered);
 
-    if (!(component.stateValues.rendered || alwaysCreateReplacements)) {
+    if (!(await component.stateValues.rendered || alwaysCreateReplacements)) {
       return { replacements: [] };
     } else {
 
-      let replacements = deepClone(component.state.serializedChildren.value);
+      let replacements = deepClone(await component.state.serializedChildren.value);
 
-      let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+      let newNamespace = component.attributes.newNamespace?.primitive;
 
-      for (let repl of replacements) {
+      if ("isResponse" in component.attributes) {
         // pass isResponse to replacements
-        let attributesFromComposite = {};
 
-        if ("isResponse" in component.attributes) {
-          attributesFromComposite = convertAttributesForComponentType({
+        for (let repl of replacements) {
+          if (typeof repl !== "object") {
+            continue;
+          }
+
+          let attributesFromComposite = convertAttributesForComponentType({
             attributes: { isResponse: component.attributes.isResponse },
             componentType: repl.componentType,
             componentInfoObjects,
-            compositeCreatesNewNamespace: newNamespace
+            compositeCreatesNewNamespace: newNamespace,
+            flags
           })
+          if (!repl.attributes) {
+            repl.attributes = {};
+          }
+
+          Object.assign(repl.attributes, attributesFromComposite)
+
         }
-
-        if (!repl.attributes) {
-          repl.attributes = {};
-        }
-
-        Object.assign(repl.attributes, attributesFromComposite)
-
       }
 
 
@@ -140,10 +203,7 @@ export default class Template extends CompositeComponent {
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
         componentInfoObjects,
-        originalNamesAreConsistent: newNamespace
-          || (!component.doenetAttributes.assignNames
-            //  && !component.replacementOf
-          ),
+        originalNamesAreConsistent: true
       });
 
       return { replacements: processResult.serializedComponents };
@@ -153,12 +213,24 @@ export default class Template extends CompositeComponent {
 
   }
 
+  static async setUpVariant({
+    serializedComponent, sharedParameters,
+    descendantVariantComponents,
+  }) {
+
+    setUpVariantSeedAndRng({
+      serializedComponent, sharedParameters,
+      descendantVariantComponents
+    });
+
+  }
+
   get allPotentialRendererTypes() {
 
     let allPotentialRendererTypes = super.allPotentialRendererTypes;
 
     let additionalRendererTypes = this.potentialRendererTypesFromSerializedComponents(
-      this.stateValues.serializedChildren
+      this.serializedChildren
     );
     for (let rendererType of additionalRendererTypes) {
       if (!allPotentialRendererTypes.includes(rendererType)) {

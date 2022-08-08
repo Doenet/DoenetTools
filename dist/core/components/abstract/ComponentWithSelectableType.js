@@ -10,12 +10,8 @@ export class ComponentWithSelectableType extends BaseComponent {
 
   static includeBlankStringChildren = true;
 
-  // used when referencing this component without prop
-  static useChildrenForReference = false;
-  static get stateVariablesShadowedForReference() { return ["value", "type"] };
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string"
     }
@@ -42,7 +38,7 @@ export class ComponentWithSelectableType extends BaseComponent {
       // remove blank string if componentType isn't text
       if (componentType !== "text") {
         matchedChildren = matchedChildren.filter(x =>
-          x.componentType !== "string" || x.state.value.trim() !== ""
+          typeof x !== "string" || x.trim() !== ""
         )
       }
 
@@ -78,6 +74,7 @@ export class ComponentWithSelectableType extends BaseComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.type = {
+      shadowVariable: true,
       returnDependencies: () => ({
         type: {
           dependencyType: "doenetAttribute",
@@ -100,7 +97,7 @@ export class ComponentWithSelectableType extends BaseComponent {
           type = "number";
         }
 
-        return { newValues: { type } };
+        return { setValue: { type } };
 
       },
     };
@@ -108,7 +105,10 @@ export class ComponentWithSelectableType extends BaseComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      hasVariableComponentType: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
+      shadowVariable: true,
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -143,8 +143,8 @@ export class ComponentWithSelectableType extends BaseComponent {
         }
 
         return {
-          newValues: { value },
-          setComponentType: { value: dependencyValues.type },
+          setValue: { value },
+          setCreateComponentOfType: { value: dependencyValues.type },
         };
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -176,8 +176,8 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
   static includeBlankStringChildren = true;
   static removeBlankStringChildrenPostSugar = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string"
     }
@@ -253,7 +253,7 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
           }
         }
         return {
-          newValues: { nValues, childForValue },
+          setValue: { nValues, childForValue },
         }
       }
     }
@@ -261,9 +261,11 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
     stateVariableDefinitions.values = {
       public: true,
       isArray: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       entryPrefixes: ["value"],
       stateVariablesDeterminingDependencies: ["childForValue"],
-      hasVariableComponentType: true,
       returnArraySizeDependencies: () => ({
         nValues: {
           dependencyType: "stateVariable",
@@ -330,8 +332,8 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
         }
 
         return {
-          newValues: { values },
-          setComponentType: { values: globalDependencyValues.type },
+          setValue: { values },
+          setCreateComponentOfType: { values: globalDependencyValues.type },
         };
       }
     }
@@ -346,8 +348,8 @@ export class ComponentListWithSelectableType extends ComponentWithSelectableType
 export class ComponentListOfListsWithSelectableType extends ComponentWithSelectableType {
   static componentType = "_componentListOfListsWithSelectableType";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string"
     }
@@ -425,7 +427,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         },
       }),
       definition({ dependencyValues }) {
-        return { newValues: { nLists: dependencyValues.listChildren.length } }
+        return { setValue: { nLists: dependencyValues.listChildren.length } }
       }
     }
 
@@ -484,7 +486,7 @@ export class ComponentListOfListsWithSelectableType extends ComponentWithSelecta
         }
 
         return {
-          newValues: { lists },
+          setValue: { lists },
         };
       }
     }

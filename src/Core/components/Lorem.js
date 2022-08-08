@@ -1,17 +1,20 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { LoremIpsum } from "lorem-ipsum";
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import { setUpVariantSeedAndRng } from '../utils/variants';
 
 export default class Lorem extends CompositeComponent {
   static componentType = "lorem";
 
   static assignNamesToReplacements = true;
 
+  static createsVariants = true;
+
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.minSentencesPerParagraph = {
       createComponentOfType: "number",
@@ -101,9 +104,41 @@ export default class Lorem extends CompositeComponent {
       }),
       markStale: () => ({ updateReplacements: true }),
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
+
+
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.generatedVariantInfo = {
+      returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
+        variantSeed: {
+          dependencyType: "value",
+          value: sharedParameters.variantSeed,
+        },
+
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let generatedVariantInfo = {
+          seed: dependencyValues.variantSeed,
+          meta: {
+            createdBy: componentName,
+          }
+        };
+
+        return {
+          setValue: {
+            generatedVariantInfo,
+          }
+        }
+
+      }
+    }
 
 
     return stateVariableDefinitions;
@@ -122,7 +157,7 @@ export default class Lorem extends CompositeComponent {
         max: await component.stateValues.maxWordsPerSentence,
         min: await component.stateValues.minWordsPerSentence
       },
-      random: component.sharedParameters.rng
+      random: component.sharedParameters.variantRng
     });
 
     let replacements = [];
@@ -183,7 +218,7 @@ export default class Lorem extends CompositeComponent {
     }
 
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -211,6 +246,18 @@ export default class Lorem extends CompositeComponent {
     };
 
     return [replacementInstruction];
+
+  }
+
+  static async setUpVariant({
+    serializedComponent, sharedParameters,
+    descendantVariantComponents,
+  }) {
+
+    setUpVariantSeedAndRng({
+      serializedComponent, sharedParameters,
+      descendantVariantComponents
+    });
 
   }
 

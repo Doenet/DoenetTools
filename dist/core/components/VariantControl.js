@@ -7,8 +7,8 @@ export default class VariantControl extends BaseComponent {
 
   // static createsVariants = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.nVariants = {
       createPrimitiveOfType: "integer",
       createStateVariable: "nVariants",
@@ -22,6 +22,12 @@ export default class VariantControl extends BaseComponent {
       defaultValue: false,
       public: true,
     };
+
+    attributes.variantIndicesToIgnore = {
+      createComponentOfType: "numberListFromString",
+      createStateVariable: "variantIndicesToIgnorePreliminary",
+      defaultValue: [],
+    }
 
     attributes.variantNames = {
       createComponentOfType: "variantNames"
@@ -47,7 +53,7 @@ export default class VariantControl extends BaseComponent {
         },
         numberOfVariantsFromSharedParameters: {
           dependencyType: "value",
-          value: sharedParameters.numberOfVariantsFromSharedParameters,
+          value: sharedParameters.numberOfVariantsPreIgnore,
         },
         nVariants: {
           dependencyType: "stateVariable",
@@ -72,13 +78,38 @@ export default class VariantControl extends BaseComponent {
           }
         }
 
-        return { newValues: { nVariantsSpecified } };
+        return { setValue: { nVariantsSpecified } };
+      }
+    }
+
+
+    stateVariableDefinitions.variantIndicesToIgnore = {
+      returnDependencies: () => ({
+        variantIndicesToIgnorePreliminary: {
+          dependencyType: "stateVariable",
+          variableName: "variantIndicesToIgnorePreliminary"
+        },
+        nVariantsSpecified: {
+          dependencyType: "stateVariable",
+          variableName: "nVariantsSpecified"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let variantIndicesToIgnore = dependencyValues.variantIndicesToIgnorePreliminary
+          .filter(x => Number.isInteger(x) && x >= 1 && x <= dependencyValues.nVariantsSpecified)
+          .sort((a, b) => a - b);
+
+        return {
+          setValue: { variantIndicesToIgnore }
+        }
       }
     }
 
     stateVariableDefinitions.nSeeds = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         seedsAttr: {
           dependencyType: "attributeComponent",
@@ -88,9 +119,9 @@ export default class VariantControl extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.seedsAttr !== null) {
-          return { newValues: { nSeeds: dependencyValues.seedsAttr.stateValues.nSeeds } }
+          return { setValue: { nSeeds: dependencyValues.seedsAttr.stateValues.nSeeds } }
         } else {
-          return { newValues: { nSeeds: 0 } }
+          return { setValue: { nSeeds: 0 } }
         }
       }
     }
@@ -98,7 +129,9 @@ export default class VariantControl extends BaseComponent {
 
     stateVariableDefinitions.seeds = {
       public: true,
-      componentType: "seed",
+      shadowingInstructions: {
+        createComponentOfType: "seed",
+      },
       isArray: true,
       entryPrefixes: ["seed"],
       returnArraySizeDependencies: () => ({
@@ -131,7 +164,7 @@ export default class VariantControl extends BaseComponent {
               .stateValues["seed" + (Number(arrayKey) + 1)]
           }
         }
-        return { newValues: { seeds } }
+        return { setValue: { seeds } }
       }
     }
 
@@ -148,13 +181,15 @@ export default class VariantControl extends BaseComponent {
         if (dependencyValues.variantNamesAttr !== null) {
           originalVariantNames = dependencyValues.variantNamesAttr.stateValues.variantNames;
         }
-        return { newValues: { originalVariantNames } }
+        return { setValue: { originalVariantNames } }
       }
     }
 
     stateVariableDefinitions.variantNames = {
       public: true,
-      componentType: "variantName",
+      shadowingInstructions: {
+        createComponentOfType: "variantName",
+      },
       isArray: true,
       entryPrefixes: ["variantName"],
       returnArraySizeDependencies: () => ({
@@ -199,15 +234,19 @@ export default class VariantControl extends BaseComponent {
           variantNames.push(variantString);
         }
 
-        return { newValues: { variantNames } }
+        return { setValue: { variantNames } }
       }
     }
 
 
     stateVariableDefinitions.selectedVariantIndex = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       immutable: true,
+      hasEssential: true,
+      shadowVariable: true,
       returnDependencies: ({ sharedParameters }) => ({
         variantsObject: {
           dependencyType: "variants",
@@ -224,32 +263,32 @@ export default class VariantControl extends BaseComponent {
           dependencyType: "stateVariable",
           variableName: "nVariantsSpecified"
         },
-        selectRng: {
+        variantIndicesToIgnore: {
+          dependencyType: "stateVariable",
+          variableName: "variantIndicesToIgnore"
+        },
+        variantRng: {
           dependencyType: "value",
-          value: sharedParameters.selectRng,
+          value: sharedParameters.variantRng,
           doNotProxy: true,
         }
       }),
       definition: function ({ dependencyValues }) {
 
         // determine how variant will be selected.
-        // Use the first of these options that is available
-        // 1. if variants.desiredVariantIndex is defined and is a valid index,
+        // - if variantsObject.desiredVariantIndex is defined and is a valid index,
         //    then use that for variantIndex
-        // 2. if variants.desiredVariantName is defined and is a valid variantName
-        //    then use the variantIndex corresponding to that name
-        // 3. else, randomly generate variantIndex (except use 0 for document)
+        // - else, randomly generate variantIndex (except use 1 for document)
 
 
-        // no essential state variable, so try to find desiredVariant
         if (dependencyValues.variantsObject !== undefined) {
           if (dependencyValues.variantsObject.desiredVariantIndex !== undefined) {
             let desiredVariantIndex = Number(dependencyValues.variantsObject.desiredVariantIndex);
             if (!Number.isFinite(desiredVariantIndex)) {
               console.warn("Variant index " + dependencyValues.variantsObject.desiredVariantIndex + " must be a number");
               return {
-                makeEssential: { selectedVariantIndex: true },
-                newValues: { selectedVariantIndex: 1 }
+                setEssentialValue: { selectedVariantIndex: true },
+                setValue: { selectedVariantIndex: 1 }
               }
             } else {
               if (!Number.isInteger(desiredVariantIndex)) {
@@ -263,30 +302,9 @@ export default class VariantControl extends BaseComponent {
               }
               let selectedVariantIndex = indexFrom0 + 1;
               return {
-                makeEssential: { selectedVariantIndex: true },
-                newValues: { selectedVariantIndex }
+                setEssentialValue: { selectedVariantIndex },
+                setValue: { selectedVariantIndex }
               }
-            }
-          }
-          if (dependencyValues.variantsObject.desiredVariantName !== undefined) {
-            if (typeof dependencyValues.variantsObject.desiredVariantName === "string") {
-              // want case insensitive test, so convert to lower case
-              // treat originalVariantNames separately so don't have to lower case
-              // remaining variantNames, which are alread lowercase
-              let originalLowerCaseVariantNames = dependencyValues.originalVariantNames.map(x => x.toLowerCase());
-              let lowerCaseVariantNames = [...originalLowerCaseVariantNames, ...dependencyValues.variantNames.slice(originalLowerCaseVariantNames.length)];
-              let desiredIndexFrom0 = lowerCaseVariantNames.indexOf(dependencyValues.variantsObject.desiredVariantName.toLowerCase());
-              if (desiredIndexFrom0 !== -1) {
-                return {
-                  makeEssential: { selectedVariantIndex: true },
-                  newValues: { selectedVariantIndex: desiredIndexFrom0 + 1 }
-                }
-              }
-            }
-            console.warn("Variant name " + dependencyValues.variantsObject.desiredVariantName + " is not valid");
-            return {
-              makeEssential: { selectedVariantIndex: true },
-              newValues: { selectedVariantIndex: 1 }
             }
           }
         }
@@ -295,22 +313,60 @@ export default class VariantControl extends BaseComponent {
 
         let selectedVariantIndex;
 
-        // if selectRng exists
+        // if variantRng exists
         // randomly pick variant index
-        if (dependencyValues.selectRng) {
+        if (dependencyValues.variantRng) {
           // random number in [0, 1)
-          let rand = dependencyValues.selectRng();
+          let rand = dependencyValues.variantRng();
+
+          let nVariants = dependencyValues.nVariantsSpecified;
+          let indicesToIgnore = dependencyValues.variantIndicesToIgnore;
+          if (indicesToIgnore.length > 0) {
+            indicesToIgnore = indicesToIgnore
+              .filter(x => Number.isInteger(x) && x >= 1 && x <= nVariants)
+              .sort((a, b) => a - b);
+
+            nVariants -= indicesToIgnore.length;
+          }
+
           // random integer from 1 to nVariants
-          selectedVariantIndex = Math.floor(rand * dependencyValues.nVariantsSpecified) + 1;
+          selectedVariantIndex = Math.floor(rand * nVariants) + 1;
+
+          if (indicesToIgnore.length > 0) {
+            // adjust selectedVariantIndex so it counts only non-ignored indices
+            for (let ind of indicesToIgnore) {
+              if (selectedVariantIndex >= ind) {
+                selectedVariantIndex++;
+              } else {
+                break;
+              }
+            }
+          }
         } else {
-          // if selectRng does not exist, we are in document
+          // if variantRng does not exist, we are in document
           // Just choose the first variant
           selectedVariantIndex = 1;
+          let indicesToIgnore = dependencyValues.variantIndicesToIgnore;
+          if (indicesToIgnore.length > 0) {
+            indicesToIgnore = indicesToIgnore
+              .filter(x => Number.isInteger(x) && x >= 1 && x <= nVariants)
+              .sort((a, b) => a - b);
+
+            // adjust selectedVariantIndex so it counts only non-ignored indices
+            for (let ind of indicesToIgnore) {
+              if (selectedVariantIndex >= ind) {
+                selectedVariantIndex++;
+              } else {
+                break;
+              }
+            }
+
+          }
         }
 
         return {
-          makeEssential: { selectedVariantIndex: true },
-          newValues: { selectedVariantIndex }
+          setEssentialValue: { selectedVariantIndex },
+          setValue: { selectedVariantIndex }
         }
 
       }
@@ -318,7 +374,9 @@ export default class VariantControl extends BaseComponent {
 
     stateVariableDefinitions.selectedVariantName = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         variantNames: {
           dependencyType: "stateVariable",
@@ -331,7 +389,7 @@ export default class VariantControl extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             selectedVariantName:
               dependencyValues.variantNames[dependencyValues.selectedVariantIndex - 1]
           }
@@ -353,7 +411,7 @@ export default class VariantControl extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         if (dependencyValues.selectedVariantIndex <= dependencyValues.seeds.length) {
-          return { newValues: { selectedSeed: dependencyValues.seeds[dependencyValues.selectedVariantIndex - 1] } }
+          return { setValue: { selectedSeed: dependencyValues.seeds[dependencyValues.selectedVariantIndex - 1] } }
         }
 
         // if fewer seeds than selectedVariantIndex, find additional seeds
@@ -371,12 +429,12 @@ export default class VariantControl extends BaseComponent {
             seedString = seedValue.toString();
           }
         }
-        return { newValues: { selectedSeed: seedString } }
+        return { setValue: { selectedSeed: seedString } }
 
       }
     }
 
-    stateVariableDefinitions.selectRng = {
+    stateVariableDefinitions.variantRng = {
       returnDependencies: ({ sharedParameters }) => ({
         selectedSeed: {
           dependencyType: "stateVariable",
@@ -389,8 +447,8 @@ export default class VariantControl extends BaseComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
-          selectRng: new dependencyValues.rngClass(dependencyValues.selectedSeed)
+        setValue: {
+          variantRng: new dependencyValues.rngClass(dependencyValues.selectedSeed)
         }
       })
     }

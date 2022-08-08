@@ -1,16 +1,13 @@
 import { enumerateCombinations } from './enumeration.js';
 
 
-export function getVariantsForDescendants({
+export function getVariantsForDescendantsForUniqueVariants({
   variantIndex,
   serializedComponent,
-  allComponentClasses
+  componentInfoObjects
 }) {
 
-  if (serializedComponent.variants === undefined) {
-    return { success: false };
-  }
-  let descendantVariantComponents = serializedComponent.variants.descendantVariantComponents;
+  let descendantVariantComponents = serializedComponent.variants?.descendantVariantComponents;
 
   if (descendantVariantComponents === undefined) {
     return { success: false }
@@ -22,16 +19,16 @@ export function getVariantsForDescendants({
 
   let indices = enumerateCombinations({
     numberOfOptionsByIndex: numberOfVariantsByDescendant,
-    maxNumber: variantIndex + 1,
-  })[variantIndex];
+    maxNumber: variantIndex,
+  })[variantIndex - 1];
 
   let desiredVariants = [];
   for (let [ind, comp] of descendantVariantComponents.entries()) {
-    let compClass = allComponentClasses[comp.componentType];
+    let compClass = componentInfoObjects.allComponentClasses[comp.componentType];
     let r = compClass.getUniqueVariant({
       serializedComponent: comp,
-      variantIndex: indices[ind],
-      allComponentClasses: allComponentClasses,
+      variantIndex: indices[ind] + 1,
+      componentInfoObjects,
     });
     if (r.success) {
       desiredVariants.push(r.desiredVariant);
@@ -40,10 +37,47 @@ export function getVariantsForDescendants({
     }
   }
 
-  // console.log("desiredVariants");
-  // console.log(desiredVariants);
   return {
     success: true,
     desiredVariants
   }
+}
+
+export function setUpVariantSeedAndRng({
+  serializedComponent, sharedParameters,
+  descendantVariantComponents,
+}) {
+
+  let variantSeed;
+  // check if desiredVariant was specified
+  let desiredVariant;
+  if (serializedComponent.variants) {
+    desiredVariant = serializedComponent.variants.desiredVariant;
+  }
+  if (desiredVariant?.seed !== undefined) {
+    variantSeed = desiredVariant.seed.toString();
+  } else {
+
+    // if variant seed wasn't specifed
+
+    // randomly pick variant seed
+    variantSeed = sharedParameters.variantRng().toString().slice(2);
+  }
+
+  sharedParameters.variantSeed = variantSeed;
+  sharedParameters.variantRng = new sharedParameters.rngClass(sharedParameters.variantSeed);
+
+  // if subvariants were specified, add those the corresponding descendants
+
+  if (desiredVariant?.subvariants && descendantVariantComponents) {
+    for (let ind in desiredVariant.subvariants) {
+      let subvariant = desiredVariant.subvariants[ind];
+      let variantComponent = descendantVariantComponents[ind];
+      if (variantComponent === undefined) {
+        break;
+      }
+      variantComponent.variants.desiredVariant = subvariant;
+    }
+  }
+
 }

@@ -1,53 +1,82 @@
-import React from "../../_snowpack/pkg/react.js";
-import DoenetRenderer from "./DoenetRenderer.js";
-export default class Point extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-    if (props.board) {
-      this.createGraphicalObject();
-    }
-  }
-  static initializeChildrenOnConstruction = false;
-  createGraphicalObject() {
-    let fillColor = this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor;
-    var jsxPointAttributes = {
-      name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hidden,
-      withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
-      layer: 10 * this.doenetSvData.layer + 9,
-      fillColor,
-      strokeColor: this.doenetSvData.selectedStyle.markerColor,
-      size: this.doenetSvData.selectedStyle.markerSize,
-      face: normalizeStyle(this.doenetSvData.selectedStyle.markerStyle)
+import React, {useContext, useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
+import useDoenetRender from "./useDoenetRenderer.js";
+import {BoardContext} from "./graph.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
+export default React.memo(function Point(props) {
+  let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
+  Point.ignoreActionsWithoutCore = true;
+  const board = useContext(BoardContext);
+  let pointJXG = useRef(null);
+  let shadowPointJXG = useRef(null);
+  let pointerAtDown = useRef(false);
+  let pointAtDown = useRef(false);
+  let dragged = useRef(false);
+  let previousWithLabel = useRef(null);
+  let previousLabelPosition = useRef(null);
+  let calculatedX = useRef(null);
+  let calculatedY = useRef(null);
+  let lastPositionFromCore = useRef(null);
+  lastPositionFromCore.current = SVs.numericalXs;
+  useEffect(() => {
+    return () => {
+      if (pointJXG.current !== null) {
+        shadowPointJXG.current.off("drag");
+        shadowPointJXG.current.off("down");
+        shadowPointJXG.current.off("up");
+        board.removeObject(pointJXG.current);
+        board.removeObject(shadowPointJXG.current);
+        pointJXG.current = null;
+        shadowPointJXG.current = null;
+      }
     };
-    if (this.doenetSvData.showLabel && this.doenetSvData.label !== "") {
+  }, []);
+  function createPointJXG() {
+    let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
+    let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
+    let fixed = !SVs.draggable || SVs.fixed;
+    let jsxPointAttributes = {
+      name: SVs.label,
+      visible: !SVs.hidden,
+      withLabel: SVs.showLabel && SVs.label !== "",
+      fixed: true,
+      layer: 10 * SVs.layer + 9,
+      fillColor,
+      strokeColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
+      fillOpacity: SVs.selectedStyle.lineOpacity,
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
+      highlightStrokeColor: getComputedStyle(document.documentElement).getPropertyValue("--lightBlue"),
+      size: SVs.selectedStyle.markerSize,
+      face: normalizeStyle(SVs.selectedStyle.markerStyle),
+      highlight: !fixed
+    };
+    if (SVs.showLabel && SVs.label !== "") {
       let anchorx, anchory, offset;
-      if (this.doenetSvData.labelPosition === "upperright") {
+      if (SVs.labelPosition === "upperright") {
         offset = [5, 5];
         anchorx = "left";
         anchory = "bottom";
-      } else if (this.doenetSvData.labelPosition === "upperleft") {
+      } else if (SVs.labelPosition === "upperleft") {
         offset = [-5, 5];
         anchorx = "right";
         anchory = "bottom";
-      } else if (this.doenetSvData.labelPosition === "lowerright") {
+      } else if (SVs.labelPosition === "lowerright") {
         offset = [5, -5];
         anchorx = "left";
         anchory = "top";
-      } else if (this.doenetSvData.labelPosition === "lowerleft") {
+      } else if (SVs.labelPosition === "lowerleft") {
         offset = [-5, -5];
         anchorx = "right";
         anchory = "top";
-      } else if (this.doenetSvData.labelPosition === "top") {
+      } else if (SVs.labelPosition === "top") {
         offset = [0, 10];
         anchorx = "middle";
         anchory = "bottom";
-      } else if (this.doenetSvData.labelPosition === "bottom") {
+      } else if (SVs.labelPosition === "bottom") {
         offset = [0, -10];
         anchorx = "middle";
         anchory = "top";
-      } else if (this.doenetSvData.labelPosition === "left") {
+      } else if (SVs.labelPosition === "left") {
         offset = [-10, 0];
         anchorx = "right";
         anchory = "middle";
@@ -59,19 +88,31 @@ export default class Point extends DoenetRenderer {
       jsxPointAttributes.label = {
         offset,
         anchorx,
-        anchory
+        anchory,
+        highlight: false
       };
-    }
-    if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
-      jsxPointAttributes.highlightFillColor = "#EEEEEE";
-      jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
-      jsxPointAttributes.showInfoBox = this.doenetSvData.showCoordsWhenDragging;
+      if (SVs.labelHasLatex) {
+        jsxPointAttributes.label.useMathJax = true;
+      }
+      if (SVs.applyStyleToLabel) {
+        jsxPointAttributes.label.strokeColor = SVs.selectedStyle.markerColor;
+      } else {
+        jsxPointAttributes.label.strokeColor = "#000000";
+      }
     } else {
-      jsxPointAttributes.highlightFillColor = fillColor;
-      jsxPointAttributes.highlightStrokeColor = this.doenetSvData.selectedStyle.markerColor;
-      jsxPointAttributes.showInfoBox = false;
+      jsxPointAttributes.label = {
+        highlight: false
+      };
+      if (SVs.labelHasLatex) {
+        jsxPointAttributes.label.useMathJax = true;
+      }
     }
-    let coords = [this.doenetSvData.numericalXs[0], this.doenetSvData.numericalXs[1]];
+    if (fixed) {
+      jsxPointAttributes.showInfoBox = false;
+    } else {
+      jsxPointAttributes.showInfoBox = SVs.showCoordsWhenDragging;
+    }
+    let coords = [SVs.numericalXs[0], SVs.numericalXs[1]];
     if (!Number.isFinite(coords[0])) {
       coords[0] = 0;
       jsxPointAttributes["visible"] = false;
@@ -80,199 +121,222 @@ export default class Point extends DoenetRenderer {
       coords[1] = 0;
       jsxPointAttributes["visible"] = false;
     }
-    this.pointJXG = this.props.board.create("point", coords, jsxPointAttributes);
-    this.pointJXG.on("drag", function(e) {
-      this.dragged = true;
-      this.onDragHandler(e);
-    }.bind(this));
-    this.pointJXG.on("up", function(e) {
-      if (this.dragged) {
-        this.actions.finalizePointPosition();
-      } else if (this.doenetSvData.switchable && !this.doenetSvData.fixed) {
-        this.actions.switchPoint();
-      }
-    }.bind(this));
-    this.pointJXG.on("down", function(e) {
-      this.dragged = false;
-      this.pointerAtDown = [e.x, e.y];
-      this.pointAtDown = [...this.pointJXG.coords.scrCoords];
-    }.bind(this));
-    this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    this.previousLabelPosition = this.doenetSvData.labelPosition;
-    return this.pointJXG;
-  }
-  deleteGraphicalObject() {
-    this.pointJXG.off("drag");
-    this.pointJXG.off("down");
-    this.pointJXG.off("up");
-    this.props.board.removeObject(this.pointJXG);
-    delete this.pointJXG;
-  }
-  componentWillUnmount() {
-    if (this.pointJXG) {
-      this.deleteGraphicalObject();
-    }
-  }
-  update({sourceOfUpdate}) {
-    if (!this.props.board) {
-      this.forceUpdate();
-      return;
-    }
-    if (this.pointJXG === void 0) {
-      return;
-    }
-    let x = this.doenetSvData.numericalXs[0];
-    let y = this.doenetSvData.numericalXs[1];
-    this.pointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
-    let visible = !this.doenetSvData.hidden;
-    if (Number.isFinite(x) && Number.isFinite(y)) {
-      let actuallyChangedVisibility = this.pointJXG.visProp["visible"] !== visible;
-      this.pointJXG.visProp["visible"] = visible;
-      this.pointJXG.visPropCalc["visible"] = visible;
-      if (actuallyChangedVisibility) {
-        this.pointJXG.setAttribute({visible});
-      }
-    } else {
-      this.pointJXG.visProp["visible"] = false;
-      this.pointJXG.visPropCalc["visible"] = false;
-    }
-    if (this.pointJXG.visProp.strokecolor !== this.doenetSvData.selectedStyle.markerColor) {
-      this.pointJXG.visProp.strokecolor = this.doenetSvData.selectedStyle.markerColor;
-    }
-    let newFillColor = this.doenetSvData.open ? "white" : this.doenetSvData.selectedStyle.markerColor;
-    if (this.pointJXG.visProp.fillcolor !== newFillColor) {
-      this.pointJXG.visProp.fillcolor = newFillColor;
-    }
-    let newFace = normalizeStyle(this.doenetSvData.selectedStyle.markerStyle);
-    if (this.pointJXG.visProp.face !== newFace) {
-      this.pointJXG.setAttribute({face: newFace});
-    }
-    if (this.pointJXG.visProp.size !== this.doenetSvData.selectedStyle.markerSize) {
-      this.pointJXG.visProp.size = this.doenetSvData.selectedStyle.markerSize;
-    }
-    if (this.doenetSvData.draggable && !this.doenetSvData.fixed) {
-      this.pointJXG.visProp.highlightfillcolor = "#EEEEEE";
-      this.pointJXG.visProp.highlightstrokecolor = "#C3D9FF";
-      this.pointJXG.visProp.showinfobox = this.doenetSvData.showCoordsWhenDragging;
-      this.pointJXG.visProp.fixed = false;
-    } else {
-      this.pointJXG.visProp.highlightfillcolor = newFillColor;
-      this.pointJXG.visProp.highlightstrokecolor = this.doenetSvData.selectedStyle.markerColor;
-      this.pointJXG.visProp.showinfobox = false;
-      this.pointJXG.visProp.fixed = true;
-    }
-    if (sourceOfUpdate && sourceOfUpdate.sourceInformation && this.componentName in sourceOfUpdate.sourceInformation) {
-      this.props.board.updateInfobox(this.pointJXG);
-    }
-    this.pointJXG.name = this.doenetSvData.label;
-    let withlabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    if (withlabel != this.previousWithLabel) {
-      this.pointJXG.setAttribute({withlabel});
-      this.previousWithLabel = withlabel;
-    }
-    this.pointJXG.needsUpdate = true;
-    this.pointJXG.update();
-    if (this.pointJXG.hasLabel) {
-      this.pointJXG.label.needsUpdate = true;
-      if (this.doenetSvData.labelPosition !== this.previousLabelPosition) {
-        let anchorx, anchory, offset;
-        if (this.doenetSvData.labelPosition === "upperright") {
-          offset = [5, 5];
-          anchorx = "left";
-          anchory = "bottom";
-        } else if (this.doenetSvData.labelPosition === "upperleft") {
-          offset = [-5, 5];
-          anchorx = "right";
-          anchory = "bottom";
-        } else if (this.doenetSvData.labelPosition === "lowerright") {
-          offset = [5, -5];
-          anchorx = "left";
-          anchory = "top";
-        } else if (this.doenetSvData.labelPosition === "lowerleft") {
-          offset = [-5, -5];
-          anchorx = "right";
-          anchory = "top";
-        } else if (this.doenetSvData.labelPosition === "top") {
-          offset = [0, 10];
-          anchorx = "middle";
-          anchory = "bottom";
-        } else if (this.doenetSvData.labelPosition === "bottom") {
-          offset = [0, -10];
-          anchorx = "middle";
-          anchory = "top";
-        } else if (this.doenetSvData.labelPosition === "left") {
-          offset = [-10, 0];
-          anchorx = "right";
-          anchory = "middle";
-        } else {
-          offset = [10, 0];
-          anchorx = "left";
-          anchory = "middle";
-        }
-        this.pointJXG.label.visProp.anchorx = anchorx;
-        this.pointJXG.label.visProp.anchory = anchory;
-        this.pointJXG.label.visProp.offset = offset;
-        this.previousLabelPosition = this.doenetSvData.labelPosition;
-        this.pointJXG.label.fullUpdate();
+    let newPointJXG = board.create("point", coords, jsxPointAttributes);
+    let shadowPointAttributes = {...jsxPointAttributes};
+    shadowPointAttributes.layer--;
+    shadowPointAttributes.fixed = fixed;
+    shadowPointAttributes.showInfoBox = false;
+    shadowPointAttributes.withLabel = false;
+    shadowPointAttributes.fillOpacity = 0;
+    shadowPointAttributes.strokeOpacity = 0;
+    let newShadowPointJXG = board.create("point", coords, shadowPointAttributes);
+    newShadowPointJXG.on("down", function(e) {
+      pointerAtDown.current = [e.x, e.y];
+      pointAtDown.current = [...newShadowPointJXG.coords.scrCoords];
+      dragged.current = false;
+      shadowPointJXG.current.visProp.fillopacity = pointJXG.current.visProp.fillopacity;
+      shadowPointJXG.current.visProp.strokeopacity = pointJXG.current.visProp.strokeopacity;
+    });
+    newShadowPointJXG.on("up", function(e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.movePoint,
+          args: {
+            x: calculatedX.current,
+            y: calculatedY.current
+          }
+        });
+      } else if (SVs.switchable && !SVs.fixed) {
+        callAction({
+          action: actions.switchPoint
+        });
+        callAction({
+          action: actions.pointClicked
+        });
       } else {
-        this.pointJXG.label.update();
+        callAction({
+          action: actions.pointClicked
+        });
       }
-    }
-    this.props.board.updateRenderer();
-  }
-  onDragHandler(e) {
-    if (this.dragged) {
-      let pointCoords = this.calculatePointPosition(e);
-      this.actions.movePoint({
-        x: pointCoords[0],
-        y: pointCoords[1],
-        transient: true,
-        skippable: true
+      dragged.current = false;
+      shadowPointJXG.current.visProp.fillopacity = 0;
+      shadowPointJXG.current.visProp.strokeopacity = 0;
+    });
+    newShadowPointJXG.on("drag", function(e) {
+      var o = board.origin.scrCoords;
+      let [xmin, ymax, xmax, ymin] = board.getBoundingBox();
+      calculatedX.current = (pointAtDown.current[1] + e.x - pointerAtDown.current[0] - o[1]) / board.unitX;
+      calculatedX.current = Math.min(xmax, Math.max(xmin, calculatedX.current));
+      calculatedY.current = (o[2] - (pointAtDown.current[2] + e.y - pointerAtDown.current[1])) / board.unitY;
+      calculatedY.current = Math.min(ymax, Math.max(ymin, calculatedY.current));
+      callAction({
+        action: actions.movePoint,
+        args: {
+          x: calculatedX.current,
+          y: calculatedY.current,
+          transient: true,
+          skippable: true
+        }
       });
-    }
-  }
-  calculatePointPosition(e) {
-    var o = this.props.board.origin.scrCoords;
-    let [xmin, ymax, xmax, ymin] = this.props.board.getBoundingBox();
-    let calculatedX = (this.pointAtDown[1] + e.x - this.pointerAtDown[0] - o[1]) / this.props.board.unitX;
-    calculatedX = Math.min(xmax, Math.max(xmin, calculatedX));
-    let calculatedY = (o[2] - (this.pointAtDown[2] + e.y - this.pointerAtDown[1])) / this.props.board.unitY;
-    calculatedY = Math.min(ymax, Math.max(ymin, calculatedY));
-    return [calculatedX, calculatedY];
-  }
-  componentDidMount() {
-    if (!this.props.board) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-        window.MathJax.Hub.processSectionDelay = 0;
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+      newPointJXG.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionFromCore.current);
+      board.updateInfobox(newPointJXG);
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
       }
-    }
+    });
+    pointJXG.current = newPointJXG;
+    shadowPointJXG.current = newShadowPointJXG;
   }
-  componentDidUpdate() {
-    if (!this.props.board) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
+  if (board) {
+    if (pointJXG.current === null) {
+      createPointJXG();
+    } else {
+      let newFillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
+      if (pointJXG.current.visProp.fillcolor !== newFillColor) {
+        pointJXG.current.visProp.fillcolor = newFillColor;
       }
+      let x = SVs.numericalXs?.[0];
+      let y = SVs.numericalXs?.[1];
+      pointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+      if (!dragged.current) {
+        shadowPointJXG.current.coords.setCoordinates(JXG.COORDS_BY_USER, [x, y]);
+      }
+      let visible = !SVs.hidden;
+      if (Number.isFinite(x) && Number.isFinite(y)) {
+        let actuallyChangedVisibility = pointJXG.current.visProp["visible"] !== visible;
+        pointJXG.current.visProp["visible"] = visible;
+        pointJXG.current.visPropCalc["visible"] = visible;
+        shadowPointJXG.current.visProp["visible"] = visible;
+        shadowPointJXG.current.visPropCalc["visible"] = visible;
+        if (actuallyChangedVisibility) {
+          pointJXG.current.setAttribute({visible});
+          shadowPointJXG.current.setAttribute({visible});
+        }
+      } else {
+        pointJXG.current.visProp["visible"] = false;
+        pointJXG.current.visPropCalc["visible"] = false;
+        shadowPointJXG.current.visProp["visible"] = false;
+        shadowPointJXG.current.visPropCalc["visible"] = false;
+      }
+      let layer = 10 * SVs.layer + 9;
+      let layerChanged = pointJXG.current.visProp.layer !== layer;
+      if (layerChanged) {
+        pointJXG.current.setAttribute({layer});
+      }
+      let fixed = !SVs.draggable || SVs.fixed;
+      let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
+      let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
+      pointJXG.current.visProp.highlight = !fixed;
+      shadowPointJXG.current.visProp.highlight = !fixed;
+      shadowPointJXG.current.visProp.fixed = fixed;
+      if (pointJXG.current.visProp.strokecolor !== strokeColor) {
+        pointJXG.current.visProp.strokecolor = strokeColor;
+        shadowPointJXG.current.visProp.strokecolor = strokeColor;
+        pointJXG.current.visProp.fillColor = fillColor;
+        shadowPointJXG.current.visProp.fillColor = fillColor;
+      }
+      if (pointJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        pointJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        pointJXG.current.visProp.fillopacity = SVs.selectedStyle.lineOpacity;
+      }
+      let newFace = normalizeStyle(SVs.selectedStyle.markerStyle);
+      if (pointJXG.current.visProp.face !== newFace) {
+        pointJXG.current.setAttribute({face: newFace});
+        shadowPointJXG.current.setAttribute({face: newFace});
+      }
+      if (pointJXG.current.visProp.size !== SVs.selectedStyle.markerSize) {
+        pointJXG.current.visProp.size = SVs.selectedStyle.markerSize;
+        shadowPointJXG.current.visProp.size = SVs.selectedStyle.markerSize;
+      }
+      if (fixed) {
+        pointJXG.current.visProp.showinfobox = false;
+      } else {
+        pointJXG.current.visProp.showinfobox = SVs.showCoordsWhenDragging;
+      }
+      if (sourceOfUpdate.sourceInformation && name in sourceOfUpdate.sourceInformation) {
+        board.updateInfobox(pointJXG.current);
+      }
+      pointJXG.current.name = SVs.label;
+      let withlabel = SVs.showLabel && SVs.label !== "";
+      if (withlabel != previousWithLabel.current) {
+        pointJXG.current.setAttribute({withlabel});
+        previousWithLabel.current = withlabel;
+      }
+      if (pointJXG.current.hasLabel) {
+        pointJXG.current.label.needsUpdate = true;
+        if (SVs.applyStyleToLabel) {
+          pointJXG.current.label.visProp.strokecolor = SVs.selectedStyle.markerColor;
+        } else {
+          pointJXG.current.label.visProp.strokecolor = "#000000";
+        }
+        if (SVs.labelPosition !== previousLabelPosition.current) {
+          let anchorx, anchory, offset;
+          if (SVs.labelPosition === "upperright") {
+            offset = [5, 5];
+            anchorx = "left";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "upperleft") {
+            offset = [-5, 5];
+            anchorx = "right";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "lowerright") {
+            offset = [5, -5];
+            anchorx = "left";
+            anchory = "top";
+          } else if (SVs.labelPosition === "lowerleft") {
+            offset = [-5, -5];
+            anchorx = "right";
+            anchory = "top";
+          } else if (SVs.labelPosition === "top") {
+            offset = [0, 10];
+            anchorx = "middle";
+            anchory = "bottom";
+          } else if (SVs.labelPosition === "bottom") {
+            offset = [0, -10];
+            anchorx = "middle";
+            anchory = "top";
+          } else if (SVs.labelPosition === "left") {
+            offset = [-10, 0];
+            anchorx = "right";
+            anchory = "middle";
+          } else {
+            offset = [10, 0];
+            anchorx = "left";
+            anchory = "middle";
+          }
+          pointJXG.current.label.visProp.anchorx = anchorx;
+          pointJXG.current.label.visProp.anchory = anchory;
+          pointJXG.current.label.visProp.offset = offset;
+          previousLabelPosition.current = SVs.labelPosition;
+          pointJXG.current.label.fullUpdate();
+        } else {
+          pointJXG.current.label.update();
+        }
+      }
+      pointJXG.current.needsUpdate = true;
+      pointJXG.current.update();
+      shadowPointJXG.current.needsUpdate = true;
+      shadowPointJXG.current.update();
+      board.updateRenderer();
     }
+    return /* @__PURE__ */ React.createElement("a", {
+      name
+    });
   }
-  render() {
-    if (this.props.board) {
-      return /* @__PURE__ */ React.createElement("a", {
-        name: this.componentName
-      });
-    }
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-    let mathJaxify = "\\(" + this.doenetSvData.coordsForDisplay.toLatex() + "\\)";
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
-      name: this.componentName
-    }), /* @__PURE__ */ React.createElement("span", {
-      id: this.componentName
-    }, mathJaxify));
+  if (SVs.hidden) {
+    return null;
   }
-}
+  let mathJaxify = "\\(" + SVs.coordsLatex + "\\)";
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
+    name
+  }), /* @__PURE__ */ React.createElement("span", {
+    id: name
+  }, /* @__PURE__ */ React.createElement(MathJax, {
+    hideUntilTypeset: "first",
+    inline: true,
+    dynamic: true
+  }, mathJaxify)));
+});
 function normalizeStyle(style) {
   if (style === "triangle") {
     return "triangleup";

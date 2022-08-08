@@ -12,6 +12,7 @@ import * as SingleCharacterComponents from './components/SingleCharacterComponen
 import * as Sectioning from './components/Sectioning';
 import * as Lists from './components/Lists';
 import * as DynamicalSystems from './components/dynamicalSystems';
+import * as Chemistry from './components/chemistry';
 import * as FeedbackDefinitions from './components/FeedbackDefinitions';
 import * as StyleDefinitions from './components/StyleDefinitions';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType';
@@ -20,13 +21,16 @@ import * as Indexing from './components/Indexing';
 import * as Divisions from './components/Divisions';
 import * as Verbatim from './components/Verbatim';
 import * as Paginator from './components/Paginator';
+import * as MatrixInput from './components/MatrixInput';
 
 import Document from './components/Document';
 import Text from './components/Text';
 import TextList from './components/TextList';
 import RandomizedTextList from './components/RandomizedTextList';
 import MathList from './components/MathList';
+import TupleList from './components/TupleList';
 import NumberList from './components/NumberList';
+import NumberListFromString from './components/NumberListFromString';
 import P from './components/P';
 import BooleanComponent from './components/Boolean';
 import BooleanList from './components/BooleanList';
@@ -50,6 +54,7 @@ import Curve from './components/Curve';
 import BezierControls from './components/BezierControls';
 import ControlVectors from './components/ControlVectors';
 import PointListComponent from './components/abstract/PointListComponent';
+import IntervalListComponent from './components/abstract/IntervalListComponent';
 import LineListComponent from './components/abstract/LineListComponent';
 import VectorListComponent from './components/abstract/VectorListComponent';
 import AngleListComponent from './components/abstract/AngleListComponent';
@@ -59,7 +64,6 @@ import Answer from './components/Answer';
 import Award from './components/Award';
 import When from './components/When';
 import MathInput from './components/MathInput';
-import MatrixInput from './components/MatrixInput';
 import TextInput from './components/TextInput';
 import BooleanInput from './components/BooleanInput';
 import ChoiceInput from './components/ChoiceInput';
@@ -70,6 +74,7 @@ import Graph from './components/Graph';
 import Variables from './components/Variables';
 import Variable from './components/Variable';
 import Function from './components/Function';
+import Interval from './components/Interval';
 import Template from './components/Template';
 import Option from './components/Option';
 import Sequence from './components/Sequence';
@@ -143,9 +148,17 @@ import SubsetOfRealsInput from './components/SubsetOfRealsInput';
 import SubsetOfReals from './components/SubsetOfReals';
 import Split from './components/Split';
 import BestFitLine from './components/BestFitLine';
-import AreaBetweenCurveXAxis from './components/AreaBetweenCurveXAxis';
+import RegionBetweenCurveXAxis from './components/RegionBetweenCurveXAxis';
 import RegionHalfPlane from './components/RegionHalfPlane';
+import CodeEditor from './components/CodeEditor';
+import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
+import HasSameFactoring from './components/HasSameFactoring';
+import DataFrame from './components/DataFrame';
+import SummaryStatistics from './components/SummaryStatistics';
+import Chart from './components/Chart';
+import Legend from './components/Legend';
+import Label from './components/Label';
 
 
 //Extended
@@ -182,6 +195,7 @@ const componentTypeArray = [
   ...Object.values(Sectioning),
   ...Object.values(Lists),
   ...Object.values(DynamicalSystems),
+  ...Object.values(Chemistry),
   ...Object.values(FeedbackDefinitions),
   ...Object.values(StyleDefinitions),
   ...Object.values(SideBySide),
@@ -190,13 +204,16 @@ const componentTypeArray = [
   ...Object.values(Divisions),
   ...Object.values(Verbatim),
   ...Object.values(Paginator),
+  ...Object.values(MatrixInput),
   Document,
   Text, TextList,
   RandomizedTextList,
   P,
   BooleanComponent, BooleanList,
   MathComponent, MathList,
+  TupleList,
   NumberList,
+  NumberListFromString,
   Copy,
   Extract,
   Collect,
@@ -213,13 +230,14 @@ const componentTypeArray = [
   Vector,
   Angle,
   Answer, Award, When,
-  MathInput, MatrixInput, TextInput, BooleanInput, ChoiceInput,
+  MathInput, TextInput, BooleanInput, ChoiceInput,
   Choice,
   NumberComponent, Integer,
   Graph,
   Variables,
   Variable,
   Function,
+  Interval,
   Template, Option,
   Sequence,
   Slider,
@@ -286,9 +304,17 @@ const componentTypeArray = [
   SubsetOfReals,
   Split,
   BestFitLine,
-  AreaBetweenCurveXAxis,
+  RegionBetweenCurveXAxis,
   RegionHalfPlane,
+  CodeEditor,
+  CodeViewer,
   RenderDoenetML,
+  HasSameFactoring,
+  DataFrame,
+  SummaryStatistics,
+  Chart,
+  Legend,
+  Label,
 
   BaseComponent,
   InlineComponent,
@@ -298,6 +324,7 @@ const componentTypeArray = [
   Input,
   CompositeComponent,
   PointListComponent,
+  IntervalListComponent,
   LineListComponent,
   VectorListComponent,
   AngleListComponent,
@@ -312,30 +339,6 @@ const componentTypeArray = [
   SingleCharacterInline,
 ];
 
-export function standardComponentClasses() {
-  const componentClasses = {};
-  const lowerCaseComponentTypes = new Set();
-  for (let ct of componentTypeArray) {
-    let newComponentType = ct.componentType;
-
-    if (newComponentType.substring(0, 1) !== "_") {
-
-      if (newComponentType === undefined) {
-        throw Error("Cannot create component as componentType is undefined for class " + ct)
-      }
-      let lowerCaseType = newComponentType.toLowerCase();
-      if (lowerCaseComponentTypes.has(lowerCaseType)) {
-        throw Error("component type " + newComponentType + " defined in two classes");
-      }
-      if (!(/[a-zA-Z]/.test(newComponentType.substring(0, 1)))) {
-        throw Error("Invalid component type " + newComponentType + ". Component types must begin with a letter.");
-      }
-      componentClasses[newComponentType] = ct;
-      lowerCaseComponentTypes.add(lowerCaseType);
-    }
-  }
-  return componentClasses;
-}
 
 export function allComponentClasses() {
   const componentClasses = {};
@@ -376,28 +379,4 @@ export function componentTypesCreatingVariants() {
   return componentClasses;
 }
 
-
-export function componentTypeWithPotentialVariants() {
-  const componentClasses = {};
-  const lowerCaseComponentTypes = new Set();
-  for (let ct of componentTypeArray) {
-    if (ct.createsVariants ||
-      ct.setUpVariantIfVariantControlChild ||
-      ct.setUpVariantUnlessAttributePrimitive ||
-      ct.alwaysSetUpVariant
-    ) {
-      let newComponentType = ct.componentType;
-      if (newComponentType === undefined) {
-        throw Error("Cannot create component as componentType is undefined for class " + ct)
-      }
-      let lowerCaseType = newComponentType.toLowerCase();
-      if (lowerCaseComponentTypes.has(lowerCaseType)) {
-        throw Error("component type " + newComponentType + " defined in two classes");
-      }
-      componentClasses[newComponentType] = ct;
-      lowerCaseComponentTypes.add(lowerCaseType);
-    }
-  }
-  return componentClasses;
-}
 

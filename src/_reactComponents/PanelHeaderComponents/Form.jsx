@@ -1,176 +1,227 @@
 import React, { useState ,useRef, useEffect} from 'react';
-import { doenetComponentForegroundInactive, doenetComponentForegroundActive } from "./theme.js";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faTimes } from '@fortawesome/free-solid-svg-icons';
-// import TextArea 
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import styled from 'styled-components';
+
+const FormInput = styled.input `
+  margin: 0px -${props => props.formWidth}px 0px 0px;
+  height: 24px;
+  width: ${props => props.inputWidth};
+  border: ${props => props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)'};
+  border-radius: var(--mainBorderRadius);
+  position: relative;
+  padding: 0px 30px 0px 5px;
+  color: var(--canvastext);
+  overflow: hidden;
+  width: 175px;
+  resize: none;
+  align-items: center;
+  white-space: nowrap;
+  outline: none;
+  font-family: 'Open Sans';
+  font-size: 14px;
+  line-height: 20px;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+`;
+
+const CancelButton = styled.button `
+  float: right;
+  margin: 5px 0px 0px -30px;
+  position: absolute;
+  z-index: 4;
+  border: 0px;
+  background-color: transparent;
+  visibility: ${props => props.cancelShown};
+  color: var(--canvastext);
+  overflow: hidden;
+  outline: none;
+`;
+
+const SubmitButton = styled.button `
+  position: absolute;
+  display: inline;
+  margin: 0px -5px 0px -5px;
+  z-index: 2;
+  height: 28px;
+  border: ${props => props.alert ? '2px solid var(--mainRed)' : 'var(--mainBorder)'};
+  border-radius: 0px 5px 5px 0px;
+  background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--mainBlue)'};
+  color: ${props => props.disabled ? 'var(--canvastext)' : 'var(--canvas)'};
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  font-size: 12px;
+  overflow: hidden;
+
+  &:hover {
+    color: var(--canvastext);
+    background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
+  }
+`;
+
+const Label = styled.p `
+  font-size: 14px;
+  display: ${props => props.labelVisible};
+  margin: 0px 5px 2px 0px;
+`;
+
+const Container = styled.div `
+  display: ${props => props.align};
+  width: 235px;
+  align-items: center;
+`;
+
+// const LabelContainer = styled.div `
+//   display: ${props => props.align};
+// `;
 
 export default function Form(props) {
-    const [textTerm, setTextTerm] = useState('')
-    const [cancelShown, setCancelShown] = useState('hidden')
-    const [formwidth,setformWidth] = useState('0px')
-    const [labelVisible, setLabelVisible] = useState(props.label ? 'static' : 'none')
-    const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
+    const [text, setText] = useState(props.value ? props.value : "");
+    const [cancelShown, setCancelShown] = useState('hidden');
+    const [formWidth, setFormWidth] = useState(props.formWidth ? props.formWidth : '0px');
+    const labelVisible = props.label ? 'static' : 'none';
+    const align = props.vertical ? 'static' : 'flex';
+    const alert = props.alert ? props.alert : null;
+
+    const [cursorStart, setCursorStart] = useState(0);
+    const [cursorEnd, setCursorEnd] = useState(0);
+    const inputRef = useRef(null);
+
+    let cleared = false;
 
     const formRef = useRef(0)
       useEffect(()=>{
         if(formRef && props.submitButton)  {
           let button = document.querySelector('#submitButton');
-         setTimeout(function() { setformWidth(button.clientWidth); }, 1000);
+          let buttonWidth = button.clientWidth;
+         setTimeout(function() { setFormWidth((235 - buttonWidth) + 'px'); }, 1000);
+         console.log(buttonWidth);
+        //  console.log((240 - buttonWidth) + 'px');
 
         }
+
       },[formRef,props])
-    var textfield = {
-        margin: `0px -${formwidth}px 0px 0px`,
-        height: '20px',
-        border: `2px solid black`,
-        borderRadius: '5px',
-        position: 'relative',
-        padding: '0px 70px 0px 5px',
-        color: '#000',
-        overflow: 'hidden',
-        width: '215px',
-        resize:'none',
-        alignItems:'center',
-        value:'Enter Text here',
-        whiteSpace: 'nowrap',
-        outline:'none',
-        fontFamily:"Open Sans",
-        lineHeight:"20px"
-       }
-       var container = {
-        display: `${align}`, 
-        width: '235px',
-        alignItems:'center'
-    }
-    var tableCellContainer = {
-      display: `table-cell`,
-     
-  }
-    var cancelButton = {
-        float: 'right',
-        margin: '6px 0px 0px -30px',
-        position: 'absolute',
-        zIndex: '4',
-        border: '0px',
-        backgroundColor: "#FFF",
-        visibility: `${cancelShown}`,
-        color: '#000',
-        overflow: 'hidden',
-        outline: 'none'
-    }
-    var submitButton = {
-        position: 'absolute',
-        display: 'inline',
-        margin: `0px -6px 0px -5px`,
-        zIndex: '2',
-        height: '24px',
-        border: `2px solid black`,
-        backgroundColor: `${doenetComponentForegroundActive}`,
-        color: '#FFFFFF',
-        borderRadius: '0px 3px 3px 0px',
-        cursor: 'pointer',
-        fontSize: '12px',
-        overflow: 'hidden',
-    }
-    var label = {
-      value: 'Label:',
-      fontSize: '12px',
-      marginRight: '5px',
-      display: `${labelVisible}`,
 
-    }
-    var disable = "";
-    if (props.disabled) {
-        submitButton.backgroundColor = '#e2e2e2';
-        submitButton.color = 'black';
-        submitButton.cursor = 'not-allowed';
-        textfield.cursor = 'not-allowed';
-        disable = "disabled";
-    }
+      useEffect(() => {
+        inputRef.current.selectionStart = cursorStart;
+        inputRef.current.selectionEnd = cursorEnd;
+      })
+    
+  var disable = "";
+  if (props.disabled) {
+      disable = "disabled";
+  };
 
-
-    if (props.width) {
-        if (props.width === "menu") {
-          container.width = '235px';
-          textfield.width = '100px';
-          if(props.submitButton){
-            container.width = '235px';
-            textfield.width = 'auto';
-          }
-          if(props.label ){
-            container.width = '235px';
-            textfield.width = 'auto';
-          }
-        } 
+  var inputWidth = '175px';
+  if (props.width) {
+    if (props.width === "menu") {
+      inputWidth = '100px';
+      if (props.submitButton) {
+        inputWidth = 'auto';
       }
-      
-      if (props.value) {
-        textfield.value = props.value;
+      if (props.label) {
+        inputWidth = 'auto';
+      }
     }
-    if (props.label) {
-      label.value = props.label;
-  }
-  if (props.alert) {
-    textfield.border = '2px solid #C1292E'
-  }
+  };
+
+  var placeholder = "";
+  if (props.placeholder) {
+    placeholder = props.placeholder;
+  };
+
+  var label = '';
+  if (props.label) {
+    label = props.label;
+  };
+
+  var ariaLabel = "";
+  if (props.ariaLabel) {
+    ariaLabel = props.ariaLabel;
+  };
+
   function handleChange(e) {
+    if (cleared) {
+      setText("");
+    } else {
+      setText(e.target.value)
+      cleared = false;
+    }
+
     if (props.onChange) props.onChange(e.target.value)
-  }
+    setCursorStart(e.target.selectionStart);
+    setCursorEnd(e.target.selectionEnd);
+  };
+
   function handleClick(e) {
-    if (props.onClick) props.onClick(e)
-  }
-    function clearInput() {
-        document.getElementById('textarea').value = '';
-        setCancelShown('hidden')
-    }
-    function changeTextTerm() {
-        setTextTerm(document.getElementById('textarea').value)
-        setCancelShown('visible')
-    }
+    if (props.onClick) props.onClick(e) 
+  };
 
-    return (
-      <>
-        <div style={container}>
+  function clearInput(e) {
+    if (props.clearInput) props.clearInput(e)
+    setCancelShown('hidden')
+    cleared = true;
+    handleChange(e);
+  };
 
-          <p style={label}>{label?.value}</p>
+  function changeTextTerm() {
+      setCancelShown('visible')
+  };
 
-          <div
-          style={tableCellContainer}
-          onClick={() => { clearInput()}}
+  function handleBlur(e) {
+    if (props.onBlur) props.onBlur(e)
+  };
+
+  function handleKeyDown(e) {
+    if (props.onKeyDown) props.onKeyDown(e)
+  };
+
+  let clearButton = null;
+  if (props.clearInput) {
+    clearButton = 
+    <CancelButton
+      cancelShown={cancelShown}
+      onClick={(e) => {
+        clearInput(e);
+      }}
+    >
+      <FontAwesomeIcon icon={faTimes} />
+    </CancelButton>
+  };
+
+  return (
+    <Container align={align}>
+      <Label labelVisible={labelVisible} align={align}>{label}</Label>
+      <div>
+        <FormInput
+          id="textarea"
+          value={text}
+          placeholder={placeholder}
+          type="text"
+          ref={inputRef}
+          inputWidth={inputWidth}
+          formWidth={formWidth}
+          onKeyUp={() => {
+            changeTextTerm();
+          }}
+          onChange={(e) => {
+            handleChange(e);
+          }}
+          onBlur={(e) => { handleBlur(e) }}
+          onKeyDown={(e) => { handleKeyDown(e) }}
+          disabled={disable}
+          alert={alert}
+          ariaLabel={ariaLabel}
+        />
+        {clearButton}
+        <SubmitButton
+          id="submitButton"
+          ref={formRef}
+          disabled={disable}
+          alert={alert}
+          onClick={(e) => { handleClick(e) }}
         >
-          <textarea
-            id="textarea"
-            defaultValue={textfield.value}
-            type="text"
-            style={textfield}
-            onKeyUp={() => {
-              changeTextTerm();
-            }}
-            onChange={(e) => {
-              handleChange(e);
-            }}
-            disabled={disable}
-          />
-          <button
-            style={cancelButton}
-            onClick={() => {
-              clearInput();
-            }}
-          >
-            <FontAwesomeIcon icon={faTimes} />
-          </button>
-          <button
-            id="submitButton"
-            style={submitButton}
-            ref={formRef}
-            onClick={(e) => { handleClick(e) }}
-          >
-            {props.submitButton ? props.submitButton : 'Submit'}
-          </button>
-        </div>
-        </div>
-
-
-      </>
-    );
-  }
+          {props.submitButton ? props.submitButton : 'Submit'}
+        </SubmitButton>
+      </div>
+    </Container>
+  );
+};

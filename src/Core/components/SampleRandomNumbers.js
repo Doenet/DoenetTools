@@ -1,6 +1,7 @@
 import { convertAttributesForComponentType } from '../utils/copy';
 import { sampleFromRandomNumbers } from '../utils/randomNumbers';
 import { processAssignNames } from '../utils/serializedStateProcessing';
+import { setUpVariantSeedAndRng } from '../utils/variants';
 import CompositeComponent from './abstract/CompositeComponent';
 
 export default class SampleRandomNumbers extends CompositeComponent {
@@ -8,11 +9,13 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   static assignNamesToReplacements = true;
 
+  static createsVariants = true;
+
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
-    
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
     }
@@ -82,6 +85,16 @@ export default class SampleRandomNumbers extends CompositeComponent {
     attributes.displaySmallAsZero = {
       leaveRaw: true
     }
+    attributes.padZeros = {
+      leaveRaw: true
+    }
+
+    attributes.variantDeterminesSeed = {
+      createComponentOfType: "boolean",
+      createStateVariable: "variantDeterminesSeed",
+      defaultValue: false,
+      public: true,
+    }
 
     return attributes;
   }
@@ -92,7 +105,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
     stateVariableDefinitions.step = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -110,17 +125,21 @@ export default class SampleRandomNumbers extends CompositeComponent {
         } else {
           step = null;
         }
-        return { newValues: { step } }
+        return { setValue: { step } }
       }
     }
 
     stateVariableDefinitions.from = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: [{
         variableName: "to",
         public: true,
-        componentType: "number"
+        shadowingInstructions: {
+          createComponentOfType: "number",
+        },
       }, {
         variableName: "nDiscreteValues",
       }],
@@ -144,7 +163,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         if (!["discreteuniform", "uniform"].includes(dependencyValues.type)) {
-          return { newValues: { from: null, to: null, nDiscreteValues: null } }
+          return { setValue: { from: null, to: null, nDiscreteValues: null } }
         }
 
         let step = dependencyValues.step;
@@ -191,7 +210,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
           }
         }
 
-        return { newValues: { from, to, nDiscreteValues } }
+        return { setValue: { from, to, nDiscreteValues } }
       }
     }
 
@@ -199,7 +218,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     stateVariableDefinitions.mean = {
       stateVariablesDeterminingDependencies: ["type"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies({ stateValues }) {
         let dependencies = {
           type: {
@@ -232,7 +253,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
         } else {
           mean = (dependencyValues.from + dependencyValues.to) / 2;
         }
-        return { newValues: { mean } }
+        return { setValue: { mean } }
 
       }
     }
@@ -240,7 +261,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     stateVariableDefinitions.variance = {
       stateVariablesDeterminingDependencies: ["type"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies({ stateValues }) {
         let dependencies = {
           type: {
@@ -295,14 +318,16 @@ export default class SampleRandomNumbers extends CompositeComponent {
           // uniform
           variance = (dependencyValues.to - dependencyValues.from) ** 2 / 12;
         }
-        return { newValues: { variance } }
+        return { setValue: { variance } }
 
       }
     }
 
     stateVariableDefinitions.standardDeviation = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         variance: {
           dependencyType: "stateVariable",
@@ -310,68 +335,78 @@ export default class SampleRandomNumbers extends CompositeComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { standardDeviation: Math.sqrt(dependencyValues.variance) }
+        setValue: { standardDeviation: Math.sqrt(dependencyValues.variance) }
       })
     }
 
 
     stateVariableDefinitions.sampledValues = {
-      returnDependencies: ({ sharedParameters }) => ({
-        numberOfSamples: {
-          dependencyType: "stateVariable",
-          variableName: "numberOfSamples",
-        },
-        type: {
-          dependencyType: "stateVariable",
-          variableName: "type"
-        },
-        from: {
-          dependencyType: "stateVariable",
-          variableName: "from"
-        },
-        to: {
-          dependencyType: "stateVariable",
-          variableName: "to"
-        },
-        step: {
-          dependencyType: "stateVariable",
-          variableName: "step"
-        },
-        nDiscreteValues: {
-          dependencyType: "stateVariable",
-          variableName: "nDiscreteValues"
-        },
-        mean: {
-          dependencyType: "stateVariable",
-          variableName: "mean"
-        },
-        standardDeviation: {
-          dependencyType: "stateVariable",
-          variableName: "standardDeviation"
-        },
-        rng: {
-          dependencyType: "value",
-          value: sharedParameters.rng,
-          doNotProxy: true,
-        },
-
-
-      }),
+      shadowVariable: true,
+      hasEssential: true,
+      stateVariablesDeterminingDependencies: ["variantDeterminesSeed"],
+      returnDependencies({ stateValues, sharedParameters }) {
+        let dependencies = {
+          numberOfSamples: {
+            dependencyType: "stateVariable",
+            variableName: "numberOfSamples",
+          },
+          type: {
+            dependencyType: "stateVariable",
+            variableName: "type"
+          },
+          from: {
+            dependencyType: "stateVariable",
+            variableName: "from"
+          },
+          to: {
+            dependencyType: "stateVariable",
+            variableName: "to"
+          },
+          step: {
+            dependencyType: "stateVariable",
+            variableName: "step"
+          },
+          nDiscreteValues: {
+            dependencyType: "stateVariable",
+            variableName: "nDiscreteValues"
+          },
+          mean: {
+            dependencyType: "stateVariable",
+            variableName: "mean"
+          },
+          standardDeviation: {
+            dependencyType: "stateVariable",
+            variableName: "standardDeviation"
+          }
+        };
+        if (stateValues.variantDeterminesSeed) {
+          dependencies.rng = {
+            dependencyType: "value",
+            value: sharedParameters.variantRng,
+            doNotProxy: true,
+          }
+        } else {
+          dependencies.rng = {
+            dependencyType: "value",
+            value: sharedParameters.rngWithDateSeed,
+            doNotProxy: true,
+          }
+        }
+        return dependencies;
+      },
       definition({ dependencyValues }) {
         if (dependencyValues.numberOfSamples < 1) {
           return {
-            makeEssential: { sampledValues: true },
-            newValues: {
-              sampledValues: [],
-            }
+            setEssentialValue: { sampledValues: [] },
+            setValue: { sampledValues: [] }
           }
         }
 
         let sampledValues = sampleFromRandomNumbers(dependencyValues);
 
         return {
-          makeEssential: { sampledValues: true },
-          newValues: { sampledValues }
+          setEssentialValue: { sampledValues },
+          setValue: { sampledValues }
         }
 
       },
@@ -379,7 +414,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "sampledValues",
+            setEssentialValue: "sampledValues",
             value: desiredStateVariableValues.sampledValues
           }]
         };
@@ -397,9 +432,40 @@ export default class SampleRandomNumbers extends CompositeComponent {
       }),
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
+
+
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.generatedVariantInfo = {
+      returnDependencies: ({ sharedParameters }) => ({
+        variantSeed: {
+          dependencyType: "value",
+          value: sharedParameters.variantSeed,
+        },
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let generatedVariantInfo = {
+          seed: dependencyValues.variantSeed,
+          meta: {
+            createdBy: componentName,
+          }
+        };
+
+        return {
+          setValue: {
+            generatedVariantInfo,
+          }
+        }
+
+      }
+    }
 
     return stateVariableDefinitions;
 
@@ -408,12 +474,12 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
 
 
-  static async createSerializedReplacements({ component, componentInfoObjects, startNum = 0 }) {
+  static async createSerializedReplacements({ component, componentInfoObjects, startNum = 0, flags }) {
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
-    for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals"]) {
+    for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
       if (attr in component.attributes) {
         attributesToConvert[attr] = component.attributes[attr]
       }
@@ -430,7 +496,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
           attributes: attributesToConvert,
           componentType: "number",
           componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         })
       }
 
@@ -454,7 +521,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
   }
 
-  static async calculateReplacementChanges({ component, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, componentInfoObjects, flags }) {
 
     let replacementChanges = [];
 
@@ -485,7 +552,8 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
         let result = await this.createSerializedReplacements({
           component, componentInfoObjects,
-          startNum: component.replacements.length
+          startNum: component.replacements.length,
+          flags
         })
 
         let replacementInstruction = {
@@ -517,7 +585,28 @@ export default class SampleRandomNumbers extends CompositeComponent {
   }
 
 
-  async resample() {
+  static async setUpVariant({
+    serializedComponent, sharedParameters,
+    descendantVariantComponents,
+  }) {
+
+    setUpVariantSeedAndRng({
+      serializedComponent, sharedParameters,
+      descendantVariantComponents
+    });
+
+    // seed from date plus a few digits from variant
+    let seedForRandomNumbers = sharedParameters.variantRng().toString().slice(2, 8) + (+(new Date));
+    sharedParameters.rngWithDateSeed = new sharedParameters.rngClass(seedForRandomNumbers);
+
+  }
+
+  static determineNumberOfUniqueVariants({ serializedComponent, componentInfoObjects }) {
+
+    return { success: false };
+  }
+
+  async resample({ actionId }) {
 
     let sampledValues = sampleFromRandomNumbers({
       type: await this.stateValues.type,
@@ -528,7 +617,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
       from: await this.stateValues.from,
       step: await this.stateValues.step,
       nDiscreteValues: await this.stateValues.nDiscreteValues,
-      rng: this.sharedParameters.rng
+      rng: (await this.stateValues.variantDeterminesSeed) ? this.sharedParameters.variantRng : this.sharedParameters.rngWithDateSeed
     });
 
 
@@ -538,16 +627,15 @@ export default class SampleRandomNumbers extends CompositeComponent {
         componentName: this.componentName,
         stateVariable: "sampledValues",
         value: sampledValues,
-      }]
+      }],
+      actionId
     });
 
   }
 
 
   actions = {
-    resample: this.resample.bind(
-      new Proxy(this, this.readOnlyProxyHandler)
-    ),
+    resample: this.resample.bind(this),
   };
 
 }

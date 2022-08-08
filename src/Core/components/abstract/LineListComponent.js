@@ -2,7 +2,7 @@ import BaseComponent from './BaseComponent';
 
 export default class LineListComponent extends BaseComponent {
   static componentType = "_lineListComponent";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
 
@@ -69,7 +69,7 @@ export default class LineListComponent extends BaseComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: { nLines: dependencyValues.lineChildren.length },
+          setValue: { nLines: dependencyValues.lineChildren.length },
           checkForActualChange: { nLines: true }
         }
       }
@@ -114,7 +114,7 @@ export default class LineListComponent extends BaseComponent {
           }
         }
 
-        return { newValues: { lineNames } }
+        return { setValue: { lineNames } }
 
       }
     }

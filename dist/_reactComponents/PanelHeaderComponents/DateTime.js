@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
 import Datetime from "../../_snowpack/pkg/react-datetime.js";
 import "../../_snowpack/pkg/react-datetime/css/react-datetime.css.proxy.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
@@ -11,13 +11,16 @@ const Label = styled.div`
 `;
 export default function DateTime(props) {
   const [value, setValue] = useState(props.value);
+  const [lastValid, setLastValid] = useState(props.value);
   const inputRef = useRef(null);
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
-  let borderColor = props.alert ? "2px solid #C1292E" : "2px solid black";
-  borderColor = props.disabled ? "2px solid #e2e2e2" : borderColor;
+  let borderColor = props.alert ? "2px solid var(--mainRed)" : "var(--mainBorder)";
+  borderColor = props.disabled ? "2px solid var(--mainGray)" : borderColor;
   let cursorStyle = props.disabled ? "not-allowed" : "auto";
+  let width = props.width ? props.width : "170px";
   useEffect(() => {
+    setLastValid(props.value);
     setValue(props.value);
   }, [props]);
   useEffect(() => {
@@ -35,17 +38,21 @@ export default function DateTime(props) {
   }
   placeholder = props.placeholder ? props.placeholder : placeholder;
   let inputProps = {
-    disabled: props.disabled === true ? true : false,
     placeholder
   };
   const renderInput = (propsRI, openCalendar, closeCalendar) => {
-    return /* @__PURE__ */ React.createElement("div", {
-      style: {width: "fit-content"}
-    }, props.label ? /* @__PURE__ */ React.createElement(Label, {
+    return /* @__PURE__ */ React.createElement("div", null, props.label ? /* @__PURE__ */ React.createElement(Label, {
       vertical: props.vertical
     }, props.label) : null, /* @__PURE__ */ React.createElement("input", {
       ...propsRI,
-      style: {border: borderColor, cursor: cursorStyle},
+      style: {
+        border: borderColor,
+        cursor: cursorStyle,
+        width,
+        color: "var(--canvastext)",
+        backgroundColor: "var(--canvas)",
+        ...props.style
+      },
       ref: inputRef,
       onChange: (e) => {
         setCursorStart(e.target.selectionStart);
@@ -61,10 +68,29 @@ export default function DateTime(props) {
         }
         if (e.key === "Enter") {
           closeCalendar();
+          e.target.blur();
         }
       }
     }));
   };
+  if (props.disabled) {
+    return /* @__PURE__ */ React.createElement("input", {
+      ref: inputRef,
+      onClick: props.disabledOnClick,
+      value: props.disabledText,
+      readOnly: true,
+      style: {
+        cursor: "not-allowed",
+        color: "var(--canvastext)",
+        backgroundColor: "var(--canvas)",
+        height: "18px",
+        width: "170px",
+        border: "2px solid var(--mainGray)",
+        borderRadius: "var(--mainBorderRadius)",
+        ...props.style
+      }
+    });
+  }
   return /* @__PURE__ */ React.createElement(Datetime, {
     renderInput,
     value,
@@ -81,9 +107,15 @@ export default function DateTime(props) {
       }
     },
     onClose: (_) => {
+      let valid = typeof value !== "string";
+      if (valid) {
+        setLastValid(value);
+      } else {
+        setValue(lastValid);
+      }
       if (props.onBlur) {
         props.onBlur({
-          valid: typeof value !== "string",
+          valid,
           value
         });
       }

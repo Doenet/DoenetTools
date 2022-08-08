@@ -1,11 +1,24 @@
 import CompositeComponent from './abstract/CompositeComponent.js';
 import { postProcessCopy } from '../utils/copy.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
+import { processAssignNames } from '../utils/serializedStateProcessing.js';
 
 export default class Intersection extends CompositeComponent {
   static componentType = "intersection";
 
+  static assignNamesToReplacements = true;
+
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
+
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
+    attributes.assignNamesSkip = {
+      createPrimitiveOfType: "number"
+    }
+
+    return attributes;
+  }
 
   static returnChildGroups() {
 
@@ -35,7 +48,7 @@ export default class Intersection extends CompositeComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
+        setValue: {
           lineChildren: dependencyValues.lineChildren
         }
       })
@@ -50,7 +63,7 @@ export default class Intersection extends CompositeComponent {
       }),
       markStale: () => ({ updateReplacements: true }),
       definition: function () {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     }
 
@@ -58,9 +71,10 @@ export default class Intersection extends CompositeComponent {
   }
 
 
-  static createSerializedReplacements({ component, components }) {
+  static async createSerializedReplacements({ component, components, componentInfoObjects }) {
 
-    let numberLineChildren = component.stateValues.lineChildren.length;
+    let lineChildren = await component.stateValues.lineChildren;
+    let numberLineChildren = lineChildren.length;
 
     if (numberLineChildren === 0) {
       return { replacements: [] };
@@ -68,15 +82,31 @@ export default class Intersection extends CompositeComponent {
 
     // intersection of one object is the object itself
     if (numberLineChildren === 1) {
-      let childName = component.stateValues.lineChildren[0].componentName;
-      let serializedChild = components[childName].serialize({ forLink: true });
+      let childName = lineChildren[0].componentName;
+      let serializedChild = await components[childName].serialize({
+        targetAttributesToIgnoreRecursively: ["isResponse"]
+      });
       if (!serializedChild.state) {
         serializedChild.state = {};
       }
       serializedChild.state.draggable = false;
       serializedChild.state.fixed = true;
 
-      return { replacements: postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName }) };
+      let serializedReplacements = postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName });
+
+      let newNamespace = component.attributes.newNamespace?.primitive;
+
+      let processResult = processAssignNames({
+        assignNames: component.doenetAttributes.assignNames,
+        serializedComponents: serializedReplacements,
+        parentName: component.componentName,
+        parentCreatesNewNamespace: newNamespace,
+        componentInfoObjects,
+      });
+
+      serializedReplacements = processResult.serializedComponents;
+
+      return { replacements: serializedReplacements };
 
     }
 
@@ -87,8 +117,8 @@ export default class Intersection extends CompositeComponent {
 
     // for now, have only implemented for two lines
     // in 2D with constant coefficients
-    let line1 = component.stateValues.lineChildren[0];
-    let line2 = component.stateValues.lineChildren[1];
+    let line1 = lineChildren[0];
+    let line2 = lineChildren[1];
 
 
     if (line1.stateValues.nDimensions !== 2 || line2.stateValues.nDimensions !== 2) {
@@ -122,16 +152,31 @@ export default class Intersection extends CompositeComponent {
       } else {
 
         // two identical lines, return first line
-        let childName = component.stateValues.lineChildren[0].componentName;
-        let serializedChild = components[childName].serialize({ forLink: true });
+        let childName = lineChildren[0].componentName;
+        let serializedChild = await components[childName].serialize({
+          targetAttributesToIgnoreRecursively: ["isResponse"]
+        });
         if (!serializedChild.state) {
           serializedChild.state = {};
         }
         serializedChild.state.draggable = false;
         serializedChild.state.fixed = true;
 
-        return { replacements: postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName }) };
+        let serializedReplacements = postProcessCopy({ serializedComponents: [serializedChild], componentName: component.componentName });
 
+        let newNamespace = component.attributes.newNamespace?.primitive;
+
+        let processResult = processAssignNames({
+          assignNames: component.doenetAttributes.assignNames,
+          serializedComponents: serializedReplacements,
+          parentName: component.componentName,
+          parentCreatesNewNamespace: newNamespace,
+          componentInfoObjects,
+        });
+
+        serializedReplacements = processResult.serializedComponents;
+
+        return { replacements: serializedReplacements };
       }
     }
 
@@ -140,20 +185,57 @@ export default class Intersection extends CompositeComponent {
     let y = (c1 * a2 - c2 * a1) / d;
     let coords = me.fromAst(["vector", x, y]);
 
-    return {
-      replacements: [{
-        componentType: "point",
-        state: { coords, draggable: false, fixed: true },
-      }]
-    };
+    let serializedReplacements = [{
+      componentType: "point",
+      state: { coords, draggable: false, fixed: true },
+    }]
+
+    let newNamespace = component.attributes.newNamespace?.primitive;
+
+    let processResult = processAssignNames({
+      assignNames: component.doenetAttributes.assignNames,
+      serializedComponents: serializedReplacements,
+      parentName: component.componentName,
+      parentCreatesNewNamespace: newNamespace,
+      componentInfoObjects,
+    });
+
+    serializedReplacements = processResult.serializedComponents;
+
+    return { replacements: serializedReplacements };
+
+    // TODO: would it be preferable to send an xs attribute
+    // rather than a coords state variable?
+    // If so, need to change state variable change is update replacements
+
+    // return {
+    //   replacements: [{
+    //     componentType: "point",
+    //     attributes: {
+    //       xs: {
+    //         component: {
+    //           componentType: "mathList",
+    //           children: [{
+    //             componentType: "math",
+    //             state: { value: me.fromAst(x) }
+    //           }, {
+    //             componentType: "math",
+    //             state: { value: me.fromAst(y) }
+    //           }]
+    //         }
+    //       }
+    //     },
+    //     state: { draggable: false, fixed: true },
+    //   }]
+    // };
 
   }
 
-  static calculateReplacementChanges({ component, components }) {
+  static async calculateReplacementChanges({ component, components, componentInfoObjects }) {
 
     let replacementChanges = [];
 
-    let serializedIntersections = this.createSerializedReplacements({ component, components }).replacements;
+    let serializedIntersections = (await this.createSerializedReplacements({ component, components, componentInfoObjects })).replacements;
 
     let nNewIntersections = serializedIntersections.length;
 
@@ -177,11 +259,16 @@ export default class Intersection extends CompositeComponent {
           recreateReplacements = true;
           break;
         }
+        if (serializedIntersections[ind].componentType !== "point") {
+          console.warn(`Have not implemented state changes for an intersection that results in a  ${serializedIntersections[ind].componentType}, so recreating`);
+          recreateReplacements = true;
+          break;
+        }
 
         let replacementInstruction = {
           changeType: "updateStateVariables",
           component: component.replacements[ind],
-          stateChanges: serializedIntersections[ind].state,
+          stateChanges: { coords: serializedIntersections[ind].state.coords },
         }
         replacementChanges.push(replacementInstruction);
       }

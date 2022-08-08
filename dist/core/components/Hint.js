@@ -37,7 +37,7 @@ export default class Hint extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             showHints: dependencyValues.showHintsFlag && !dependencyValues.hide
           }
         }
@@ -46,16 +46,17 @@ export default class Hint extends BlockComponent {
 
     stateVariableDefinitions.open = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
+      hasEssential: true,
       returnDependencies: () => ({}),
       definition() {
         return {
           useEssentialOrDefaultValue: {
-            open: {
-              variablesToCheck: ["open"]
-            }
+            open: true
           }
         }
       },
@@ -63,7 +64,7 @@ export default class Hint extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "open",
+            setEssentialValue: "open",
             value: desiredStateVariableValues.open
           }]
         }
@@ -81,7 +82,7 @@ export default class Hint extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             titleDefinedByChildren: dependencyValues.titleChild.length > 0
           }
         }
@@ -90,7 +91,9 @@ export default class Hint extends BlockComponent {
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
@@ -101,9 +104,9 @@ export default class Hint extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.titleChild.length === 0) {
-          return { newValues: { title: "Hint" } };
+          return { setValue: { title: "Hint" } };
         } else {
-          return { newValues: { title: dependencyValues.titleChild[0].stateValues.text } };
+          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
         }
       }
     }
@@ -112,15 +115,16 @@ export default class Hint extends BlockComponent {
 
   }
 
-  revealHint() {
+  async revealHint({actionId}) {
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "open",
         value: true
       }],
+      actionId,
       event: {
         verb: "viewed",
         object: {
@@ -131,15 +135,16 @@ export default class Hint extends BlockComponent {
     });
   }
 
-  closeHint() {
+  async closeHint({actionId}) {
 
-    return this.coreFunctions.performUpdate({
+    return await this.coreFunctions.performUpdate({
       updateInstructions: [{
         updateType: "updateValue",
         componentName: this.componentName,
         stateVariable: "open",
         value: false
       }],
+      actionId,
       event: {
         verb: "closed",
         object: {
@@ -150,9 +155,22 @@ export default class Hint extends BlockComponent {
     });
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     revealHint: this.revealHint.bind(this),
     closeHint: this.closeHint.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

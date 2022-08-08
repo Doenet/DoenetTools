@@ -1,39 +1,18 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import { MathJax } from 'better-react-mathjax';
+import React, { useEffect } from 'react';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class Number extends DoenetRenderer {
+export default React.memo(function Number(props) {
+  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
-  static initializeChildrenOnConstruction = false;
 
-  componentDidMount() {
-    if (this.doenetSvData.renderAsMath) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-        window.MathJax.Hub.processSectionDelay = 0;
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
-      }
-    }
+  if (SVs.hidden) {
+    return null;
   }
 
-  componentDidUpdate() {
-    if (this.doenetSvData.renderAsMath) {
-      if (window.MathJax) {
-        window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + this.componentName]);
-      }
-    }
+  let number = SVs.text;
+  if (SVs.renderAsMath) {
+    number = "\\(" + number + "\\)"
   }
-
-
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    let number = this.doenetSvData.valueForDisplay;
-    if (this.doenetSvData.renderAsMath) {
-      number = "\\(" + number + "\\)"
-    }
-    return <><a name={this.componentName} /><span id={this.componentName}>{number}</span></>
-  }
-}
+  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{number}</MathJax></span></>
+})

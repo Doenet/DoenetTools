@@ -4,8 +4,8 @@ export default class EquilibriumCurve extends Curve {
   static componentType = "equilibriumCurve";
   static rendererType = "curve";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.stable = {
       createComponentOfType: "boolean",
@@ -41,7 +41,7 @@ export default class EquilibriumCurve extends Curve {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { dashed: !dependencyValues.stable }
+          setValue: { dashed: !dependencyValues.stable }
         }
       },
       inverseDefinition({ desiredStateVariableValues }) {
@@ -60,15 +60,16 @@ export default class EquilibriumCurve extends Curve {
 
   };
 
-  switchCurve() {
-    if (this.stateValues.switchable) {
-      return this.coreFunctions.performUpdate({
+  async switchCurve({ actionId }) {
+    if (await this.stateValues.switchable) {
+      return await this.coreFunctions.performUpdate({
         updateInstructions: [{
           updateType: "updateValue",
           componentName: this.componentName,
           stateVariable: "stable",
           value: !this.stateValues.stable,
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -80,6 +81,8 @@ export default class EquilibriumCurve extends Curve {
           }
         }
       });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }

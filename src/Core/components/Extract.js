@@ -11,12 +11,10 @@ export default class Extract extends CompositeComponent {
 
   static acceptAnyAttribute = true;
 
-  static get stateVariablesShadowedForReference() { return ["propName"] };
-
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     // delete off attributes from base component that should apply to replacements instead
     // (using acceptAnyAttribute)
@@ -32,7 +30,7 @@ export default class Extract extends CompositeComponent {
     attributes.prop = {
       createPrimitiveOfType: "string",
     };
-    attributes.componentType = {
+    attributes.createComponentOfType = {
       createPrimitiveOfType: "string",
     };
     attributes.nComponents = {
@@ -68,7 +66,13 @@ export default class Extract extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.link = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { link: true } })
+    }
+
     stateVariableDefinitions.propName = {
+      shadowVariable: true,
       returnDependencies: () => ({
         propName: {
           dependencyType: "attributePrimitive",
@@ -76,7 +80,7 @@ export default class Extract extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { propName: dependencyValues.propName } }
+        return { setValue: { propName: dependencyValues.propName } }
       }
     }
 
@@ -84,23 +88,57 @@ export default class Extract extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "propName", "componentIndex", "propIndex"
       ],
-      returnDependencies: ({ stateValues }) => ({
-        children: {
-          dependencyType: "child",
-          childGroups: ["anything"],
-          variableNames: [stateValues.propName],
-          variablesOptional: true,
-          componentIndex: stateValues.componentIndex,
-          propIndex: stateValues.propIndex,
-          publicCaseInsensitiveVariableMatch: true,
-          useMappedVariableNames: true,
+      additionalStateVariablesDefined: ["effectivePropNameBySource"],
+      returnDependencies: function ({ stateValues }) {
+        let childIndices;
+        let componentIndex;
+
+        if (stateValues.componentIndex !== null) {
+          componentIndex = Number(stateValues.componentIndex)
         }
-      }),
-      definition: ({ dependencyValues }) => ({
-        newValues: {
-          sourceComponents: dependencyValues.children
+        if (Number.isInteger(componentIndex)) {
+          childIndices = [componentIndex - 1];
         }
-      })
+        return {
+          children: {
+            dependencyType: "child",
+            childGroups: ["anything"],
+            variableNames: [stateValues.propName],
+            variablesOptional: true,
+            childIndices,
+            propIndex: stateValues.propIndex,
+            caseInsensitiveVariableMatch: true,
+            publicStateVariablesOnly: true,
+            useMappedVariableNames: true,
+          },
+          propName: {
+            dependencyType: "stateVariable",
+            variableName: "propName"
+          }
+        }
+      },
+      definition: function ({ dependencyValues }) {
+        let sourceComponents = dependencyValues.children;
+
+        let effectivePropNameBySource = [];
+
+        for (let comp of sourceComponents) {
+          let propName;
+          if (comp.stateValues) {
+            propName = Object.keys(comp.stateValues)[0];
+          }
+          if (!propName) {
+            propName = dependencyValues.propName;
+          }
+          effectivePropNameBySource.push(propName)
+        }
+
+        return {
+          setValue: {
+            sourceComponents, effectivePropNameBySource
+          }
+        }
+      }
     }
 
 
@@ -116,7 +154,7 @@ export default class Extract extends CompositeComponent {
         },
       }),
       definition() {
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -133,7 +171,7 @@ export default class Extract extends CompositeComponent {
       // the whole point of this state variable is to return updateReplacements
       // on mark stale
       markStale: () => ({ updateReplacements: true }),
-      definition: () => ({ newValues: { needsReplacementsUpdatedWhenStale: true } })
+      definition: () => ({ setValue: { needsReplacementsUpdatedWhenStale: true } })
     }
 
 
@@ -157,7 +195,7 @@ export default class Extract extends CompositeComponent {
 
     workspace.uniqueIdentifiersUsedBySource = {};
 
-    let compositeAttributesObj = this.createAttributesObject({ flags });
+    let compositeAttributesObj = this.createAttributesObject();
 
     let sourceComponents = await component.stateValues.sourceComponents;
 
@@ -202,10 +240,12 @@ export default class Extract extends CompositeComponent {
 
     // console.log(`create replacement for source ${sourceNum}, ${numReplacementsSoFar} of ${component.componentName}`)
 
+    let propName = (await component.stateValues.effectivePropNameBySource)[sourceNum];
+
     let results = await replacementFromProp({
       component, components,
       replacementSource: (await component.stateValues.sourceComponents)[sourceNum],
-      propName: await component.stateValues.propName,
+      propName,
       // numReplacementsSoFar,
       uniqueIdentifiersUsed,
       compositeAttributesObj,
@@ -216,7 +256,7 @@ export default class Extract extends CompositeComponent {
     let serializedReplacements = results.serializedReplacements;
     let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -251,7 +291,7 @@ export default class Extract extends CompositeComponent {
     let numReplacementsBySource = [];
     let propVariablesCopiedBySource = [];
 
-    let compositeAttributesObj = this.createAttributesObject({ flags });
+    let compositeAttributesObj = this.createAttributesObject();
 
     let sourceComponents = await component.stateValues.sourceComponents;
 

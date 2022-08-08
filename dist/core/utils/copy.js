@@ -1,9 +1,9 @@
 import { getUniqueIdentifierFromBase } from "./naming.js";
-import { applyMacros, componentFromAttribute } from "./serializedStateProcessing.js";
+import { applyMacros, applySugar, componentFromAttribute, removeBlankStringChildren } from "./serializedStateProcessing.js";
 
 export function postProcessCopy({ serializedComponents, componentName,
   addShadowDependencies = true, uniqueIdentifiersUsed = [], identifierPrefix = "",
-  unlinkExternalCopies = false, copiesByFullTName = {}, componentNamesFound = [], assignNamesFound = [], activeAliases = [],
+  unlinkExternalCopies = false, copiesByTargetComponentName = {}, componentNamesFound = [], assignNamesFound = [], activeAliases = [],
   init = true
 }) {
 
@@ -14,6 +14,10 @@ export function postProcessCopy({ serializedComponents, componentName,
   for (let ind in serializedComponents) {
     let component = serializedComponents[ind];
 
+    if (typeof component !== "object") {
+      continue;
+    }
+
     let uniqueIdentifierBase;
     if (component.originalName) {
 
@@ -21,7 +25,7 @@ export function postProcessCopy({ serializedComponents, componentName,
         componentNamesFound.push(component.originalName);
         if (component.originalDoenetAttributes && component.originalDoenetAttributes.assignNames) {
           let originalNamespace;
-          if (component.attributes.newNamespace && component.attributes.newNamespace.primitive) {
+          if (component.attributes.newNamespace?.primitive) {
             originalNamespace = component.originalName;
           } else {
             let lastSlash = component.originalName.lastIndexOf('/');
@@ -72,24 +76,24 @@ export function postProcessCopy({ serializedComponents, componentName,
     }
 
     if (component.componentType === "copy" && unlinkExternalCopies) {
-      let fullTName = component.doenetAttributes.fullTName;
-      if (!fullTName) {
+      let targetComponentName = component.doenetAttributes.targetComponentName;
+      if (!targetComponentName) {
         if (!component.attributes.uri) {
-          throw Error('we need to create a fullTName here, then.')
+          throw Error('we need to create a targetComponentName here, then.')
         }
       } else {
-        if (activeAliases.includes(component.doenetAttributes.tName)) {
+        if (activeAliases.includes(component.doenetAttributes.target)) {
           // TODO: is the this right thing to do?
           // Not clear if following the same rules for when a match would override an alias
-          // Setting fullTName to a relative name presumably prevents the fullTName
+          // Setting targetComponentName to a relative name presumably prevents the targetComponentName
           // from ever matching anything.  Is that what we want?
-          component.doenetAttributes.fullTName = component.doenetAttributes.tName;
+          component.doenetAttributes.targetComponentName = component.doenetAttributes.target;
         } else {
           // don't create if matches an alias
-          if (copiesByFullTName[fullTName] === undefined) {
-            copiesByFullTName[fullTName] = [];
+          if (copiesByTargetComponentName[targetComponentName] === undefined) {
+            copiesByTargetComponentName[targetComponentName] = [];
           }
-          copiesByFullTName[fullTName].push(component);
+          copiesByTargetComponentName[targetComponentName].push(component);
         }
       }
 
@@ -104,12 +108,15 @@ export function postProcessCopy({ serializedComponents, componentName,
 
   for (let ind in serializedComponents) {
     let component = serializedComponents[ind];
+    if (typeof component !== "object") {
+      continue;
+    }
 
     postProcessCopy({
       serializedComponents: component.children,
       componentName,
       addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
-      unlinkExternalCopies, copiesByFullTName, componentNamesFound, assignNamesFound,
+      unlinkExternalCopies, copiesByTargetComponentName, componentNamesFound, assignNamesFound,
       activeAliases: [...activeAliases],  // don't add values from children
       init: false
     });
@@ -122,7 +129,7 @@ export function postProcessCopy({ serializedComponents, componentName,
             serializedComponents: [attribute.component],
             componentName,
             addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
-            unlinkExternalCopies, copiesByFullTName, componentNamesFound, assignNamesFound,
+            unlinkExternalCopies, copiesByTargetComponentName, componentNamesFound, assignNamesFound,
             activeAliases: [...activeAliases],  // don't add values from children
             init: false,
           })[0];
@@ -134,7 +141,7 @@ export function postProcessCopy({ serializedComponents, componentName,
         serializedComponents: component.replacements,
         componentName,
         addShadowDependencies, uniqueIdentifiersUsed, identifierPrefix,
-        unlinkExternalCopies, copiesByFullTName, componentNamesFound, assignNamesFound,
+        unlinkExternalCopies, copiesByTargetComponentName, componentNamesFound, assignNamesFound,
         activeAliases: [...activeAliases],  // don't add values from children
         init: false
       });
@@ -143,24 +150,24 @@ export function postProcessCopy({ serializedComponents, componentName,
   }
 
   if (init && unlinkExternalCopies) {
-    for (let fullTName in copiesByFullTName) {
-      if (!componentNamesFound.includes(fullTName)) {
+    for (let targetComponentName in copiesByTargetComponentName) {
+      if (!componentNamesFound.includes(targetComponentName)) {
         let foundMatchViaAssignNames = false;
         for (let cName of assignNamesFound) {
           let namespace = cName + "/";
           let nSpaceLen = namespace.length;
-          if (fullTName.substring(0, nSpaceLen) === namespace) {
+          if (targetComponentName.substring(0, nSpaceLen) === namespace) {
             foundMatchViaAssignNames = true;
             break;
           }
         }
         if (!foundMatchViaAssignNames) {
-          for (let copyComponent of copiesByFullTName[fullTName]) {
+          for (let copyComponent of copiesByTargetComponentName[targetComponentName]) {
             if (!copyComponent.attributes) {
               copyComponent.attributes = {};
             }
             copyComponent.attributes.link = { primitive: false }
-            copyComponent.doenetAttributes.tName = copyComponent.doenetAttributes.fullTName;
+            copyComponent.doenetAttributes.target = copyComponent.doenetAttributes.targetComponentName;
           }
         }
       }
@@ -182,7 +189,7 @@ export function convertAttributesForComponentType({
 
 
   let newClass = componentInfoObjects.allComponentClasses[componentType];
-  let newAttributesObj = newClass.createAttributesObject({ flags });
+  let newAttributesObj = newClass.createAttributesObject();
   let attributeLowerCaseMapping = {};
   for (let propName in newAttributesObj) {
     attributeLowerCaseMapping[propName.toLowerCase()] = propName;
@@ -210,15 +217,27 @@ export function convertAttributesForComponentType({
         componentInfoObjects
       });
 
-      if (newAttributes[propName].children) {
-        newAttributes[propName].children = applyMacros(newAttributes[propName].children, componentInfoObjects);
+      if (newAttributes[propName].component?.children) {
+
+        let serializedComponents = [newAttributes[propName].component];
+
+        applyMacros(serializedComponents, componentInfoObjects);
+
+        removeBlankStringChildren(serializedComponents, componentInfoObjects)
+
+        applySugar({
+          serializedComponents,
+          componentInfoObjects,
+          isAttributeComponent: true,
+        });
+
         if (compositeCreatesNewNamespace) {
-          // modify tNames to go back one namespace
-          for (let child of newAttributes[propName].children) {
+          // modify targets to go back one namespace
+          for (let child of newAttributes[propName].component.children) {
             if (child.componentType === "copy") {
-              let tName = child.doenetAttributes.tName;
-              if (/[a-zA-Z_]/.test(tName[0])) {
-                child.doenetAttributes.tName = "../" + tName;
+              let target = child.doenetAttributes.target;
+              if (/[a-zA-Z_]/.test(target[0])) {
+                child.doenetAttributes.target = "../" + target;
               }
             }
           }

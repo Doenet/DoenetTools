@@ -5,8 +5,8 @@ export default class ConstrainToGraph extends ConstraintComponent {
   static componentType = "constrainToGraph";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.buffer = {
       createComponentOfType: "number",
       createStateVariable: "buffer",
@@ -23,7 +23,7 @@ export default class ConstrainToGraph extends ConstraintComponent {
 
     stateVariableDefinitions.independentComponentConstraints = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { independentComponentConstraints: true } })
+      definition: () => ({ setValue: { independentComponentConstraints: true } })
     }
 
 
@@ -37,21 +37,23 @@ export default class ConstrainToGraph extends ConstraintComponent {
 
     stateVariableDefinitions.applyComponentConstraint = {
       returnDependencies: () => ({
-        graphAncestor: {
+        constraintAncestor: {
           dependencyType: "ancestor",
-          componentType: "graph",
-          variableNames: ["xmin", "xmax", "ymin", "ymax"]
+          componentType: "constraints",
+          variableNames: ["graphXmin", "graphXmax", "graphYmin", "graphYmax"]
         },
         buffer: {
           dependencyType: "stateVariable",
           variableName: "buffer"
-        }
+        },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: {
-          applyComponentConstraint: function (variables) {
+        setValue: {
+          applyComponentConstraint: function ({ variables, scales }) {
 
-            if (!dependencyValues.graphAncestor) {
+            if (dependencyValues.constraintAncestor === null ||
+              dependencyValues.constraintAncestor.stateValues.graphXmin === null
+            ) {
               return {};
             }
 
@@ -65,8 +67,8 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 return {};
               }
 
-              let xmin = dependencyValues.graphAncestor.stateValues.xmin;
-              let xmax = dependencyValues.graphAncestor.stateValues.xmax;
+              let xmin = dependencyValues.constraintAncestor.stateValues.graphXmin;
+              let xmax = dependencyValues.constraintAncestor.stateValues.graphXmax;
 
               if (!(Number.isFinite(xmin) && Number.isFinite(xmax))) {
                 return {};
@@ -75,7 +77,7 @@ export default class ConstrainToGraph extends ConstraintComponent {
               let lowerBound = xmin;
               let upperBound = xmax;
               let buffer = dependencyValues.buffer;
-              if(buffer > 0) {
+              if (buffer > 0) {
                 let bufferAdjust = buffer * (xmax - xmin);
                 lowerBound += bufferAdjust;
                 upperBound -= bufferAdjust;
@@ -98,8 +100,8 @@ export default class ConstrainToGraph extends ConstraintComponent {
                 return {};
               }
 
-              let ymin = dependencyValues.graphAncestor.stateValues.ymin;
-              let ymax = dependencyValues.graphAncestor.stateValues.ymax;
+              let ymin = dependencyValues.constraintAncestor.stateValues.graphYmin;
+              let ymax = dependencyValues.constraintAncestor.stateValues.graphYmax;
 
               if (!(Number.isFinite(ymin) && Number.isFinite(ymax))) {
                 return {};
@@ -108,7 +110,7 @@ export default class ConstrainToGraph extends ConstraintComponent {
               let lowerBound = ymin;
               let upperBound = ymax;
               let buffer = dependencyValues.buffer;
-              if(buffer > 0) {
+              if (buffer > 0) {
                 let bufferAdjust = buffer * (ymax - ymin);
                 lowerBound += bufferAdjust;
                 upperBound -= bufferAdjust;

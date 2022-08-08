@@ -3,10 +3,10 @@ import BaseComponent from './abstract/BaseComponent.js';
 
 export default class CellBlock extends BaseComponent {
   static componentType = "cellBlock";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.rowNum = {
       createComponentOfType: "text",
@@ -52,7 +52,7 @@ export default class CellBlock extends BaseComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             prescribedCellsRowsColumnsBlocks: dependencyValues.cellRelatedChildren
           }
         }

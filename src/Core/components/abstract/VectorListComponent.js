@@ -3,7 +3,7 @@ import { breakEmbeddedStringsIntoParensPieces } from '../commonsugar/breakstring
 
 export default class VectorListComponent extends BaseComponent {
   static componentType = "_vectorListComponent";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
   static returnSugarInstructions() {
@@ -70,7 +70,7 @@ export default class VectorListComponent extends BaseComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { nVectors: dependencyValues.vectorChildren.length },
+        setValue: { nVectors: dependencyValues.vectorChildren.length },
         checkForActualChange: { nVectors: true }
       })
     }
@@ -100,7 +100,7 @@ export default class VectorListComponent extends BaseComponent {
           }
         }
         return {
-          newValues: { nDimensions },
+          setValue: { nDimensions },
           checkForActualChange: { nDimensions: true }
         }
       }
@@ -125,9 +125,9 @@ export default class VectorListComponent extends BaseComponent {
                 return [];
               }
             } else {
-              // if don't know array size, just guess that the entry is OK
-              // It will get corrected once array size is known.
-              // TODO: better to return empty array?
+              // If not given the array size,
+              // then return the array keys assuming the array is large enough.
+              // Must do this as it is used to determine potential array entries.
               return [String(indices)];
             }
           } else {
@@ -135,18 +135,38 @@ export default class VectorListComponent extends BaseComponent {
           }
         } else {
           // vector3 is all components of the third vector
-          let vectorInd = Number(varEnding) - 1;
-          if (!arraySize) {
+
+          let pointInd = Number(varEnding) - 1;
+          if (!(Number.isInteger(pointInd) && pointInd >= 0)) {
             return [];
           }
-          if (Number.isInteger(vectorInd) && vectorInd >= 0 && vectorInd < arraySize[0]) {
-            // array of "vectorInd,i", where i=0, ..., arraySize[1]-1
-            return Array.from(Array(arraySize[1]), (_, i) => vectorInd + "," + i)
+
+          if (!arraySize) {
+            // If don't have array size, we just need to determine if it is a potential entry.
+            // Return the first entry assuming array is large enough
+            return [pointInd + ",0"];
+          }
+          if (pointInd < arraySize[0]) {
+            // array of "pointInd,i", where i=0, ..., arraySize[1]-1
+            return Array.from(Array(arraySize[1]), (_, i) => pointInd + "," + i)
           } else {
             return [];
           }
         }
 
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "vectors") {
+          return "vector" + propIndex;
+        }
+        if (varName.slice(0, 6) === "vector") {
+          // could be vector or vectorX
+          let vectorNum = Number(varName.slice(6));
+          if (Number.isInteger(vectorNum) && vectorNum > 0) {
+            return `vectorX${vectorNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nVectors: {
@@ -195,7 +215,7 @@ export default class VectorListComponent extends BaseComponent {
           }
         }
 
-        return { newValues: { vectors } }
+        return { setValue: { vectors } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,

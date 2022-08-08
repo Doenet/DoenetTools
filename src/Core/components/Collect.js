@@ -13,12 +13,10 @@ export default class Collect extends CompositeComponent {
   static acceptTarget = true;
   static acceptAnyAttribute = true;
 
-  static get stateVariablesShadowedForReference() { return ["targetComponent", "propName", "componentTypesToCollect"] };
-
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     // delete off attributes from base component that should apply to replacements instead
     // (using acceptAnyAttribute)
@@ -55,15 +53,15 @@ export default class Collect extends CompositeComponent {
     };
 
     attributes.targetAttributesToIgnore = {
-      createComponentOfType: "textList",
+      createPrimitiveOfType: "stringArray",
       createStateVariable: "targetAttributesToIgnore",
       defaultValue: [],
       public: true,
     };
 
-    attributes.targetAttributesToAlwaysIgnore = {
-      createComponentOfType: "textList",
-      createStateVariable: "targetAttributesToAlwaysIgnore",
+    attributes.targetAttributesToIgnoreRecursively = {
+      createPrimitiveOfType: "stringArray",
+      createStateVariable: "targetAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
     };
@@ -80,7 +78,13 @@ export default class Collect extends CompositeComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.link = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { link: true } })
+    }
+
     stateVariableDefinitions.targetComponent = {
+      shadowVariable: true,
       returnDependencies: () => ({
         targetComponent: {
           dependencyType: "targetComponent",
@@ -88,7 +92,7 @@ export default class Collect extends CompositeComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             targetComponent: dependencyValues.targetComponent
           }
         }
@@ -112,7 +116,7 @@ export default class Collect extends CompositeComponent {
       },
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             targetInactive: Boolean(dependencyValues.targetIsInactiveCompositeReplacement)
           }
         }
@@ -130,13 +134,14 @@ export default class Collect extends CompositeComponent {
       definition: function ({ dependencyValues }) {
         if (dependencyValues.targetComponent === null) {
           console.warn(`No copy target`);
-          return { newValues: { targetName: "" } }
+          return { setValue: { targetName: "" } }
         }
-        return { newValues: { targetName: dependencyValues.targetComponent.componentName } }
+        return { setValue: { targetName: dependencyValues.targetComponent.componentName } }
       },
     };
 
     stateVariableDefinitions.propName = {
+      shadowVariable: true,
       returnDependencies: () => ({
         propName: {
           dependencyType: "attributePrimitive",
@@ -144,13 +149,17 @@ export default class Collect extends CompositeComponent {
         },
       }),
       definition: function ({ dependencyValues }) {
-        return { newValues: { propName: dependencyValues.propName } }
+        return { setValue: { propName: dependencyValues.propName } }
       }
     }
 
 
     stateVariableDefinitions.componentTypesToCollect = {
-      additionalStateVariablesDefined: ["componentClassesToCollect"],
+      shadowVariable: true,
+      additionalStateVariablesDefined: [{
+        variableName: "componentClassesToCollect",
+        shadowVariable: true
+      }],
       returnDependencies: () => ({
         componentTypesAttr: {
           dependencyType: "attributeComponent",
@@ -181,7 +190,7 @@ export default class Collect extends CompositeComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             componentTypesToCollect, componentClassesToCollect
           }
         }
@@ -194,6 +203,7 @@ export default class Collect extends CompositeComponent {
       stateVariablesDeterminingDependencies: [
         "componentTypesToCollect", "targetName", "propName", "componentIndex", "propIndex"
       ],
+      additionalStateVariablesDefined: ["effectivePropNameByComponent"],
       returnDependencies: function ({ stateValues }) {
         if (!stateValues.targetName) {
           return {};
@@ -212,9 +222,9 @@ export default class Collect extends CompositeComponent {
         if (stateValues.propName) {
           descendants.variableNames = [stateValues.propName];
           descendants.variablesOptional = true;
-          descendants.componentIndex = stateValues.componentIndex;
           descendants.propIndex = stateValues.propIndex;
-          descendants.publicCaseInsensitiveVariableMatch = true;
+          descendants.caseInsensitiveVariableMatch = true;
+          descendants.publicStateVariablesOnly = true;
           descendants.useMappedVariableNames = true;
         }
 
@@ -223,6 +233,10 @@ export default class Collect extends CompositeComponent {
           maximumNumber: {
             dependencyType: "stateVariable",
             variableName: "maximumNumber"
+          },
+          propName: {
+            dependencyType: "stateVariable",
+            variableName: "propName"
           }
         }
       },
@@ -241,8 +255,22 @@ export default class Collect extends CompositeComponent {
           collectedComponents = collectedComponents.slice(0, maxnum)
         }
 
+        let effectivePropNameByComponent = [];
+
+        for (let comp of collectedComponents) {
+          let propName;
+          if (comp.stateValues) {
+            propName = Object.keys(comp.stateValues)[0];
+          }
+          if (!propName && dependencyValues.propName) {
+            // a propName was specified, but it just wasn't found
+            propName = dependencyValues.propName;
+          }
+          effectivePropNameByComponent.push(propName)
+        }
+
         return {
-          newValues: { collectedComponents }
+          setValue: { collectedComponents, effectivePropNameByComponent }
         }
 
       }
@@ -261,7 +289,7 @@ export default class Collect extends CompositeComponent {
         },
       }),
       definition: () => ({
-        newValues: { readyToExpandWhenResolved: true }
+        setValue: { readyToExpandWhenResolved: true }
       })
     }
 
@@ -281,7 +309,7 @@ export default class Collect extends CompositeComponent {
         return { updateReplacements: true }
       },
       definition() {
-        return { newValues: { needsReplacementsUpdatedWhenStale: true } }
+        return { setValue: { needsReplacementsUpdatedWhenStale: true } }
       }
     }
 
@@ -294,7 +322,8 @@ export default class Collect extends CompositeComponent {
   static async createSerializedReplacements({ component, components, workspace,
     componentInfoObjects,
     nComponentsForSource,
-    publicCaseInsensitiveAliasSubstitutions
+    publicCaseInsensitiveAliasSubstitutions,
+    flags
   }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`)
@@ -314,7 +343,7 @@ export default class Collect extends CompositeComponent {
 
     workspace.uniqueIdentifiersUsedByCollected = {};
 
-    let compositeAttributesObj = this.createAttributesObject({});
+    let compositeAttributesObj = this.createAttributesObject();
 
     let collectedComponents = await component.stateValues.collectedComponents;
     for (let collectedNum = 0; collectedNum < collectedComponents.length; collectedNum++) {
@@ -330,6 +359,7 @@ export default class Collect extends CompositeComponent {
           compositeAttributesObj,
           nComponentsForSource,
           publicCaseInsensitiveAliasSubstitutions,
+          flags
         });
 
         workspace.propVariablesCopiedByCollected[collectedNum] = results.propVariablesCopiedByReplacement;
@@ -361,6 +391,7 @@ export default class Collect extends CompositeComponent {
     compositeAttributesObj,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
+    flags
   }) {
 
     // console.log(`create replacement for collected ${collectedNum}, ${numReplacementsSoFar}`)
@@ -381,9 +412,9 @@ export default class Collect extends CompositeComponent {
       return { serializedReplacements, propVariablesCopiedByReplacement };
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
-    let propName = await component.stateValues.propName;
+    let propName = (await component.stateValues.effectivePropNameByComponent)[collectedNum];
     if (propName) {
 
       let results = await replacementFromProp({
@@ -403,7 +434,15 @@ export default class Collect extends CompositeComponent {
 
     } else {
 
-      let serializedCopy = [await collectedComponent.serialize()];
+      let targetAttributesToIgnore = await component.stateValues.targetAttributesToIgnore;
+      let targetAttributesToIgnoreRecursively = await component.stateValues.targetAttributesToIgnoreRecursively;
+
+      let serializedCopy = [await collectedComponent.serialize(
+        {
+          targetAttributesToIgnore,
+          targetAttributesToIgnoreRecursively
+        }
+      )];
 
       serializedReplacements = postProcessCopy({
         serializedComponents: serializedCopy,
@@ -419,8 +458,10 @@ export default class Collect extends CompositeComponent {
         let attributesFromComposite = convertAttributesForComponentType({
           attributes: component.attributes,
           componentType: repl.componentType,
-          componentInfoObjects, compositeAttributesObj,
-          compositeCreatesNewNamespace: newNamespace
+          componentInfoObjects,
+          compositeAttributesObj,
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         });
         Object.assign(repl.attributes, attributesFromComposite)
       }
@@ -446,7 +487,8 @@ export default class Collect extends CompositeComponent {
   static async calculateReplacementChanges({ component, componentChanges, components, workspace,
     componentInfoObjects,
     nComponentsForSource,
-    publicCaseInsensitiveAliasSubstitutions
+    publicCaseInsensitiveAliasSubstitutions,
+    flags
   }) {
 
     // console.log("Calculating replacement changes for " + component.componentName);
@@ -490,7 +532,7 @@ export default class Collect extends CompositeComponent {
 
     let recreateRemaining = false;
 
-    let compositeAttributesObj = this.createAttributesObject({});
+    let compositeAttributesObj = this.createAttributesObject();
 
     for (let collectedNum = 0; collectedNum < maxCollectedLength; collectedNum++) {
       let collected = collectedComponents[collectedNum];
@@ -564,7 +606,8 @@ export default class Collect extends CompositeComponent {
           componentInfoObjects,
           compositeAttributesObj,
           nComponentsForSource,
-          publicCaseInsensitiveAliasSubstitutions
+          publicCaseInsensitiveAliasSubstitutions,
+          flags
         });
 
         numReplacementsSoFar += results.numReplacements;
@@ -626,6 +669,7 @@ export default class Collect extends CompositeComponent {
         compositeAttributesObj,
         nComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
+        flags
       });
 
       let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;
@@ -707,7 +751,8 @@ export default class Collect extends CompositeComponent {
     numReplacementsToDelete,
     uniqueIdentifiersUsed, components, componentInfoObjects, compositeAttributesObj,
     nComponentsForSource,
-    publicCaseInsensitiveAliasSubstitutions
+    publicCaseInsensitiveAliasSubstitutions,
+    flags
   }) {
 
     let results = await this.createReplacementForCollected({
@@ -715,6 +760,7 @@ export default class Collect extends CompositeComponent {
       componentInfoObjects, compositeAttributesObj,
       nComponentsForSource,
       publicCaseInsensitiveAliasSubstitutions,
+      flags
     });
 
     let propVariablesCopiedByReplacement = results.propVariablesCopiedByReplacement;

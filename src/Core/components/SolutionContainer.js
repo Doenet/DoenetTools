@@ -5,8 +5,8 @@ export default class SolutionContainer extends Template {
 
   static stateVariableToEvaluateAfterReplacements = "open";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     delete attributes.rendered;
     return attributes;
   }
@@ -26,7 +26,7 @@ export default class SolutionContainer extends Template {
       markStale: () => ({ updateReplacements: true }),
       definition({ dependencyValues }) {
         let rendered = Boolean(dependencyValues.parentOpen);
-        return { newValues: { rendered } };
+        return { setValue: { rendered } };
       }
     }
 

@@ -15,12 +15,8 @@ export default class Slider extends BaseComponent {
 
   static variableForPlainMacro = "value";
 
-  static get stateVariablesShadowedForReference() {
-    return ["value"]
-  };
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string",
       createStateVariable: "type",
@@ -46,14 +42,16 @@ export default class Slider extends BaseComponent {
     attributes.initialValue = {
       createComponentOfType: "_componentWithSelectableType",
       createStateVariable: "initialValue",
-      defaultValue: undefined,
+      defaultValue: null,
     }
     attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: undefined,
+      createComponentOfType: "label",
+    };
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true
     };
     attributes.showControls = {
       createComponentOfType: "boolean",
@@ -136,6 +134,9 @@ export default class Slider extends BaseComponent {
     }, {
       group: "markers",
       componentTypes: ["markers"]
+    }, {
+      group: "labels",
+      componentTypes: ["label"]
     }]
 
   }
@@ -145,10 +146,74 @@ export default class Slider extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.label = {
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "label",
+      },
+      hasEssential: true,
+      defaultValue: "",
+      additionalStateVariablesDefined: [{
+        variableName: "labelHasLatex",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        labelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "label",
+          variableNames: ["value", "hasLatex"]
+        },
+        labelChild: {
+          dependencyType: "child",
+          childGroups: ["labels"],
+          variableNames: ["value", "hasLatex"]
+        },
+        labelIsName: {
+          dependencyType: "stateVariable",
+          variableName: "labelIsName"
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+        if (dependencyValues.labelChild.length > 0) {
+          return {
+            setValue: {
+              label: dependencyValues.labelChild[0].stateValues.value,
+              labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.labelAttr) {
+          return {
+            setValue: {
+              label: dependencyValues.labelAttr.stateValues.value,
+              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.labelIsName) {
+          let lastSlash = componentName.lastIndexOf('/');
+          // &#95; is HTML entity for underscore, so JSXgraph won't replace it with subscript
+          let label = componentName.substring(lastSlash + 1).replaceAll("_", "&#95;");
+          return {
+            setValue: {
+              label,
+              labelHasLatex: false
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { label: true },
+            setValue: { labelHasLatex: false }
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.items = {
       forRenderer: true,
       public: true,
-      hasVariableComponentType: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       // isArray: true,
       // entryPrefixes: ["item"],
       // entireArrayAtOnce: true,
@@ -203,8 +268,8 @@ export default class Slider extends BaseComponent {
         }
 
         return {
-          newValues: { items },
-          setComponentType: { items: dependencyValues.type },
+          setValue: { items },
+          setCreateComponentOfType: { items: dependencyValues.type },
         };
       }
     }
@@ -213,7 +278,9 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.nItems = {
       forRenderer: true,
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         items: {
           dependencyType: "stateVariable",
@@ -248,7 +315,7 @@ export default class Slider extends BaseComponent {
           }
         }
 
-        return { newValues: { nItems } }
+        return { setValue: { nItems } }
       }
     }
 
@@ -280,7 +347,7 @@ export default class Slider extends BaseComponent {
           firstItem = null;  // text with no children
         }
 
-        return { newValues: { firstItem } }
+        return { setValue: { firstItem } }
       }
     }
 
@@ -320,7 +387,7 @@ export default class Slider extends BaseComponent {
           lastItem = null;   // text with no children
         }
 
-        return { newValues: { lastItem } }
+        return { setValue: { lastItem } }
       }
     }
 
@@ -338,12 +405,13 @@ export default class Slider extends BaseComponent {
         for (let [ind, item] of dependencyValues.items.entries()) {
           valueToIndex[item] = ind;
         }
-        return { newValues: { valueToIndex } }
+        return { setValue: { valueToIndex } }
       }
     }
 
 
     stateVariableDefinitions.preliminaryValue = {
+      hasEssential: true,
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -364,7 +432,6 @@ export default class Slider extends BaseComponent {
           return {
             useEssentialOrDefaultValue: {
               preliminaryValue: {
-                variablesToCheck: "value",
                 get defaultValue() {
                   return dependencyValues.initialValue;
                 }
@@ -373,7 +440,7 @@ export default class Slider extends BaseComponent {
           }
         }
 
-        return { newValues: { preliminaryValue: dependencyValues.bindValueTo.stateValues.value } };
+        return { setValue: { preliminaryValue: dependencyValues.bindValueTo.stateValues.value } };
 
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -392,7 +459,7 @@ export default class Slider extends BaseComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "preliminaryValue",
+            setEssentialValue: "preliminaryValue",
             value: desiredStateVariableValues.preliminaryValue
           }]
         }
@@ -440,7 +507,7 @@ export default class Slider extends BaseComponent {
           index = 0;
         }
 
-        return { newValues: { index } }
+        return { setValue: { index } }
 
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
@@ -492,8 +559,9 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.value = {
       forRenderer: true,
       public: true,
-      essential: true,
-      hasVariableComponentType: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -526,8 +594,8 @@ export default class Slider extends BaseComponent {
         }
 
         return {
-          newValues: { value },
-          setComponentType: { value: dependencyValues.type },
+          setValue: { value },
+          setCreateComponentOfType: { value: dependencyValues.type },
         }
 
       },
@@ -563,7 +631,7 @@ export default class Slider extends BaseComponent {
         });
 
         return {
-          newValues: {
+          setValue: {
             valueForDisplay: rounded.tree
           }
         }
@@ -608,7 +676,7 @@ export default class Slider extends BaseComponent {
           }
         }
 
-        return { newValues: { markers } }
+        return { setValue: { markers } }
 
       }
     }
@@ -626,7 +694,7 @@ export default class Slider extends BaseComponent {
     //     // }
     //   }),
     //   definition: ({ dependencyValues }) => ({
-    //     newValues: {
+    //     setValue: {
     //       // disabled: !dependencyValues.collaborateGroups.matchGroup(dependencyValues.collaboration)
     //       disabled: false
     //     }
@@ -637,7 +705,7 @@ export default class Slider extends BaseComponent {
   }
 
 
-  async changeValue({ value, transient }) {
+  async changeValue({ value, transient, actionId }) {
     if (!await this.stateValues.disabled) {
       if (transient) {
         return await this.coreFunctions.performUpdate({
@@ -647,7 +715,8 @@ export default class Slider extends BaseComponent {
             stateVariable: "value",
             value
           }],
-          transient
+          transient,
+          actionId
         });
       } else {
         return await this.coreFunctions.performUpdate({
@@ -657,6 +726,7 @@ export default class Slider extends BaseComponent {
             stateVariable: "value",
             value
           }],
+          actionId,
           event: {
             verb: "selected",
             object: {
@@ -670,6 +740,8 @@ export default class Slider extends BaseComponent {
           }
         });
       }
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

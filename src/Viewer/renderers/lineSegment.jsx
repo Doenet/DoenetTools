@@ -1,46 +1,85 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useContext, useEffect, useRef } from 'react';
+import useDoenetRender from './useDoenetRenderer';
+import { BoardContext } from './graph';
 
-export default class LineSegment extends DoenetRenderer {
-  constructor(props) {
-    super(props)
+export default React.memo(function LineSegment(props) {
+  let { name, SVs, actions, callAction } = useDoenetRender(props);
 
-    this.onDragHandler = this.onDragHandler.bind(this);
+  LineSegment.ignoreActionsWithoutCore = true;
 
-    if (props.board) {
-      this.createGraphicalObject();
+  const board = useContext(BoardContext);
 
-      this.doenetPropsForChildren = { board: this.props.board };
-      this.initializeChildren();
+  let lineSegmentJXG = useRef(null);
+  let point1JXG = useRef(null);
+  let point2JXG = useRef(null);
+
+  let pointerAtDown = useRef(false);
+  let pointsAtDown = useRef(false);
+  let draggedPoint = useRef(null);
+  let previousWithLabel = useRef(null);
+  let pointCoords = useRef(null);
+  let downOnPoint = useRef(null);
+
+  let lastPositionsFromCore = useRef(null);
+
+  lastPositionsFromCore.current = SVs.numericalEndpoints;
+
+  useEffect(() => {
+
+    //On unmount
+    return () => {
+      // if line is defined
+      if (lineSegmentJXG.current) {
+        deleteLineSegmentJXG();
+      }
+
     }
-  }
+  }, [])
 
-  static initializeChildrenOnConstruction = false;
 
-  createGraphicalObject() {
+  function createLineSegmentJXG() {
 
-    if (this.doenetSvData.numericalEndpoints.length !== 2 ||
-      this.doenetSvData.numericalEndpoints.some(x => x.length !== 2)
+    if (SVs.numericalEndpoints.length !== 2 ||
+      SVs.numericalEndpoints.some(x => x.length !== 2)
     ) {
+      lineSegmentJXG.current = null;
+      point1JXG.current = null;
+      point2JXG.current = null;
       return;
     }
 
+    let fixed = !SVs.draggable || SVs.fixed;
+
     //things to be passed to JSXGraph as attributes
     var jsxSegmentAttributes = {
-      name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hidden,
-      withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
-      layer: 10 * this.doenetSvData.layer + 7,
-      strokeColor: this.doenetSvData.selectedStyle.lineColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
-      strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
+      name: SVs.label,
+      visible: !SVs.hidden,
+      withLabel: SVs.showLabel && SVs.label !== "",
+      fixed,
+      layer: 10 * SVs.layer + 7,
+      strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
+      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
+      strokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeWidth: SVs.selectedStyle.lineWidth,
+      dash: styleToDash(SVs.selectedStyle.lineStyle),
+      highlight: !fixed,
     };
 
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      jsxSegmentAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+    jsxSegmentAttributes.label = {
+      highlight: false
     }
+    if (SVs.labelHasLatex) {
+      jsxSegmentAttributes.label.useMathJax = true
+    }
+
+    if (SVs.applyStyleToLabel) {
+      jsxSegmentAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxSegmentAttributes.label.strokeColor = "#000000";
+    }
+
 
     let jsxPointAttributes = Object.assign({}, jsxSegmentAttributes);
     Object.assign(jsxPointAttributes, {
@@ -48,228 +87,311 @@ export default class LineSegment extends DoenetRenderer {
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
-      highlightFillColor: 'lightgray',
-      layer: 10 * this.doenetSvData.layer + 8,
-      showInfoBox: this.doenetSvData.showCoordsWhenDragging,
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
+      layer: 10 * SVs.layer + 8,
+      showInfoBox: SVs.showCoordsWhenDragging,
     });
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
+    if (!SVs.draggable || SVs.fixed) {
       jsxPointAttributes.visible = false;
     }
 
 
     let endpoints = [
-      [...this.doenetSvData.numericalEndpoints[0]],
-      [...this.doenetSvData.numericalEndpoints[1]]
+      [...SVs.numericalEndpoints[0]],
+      [...SVs.numericalEndpoints[1]]
     ];
 
     // create invisible points at endpoints
-    this.point1JXG = this.props.board.create('point', endpoints[0], jsxPointAttributes);
-    this.point2JXG = this.props.board.create('point', endpoints[1], jsxPointAttributes);
+    point1JXG.current = board.create('point', endpoints[0], jsxPointAttributes);
+    point2JXG.current = board.create('point', endpoints[1], jsxPointAttributes);
 
+    lineSegmentJXG.current = board.create('segment', [point1JXG.current, point2JXG.current], jsxSegmentAttributes);
 
-    this.lineSegmentJXG = this.props.board.create('segment', [this.point1JXG, this.point2JXG], jsxSegmentAttributes);
+    point1JXG.current.on('drag', (e) => onDragHandler(1, e));
+    point2JXG.current.on('drag', (e) => onDragHandler(2, e));
+    lineSegmentJXG.current.on('drag', (e) => onDragHandler(0, e));
 
-    this.point1JXG.on('drag', () => this.onDragHandler(1, true));
-    this.point2JXG.on('drag', () => this.onDragHandler(2, true));
-    this.lineSegmentJXG.on('drag', (e) => this.onDragHandler(0, true, e));
-
-    this.point1JXG.on('up', () => this.onDragHandler(1, false));
-    this.point2JXG.on('up', () => this.onDragHandler(2, false));
-    this.lineSegmentJXG.on('up', function (e) {
-      if (this.draggedPoint === 0) {
-        this.actions.finalizeLineSegmentPosition();
+    point1JXG.current.on('up', () => {
+      if (draggedPoint.current === 1) {
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point1coords: pointCoords.current,
+          }
+        })
+      } else if (draggedPoint.current === null) {
+        callAction({
+          action: actions.lineSegmentClicked
+        });
       }
-    }.bind(this));
+      downOnPoint.current = null;
+    })
+    point2JXG.current.on('up', () => {
+      if (draggedPoint.current === 2) {
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point2coords: pointCoords.current,
+          }
+        })
+      } else if (draggedPoint.current === null) {
+        callAction({
+          action: actions.lineSegmentClicked
+        });
+      }
+      downOnPoint.current = null;
+    })
+    lineSegmentJXG.current.on('up', function (e) {
+      if (draggedPoint.current === 0) {
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point1coords: pointCoords.current[0],
+            point2coords: pointCoords.current[1],
+          }
+        })
+      } else if (draggedPoint.current === null && downOnPoint.current === null) {
+        // Note: counting on fact that up on line segment will trigger before up on points
+        callAction({
+          action: actions.lineSegmentClicked
+        });
+      }
+    });
 
-    this.point1JXG.on('down', () => this.draggedPoint = null);
-    this.point2JXG.on('down', () => this.draggedPoint = null);
-    this.lineSegmentJXG.on('down', function (e) {
-      this.draggedPoint = null;
-      this.pointerAtDown = [e.x, e.y];
-      this.pointsAtDown = [
-        [...this.point1JXG.coords.scrCoords],
-        [...this.point2JXG.coords.scrCoords]
+    point1JXG.current.on('down', (e) => {
+      draggedPoint.current = null;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 1;
+    });
+    point2JXG.current.on('down', (e) => {
+      draggedPoint.current = null;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 2;
+    });
+    lineSegmentJXG.current.on('down', function (e) {
+      draggedPoint.current = null;
+      pointerAtDown.current = [e.x, e.y];
+      pointsAtDown.current = [
+        [...point1JXG.current.coords.scrCoords],
+        [...point2JXG.current.coords.scrCoords]
       ]
-    }.bind(this));
+    });
 
-    this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
+    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
 
-    return this.lineSegmentJXG;
+    return lineSegmentJXG.current;
 
   }
 
-  deleteGraphicalObject() {
-    this.lineSegmentJXG.off('drag');
-    this.lineSegmentJXG.off('down');
-    this.lineSegmentJXG.off('up');
-    this.props.board.removeObject(this.lineSegmentJXG);
-    delete this.lineSegmentJXG;
 
-    this.point1JXG.off('drag');
-    this.point1JXG.off('down');
-    this.point1JXG.off('up');
-    this.props.board.removeObject(this.point1JXG);
-    delete this.point1JXG;
+  function onDragHandler(i, e) {
 
-    this.point2JXG.off('drag');
-    this.point2JXG.off('down');
-    this.point2JXG.off('up');
-    this.props.board.removeObject(this.point2JXG);
-    delete this.point2JXG;
-  }
+    //Protect against very small unintended drags
+    if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+      Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      draggedPoint.current = i;
 
-  componentWillUnmount() {
-    if (this.lineSegmentJXG) {
-      this.deleteGraphicalObject();
-    }
-  }
-
-
-  update({ sourceOfUpdate }) {
-
-    if (!this.props.board) {
-      this.forceUpdate();
-      return;
-    }
-
-    if (this.lineSegmentJXG === undefined) {
-      return this.createGraphicalObject();
-    }
-
-    if (this.doenetSvData.numericalEndpoints.length !== 2 ||
-      this.doenetSvData.numericalEndpoints.some(x => x.length !== 2)
-    ) {
-      return this.deleteGraphicalObject();
-    }
-
-    let validCoords = true;
-
-    for (let coords of [this.doenetSvData.numericalEndpoints[0], this.doenetSvData.numericalEndpoints[1]]) {
-      if (!Number.isFinite(coords[0])) {
-        validCoords = false;
-      }
-      if (!Number.isFinite(coords[1])) {
-        validCoords = false;
+      if (i == 1) {
+        pointCoords.current = [lineSegmentJXG.current.point1.X(), lineSegmentJXG.current.point1.Y()];
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point1coords: pointCoords.current,
+            transient: true,
+            skippable: true,
+          }
+        })
+      } else if (i == 2) {
+        pointCoords.current = [lineSegmentJXG.current.point2.X(), lineSegmentJXG.current.point2.Y()];
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point2coords: pointCoords.current,
+            transient: true,
+            skippable: true,
+          }
+        })
+      } else {
+        calculatePointPositions(e);
+        callAction({
+          action: actions.moveLineSegment,
+          args: {
+            point1coords: pointCoords.current[0],
+            point2coords: pointCoords.current[1],
+            transient: true,
+            skippable: true,
+          }
+        })
       }
     }
 
-    this.lineSegmentJXG.point1.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoints[0]);
-    this.lineSegmentJXG.point2.coords.setCoordinates(JXG.COORDS_BY_USER, this.doenetSvData.numericalEndpoints[1]);
-
-    let visible = !this.doenetSvData.hidden;
-
-    if (validCoords) {
-      let actuallyChangedVisibility = this.lineSegmentJXG.visProp["visible"] !== visible;
-      this.lineSegmentJXG.visProp["visible"] = visible;
-      this.lineSegmentJXG.visPropCalc["visible"] = visible;
-
-      if (actuallyChangedVisibility) {
-        // at least for point, this function is incredibly slow, so don't run it if not necessary
-        // TODO: figure out how to make label disappear right away so don't need to run this function
-        this.lineSegmentJXG.setAttribute({ visible: visible })
-      }
-    }
-    else {
-      this.lineSegmentJXG.visProp["visible"] = false;
-      this.lineSegmentJXG.visPropCalc["visible"] = false;
-      // this.lineSegmentJXG.setAttribute({visible: false})
-    }
-
-    this.lineSegmentJXG.name = this.doenetSvData.label;
-    // this.lineSegmentJXG.visProp.withlabel = this.showlabel && this.label !== "";
-
-    let withlabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    if (withlabel != this.previousWithLabel) {
-      this.lineSegmentJXG.setAttribute({ withlabel: withlabel });
-      this.previousWithLabel = withlabel;
-    }
-
-    this.lineSegmentJXG.needsUpdate = true;
-    this.lineSegmentJXG.update()
-    if (this.lineSegmentJXG.hasLabel) {
-      this.lineSegmentJXG.label.needsUpdate = true;
-      this.lineSegmentJXG.label.update();
-    }
-    this.point1JXG.needsUpdate = true;
-    this.point1JXG.update();
-    this.point2JXG.needsUpdate = true;
-    this.point2JXG.update();
-
-    this.props.board.updateRenderer();
+    lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[0]);
+    lineSegmentJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastPositionsFromCore.current[1]);
 
   }
 
-  onDragHandler(i, transient, e) {
-
-    if (transient) {
-      this.draggedPoint = i;
-    } else if (this.draggedPoint !== i) {
-      return;
-    }
-
-    if (i == 1) {
-      this.actions.moveLineSegment({
-        point1coords: [this.lineSegmentJXG.point1.X(), this.lineSegmentJXG.point1.Y()],
-        transient,
-        skippable: transient,
-      });
-    } else if (i == 2) {
-      this.actions.moveLineSegment({
-        point2coords: [this.lineSegmentJXG.point2.X(), this.lineSegmentJXG.point2.Y()],
-        transient,
-        skippable: transient
-      });
-    } else {
-      let pointCoords = this.calculatePointPositions(e);
-      this.actions.moveLineSegment({
-        point1coords: pointCoords[0],
-        point2coords: pointCoords[1],
-        transient: true,
-        skippable: true,
-      });
-    }
-  }
-
-  calculatePointPositions(e) {
+  function calculatePointPositions(e) {
 
     // the reason we calculate point position with this algorithm,
     // rather than using .X() and .Y() directly
     // is so that points don't get trapped on an attracting object
     // if you move the mouse slowly.
     // The attributes .X() and .Y() are affected by
-    // .setCoordinates functions called in update()
+    // .setCoordinates functions called
     // so will get modified to go back to the attracting object
 
-    var o = this.props.board.origin.scrCoords;
+    var o = board.origin.scrCoords;
 
-    let pointCoords = []
+    pointCoords.current = []
 
     for (let i = 0; i < 2; i++) {
-      let calculatedX = (this.pointsAtDown[i][1] + e.x - this.pointerAtDown[0]
-        - o[1]) / this.props.board.unitX;
+      let calculatedX = (pointsAtDown.current[i][1] + e.x - pointerAtDown.current[0]
+        - o[1]) / board.unitX;
       let calculatedY = (o[2] -
-        (this.pointsAtDown[i][2] + e.y - this.pointerAtDown[1]))
-        / this.props.board.unitY;
-      pointCoords.push([calculatedX, calculatedY]);
+        (pointsAtDown.current[i][2] + e.y - pointerAtDown.current[1]))
+        / board.unitY;
+      pointCoords.current.push([calculatedX, calculatedY]);
     }
-    return pointCoords;
+    return pointCoords.current;
   }
 
 
-  render() {
 
-    if (this.props.board) {
-      return <><a name={this.componentName} />{this.children}</>
-    }
+  function deleteLineSegmentJXG() {
+    lineSegmentJXG.current.off('drag');
+    lineSegmentJXG.current.off('down');
+    lineSegmentJXG.current.off('up');
+    board.removeObject(lineSegmentJXG.current);
+    lineSegmentJXG.current = null;
 
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
+    point1JXG.current.off('drag');
+    point1JXG.current.off('down');
+    point1JXG.current.off('up');
+    board.removeObject(point1JXG.current);
+    point1JXG.current = null;
 
-    // don't think we want to return anything if not in board
-    return <><a name={this.componentName} /></>
+    point2JXG.current.off('drag');
+    point2JXG.current.off('down');
+    point2JXG.current.off('up');
+    board.removeObject(point2JXG.current);
+    point2JXG.current = null;
   }
-}
+
+
+
+
+  if (board) {
+    if (lineSegmentJXG.current === null) {
+      createLineSegmentJXG();
+    } else if (SVs.numericalEndpoints.length !== 2 ||
+      SVs.numericalEndpoints.some(x => x.length !== 2)
+    ) {
+      deleteLineSegmentJXG();
+    } else {
+
+      let validCoords = true;
+
+      for (let coords of [SVs.numericalEndpoints[0], SVs.numericalEndpoints[1]]) {
+        if (!Number.isFinite(coords[0])) {
+          validCoords = false;
+        }
+        if (!Number.isFinite(coords[1])) {
+          validCoords = false;
+        }
+      }
+
+      lineSegmentJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[0]);
+      lineSegmentJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, SVs.numericalEndpoints[1]);
+
+      let visible = !SVs.hidden;
+
+      if (validCoords) {
+        let actuallyChangedVisibility = lineSegmentJXG.current.visProp["visible"] !== visible;
+        lineSegmentJXG.current.visProp["visible"] = visible;
+        lineSegmentJXG.current.visPropCalc["visible"] = visible;
+
+        if (actuallyChangedVisibility) {
+          // at least for point, this function is incredibly slow, so don't run it if not necessary
+          // TODO: figure out how to make label disappear right away so don't need to run this function
+          lineSegmentJXG.current.setAttribute({ visible: visible })
+        }
+      }
+      else {
+        lineSegmentJXG.current.visProp["visible"] = false;
+        lineSegmentJXG.current.visPropCalc["visible"] = false;
+        // lineSegmentJXG.current.setAttribute({visible: false})
+      }
+
+      let fixed = !SVs.draggable || SVs.fixed;
+
+      lineSegmentJXG.current.visProp.fixed = fixed;
+      lineSegmentJXG.current.visProp.highlight = !fixed;
+
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = lineSegmentJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        lineSegmentJXG.current.setAttribute({ layer });
+        point1JXG.current.setAttribute({ layer: layer + 1 });
+        point2JXG.current.setAttribute({ layer: layer + 1 });
+      }
+
+      if (lineSegmentJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        lineSegmentJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        lineSegmentJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (lineSegmentJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        lineSegmentJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+        lineSegmentJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
+      }
+      if (lineSegmentJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        lineSegmentJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
+        lineSegmentJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
+      if (lineSegmentJXG.current.visProp.dash !== newDash) {
+        lineSegmentJXG.current.visProp.dash = newDash;
+      }
+
+      lineSegmentJXG.current.name = SVs.label;
+
+      let withlabel = SVs.showLabel && SVs.label !== "";
+      if (withlabel != previousWithLabel.current) {
+        lineSegmentJXG.current.setAttribute({ withlabel: withlabel });
+        previousWithLabel.current = withlabel;
+      }
+
+      lineSegmentJXG.current.needsUpdate = true;
+      lineSegmentJXG.current.update()
+      if (lineSegmentJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          lineSegmentJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          lineSegmentJXG.current.label.visProp.strokecolor = "#000000";
+        }
+        lineSegmentJXG.current.label.needsUpdate = true;
+        lineSegmentJXG.current.label.update();
+      }
+      point1JXG.current.needsUpdate = true;
+      point1JXG.current.update();
+      point2JXG.current.needsUpdate = true;
+      point2JXG.current.update();
+
+      board.updateRenderer();
+
+    }
+    return <><a name={name} /></>
+  }
+
+  if (SVs.hidden) {
+    return null;
+  }
+
+  // don't think we want to return anything if not in board
+  return <><a name={name} /></>
+
+
+})
 
 function styleToDash(style) {
   if (style === "solid") {

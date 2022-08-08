@@ -9,9 +9,8 @@ export class IsInteger extends BooleanBaseOperatorOfMath {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.booleanOperator.definition = () => ({
-      newValues: {
+      setValue: {
         booleanOperator: function (values) {
-          console.log('values', values)
           if (values.length === 0) {
             return false;
           }
@@ -53,7 +52,7 @@ export class IsNumber extends BooleanBaseOperatorOfMath {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.booleanOperator.definition = () => ({
-      newValues: {
+      setValue: {
         booleanOperator: function (values) {
           if (values.length === 0) {
             return false;
@@ -80,8 +79,8 @@ export class IsNumber extends BooleanBaseOperatorOfMath {
 export class IsBetween extends BooleanBaseOperatorOfMath {
   static componentType = "isBetween";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.limits = {
       createComponentOfType: "numberList",
       createStateVariable: "limits",
@@ -125,13 +124,13 @@ export class IsBetween extends BooleanBaseOperatorOfMath {
           lowerLimit = lim2;
           upperLimit = lim1;
         } else {
-          return { newValues: { booleanOperator: () => false } }
+          return { setValue: { booleanOperator: () => false } }
         }
 
         let strict = dependencyValues.strict;
 
         return {
-          newValues: {
+          setValue: {
             booleanOperator: function (values) {
               if (values.length === 0) {
                 return false;

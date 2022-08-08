@@ -23,7 +23,9 @@ export default class Footnote extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         inlineChildren: {
@@ -46,13 +48,15 @@ export default class Footnote extends InlineComponent {
           }
         }
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 
     stateVariableDefinitions.footnoteTag = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         footnoteCounter: {
@@ -62,7 +66,7 @@ export default class Footnote extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { footnoteTag: String(dependencyValues.footnoteCounter) }
+          setValue: { footnoteTag: String(dependencyValues.footnoteCounter) }
         }
       }
     }

@@ -12,6 +12,7 @@ import * as SingleCharacterComponents from './components/SingleCharacterComponen
 import * as Sectioning from './components/Sectioning.js';
 import * as Lists from './components/Lists.js';
 import * as DynamicalSystems from './components/dynamicalSystems/index.js';
+import * as Chemistry from './components/chemistry/index.js';
 import * as FeedbackDefinitions from './components/FeedbackDefinitions.js';
 import * as StyleDefinitions from './components/StyleDefinitions.js';
 import * as ComponentWithSelectableType from './components/abstract/ComponentWithSelectableType.js';
@@ -20,14 +21,16 @@ import * as Indexing from './components/Indexing.js';
 import * as Divisions from './components/Divisions.js';
 import * as Verbatim from './components/Verbatim.js';
 import * as Paginator from './components/Paginator.js';
+import * as MatrixInput from './components/MatrixInput.js';
 
 import Document from './components/Document.js';
-import StringComponent from './components/StringComponent.js';
 import Text from './components/Text.js';
 import TextList from './components/TextList.js';
 import RandomizedTextList from './components/RandomizedTextList.js';
 import MathList from './components/MathList.js';
+import TupleList from './components/TupleList.js';
 import NumberList from './components/NumberList.js';
+import NumberListFromString from './components/NumberListFromString.js';
 import P from './components/P.js';
 import BooleanComponent from './components/Boolean.js';
 import BooleanList from './components/BooleanList.js';
@@ -51,6 +54,7 @@ import Curve from './components/Curve.js';
 import BezierControls from './components/BezierControls.js';
 import ControlVectors from './components/ControlVectors.js';
 import PointListComponent from './components/abstract/PointListComponent.js';
+import IntervalListComponent from './components/abstract/IntervalListComponent.js';
 import LineListComponent from './components/abstract/LineListComponent.js';
 import VectorListComponent from './components/abstract/VectorListComponent.js';
 import AngleListComponent from './components/abstract/AngleListComponent.js';
@@ -60,7 +64,6 @@ import Answer from './components/Answer.js';
 import Award from './components/Award.js';
 import When from './components/When.js';
 import MathInput from './components/MathInput.js';
-import MatrixInput from './components/MatrixInput.js';
 import TextInput from './components/TextInput.js';
 import BooleanInput from './components/BooleanInput.js';
 import ChoiceInput from './components/ChoiceInput.js';
@@ -71,6 +74,7 @@ import Graph from './components/Graph.js';
 import Variables from './components/Variables.js';
 import Variable from './components/Variable.js';
 import Function from './components/Function.js';
+import Interval from './components/Interval.js';
 import Template from './components/Template.js';
 import Option from './components/Option.js';
 import Sequence from './components/Sequence.js';
@@ -144,8 +148,19 @@ import SubsetOfRealsInput from './components/SubsetOfRealsInput.js';
 import SubsetOfReals from './components/SubsetOfReals.js';
 import Split from './components/Split.js';
 import BestFitLine from './components/BestFitLine.js';
-import AreaBetweenCurveXAxis from './components/AreaBetweenCurveXAxis.js';
+import RegionBetweenCurveXAxis from './components/RegionBetweenCurveXAxis.js';
 import RegionHalfPlane from './components/RegionHalfPlane.js';
+import CodeEditor from './components/CodeEditor.js';
+import CodeViewer from './components/CodeViewer.js';
+import RenderDoenetML from './components/RenderDoenetML.js';
+import HasSameFactoring from './components/HasSameFactoring.js';
+import OrbitalDiagramInput from './components/OrbitalDiagramInput.js';
+import OrbitalDiagram from './components/OrbitalDiagram.js';
+import DataFrame from './components/DataFrame.js';
+import SummaryStatistics from './components/SummaryStatistics.js';
+import Chart from './components/Chart.js';
+import Legend from './components/Legend.js';
+import Label from './components/Label.js';
 
 
 //Extended
@@ -182,6 +197,7 @@ const componentTypeArray = [
   ...Object.values(Sectioning),
   ...Object.values(Lists),
   ...Object.values(DynamicalSystems),
+  ...Object.values(Chemistry),
   ...Object.values(FeedbackDefinitions),
   ...Object.values(StyleDefinitions),
   ...Object.values(SideBySide),
@@ -190,14 +206,16 @@ const componentTypeArray = [
   ...Object.values(Divisions),
   ...Object.values(Verbatim),
   ...Object.values(Paginator),
+  ...Object.values(MatrixInput),
   Document,
-  StringComponent,
   Text, TextList,
   RandomizedTextList,
   P,
   BooleanComponent, BooleanList,
   MathComponent, MathList,
+  TupleList,
   NumberList,
+  NumberListFromString,
   Copy,
   Extract,
   Collect,
@@ -214,13 +232,14 @@ const componentTypeArray = [
   Vector,
   Angle,
   Answer, Award, When,
-  MathInput, MatrixInput, TextInput, BooleanInput, ChoiceInput,
+  MathInput, TextInput, BooleanInput, ChoiceInput,
   Choice,
   NumberComponent, Integer,
   Graph,
   Variables,
   Variable,
   Function,
+  Interval,
   Template, Option,
   Sequence,
   Slider,
@@ -287,8 +306,19 @@ const componentTypeArray = [
   SubsetOfReals,
   Split,
   BestFitLine,
-  AreaBetweenCurveXAxis,
+  RegionBetweenCurveXAxis,
   RegionHalfPlane,
+  CodeEditor,
+  CodeViewer,
+  RenderDoenetML,
+  HasSameFactoring,
+  OrbitalDiagramInput,
+  OrbitalDiagram,
+  DataFrame,
+  SummaryStatistics,
+  Chart,
+  Legend,
+  Label,
 
   BaseComponent,
   InlineComponent,
@@ -298,6 +328,7 @@ const componentTypeArray = [
   Input,
   CompositeComponent,
   PointListComponent,
+  IntervalListComponent,
   LineListComponent,
   VectorListComponent,
   AngleListComponent,
@@ -312,30 +343,6 @@ const componentTypeArray = [
   SingleCharacterInline,
 ];
 
-export function standardComponentClasses() {
-  const componentClasses = {};
-  const lowerCaseComponentTypes = new Set();
-  for (let ct of componentTypeArray) {
-    let newComponentType = ct.componentType;
-
-    if (newComponentType.substring(0, 1) !== "_") {
-
-      if (newComponentType === undefined) {
-        throw Error("Cannot create component as componentType is undefined for class " + ct)
-      }
-      let lowerCaseType = newComponentType.toLowerCase();
-      if (lowerCaseComponentTypes.has(lowerCaseType)) {
-        throw Error("component type " + newComponentType + " defined in two classes");
-      }
-      if (!(/[a-zA-Z]/.test(newComponentType.substring(0, 1)))) {
-        throw Error("Invalid component type " + newComponentType + ". Component types must begin with a letter.");
-      }
-      componentClasses[newComponentType] = ct;
-      lowerCaseComponentTypes.add(lowerCaseType);
-    }
-  }
-  return componentClasses;
-}
 
 export function allComponentClasses() {
   const componentClasses = {};
@@ -376,28 +383,4 @@ export function componentTypesCreatingVariants() {
   return componentClasses;
 }
 
-
-export function componentTypeWithPotentialVariants() {
-  const componentClasses = {};
-  const lowerCaseComponentTypes = new Set();
-  for (let ct of componentTypeArray) {
-    if (ct.createsVariants ||
-      ct.setUpVariantIfVariantControlChild ||
-      ct.setUpVariantUnlessAttributePrimitive ||
-      ct.alwaysSetUpVariant
-    ) {
-      let newComponentType = ct.componentType;
-      if (newComponentType === undefined) {
-        throw Error("Cannot create component as componentType is undefined for class " + ct)
-      }
-      let lowerCaseType = newComponentType.toLowerCase();
-      if (lowerCaseComponentTypes.has(lowerCaseType)) {
-        throw Error("component type " + newComponentType + " defined in two classes");
-      }
-      componentClasses[newComponentType] = ct;
-      lowerCaseComponentTypes.add(lowerCaseType);
-    }
-  }
-  return componentClasses;
-}
 

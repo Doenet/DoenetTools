@@ -9,8 +9,8 @@ include "db_connection.php";
 
 $jwtArray = include "jwtArray.php";
 $userId = $jwtArray['userId'];
-// $examUserId = $jwtArray['examineeUserId'];
-// $examDoenetId = $jwtArray['doenetId'];
+// $examUserId = array_key_exists("examineeUserId",$jwtArray) ? $jwtArray['examineeUserId'] : "";
+// $examDoenetId = array_key_exists("doenetId",$jwtArray) ? $jwtArray['doenetId'] : "";
 
 $doenetId =  mysqli_real_escape_string($conn,$_REQUEST["doenetId"]);
 
@@ -54,7 +54,7 @@ if ($success){
 
 $sql="
 SELECT 
- c.contentId AS contentId,
+ c.cid AS cid,
  c.versionId AS versionId,
  c.title AS title,
  c.timestamp AS timestamp,
@@ -75,7 +75,7 @@ if ($result->num_rows > 0){
     while($row = $result->fetch_assoc()){ 
         $version = array(
                 "title"=>$row['title'],
-                "contentId"=>$row['contentId'],
+                "cid"=>$row['cid'],
                 "versionId"=>$row['versionId'],
                 "timestamp"=>$row['timestamp'],
                 "isDraft"=>$row['isDraft'],

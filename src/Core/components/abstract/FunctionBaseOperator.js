@@ -1,5 +1,6 @@
-import Function, { returnSymbolicFunctionFromFormula, returnNumericalFunctionFromFormula } from '../Function';
+import Function from '../Function';
 import me from 'math-expressions';
+import { returnNumericalFunctionFromFormula, returnSymbolicFunctionFromFormula } from '../../utils/function';
 
 export default class FunctionOperator extends Function {
   static componentType = "_functionOperator";
@@ -8,29 +9,74 @@ export default class FunctionOperator extends Function {
   static returnSugarInstructions() {
     let sugarInstructions = [];
 
-    let wrapStringsAndMacros = function ({ matchedChildren }) {
+    let wrapStringsAndMacros = function ({ matchedChildren, componentInfoObjects }) {
 
-      // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
+
+      let componentIsLabel = x=> componentInfoObjects.componentIsSpecifiedType(x, "label");
+
+      // only apply if all children are strings, macros, or labels
+      if (matchedChildren.length === 0 || !matchedChildren.every(child =>
         typeof child === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
+        child.doenetAttributes?.createdFromMacro ||
+        componentIsLabel(child)
       )) {
         return { success: false }
       }
 
+
+      // wrap first group of non-label children in <math>
+
+      let childIsLabel = matchedChildren.map(componentIsLabel);
+
+      let childrenToWrap = [], childrenToNotWrapBegin = [], childrenToNotWrapEnd = [];
+
+      if (childIsLabel.filter(x => x).length === 0) {
+        childrenToWrap = matchedChildren
+      } else {
+        if (childIsLabel[0]) {
+          // started with label, find first non-label child
+          let firstNonLabelInd = childIsLabel.indexOf(false);
+          if (firstNonLabelInd !== -1) {
+            childrenToNotWrapBegin = matchedChildren.slice(0, firstNonLabelInd);
+            matchedChildren = matchedChildren.slice(firstNonLabelInd);
+            childIsLabel = childIsLabel.slice(firstNonLabelInd)
+          }
+        }
+
+        // now we don't have label at the beginning
+        // find first label ind
+        let firstLabelInd = childIsLabel.indexOf(true);
+        if (firstLabelInd === -1) {
+          childrenToWrap = matchedChildren;
+        } else {
+          childrenToWrap = matchedChildren.slice(0, firstLabelInd);
+          childrenToNotWrapEnd = matchedChildren.slice(firstLabelInd);
+        }
+
+      }
+
+      if (childrenToWrap.length === 0) {
+        return { success: false }
+      }
+
+
       // don't apply to a single macro
-      if (matchedChildren.length === 1 &&
-        typeof matchedChildren[0] !== "string"
+      if (childrenToWrap.length === 1 &&
+        typeof childrenToWrap[0] !== "string"
       ) {
         return { success: false }
       }
 
       return {
         success: true,
-        newChildren: [{
-          componentType: "math",
-          children: matchedChildren
-        }],
+        newChildren: [
+          ...childrenToNotWrapBegin,
+          {
+            componentType: "math",
+            children: childrenToWrap
+          },
+          ...childrenToNotWrapEnd
+        ],
       }
 
     }
@@ -42,26 +88,16 @@ export default class FunctionOperator extends Function {
     return sugarInstructions;
   }
 
-  static returnChildGroups() {
-
-    return [{
-      group: "maths",
-      componentTypes: ["math"]
-    }, {
-      group: "functions",
-      componentTypes: ["function"]
-    }]
-
-  }
-
 
   static returnStateVariableDefinitions({ numerics }) {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions({ numerics });
 
+    let componentType = this.componentType;
+
     stateVariableDefinitions.isInterpolatedFunction = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { isInterpolatedFunction: false } })
+      definition: () => ({ setValue: { isInterpolatedFunction: false } })
     }
 
     delete stateVariableDefinitions.nPrescribedPoints;
@@ -76,17 +112,17 @@ export default class FunctionOperator extends Function {
 
     stateVariableDefinitions.operatorBasedOnFormulaIfAvailable = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { operatorBasedOnFormulaIfAvailable: false } })
+      definition: () => ({ setValue: { operatorBasedOnFormulaIfAvailable: false } })
     }
 
     stateVariableDefinitions.formula.returnDependencies = () => ({})
     stateVariableDefinitions.formula.definition = () => ({
-      newValues: { formula: me.fromAst('\uff3f') }
+      setValue: { formula: me.fromAst('\uff3f') }
     })
 
     stateVariableDefinitions.operatorComposesWithOriginal = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { operatorComposesWithOriginal: true } })
+      definition: () => ({ setValue: { operatorComposesWithOriginal: true } })
     }
 
     // TODO: extend symbolicFunctionOperator and numericalFunctionOperator
@@ -95,27 +131,41 @@ export default class FunctionOperator extends Function {
     // if the function is to be vector-valued
     stateVariableDefinitions.symbolicFunctionOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { symbolicFunctionOperator: x => me.fromAst('\uff3f') } })
+      definition: () => ({ setValue: { symbolicFunctionOperator: x => me.fromAst('\uff3f') } })
     }
 
     stateVariableDefinitions.numericalFunctionOperator = {
+      additionalStateVariablesDefined: ["numericalFunctionOperatorArguments"],
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { numericalFunctionOperator: x => NaN } })
+      definition: () => ({
+        setValue: {
+          numericalFunctionOperator: x => NaN,
+          numericalFunctionOperatorArguments: []
+        }
+      })
+    }
+
+
+    stateVariableDefinitions.numericalFunctionOperatorArguments = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { numericalFunctionOperatorArguments: {} } })
     }
 
     stateVariableDefinitions.formulaOperator = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { formulaOperator: x => me.fromAst('\uff3f') } })
+      definition: () => ({ setValue: { formulaOperator: x => me.fromAst('\uff3f') } })
     }
 
     stateVariableDefinitions.returnNumericalDerivatives = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { returnNumericalDerivatives: null } })
+      definition: () => ({ setValue: { returnNumericalDerivatives: null } })
     }
 
     stateVariableDefinitions.formula = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       additionalStateVariablesDefined: ["operatorBasedOnFormula"],
       // stateVariablesDeterminingDependencies: ["operatorBasedOnFormulaIfAvailable"],
       returnDependencies: () => ({
@@ -149,7 +199,7 @@ export default class FunctionOperator extends Function {
           )
         ) {
           return {
-            newValues: {
+            setValue: {
               formula: me.fromAst("\uff3f"),
               operatorBasedOnFormula: false
             }
@@ -164,7 +214,7 @@ export default class FunctionOperator extends Function {
           formulaPreOperator = dependencyValues.functionChild[0].stateValues.formula;
         }
         return {
-          newValues: {
+          setValue: {
             formula: dependencyValues.formulaOperator(formulaPreOperator),
             operatorBasedOnFormula: true,
           }
@@ -242,7 +292,7 @@ export default class FunctionOperator extends Function {
           for (let arrayKey of arrayKeys) {
             symbolicfs[arrayKey] = returnSymbolicFunctionFromFormula(globalDependencyValues, arrayKey)
             return {
-              newValues: { symbolicfs }
+              setValue: { symbolicfs }
             }
           }
         } else if (globalDependencyValues.operatorComposesWithOriginal) {
@@ -254,7 +304,7 @@ export default class FunctionOperator extends Function {
                 symbolicfs[arrayKey] = x => me.fromAst('\uff3f')
               }
               return {
-                newValues: { symbolicfs }
+                setValue: { symbolicfs }
               }
             } else {
 
@@ -275,7 +325,7 @@ export default class FunctionOperator extends Function {
               }
 
               return {
-                newValues: { symbolicfs }
+                setValue: { symbolicfs }
               }
 
             }
@@ -292,7 +342,7 @@ export default class FunctionOperator extends Function {
             }
 
             return {
-              newValues: { symbolicfs }
+              setValue: { symbolicfs }
             }
 
           }
@@ -303,7 +353,7 @@ export default class FunctionOperator extends Function {
           }
 
           return {
-            newValues: { symbolicfs }
+            setValue: { symbolicfs }
           }
 
         }
@@ -366,12 +416,20 @@ export default class FunctionOperator extends Function {
       }),
       arrayDefinitionByKey: function ({ globalDependencyValues, usedDefault, arrayKeys, arraySize }) {
 
+        // TODO: correctly handle nOutputs > 1
+
         if (globalDependencyValues.operatorBasedOnFormula) {
           let numericalfs = {};
           for (let arrayKey of arrayKeys) {
-            numericalfs[arrayKey] = returnNumericalFunctionFromFormula(globalDependencyValues, arrayKey)
+            numericalfs[arrayKey] = returnNumericalFunctionFromFormula({
+              formula: globalDependencyValues.formula,
+              nInputs: globalDependencyValues.nInputs,
+              variables: globalDependencyValues.variables,
+              domain: globalDependencyValues.domain,
+              component: arrayKey
+            })
             return {
-              newValues: { numericalfs }
+              setValue: { numericalfs }
             }
           }
         } else if (globalDependencyValues.operatorComposesWithOriginal) {
@@ -383,7 +441,7 @@ export default class FunctionOperator extends Function {
                 numericalfs[arrayKey] = x => NaN
               }
               return {
-                newValues: { numericalfs }
+                setValue: { numericalfs }
               }
             } else {
 
@@ -394,7 +452,13 @@ export default class FunctionOperator extends Function {
               let childFs = [];
 
               for (let ind = 0; ind < arraySize[0]; ind++) {
-                childFs.push(returnNumericalFunctionFromFormula(dependencyValuesWithChildFormula, ind))
+                childFs.push(returnNumericalFunctionFromFormula({
+                  formula: globalDependencyValues.formula,
+                  nInputs: globalDependencyValues.nInputs,
+                  variables: globalDependencyValues.variables,
+                  domain: globalDependencyValues.domain,
+                  component: ind
+                }))
               }
               let numericalfs = {};
               for (let arrayKey of arrayKeys) {
@@ -404,7 +468,7 @@ export default class FunctionOperator extends Function {
               }
 
               return {
-                newValues: { numericalfs }
+                setValue: { numericalfs }
               }
 
             }
@@ -422,7 +486,7 @@ export default class FunctionOperator extends Function {
             }
 
             return {
-              newValues: { numericalfs }
+              setValue: { numericalfs }
             }
 
           }
@@ -434,9 +498,135 @@ export default class FunctionOperator extends Function {
           }
 
           return {
-            newValues: { numericalfs }
+            setValue: { numericalfs }
           }
 
+        }
+
+      }
+    }
+
+
+    stateVariableDefinitions.fDefinition = {
+      returnDependencies: () => ({
+        operatorBasedOnFormula: {
+          dependencyType: "stateVariable",
+          variableName: "operatorBasedOnFormula"
+        },
+        formula: {
+          dependencyType: "stateVariable",
+          variableName: "formula"
+        },
+        variables: {
+          dependencyType: "stateVariable",
+          variableName: "variables",
+        },
+        nInputs: {
+          dependencyType: "stateVariable",
+          variableName: "nInputs",
+        },
+        nOutputs: {
+          dependencyType: "stateVariable",
+          variableName: "nOutputs",
+        },
+        functionChild: {
+          dependencyType: "child",
+          childGroups: ["functions"],
+          variableNames: ["fDefinition"]
+        },
+        mathChild: {
+          dependencyType: "child",
+          childGroups: ["maths"],
+          variableNames: ["value"],
+        },
+        numericalFunctionOperator: {
+          dependencyType: "stateVariable",
+          variableName: "numericalFunctionOperator"
+        },
+        numericalFunctionOperatorArguments: {
+          dependencyType: "stateVariable",
+          variableName: "numericalFunctionOperatorArguments"
+        },
+        operatorComposesWithOriginal: {
+          dependencyType: "stateVariable",
+          variableName: "operatorComposesWithOriginal"
+        },
+        domain: {
+          dependencyType: "stateVariable",
+          variableName: "domain"
+        }
+      }),
+      definition({ dependencyValues }) {
+
+        // TODO: correctly handle nOutputs > 1
+
+        if (dependencyValues.operatorBasedOnFormula) {
+          return {
+            setValue: {
+              fDefinition: {
+                functionType: "formula",
+                formula: dependencyValues.formula.tree,
+                variables: dependencyValues.variables.map(x => x.tree),
+                nInputs: dependencyValues.nInputs,
+                nOutputs: dependencyValues.nOutputs,
+                domain: dependencyValues.domain,
+              }
+            }
+          }
+
+        } else if (dependencyValues.operatorComposesWithOriginal) {
+
+          if (dependencyValues.functionChild.length === 0) {
+            if (dependencyValues.mathChild.length === 0) {
+              return {
+                setValue: {
+                  fDefinition: {
+                    functionType: "formula",
+                    formula: '\uff3f',
+                    variables: dependencyValues.variables.map(x => x.tree),
+                    nInputs: dependencyValues.nInputs,
+                    nOutputs: dependencyValues.nOutputs,
+                    domain: dependencyValues.domain,
+                  }
+                }
+              }
+            } else {
+
+              // TODO: is this case with a math child used anywhere?
+              throw Error('function operator with math child not implemented yet')
+
+
+            }
+          } else {
+
+            return {
+              setValue: {
+                fDefinition: {
+                  functionType: "functionOperator",
+                  componentType,
+                  nOutputs: dependencyValues.nOutputs,
+                  functionOperatorArguments: dependencyValues.numericalFunctionOperatorArguments,
+                  operatorComposesWithOriginal: true,
+                  originalFDefinition: dependencyValues.functionChild[0].stateValues.fDefinition,
+                }
+              }
+            }
+
+          }
+
+        } else {
+          return {
+            setValue: {
+              fDefinition: {
+                functionType: "functionOperator",
+                componentType,
+                nOutputs: dependencyValues.nOutputs,
+                functionOperatorArguments: dependencyValues.numericalFunctionOperatorArguments,
+                operatorComposesWithOriginal: false,
+                originalFDefinition: dependencyValues.functionChild[0].stateValues.fDefinition,
+              }
+            }
+          }
         }
 
       }

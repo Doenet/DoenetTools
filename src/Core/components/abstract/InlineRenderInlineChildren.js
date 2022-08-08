@@ -26,7 +26,9 @@ export default class InlineRenderInlineChildren extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
@@ -50,7 +52,7 @@ export default class InlineRenderInlineChildren extends InlineComponent {
 
         text = componentClass.beginTextDelimiter + text + componentClass.endTextDelimiter;
 
-        return { newValues: { text } };
+        return { setValue: { text } };
       }
     }
 

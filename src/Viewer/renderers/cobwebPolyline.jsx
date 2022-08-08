@@ -1,59 +1,83 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useContext, useEffect, useRef } from 'react';
+import useDoenetRender from './useDoenetRenderer';
+import { BoardContext } from './graph';
+import { createFunctionFromDefinition } from '../../Core/utils/function';
 
-export default class CobwebPolyline extends DoenetRenderer {
-  constructor(props) {
-    super(props)
 
-    this.onDragHandler = this.onDragHandler.bind(this);
+export default React.memo(function CobwebPolyline(props) {
+  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
-    if (props.board) {
-      this.createGraphicalObject();
+  CobwebPolyline.ignoreActionsWithoutCore = true;
 
-      this.doenetPropsForChildren = { board: this.props.board };
-      this.initializeChildren();
+  const board = useContext(BoardContext);
+
+  let curveJXG = useRef(null);
+  let diagonalJXG = useRef(null);
+  let polylineJXG = useRef(null);
+  let pointsJXG = useRef(null);
+
+  let pointCoords = useRef(null);
+  let draggedPoint = useRef(null);
+  let previousNPoints = useRef(null);
+  let jsxPointAttributes = useRef(null);
+
+  let lastPositionsFromCore = useRef(null);
+  lastPositionsFromCore.current = SVs.numericalVertices;
+
+
+
+  useEffect(() => {
+
+    //On unmount
+    return () => {
+      // if point is defined
+      if (polylineJXG.current) {
+        deleteCobwebPolylineJXG();
+      }
     }
-  }
+  }, [])
 
-  static initializeChildrenOnConstruction = false;
 
-  createGraphicalObject() {
 
-    if (this.doenetSvData.numericalVertices.length !== this.doenetSvData.nPoints ||
-      this.doenetSvData.numericalVertices.some(x => x.length !== 2)
-    ) {
-      return;
-    }
+  function createCobwebPolylineJXG() {
+
+    // if (SVs.numericalVertices.length !== SVs.nVertices ||
+    //   SVs.numericalVertices.some(x => x.length !== 2)
+    // ) {
+    //   return null;
+    // }
 
     let functionAttributes = {
-      visible: !this.doenetSvData.hidden,
+      visible: !SVs.hidden,
       withLabel: false,
       fixed: true,
-      layer: 10 * this.doenetSvData.layer + 5,
+      layer: 10 * SVs.layer + 5,
       strokeColor: 'green',
       highlightStrokeColor: 'green',
       strokeWidth: 3,
       dash: styleToDash('solid'),
     };
 
-    this.curveJXG = this.props.board.create('functiongraph', [this.doenetSvData.f], functionAttributes);
+    let f = createFunctionFromDefinition(SVs.fDefinition);
+
+    curveJXG.current = board.create('functiongraph', [f], functionAttributes);
 
     let diagonalAttributes = {
-      visible: !this.doenetSvData.hidden,
+      visible: !SVs.hidden,
       withLabel: false,
       fixed: true,
-      layer: 10 * this.doenetSvData.layer + 5,
+      layer: 10 * SVs.layer + 5,
       strokeColor: 'gray',
       highlightStrokeColor: 'gray',
       strokeWidth: 2,
       dash: styleToDash('solid'),
     };
-    this.diagonalJXG = this.props.board.create('line', [[0, 0], [1, 1]], diagonalAttributes);
+    diagonalJXG.current = board.create('line', [[0, 0], [1, 1]], diagonalAttributes);
 
 
     let validCoords = true;
 
-    for (let coords of this.doenetSvData.numericalVertices) {
+    for (let coords of SVs.numericalVertices) {
       if (!Number.isFinite(coords[0])) {
         validCoords = false;
       }
@@ -63,51 +87,54 @@ export default class CobwebPolyline extends DoenetRenderer {
     }
 
     //things to be passed to JSXGraph as attributes
-    this.jsxPolylineAttributes = {
-      name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hidden && validCoords,
-      withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
+    let jsxPolylineAttributes = {
+      name: SVs.label,
+      visible: !SVs.hidden && validCoords,
+      withLabel: SVs.showLabel && SVs.label !== "",
       fixed: true,
-      layer: 10 * this.doenetSvData.layer + 7,
-      strokeColor: this.doenetSvData.selectedStyle.lineColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
-      strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
+      layer: 10 * SVs.layer + 7,
+      strokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      strokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeWidth: SVs.selectedStyle.lineWidth,
+      dash: styleToDash(SVs.selectedStyle.lineStyle),
     };
 
-
-    if (!this.doenetSvData.draggable) {
-      this.jsxPolylineAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+    jsxPolylineAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxPolylineAttributes.label.useMathJax = true 
     }
 
-    this.jsxPointAttributes = {
-      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
-      visible: !this.doenetSvData.hidden && validCoords && this.doenetSvData.draggable,
+    jsxPointAttributes.current = {
+      fixed: !SVs.draggable || SVs.fixed,
+      visible: !SVs.hidden && validCoords && SVs.draggable,
       withLabel: true,
       name: "A",
-      layer: 10 * this.doenetSvData.layer + 9,
-      fillColor: this.doenetSvData.selectedStyle.markerColor,
-      strokeColor: this.doenetSvData.selectedStyle.markerColor,
-      size: this.doenetSvData.selectedStyle.markerSize,
-      face: normalizeStyle(this.doenetSvData.selectedStyle.markerStyle),
+      layer: 10 * SVs.layer + 9,
+      fillColor: SVs.selectedStyle.markerColor,
+      strokeColor: SVs.selectedStyle.markerColor,
+      size: SVs.selectedStyle.markerSize,
+      face: normalizeStyle(SVs.selectedStyle.markerStyle),
 
     }
 
-    if (this.doenetSvData.draggable) {
-      this.jsxPointAttributes.highlightFillColor = "#EEEEEE";
-      this.jsxPointAttributes.highlightStrokeColor = "#C3D9FF";
-      this.jsxPointAttributes.showInfoBox = true;
+    if (SVs.draggable) {
+      jsxPointAttributes.current.highlightFillColor = "#EEEEEE";
+      jsxPointAttributes.current.highlightStrokeColor = "#C3D9FF";
+      jsxPointAttributes.current.showInfoBox = true;
     } else {
-      this.jsxPointAttributes.highlightFillColor = this.doenetSvData.selectedStyle.markerColor;
-      this.jsxPointAttributes.highlightStrokeColor = this.doenetSvData.selectedStyle.markerColor;
-      this.jsxPointAttributes.showInfoBox = false;
+      jsxPointAttributes.current.highlightFillColor = SVs.selectedStyle.markerColor;
+      jsxPointAttributes.current.highlightStrokeColor = SVs.selectedStyle.markerColor;
+      jsxPointAttributes.current.showInfoBox = false;
     }
 
-    this.pointsJXG = [];
-    let varName = this.doenetSvData.variable.toString();
+    pointsJXG.current = [];
+    let varName = SVs.variable.toString();
 
-    for (let i = 0; i < this.doenetSvData.nPoints; i++) {
-      let pointAttributes = Object.assign({}, this.jsxPointAttributes);
+    for (let i = 0; i < SVs.nPoints; i++) {
+      let pointAttributes = Object.assign({}, jsxPointAttributes.current);
       if (i === 0) {
         pointAttributes.name = `(${varName}_0,0)`;
       } else if (i % 2 === 1) {
@@ -115,218 +142,231 @@ export default class CobwebPolyline extends DoenetRenderer {
       } else {
         pointAttributes.name = `(${varName}_${i / 2}, ${varName}_${i / 2})`;
       }
-      if (i !== this.doenetSvData.nPoints - 1) {
+      if (i !== SVs.nPoints - 1) {
         pointAttributes.visible = false;
       }
-      this.pointsJXG.push(
-        this.props.board.create('point', [...this.doenetSvData.numericalVertices[i]], pointAttributes)
+      pointsJXG.current.push(
+        board.create('point', [...SVs.numericalVertices[i]], pointAttributes)
       );
     }
 
     let x = [], y = [];
-    this.doenetSvData.numericalVertices.forEach(z => { x.push(z[0]); y.push(z[1]) });
+    SVs.numericalVertices.forEach(z => { x.push(z[0]); y.push(z[1]) });
 
-    this.polylineJXG = this.props.board.create('curve', [x, y], this.jsxPolylineAttributes);
+    let newPolylineJXG = board.create('curve', [x, y], jsxPolylineAttributes);
 
-    for (let i = 0; i < this.doenetSvData.nPoints; i++) {
-      this.pointsJXG[i].on('drag', x => this.onDragHandler(i, true));
-      this.pointsJXG[i].on('up', x => this.onDragHandler(i, false));
-      this.pointsJXG[i].on('down', x => this.draggedPoint = null);
+    for (let i = 0; i < SVs.nPoints; i++) {
+      pointsJXG.current[i].on('drag', x => dragHandler(i));
+      pointsJXG.current[i].on('up', x => upHandler(i));
+      pointsJXG.current[i].on('down', x => draggedPoint.current = null);
     }
 
-    this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    this.previousNPoints = this.doenetSvData.nPoints;
+    previousNPoints.current = SVs.nPoints;
 
-    return this.polylineJXG;
+    return newPolylineJXG;
 
   }
 
-  deleteGraphicalObject() {
+  function deleteCobwebPolylineJXG() {
 
-    this.props.board.removeObject(this.polylineJXG);
-    delete this.polylineJXG;
+    board.removeObject(polylineJXG.current);
+    polylineJXG.current = null;
 
-    for (let i = 0; i < this.doenetSvData.nPoints; i++) {
-      if (this.pointsJXG[i]) {
-        this.pointsJXG[i].off('drag')
-        this.pointsJXG[i].off('up')
-        this.pointsJXG[i].off('down')
-        this.props.board.removeObject(this.pointsJXG[i]);
-        delete this.pointsJXG[i];
+    board.removeObject(curveJXG.current);
+    curveJXG.current = null;
+
+    board.removeObject(diagonalJXG.current);
+    diagonalJXG.current = null;
+
+    for (let i = 0; i < SVs.nPoints; i++) {
+      if (pointsJXG.current[i]) {
+        pointsJXG.current[i].off('drag')
+        pointsJXG.current[i].off('up')
+        pointsJXG.current[i].off('down')
+        board.removeObject(pointsJXG.current[i]);
+        delete pointsJXG.current[i];
       }
     }
   }
 
-  componentWillUnmount() {
-    if (this.polylineJXG) {
-      this.deleteGraphicalObject();
-    }
+  function dragHandler(i) {
+    draggedPoint.current = i;
+
+    pointCoords.current = {};
+    pointCoords.current[i] = [pointsJXG.current[i].X(), pointsJXG.current[i].Y()];
+    callAction({
+      action: actions.movePolyline,
+      args: {
+        pointCoords: pointCoords.current,
+        transient: true,
+        skippable: true,
+        sourceInformation: { vertex: i }
+      }
+    })
+
+    pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
+    board.updateInfobox(pointsJXG.current[i])
+
   }
 
-
-  update({ sourceOfUpdate }) {
-
-    if (!this.props.board) {
-      this.forceUpdate();
+  function upHandler(i) {
+    if (draggedPoint.current !== i) {
       return;
     }
 
-    if (this.polylineJXG === undefined) {
-      return this.createGraphicalObject();
-    }
 
-    this.curveJXG.Y = this.doenetSvData.f;
-    this.curveJXG.needsUpdate = true;
-    this.curveJXG.updateCurve();
-
-
-    let validCoords = true;
-
-    for (let coords of this.doenetSvData.numericalVertices) {
-      if (!Number.isFinite(coords[0])) {
-        validCoords = false;
+    callAction({
+      action: actions.movePolyline,
+      args: {
+        pointCoords: pointCoords.current,
+        sourceInformation: { vertex: i }
       }
-      if (!Number.isFinite(coords[1])) {
-        validCoords = false;
-      }
-    }
+    })
+  }
 
-    let varName = this.doenetSvData.variable.toString();
 
-    // add or delete points as required and change data array size
-    if (this.doenetSvData.nPoints > this.previousNPoints) {
-      for (let i = this.previousNPoints; i < this.doenetSvData.nPoints; i++) {
-        let pointAttributes = Object.assign({}, this.jsxPointAttributes);
-        if (i === 0) {
-          pointAttributes.name = `(${varName}_0,0)`;
-        } else if (i % 2 === 1) {
-          pointAttributes.name = `(${varName}_${(i - 1) / 2}, ${varName}_${(i + 1) / 2})`;
-        } else {
-          pointAttributes.name = `(${varName}_${i / 2}, ${varName}_${i / 2})`;
+  if (board) {
+
+    if (!polylineJXG.current) {
+      polylineJXG.current = createCobwebPolylineJXG();
+      // } else if (SVs.numericalVertices.length !== SVs.nVertices ||
+      //   SVs.numericalVertices.some(x => x.length !== 2)
+      // ) {
+      //   deleteCobwebPolylineJXG();
+    } else {
+
+      let f = createFunctionFromDefinition(SVs.fDefinition);
+
+      curveJXG.current.Y = f;
+      curveJXG.current.needsUpdate = true;
+      curveJXG.current.updateCurve();
+
+
+      let validCoords = true;
+
+      for (let coords of SVs.numericalVertices) {
+        if (!Number.isFinite(coords[0])) {
+          validCoords = false;
         }
-        if (i !== this.doenetSvData.nPoints - 1) {
-          pointAttributes.visible = false;
-        }
-        this.pointsJXG.push(
-          this.props.board.create('point', [...this.doenetSvData.numericalVertices[i]], pointAttributes)
-        );
-
-        this.pointsJXG[i].on('drag', x => this.onDragHandler(i, true));
-        this.pointsJXG[i].on('up', x => this.onDragHandler(i, false));
-        this.pointsJXG[i].on('down', x => this.draggedPoint = null);
-      }
-    } else if (this.doenetSvData.nPoints < this.previousNPoints) {
-      for (let i = this.doenetSvData.nPoints; i < this.previousNPoints; i++) {
-        let pt = this.pointsJXG.pop();
-        pt.off('drag')
-        pt.off('up')
-        pt.off('down')
-        this.props.board.removeObject(pt);
-      }
-      this.polylineJXG.dataX.length = this.doenetSvData.nPoints;
-    }
-
-    this.previousNPoints = this.doenetSvData.nPoints;
-
-    let shiftX = this.polylineJXG.transformMat[1][0];
-    let shiftY = this.polylineJXG.transformMat[2][0];
-
-
-    for (let i = 0; i < this.doenetSvData.nPoints; i++) {
-      this.pointsJXG[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...this.doenetSvData.numericalVertices[i]]);
-      this.polylineJXG.dataX[i] = this.doenetSvData.numericalVertices[i][0] - shiftX;
-      this.polylineJXG.dataY[i] = this.doenetSvData.numericalVertices[i][1] - shiftY;
-    }
-
-
-    let visible = !this.doenetSvData.hidden;
-
-    if (validCoords) {
-      this.polylineJXG.visProp["visible"] = visible;
-      this.polylineJXG.visPropCalc["visible"] = visible;
-      // this.polylineJXG.setAttribute({visible: visible})
-
-      for (let i = 0; i < this.doenetSvData.nPoints - 1; i++) {
-        this.pointsJXG[i].visProp["visible"] = false;
-        this.pointsJXG[i].visPropCalc["visible"] = false;
-      }
-      if (this.doenetSvData.nPoints > 0) {
-        if (this.doenetSvData.draggable) {
-          this.pointsJXG[this.doenetSvData.nPoints - 1].visProp["visible"] = visible;
-          this.pointsJXG[this.doenetSvData.nPoints - 1].visPropCalc["visible"] = visible;
+        if (!Number.isFinite(coords[1])) {
+          validCoords = false;
         }
       }
-    }
-    else {
-      this.polylineJXG.visProp["visible"] = false;
-      this.polylineJXG.visPropCalc["visible"] = false;
-      // this.polylineJXG.setAttribute({visible: false})
 
-      for (let i = 0; i < this.doenetSvData.nPoints; i++) {
-        this.pointsJXG[i].visProp["visible"] = false;
-        this.pointsJXG[i].visPropCalc["visible"] = false;
+      let varName = SVs.variable.toString();
+
+      // add or delete points as required and change data array size
+      if (SVs.nPoints > previousNPoints.current) {
+        for (let i = previousNPoints.current; i < SVs.nPoints; i++) {
+          let pointAttributes = Object.assign({}, jsxPointAttributes.current);
+          if (i === 0) {
+            pointAttributes.name = `(${varName}_0,0)`;
+          } else if (i % 2 === 1) {
+            pointAttributes.name = `(${varName}_${(i - 1) / 2}, ${varName}_${(i + 1) / 2})`;
+          } else {
+            pointAttributes.name = `(${varName}_${i / 2}, ${varName}_${i / 2})`;
+          }
+          if (i !== SVs.nPoints - 1) {
+            pointAttributes.visible = false;
+          }
+          pointsJXG.current.push(
+            board.create('point', [...SVs.numericalVertices[i]], pointAttributes)
+          );
+
+          pointsJXG.current[i].on('drag', x => dragHandler(i));
+          pointsJXG.current[i].on('up', x => upHandler(i));
+          pointsJXG.current[i].on('down', x => draggedPoint.current = null);
+        }
+      } else if (SVs.nPoints < previousNPoints.current) {
+        for (let i = SVs.nPoints; i < previousNPoints.current; i++) {
+          let pt = pointsJXG.current.pop();
+          pt.off('drag')
+          pt.off('up')
+          pt.off('down')
+          board.removeObject(pt);
+        }
+        polylineJXG.current.dataX.length = SVs.nPoints;
       }
-    }
 
-    if (this.componentName in sourceOfUpdate.sourceInformation) {
-      let vertexUpdated = sourceOfUpdate.sourceInformation[this.componentName].vertex;
+      previousNPoints.current = SVs.nPoints;
 
-      if (Number.isFinite(vertexUpdated)) {
-        this.props.board.updateInfobox(this.pointsJXG[vertexUpdated]);
+      let shiftX = polylineJXG.current.transformMat[1][0];
+      let shiftY = polylineJXG.current.transformMat[2][0];
+
+
+      for (let i = 0; i < SVs.nPoints; i++) {
+        pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalVertices[i]]);
+        polylineJXG.current.dataX[i] = SVs.numericalVertices[i][0] - shiftX;
+        polylineJXG.current.dataY[i] = SVs.numericalVertices[i][1] - shiftY;
       }
+
+
+      let visible = !SVs.hidden;
+
+      if (validCoords) {
+        polylineJXG.current.visProp["visible"] = visible;
+        polylineJXG.current.visPropCalc["visible"] = visible;
+        // polylineJXG.current.setAttribute({visible: visible})
+
+        for (let i = 0; i < SVs.nPoints - 1; i++) {
+          pointsJXG.current[i].visProp["visible"] = false;
+          pointsJXG.current[i].visPropCalc["visible"] = false;
+        }
+        if (SVs.nPoints > 0) {
+          if (SVs.draggable) {
+            pointsJXG.current[SVs.nPoints - 1].visProp["visible"] = visible;
+            pointsJXG.current[SVs.nPoints - 1].visPropCalc["visible"] = visible;
+          }
+        }
+      }
+      else {
+        polylineJXG.current.visProp["visible"] = false;
+        polylineJXG.current.visPropCalc["visible"] = false;
+        // polylineJXG.current.setAttribute({visible: false})
+
+        for (let i = 0; i < SVs.nPoints; i++) {
+          pointsJXG.current[i].visProp["visible"] = false;
+          pointsJXG.current[i].visPropCalc["visible"] = false;
+        }
+      }
+
+      if (sourceOfUpdate.sourceInformation &&
+        name in sourceOfUpdate.sourceInformation
+      ) {
+        let vertexUpdated = sourceOfUpdate.sourceInformation[name].vertex;
+
+        if (Number.isFinite(vertexUpdated)) {
+          board.updateInfobox(pointsJXG.current[vertexUpdated]);
+        }
+      }
+
+
+      polylineJXG.current.needsUpdate = true;
+      polylineJXG.current.update().updateVisibility();
+      for (let i = 0; i < SVs.nPoints; i++) {
+        pointsJXG.current[i].needsUpdate = true;
+        pointsJXG.current[i].update();
+      }
+      if (SVs.nPoints > 0) {
+        pointsJXG.current[SVs.nPoints - 1].setAttribute({ withlabel: true })
+        pointsJXG.current[SVs.nPoints - 1].label.needsUpdate = true;
+        pointsJXG.current[SVs.nPoints - 1].label.update();
+      }
+
+      board.updateRenderer();
     }
-
-
-
-    this.polylineJXG.needsUpdate = true;
-    this.polylineJXG.update().updateVisibility();
-    for (let i = 0; i < this.doenetSvData.nPoints; i++) {
-      this.pointsJXG[i].needsUpdate = true;
-      this.pointsJXG[i].update();
-    }
-    if (this.doenetSvData.nPoints > 0) {
-      this.pointsJXG[this.doenetSvData.nPoints - 1].setAttribute({ withlabel: true })
-      this.pointsJXG[this.doenetSvData.nPoints - 1].label.needsUpdate = true;
-      this.pointsJXG[this.doenetSvData.nPoints - 1].label.update();
-    }
-
-    this.props.board.updateRenderer();
 
   }
 
 
-  onDragHandler(i, transient) {
-    if (transient) {
-      this.draggedPoint = i;
-    } else if (this.draggedPoint !== i) {
-      return;
-    }
-
-    let pointCoords = {};
-    pointCoords[i] = [this.pointsJXG[i].X(), this.pointsJXG[i].Y()];
-    this.actions.movePolyline({
-      pointCoords,
-      transient,
-      skippable: transient,
-      sourceInformation: { vertex: i }
-    });
+  if (SVs.hidden) {
+    return null;
   }
 
+  // don't think we want to return anything if not in board
+  return <><a name={name} /></>
 
-  render() {
-
-    if (this.props.board) {
-      return <><a name={this.componentName} />{this.children}</>
-    }
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    // don't think we want to return anything if not in board
-    return <><a name={this.componentName} /></>
-  }
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

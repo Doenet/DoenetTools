@@ -23,7 +23,9 @@ export default class Markers extends BaseComponent {
 
     stateVariableDefinitions.markerType = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         textChildren: {
           dependencyType: "child",
@@ -43,15 +45,17 @@ export default class Markers extends BaseComponent {
         } else {
           markerType = "empty";
         }
-        return { newValues: { markerType } }
+        return { setValue: { markerType } }
       }
     }
 
     stateVariableDefinitions.markers = {
       public: true,
       isArray: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       entryPrefixes: ["item"],
-      hasVariableComponentType: true,
       returnDependencies: () => ({
         markerType: {
           dependencyType: "stateVariable",
@@ -82,8 +86,8 @@ export default class Markers extends BaseComponent {
         }
 
         return {
-          newValues: { markers },
-          setComponentType: { markers: componentType },
+          setValue: { markers },
+          setCreateComponentOfType: { markers: componentType },
         }
       }
     }

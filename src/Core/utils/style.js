@@ -1,22 +1,40 @@
 
 export let styleAttributes = {
   lineColor: { componentType: "text" },
+  lineColorWord: { componentType: "text" },
+  lineOpacity: { componentType: "number" },
   lineWidth: { componentType: "number" },
-  lineStyle: { componentType: "text" },
+  lineWidthWord: { componentType: "text" },
+  lineStyle: { componentType: "text" }, // solid, dashed, dotted
+  lineStyleWord: { componentType: "text" },
   markerColor: { componentType: "text" },
+  markerColorWord: { componentType: "text" },
+  // marker styles: cross, circle, square, plus, diamond,
+  // triangle (alias for triangleUp), triangleUp, triangleDown, triangleLeft, triangleRight
   markerStyle: { componentType: "text" },
+  markerStyleWord: { componentType: "text" },
   markerSize: { componentType: "number" },
   fillColor: { componentType: "text" },
+  fillColorWord: { componentType: "text" },
+  fillOpacity: { componentType: "number" },
 }
 
 let defaultStyle = {
-  lineColor: "blue",
+  lineColor: "#648FFF",
+  lineColorWord: "blue",
+  lineOpacity: 0.7,
   lineWidth: 4,
+  lineWidthWord: "thick",
   lineStyle: "solid",
-  markerColor: "blue",
+  lineStyleWord: "",
+  markerColor: "#648FFF",
+  markerColorWord: "blue",
   markerStyle: "circle",
+  markerStyleWord: "point",
   markerSize: 3,
   fillColor: "none",
+  fillColorWord: "none",
+  fillOpacity: 0.3,
 }
 
 
@@ -24,58 +42,106 @@ function returnDefaultStyleDefinitions() {
 
   return {
     1: {
-      lineColor: "blue",
+      lineColor: "#648FFF",
+      lineColorWord: "blue",
+      lineOpacity: 0.7,
       lineWidth: 4,
+      lineWidthWord: "thick",
       lineStyle: "solid",
-      markerColor: "blue",
+      lineStyleWord: "",
+      markerColor: "#648FFF",
+      markerColorWord: "blue",
       markerStyle: "circle",
+      markerStyleWord: "point",
       markerSize: 3,
       fillColor: "none",
+      fillColorWord: "none",
+      fillOpacity: 0.3,
     },
     2: {
-      lineColor: "green",
+      lineColor: "#D4042D",
+      lineColorWord: "red",
+      lineOpacity: 0.7,
       lineWidth: 2,
+      lineWidthWord: "",
       lineStyle: "solid",
-      markerColor: "green",
+      lineStyleWord: "",
+      markerColor: "#D4042D",
+      markerColorWord: "red",
       markerStyle: "square",
+      markerStyleWord: "square",
       markerSize: 4,
       fillColor: "none",
+      fillColorWord: "none",
+      fillOpacity: 0.3,
     },
     3: {
-      lineColor: "red",
+      lineColor: "#F19143",
+      lineColorWord: "orange",
+      lineOpacity: 0.7,
       lineWidth: 3,
+      lineWidthWord: "",
       lineStyle: "solid",
-      markerColor: "red",
+      lineStyleWord: "",
+      markerColor: "#F19143",
+      markerColorWord: "orange",
       markerStyle: "triangle",
+      markerStyleWord: "triangle",
       markerSize: 5,
       fillColor: "none",
+      fillColorWord: "none",
+      fillOpacity: 0.3,
     },
     4: {
-      lineColor: "purple",
+      lineColor: "#644CD6",
+      lineColorWord: "purple",
+      lineOpacity: 0.7,
       lineWidth: 2,
+      lineWidthWord: "",
       lineStyle: "solid",
-      markerColor: "purple",
+      lineStyleWord: "",
+      markerColor: "#644CD6",
+      markerColorWord: "purple",
       markerStyle: "diamond",
+      markerStyleWord: "diamond",
       markerSize: 4,
       fillColor: "none",
+      fillColorWord: "none",
+      fillOpacity: 0.3,
     },
     5: {
       lineColor: "black",
+      lineColorWord: "black",
+      lineOpacity: 0.7,
       lineWidth: 1,
+      lineWidthWord: "thin",
       lineStyle: "solid",
+      lineStyleWord: "",
       markerColor: "black",
+      markerColorWord: "black",
       markerStyle: "circle",
+      markerStyleWord: "point",
       markerSize: 2,
       fillColor: "none",
+      fillColorWord: "none",
+      fillOpacity: 0.3,
     },
     6: {
-      lineColor: "lightgray",
+      lineColor: "gray",
+      lineColorWord: "gray",
+      lineOpacity: 0.7,
       lineWidth: 1,
+      lineWidthWord: "thin",
       lineStyle: "dotted",
-      markerColor: "lightgray",
+      lineStyleWord: "dotted",
+      markerColor: "gray",
+      markerColorWord: "gray",
       markerStyle: "circle",
+      markerStyleWord: "point",
       markerSize: 2,
       fillColor: "none",
+      fillColorWord: "none",
+      fillOpacity: 0.3,
     }
   }
 }
@@ -88,11 +154,12 @@ export function returnStyleDefinitionStateVariables() {
     returnDependencies: () => ({
       setupChildren: {
         dependencyType: "child",
-        childGroups: ["setups"]
+        childGroups: ["setups"],
+        proceedIfAllChildrenNotMatched: true,
       }
     }),
     definition({ dependencyValues }) {
-      return { newValues: { setupChildren: dependencyValues.setupChildren } }
+      return { setValue: { setupChildren: dependencyValues.setupChildren } }
     }
   }
 
@@ -100,18 +167,14 @@ export function returnStyleDefinitionStateVariables() {
     stateVariablesDeterminingDependencies: ["setupChildren"],
     returnDependencies({ stateValues }) {
       let dependencies = {
-        styleDefinitionsChildren: {
-          dependencyType: "child",
-          childGroups: ["styleDefinitions"],
-          variableNames: ["value"]
-        },
         ancestorWithStyle: {
           dependencyType: "ancestor",
           variableNames: ["styleDefinitions"]
         },
-        styleDefinitionsAndSetupChildren: {
+        setupChildren: {
           dependencyType: "child",
-          childGroups: ["styleDefinitions", "setups"]
+          childGroups: ["setups"],
+          proceedIfAllChildrenNotMatched: true,
         }
       }
 
@@ -146,16 +209,9 @@ export function returnStyleDefinitionStateVariables() {
       }
 
 
-      let styleDefChildNum = 0;
-
       let styleDefinitionChildren = [];
-      for (let child of dependencyValues.styleDefinitionsAndSetupChildren) {
-        if (child.componentType === "setup") {
-          styleDefinitionChildren.push(...dependencyValues[`styleDefinitionsOf${child.componentName}`]);
-        } else {
-          styleDefinitionChildren.push(dependencyValues.styleDefinitionsChildren[styleDefChildNum]);
-          styleDefChildNum++;
-        }
+      for (let child of dependencyValues.setupChildren) {
+        styleDefinitionChildren.push(...dependencyValues[`styleDefinitionsOf${child.componentName}`]);
       }
 
 
@@ -167,11 +223,51 @@ export function returnStyleDefinitionStateVariables() {
           if (!styleDef) {
             styleDef = styleDefinitions[styleNumber] = Object.assign({}, defaultStyle);
           }
-          Object.assign(styleDef, newStyleDefs[styleNumber])
+
+          let theNewDef = Object.assign({}, newStyleDefs[styleNumber]);
+          if ("markerColor" in theNewDef && !("markerColorWord" in theNewDef)) {
+            theNewDef.markerColorWord = theNewDef.markerColor;
+          }
+          if ("markerStyle" in theNewDef && !("markerStyleWord" in theNewDef)) {
+            theNewDef.markerStyleWord = theNewDef.markerStyle;
+            if (theNewDef.markerStyleWord === "circle") {
+              theNewDef.markerStyleWord = "point";
+            } else if (theNewDef.markerStyleWord.slice(0, 8) === "triangle") {
+              theNewDef.markerStyleWord = "triangle";
+            }
+          }
+          if ("lineColor" in theNewDef && !("lineColorWord" in theNewDef)) {
+            theNewDef.lineColorWord = theNewDef.lineColor;
+          }
+          if ("fillColor" in theNewDef && !("fillColorWord" in theNewDef)) {
+            theNewDef.fillColorWord = theNewDef.fillColor;
+          }
+          if ("lineWidth" in theNewDef && !("lineWidthWord" in theNewDef)) {
+            if (theNewDef.lineWidth >= 4) {
+              theNewDef.lineWidthWord = "thick";
+            } else if (theNewDef.lineWidth <= 1) {
+              theNewDef.lineWidthWord = "thin";
+            } else {
+              theNewDef.lineWidthWord = "";
+            }
+          }
+          if ("lineStyle" in theNewDef && !("lineStyleWord" in theNewDef)) {
+            if (theNewDef.lineStyle === "dashed") {
+              theNewDef.lineStyleWord = "dashed";
+            } else if (theNewDef.lineStyle === "dotted") {
+              theNewDef.lineStyleWord = "dotted";
+            } else {
+              theNewDef.lineStyleWord = "";
+            }
+          }
+
+          Object.assign(styleDef, theNewDef);
+
+
         }
       }
 
-      return { newValues: { styleDefinitions } };
+      return { setValue: { styleDefinitions } };
 
     }
   }
@@ -208,7 +304,7 @@ export function returnSelectedStyleStateVariableDefinition() {
         if (selectedStyle === undefined) {
           selectedStyle = defaultStyle;
         }
-        return { newValues: { selectedStyle } };
+        return { setValue: { selectedStyle } };
       }
     }
   }

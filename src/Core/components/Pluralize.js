@@ -11,8 +11,8 @@ export default class Pluralize extends Text {
   static componentType = "pluralize";
   static rendererType = "text";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.pluralForm = {
       createComponentOfType: "text",
       createStateVariable: "pluralForm",
@@ -43,7 +43,9 @@ export default class Pluralize extends Text {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         valuePrePluralize: {
           dependencyType: "stateVariable",
@@ -66,7 +68,7 @@ export default class Pluralize extends Text {
         let allwords = text.values().toNumber().all().terms().json();
 
         if (allwords.length === 0) {
-          return { newValues: { value: dependencyValues.valuePrePluralize } }
+          return { setValue: { value: dependencyValues.valuePrePluralize } }
         }
 
         let makePlural;
@@ -83,20 +85,20 @@ export default class Pluralize extends Text {
           }
 
           if (!makePlural) {
-            return { newValues: { value: dependencyValues.valuePrePluralize } }
+            return { setValue: { value: dependencyValues.valuePrePluralize } }
           }
 
           // if have pluralForm, the one word should be turned into the pluralForm
           if (dependencyValues.pluralForm !== null) {
             return {
-              newValues: {
+              setValue: {
                 value: dependencyValues.pluralForm
               }
             }
           } else {
             // attempt to pluralize via nlp
             return {
-              newValues: {
+              setValue: {
                 value: text.nouns().toPlural().all().out('text')
               }
             }
@@ -147,7 +149,7 @@ export default class Pluralize extends Text {
         }
 
         if (makePlural === false) {
-          return { newValues: { value: dependencyValues.valuePrePluralize } }
+          return { setValue: { value: dependencyValues.valuePrePluralize } }
         }
 
         // not sure why have to create new text for this to work
@@ -171,7 +173,7 @@ export default class Pluralize extends Text {
           }
         }
         return {
-          newValues: {
+          setValue: {
             value: text2.out('text')
           }
         }
@@ -182,7 +184,9 @@ export default class Pluralize extends Text {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {
@@ -191,7 +195,7 @@ export default class Pluralize extends Text {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { text: dependencyValues.value }
+        setValue: { text: dependencyValues.value }
       })
     }
 

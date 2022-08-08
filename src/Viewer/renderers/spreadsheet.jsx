@@ -1,41 +1,63 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useEffect } from 'react';
+import useDoenetRender from './useDoenetRenderer';
 import { HotTable } from '@handsontable/react';
 import { HyperFormula } from 'hyperformula';
 import 'handsontable/dist/handsontable.full.css';
 import { sizeToCSS } from './utils/css';
+import { registerAllModules } from 'handsontable/registry';
+import VisibilitySensor from 'react-visibility-sensor-v2';
+
+registerAllModules();
 
 
-export default class SpreadsheetRenderer extends DoenetRenderer {
+export default React.memo(function SpreadsheetRenderer(props) {
+  let { name, SVs, actions, callAction } = useDoenetRender(props);
 
-  render() {
-    if (this.doenetSvData.hidden) {
-      return null;
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
     }
+  }, [])
 
-
-    return <div id={this.componentName}>
-      <a name={this.componentName} />
+  if (SVs.hidden) {
+    return null;
+  }
+  
+  return (
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+    <div id={name} style={{ margin: "12px 0" }} >
+      <a name={name} />
       <HotTable
+        // style={{ borderRadius:"var(--mainBorderRadius)", border:"var(--mainBorder)" }}
         licenseKey='non-commercial-and-evaluation'
-        data={this.doenetSvData.cells.map(x => [...x])}
-        colHeaders={this.doenetSvData.columnHeaders}
-        rowHeaders={this.doenetSvData.rowHeaders}
-        width={sizeToCSS(this.doenetSvData.width)}
-        height={sizeToCSS(this.doenetSvData.height)}
+        data={SVs.cells.map(x => [...x])}
+        colHeaders={SVs.columnHeaders}
+        rowHeaders={SVs.rowHeaders}
+        width={sizeToCSS(SVs.width)}
+        height={sizeToCSS(SVs.height)}
         // beforeChange={this.actions.onChange} 
-        afterChange={(changes, source) => this.actions.onChange({ changes, source })}
+        afterChange={(changes, source) => callAction({action:actions.onChange, args:{ changes, source }})}
         formulas={{
           engine: HyperFormula
         }}
-        fixedRowsTop={this.doenetSvData.fixedRowsTop}
-        fixedColumnsLeft={this.doenetSvData.fixedColumnsLeft}
+        fixedRowsTop={SVs.fixedRowsTop}
+        fixedColumnsLeft={SVs.fixedColumnsLeft}
         hiddenColumns={{
-          columns: this.doenetSvData.hiddenColumns.map(x => x - 1),
+          columns: SVs.hiddenColumns.map(x => x - 1),
           indicators: false
         }}
         hiddenRows={{
-          rows: this.doenetSvData.hiddenRows.map(x => x - 1),
+          rows: SVs.hiddenRows.map(x => x - 1),
           indicators: false
         }}
         // contextMenu={
@@ -51,10 +73,9 @@ export default class SpreadsheetRenderer extends DoenetRenderer {
         //   }
         // }
         stretchH="all"
-      /></div>
+      />
+    </div>
+    </VisibilitySensor>
+  )
+})
 
-
-  }
-
-
-}

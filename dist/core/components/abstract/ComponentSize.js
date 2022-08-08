@@ -37,9 +37,9 @@ export class ComponentSize extends InlineComponent {
 
       // if last child is a string, extract unit if it exists
       let lastChild = matchedChildren[matchedChildren.length - 1];
-      if (lastChild.componentType === "string") {
+      if (typeof lastChild === "string") {
         let lastWordRe = /([a-zA-z]+|%)$/;
-        let lastString = lastChild.state.value.trim();
+        let lastString = lastChild.trim();
         let match = lastString.match(lastWordRe);
 
         if (match) {
@@ -51,10 +51,7 @@ export class ComponentSize extends InlineComponent {
 
             let childrenForNumber = matchedChildren.slice(0, matchedChildren.length - 1);
             if (rest.length > 0) {
-              childrenForNumber.push({
-                componentType: "string",
-                state: { value: rest }
-              })
+              childrenForNumber.push(rest)
             }
 
 
@@ -62,10 +59,8 @@ export class ComponentSize extends InlineComponent {
               componentType: "number",
               children: childrenForNumber
             },
-            {
-              componentType: "string",
-              state: { value: unit }
-            }]
+              unit
+            ]
 
             return {
               success: true,
@@ -122,7 +117,10 @@ export class ComponentSize extends InlineComponent {
 
     stateVariableDefinitions.componentSize = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
+      hasEssential: true,
       returnDependencies: () => ({
         componentSizeChild: {
           dependencyType: "child",
@@ -157,7 +155,6 @@ export class ComponentSize extends InlineComponent {
               return {
                 useEssentialOrDefaultValue: {
                   componentSize: {
-                    variablesToCheck: "componentSize",
                     defaultValue: {
                       size: 100,
                       isAbsolute: defaultIsAbsolute
@@ -169,7 +166,7 @@ export class ComponentSize extends InlineComponent {
               //only componentSize child
 
               return {
-                newValues: {
+                setValue: {
                   componentSize: dependencyValues.componentSizeChild[0].stateValues.componentSize
                 }
               }
@@ -178,7 +175,7 @@ export class ComponentSize extends InlineComponent {
             //only number child
 
             return {
-              newValues: {
+              setValue: {
                 componentSize: {
                   size: dependencyValues.numberChild[0].stateValues.value,
                   isAbsolute: true,
@@ -195,7 +192,7 @@ export class ComponentSize extends InlineComponent {
             //string and number child
 
             originalSize = dependencyValues.numberChild[0].stateValues.value;
-            originalUnit = dependencyValues.stringChild[0].stateValues.value.trim();
+            originalUnit = dependencyValues.stringChild[0].trim();
           } else {
             //only string child
 
@@ -208,10 +205,10 @@ export class ComponentSize extends InlineComponent {
             // <width>100pixel</width>
             // <width>50%</width>
 
-            let result = dependencyValues.stringChild[0].stateValues.value.trim().match(/^(-?[\d.]+)\s*(.*)$/);
+            let result = dependencyValues.stringChild[0].trim().match(/^(-?[\d.]+)\s*(.*)$/);
             if (result === null) {
               // console.warn(componentType + " must begin with a number.");
-              return { newValues: { componentSize: null } };
+              return { setValue: { componentSize: null } };
             }
             originalSize = result[1];
             originalUnit = result[2].trim();
@@ -220,7 +217,7 @@ export class ComponentSize extends InlineComponent {
           originalSize = Number(originalSize);
           if (!Number.isFinite(originalSize)) {
             // console.warn(componentType + " must have a number");
-            return { newValues: { componentSize: null } };
+            return { setValue: { componentSize: null } };
           }
 
           let isAbsolute = !(originalUnit === '%' || originalUnit === 'em');
@@ -238,7 +235,7 @@ export class ComponentSize extends InlineComponent {
           // console.log(`value: ${value}, isAbsolute: ${isAbsolute}`);
 
           return {
-            newValues: {
+            setValue: {
               componentSize: {
                 size,
                 isAbsolute
@@ -249,7 +246,7 @@ export class ComponentSize extends InlineComponent {
         }
 
       },
-      inverseDefinition({ desiredStateVariableValues, dependencyValues, stateValues }) {
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (dependencyValues.stringChild.length === 0) {
           if (dependencyValues.numberChild.length === 0) {
             if (dependencyValues.componentSizeChild.length === 0) {
@@ -257,7 +254,7 @@ export class ComponentSize extends InlineComponent {
               return {
                 success: true,
                 instructions: [{
-                  setStateVariable: "componentSize",
+                  setEssentialValue: "componentSize",
                   value: desiredStateVariableValues.componentSize
                 }]
               }
@@ -302,7 +299,7 @@ export class ComponentSize extends InlineComponent {
             // (since the number could be defined in this context)
 
 
-            let originalUnit = dependencyValues.stringChild[0].stateValues.value.trim();
+            let originalUnit = dependencyValues.stringChild[0].trim();
             let originalIsAbsolute = !(originalUnit === '%' || originalUnit === 'em');
 
             if (desiredStateVariableValues.componentSize.isAbsolute !== originalIsAbsolute) {
@@ -358,7 +355,9 @@ export class ComponentSize extends InlineComponent {
 
     stateVariableDefinitions.number = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         componentSize: {
           dependencyType: "stateVariable",
@@ -372,7 +371,7 @@ export class ComponentSize extends InlineComponent {
           number = dependencyValues.componentSize.size;
         }
 
-        return { newValues: { number } }
+        return { setValue: { number } }
       },
       inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
         if (!dependencyValues.componentSize) {
@@ -401,7 +400,9 @@ export class ComponentSize extends InlineComponent {
 
     stateVariableDefinitions.isAbsolute = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         componentSize: {
           dependencyType: "stateVariable",
@@ -415,7 +416,7 @@ export class ComponentSize extends InlineComponent {
           isAbsolute = dependencyValues.componentSize.isAbsolute;
         }
 
-        return { newValues: { isAbsolute } }
+        return { setValue: { isAbsolute } }
       },
     }
 
@@ -440,7 +441,7 @@ export class ComponentSize extends InlineComponent {
         }
 
         return {
-          newValues: { text }
+          setValue: { text }
         }
       }
     }
@@ -483,8 +484,8 @@ export class ComponentSizeList extends BaseComponent {
       }
 
       for (let child of matchedChildren) {
-        if (child.componentType === "string") {
-          let strParts = child.state.value.split(/\s+/);
+        if (typeof child === "string") {
+          let strParts = child.split(/\s+/);
 
           if (strParts[0].length === 0) {
             // string begins with a space
@@ -499,10 +500,7 @@ export class ComponentSizeList extends BaseComponent {
 
           for (let [i, s] of strParts.entries()) {
             if (s.length > 0) {
-              piece.push({
-                componentType: "string",
-                state: { value: s }
-              });
+              piece.push(s);
               if (i < strParts.length - 1) {
                 // if not last part, it means there was a space
                 // after this part
@@ -561,12 +559,14 @@ export class ComponentSizeList extends BaseComponent {
     // so that can't have a list with partially hidden components
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { overrideChildHide: true } })
+      definition: () => ({ setValue: { overrideChildHide: true } })
     }
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
@@ -607,7 +607,7 @@ export class ComponentSizeList extends BaseComponent {
         }
 
         return {
-          newValues: { nComponents, childIndexByArrayKey },
+          setValue: { nComponents, childIndexByArrayKey },
           checkForActualChange: { nComponents: true }
         }
       }
@@ -615,7 +615,9 @@ export class ComponentSizeList extends BaseComponent {
 
     stateVariableDefinitions.componentSizes = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       isArray: true,
       entryPrefixes: ["componentSize"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
@@ -682,7 +684,7 @@ export class ComponentSizeList extends BaseComponent {
 
         }
 
-        return { newValues: { componentSizes } }
+        return { setValue: { componentSizes } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, globalDependencyValues,

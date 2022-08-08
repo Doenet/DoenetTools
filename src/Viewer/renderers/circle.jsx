@@ -1,175 +1,155 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useContext, useEffect, useRef } from 'react';
+import useDoenetRender from './useDoenetRenderer';
+import { BoardContext } from './graph';
 
-export default class Circle extends DoenetRenderer {
-  constructor(props) {
-    super(props)
+export default React.memo(function Circle(props) {
+  let { name, SVs, actions, callAction } = useDoenetRender(props);
 
-    if (props.board) {
-      this.createGraphicalObject();
+  Circle.ignoreActionsWithoutCore = true;
 
-      this.doenetPropsForChildren = { board: this.props.board };
-      this.initializeChildren();
+  const board = useContext(BoardContext);
+
+  let circleJXG = useRef(null)
+
+  let dragged = useRef(false);
+  let pointerAtDown = useRef(false);
+  let centerAtDown = useRef(false);
+  let radiusAtDown = useRef(false);
+  let throughAnglesAtDown = useRef(false);
+  let previousWithLabel = useRef(false);
+  let centerCoords = useRef(null);
+
+  let lastCenterFromCore = useRef(null);
+  let throughAnglesFromCore = useRef(null);
+
+  lastCenterFromCore.current = SVs.numericalCenter;
+  throughAnglesFromCore.current = SVs.throughAngles;
+
+  useEffect(() => {
+
+    //On unmount
+    return () => {
+      // if point is defined
+      if (circleJXG.current) {
+        deleteCircleJXG();
+      }
+
     }
-  }
+  }, [])
 
-  static initializeChildrenOnConstruction = false;
+  function createCircleJXG() {
 
-  createGraphicalObject() {
-
-    if (!(Number.isFinite(this.doenetSvData.numericalCenter[0])
-      && Number.isFinite(this.doenetSvData.numericalCenter[1])
-      && this.doenetSvData.numericalRadius > 0)
+    if (!(Number.isFinite(SVs.numericalCenter[0])
+      && Number.isFinite(SVs.numericalCenter[1])
+      && SVs.numericalRadius > 0)
     ) {
-      return;
+      return null;
     }
+
+    let fixed = !SVs.draggable || SVs.fixed;
 
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
-      name: this.doenetSvData.label,
-      visible: !this.doenetSvData.hidden,
-      withLabel: this.doenetSvData.showLabel && this.doenetSvData.label !== "",
-      fixed: !this.doenetSvData.draggable || this.doenetSvData.fixed,
-      layer: 10 * this.doenetSvData.layer + 5,
-      strokeColor: this.doenetSvData.selectedStyle.lineColor,
-      highlightStrokeColor: this.doenetSvData.selectedStyle.lineColor,
-      strokeWidth: this.doenetSvData.selectedStyle.lineWidth,
-      dash: styleToDash(this.doenetSvData.selectedStyle.lineStyle),
+      name: SVs.label,
+      visible: !SVs.hidden,
+      withLabel: SVs.showLabel && SVs.label !== "",
+      fixed,
+      layer: 10 * SVs.layer + 5,
+      strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
+      highlightStrokeColor: SVs.selectedStyle.lineColor,
+      strokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
+      dash: styleToDash(SVs.selectedStyle.lineStyle),
+      fillColor: SVs.selectedStyle.fillColor,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
+      highlightFillColor: SVs.selectedStyle.fillColor,
+      highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
+      highlight: !fixed,
     };
 
-    if (!this.doenetSvData.draggable || this.doenetSvData.fixed) {
-      jsxCircleAttributes.highlightStrokeWidth = this.doenetSvData.selectedStyle.lineWidth;
+
+    if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
+      jsxCircleAttributes.hasInnerPoints = true;
     }
 
-    this.circleJXG = this.props.board.create('circle',
-      [[...this.doenetSvData.numericalCenter], this.doenetSvData.numericalRadius],
+    jsxCircleAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxCircleAttributes.label.useMathJax = true
+    }
+
+    if (SVs.showLabel && SVs.label !== "") {
+      if (SVs.applyStyleToLabel) {
+        jsxCircleAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      } else {
+        jsxCircleAttributes.label.strokeColor = "#000000";
+      }
+    }
+
+    let newCircleJXG = board.create('circle',
+      [[...SVs.numericalCenter], SVs.numericalRadius],
       jsxCircleAttributes
     );
 
 
-    this.circleJXG.on('drag', function (e) {
-      this.dragged = true;
-      this.onDragHandler(e);
-    }.bind(this));
-
-    this.circleJXG.on('up', function (e) {
-      if(this.dragged) {
-        this.actions.finalizeCirclePosition();
+    newCircleJXG.on('drag', function (e) {
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+        dragged.current = true;
       }
-    }.bind(this));
 
-    this.circleJXG.on('down', function (e) {
-      this.dragged = false;
-      this.pointerAtDown = [e.x, e.y];
-      this.centerAtDown = [...this.circleJXG.center.coords.scrCoords];
-      this.radiusAtDown = this.circleJXG.radius;
-      this.throughAnglesAtDown = [...this.doenetSvData.throughAngles];
-    }.bind(this));
+      centerCoords.current = calculateCenterPosition(e);
+      callAction({
+        action: actions.moveCircle,
+        args: {
+          center: centerCoords.current,
+          radius: radiusAtDown.current,
+          throughAngles: throughAnglesAtDown.current,
+          transient: true,
+          skippable: true,
+        }
+      })
 
-    this.previousWithLabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
+      newCircleJXG.center.coords.setCoordinates(JXG.COORDS_BY_USER, [...lastCenterFromCore.current]);
 
-    return this.circleJXG;
+    });
 
-  }
+    newCircleJXG.on('up', function (e) {
+      if (dragged.current) {
+        callAction({
+          action: actions.moveCircle,
+          args: {
+            center: centerCoords.current,
+            radius: radiusAtDown.current,
+            throughAngles: throughAnglesAtDown.current,
+          }
+        })
+      } else {
+        callAction({
+          action: actions.circleClicked
+        });
+      }
+    });
 
-  deleteGraphicalObject() {
-    this.circleJXG.off('drag');
-    this.circleJXG.off('up');
-    this.circleJXG.off('down');
+    newCircleJXG.on('down', function (e) {
+      dragged.current = false;
+      pointerAtDown.current = [e.x, e.y];
+      centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
+      radiusAtDown.current = newCircleJXG.radius;
+      throughAnglesAtDown.current = [...throughAnglesFromCore.current];
+    });
 
-    this.props.board.removeObject(this.circleJXG);
-    delete this.circleJXG;
-  }
+    previousWithLabel.current = SVs.showLabel && SVs.label !== "";
 
-  componentWillUnmount() {
-    if (this.circleJXG) {
-      this.deleteGraphicalObject();
-    }
-  }
-
-
-  update({ sourceOfUpdate }) {
-
-    if (!this.props.board) {
-      this.forceUpdate();
-      return;
-    }
-
-    if (this.circleJXG === undefined) {
-      return this.createGraphicalObject();
-    }
-
-
-    if (!(Number.isFinite(this.doenetSvData.numericalCenter[0])
-      && Number.isFinite(this.doenetSvData.numericalCenter[1])
-      && this.doenetSvData.numericalRadius > 0)
-    ) {
-      // can't render circle
-      return this.deleteGraphicalObject();
-
-    }
-
-
-    if (this.props.board.updateQuality === this.props.board.BOARD_QUALITY_LOW) {
-      this.props.board.itemsRenderedLowQuality[this.componentName] = this.circleJXG;
-    }
-
-
-
-    let validCoords = this.doenetSvData.numericalCenter.every(x => Number.isFinite(x));
-
-
-
-    this.circleJXG.center.coords.setCoordinates(JXG.COORDS_BY_USER, [...this.doenetSvData.numericalCenter]);
-    this.circleJXG.setRadius(this.doenetSvData.numericalRadius);
-
-
-    let visible = !this.doenetSvData.hidden;
-
-    if (validCoords) {
-      this.circleJXG.visProp["visible"] = visible;
-      this.circleJXG.visPropCalc["visible"] = visible;
-      // this.circleJXG.setAttribute({visible: visible})
-    }
-    else {
-      this.circleJXG.visProp["visible"] = false;
-      this.circleJXG.visPropCalc["visible"] = false;
-      // this.circleJXG.setAttribute({visible: false})
-    }
-
-    this.circleJXG.name = this.doenetSvData.label;
-
-    let withlabel = this.doenetSvData.showLabel && this.doenetSvData.label !== "";
-    if (withlabel != this.previousWithLabel) {
-      this.circleJXG.setAttribute({ withlabel: withlabel });
-      this.previousWithLabel = withlabel;
-    }
-
-    this.circleJXG.needsUpdate = true;
-    this.circleJXG.update()
-    if (this.circleJXG.hasLabel) {
-      this.circleJXG.label.needsUpdate = true;
-      this.circleJXG.label.update();
-    }
-    this.props.board.updateRenderer();
+    return newCircleJXG;
 
   }
 
-
-  onDragHandler(e) {
-
-    if (this.dragged) {
-      let centerCoords = this.calculateCenterPosition(e);
-      this.actions.moveCircle({
-        center: centerCoords,
-        radius: this.radiusAtDown,
-        throughAngles: this.throughAnglesAtDown,
-        transient: true
-      });
-    }
-  }
-
-  calculateCenterPosition(e) {
+  function calculateCenterPosition(e) {
 
     // the reason we calculate point position with this algorithm,
     // rather than using .X() and .Y() directly
@@ -179,32 +159,142 @@ export default class Circle extends DoenetRenderer {
     // .setCoordinates functions called in update()
     // so will get modified to go back to the attracting object
 
-    var o = this.props.board.origin.scrCoords;
+    var o = board.origin.scrCoords;
 
-    let calculatedX = (this.centerAtDown[1] + e.x - this.pointerAtDown[0]
-      - o[1]) / this.props.board.unitX;
+    let calculatedX = (centerAtDown.current[1] + e.x - pointerAtDown.current[0]
+      - o[1]) / board.unitX;
     let calculatedY = (o[2] -
-      (this.centerAtDown[2] + e.y - this.pointerAtDown[1]))
-      / this.props.board.unitY;
+      (centerAtDown.current[2] + e.y - pointerAtDown.current[1]))
+      / board.unitY;
     return [calculatedX, calculatedY];
   }
 
-
-  render() {
-
-
-    if (this.props.board) {
-      return <><a name={this.componentName} />{this.children}</>
-    }
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    // don't think we want to return anything if not in board
-    return <><a name={this.componentName} /></>
+  function deleteCircleJXG() {
+    circleJXG.current.off('drag');
+    circleJXG.current.off('down');
+    circleJXG.current.off('up');
+    board.removeObject(circleJXG.current);
+    circleJXG.current = null;
   }
-}
+
+
+  if (board) {
+
+    if (!circleJXG.current) {
+      // attempt to create circleJXG.current if it doesn't exist yet
+
+      circleJXG.current = createCircleJXG();
+
+
+    } else if (!(Number.isFinite(SVs.numericalCenter[0])
+      && Number.isFinite(SVs.numericalCenter[1])
+      && SVs.numericalRadius > 0)
+    ) {
+
+      // can't render circle
+
+      deleteCircleJXG();
+    } else {
+
+
+      if (board.updateQuality === board.BOARD_QUALITY_LOW) {
+        board.itemsRenderedLowQuality[name] = circleJXG.current;
+      }
+
+
+      let validCoords = SVs.numericalCenter.every(x => Number.isFinite(x));
+
+
+      circleJXG.current.center.coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalCenter]);
+      circleJXG.current.setRadius(SVs.numericalRadius);
+
+
+      let visible = !SVs.hidden;
+
+      if (validCoords) {
+        circleJXG.current.visProp["visible"] = visible;
+        circleJXG.current.visPropCalc["visible"] = visible;
+        // circleJXG.current.setAttribute({visible: visible})
+      }
+      else {
+        circleJXG.current.visProp["visible"] = false;
+        circleJXG.current.visPropCalc["visible"] = false;
+        // circleJXG.current.setAttribute({visible: false})
+      }
+
+      let fixed = !SVs.draggable || SVs.fixed;
+
+
+      circleJXG.current.visProp.fixed = fixed;
+      circleJXG.current.visProp.highlight = !fixed;
+
+      let layer = 10 * SVs.layer + 5;
+      let layerChanged = circleJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        circleJXG.current.setAttribute({ layer });
+      }
+
+      if (circleJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        circleJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        circleJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (circleJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        circleJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        circleJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
+      if (circleJXG.current.visProp.dash !== newDash) {
+        circleJXG.current.visProp.dash = newDash;
+      }
+      if (circleJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        circleJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+        circleJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
+      }
+
+      if (circleJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
+        circleJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.highlightfillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
+      }
+      if (circleJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        circleJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+        circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
+      }
+
+      circleJXG.current.name = SVs.label;
+
+      let withlabel = SVs.showLabel && SVs.label !== "";
+      if (withlabel != previousWithLabel.current) {
+        circleJXG.current.setAttribute({ withlabel: withlabel });
+        previousWithLabel.current = withlabel;
+      }
+
+      circleJXG.current.needsUpdate = true;
+      circleJXG.current.update();
+
+      if (circleJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          circleJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          circleJXG.current.label.visProp.strokecolor = "#000000";
+        }
+        circleJXG.current.label.needsUpdate = true;
+        circleJXG.current.label.update();
+      }
+      board.updateRenderer();
+    }
+  }
+
+  if (SVs.hidden) {
+    return null;
+  }
+
+  return <a name={name} />
+
+})
+
+
 
 function styleToDash(style) {
   if (style === "solid") {

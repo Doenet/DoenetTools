@@ -1,39 +1,59 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useEffect } from 'react';
+import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
-export default class Table extends DoenetRenderer {
+export default React.memo(function Tabular(props) {
+  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
 
-  render() {
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
 
-    if (this.doenetSvData.hidden) {
-      return null;
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
     }
+  }, [])
 
+  if (SVs.hidden) {
+    return null;
+  }
 
-    // let rows = this.children.map((x, i) => <tr key={"row" + i}>x</tr>)
-
-    const tableStyle = {
-      width: sizeToCSS(this.doenetSvData.width),
-      height: sizeToCSS(this.doenetSvData.height),
-      borderCollapse: "collapse",
-      borderColor: "black"
-    }
-    if (this.doenetSvData.top !== "none") {
-      tableStyle.borderTopStyle = "solid";
-      if (this.doenetSvData.top === "minor") {
-        tableStyle.borderTopWidth = "thin";
-      } else if (this.doenetSvData.top === "medium") {
-        tableStyle.borderTopWidth = "medium";
-      } else {
-        tableStyle.borderTopWidth = "thick";
-      }
-    }
-
-    return <><a name={this.componentName} /><table id={this.componentName} style={tableStyle}>
-      <tbody>
-      {this.children}
-      </tbody>
-    </table></>
+const tableStyle = {
+  width: sizeToCSS(SVs.width),
+  height: sizeToCSS(SVs.height),
+  borderCollapse: "collapse",
+  borderColor: "var(--canvastext)", 
+  borderRadius: "var(--mainBorderRadius)",
+  tableLayout: "fixed"
+}
+if (SVs.top !== "none") {
+  tableStyle.borderTopStyle = "solid";
+  if (SVs.top === "minor") {
+    tableStyle.borderTopWidth = "thin";
+  } else if (SVs.top === "medium") {
+    tableStyle.borderTopWidth = "medium";
+  } else {
+    tableStyle.borderTopWidth = "thick";
   }
 }
+
+return (
+  <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+  <div style={{ margin: "12px 0" }} >
+    <a name={name} />
+    <table id={name} style={tableStyle}>
+      <tbody>{children}</tbody>
+    </table>
+  </div>
+  </VisibilitySensor>
+  )
+})
+

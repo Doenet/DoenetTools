@@ -21,7 +21,9 @@ export default class IntComma extends Text {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: this.componentType,
+      shadowingInstructions: {
+        createComponentOfType: this.componentType,
+      },
       returnDependencies: () => ({
         originalValue: {
           dependencyType: "stateVariable",
@@ -38,13 +40,15 @@ export default class IntComma extends Text {
           matchObj = value.match(startAtLeastFourNumRegex);
         }
 
-        return { newValues: { value } }
+        return { setValue: { value } }
       }
     }
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {
@@ -53,7 +57,7 @@ export default class IntComma extends Text {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { text: dependencyValues.value }
+        setValue: { text: dependencyValues.value }
       })
     }
 

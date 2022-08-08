@@ -8,7 +8,7 @@ export class Section extends SectioningComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: 1 }
+      setValue: { level: 1 }
     });
 
     return stateVariableDefinitions;
@@ -25,7 +25,7 @@ export class Subsection extends SectioningComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: 2 }
+      setValue: { level: 2 }
     });
 
     return stateVariableDefinitions;
@@ -42,7 +42,7 @@ export class Subsubsection extends SectioningComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: 3 }
+      setValue: { level: 3 }
     });
 
     return stateVariableDefinitions;
@@ -59,7 +59,7 @@ export class Paragraphs extends SectioningComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: 4 }
+      setValue: { level: 4 }
     });
 
     return stateVariableDefinitions;
@@ -71,8 +71,8 @@ export class Aside extends SectioningComponent {
   static componentType = "aside";
   static rendererType = "section";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.collapsible = {
       createComponentOfType: "boolean",
@@ -106,17 +106,16 @@ export class Aside extends SectioningComponent {
       useEssentialOrDefaultValue: {
         open: {
           defaultValue: dependencyValues.startOpen,
-          variablesToCheck: ["open"]
         }
       }
     })
 
     stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: 3 }
+      setValue: { level: 3 }
     });
 
     stateVariableDefinitions.containerTag.definition = () => ({
-      newValues: { containerTag: "aside" }
+      setValue: { containerTag: "aside" }
     });
 
     return stateVariableDefinitions;
@@ -128,16 +127,9 @@ export class Problem extends SectioningComponent {
   static componentType = "problem";
   static rendererType = "section";
 
-  static setUpVariantUnlessAttributePrimitive = "suppressAutomaticVariants";
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.aggregateScores.defaultValue = true;
-    attributes.suppressAutomaticVariants = {
-      createPrimitiveOfType: "boolean",
-      createStateVariable: "suppressAutomaticVariants",
-      defaultValue: false,
-    }
     return attributes;
   }
 
@@ -146,14 +138,12 @@ export class Problem extends SectioningComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    delete stateVariableDefinitions.suppressAutomaticVariants;
-
     stateVariableDefinitions.sectionName.definition = () => ({
-      newValues: { sectionName: "Problem" }
+      setValue: { sectionName: "Problem" }
     });
 
     stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: 3 }
+      setValue: { level: 3 }
     });
 
     return stateVariableDefinitions;
@@ -170,7 +160,7 @@ export class Exercise extends Problem {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.sectionName.definition = () => ({
-      newValues: { sectionName: "Exercise" }
+      setValue: { sectionName: "Exercise" }
     });
 
     return stateVariableDefinitions;
@@ -189,11 +179,11 @@ export class Example extends SectioningComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.sectionName.definition = () => ({
-      newValues: { sectionName: "Example" }
+      setValue: { sectionName: "Example" }
     });
 
     stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: 3 }
+      setValue: { level: 3 }
     });
 
     return stateVariableDefinitions;
@@ -212,11 +202,11 @@ export class StandinForFutureLayoutTag extends SectioningComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
     stateVariableDefinitions.level.definition = () => ({
-      newValues: { level: 3 }
+      setValue: { level: 3 }
     });
 
     stateVariableDefinitions.containerTag.definition = () => ({
-      newValues: { containerTag: "aside" }
+      setValue: { containerTag: "aside" }
     });
 
     return stateVariableDefinitions

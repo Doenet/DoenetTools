@@ -12,7 +12,7 @@ $userId = $jwtArray['userId'];
 
 $_POST = json_decode(file_get_contents("php://input"),true);
 $doenetId = mysqli_real_escape_string($conn,$_POST["doenetId"]);
-$contentId = mysqli_real_escape_string($conn,$_POST["contentId"]);
+$cid = mysqli_real_escape_string($conn,$_POST["cid"]);
 
 $success = TRUE;
 $message = "";
@@ -20,19 +20,19 @@ $message = "";
 if ($doenetId == ""){
   $success = FALSE;
   $message = 'Internal Error: missing doenetId';
-}elseif ($contentId == ""){
+}elseif ($cid == ""){
   $success = FALSE;
-  $message = 'Internal Error: missing contentId';
+  $message = 'Internal Error: missing cid';
 }
 
 if ($success){
 
   // find latest attempts of doenetId
   // and mark user_assigment as stale 
-  // if the latest attempt is not contentId
+  // if the latest attempt is not cid
   $sql = "UPDATE user_assignment a
   INNER JOIN (
-    SELECT doenetId, contentId, userId, attemptNumber
+    SELECT doenetId, cid, userId, attemptNumber
     FROM user_assignment_attempt
   ) b ON a.doenetId=b.doenetId and a.userId=b.userId
   INNER JOIN (
@@ -41,7 +41,7 @@ if ($success){
     GROUP BY doenetId, userId
   ) c ON b.doenetId=c.doenetId and b.userId=c.userId and b.attemptNumber = c.maxAttempt
   SET a.stale = 1
-  WHERE b.doenetId='$doenetId' and b.contentId != '$contentId'
+  WHERE b.doenetId='$doenetId' and b.cid != '$cid'
   ";
 
   $result = $conn->query($sql);

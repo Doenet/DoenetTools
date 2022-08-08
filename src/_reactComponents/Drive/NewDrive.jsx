@@ -27,6 +27,7 @@ import {
   // faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import styled, { keyframes } from 'styled-components';
 import { Link } from 'react-router-dom';
 import {
   atom,
@@ -71,17 +72,25 @@ const loadAssignmentAtomFamily = atomFamily({
       });
       let assignment = { ...data.assignment };
 
-      if (assignment.assignedDate){
-        assignment.assignedDate = UTCDateStringToDate(assignment.assignedDate).toLocaleString();
+      if (assignment.assignedDate) {
+        assignment.assignedDate = UTCDateStringToDate(
+          assignment.assignedDate,
+        ).toLocaleString();
       }
-      if (assignment.dueDate){
-        assignment.dueDate = UTCDateStringToDate(assignment.dueDate).toLocaleString();
+      if (assignment.dueDate) {
+        assignment.dueDate = UTCDateStringToDate(
+          assignment.dueDate,
+        ).toLocaleString();
       }
-      if (assignment.pinnedAfterDate){
-        assignment.pinnedAfterDate = UTCDateStringToDate(assignment.pinnedAfterDate).toLocaleString();
+      if (assignment.pinnedAfterDate) {
+        assignment.pinnedAfterDate = UTCDateStringToDate(
+          assignment.pinnedAfterDate,
+        ).toLocaleString();
       }
-      if (assignment.pinnedUntilDate){
-        assignment.pinnedUntilDate = UTCDateStringToDate(assignment.pinnedUntilDate).toLocaleString();
+      if (assignment.pinnedUntilDate) {
+        assignment.pinnedUntilDate = UTCDateStringToDate(
+          assignment.pinnedUntilDate,
+        ).toLocaleString();
       }
 
       return assignment;
@@ -316,12 +325,60 @@ export const dragStateAtom = atom({
 
 // const dragShadowId = 'dragShadow';
 
+const movingGradient = keyframes `
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+
+const Table = styled.table `
+  width: 850px;
+  border-radius: 5px;
+`;
+const Tr = styled.tr `
+  border-bottom: 2px solid black;
+`;
+const Td = styled.td `
+  height: 40px;
+  vertical-align: middle;
+  padding: 8px;
+
+  &.Td2 {
+    width: 50px;
+  }
+
+  &.Td3 {
+    width: 400px;
+  }
+
+`;
+const TBody = styled.tbody ``;
+// const TdSpan = styled.span `
+//   display: block;
+// `;
+const Td2Span = styled.span `
+  background-color: var(--mainGray);
+  width: 70px;
+  height: 16px;
+  border-radius: 5px;
+`;
+const Td3Span = styled.span `
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, var(--mainGray) 20%, var(--mainGray) 50%, var(--mainGray) 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+`;
+
 export default function Drive(props) {
   // console.log("=== Drive")
 
   const isNav = false;
   const [driveId, parentFolderId, itemId, type] = props.path.split(':');
-  const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
+  const drivesAvailable = useRecoilValueLoadable(fetchCoursesQuery);
   const { driveIdsAndLabels } = drivesAvailable.getValue();
   const [numColumns, setNumColumns] = useState(1);
   const setDriveInstanceId = useSetRecoilState(
@@ -383,7 +440,21 @@ export default function Drive(props) {
     }
 
     return (
-      <Suspense fallback={<div>loading Drive...</div>}>
+      <Suspense 
+        fallback={
+          <Table>
+            <TBody>
+              <Tr>
+                <Td className='Td2'>
+                  <Td2Span></Td2Span>
+                </Td>
+                <Td className='Td3'>
+                  <Td3Span></Td3Span>
+                </Td>
+              </Tr>
+            </TBody>
+          </Table>
+        }>
         {heading}
         <Folder
           driveId={driveId}
@@ -535,23 +606,23 @@ export const folderDictionaryFilterSelector = selectorFamily({
       // filter = 'All' handled already without any prop(filter)
       if (filter === 'Released Only') {
         let newDefaultOrder = [];
-        for (let contentId of fD.contentIds.defaultOrder) {
+        for (let cid of fD.contentIds.defaultOrder) {
           if (
-            fD.contentsDictionary[contentId].isReleased === '1' ||
-            fD.contentsDictionary[contentId].itemType === 'Folder'
+            fD.contentsDictionary[cid].isReleased === '1' ||
+            fD.contentsDictionary[cid].itemType === 'Folder'
           ) {
-            newDefaultOrder.push(contentId);
+            newDefaultOrder.push(cid);
           }
         }
         fDreturn.contentIds.defaultOrder = newDefaultOrder;
       } else if (filter === 'Assigned Only') {
         let newDefaultOrder = [];
-        for (let contentId of fD.contentIds.defaultOrder) {
+        for (let cid of fD.contentIds.defaultOrder) {
           if (
-            fD.contentsDictionary[contentId].isAssigned === '1' ||
-            fD.contentsDictionary[contentId].itemType === 'Folder'
+            fD.contentsDictionary[cid].isAssigned === '1' ||
+            fD.contentsDictionary[cid].itemType === 'Folder'
           ) {
-            newDefaultOrder.push(contentId);
+            newDefaultOrder.push(cid);
           }
         }
         fDreturn.contentIds.defaultOrder = newDefaultOrder;
@@ -779,13 +850,14 @@ export function DriveHeader({
   );
 }
 
-export const fetchDrivesQuery = atom({
-  key: 'fetchDrivesQuery',
+export const fetchCoursesQuery = atom({
+  key: 'fetchCoursesQuery',
   default: selector({
-    key: 'fetchDrivesQuery/Default',
+    key: 'fetchCoursesQuery/Default',
     get: async () => {
-      const { data } = await axios.get(`/api/loadAvailableDrives.php`);
-      return data;
+      const { data: oldData } = await axios.get(`/api/loadAvailableDrives.php`);
+      // console.log("oldData",oldData);
+      return oldData;
     },
   }),
 });
@@ -793,10 +865,11 @@ export const fetchDrivesQuery = atom({
 export const fetchDrivesSelector = selector({
   key: 'fetchDrivesSelector',
   get: ({ get }) => {
-    return get(fetchDrivesQuery);
+    return get(fetchCoursesQuery);
   },
   set: ({ get, set }, labelTypeDriveIdColorImage) => {
-    let driveData = get(fetchDrivesQuery);
+    // console.log(labelTypeDriveIdColorImage);
+    let driveData = get(fetchCoursesQuery);
     // let selectedDrives = get(selectedDriveInformation);
     let newDriveData = { ...driveData };
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
@@ -878,11 +951,12 @@ export const fetchDrivesSelector = selector({
         type: 'content',
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
 
       const payload = { params };
-      axios.get('/api/addDrive.php', payload);
-      // .then((resp)=>console.log(">>>resp",resp.data))
+      axios
+        .get('/api/addDrive.php', payload)
+        .then((resp) => console.log('>>>resp', resp.data));
     } else if (labelTypeDriveIdColorImage.type === 'new course drive') {
       newDrive = {
         driveId: labelTypeDriveIdColorImage.newDriveId,
@@ -894,7 +968,7 @@ export const fetchDrivesSelector = selector({
         subType: 'Administrator',
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
 
       const payload = { params };
       axios.get('/api/addDrive.php', payload);
@@ -910,12 +984,44 @@ export const fetchDrivesSelector = selector({
         }
       }
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);
     } else if (labelTypeDriveIdColorImage.type === 'update drive color') {
       //TODO: implement
+      //Find matching drive and update label
+      for (let [i, drive] of newDriveData.driveIdsAndLabels.entries()) {
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
+          let newDrive = { ...drive };
+          newDrive.color = labelTypeDriveIdColorImage.color;
+          newDrive.image = labelTypeDriveIdColorImage.image;
+          newDriveData.driveIdsAndLabels[i] = newDrive;
+          break;
+        }
+      }
+      //Set drive
+      set(fetchCoursesQuery, newDriveData);
+      //Save to db
+      const payload = { params };
+      axios.get('/api/updateDrive.php', payload);
+    } else if (labelTypeDriveIdColorImage.type === 'update drive image') {
+      //TODO: implement
+      //Find matching drive and update label
+      for (let [i, drive] of newDriveData.driveIdsAndLabels.entries()) {
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
+          let newDrive = { ...drive };
+          newDrive.image = labelTypeDriveIdColorImage.image;
+          newDrive.color = labelTypeDriveIdColorImage.color;
+          newDriveData.driveIdsAndLabels[i] = newDrive;
+          break;
+        }
+      }
+      //Set drive
+      set(fetchCoursesQuery, newDriveData);
+      //Save to db
+      const payload = { params };
+      axios.get('/api/updateDrive.php', payload);
     } else if (labelTypeDriveIdColorImage.type === 'delete drive') {
       //Find matching drive and update label
       //delete drive
@@ -933,7 +1039,7 @@ export const fetchDrivesSelector = selector({
       }
 
       //Set drive
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       //Save to db
       const payload = { params };
       axios.get('/api/updateDrive.php', payload);
@@ -1086,7 +1192,7 @@ function Folder(props) {
   }, [props.pathItemId, setInstanceParentId]);
 
   const indentPx = 25;
-  let bgcolor = '#ffffff';
+  let bgcolor = 'var(--canvas)';
   let borderSide = '0px';
   let marginSize = '0';
   let widthSize = '60vw';
@@ -1095,21 +1201,21 @@ function Folder(props) {
     widthSize = '224px';
   }
   if (isSelected) {
-    bgcolor = 'hsl(209,54%,82%)';
+    bgcolor = 'var(--lightBlue)';
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = '#e2e2e2';
+    bgcolor = 'var(--mainGray)';
   }
 
   const isDraggedOver =
     dropState.activeDropTargetId === itemId &&
     !dragState.draggedItemsId?.has(itemId);
   if (isDraggedOver) {
-    bgcolor = '#f0f0f0';
+    bgcolor = 'var(--mainGray)';
   }
   const isDropTargetFolder = dragState.dragShadowParentId === itemId;
   if (isDropTargetFolder) {
-    bgcolor = 'hsl(209,54%,82%)';
+    bgcolor = 'var(--lightBlue)';
   }
 
   // Update refs for variables used in DnD callbacks to eliminate re-registration
@@ -1135,11 +1241,11 @@ function Folder(props) {
   }
 
   let openCloseText = isOpen ? (
-    <span data-cy="folderToggleCloseIcon">
+    <span data-test="folderToggleCloseIcon">
       <FontAwesomeIcon icon={faChevronDown} />
     </span>
   ) : (
-    <span data-cy="folderToggleOpenIcon">
+    <span data-test="folderToggleOpenIcon">
       <FontAwesomeIcon icon={faChevronRight} />
     </span>
   );
@@ -1285,7 +1391,7 @@ function Folder(props) {
       <div
         role="button"
         data-doenet-driveinstanceid={props.driveInstanceId}
-        data-cy="driveItem"
+        data-test="driveItem"
         tabIndex={0}
         className="noselect nooutline"
         style={{
@@ -1293,7 +1399,7 @@ function Folder(props) {
           // width: "300px",
           padding: '8px',
           border: '0px',
-          borderBottom: '2px solid black',
+          borderBottom: '2px solid var(--canvastext)',
           backgroundColor: bgcolor,
           // width: widthSize,
           // boxShadow: borderSide,
@@ -1394,10 +1500,10 @@ function Folder(props) {
         >
           <div style={{ display: 'inline', margin: '0px' }}>
             {openCloseButton}
-            <span data-cy="folderIcon">
+            <span data-test="folderIcon">
               <FontAwesomeIcon icon={faFolder} />
             </span>
-            <span data-cy="folderLabel">{label}</span>
+            <span data-test="folderLabel">{label}</span>
           </div>
         </div>
       </div>
@@ -1414,14 +1520,14 @@ function Folder(props) {
         <div
           role="button"
           data-doenet-driveinstanceid={props.driveInstanceId}
-          data-cy="navDriveHeader"
+          data-test="navDriveHeader"
           tabIndex={0}
           className="noselect nooutline"
           style={{
             cursor: 'pointer',
             padding: '12.5px',
             border: '0px',
-            borderBottom: '2px solid black',
+            borderBottom: '2px solid var(--canvastext)',
             backgroundColor: bgcolor,
             marginLeft: marginSize,
             fontSize: '24px',
@@ -1473,7 +1579,7 @@ function Folder(props) {
             cursor: 'pointer',
             padding: '12.5px',
             border: '0px',
-            borderBottom: '2px solid black',
+            borderBottom: '2px solid var(--canvastext)',
             backgroundColor: bgcolor,
             marginLeft: marginSize,
             fontSize: '24px',
@@ -1688,7 +1794,7 @@ function Folder(props) {
   }
 
   return (
-    <div data-cy="drive">
+    <div data-test="drive">
       {folder}
       {items}
     </div>
@@ -1715,16 +1821,16 @@ export const DragShadow = React.memo(function Node(props) {
   const indentPx = 30;
   return (
     <div
-      data-cy="dragShadow"
+      data-test="dragShadow"
       style={{
         width: '100%',
         height: '33px',
         marginLeft: `${props.indentLevel * indentPx}px`,
         padding: '0px',
-        backgroundColor: '#f5f5f5',
-        color: '#f5f5f5',
-        boxShadow: '0 0 3px rgba(0, 0, 0, .2)',
-        border: '2px dotted #14c6ff',
+        backgroundColor: 'var(--mainGray)',
+        color: 'var(--mainGray)',
+        boxShadow: '0 0 3px var(--canvastext)',
+        border: '2px dotted var(--solidLightBlue)',
       }}
     >
       <div className="noselect">.</div>
@@ -1760,6 +1866,7 @@ export const clearDriveAndItemSelections = selector({
       set(drivecardSelectedNodesAtom, []);
     }
   },
+  get: () => {},
 });
 
 //key: driveInstanceId
@@ -2057,7 +2164,7 @@ export const DoenetML = React.memo(function DoenetML(props) {
     columns = '100%';
   }
 
-  let bgcolor = '#ffffff';
+  let bgcolor = 'var(--canvas)';
   let borderSide = '0px 0px 0px 0px';
   let widthSize = 'auto';
   let marginSize = '0';
@@ -2079,11 +2186,11 @@ export const DoenetML = React.memo(function DoenetML(props) {
     columns = '1fr';
   }
   if (isSelected || (props.isNav && props.item.itemId === props.pathItemId)) {
-    bgcolor = 'hsl(209,54%,82%)';
+    bgcolor = 'var(--lightBlue)';
     // borderSide = '8px 0px 0px 0px #1A5A99';
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = '#e2e2e2';
+    bgcolor = 'var(--mainGray)';
   }
 
   useEffect(() => {
@@ -2118,16 +2225,16 @@ export const DoenetML = React.memo(function DoenetML(props) {
 
   let doenetMLJSX = (
     <div
+    data-doenet-driveinstanceid={props.driveInstanceId}
       role="button"
-      data-doenet-driveinstanceid={props.driveInstanceId}
-      data-cy="driveItem"
+      data-test="driveItem"
       tabIndex={0}
       className="noselect nooutline"
       style={{
         cursor: 'pointer',
         padding: '8px',
         border: '0px',
-        borderBottom: '2px solid black',
+        borderBottom: '2px solid var(--canvas)',
         backgroundColor: bgcolor,
         width: widthSize,
         // boxShadow: borderSide,
@@ -2190,10 +2297,10 @@ export const DoenetML = React.memo(function DoenetML(props) {
         }}
       >
         <p style={{ display: 'inline', margin: '0px' }}>
-          <span data-cy="doenetMLIcon">
+          <span data-test="doenetMLIcon">
             <FontAwesomeIcon icon={faCode} />
           </span>
-          <span data-cy="doenetMLLabel">{label} </span>
+          <span data-test="doenetMLLabel">{label} </span>
         </p>
         {props.numColumns >= 2 ? column2 : null}
         {props.numColumns >= 3 ? column3 : null}
@@ -2508,7 +2615,7 @@ function useUpdateBreadcrumb(props) {
     // generate folder stack
     const breadcrumbItemStyle = {
       fontSize: '24px',
-      color: '#040F1A',
+      color: 'var(--canvastext)',
       textDecoration: 'none',
     };
 
@@ -2589,7 +2696,7 @@ function useUpdateBreadcrumb(props) {
         }}
       >
         <Link
-          data-cy="breadcrumbDriveColumn"
+          data-test="breadcrumbDriveColumn"
           style={breadcrumbItemStyle}
           to={driveDestinationLink}
         >
@@ -2613,9 +2720,9 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
   const containerStyle = {
     transform: 'rotate(-5deg)',
     zIndex: '10',
-    background: '#e2e2e2',
+    background: 'var(--mainGray)',
     width: '40vw',
-    border: '2px solid black',
+    border: '2px solid var(--canvastext)',
     padding: '0px',
     height: '38px',
     overflow: 'hidden',
@@ -2623,12 +2730,12 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
 
   const singleItemStyle = {
     boxShadow: 'rgba(0, 0, 0, 0.20) 5px 5px 3px 3px',
-    borderRadius: '2px solid black',
+    borderRadius: '2px solid var(--canvastext)',
     animation: 'dragAnimation 2s',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    background: '#e2e2e2',
+    background: 'var(--mainGray)',
     // marginLeft: "-60px"
   };
 
@@ -2638,9 +2745,9 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
     top: '6px',
     right: '5px',
     borderRadius: '25px',
-    background: '#1A5A99',
+    background: 'var(--mainBlue)',
     fontSize: '12px',
-    color: 'white',
+    color: 'var(--canvas)',
     width: '25px',
     height: '25px',
     display: 'flex',
@@ -2654,9 +2761,9 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
     top: '6px',
     left: '5px',
     borderRadius: '25px',
-    background: '#08ed00',
+    background: 'var(--mainGreen)',
     fontSize: '23px',
-    color: 'white',
+    color: 'var(--canvas)',
     width: '25px',
     height: '25px',
     display: 'flex',
@@ -2701,7 +2808,7 @@ const DragGhost = ({ id, element, numItems, copyMode = false }) => {
   }
 
   dragGhost = (
-    <div id={id} data-cy="dragGhost" style={containerStyle}>
+    <div id={id} data-test="dragGhost" style={containerStyle}>
       {dragGhost}
     </div>
   );

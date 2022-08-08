@@ -19,6 +19,7 @@ import {
   faChalkboard
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
+import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
 import {Link} from "../../_snowpack/pkg/react-router-dom.js";
 import {
   atom,
@@ -51,9 +52,8 @@ const loadAssignmentAtomFamily = atomFamily({
   default: selectorFamily({
     key: "loadAssignmentAtomFamily/Default",
     get: (doenetId) => async () => {
-      const payload = {doenetId};
       const {data} = await axios.get("/api/getAllAssignmentSettings.php", {
-        params: payload
+        params: {doenetId}
       });
       let assignment = {...data.assignment};
       if (assignment.assignedDate) {
@@ -260,10 +260,53 @@ export const dragStateAtom = atom({
     copyMode: false
   }
 });
+const movingGradient = keyframes`
+  0% { background-position: -250px 0; }
+  100% { background-position: 250px 0; }
+`;
+const Table = styled.table`
+  width: 850px;
+  border-radius: 5px;
+`;
+const Tr = styled.tr`
+  border-bottom: 2px solid black;
+`;
+const Td = styled.td`
+  height: 40px;
+  vertical-align: middle;
+  padding: 8px;
+
+  &.Td2 {
+    width: 50px;
+  }
+
+  &.Td3 {
+    width: 400px;
+  }
+
+`;
+const TBody = styled.tbody``;
+const Td2Span = styled.span`
+  background-color: var(--mainGray);
+  width: 70px;
+  height: 16px;
+  border-radius: 5px;
+`;
+const Td3Span = styled.span`
+  height: 14px;
+  border-radius: 5px;
+  background: linear-gradient(to right, var(--mainGray) 20%, var(--mainGray) 50%, var(--mainGray) 80%);
+  background-size: 500px 100px;
+  animation-name: ${movingGradient};
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+`;
 export default function Drive(props) {
   const isNav = false;
   const [driveId, parentFolderId, itemId, type] = props.path.split(":");
-  const drivesAvailable = useRecoilValueLoadable(fetchDrivesQuery);
+  const drivesAvailable = useRecoilValueLoadable(fetchCoursesQuery);
   const {driveIdsAndLabels} = drivesAvailable.getValue();
   const [numColumns, setNumColumns] = useState(1);
   const setDriveInstanceId = useSetRecoilState(driveInstanceIdDictionary(driveId));
@@ -306,7 +349,11 @@ export default function Drive(props) {
       });
     }
     return /* @__PURE__ */ React.createElement(Suspense, {
-      fallback: /* @__PURE__ */ React.createElement("div", null, "loading Drive...")
+      fallback: /* @__PURE__ */ React.createElement(Table, null, /* @__PURE__ */ React.createElement(TBody, null, /* @__PURE__ */ React.createElement(Tr, null, /* @__PURE__ */ React.createElement(Td, {
+        className: "Td2"
+      }, /* @__PURE__ */ React.createElement(Td2Span, null)), /* @__PURE__ */ React.createElement(Td, {
+        className: "Td3"
+      }, /* @__PURE__ */ React.createElement(Td3Span, null)))))
     }, heading, /* @__PURE__ */ React.createElement(Folder, {
       driveId,
       folderId: rootFolderId,
@@ -405,17 +452,17 @@ export const folderDictionaryFilterSelector = selectorFamily({
     fDreturn.contentIds = {...fD.contentIds};
     if (filter === "Released Only") {
       let newDefaultOrder = [];
-      for (let contentId of fD.contentIds.defaultOrder) {
-        if (fD.contentsDictionary[contentId].isReleased === "1" || fD.contentsDictionary[contentId].itemType === "Folder") {
-          newDefaultOrder.push(contentId);
+      for (let cid of fD.contentIds.defaultOrder) {
+        if (fD.contentsDictionary[cid].isReleased === "1" || fD.contentsDictionary[cid].itemType === "Folder") {
+          newDefaultOrder.push(cid);
         }
       }
       fDreturn.contentIds.defaultOrder = newDefaultOrder;
     } else if (filter === "Assigned Only") {
       let newDefaultOrder = [];
-      for (let contentId of fD.contentIds.defaultOrder) {
-        if (fD.contentsDictionary[contentId].isAssigned === "1" || fD.contentsDictionary[contentId].itemType === "Folder") {
-          newDefaultOrder.push(contentId);
+      for (let cid of fD.contentIds.defaultOrder) {
+        if (fD.contentsDictionary[cid].isAssigned === "1" || fD.contentsDictionary[cid].itemType === "Folder") {
+          newDefaultOrder.push(cid);
         }
       }
       fDreturn.contentIds.defaultOrder = newDefaultOrder;
@@ -581,23 +628,23 @@ export function DriveHeader({
     style: {textAlign: "center"}
   }, columnTypes[3]) : null)));
 }
-export const fetchDrivesQuery = atom({
-  key: "fetchDrivesQuery",
+export const fetchCoursesQuery = atom({
+  key: "fetchCoursesQuery",
   default: selector({
-    key: "fetchDrivesQuery/Default",
+    key: "fetchCoursesQuery/Default",
     get: async () => {
-      const {data} = await axios.get(`/api/loadAvailableDrives.php`);
-      return data;
+      const {data: oldData} = await axios.get(`/api/loadAvailableDrives.php`);
+      return oldData;
     }
   })
 });
 export const fetchDrivesSelector = selector({
   key: "fetchDrivesSelector",
   get: ({get}) => {
-    return get(fetchDrivesQuery);
+    return get(fetchCoursesQuery);
   },
   set: ({get, set}, labelTypeDriveIdColorImage) => {
-    let driveData = get(fetchDrivesQuery);
+    let driveData = get(fetchCoursesQuery);
     let newDriveData = {...driveData};
     newDriveData.driveIdsAndLabels = [...driveData.driveIdsAndLabels];
     let params = {
@@ -616,9 +663,9 @@ export const fetchDrivesSelector = selector({
         type: "content"
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
-      axios.get("/api/addDrive.php", payload);
+      axios.get("/api/addDrive.php", payload).then((resp) => console.log(">>>resp", resp.data));
     } else if (labelTypeDriveIdColorImage.type === "new course drive") {
       newDrive = {
         driveId: labelTypeDriveIdColorImage.newDriveId,
@@ -630,7 +677,7 @@ export const fetchDrivesSelector = selector({
         subType: "Administrator"
       };
       newDriveData.driveIdsAndLabels.unshift(newDrive);
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/addDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "update drive label") {
@@ -642,10 +689,35 @@ export const fetchDrivesSelector = selector({
           break;
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "update drive color") {
+      for (let [i, drive] of newDriveData.driveIdsAndLabels.entries()) {
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
+          let newDrive2 = {...drive};
+          newDrive2.color = labelTypeDriveIdColorImage.color;
+          newDrive2.image = labelTypeDriveIdColorImage.image;
+          newDriveData.driveIdsAndLabels[i] = newDrive2;
+          break;
+        }
+      }
+      set(fetchCoursesQuery, newDriveData);
+      const payload = {params};
+      axios.get("/api/updateDrive.php", payload);
+    } else if (labelTypeDriveIdColorImage.type === "update drive image") {
+      for (let [i, drive] of newDriveData.driveIdsAndLabels.entries()) {
+        if (drive.driveId === labelTypeDriveIdColorImage.newDriveId) {
+          let newDrive2 = {...drive};
+          newDrive2.image = labelTypeDriveIdColorImage.image;
+          newDrive2.color = labelTypeDriveIdColorImage.color;
+          newDriveData.driveIdsAndLabels[i] = newDrive2;
+          break;
+        }
+      }
+      set(fetchCoursesQuery, newDriveData);
+      const payload = {params};
+      axios.get("/api/updateDrive.php", payload);
     } else if (labelTypeDriveIdColorImage.type === "delete drive") {
       let driveIdsAndLabelsLength = newDriveData.driveIdsAndLabels;
       for (let i = 0; i < driveIdsAndLabelsLength.length; i++) {
@@ -656,7 +728,7 @@ export const fetchDrivesSelector = selector({
           }
         }
       }
-      set(fetchDrivesQuery, newDriveData);
+      set(fetchCoursesQuery, newDriveData);
       const payload = {params};
       axios.get("/api/updateDrive.php", payload);
     }
@@ -767,7 +839,7 @@ function Folder(props) {
     setInstanceParentId(props.pathItemId);
   }, [props.pathItemId, setInstanceParentId]);
   const indentPx = 25;
-  let bgcolor = "#ffffff";
+  let bgcolor = "var(--canvas)";
   let borderSide = "0px";
   let marginSize = "0";
   let widthSize = "60vw";
@@ -776,18 +848,18 @@ function Folder(props) {
     widthSize = "224px";
   }
   if (isSelected) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = "#e2e2e2";
+    bgcolor = "var(--mainGray)";
   }
   const isDraggedOver = dropState.activeDropTargetId === itemId && !dragState.draggedItemsId?.has(itemId);
   if (isDraggedOver) {
-    bgcolor = "#f0f0f0";
+    bgcolor = "var(--mainGray)";
   }
   const isDropTargetFolder = dragState.dragShadowParentId === itemId;
   if (isDropTargetFolder) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   useEffect(() => {
     isOpenRef.current = isOpen;
@@ -906,7 +978,7 @@ function Folder(props) {
         cursor: "pointer",
         padding: "8px",
         border: "0px",
-        borderBottom: "2px solid black",
+        borderBottom: "2px solid var(--canvastext)",
         backgroundColor: bgcolor,
         marginLeft: marginSize,
         borderLeft: borderSide
@@ -1013,7 +1085,7 @@ function Folder(props) {
         cursor: "pointer",
         padding: "12.5px",
         border: "0px",
-        borderBottom: "2px solid black",
+        borderBottom: "2px solid var(--canvastext)",
         backgroundColor: bgcolor,
         marginLeft: marginSize,
         fontSize: "24px",
@@ -1058,7 +1130,7 @@ function Folder(props) {
           cursor: "pointer",
           padding: "12.5px",
           border: "0px",
-          borderBottom: "2px solid black",
+          borderBottom: "2px solid var(--canvastext)",
           backgroundColor: bgcolor,
           marginLeft: marginSize,
           fontSize: "24px",
@@ -1249,10 +1321,10 @@ export const DragShadow = React.memo(function Node2(props) {
       height: "33px",
       marginLeft: `${props.indentLevel * indentPx}px`,
       padding: "0px",
-      backgroundColor: "#f5f5f5",
-      color: "#f5f5f5",
-      boxShadow: "0 0 3px rgba(0, 0, 0, .2)",
-      border: "2px dotted #14c6ff"
+      backgroundColor: "var(--mainGray)",
+      color: "var(--mainGray)",
+      boxShadow: "0 0 3px var(--canvastext)",
+      border: "2px dotted var(--solidLightBlue)"
     }
   }, /* @__PURE__ */ React.createElement("div", {
     className: "noselect"
@@ -1277,6 +1349,8 @@ export const clearDriveAndItemSelections = selector({
     if (globalDrivesSelected.length > 0) {
       set(drivecardSelectedNodesAtom, []);
     }
+  },
+  get: () => {
   }
 });
 export const driveInstanceParentFolderIdAtom = atomFamily({
@@ -1499,7 +1573,7 @@ export const DoenetML = React.memo(function DoenetML2(props) {
   } else if (props.numColumns === 1) {
     columns = "100%";
   }
-  let bgcolor = "#ffffff";
+  let bgcolor = "var(--canvas)";
   let borderSide = "0px 0px 0px 0px";
   let widthSize = "auto";
   let marginSize = "0";
@@ -1518,10 +1592,10 @@ export const DoenetML = React.memo(function DoenetML2(props) {
     columns = "1fr";
   }
   if (isSelected || props.isNav && props.item.itemId === props.pathItemId) {
-    bgcolor = "hsl(209,54%,82%)";
+    bgcolor = "var(--lightBlue)";
   }
   if (isSelected && dragState.isDragging) {
-    bgcolor = "#e2e2e2";
+    bgcolor = "var(--mainGray)";
   }
   useEffect(() => {
     parentFolderSortOrderRef.current = parentFolderSortOrder;
@@ -1550,8 +1624,8 @@ export const DoenetML = React.memo(function DoenetML2(props) {
     }
   };
   let doenetMLJSX = /* @__PURE__ */ React.createElement("div", {
-    role: "button",
     "data-doenet-driveinstanceid": props.driveInstanceId,
+    role: "button",
     "data-cy": "driveItem",
     tabIndex: 0,
     className: "noselect nooutline",
@@ -1559,7 +1633,7 @@ export const DoenetML = React.memo(function DoenetML2(props) {
       cursor: "pointer",
       padding: "8px",
       border: "0px",
-      borderBottom: "2px solid black",
+      borderBottom: "2px solid var(--canvas)",
       backgroundColor: bgcolor,
       width: widthSize,
       marginLeft: marginSize
@@ -1874,7 +1948,7 @@ function useUpdateBreadcrumb(props) {
     let breadcrumbStack = [];
     const breadcrumbItemStyle = {
       fontSize: "24px",
-      color: "#040F1A",
+      color: "var(--canvastext)",
       textDecoration: "none"
     };
     for (let currentNode of nodesOnPath) {
@@ -1951,21 +2025,21 @@ const DragGhost = ({id, element, numItems, copyMode = false}) => {
   const containerStyle = {
     transform: "rotate(-5deg)",
     zIndex: "10",
-    background: "#e2e2e2",
+    background: "var(--mainGray)",
     width: "40vw",
-    border: "2px solid black",
+    border: "2px solid var(--canvastext)",
     padding: "0px",
     height: "38px",
     overflow: "hidden"
   };
   const singleItemStyle = {
     boxShadow: "rgba(0, 0, 0, 0.20) 5px 5px 3px 3px",
-    borderRadius: "2px solid black",
+    borderRadius: "2px solid var(--canvastext)",
     animation: "dragAnimation 2s",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background: "#e2e2e2"
+    background: "var(--mainGray)"
   };
   const multipleItemsNumCircleContainerStyle = {
     position: "absolute",
@@ -1973,9 +2047,9 @@ const DragGhost = ({id, element, numItems, copyMode = false}) => {
     top: "6px",
     right: "5px",
     borderRadius: "25px",
-    background: "#1A5A99",
+    background: "var(--mainBlue)",
     fontSize: "12px",
-    color: "white",
+    color: "var(--canvas)",
     width: "25px",
     height: "25px",
     display: "flex",
@@ -1988,9 +2062,9 @@ const DragGhost = ({id, element, numItems, copyMode = false}) => {
     top: "6px",
     left: "5px",
     borderRadius: "25px",
-    background: "#08ed00",
+    background: "var(--mainGreen)",
     fontSize: "23px",
-    color: "white",
+    color: "var(--canvas)",
     width: "25px",
     height: "25px",
     display: "flex",

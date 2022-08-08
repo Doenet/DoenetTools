@@ -3,6 +3,7 @@ import InlineComponent from './InlineComponent.js';
 export default class TextOrInline extends InlineComponent {
   static componentType = "_textOrInline";
   static renderChildren = true;
+  static rendererType = "containerInline";
 
   static includeBlankStringChildren = true;
 
@@ -21,7 +22,9 @@ export default class TextOrInline extends InlineComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: this.componentType,
+      shadowingInstructions: {
+        createComponentOfType: this.componentType
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",
@@ -33,17 +36,21 @@ export default class TextOrInline extends InlineComponent {
       definition: function ({ dependencyValues }) {
         let value = "";
         for (let comp of dependencyValues.inlineChildren) {
-          if (typeof comp.stateValues.text === "string") {
+          if(typeof comp !== "object") {
+            value += comp.toString();
+          } else if (typeof comp.stateValues.text === "string") {
             value += comp.stateValues.text;
           }
         }
-        return { newValues: { value } };
+        return { setValue: { value } };
       }
     }
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -51,7 +58,7 @@ export default class TextOrInline extends InlineComponent {
         }
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { text: dependencyValues.value }
+        setValue: { text: dependencyValues.value }
       })
     }
 

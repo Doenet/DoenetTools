@@ -7,11 +7,9 @@ export class Extremum extends BaseComponent {
   static componentType = "extremum";
   static rendererType = undefined;
 
-  static get stateVariablesShadowedForReference() { return ["location", "value"] };
 
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.location = {
       createComponentOfType: "math"
@@ -85,8 +83,8 @@ export class Extremum extends BaseComponent {
           if (locationComponent.children.length === 0 ||
             (
               locationComponent.children.length === 1 &&
-              locationComponent.children[0].componentType === "string" &&
-              locationComponent.children[0].state.value.trim() === ""
+              typeof locationComponent.children[0] === "string" &&
+              locationComponent.children[0].trim() === ""
             )
           ) {
             delete newAttributes.location;
@@ -95,8 +93,8 @@ export class Extremum extends BaseComponent {
           if (valueComponent.children.length === 0 ||
             (
               valueComponent.children.length === 1 &&
-              valueComponent.children[0].componentType === "string" &&
-              valueComponent.children[0].state.value.trim() === ""
+              typeof valueComponent.children[0] === "string" &&
+              valueComponent.children[0].trim() === ""
             )
           ) {
             delete newAttributes.value;
@@ -145,13 +143,19 @@ export class Extremum extends BaseComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       defaultValue: null,
+      hasEssential: true,
       additionalStateVariablesDefined: [{
         variableName: "location",
         public: true,
-        componentType: "math",
+        shadowingInstructions: {
+          createComponentOfType: "math",
+        },
         defaultValue: null,
+        hasEssential: true,
       }],
       returnDependencies: () => ({
         extremumChild: {
@@ -192,29 +196,29 @@ export class Extremum extends BaseComponent {
           }
         }
 
-        let newValues = {};
+        let setValue = {};
         let useEssentialOrDefaultValue = {};
         let haveNewValues = false;
         let haveEssential = false;
         if (location === undefined) {
-          useEssentialOrDefaultValue.location = { variablesToCheck: ["location"] }
+          useEssentialOrDefaultValue.location = true
           haveEssential = true;
         } else {
-          newValues.location = location;
+          setValue.location = location;
           haveNewValues = true;
         }
 
         if (value === undefined) {
-          useEssentialOrDefaultValue.value = { variablesToCheck: ["value"] }
+          useEssentialOrDefaultValue.value = true
           haveEssential = true;
         } else {
-          newValues.value = value;
+          setValue.value = value;
           haveNewValues = true;
         }
 
         let result = {};
         if (haveNewValues) {
-          result.newValues = newValues;
+          result.setValue = setValue;
         }
         if (haveEssential) {
           result.useEssentialOrDefaultValue = useEssentialOrDefaultValue;
@@ -264,7 +268,7 @@ export class Extrema extends BaseComponent {
       return {
         success: true,
         newChildren: results.pieces.map(function (piece) {
-          if (piece.length > 1 || piece[0].componentType === "string") {
+          if (piece.length > 1 || typeof piece[0] === "string") {
             return {
               componentType: extremaClass.componentTypeSingular,
               children: piece
@@ -315,7 +319,7 @@ export class Extrema extends BaseComponent {
       definition: function ({ dependencyValues }) {
         let extremeVarName = "n" + extremaClass.componentTypeCapitalized;
         return {
-          newValues: {
+          setValue: {
             [extremeVarName]: dependencyValues.children.length,
             childIdentities: dependencyValues.children,
           },
@@ -342,9 +346,9 @@ export class Extrema extends BaseComponent {
         ].includes(arrayEntryPrefix)) {
           let extremumInd = Number(varEnding) - 1;
           if (Number.isInteger(extremumInd) && extremumInd >= 0) {
-            // if don't know array size, just guess that the entry is OK
-            // It will get corrected once array size is known.
-            // TODO: better to return empty array?
+            // If not given the array size,
+            // then return the array keys assuming the array is large enough.
+            // Must do this as it is used to determine potential array entries.
             if (!arraySize || extremumInd < arraySize[0]) {
               if (arrayEntryPrefix === extremaClass.componentTypeSingular) {
                 return [extremumInd + ",0", extremumInd + ",1"];
@@ -360,18 +364,28 @@ export class Extrema extends BaseComponent {
             return [];
           }
         } else if (arrayEntryPrefix === extremaClass.componentTypeSingular + "Locations") {
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
+          if (varEnding !== "") {
             return [];
           }
+
+          if (!arraySize) {
+            // if don't have arraySize, just use first point assuming array size is large enough
+            return ["0,0"]
+          }
+
           // array of "i,0"", where i=0, ..., arraySize[0]-1
           return Array.from(Array(arraySize[0]), (_, i) => i + ",0")
         } else if (arrayEntryPrefix === extremaClass.componentTypeSingular + "Values") {
 
-          // can't guess at arrayKeys if don't have arraySize
-          if (!arraySize || varEnding !== "") {
+          if (varEnding !== "") {
             return [];
           }
+
+          if (!arraySize) {
+            // if don't have arraySize, just use first point assuming array size is large enough
+            return ["0,1"]
+          }
+
           // array of "i,1"", where i=0, ..., arraySize[0]-1
           return Array.from(Array(arraySize[0]), (_, i) => i + ",1")
         } else {
@@ -387,6 +401,30 @@ export class Extrema extends BaseComponent {
         } else {
           return extremaClass.componentTypeSingular + "Value" + (Number(ind1) + 1)
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === extremaClass.componentType) {
+          return extremaClass.componentTypeSingular + propIndex;
+        }
+        if (varName === extremaClass.componentTypeSingular + "Locations") {
+          return extremaClass.componentTypeSingular + "Location" + propIndex;
+        }
+        if (varName === extremaClass.componentTypeSingular + "Values") {
+          return extremaClass.componentTypeSingular + "Value" + propIndex;
+        }
+        let typeLen = extremaClass.componentTypeSingular.length;
+        if (varName.slice(0, typeLen) === extremaClass.componentTypeSingular) {
+          // could be extremaClass.componentTypeSingular, or with "Location" or "Value" appended
+          let componentNum = Number(varName.slice(typeLen));
+          if (Number.isInteger(componentNum) && componentNum > 0) {
+            if (propIndex === 1) {
+              return extremaClass.componentTypeSingular + "Location" + componentNum
+            } else if (propIndex === 2) {
+              return extremaClass.componentTypeSingular + "Value" + componentNum
+            }
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nChildren: {
@@ -442,7 +480,7 @@ export class Extrema extends BaseComponent {
           }
         }
 
-        return { newValues: { [extremaClass.componentType]: extrema } }
+        return { setValue: { [extremaClass.componentType]: extrema } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,

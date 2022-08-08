@@ -1,27 +1,32 @@
 import CompositeComponent from './abstract/CompositeComponent';
 import { processAssignNames } from '../utils/serializedStateProcessing';
 import { convertAttributesForComponentType } from '../utils/copy';
-import { returnSequenceValues, returnSequenceValueForIndex, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions, returnStandardSequenceStateVariablesShadowedForReference } from '../utils/sequence';
+import { returnSequenceValues, returnSequenceValueForIndex, returnStandardSequenceAttributes, returnStandardSequenceStateVariableDefinitions } from '../utils/sequence';
 
 export default class Sequence extends CompositeComponent {
   static componentType = "sequence";
 
   static assignNamesToReplacements = true;
 
-  // don't actually need to shadow these, as replacements for shadows
-  // ignore state variables
-  // but, shadow them so that state variables are consistent
-  // since attributeComponents aren't copied
-  static get stateVariablesShadowedForReference() {
-    return returnStandardSequenceStateVariablesShadowedForReference();
-  };
-
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.fixed = {
+      leaveRaw: true
+    }
+
+    attributes.displayDigits = {
+      leaveRaw: true
+    }
+    attributes.displayDecimals = {
+      leaveRaw: true
+    }
+    attributes.displaySmallAsZero = {
+      leaveRaw: true
+    }
+    attributes.padZeros = {
       leaveRaw: true
     }
 
@@ -72,7 +77,7 @@ export default class Sequence extends CompositeComponent {
       definition: function () {
         // even with invalid sequence, still ready to expand
         // (it will just expand with zero replacements)
-        return { newValues: { readyToExpandWhenResolved: true } };
+        return { setValue: { readyToExpandWhenResolved: true } };
       },
     };
 
@@ -80,7 +85,7 @@ export default class Sequence extends CompositeComponent {
   }
 
 
-  static async createSerializedReplacements({ component, workspace, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, workspace, componentInfoObjects, flags }) {
 
     // console.log(`create serialized replacements for ${component.componentName}`)
 
@@ -110,7 +115,7 @@ export default class Sequence extends CompositeComponent {
       exclude,
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
 
     let sequenceValues = returnSequenceValues({
@@ -133,18 +138,28 @@ export default class Sequence extends CompositeComponent {
 
     let replacements = [];
 
+
+    let attributesToConvert = {};
+    for (let attr of ["fixed", "displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
+      if (attr in component.attributes) {
+        attributesToConvert[attr] = component.attributes[attr]
+      }
+    }
+
     for (let componentValue of sequenceValues) {
 
       // allow one to override the fixed (default true) attribute
+      // as well as rounding settings
       // by specifying it on the sequence
       let attributesFromComposite = {};
 
-      if ("fixed" in component.attributes) {
+      if (Object.keys(attributesToConvert).length > 0) {
         attributesFromComposite = convertAttributesForComponentType({
-          attributes: { fixed: component.attributes.fixed },
+          attributes: attributesToConvert,
           componentType,
           componentInfoObjects,
-          compositeCreatesNewNamespace: newNamespace
+          compositeCreatesNewNamespace: newNamespace,
+          flags
         })
       }
 
@@ -170,7 +185,7 @@ export default class Sequence extends CompositeComponent {
     return { replacements: processResult.serializedComponents };
   }
 
-  static async calculateReplacementChanges({ component, workspace, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, workspace, componentInfoObjects, flags }) {
     // console.log(`calculate replacement changes for ${component.componentName}`);
 
 
@@ -223,7 +238,7 @@ export default class Sequence extends CompositeComponent {
 
       // calculate new serialized replacements
       let newSerializedReplacements = (await this.createSerializedReplacements({
-        component, workspace, componentInfoObjects
+        component, workspace, componentInfoObjects, flags
       })).replacements;
 
       let replacementInstruction = {
@@ -332,7 +347,14 @@ export default class Sequence extends CompositeComponent {
         // Need to add more replacement components
 
         let newSerializedReplacements = [];
-        let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+        let newNamespace = component.attributes.newNamespace?.primitive;
+
+        let attributesToConvert = {};
+        for (let attr of ["fixed", "displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
+          if (attr in component.attributes) {
+            attributesToConvert[attr] = component.attributes[attr]
+          }
+        }
 
         for (let ind = prevlength; ind < await component.stateValues.length; ind++) {
           let componentValue = returnSequenceValueForIndex({
@@ -350,15 +372,17 @@ export default class Sequence extends CompositeComponent {
           }
 
           // allow one to override the fixed (default true) attribute
+          // as well as rounding settings
           // by specifying it on the sequence
           let attributesFromComposite = {};
 
-          if ("fixed" in component.attributes) {
+          if (Object.keys(attributesToConvert).length > 0) {
             attributesFromComposite = convertAttributesForComponentType({
-              attributes: { fixed: component.attributes.fixed },
+              attributes: attributesToConvert,
               componentType,
               componentInfoObjects,
-              compositeCreatesNewNamespace: newNamespace
+              compositeCreatesNewNamespace: newNamespace,
+              flags
             })
           }
 

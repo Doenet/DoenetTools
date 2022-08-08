@@ -1,20 +1,38 @@
-import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import React, { useEffect } from 'react';
+import useDoenetRender from './useDoenetRenderer';
 import cssesc from 'cssesc';
 import { sizeToCSS } from './utils/css';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
-export default class Embed extends DoenetRenderer {
+export default React.memo(function Figure(props) {
+  let { name, SVs, actions, callAction } = useDoenetRender(props);
 
-  componentDidMount() {
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
 
-    if (this.doenetSvData.encodedGeogebraContent) {
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
-      let doenetSvData = this.doenetSvData;
+  useEffect(() => {
 
-      let cName = cssesc(this.componentName);
+    if (SVs.encodedGeogebraContent) {
 
-      let width = sizeToCSS(this.doenetSvData.width);
-      let height = sizeToCSS(this.doenetSvData.height);
+      let doenetSvData = SVs;
+
+      let cName = cssesc(name);
+
+      let width = sizeToCSS(SVs.width);
+      let height = sizeToCSS(SVs.height);
 
       window.MathJax.Hub.Register.StartupHook("End", function () {
         let parameters = {
@@ -49,34 +67,34 @@ export default class Embed extends DoenetRenderer {
         applet.inject("container_" + cName, 'preferhtml5');
       });
 
-      this.forceUpdate();
     }
-  }
+  }, [])
 
-  render() {
 
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    let width = sizeToCSS(this.doenetSvData.width);
-    let height = sizeToCSS(this.doenetSvData.height);
-
-    if (this.doenetSvData.geogebra) {
-      return <div className="geogebra" id={this.componentName}>
-        <a name={this.componentName} />
-        <iframe scrolling="no" title="" src={`https://www.geogebra.org/material/iframe/id/${this.doenetSvData.geogebra}/width/${width}/height/${height}/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false`} width={width} height={height} style={{ border: "0px" }}> </iframe>
-      </div>
-    } else if (this.doenetSvData.encodedGeogebraContent) {
-      return <div className="javascriptapplet" id={cssesc(this.componentName)}>
-        <div className="geogebrawebapplet" id={"container_" + cssesc(this.componentName)}
-          style={{ minWidth: width, minHeight: height }} />
-      </div>
-
-    }
-
-    console.warn("Nothing specified to embed");
+  if (SVs.hidden) {
     return null;
-
   }
-}
+
+  let width = sizeToCSS(SVs.width);
+  let height = sizeToCSS(SVs.height);
+
+  if (SVs.geogebra) {
+    return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+      <div className="geogebra" id={name}>
+      <a name={name} />
+      <iframe scrolling="no" title="" src={`https://www.geogebra.org/material/iframe/id/${SVs.geogebra}/width/${width}/height/${height}/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false`} width={width} height={height} style={{ border: "0px" }}> </iframe>
+    </div>
+    </VisibilitySensor>
+  } else if (SVs.encodedGeogebraContent) {
+    return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+    <div className="javascriptapplet" id={cssesc(name)}>
+      <div className="geogebrawebapplet" id={"container_" + cssesc(name)}
+        style={{ minWidth: width, minHeight: height }} />
+    </div>
+    </VisibilitySensor>
+  }
+
+  console.warn("Nothing specified to embed");
+  return null;
+
+})

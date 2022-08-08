@@ -1,14 +1,20 @@
 import React from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class Em extends DoenetRenderer {
+export default React.memo(function C(props) {
+  let {name, SVs, children} = useDoenetRender(props);
 
-  render() {
-
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
-
-    return <code id={this.componentName}><a name={this.componentName} />{this.children}</code>
+  if (SVs.hidden) {
+    return null;
   }
-}
+  
+  return (
+    <code id={name} style={{ margin:"12px 0" }}>
+      <a name={name} />
+      {children}
+    </code>
+
+  )
+})
+
+

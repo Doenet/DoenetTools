@@ -21,7 +21,9 @@ export default class BooleanOperatorOneInput extends BooleanComponent {
     // create new version of value that applies operator
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {
@@ -32,7 +34,7 @@ export default class BooleanOperatorOneInput extends BooleanComponent {
       }),
       definition: function ({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             value: constructor.applyBooleanOperator(
               dependencyValues.value
             )

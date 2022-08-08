@@ -9,9 +9,11 @@ export default class SingleCharacter extends InlineComponent {
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({}),
-      definition: () => ({ newValues: { text: this.unicodeCharacter } })
+      definition: () => ({ setValue: { text: this.unicodeCharacter } })
     }
 
     return stateVariableDefinitions;

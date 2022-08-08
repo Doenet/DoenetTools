@@ -1,14 +1,14 @@
 import React from "../../_snowpack/pkg/react.js";
 import Button from "../../_reactComponents/PanelHeaderComponents/Button.js";
 import {useRecoilCallback} from "../../_snowpack/pkg/recoil.js";
-import {fetchDrivesQuery} from "../../_reactComponents/Drive/NewDrive.js";
+import {fetchCoursesQuery} from "../../_reactComponents/Drive/NewDrive.js";
 import {searchParamAtomFamily} from "../NewToolRoot.js";
 import {assignmentData, overViewData, studentData} from "../ToolPanels/Gradebook.js";
 import axios from "../../_snowpack/pkg/axios.js";
 export default function GradeDownload() {
   const download = useRecoilCallback(({snapshot}) => async () => {
     const driveId = await snapshot.getPromise(searchParamAtomFamily("driveId"));
-    let driveInfo = await snapshot.getPromise(fetchDrivesQuery);
+    let driveInfo = await snapshot.getPromise(fetchCoursesQuery);
     let driveLabel;
     for (let info of driveInfo.driveIdsAndLabels) {
       if (info.driveId === driveId) {
@@ -62,9 +62,10 @@ export default function GradeDownload() {
           break;
         }
       }
+      let studentName = `${students[userId].firstName} ${students[userId].lastName}`.replaceAll('"', '""');
       studentInfo[userId] = {
         courseTotal: 0,
-        csv: `${students[userId].firstName} ${students[userId].lastName},${email},${studentId},${section},${withdrew},`
+        csv: `"${studentName}",${email},${studentId},${section},${withdrew},`
       };
     }
     let courseTotalPossiblePoints = 0;

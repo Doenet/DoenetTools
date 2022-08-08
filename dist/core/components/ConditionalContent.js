@@ -2,6 +2,7 @@ import CompositeComponent from './abstract/CompositeComponent.js';
 import { deepClone } from '../utils/deepFunctions.js';
 import { processAssignNames } from '../utils/serializedStateProcessing.js';
 import { createUniqueName } from '../utils/naming.js';
+import { setUpVariantSeedAndRng } from '../utils/variants.js';
 
 export default class ConditionalContent extends CompositeComponent {
   static componentType = "conditionalContent";
@@ -9,26 +10,31 @@ export default class ConditionalContent extends CompositeComponent {
   static includeBlankStringChildren = true;
 
   static assignNamesToReplacements = true;
-  static originalNamesAreConsistent = true;
 
-  static get stateVariablesShadowedForReference() {
-    return ["baseConditionSatisfied"]
-  }
+  static createsVariants = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
 
   // keep serialized all children other othan cases or else
-  static keepChildrenSerialized({ serializedComponent }) {
+  static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
       return [];
     }
+
+    let componentTypeIsSpecifiedType = (cType, specifiedCType) => componentInfoObjects.isInheritedComponentType({
+      inheritedComponentType: cType,
+      baseComponentType: specifiedCType
+    });
+
+    let componentIsSpecifiedType = (comp, specifiedCType) =>
+      componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
+      || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
+
     let keepSerializedInds = [];
     for (let [ind, child] of serializedComponent.children.entries()) {
-      if (!["case", "else"].includes(child.componentType)) {
-        if (!(child.attributes && child.attributes.componentType && ["case", "else"].includes(child.attributes.componentType.primitive))) {
-          keepSerializedInds.push(ind)
-        }
+      if (!(componentIsSpecifiedType(child, "case") || componentIsSpecifiedType(child, "else"))) {
+        keepSerializedInds.push(ind)
       }
     }
 
@@ -36,9 +42,9 @@ export default class ConditionalContent extends CompositeComponent {
   }
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
-    
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
+
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
     }
@@ -88,7 +94,7 @@ export default class ConditionalContent extends CompositeComponent {
           baseConditionSatisfied = dependencyValues.conditionAttr.stateValues.value;
         }
 
-        return { newValues: { baseConditionSatisfied } }
+        return { setValue: { baseConditionSatisfied } }
       }
     };
 
@@ -103,7 +109,7 @@ export default class ConditionalContent extends CompositeComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             caseChildren: dependencyValues.caseChildren,
             nCases: dependencyValues.caseChildren.length
           }
@@ -123,7 +129,7 @@ export default class ConditionalContent extends CompositeComponent {
         if (dependencyValues.elseChild.length > 0) {
           elseChild = dependencyValues.elseChild[0]
         }
-        return { newValues: { elseChild } };
+        return { setValue: { elseChild } };
       }
     }
 
@@ -139,7 +145,7 @@ export default class ConditionalContent extends CompositeComponent {
         },
       }),
       definition: ({ dependencyValues }) => ({
-        newValues: { haveCasesOrElse: dependencyValues.nCases > 0 || dependencyValues.elseChild !== null }
+        setValue: { haveCasesOrElse: dependencyValues.nCases > 0 || dependencyValues.elseChild !== null }
       })
     }
 
@@ -177,7 +183,7 @@ export default class ConditionalContent extends CompositeComponent {
         }
 
         return {
-          newValues: {
+          setValue: {
             selectedIndices,
           }
         };
@@ -202,20 +208,76 @@ export default class ConditionalContent extends CompositeComponent {
       markStale: () => ({ updateReplacements: true }),
       definition() {
         return {
-          newValues: { readyToExpandWhenResolved: true }
+          setValue: { readyToExpandWhenResolved: true }
         }
       }
     }
 
+
+    stateVariableDefinitions.isVariantComponent = {
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { isVariantComponent: true } })
+    }
+
+    stateVariableDefinitions.generatedVariantInfo = {
+      returnDependencies: ({ sharedParameters, componentInfoObjects }) => ({
+        variantSeed: {
+          dependencyType: "value",
+          value: sharedParameters.variantSeed,
+        },
+        variantDescendants: {
+          dependencyType: "descendant",
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
+          variableNames: [
+            "isVariantComponent",
+            "generatedVariantInfo",
+          ],
+          useReplacementsForComposites: true,
+          recurseToMatchedChildren: false,
+          variablesOptional: true,
+          includeNonActiveChildren: true,
+          ignoreReplacementsOfEncounteredComposites: true,
+        },
+
+      }),
+      definition({ dependencyValues, componentName }) {
+
+        let generatedVariantInfo = {
+          seed: dependencyValues.variantSeed,
+          meta: {
+            createdBy: componentName,
+          }
+        };
+
+
+        let subvariants = generatedVariantInfo.subvariants = [];
+        for (let descendant of dependencyValues.variantDescendants) {
+          if (descendant.stateValues.isVariantComponent) {
+            subvariants.push(descendant.stateValues.generatedVariantInfo)
+          } else if (descendant.stateValues.generatedVariantInfo) {
+            subvariants.push(...descendant.stateValues.generatedVariantInfo.subvariants)
+          }
+        }
+
+        return {
+          setValue: {
+            generatedVariantInfo,
+          }
+        }
+
+      }
+    }
+
+
     return stateVariableDefinitions;
   }
 
-  static createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
+  static async createSerializedReplacements({ component, components, workspace, componentInfoObjects }) {
 
-    let replacements = this.getReplacements(component, components, componentInfoObjects);
+    let replacements = await this.getReplacements(component, components, componentInfoObjects);
 
-    workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
-    workspace.previousBaseConditionSatisfied = component.stateValues.baseConditionSatisfied;
+    workspace.previousSelectedIndices = [...await component.stateValues.selectedIndices];
+    workspace.previousBaseConditionSatisfied = await component.stateValues.baseConditionSatisfied;
 
     // console.log(`replacements for ${component.componentName}`)
     // console.log(JSON.parse(JSON.stringify(replacements)));
@@ -225,29 +287,31 @@ export default class ConditionalContent extends CompositeComponent {
 
   }
 
-  static getReplacements(component, components, componentInfoObjects) {
+  static async getReplacements(component, components, componentInfoObjects) {
 
 
-    if (!component.stateValues.baseConditionSatisfied) {
+    if (!await component.stateValues.baseConditionSatisfied) {
       return [];
     }
 
     let replacements = [];
 
-    if (!component.stateValues.haveCasesOrElse) {
+    if (!await component.stateValues.haveCasesOrElse) {
       replacements = deepClone(component.serializedChildren);
     } else {
 
-      for (let selectedIndex of component.stateValues.selectedIndices) {
+      let caseChildren = await component.stateValues.caseChildren;
+
+      for (let [replInd, selectedIndex] of (await component.stateValues.selectedIndices).entries()) {
 
         let selectedChildName, childComponentType, newNameForSelectedChild;
-        if (selectedIndex < component.stateValues.nCases) {
-          selectedChildName = component.stateValues.caseChildren[selectedIndex].componentName;
+        if (selectedIndex < await component.stateValues.nCases) {
+          selectedChildName = caseChildren[selectedIndex].componentName;
           newNameForSelectedChild = createUniqueName("case", `${component.componentName}|replacement|${selectedIndex}`)
           childComponentType = "case";
 
         } else {
-          selectedChildName = component.stateValues.elseChild.componentName;
+          selectedChildName = (await component.stateValues.elseChild).componentName;
           newNameForSelectedChild = createUniqueName("else", `${component.componentName}|replacement|${selectedIndex}`)
           childComponentType = "else";
         }
@@ -259,13 +323,14 @@ export default class ConditionalContent extends CompositeComponent {
         // use state, not stateValues, as read only proxy messes up internal
         // links between descendant variant components and the components themselves
 
-        let serializedGrandchildren = deepClone(components[selectedChildName].state.serializedChildren.value);
+        let serializedGrandchildren = deepClone(await components[selectedChildName].state.serializedChildren.value);
         let serializedChild = {
           componentType: childComponentType,
           state: { rendered: true },
           doenetAttributes: Object.assign({}, components[selectedChildName].doenetAttributes),
           children: serializedGrandchildren,
           originalName: newNameForSelectedChild,
+          variants: { desiredVariant: { seed: component.sharedParameters.variantSeed + replInd.toString() + '|' + selectedIndex.toString() } }
         }
 
         if (components[selectedChildName].attributes.newNamespace) {
@@ -276,7 +341,7 @@ export default class ConditionalContent extends CompositeComponent {
       }
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -284,8 +349,7 @@ export default class ConditionalContent extends CompositeComponent {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
-      originalNamesAreConsistent: newNamespace
-        || !component.doenetAttributes.assignNames,
+      originalNamesAreConsistent: true,
     });
 
 
@@ -293,22 +357,25 @@ export default class ConditionalContent extends CompositeComponent {
 
   }
 
-  static calculateReplacementChanges({ component, componentChanges, components, workspace, componentInfoObjects }) {
+  static async calculateReplacementChanges({ component, componentChanges, components, workspace, componentInfoObjects }) {
 
     // console.log(`calculate replacement changes for selectByCondition ${component.componentName}`)
     // console.log(workspace.previousSelectedIndices);
     // console.log(component.stateValues.selectedIndices);
 
-    if (workspace.previousSelectedIndices.length === component.stateValues.selectedIndices.length
-      && workspace.previousSelectedIndices.every((v, i) => v === component.stateValues.selectedIndices[i])
+    let selectedIndices = await component.stateValues.selectedIndices;
+    let baseConditionSatisfied = await component.stateValues.baseConditionSatisfied;
+
+    if (workspace.previousSelectedIndices.length === selectedIndices.length
+      && workspace.previousSelectedIndices.every((v, i) => v === selectedIndices[i])
     ) {
 
-      if (workspace.previousBaseConditionSatisfied === component.stateValues.baseConditionSatisfied) {
+      if (workspace.previousBaseConditionSatisfied === baseConditionSatisfied) {
         return [];
       } else {
 
 
-        if (component.stateValues.baseConditionSatisfied) {
+        if (baseConditionSatisfied) {
           if (component.replacements.length === component.serializedChildren.length) {
             // just stop withholding replacements
             // stop withholding replacements
@@ -318,7 +385,7 @@ export default class ConditionalContent extends CompositeComponent {
               replacementsToWithhold: 0,
             };
 
-            workspace.previousBaseConditionSatisfied = component.stateValues.baseConditionSatisfied;
+            workspace.previousBaseConditionSatisfied = baseConditionSatisfied;
             return [replacementInstruction];
           }
 
@@ -329,7 +396,7 @@ export default class ConditionalContent extends CompositeComponent {
             replacementsToWithhold,
           };
 
-          workspace.previousBaseConditionSatisfied = component.stateValues.baseConditionSatisfied;
+          workspace.previousBaseConditionSatisfied = baseConditionSatisfied;
           return [replacementInstruction];
 
         }
@@ -343,7 +410,7 @@ export default class ConditionalContent extends CompositeComponent {
 
     let replacementChanges = [];
 
-    let replacements = this.getReplacements(component, components, componentInfoObjects);
+    let replacements = await this.getReplacements(component, components, componentInfoObjects);
 
     let replacementInstruction = {
       changeType: "add",
@@ -356,12 +423,25 @@ export default class ConditionalContent extends CompositeComponent {
 
     replacementChanges.push(replacementInstruction);
 
-    workspace.previousSelectedIndices = [...component.stateValues.selectedIndices];
-    workspace.previousBaseConditionSatisfied = component.stateValues.baseConditionSatisfied;
+    workspace.previousSelectedIndices = [...selectedIndices];
+    workspace.previousBaseConditionSatisfied = baseConditionSatisfied;
 
     return replacementChanges;
 
   }
+
+  static async setUpVariant({
+    serializedComponent, sharedParameters,
+    descendantVariantComponents,
+  }) {
+
+    setUpVariantSeedAndRng({
+      serializedComponent, sharedParameters,
+      descendantVariantComponents
+    });
+
+  }
+
 
   get allPotentialRendererTypes() {
 

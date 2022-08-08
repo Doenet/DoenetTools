@@ -1,65 +1,49 @@
-import { use } from 'chai';
 import React, { useState } from 'react';
-import DoenetRenderer from './DoenetRenderer';
+import useDoenetRender from './useDoenetRenderer';
 
-export default class Footnote extends DoenetRenderer {
-  constructor(props) {
-    super(props);
-    this.handleClick = this.handleClick.bind(this);
-    this.state = {isVisible: false};
+export default React.memo(function Footnote(props) {
+  let { name, SVs } = useDoenetRender(props,false);
+  let [isVisible,setIsVisible] = useState(false);
+
+  if (SVs.hidden) {
+    return null;
   }
 
-  handleClick() {
-    if (this.state.isVisible == true) {
-      this.setState({isVisible: false});
-      console.log(this.state.isVisible);
-    } else {
-      this.setState({isVisible: true});
-      console.log(this.state.isVisible)
-    }
+  const footnoteMessageStyle = {
+    padding: '10px', 
+    borderRadius: '5px', 
+    backgroundColor: '#e2e2e2',
+    display: `static`,
   }
-    
-  render() {
+let footnoteMessage = '';
 
-    if (this.doenetSvData.hidden) {
-      return null;
-    }
+if (isVisible) {
+  footnoteMessage = <div style={footnoteMessageStyle}>{SVs.text}</div>;
+} 
 
-    const footnoteMessageStyle = {
-          padding: '10px', 
-          borderRadius: '5px', 
-          backgroundColor: '#e2e2e2',
-          display: `static`,
-        }
-    let footnoteMessage; 
-    if (this.state.isVisible) {
-      footnoteMessage = <div style={footnoteMessageStyle}>{this.doenetSvData.text}</div>;
-    } else {
-      footnoteMessage = ''
-    }
-
-    const buttonStyle = {
-      backgroundColor: 'white',
-      border: 'none'
-    }
-
-    const footnoteStyle = {
-      textDecoration: 'none',
-      color: '#1A5A99'
-    }
-    
-    return (
-      <>
-      <span id={this.componentName}>
-        <a name={this.componentName} />
-        <sup>
-          <button style={buttonStyle} onClick={this.handleClick}>
-            <a href='#' title={this.doenetSvData.text} style={footnoteStyle}>[{this.doenetSvData.footnoteTag}]</a>
-          </button>
-        </sup>
-      </span>
-      {footnoteMessage}
-      </>
-    );
-  }
+const buttonStyle = {
+backgroundColor: 'white',
+border: 'none'
 }
+
+const footnoteStyle = {
+textDecoration: 'none',
+color: '#1A5A99'
+}
+
+return (
+<>
+<span id={name}>
+  <a name={name} />
+  <sup>
+    <button style={buttonStyle} onClick={()=>setIsVisible((was)=>!was)}>
+      <a href='#' title={SVs.text} style={footnoteStyle}>[{SVs.footnoteTag}]</a>
+    </button>
+  </sup>
+</span>
+{footnoteMessage}
+</>
+);
+
+})
+

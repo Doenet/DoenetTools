@@ -1,12 +1,12 @@
-import { E as EditorView, V as ViewPlugin, R as RangeSet, D as Decoration, W as WidgetType, a as RangeSetBuilder, b as RangeValue, P as PluginField, r as runScopeHandlers, c as Direction, l as logException, k as keymap, h as highlightSpecialChars, d as drawSelection, e as highlightActiveLine } from '../common/index-69193cdd.js';
-import { A as Annotation, F as Facet, c as combineConfig, S as StateField, T as Transaction, C as ChangeSet, a as ChangeDesc, E as EditorSelection, b as StateEffect, M as MapMode, d as codePointSize, e as codePointAt, f as CharCategory, g as fromCodePoint, P as Prec, h as findColumn, i as countColumn, j as EditorState } from '../common/index-760ad7b2.js';
-import { l as language, f as foldable, s as syntaxTree, i as indentOnInput } from '../common/index-1809cded.js';
-import { g as gutter, G as GutterMarker, l as lineNumbers, h as highlightActiveLineGutter } from '../common/index-7c2292c8.js';
-import { b as bracketMatching, d as defaultKeymap } from '../common/index-568685e1.js';
-import { d as defaultHighlightStyle } from '../common/index-f5308bd6.js';
-import '../common/tree.es-a8ccfba9.js';
+import { E as EditorView, R as RangeSet, V as ViewPlugin, D as Decoration, W as WidgetType, a as RangeSetBuilder, b as RangeValue, P as PluginField, r as runScopeHandlers, c as Direction, l as logException, k as keymap, h as highlightSpecialChars, d as drawSelection, e as dropCursor, f as highlightActiveLine } from '../common/index-d029f935.js';
+import { F as Facet, c as combineConfig, S as StateField, E as EditorSelection, T as Transaction, C as ChangeSet, a as ChangeDesc, A as Annotation, b as StateEffect, d as codePointSize, e as codePointAt, f as CharCategory, M as MapMode, g as fromCodePoint, P as Prec, h as findColumn, i as countColumn, j as EditorState } from '../common/index-04f03c08.js';
+import { f as foldable, l as language, s as syntaxTree, i as indentOnInput } from '../common/index-febc6a6d.js';
+import { g as gutter, G as GutterMarker, l as lineNumbers, h as highlightActiveLineGutter } from '../common/index-80ce4713.js';
+import { b as bracketMatching, d as defaultKeymap } from '../common/index-bbc3642b.js';
+import { d as defaultHighlightStyle } from '../common/index-76591e04.js';
+import '../common/index-3d578c67.js';
 
-const fromHistory = Annotation.define();
+const fromHistory = /*@__PURE__*/Annotation.define();
 /**
 Transaction annotation that will prevent that transaction from
 being combined with other transactions in the undo history. Given
@@ -14,7 +14,7 @@ being combined with other transactions in the undo history. Given
 `"after"`, subsequent transactions won't be combined with this
 one. With `"full"`, the transaction is isolated on both sides.
 */
-const isolateHistory = Annotation.define();
+const isolateHistory = /*@__PURE__*/Annotation.define();
 /**
 This facet provides a way to register functions that, given a
 transaction, provide a set of effects that the history should
@@ -22,8 +22,8 @@ store when inverting the transaction. This can be used to
 integrate some kinds of effects in the history, so that they can
 be undone (and redone again).
 */
-const invertedEffects = Facet.define();
-const historyConfig = Facet.define({
+const invertedEffects = /*@__PURE__*/Facet.define();
+const historyConfig = /*@__PURE__*/Facet.define({
     combine(configs) {
         return combineConfig(configs, {
             minDepth: 100,
@@ -31,7 +31,12 @@ const historyConfig = Facet.define({
         }, { minDepth: Math.max, newGroupDelay: Math.min });
     }
 });
-const historyField_ = StateField.define({
+function changeEnd(changes) {
+    let end = 0;
+    changes.iterChangedRanges((_, to) => end = to);
+    return end;
+}
+const historyField_ = /*@__PURE__*/StateField.define({
     create() {
         return HistoryState.empty;
     },
@@ -39,7 +44,8 @@ const historyField_ = StateField.define({
         let config = tr.state.facet(historyConfig);
         let fromHist = tr.annotation(fromHistory);
         if (fromHist) {
-            let item = HistEvent.fromTransaction(tr), from = fromHist.side;
+            let selection = tr.docChanged ? EditorSelection.single(changeEnd(tr.changes)) : undefined;
+            let item = HistEvent.fromTransaction(tr, selection), from = fromHist.side;
             let other = from == 0 /* Done */ ? state.undone : state.done;
             if (item)
                 other = updateBranch(other, other.length, config.minDepth, item);
@@ -78,17 +84,19 @@ function history(config = {}) {
         historyConfig.of(config),
         EditorView.domEventHandlers({
             beforeinput(e, view) {
-                if (e.inputType == "historyUndo")
-                    return undo(view);
-                if (e.inputType == "historyRedo")
-                    return redo(view);
-                return false;
+                let command = e.inputType == "historyUndo" ? undo : e.inputType == "historyRedo" ? redo : null;
+                if (!command)
+                    return false;
+                e.preventDefault();
+                return command(view);
             }
         })
     ];
 }
 function cmd(side, selection) {
     return function ({ state, dispatch }) {
+        if (!selection && state.readOnly)
+            return false;
         let historyState = state.field(historyField_, false);
         if (!historyState)
             return false;
@@ -103,20 +111,20 @@ function cmd(side, selection) {
 Undo a single group of history events. Returns false if no group
 was available.
 */
-const undo = cmd(0 /* Done */, false);
+const undo = /*@__PURE__*/cmd(0 /* Done */, false);
 /**
 Redo a group of history events. Returns false if no group was
 available.
 */
-const redo = cmd(1 /* Undone */, false);
+const redo = /*@__PURE__*/cmd(1 /* Undone */, false);
 /**
 Undo a selection change.
 */
-const undoSelection = cmd(0 /* Done */, true);
+const undoSelection = /*@__PURE__*/cmd(0 /* Done */, true);
 /**
 Redo a selection change.
 */
-const redoSelection = cmd(1 /* Undone */, true);
+const redoSelection = /*@__PURE__*/cmd(1 /* Undone */, true);
 // History events store groups of changes or effects that need to be
 // undone/redone together.
 class HistEvent {
@@ -158,7 +166,7 @@ class HistEvent {
     // This does not check `addToHistory` and such, it assumes the
     // transaction needs to be converted to an item. Returns null when
     // there are no changes or effects in the transaction.
-    static fromTransaction(tr) {
+    static fromTransaction(tr, selection) {
         let effects = none;
         for (let invert of tr.startState.facet(invertedEffects)) {
             let result = invert(tr);
@@ -167,7 +175,7 @@ class HistEvent {
         }
         if (!effects.length && tr.changes.empty)
             return null;
-        return new HistEvent(tr.changes.invert(tr.startState.doc), effects, undefined, tr.startState.selection, none);
+        return new HistEvent(tr.changes.invert(tr.startState.doc), effects, undefined, selection || tr.startState.selection, none);
     }
     static selection(selections) {
         return new HistEvent(undefined, none, undefined, undefined, selections);
@@ -251,6 +259,7 @@ function mapEvent(event, mapping, extraSelections) {
     let fullMapping = event.mapped ? event.mapped.composeDesc(before) : before;
     return new HistEvent(mappedChanges, StateEffect.mapEffects(event.effects, mapping), fullMapping, event.startSelection.map(before), selections);
 }
+const joinableUserEvent = /^(input\.type|delete)($|\.)/;
 class HistoryState {
     constructor(done, undone, prevTime = 0, prevUserEvent = undefined) {
         this.done = done;
@@ -263,11 +272,13 @@ class HistoryState {
     }
     addChanges(event, time, userEvent, newGroupDelay, maxLen) {
         let done = this.done, lastEvent = done[done.length - 1];
-        if (lastEvent && lastEvent.changes &&
-            time - this.prevTime < newGroupDelay &&
-            !lastEvent.selectionsAfter.length &&
-            !lastEvent.changes.empty && event.changes &&
-            isAdjacent(lastEvent.changes, event.changes)) {
+        if (lastEvent && lastEvent.changes && !lastEvent.changes.empty && event.changes &&
+            (!userEvent || joinableUserEvent.test(userEvent)) &&
+            ((!lastEvent.selectionsAfter.length &&
+                time - this.prevTime < newGroupDelay &&
+                isAdjacent(lastEvent.changes, event.changes)) ||
+                // For compose (but not compose.start) events, always join with previous event
+                userEvent == "input.type.compose")) {
             done = updateBranch(done, done.length - 1, maxLen, new HistEvent(event.changes.compose(lastEvent.changes), conc(event.effects, lastEvent.effects), lastEvent.mapped, lastEvent.startSelection, none));
         }
         else {
@@ -279,7 +290,7 @@ class HistoryState {
         let last = this.done.length ? this.done[this.done.length - 1].selectionsAfter : none;
         if (last.length > 0 &&
             time - this.prevTime < newGroupDelay &&
-            userEvent == "keyboardselection" && this.prevUserEvent == userEvent &&
+            userEvent == this.prevUserEvent && userEvent && /^select($|\.)/.test(userEvent) &&
             eqSelectionShape(last[last.length - 1], selection))
             return this;
         return new HistoryState(addSelection(this.done, selection), this.undone, time, userEvent);
@@ -295,7 +306,9 @@ class HistoryState {
         if (selection && event.selectionsAfter.length) {
             return state.update({
                 selection: event.selectionsAfter[event.selectionsAfter.length - 1],
-                annotations: fromHistory.of({ side, rest: popSelection(branch) })
+                annotations: fromHistory.of({ side, rest: popSelection(branch) }),
+                userEvent: side == 0 /* Done */ ? "select.undo" : "select.redo",
+                scrollIntoView: true
             });
         }
         else if (!event.changes) {
@@ -310,12 +323,14 @@ class HistoryState {
                 selection: event.startSelection,
                 effects: event.effects,
                 annotations: fromHistory.of({ side, rest }),
-                filter: false
+                filter: false,
+                userEvent: side == 0 /* Done */ ? "undo" : "redo",
+                scrollIntoView: true
             });
         }
     }
 }
-HistoryState.empty = new HistoryState(none, none);
+HistoryState.empty = /*@__PURE__*/new HistoryState(none, none);
 /**
 Default key bindings for the undo history.
 
@@ -352,7 +367,7 @@ function selectedLines(view) {
     for (let { head } of view.state.selection.ranges) {
         if (lines.some(l => l.from <= head && l.to >= head))
             continue;
-        lines.push(view.visualLineAt(head));
+        lines.push(view.lineBlockAt(head));
     }
     return lines;
 }
@@ -383,7 +398,7 @@ const foldState = /*@__PURE__*/StateField.define({
         }
         return folded;
     },
-    provide: f => EditorView.decorations.compute([f], s => s.field(f))
+    provide: f => EditorView.decorations.from(f)
 });
 function foldInside(state, from, to) {
     var _a;
@@ -442,10 +457,10 @@ Fold all top-level foldable ranges.
 const foldAll = view => {
     let { state } = view, effects = [];
     for (let pos = 0; pos < state.doc.length;) {
-        let line = view.visualLineAt(pos), range = foldable(state, line.from, line.to);
+        let line = view.lineBlockAt(pos), range = foldable(state, line.from, line.to);
         if (range)
             effects.push(foldEffect.of(range));
-        pos = (range ? view.visualLineAt(range.to) : line).to + 1;
+        pos = (range ? view.lineBlockAt(range.to) : line).to + 1;
     }
     if (effects.length)
         view.dispatch({ effects: maybeEnable(view.state, effects) });
@@ -494,29 +509,31 @@ function codeFolding(config) {
     return result;
 }
 const foldWidget = /*@__PURE__*/Decoration.replace({ widget: /*@__PURE__*/new class extends WidgetType {
-        ignoreEvents() { return false; }
         toDOM(view) {
             let { state } = view, conf = state.facet(foldConfig);
-            if (conf.placeholderDOM)
-                return conf.placeholderDOM();
-            let element = document.createElement("span");
-            element.textContent = conf.placeholderText;
-            element.setAttribute("aria-label", state.phrase("folded code"));
-            element.title = state.phrase("unfold");
-            element.className = "cm-foldPlaceholder";
-            element.onclick = event => {
-                let line = view.visualLineAt(view.posAtDOM(event.target));
+            let onclick = (event) => {
+                let line = view.lineBlockAt(view.posAtDOM(event.target));
                 let folded = foldInside(view.state, line.from, line.to);
                 if (folded)
                     view.dispatch({ effects: unfoldEffect.of(folded) });
                 event.preventDefault();
             };
+            if (conf.placeholderDOM)
+                return conf.placeholderDOM(view, onclick);
+            let element = document.createElement("span");
+            element.textContent = conf.placeholderText;
+            element.setAttribute("aria-label", state.phrase("folded code"));
+            element.title = state.phrase("unfold");
+            element.className = "cm-foldPlaceholder";
+            element.onclick = onclick;
             return element;
         }
     } });
 const foldGutterDefaults = {
     openText: "⌄",
-    closedText: "›"
+    closedText: "›",
+    markerDOM: null,
+    domEventHandlers: {},
 };
 class FoldMarker extends GutterMarker {
     constructor(config, open) {
@@ -526,6 +543,8 @@ class FoldMarker extends GutterMarker {
     }
     eq(other) { return this.config == other.config && this.open == other.open; }
     toDOM(view) {
+        if (this.config.markerDOM)
+            return this.config.markerDOM(this.open);
         let span = document.createElement("span");
         span.textContent = this.open ? this.config.openText : this.config.closedText;
         span.title = view.state.phrase(this.open ? "Fold line" : "Unfold line");
@@ -548,20 +567,22 @@ function foldGutter(config = {}) {
         update(update) {
             if (update.docChanged || update.viewportChanged ||
                 update.startState.facet(language) != update.state.facet(language) ||
-                update.startState.field(foldState, false) != update.state.field(foldState, false))
+                update.startState.field(foldState, false) != update.state.field(foldState, false) ||
+                syntaxTree(update.startState) != syntaxTree(update.state))
                 this.markers = this.buildMarkers(update.view);
         }
         buildMarkers(view) {
             let builder = new RangeSetBuilder();
-            view.viewportLines(line => {
+            for (let line of view.viewportLineBlocks) {
                 let mark = foldInside(view.state, line.from, line.to) ? canUnfold
                     : foldable(view.state, line.from, line.to) ? canFold : null;
                 if (mark)
                     builder.add(line.from, line.from, mark);
-            });
+            }
             return builder.finish();
         }
     });
+    let { domEventHandlers } = fullConfig;
     return [
         markers,
         gutter({
@@ -570,8 +591,9 @@ function foldGutter(config = {}) {
             initialSpacer() {
                 return new FoldMarker(fullConfig, false);
             },
-            domEventHandlers: {
-                click: (view, line) => {
+            domEventHandlers: Object.assign(Object.assign({}, domEventHandlers), { click: (view, line, event) => {
+                    if (domEventHandlers.click && domEventHandlers.click(view, line, event))
+                        return true;
                     let folded = foldInside(view.state, line.from, line.to);
                     if (folded) {
                         view.dispatch({ effects: unfoldEffect.of(folded) });
@@ -583,8 +605,7 @@ function foldGutter(config = {}) {
                         return true;
                     }
                     return false;
-                }
-            }
+                } })
         }),
         codeFolding()
     ];
@@ -599,7 +620,7 @@ const baseTheme = /*@__PURE__*/EditorView.baseTheme({
         padding: "0 1px",
         cursor: "pointer"
     },
-    ".cm-foldGutter .cm-gutterElement": {
+    ".cm-foldGutter span": {
         padding: "0 1px",
         cursor: "pointer"
     }
@@ -607,22 +628,22 @@ const baseTheme = /*@__PURE__*/EditorView.baseTheme({
 
 const defaults = {
     brackets: ["(", "[", "{", "'", '"'],
-    before: ")]}'\":;>"
+    before: ")]}:;>"
 };
-const closeBracketEffect = StateEffect.define({
+const closeBracketEffect = /*@__PURE__*/StateEffect.define({
     map(value, mapping) {
         let mapped = mapping.mapPos(value, -1, MapMode.TrackAfter);
         return mapped == null ? undefined : mapped;
     }
 });
-const skipBracketEffect = StateEffect.define({
+const skipBracketEffect = /*@__PURE__*/StateEffect.define({
     map(value, mapping) { return mapping.mapPos(value); }
 });
-const closedBracket = new class extends RangeValue {
+const closedBracket = /*@__PURE__*/new class extends RangeValue {
 };
 closedBracket.startSide = 1;
 closedBracket.endSide = -1;
-const bracketState = StateField.define({
+const bracketState = /*@__PURE__*/StateField.define({
     create() { return RangeSet.empty; },
     update(value, tr) {
         if (tr.selection) {
@@ -641,13 +662,15 @@ const bracketState = StateField.define({
         return value;
     }
 });
-/// Extension to enable bracket-closing behavior. When a closeable
-/// bracket is typed, its closing bracket is immediately inserted
-/// after the cursor. When closing a bracket directly in front of a
-/// closing bracket inserted by the extension, the cursor moves over
-/// that bracket.
+/**
+Extension to enable bracket-closing behavior. When a closeable
+bracket is typed, its closing bracket is immediately inserted
+after the cursor. When closing a bracket directly in front of a
+closing bracket inserted by the extension, the cursor moves over
+that bracket.
+*/
 function closeBrackets() {
-    return [EditorView.inputHandler.of(handleInput), bracketState];
+    return [inputHandler, bracketState];
 }
 const definedClosing = "()[]{}<>";
 function closing(ch) {
@@ -659,8 +682,9 @@ function closing(ch) {
 function config(state, pos) {
     return state.languageDataAt("closeBrackets", pos)[0] || defaults;
 }
-function handleInput(view, from, to, insert) {
-    if (view.composing)
+const android = typeof navigator == "object" && /*@__PURE__*//Android\b/.test(navigator.userAgent);
+const inputHandler = /*@__PURE__*/EditorView.inputHandler.of((view, from, to, insert) => {
+    if ((android ? view.composing : view.compositionStarted) || view.state.readOnly)
         return false;
     let sel = view.state.selection.main;
     if (insert.length > 2 || insert.length == 2 && codePointSize(codePointAt(insert, 0)) == 1 ||
@@ -671,10 +695,14 @@ function handleInput(view, from, to, insert) {
         return false;
     view.dispatch(tr);
     return true;
-}
-/// Command that implements deleting a pair of matching brackets when
-/// the cursor is between them.
+});
+/**
+Command that implements deleting a pair of matching brackets when
+the cursor is between them.
+*/
 const deleteBracketPair = ({ state, dispatch }) => {
+    if (state.readOnly)
+        return false;
     let conf = config(state, state.selection.main.head);
     let tokens = conf.brackets || defaults.brackets;
     let dont = null, changes = state.changeByRange(range => {
@@ -684,7 +712,7 @@ const deleteBracketPair = ({ state, dispatch }) => {
                 if (token == before && nextChar(state.doc, range.head) == closing(codePointAt(token, 0)))
                     return { changes: { from: range.head - token.length, to: range.head + token.length },
                         range: EditorSelection.cursor(range.head - token.length),
-                        annotations: Transaction.userEvent.of("delete") };
+                        userEvent: "delete.backward" };
             }
         }
         return { range: dont = range };
@@ -693,20 +721,24 @@ const deleteBracketPair = ({ state, dispatch }) => {
         dispatch(state.update(changes, { scrollIntoView: true }));
     return !dont;
 };
-/// Close-brackets related key bindings. Binds Backspace to
-/// [`deleteBracketPair`](#closebrackets.deleteBracketPair).
+/**
+Close-brackets related key bindings. Binds Backspace to
+[`deleteBracketPair`](https://codemirror.net/6/docs/ref/#closebrackets.deleteBracketPair).
+*/
 const closeBracketsKeymap = [
     { key: "Backspace", run: deleteBracketPair }
 ];
-/// Implements the extension's behavior on text insertion. If the
-/// given string counts as a bracket in the language around the
-/// selection, and replacing the selection with it requires custom
-/// behavior (inserting a closing version or skipping past a
-/// previously-closed bracket), this function returns a transaction
-/// representing that custom behavior. (You only need this if you want
-/// to programmatically insert brackets—the
-/// [`closeBrackets`](#closebrackets.closeBrackets) extension will
-/// take care of running this for user input.)
+/**
+Implements the extension's behavior on text insertion. If the
+given string counts as a bracket in the language around the
+selection, and replacing the selection with it requires custom
+behavior (inserting a closing version or skipping past a
+previously-closed bracket), this function returns a transaction
+representing that custom behavior. (You only need this if you want
+to programmatically insert brackets—the
+[`closeBrackets`](https://codemirror.net/6/docs/ref/#closebrackets.closeBrackets) extension will
+take care of running this for user input.)
+*/
 function insertBracket(state, bracket) {
     let conf = config(state, state.selection.main.head);
     let tokens = conf.brackets || defaults.brackets;
@@ -751,7 +783,7 @@ function handleOpen(state, open, close, closeBefore) {
     });
     return dont ? null : state.update(changes, {
         scrollIntoView: true,
-        annotations: Transaction.userEvent.of("input")
+        userEvent: "input.type"
     });
 }
 function handleClose(state, _open, close) {
@@ -795,7 +827,7 @@ function handleSame(state, token, allowTriple) {
         }
         else if (state.charCategorizer(pos)(next) != CharCategory.Word) {
             let prev = state.sliceDoc(pos - 1, pos);
-            if (prev != token && state.charCategorizer(pos)(prev) != CharCategory.Word)
+            if (prev != token && state.charCategorizer(pos)(prev) != CharCategory.Word && !probablyInString(state, pos, token))
                 return { changes: { insert: token + token, from: pos },
                     effects: closeBracketEffect.of(pos + token.length),
                     range: EditorSelection.cursor(pos + token.length) };
@@ -804,12 +836,24 @@ function handleSame(state, token, allowTriple) {
     });
     return dont ? null : state.update(changes, {
         scrollIntoView: true,
-        annotations: Transaction.userEvent.of("input")
+        userEvent: "input.type"
     });
 }
 function nodeStart(state, pos) {
-    let tree = syntaxTree(state).resolve(pos + 1);
+    let tree = syntaxTree(state).resolveInner(pos + 1);
     return tree.parent && tree.from == pos;
+}
+function probablyInString(state, pos, quoteToken) {
+    let node = syntaxTree(state).resolveInner(pos, -1);
+    for (let i = 0; i < 5; i++) {
+        if (state.sliceDoc(node.from, node.from + quoteToken.length) == quoteToken)
+            return true;
+        let parent = node.to == pos && node.parent;
+        if (!parent)
+            break;
+        node = parent;
+    }
+    return false;
 }
 
 const panelConfig = /*@__PURE__*/Facet.define({
@@ -844,9 +888,6 @@ const panelPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
         this.bottom.sync(this.panels.filter(p => !p.top));
         for (let p of this.panels) {
             p.dom.classList.add("cm-panel");
-            // FIXME drop on next breaking release
-            if (p.class)
-                p.dom.classList.add(p.class);
             if (p.mount)
                 p.mount();
         }
@@ -887,9 +928,6 @@ const panelPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
             this.bottom.sync(bottom);
             for (let p of mount) {
                 p.dom.classList.add("cm-panel");
-                // FIXME drop on next breaking release
-                if (p.class)
-                    p.dom.classList.add(p.class);
                 if (p.mount)
                     p.mount();
             }
@@ -918,6 +956,9 @@ class PanelGroup {
         this.syncClasses();
     }
     sync(panels) {
+        for (let p of this.panels)
+            if (p.destroy && panels.indexOf(p) < 0)
+                p.destroy();
         this.panels = panels;
         this.syncDOM();
     }
@@ -1148,6 +1189,8 @@ class SearchCursor {
         return match;
     }
 }
+if (typeof Symbol != "undefined")
+    SearchCursor.prototype[Symbol.iterator] = function () { return this; };
 
 const empty = { from: -1, to: -1, match: /*@__PURE__*//.*/.exec("") };
 const baseFlags = "gm" + (/x/.unicode == null ? "" : "u");
@@ -1304,6 +1347,10 @@ class MultilineRegExpCursor {
         }
     }
 }
+if (typeof Symbol != "undefined") {
+    RegExpCursor.prototype[Symbol.iterator] = MultilineRegExpCursor.prototype[Symbol.iterator] =
+        function () { return this; };
+}
 function validRegExp(source) {
     try {
         new RegExp(source, baseFlags);
@@ -1407,7 +1454,8 @@ const baseTheme$1$1 = /*@__PURE__*/EditorView.baseTheme({
 const defaultHighlightOptions = {
     highlightWordAroundCursor: false,
     minSelectionLength: 1,
-    maxMatches: 100
+    maxMatches: 100,
+    wholeWords: true
 };
 const highlightConfig = /*@__PURE__*/Facet.define({
     combine(options) {
@@ -1432,6 +1480,16 @@ function highlightSelectionMatches(options) {
 }
 const matchDeco = /*@__PURE__*/Decoration.mark({ class: "cm-selectionMatch" });
 const mainMatchDeco = /*@__PURE__*/Decoration.mark({ class: "cm-selectionMatch cm-selectionMatch-main" });
+// Whether the characters directly outside the given positions are non-word characters
+function insideWordBoundaries(check, state, from, to) {
+    return (from == 0 || check(state.sliceDoc(from - 1, from)) != CharCategory.Word) &&
+        (to == state.doc.length || check(state.sliceDoc(to, to + 1)) != CharCategory.Word);
+}
+// Whether the characters directly at the given positions are word characters
+function insideWord(check, state, from, to) {
+    return check(state.sliceDoc(from, from + 1)) == CharCategory.Word
+        && check(state.sliceDoc(to - 1, to)) == CharCategory.Word;
+}
 const matchHighlighter = /*@__PURE__*/ViewPlugin.fromClass(class {
     constructor(view) {
         this.decorations = this.getDeco(view);
@@ -1459,18 +1517,26 @@ const matchHighlighter = /*@__PURE__*/ViewPlugin.fromClass(class {
             let len = range.to - range.from;
             if (len < conf.minSelectionLength || len > 200)
                 return Decoration.none;
-            query = state.sliceDoc(range.from, range.to).trim();
-            if (!query)
-                return Decoration.none;
+            if (conf.wholeWords) {
+                query = state.sliceDoc(range.from, range.to); // TODO: allow and include leading/trailing space?
+                check = state.charCategorizer(range.head);
+                if (!(insideWordBoundaries(check, state, range.from, range.to)
+                    && insideWord(check, state, range.from, range.to)))
+                    return Decoration.none;
+            }
+            else {
+                query = state.sliceDoc(range.from, range.to).trim();
+                if (!query)
+                    return Decoration.none;
+            }
         }
         let deco = [];
         for (let part of view.visibleRanges) {
             let cursor = new SearchCursor(state.doc, query, part.from, part.to);
-            while (!cursor.nextOverlapping().done) {
+            while (!cursor.next().done) {
                 let { from, to } = cursor.value;
-                if (!check || ((from == 0 || check(state.sliceDoc(from - 1, from)) != CharCategory.Word) &&
-                    (to == state.doc.length || check(state.sliceDoc(to, to + 1)) != CharCategory.Word))) {
-                    if (check && from <= range.from && to >= range.to)
+                if (!check || insideWordBoundaries(check, state, from, to)) {
+                    if (range.empty && from <= range.from && to >= range.to)
                         deco.push(mainMatchDeco.range(from, to));
                     else if (from >= range.to || to <= range.from)
                         deco.push(matchDeco.range(from, to));
@@ -1500,16 +1566,27 @@ const selectWord = ({ state, dispatch }) => {
 // Find next occurrence of query relative to last cursor. Wrap around
 // the document if there are no more matches.
 function findNextOccurrence(state, query) {
-    let { ranges } = state.selection;
-    let ahead = new SearchCursor(state.doc, query, ranges[ranges.length - 1].to).next();
-    if (!ahead.done)
-        return ahead.value;
-    let cursor = new SearchCursor(state.doc, query, 0, Math.max(0, ranges[ranges.length - 1].from - 1));
-    while (!cursor.next().done) {
-        if (!ranges.some(r => r.from === cursor.value.from))
+    let { main, ranges } = state.selection;
+    let word = state.wordAt(main.head), fullWord = word && word.from == main.from && word.to == main.to;
+    for (let cycled = false, cursor = new SearchCursor(state.doc, query, ranges[ranges.length - 1].to);;) {
+        cursor.next();
+        if (cursor.done) {
+            if (cycled)
+                return null;
+            cursor = new SearchCursor(state.doc, query, 0, Math.max(0, ranges[ranges.length - 1].from - 1));
+            cycled = true;
+        }
+        else {
+            if (cycled && ranges.some(r => r.from == cursor.value.from))
+                continue;
+            if (fullWord) {
+                let word = state.wordAt(cursor.value.from);
+                if (!word || word.from != cursor.value.from || word.to != cursor.value.to)
+                    continue;
+            }
             return cursor.value;
+        }
     }
-    return null;
 }
 /**
 Select next occurrence of the current selection.
@@ -1526,48 +1603,78 @@ const selectNextOccurrence = ({ state, dispatch }) => {
     if (!range)
         return false;
     dispatch(state.update({
-        selection: state.selection.addRange(EditorSelection.range(range.from, range.to)),
-        scrollIntoView: true
+        selection: state.selection.addRange(EditorSelection.range(range.from, range.to), false),
+        effects: EditorView.scrollIntoView(range.to)
     }));
     return true;
 };
 
 const searchConfigFacet = /*@__PURE__*/Facet.define({
     combine(configs) {
-        return { top: configs.some(c => c.top) };
+        var _a;
+        return {
+            top: configs.reduce((val, conf) => val !== null && val !== void 0 ? val : conf.top, undefined) || false,
+            caseSensitive: configs.reduce((val, conf) => val !== null && val !== void 0 ? val : (conf.caseSensitive || conf.matchCase), undefined) || false,
+            createPanel: ((_a = configs.find(c => c.createPanel)) === null || _a === void 0 ? void 0 : _a.createPanel) || (view => new SearchPanel(view))
+        };
     }
 });
-class Query {
-    constructor(search, replace, caseInsensitive) {
-        this.search = search;
-        this.replace = replace;
-        this.caseInsensitive = caseInsensitive;
+/**
+A search query. Part of the editor's search state.
+*/
+class SearchQuery {
+    /**
+    Create a query object.
+    */
+    constructor(config) {
+        this.search = config.search;
+        this.caseSensitive = !!config.caseSensitive;
+        this.regexp = !!config.regexp;
+        this.replace = config.replace || "";
+        this.valid = !!this.search && (!this.regexp || validRegExp(this.search));
+        this.unquoted = this.search.replace(/\\([nrt\\])/g, (_, ch) => ch == "n" ? "\n" : ch == "r" ? "\r" : ch == "t" ? "\t" : "\\");
     }
+    /**
+    Compare this query to another query.
+    */
     eq(other) {
         return this.search == other.search && this.replace == other.replace &&
-            this.caseInsensitive == other.caseInsensitive && this.constructor == other.constructor;
+            this.caseSensitive == other.caseSensitive && this.regexp == other.regexp;
+    }
+    /**
+    @internal
+    */
+    create() {
+        return this.regexp ? new RegExpQuery(this) : new StringQuery(this);
+    }
+    getCursor(doc, from = 0, to = doc.length) {
+        return this.regexp ? regexpCursor(this, doc, from, to) : stringCursor(this, doc, from, to);
     }
 }
-class StringQuery extends Query {
-    constructor(search, replace, caseInsensitive) {
-        super(search, replace, caseInsensitive);
-        this.unquoted = search.replace(/\\([nrt\\])/g, (_, ch) => ch == "n" ? "\n" : ch == "r" ? "\r" : ch == "t" ? "\t" : "\\");
+class QueryType {
+    constructor(spec) {
+        this.spec = spec;
     }
-    cursor(doc, from = 0, to = doc.length) {
-        return new SearchCursor(doc, this.unquoted, from, to, this.caseInsensitive ? x => x.toLowerCase() : undefined);
+}
+function stringCursor(spec, doc, from, to) {
+    return new SearchCursor(doc, spec.unquoted, from, to, spec.caseSensitive ? undefined : x => x.toLowerCase());
+}
+class StringQuery extends QueryType {
+    constructor(spec) {
+        super(spec);
     }
     nextMatch(doc, curFrom, curTo) {
-        let cursor = this.cursor(doc, curTo).nextOverlapping();
+        let cursor = stringCursor(this.spec, doc, curTo, doc.length).nextOverlapping();
         if (cursor.done)
-            cursor = this.cursor(doc, 0, curFrom).nextOverlapping();
+            cursor = stringCursor(this.spec, doc, 0, curFrom).nextOverlapping();
         return cursor.done ? null : cursor.value;
     }
     // Searching in reverse is, rather than implementing inverted search
     // cursor, done by scanning chunk after chunk forward.
     prevMatchInRange(doc, from, to) {
         for (let pos = to;;) {
-            let start = Math.max(from, pos - 10000 /* ChunkSize */ - this.unquoted.length);
-            let cursor = this.cursor(doc, start, pos), range = null;
+            let start = Math.max(from, pos - 10000 /* ChunkSize */ - this.spec.unquoted.length);
+            let cursor = stringCursor(this.spec, doc, start, pos), range = null;
             while (!cursor.nextOverlapping().done)
                 range = cursor.value;
             if (range)
@@ -1581,9 +1688,9 @@ class StringQuery extends Query {
         return this.prevMatchInRange(doc, 0, curFrom) ||
             this.prevMatchInRange(doc, curTo, doc.length);
     }
-    getReplacement(_result) { return this.replace; }
+    getReplacement(_result) { return this.spec.replace; }
     matchAll(doc, limit) {
-        let cursor = this.cursor(doc), ranges = [];
+        let cursor = stringCursor(this.spec, doc, 0, doc.length), ranges = [];
         while (!cursor.next().done) {
             if (ranges.length >= limit)
                 return null;
@@ -1592,30 +1699,25 @@ class StringQuery extends Query {
         return ranges;
     }
     highlight(doc, from, to, add) {
-        let cursor = this.cursor(doc, Math.max(0, from - this.unquoted.length), Math.min(to + this.unquoted.length, doc.length));
+        let cursor = stringCursor(this.spec, doc, Math.max(0, from - this.spec.unquoted.length), Math.min(to + this.spec.unquoted.length, doc.length));
         while (!cursor.next().done)
             add(cursor.value.from, cursor.value.to);
     }
-    get valid() { return !!this.search; }
 }
-class RegExpQuery extends Query {
-    constructor(search, replace, caseInsensitive) {
-        super(search, replace, caseInsensitive);
-        this.valid = !!search && validRegExp(search);
-    }
-    cursor(doc, from = 0, to = doc.length) {
-        return new RegExpCursor(doc, this.search, this.caseInsensitive ? { ignoreCase: true } : undefined, from, to);
-    }
+function regexpCursor(spec, doc, from, to) {
+    return new RegExpCursor(doc, spec.search, spec.caseSensitive ? undefined : { ignoreCase: true }, from, to);
+}
+class RegExpQuery extends QueryType {
     nextMatch(doc, curFrom, curTo) {
-        let cursor = this.cursor(doc, curTo).next();
+        let cursor = regexpCursor(this.spec, doc, curTo, doc.length).next();
         if (cursor.done)
-            cursor = this.cursor(doc, 0, curFrom).next();
+            cursor = regexpCursor(this.spec, doc, 0, curFrom).next();
         return cursor.done ? null : cursor.value;
     }
     prevMatchInRange(doc, from, to) {
         for (let size = 1;; size++) {
             let start = Math.max(from, to - size * 10000 /* ChunkSize */);
-            let cursor = this.cursor(doc, start, to), range = null;
+            let cursor = regexpCursor(this.spec, doc, start, to), range = null;
             while (!cursor.next().done)
                 range = cursor.value;
             if (range && (start == from || range.from > start + 10))
@@ -1629,13 +1731,13 @@ class RegExpQuery extends Query {
             this.prevMatchInRange(doc, curTo, doc.length);
     }
     getReplacement(result) {
-        return this.replace.replace(/\$([$&\d+])/g, (m, i) => i == "$" ? "$"
+        return this.spec.replace.replace(/\$([$&\d+])/g, (m, i) => i == "$" ? "$"
             : i == "&" ? result.match[0]
                 : i != "0" && +i < result.match.length ? result.match[i]
                     : m);
     }
     matchAll(doc, limit) {
-        let cursor = this.cursor(doc), ranges = [];
+        let cursor = regexpCursor(this.spec, doc, 0, doc.length), ranges = [];
         while (!cursor.next().done) {
             if (ranges.length >= limit)
                 return null;
@@ -1644,21 +1746,28 @@ class RegExpQuery extends Query {
         return ranges;
     }
     highlight(doc, from, to, add) {
-        let cursor = this.cursor(doc, Math.max(0, from - 250 /* HighlightMargin */), Math.min(to + 250 /* HighlightMargin */, doc.length));
+        let cursor = regexpCursor(this.spec, doc, Math.max(0, from - 250 /* HighlightMargin */), Math.min(to + 250 /* HighlightMargin */, doc.length));
         while (!cursor.next().done)
             add(cursor.value.from, cursor.value.to);
     }
 }
-const setQuery = /*@__PURE__*/StateEffect.define();
+/**
+A state effect that updates the current search query. Note that
+this only has an effect if the search state has been initialized
+(by including [`search`](https://codemirror.net/6/docs/ref/#search.search) in your configuration or
+by running [`openSearchPanel`](https://codemirror.net/6/docs/ref/#search.openSearchPanel) at least
+once).
+*/
+const setSearchQuery = /*@__PURE__*/StateEffect.define();
 const togglePanel = /*@__PURE__*/StateEffect.define();
 const searchState = /*@__PURE__*/StateField.define({
     create(state) {
-        return new SearchState(defaultQuery(state), createSearchPanel);
+        return new SearchState(defaultQuery(state).create(), null);
     },
     update(value, tr) {
         for (let effect of tr.effects) {
-            if (effect.is(setQuery))
-                value = new SearchState(effect.value, value.panel);
+            if (effect.is(setSearchQuery))
+                value = new SearchState(effect.value.create(), value.panel);
             else if (effect.is(togglePanel))
                 value = new SearchState(value.query, effect.value ? createSearchPanel : null);
         }
@@ -1680,11 +1789,11 @@ const searchHighlighter = /*@__PURE__*/ViewPlugin.fromClass(class {
     }
     update(update) {
         let state = update.state.field(searchState);
-        if (state != update.startState.field(searchState) || update.docChanged || update.selectionSet)
+        if (state != update.startState.field(searchState) || update.docChanged || update.selectionSet || update.viewportChanged)
             this.decorations = this.highlight(state);
     }
     highlight({ query, panel }) {
-        if (!panel || !query.valid)
+        if (!panel || !query.spec.valid)
             return Decoration.none;
         let { view } = this;
         let builder = new RangeSetBuilder();
@@ -1705,7 +1814,7 @@ const searchHighlighter = /*@__PURE__*/ViewPlugin.fromClass(class {
 function searchCommand(f) {
     return view => {
         let state = view.state.field(searchState, false);
-        return state && state.query.valid ? f(view, state) : openSearchPanel(view);
+        return state && state.query.spec.valid ? f(view, state) : openSearchPanel(view);
     };
 }
 /**
@@ -1722,7 +1831,8 @@ const findNext = /*@__PURE__*/searchCommand((view, { query }) => {
     view.dispatch({
         selection: { anchor: next.from, head: next.to },
         scrollIntoView: true,
-        effects: announceMatch(view, next)
+        effects: announceMatch(view, next),
+        userEvent: "select.search"
     });
     return true;
 });
@@ -1739,7 +1849,8 @@ const findPrevious = /*@__PURE__*/searchCommand((view, { query }) => {
     view.dispatch({
         selection: { anchor: range.from, head: range.to },
         scrollIntoView: true,
-        effects: announceMatch(view, range)
+        effects: announceMatch(view, range),
+        userEvent: "select.search"
     });
     return true;
 });
@@ -1751,7 +1862,8 @@ const selectMatches = /*@__PURE__*/searchCommand((view, { query }) => {
     if (!ranges || !ranges.length)
         return false;
     view.dispatch({
-        selection: EditorSelection.create(ranges.map(r => EditorSelection.range(r.from, r.to)))
+        selection: EditorSelection.create(ranges.map(r => EditorSelection.range(r.from, r.to))),
+        userEvent: "select.search.matches"
     });
     return true;
 });
@@ -1771,7 +1883,10 @@ const selectSelectionMatches = ({ state, dispatch }) => {
             main = ranges.length;
         ranges.push(EditorSelection.range(cur.value.from, cur.value.to));
     }
-    dispatch(state.update({ selection: EditorSelection.create(ranges, main) }));
+    dispatch(state.update({
+        selection: EditorSelection.create(ranges, main),
+        userEvent: "select.search.matches"
+    }));
     return true;
 };
 /**
@@ -1779,6 +1894,8 @@ Replace the current match of the search query.
 */
 const replaceNext = /*@__PURE__*/searchCommand((view, { query }) => {
     let { state } = view, { from, to } = state.selection.main;
+    if (state.readOnly)
+        return false;
     let next = query.nextMatch(state.doc, from, from);
     if (!next)
         return false;
@@ -1795,7 +1912,8 @@ const replaceNext = /*@__PURE__*/searchCommand((view, { query }) => {
     view.dispatch({
         changes, selection,
         scrollIntoView: !!selection,
-        effects: next ? announceMatch(view, next) : undefined
+        effects: next ? announceMatch(view, next) : undefined,
+        userEvent: "input.replace"
     });
     return true;
 });
@@ -1804,39 +1922,29 @@ Replace all instances of the search query with the given
 replacement.
 */
 const replaceAll = /*@__PURE__*/searchCommand((view, { query }) => {
+    if (view.state.readOnly)
+        return false;
     let changes = query.matchAll(view.state.doc, 1e9).map(match => {
         let { from, to } = match;
         return { from, to, insert: query.getReplacement(match) };
     });
     if (!changes.length)
         return false;
-    view.dispatch({ changes });
+    view.dispatch({
+        changes,
+        userEvent: "input.replace.all"
+    });
     return true;
 });
 function createSearchPanel(view) {
-    let { query } = view.state.field(searchState);
-    return {
-        dom: buildPanel({
-            view,
-            query,
-            updateQuery(q) {
-                if (!query.eq(q)) {
-                    query = q;
-                    view.dispatch({ effects: setQuery.of(query) });
-                }
-            }
-        }),
-        mount() {
-            this.dom.querySelector("[name=search]").select();
-        },
-        pos: 80,
-        top: view.state.facet(searchConfigFacet).top
-    };
+    return view.state.facet(searchConfigFacet).createPanel(view);
 }
 function defaultQuery(state, fallback) {
+    var _a;
     let sel = state.selection.main;
     let selText = sel.empty || sel.to > sel.from + 100 ? "" : state.sliceDoc(sel.from, sel.to);
-    return fallback && !selText ? fallback : new StringQuery(selText.replace(/\n/g, "\\n"), "", (fallback === null || fallback === void 0 ? void 0 : fallback.caseInsensitive) || false);
+    let caseSensitive = (_a = fallback === null || fallback === void 0 ? void 0 : fallback.caseSensitive) !== null && _a !== void 0 ? _a : state.facet(searchConfigFacet).caseSensitive;
+    return fallback && !selText ? fallback : new SearchQuery({ search: selText.replace(/\n/g, "\\n"), caseSensitive });
 }
 /**
 Make sure the search panel is open and focused.
@@ -1847,12 +1955,19 @@ const openSearchPanel = view => {
         let panel = getPanel(view, createSearchPanel);
         if (!panel)
             return false;
-        panel.dom.querySelector("[name=search]").focus();
+        let searchInput = panel.dom.querySelector("[name=search]");
+        if (searchInput != view.root.activeElement) {
+            let query = defaultQuery(view.state, state.query.spec);
+            if (query.valid)
+                view.dispatch({ effects: setSearchQuery.of(query) });
+            searchInput.focus();
+            searchInput.select();
+        }
     }
     else {
         view.dispatch({ effects: [
                 togglePanel.of(true),
-                state ? setQuery.of(defaultQuery(view.state, state.query)) : StateEffect.appendConfig.of(searchExtensions)
+                state ? setSearchQuery.of(defaultQuery(view.state, state.query.spec)) : StateEffect.appendConfig.of(searchExtensions)
             ] });
     }
     return true;
@@ -1881,79 +1996,118 @@ Default search-related key bindings.
 */
 const searchKeymap = [
     { key: "Mod-f", run: openSearchPanel, scope: "editor search-panel" },
-    { key: "F3", run: findNext, shift: findPrevious, scope: "editor search-panel" },
-    { key: "Mod-g", run: findNext, shift: findPrevious, scope: "editor search-panel" },
+    { key: "F3", run: findNext, shift: findPrevious, scope: "editor search-panel", preventDefault: true },
+    { key: "Mod-g", run: findNext, shift: findPrevious, scope: "editor search-panel", preventDefault: true },
     { key: "Escape", run: closeSearchPanel, scope: "editor search-panel" },
     { key: "Mod-Shift-l", run: selectSelectionMatches },
     { key: "Alt-g", run: gotoLine },
-    { key: "Mod-d", run: selectNextOccurrence },
+    { key: "Mod-d", run: selectNextOccurrence, preventDefault: true },
 ];
-function buildPanel(conf) {
-    function phrase(phrase) { return conf.view.state.phrase(phrase); }
-    let searchField = crelt("input", {
-        value: conf.query.search,
-        placeholder: phrase("Find"),
-        "aria-label": phrase("Find"),
-        class: "cm-textfield",
-        name: "search",
-        onchange: update,
-        onkeyup: update
-    });
-    let replaceField = crelt("input", {
-        value: conf.query.replace,
-        placeholder: phrase("Replace"),
-        "aria-label": phrase("Replace"),
-        class: "cm-textfield",
-        name: "replace",
-        onchange: update,
-        onkeyup: update
-    });
-    let caseField = crelt("input", {
-        type: "checkbox",
-        name: "case",
-        checked: !conf.query.caseInsensitive,
-        onchange: update
-    });
-    let reField = crelt("input", {
-        type: "checkbox",
-        name: "re",
-        checked: conf.query instanceof RegExpQuery,
-        onchange: update
-    });
-    function update() {
-        conf.updateQuery(new (reField.checked ? RegExpQuery : StringQuery)(searchField.value, replaceField.value, !caseField.checked));
+class SearchPanel {
+    constructor(view) {
+        this.view = view;
+        let query = this.query = view.state.field(searchState).query.spec;
+        this.commit = this.commit.bind(this);
+        this.searchField = crelt("input", {
+            value: query.search,
+            placeholder: phrase(view, "Find"),
+            "aria-label": phrase(view, "Find"),
+            class: "cm-textfield",
+            name: "search",
+            onchange: this.commit,
+            onkeyup: this.commit
+        });
+        this.replaceField = crelt("input", {
+            value: query.replace,
+            placeholder: phrase(view, "Replace"),
+            "aria-label": phrase(view, "Replace"),
+            class: "cm-textfield",
+            name: "replace",
+            onchange: this.commit,
+            onkeyup: this.commit
+        });
+        this.caseField = crelt("input", {
+            type: "checkbox",
+            name: "case",
+            checked: query.caseSensitive,
+            onchange: this.commit
+        });
+        this.reField = crelt("input", {
+            type: "checkbox",
+            name: "re",
+            checked: query.regexp,
+            onchange: this.commit
+        });
+        function button(name, onclick, content) {
+            return crelt("button", { class: "cm-button", name, onclick, type: "button" }, content);
+        }
+        this.dom = crelt("div", { onkeydown: (e) => this.keydown(e), class: "cm-search" }, [
+            this.searchField,
+            button("next", () => findNext(view), [phrase(view, "next")]),
+            button("prev", () => findPrevious(view), [phrase(view, "previous")]),
+            button("select", () => selectMatches(view), [phrase(view, "all")]),
+            crelt("label", null, [this.caseField, phrase(view, "match case")]),
+            crelt("label", null, [this.reField, phrase(view, "regexp")]),
+            ...view.state.readOnly ? [] : [
+                crelt("br"),
+                this.replaceField,
+                button("replace", () => replaceNext(view), [phrase(view, "replace")]),
+                button("replaceAll", () => replaceAll(view), [phrase(view, "replace all")]),
+                crelt("button", {
+                    name: "close",
+                    onclick: () => closeSearchPanel(view),
+                    "aria-label": phrase(view, "close"),
+                    type: "button"
+                }, ["×"])
+            ]
+        ]);
     }
-    function keydown(e) {
-        if (runScopeHandlers(conf.view, e, "search-panel")) {
+    commit() {
+        let query = new SearchQuery({
+            search: this.searchField.value,
+            caseSensitive: this.caseField.checked,
+            regexp: this.reField.checked,
+            replace: this.replaceField.value
+        });
+        if (!query.eq(this.query)) {
+            this.query = query;
+            this.view.dispatch({ effects: setSearchQuery.of(query) });
+        }
+    }
+    keydown(e) {
+        if (runScopeHandlers(this.view, e, "search-panel")) {
             e.preventDefault();
         }
-        else if (e.keyCode == 13 && e.target == searchField) {
+        else if (e.keyCode == 13 && e.target == this.searchField) {
             e.preventDefault();
-            (e.shiftKey ? findPrevious : findNext)(conf.view);
+            (e.shiftKey ? findPrevious : findNext)(this.view);
         }
-        else if (e.keyCode == 13 && e.target == replaceField) {
+        else if (e.keyCode == 13 && e.target == this.replaceField) {
             e.preventDefault();
-            replaceNext(conf.view);
+            replaceNext(this.view);
         }
     }
-    function button(name, onclick, content) {
-        return crelt("button", { class: "cm-button", name, onclick }, content);
+    update(update) {
+        for (let tr of update.transactions)
+            for (let effect of tr.effects) {
+                if (effect.is(setSearchQuery) && !effect.value.eq(this.query))
+                    this.setQuery(effect.value);
+            }
     }
-    let panel = crelt("div", { onkeydown: keydown, class: "cm-search" }, [
-        searchField,
-        button("next", () => findNext(conf.view), [phrase("next")]),
-        button("prev", () => findPrevious(conf.view), [phrase("previous")]),
-        button("select", () => selectMatches(conf.view), [phrase("all")]),
-        crelt("label", null, [caseField, phrase("match case")]),
-        crelt("label", null, [reField, phrase("regexp")]),
-        crelt("br"),
-        replaceField,
-        button("replace", () => replaceNext(conf.view), [phrase("replace")]),
-        button("replaceAll", () => replaceAll(conf.view), [phrase("replace all")]),
-        crelt("button", { name: "close", onclick: () => closeSearchPanel(conf.view), "aria-label": phrase("close") }, ["×"])
-    ]);
-    return panel;
+    setQuery(query) {
+        this.query = query;
+        this.searchField.value = query.search;
+        this.replaceField.value = query.replace;
+        this.caseField.checked = query.caseSensitive;
+        this.reField.checked = query.regexp;
+    }
+    mount() {
+        this.searchField.select();
+    }
+    get pos() { return 80; }
+    get top() { return this.view.state.facet(searchConfigFacet).top; }
 }
+function phrase(view, phrase) { return view.state.phrase(phrase); }
 const AnnounceMargin = 30;
 const Break = /[\s\.,:;?!]/;
 function announceMatch(view, { from, to }) {
@@ -2008,111 +2162,230 @@ const baseTheme$2 = /*@__PURE__*/EditorView.baseTheme({
 });
 const searchExtensions = [
     searchState,
-    /*@__PURE__*/Prec.override(searchHighlighter),
+    /*@__PURE__*/Prec.lowest(searchHighlighter),
     baseTheme$2
 ];
 
 const ios = typeof navigator != "undefined" &&
-    !/Edge\/(\d+)/.exec(navigator.userAgent) && /Apple Computer/.test(navigator.vendor) &&
-    (/Mobile\/\w+/.test(navigator.userAgent) || navigator.maxTouchPoints > 2);
+    !/*@__PURE__*//Edge\/(\d+)/.exec(navigator.userAgent) && /*@__PURE__*//Apple Computer/.test(navigator.vendor) &&
+    (/*@__PURE__*//Mobile\/\w+/.test(navigator.userAgent) || navigator.maxTouchPoints > 2);
 const Outside = "-10000px";
-const tooltipPlugin = ViewPlugin.fromClass(class {
-    constructor(view) {
-        this.view = view;
-        this.inView = true;
-        this.measureReq = { read: this.readMeasure.bind(this), write: this.writeMeasure.bind(this), key: this };
-        this.input = view.state.facet(showTooltip);
+class TooltipViewManager {
+    constructor(view, facet, createTooltipView) {
+        this.facet = facet;
+        this.createTooltipView = createTooltipView;
+        this.input = view.state.facet(facet);
         this.tooltips = this.input.filter(t => t);
-        this.tooltipViews = this.tooltips.map(tp => this.createTooltip(tp));
+        this.tooltipViews = this.tooltips.map(createTooltipView);
     }
     update(update) {
-        let input = update.state.facet(showTooltip);
-        if (input == this.input) {
+        let input = update.state.facet(this.facet);
+        let tooltips = input.filter(x => x);
+        if (input === this.input) {
             for (let t of this.tooltipViews)
                 if (t.update)
                     t.update(update);
+            return false;
+        }
+        let tooltipViews = [];
+        for (let i = 0; i < tooltips.length; i++) {
+            let tip = tooltips[i], known = -1;
+            if (!tip)
+                continue;
+            for (let i = 0; i < this.tooltips.length; i++) {
+                let other = this.tooltips[i];
+                if (other && other.create == tip.create)
+                    known = i;
+            }
+            if (known < 0) {
+                tooltipViews[i] = this.createTooltipView(tip);
+            }
+            else {
+                let tooltipView = tooltipViews[i] = this.tooltipViews[known];
+                if (tooltipView.update)
+                    tooltipView.update(update);
+            }
+        }
+        for (let t of this.tooltipViews)
+            if (tooltipViews.indexOf(t) < 0)
+                t.dom.remove();
+        this.input = input;
+        this.tooltips = tooltips;
+        this.tooltipViews = tooltipViews;
+        return true;
+    }
+}
+function windowSpace() {
+    return { top: 0, left: 0, bottom: innerHeight, right: innerWidth };
+}
+const tooltipConfig = /*@__PURE__*/Facet.define({
+    combine: values => {
+        var _a, _b, _c;
+        return ({
+            position: ios ? "absolute" : ((_a = values.find(conf => conf.position)) === null || _a === void 0 ? void 0 : _a.position) || "fixed",
+            parent: ((_b = values.find(conf => conf.parent)) === null || _b === void 0 ? void 0 : _b.parent) || null,
+            tooltipSpace: ((_c = values.find(conf => conf.tooltipSpace)) === null || _c === void 0 ? void 0 : _c.tooltipSpace) || windowSpace,
+        });
+    }
+});
+const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
+    constructor(view) {
+        var _a;
+        this.view = view;
+        this.inView = true;
+        this.lastTransaction = 0;
+        this.measureTimeout = -1;
+        let config = view.state.facet(tooltipConfig);
+        this.position = config.position;
+        this.parent = config.parent;
+        this.classes = view.themeClasses;
+        this.createContainer();
+        this.measureReq = { read: this.readMeasure.bind(this), write: this.writeMeasure.bind(this), key: this };
+        this.manager = new TooltipViewManager(view, showTooltip, t => this.createTooltip(t));
+        this.intersectionObserver = typeof IntersectionObserver == "function" ? new IntersectionObserver(entries => {
+            if (Date.now() > this.lastTransaction - 50 &&
+                entries.length > 0 && entries[entries.length - 1].intersectionRatio < 1)
+                this.measureSoon();
+        }, { threshold: [1] }) : null;
+        this.observeIntersection();
+        (_a = view.dom.ownerDocument.defaultView) === null || _a === void 0 ? void 0 : _a.addEventListener("resize", this.measureSoon = this.measureSoon.bind(this));
+        this.maybeMeasure();
+    }
+    createContainer() {
+        if (this.parent) {
+            this.container = document.createElement("div");
+            this.container.style.position = "relative";
+            this.container.className = this.view.themeClasses;
+            this.parent.appendChild(this.container);
         }
         else {
-            let tooltips = input.filter(x => x);
-            let views = [];
-            for (let i = 0; i < tooltips.length; i++) {
-                let tip = tooltips[i], known = -1;
-                if (!tip)
-                    continue;
-                for (let i = 0; i < this.tooltips.length; i++) {
-                    let other = this.tooltips[i];
-                    if (other && other.create == tip.create)
-                        known = i;
-                }
-                if (known < 0) {
-                    views[i] = this.createTooltip(tip);
-                }
-                else {
-                    let tooltipView = views[i] = this.tooltipViews[known];
-                    if (tooltipView.update)
-                        tooltipView.update(update);
-                }
-            }
-            for (let t of this.tooltipViews)
-                if (views.indexOf(t) < 0)
-                    t.dom.remove();
-            this.input = input;
-            this.tooltips = tooltips;
-            this.tooltipViews = views;
-            this.maybeMeasure();
+            this.container = this.view.dom;
         }
+    }
+    observeIntersection() {
+        if (this.intersectionObserver) {
+            this.intersectionObserver.disconnect();
+            for (let tooltip of this.manager.tooltipViews)
+                this.intersectionObserver.observe(tooltip.dom);
+        }
+    }
+    measureSoon() {
+        if (this.measureTimeout < 0)
+            this.measureTimeout = setTimeout(() => {
+                this.measureTimeout = -1;
+                this.maybeMeasure();
+            }, 50);
+    }
+    update(update) {
+        if (update.transactions.length)
+            this.lastTransaction = Date.now();
+        let updated = this.manager.update(update);
+        if (updated)
+            this.observeIntersection();
+        let shouldMeasure = updated || update.geometryChanged;
+        let newConfig = update.state.facet(tooltipConfig);
+        if (newConfig.position != this.position) {
+            this.position = newConfig.position;
+            for (let t of this.manager.tooltipViews)
+                t.dom.style.position = this.position;
+            shouldMeasure = true;
+        }
+        if (newConfig.parent != this.parent) {
+            if (this.parent)
+                this.container.remove();
+            this.parent = newConfig.parent;
+            this.createContainer();
+            for (let t of this.manager.tooltipViews)
+                this.container.appendChild(t.dom);
+            shouldMeasure = true;
+        }
+        else if (this.parent && this.view.themeClasses != this.classes) {
+            this.classes = this.container.className = this.view.themeClasses;
+        }
+        if (shouldMeasure)
+            this.maybeMeasure();
     }
     createTooltip(tooltip) {
         let tooltipView = tooltip.create(this.view);
         tooltipView.dom.classList.add("cm-tooltip");
-        // FIXME drop this on the next breaking release
-        if (tooltip.class)
-            tooltipView.dom.classList.add(tooltip.class);
+        if (tooltip.arrow && !tooltipView.dom.querySelector(".cm-tooltip > .cm-tooltip-arrow")) {
+            let arrow = document.createElement("div");
+            arrow.className = "cm-tooltip-arrow";
+            tooltipView.dom.appendChild(arrow);
+        }
+        tooltipView.dom.style.position = this.position;
         tooltipView.dom.style.top = Outside;
-        this.view.dom.appendChild(tooltipView.dom);
+        this.container.appendChild(tooltipView.dom);
         if (tooltipView.mount)
             tooltipView.mount(this.view);
         return tooltipView;
     }
     destroy() {
-        for (let { dom } of this.tooltipViews)
+        var _a, _b;
+        (_a = this.view.dom.ownerDocument.defaultView) === null || _a === void 0 ? void 0 : _a.removeEventListener("resize", this.measureSoon);
+        for (let { dom } of this.manager.tooltipViews)
             dom.remove();
+        (_b = this.intersectionObserver) === null || _b === void 0 ? void 0 : _b.disconnect();
+        clearTimeout(this.measureTimeout);
     }
     readMeasure() {
+        let editor = this.view.dom.getBoundingClientRect();
         return {
-            editor: this.view.dom.getBoundingClientRect(),
-            pos: this.tooltips.map(t => this.view.coordsAtPos(t.pos)),
-            size: this.tooltipViews.map(({ dom }) => dom.getBoundingClientRect()),
-            innerWidth: window.innerWidth,
-            innerHeight: window.innerHeight
+            editor,
+            parent: this.parent ? this.container.getBoundingClientRect() : editor,
+            pos: this.manager.tooltips.map((t, i) => {
+                let tv = this.manager.tooltipViews[i];
+                return tv.getCoords ? tv.getCoords(t.pos) : this.view.coordsAtPos(t.pos);
+            }),
+            size: this.manager.tooltipViews.map(({ dom }) => dom.getBoundingClientRect()),
+            space: this.view.state.facet(tooltipConfig).tooltipSpace(this.view),
         };
     }
     writeMeasure(measured) {
-        let { editor } = measured;
-        for (let i = 0; i < this.tooltipViews.length; i++) {
-            let tooltip = this.tooltips[i], tView = this.tooltipViews[i], { dom } = tView;
+        let { editor, space } = measured;
+        let others = [];
+        for (let i = 0; i < this.manager.tooltips.length; i++) {
+            let tooltip = this.manager.tooltips[i], tView = this.manager.tooltipViews[i], { dom } = tView;
             let pos = measured.pos[i], size = measured.size[i];
             // Hide tooltips that are outside of the editor.
-            if (!pos || pos.bottom <= editor.top || pos.top >= editor.bottom || pos.right <= editor.left || pos.left >= editor.right) {
+            if (!pos || pos.bottom <= Math.max(editor.top, space.top) ||
+                pos.top >= Math.min(editor.bottom, space.bottom) ||
+                pos.right < Math.max(editor.left, space.left) - .1 ||
+                pos.left > Math.min(editor.right, space.right) + .1) {
                 dom.style.top = Outside;
                 continue;
             }
+            let arrow = tooltip.arrow ? tView.dom.querySelector(".cm-tooltip-arrow") : null;
+            let arrowHeight = arrow ? 7 /* Size */ : 0;
             let width = size.right - size.left, height = size.bottom - size.top;
-            let left = this.view.textDirection == Direction.LTR ? Math.min(pos.left, measured.innerWidth - width)
-                : Math.max(0, pos.left - width);
+            let offset = tView.offset || noOffset, ltr = this.view.textDirection == Direction.LTR;
+            let left = size.width > space.right - space.left ? (ltr ? space.left : space.right - size.width)
+                : ltr ? Math.min(pos.left - (arrow ? 14 /* Offset */ : 0) + offset.x, space.right - width)
+                    : Math.max(space.left, pos.left - width + (arrow ? 14 /* Offset */ : 0) - offset.x);
             let above = !!tooltip.above;
-            if (!tooltip.strictSide &&
-                (above ? pos.top - (size.bottom - size.top) < 0 : pos.bottom + (size.bottom - size.top) > measured.innerHeight))
+            if (!tooltip.strictSide && (above
+                ? pos.top - (size.bottom - size.top) - offset.y < space.top
+                : pos.bottom + (size.bottom - size.top) + offset.y > space.bottom) &&
+                above == (space.bottom - pos.bottom > pos.top - space.top))
                 above = !above;
-            if (ios) {
-                dom.style.top = ((above ? pos.top - height : pos.bottom) - editor.top) + "px";
-                dom.style.left = (left - editor.left) + "px";
-                dom.style.position = "absolute";
+            let top = above ? pos.top - height - arrowHeight - offset.y : pos.bottom + arrowHeight + offset.y;
+            let right = left + width;
+            if (tView.overlap !== true)
+                for (let r of others)
+                    if (r.left < right && r.right > left && r.top < top + height && r.bottom > top)
+                        top = above ? r.top - height - 2 - arrowHeight : r.bottom + arrowHeight + 2;
+            if (this.position == "absolute") {
+                dom.style.top = (top - measured.parent.top) + "px";
+                dom.style.left = (left - measured.parent.left) + "px";
             }
             else {
-                dom.style.top = (above ? pos.top - height : pos.bottom) + "px";
+                dom.style.top = top + "px";
                 dom.style.left = left + "px";
             }
+            if (arrow)
+                arrow.style.left = `${pos.left + (ltr ? offset.x : -offset.x) - (left + 14 /* Offset */ - 7 /* Size */)}px`;
+            if (tView.overlap !== true)
+                others.push({ left, top, right, bottom: top + height });
             dom.classList.toggle("cm-tooltip-above", above);
             dom.classList.toggle("cm-tooltip-below", !above);
             if (tView.positioned)
@@ -2120,10 +2393,15 @@ const tooltipPlugin = ViewPlugin.fromClass(class {
         }
     }
     maybeMeasure() {
-        if (this.tooltips.length) {
-            if (this.view.inView || this.inView)
+        if (this.manager.tooltips.length) {
+            if (this.view.inView)
                 this.view.requestMeasure(this.measureReq);
-            this.inView = this.view.inView;
+            if (this.inView != this.view.inView) {
+                this.inView = this.view.inView;
+                if (!this.inView)
+                    for (let tv of this.manager.tooltipViews)
+                        tv.dom.style.top = Outside;
+            }
         }
     }
 }, {
@@ -2131,37 +2409,135 @@ const tooltipPlugin = ViewPlugin.fromClass(class {
         scroll() { this.maybeMeasure(); }
     }
 });
-const baseTheme$3 = EditorView.baseTheme({
+const baseTheme$3 = /*@__PURE__*/EditorView.baseTheme({
     ".cm-tooltip": {
-        position: "fixed",
         zIndex: 100
     },
     "&light .cm-tooltip": {
-        border: "1px solid #ddd",
+        border: "1px solid #bbb",
         backgroundColor: "#f5f5f5"
+    },
+    "&light .cm-tooltip-section:not(:first-child)": {
+        borderTop: "1px solid #bbb",
     },
     "&dark .cm-tooltip": {
         backgroundColor: "#333338",
         color: "white"
+    },
+    ".cm-tooltip-arrow": {
+        height: `${7 /* Size */}px`,
+        width: `${7 /* Size */ * 2}px`,
+        position: "absolute",
+        zIndex: -1,
+        overflow: "hidden",
+        "&:before, &:after": {
+            content: "''",
+            position: "absolute",
+            width: 0,
+            height: 0,
+            borderLeft: `${7 /* Size */}px solid transparent`,
+            borderRight: `${7 /* Size */}px solid transparent`,
+        },
+        ".cm-tooltip-above &": {
+            bottom: `-${7 /* Size */}px`,
+            "&:before": {
+                borderTop: `${7 /* Size */}px solid #bbb`,
+            },
+            "&:after": {
+                borderTop: `${7 /* Size */}px solid #f5f5f5`,
+                bottom: "1px"
+            }
+        },
+        ".cm-tooltip-below &": {
+            top: `-${7 /* Size */}px`,
+            "&:before": {
+                borderBottom: `${7 /* Size */}px solid #bbb`,
+            },
+            "&:after": {
+                borderBottom: `${7 /* Size */}px solid #f5f5f5`,
+                top: "1px"
+            }
+        },
+    },
+    "&dark .cm-tooltip .cm-tooltip-arrow": {
+        "&:before": {
+            borderTopColor: "#333338",
+            borderBottomColor: "#333338"
+        },
+        "&:after": {
+            borderTopColor: "transparent",
+            borderBottomColor: "transparent"
+        }
     }
 });
+const noOffset = { x: 0, y: 0 };
 /**
 Behavior by which an extension can provide a tooltip to be shown.
 */
-const showTooltip = Facet.define({
+const showTooltip = /*@__PURE__*/Facet.define({
     enables: [tooltipPlugin, baseTheme$3]
 });
-const HoverTime = 750, HoverMaxDist = 6;
+const showHoverTooltip = /*@__PURE__*/Facet.define();
+class HoverTooltipHost {
+    constructor(view) {
+        this.view = view;
+        this.mounted = false;
+        this.dom = document.createElement("div");
+        this.dom.classList.add("cm-tooltip-hover");
+        this.manager = new TooltipViewManager(view, showHoverTooltip, t => this.createHostedView(t));
+    }
+    // Needs to be static so that host tooltip instances always match
+    static create(view) {
+        return new HoverTooltipHost(view);
+    }
+    createHostedView(tooltip) {
+        let hostedView = tooltip.create(this.view);
+        hostedView.dom.classList.add("cm-tooltip-section");
+        this.dom.appendChild(hostedView.dom);
+        if (this.mounted && hostedView.mount)
+            hostedView.mount(this.view);
+        return hostedView;
+    }
+    mount(view) {
+        for (let hostedView of this.manager.tooltipViews) {
+            if (hostedView.mount)
+                hostedView.mount(view);
+        }
+        this.mounted = true;
+    }
+    positioned() {
+        for (let hostedView of this.manager.tooltipViews) {
+            if (hostedView.positioned)
+                hostedView.positioned();
+        }
+    }
+    update(update) {
+        this.manager.update(update);
+    }
+}
+const showHoverTooltipHost = /*@__PURE__*/showTooltip.compute([showHoverTooltip], state => {
+    let tooltips = state.facet(showHoverTooltip).filter(t => t);
+    if (tooltips.length === 0)
+        return null;
+    return {
+        pos: Math.min(...tooltips.map(t => t.pos)),
+        end: Math.max(...tooltips.filter(t => t.end != null).map(t => t.end)),
+        create: HoverTooltipHost.create,
+        above: tooltips[0].above,
+        arrow: tooltips.some(t => t.arrow),
+    };
+});
 class HoverPlugin {
-    constructor(view, source, field, setHover) {
+    constructor(view, source, field, setHover, hoverTime) {
         this.view = view;
         this.source = source;
         this.field = field;
         this.setHover = setHover;
-        this.lastMouseMove = null;
+        this.hoverTime = hoverTime;
         this.hoverTimeout = -1;
         this.restartTimeout = -1;
         this.pending = null;
+        this.lastMove = { x: 0, y: 0, target: view.dom, time: 0 };
         this.checkHover = this.checkHover.bind(this);
         view.dom.addEventListener("mouseleave", this.mouseleave = this.mouseleave.bind(this));
         view.dom.addEventListener("mousemove", this.mousemove = this.mousemove.bind(this));
@@ -2180,29 +2556,27 @@ class HoverPlugin {
         this.hoverTimeout = -1;
         if (this.active)
             return;
-        let now = Date.now(), lastMove = this.lastMouseMove;
-        if (now - lastMove.timeStamp < HoverTime)
-            this.hoverTimeout = setTimeout(this.checkHover, HoverTime - (now - lastMove.timeStamp));
+        let hovered = Date.now() - this.lastMove.time;
+        if (hovered < this.hoverTime)
+            this.hoverTimeout = setTimeout(this.checkHover, this.hoverTime - hovered);
         else
             this.startHover();
     }
     startHover() {
         var _a;
         clearTimeout(this.restartTimeout);
-        let lastMove = this.lastMouseMove;
-        let coords = { x: lastMove.clientX, y: lastMove.clientY };
-        let pos = this.view.contentDOM.contains(lastMove.target)
-            ? this.view.posAtCoords(coords) : null;
+        let { lastMove } = this;
+        let pos = this.view.contentDOM.contains(lastMove.target) ? this.view.posAtCoords(lastMove) : null;
         if (pos == null)
             return;
         let posCoords = this.view.coordsAtPos(pos);
-        if (posCoords == null || coords.y < posCoords.top || coords.y > posCoords.bottom ||
-            coords.x < posCoords.left - this.view.defaultCharacterWidth ||
-            coords.x > posCoords.right + this.view.defaultCharacterWidth)
+        if (posCoords == null || lastMove.y < posCoords.top || lastMove.y > posCoords.bottom ||
+            lastMove.x < posCoords.left - this.view.defaultCharacterWidth ||
+            lastMove.x > posCoords.right + this.view.defaultCharacterWidth)
             return;
         let bidi = this.view.bidiSpans(this.view.state.doc.lineAt(pos)).find(s => s.from <= pos && s.to >= pos);
         let rtl = bidi && bidi.dir == Direction.RTL ? -1 : 1;
-        let open = this.source(this.view, pos, (coords.x < posCoords.left ? -rtl : rtl));
+        let open = this.source(this.view, pos, (lastMove.x < posCoords.left ? -rtl : rtl));
         if ((_a = open) === null || _a === void 0 ? void 0 : _a.then) {
             let pending = this.pending = { pos };
             open.then(result => {
@@ -2219,14 +2593,14 @@ class HoverPlugin {
     }
     mousemove(event) {
         var _a;
-        this.lastMouseMove = event;
+        this.lastMove = { x: event.clientX, y: event.clientY, target: event.target, time: Date.now() };
         if (this.hoverTimeout < 0)
-            this.hoverTimeout = setTimeout(this.checkHover, HoverTime);
+            this.hoverTimeout = setTimeout(this.checkHover, this.hoverTime);
         let tooltip = this.active;
-        if (tooltip && !isInTooltip(event.target) || this.pending) {
+        if (tooltip && !isInTooltip(this.lastMove.target) || this.pending) {
             let { pos } = tooltip || this.pending, end = (_a = tooltip === null || tooltip === void 0 ? void 0 : tooltip.end) !== null && _a !== void 0 ? _a : pos;
-            if ((pos == end ? this.view.posAtCoords({ x: event.clientX, y: event.clientY }) != pos
-                : !isOverRange(this.view, pos, end, event.clientX, event.clientY, HoverMaxDist))) {
+            if ((pos == end ? this.view.posAtCoords(this.lastMove) != pos
+                : !isOverRange(this.view, pos, end, event.clientX, event.clientY, 6 /* MaxDist */))) {
                 this.view.dispatch({ effects: this.setHover.of(null) });
                 this.pending = null;
             }
@@ -2273,17 +2647,24 @@ associated with position `pos` return the tooltip description
 (either directly or in a promise). The `side` argument indicates
 on which side of the position the pointer is—it will be -1 if the
 pointer is before the position, 1 if after the position.
+
+Note that all hover tooltips are hosted within a single tooltip
+container element. This allows multiple tooltips over the same
+range to be "merged" together without overlapping.
 */
 function hoverTooltip(source, options = {}) {
-    const setHover = StateEffect.define();
-    const hoverState = StateField.define({
+    let setHover = StateEffect.define();
+    let hoverState = StateField.define({
         create() { return null; },
         update(value, tr) {
             if (value && (options.hideOnChange && (tr.docChanged || tr.selection)))
                 return null;
-            for (let effect of tr.effects)
+            for (let effect of tr.effects) {
                 if (effect.is(setHover))
                     return effect.value;
+                if (effect.is(closeHoverTooltipEffect))
+                    return null;
+            }
             if (value && tr.docChanged) {
                 let newPos = tr.changes.mapPos(value.pos, -1, MapMode.TrackDel);
                 if (newPos == null)
@@ -2296,13 +2677,25 @@ function hoverTooltip(source, options = {}) {
             }
             return value;
         },
-        provide: f => showTooltip.from(f)
+        provide: f => showHoverTooltip.from(f)
     });
     return [
         hoverState,
-        ViewPlugin.define(view => new HoverPlugin(view, source, hoverState, setHover))
+        ViewPlugin.define(view => new HoverPlugin(view, source, hoverState, setHover, options.hoverTime || 300 /* Time */)),
+        showHoverTooltipHost
     ];
 }
+/**
+Get the active tooltip view for a given tooltip, if available.
+*/
+function getTooltip(view, tooltip) {
+    let plugin = view.plugin(tooltipPlugin);
+    if (!plugin)
+        return null;
+    let found = plugin.manager.tooltips.indexOf(tooltip);
+    return found < 0 ? null : plugin.manager.tooltipViews[found];
+}
+const closeHoverTooltipEffect = /*@__PURE__*/StateEffect.define();
 
 /**
 An instance of this is passed to completion source functions.
@@ -2342,7 +2735,7 @@ class CompletionContext {
     token before `this.pos`.
     */
     tokenBefore(types) {
-        let token = syntaxTree(this.state).resolve(this.pos, -1);
+        let token = syntaxTree(this.state).resolveInner(this.pos, -1);
         while (token && types.indexOf(token.name) < 0)
             token = token.parent;
         return token ? { from: token.from, to: this.pos,
@@ -2422,13 +2815,20 @@ function ensureAnchor(expr, start) {
         return expr;
     return new RegExp(`${addStart ? "^" : ""}(?:${source})${addEnd ? "$" : ""}`, (_a = expr.flags) !== null && _a !== void 0 ? _a : (expr.ignoreCase ? "i" : ""));
 }
+/**
+This annotation is added to transactions that are produced by
+picking a completion.
+*/
+const pickedCompletion = /*@__PURE__*/Annotation.define();
 function applyCompletion(view, option) {
     let apply = option.completion.apply || option.completion.label;
     let result = option.source;
     if (typeof apply == "string") {
         view.dispatch({
             changes: { from: result.from, to: result.to, insert: apply },
-            selection: { anchor: result.from + apply.length }
+            selection: { anchor: result.from + apply.length },
+            userEvent: "input.complete",
+            annotations: pickedCompletion.of(option.completion)
         });
     }
     else {
@@ -2511,7 +2911,7 @@ class FuzzyMatcher {
         let byWordTo = 0, byWordFolded = false;
         // If we've found a partial adjacent match, these track its state
         let adjacentTo = 0, adjacentStart = -1, adjacentEnd = -1;
-        let hasLower = /[a-z]/.test(word);
+        let hasLower = /[a-z]/.test(word), wordAdjacent = true;
         // Go over the option's text, scanning for the various kinds of matches
         for (let i = 0, e = Math.min(word.length, 200), prevType = 0 /* NonWord */; i < e && byWordTo < len;) {
             let next = codePointAt(word, i);
@@ -2522,7 +2922,7 @@ class FuzzyMatcher {
                     if (next == chars[adjacentTo] || next == folded[adjacentTo]) {
                         if (adjacentTo == 0)
                             adjacentStart = i;
-                        adjacentEnd = i;
+                        adjacentEnd = i + 1;
                         adjacentTo++;
                     }
                     else {
@@ -2533,26 +2933,30 @@ class FuzzyMatcher {
             let ch, type = next < 0xff
                 ? (next >= 48 && next <= 57 || next >= 97 && next <= 122 ? 2 /* Lower */ : next >= 65 && next <= 90 ? 1 /* Upper */ : 0 /* NonWord */)
                 : ((ch = fromCodePoint(next)) != ch.toLowerCase() ? 1 /* Upper */ : ch != ch.toUpperCase() ? 2 /* Lower */ : 0 /* NonWord */);
-            if ((type == 1 /* Upper */ && hasLower || prevType == 0 /* NonWord */ && type != 0 /* NonWord */) &&
-                (chars[byWordTo] == next || (folded[byWordTo] == next && (byWordFolded = true))))
-                byWord[byWordTo++] = i;
+            if (!i || type == 1 /* Upper */ && hasLower || prevType == 0 /* NonWord */ && type != 0 /* NonWord */) {
+                if (chars[byWordTo] == next || (folded[byWordTo] == next && (byWordFolded = true)))
+                    byWord[byWordTo++] = i;
+                else if (byWord.length)
+                    wordAdjacent = false;
+            }
             prevType = type;
             i += codePointSize(next);
         }
-        if (byWordTo == len && byWord[0] == 0)
+        if (byWordTo == len && byWord[0] == 0 && wordAdjacent)
             return this.result(-100 /* ByWord */ + (byWordFolded ? -200 /* CaseFold */ : 0), byWord, word);
         if (adjacentTo == len && adjacentStart == 0)
-            return [-200 /* CaseFold */, 0, adjacentEnd];
+            return [-200 /* CaseFold */ - word.length, 0, adjacentEnd];
         if (direct > -1)
-            return [-700 /* NotStart */, direct, direct + this.pattern.length];
+            return [-700 /* NotStart */ - word.length, direct, direct + this.pattern.length];
         if (adjacentTo == len)
-            return [-200 /* CaseFold */ + -700 /* NotStart */, adjacentStart, adjacentEnd];
+            return [-200 /* CaseFold */ + -700 /* NotStart */ - word.length, adjacentStart, adjacentEnd];
         if (byWordTo == len)
-            return this.result(-100 /* ByWord */ + (byWordFolded ? -200 /* CaseFold */ : 0) + -700 /* NotStart */, byWord, word);
+            return this.result(-100 /* ByWord */ + (byWordFolded ? -200 /* CaseFold */ : 0) + -700 /* NotStart */ +
+                (wordAdjacent ? 0 : -1100 /* Gap */), byWord, word);
         return chars.length == 2 ? null : this.result((any[0] ? -700 /* NotStart */ : 0) + -200 /* CaseFold */ + -1100 /* Gap */, any, word);
     }
     result(score, positions, word) {
-        let result = [score], i = 1;
+        let result = [score - word.length], i = 1;
         for (let pos of positions) {
             let to = pos + (this.astral ? codePointSize(codePointAt(word, pos)) : 1);
             if (i > 1 && result[i - 1] == pos)
@@ -2572,168 +2976,68 @@ const completionConfig = /*@__PURE__*/Facet.define({
             activateOnTyping: true,
             override: null,
             maxRenderedOptions: 100,
-            defaultKeymap: true
+            defaultKeymap: true,
+            optionClass: () => "",
+            aboveCursor: false,
+            icons: true,
+            addToOptions: []
         }, {
-            defaultKeymap: (a, b) => a && b
+            defaultKeymap: (a, b) => a && b,
+            icons: (a, b) => a && b,
+            optionClass: (a, b) => c => joinClass(a(c), b(c)),
+            addToOptions: (a, b) => a.concat(b)
         });
     }
 });
-
-const MaxInfoWidth = 300;
-const baseTheme$4 = /*@__PURE__*/EditorView.baseTheme({
-    ".cm-tooltip.cm-tooltip-autocomplete": {
-        "& > ul": {
-            fontFamily: "monospace",
-            whiteSpace: "nowrap",
-            overflow: "auto",
-            maxWidth_fallback: "700px",
-            maxWidth: "min(700px, 95vw)",
-            maxHeight: "10em",
-            listStyle: "none",
-            margin: 0,
-            padding: 0,
-            "& > li": {
-                cursor: "pointer",
-                padding: "1px 1em 1px 3px",
-                lineHeight: 1.2
-            },
-            "& > li[aria-selected]": {
-                background_fallback: "#bdf",
-                backgroundColor: "Highlight",
-                color_fallback: "white",
-                color: "HighlightText"
-            }
-        }
-    },
-    ".cm-completionListIncompleteTop:before, .cm-completionListIncompleteBottom:after": {
-        content: '"···"',
-        opacity: 0.5,
-        display: "block",
-        textAlign: "center"
-    },
-    ".cm-tooltip.cm-completionInfo": {
-        position: "absolute",
-        padding: "3px 9px",
-        width: "max-content",
-        maxWidth: MaxInfoWidth + "px",
-    },
-    ".cm-completionInfo.cm-completionInfo-left": { right: "100%" },
-    ".cm-completionInfo.cm-completionInfo-right": { left: "100%" },
-    "&light .cm-snippetField": { backgroundColor: "#00000022" },
-    "&dark .cm-snippetField": { backgroundColor: "#ffffff22" },
-    ".cm-snippetFieldPosition": {
-        verticalAlign: "text-top",
-        width: 0,
-        height: "1.15em",
-        margin: "0 -0.7px -.7em",
-        borderLeft: "1.4px dotted #888"
-    },
-    ".cm-completionMatchedText": {
-        textDecoration: "underline"
-    },
-    ".cm-completionDetail": {
-        marginLeft: "0.5em",
-        fontStyle: "italic"
-    },
-    ".cm-completionIcon": {
-        fontSize: "90%",
-        width: ".8em",
-        display: "inline-block",
-        textAlign: "center",
-        paddingRight: ".6em",
-        opacity: "0.6"
-    },
-    ".cm-completionIcon-function, .cm-completionIcon-method": {
-        "&:after": { content: "'ƒ'" }
-    },
-    ".cm-completionIcon-class": {
-        "&:after": { content: "'○'" }
-    },
-    ".cm-completionIcon-interface": {
-        "&:after": { content: "'◌'" }
-    },
-    ".cm-completionIcon-variable": {
-        "&:after": { content: "'𝑥'" }
-    },
-    ".cm-completionIcon-constant": {
-        "&:after": { content: "'𝐶'" }
-    },
-    ".cm-completionIcon-type": {
-        "&:after": { content: "'𝑡'" }
-    },
-    ".cm-completionIcon-enum": {
-        "&:after": { content: "'∪'" }
-    },
-    ".cm-completionIcon-property": {
-        "&:after": { content: "'□'" }
-    },
-    ".cm-completionIcon-keyword": {
-        "&:after": { content: "'🔑\uFE0E'" } // Disable emoji rendering
-    },
-    ".cm-completionIcon-namespace": {
-        "&:after": { content: "'▢'" }
-    },
-    ".cm-completionIcon-text": {
-        "&:after": { content: "'abc'", fontSize: "50%", verticalAlign: "middle" }
-    }
-});
-
-function createListBox(options, id, range) {
-    const ul = document.createElement("ul");
-    ul.id = id;
-    ul.setAttribute("role", "listbox");
-    ul.setAttribute("aria-expanded", "true");
-    for (let i = range.from; i < range.to; i++) {
-        let { completion, match } = options[i];
-        const li = ul.appendChild(document.createElement("li"));
-        li.id = id + "-" + i;
-        let icon = li.appendChild(document.createElement("div"));
-        icon.classList.add("cm-completionIcon");
-        if (completion.type)
-            icon.classList.add(...completion.type.split(/\s+/g).map(cls => "cm-completionIcon-" + cls));
-        icon.setAttribute("aria-hidden", "true");
-        let labelElt = li.appendChild(document.createElement("span"));
-        labelElt.className = "cm-completionLabel";
-        let { label, detail } = completion, off = 0;
-        for (let j = 1; j < match.length;) {
-            let from = match[j++], to = match[j++];
-            if (from > off)
-                labelElt.appendChild(document.createTextNode(label.slice(off, from)));
-            let span = labelElt.appendChild(document.createElement("span"));
-            span.appendChild(document.createTextNode(label.slice(from, to)));
-            span.className = "cm-completionMatchedText";
-            off = to;
-        }
-        if (off < label.length)
-            labelElt.appendChild(document.createTextNode(label.slice(off)));
-        if (detail) {
-            let detailElt = li.appendChild(document.createElement("span"));
-            detailElt.className = "cm-completionDetail";
-            detailElt.textContent = detail;
-        }
-        li.setAttribute("role", "option");
-    }
-    if (range.from)
-        ul.classList.add("cm-completionListIncompleteTop");
-    if (range.to < options.length)
-        ul.classList.add("cm-completionListIncompleteBottom");
-    return ul;
+function joinClass(a, b) {
+    return a ? b ? a + " " + b : a : b;
 }
-function createInfoDialog(option, view) {
-    let dom = document.createElement("div");
-    dom.className = "cm-tooltip cm-completionInfo";
-    let { info } = option.completion;
-    if (typeof info == "string") {
-        dom.textContent = info;
-    }
-    else {
-        let content = info(option.completion);
-        if (content.then)
-            content.then(node => dom.appendChild(node), e => logException(view.state, e, "completion info"));
-        else
-            dom.appendChild(content);
-    }
-    return dom;
+
+function optionContent(config) {
+    let content = config.addToOptions.slice();
+    if (config.icons)
+        content.push({
+            render(completion) {
+                let icon = document.createElement("div");
+                icon.classList.add("cm-completionIcon");
+                if (completion.type)
+                    icon.classList.add(...completion.type.split(/\s+/g).map(cls => "cm-completionIcon-" + cls));
+                icon.setAttribute("aria-hidden", "true");
+                return icon;
+            },
+            position: 20
+        });
+    content.push({
+        render(completion, _s, match) {
+            let labelElt = document.createElement("span");
+            labelElt.className = "cm-completionLabel";
+            let { label } = completion, off = 0;
+            for (let j = 1; j < match.length;) {
+                let from = match[j++], to = match[j++];
+                if (from > off)
+                    labelElt.appendChild(document.createTextNode(label.slice(off, from)));
+                let span = labelElt.appendChild(document.createElement("span"));
+                span.appendChild(document.createTextNode(label.slice(from, to)));
+                span.className = "cm-completionMatchedText";
+                off = to;
+            }
+            if (off < label.length)
+                labelElt.appendChild(document.createTextNode(label.slice(off)));
+            return labelElt;
+        },
+        position: 50
+    }, {
+        render(completion) {
+            if (!completion.detail)
+                return null;
+            let detailElt = document.createElement("span");
+            detailElt.className = "cm-completionDetail";
+            detailElt.textContent = completion.detail;
+            return detailElt;
+        },
+        position: 80
+    });
+    return content.sort((a, b) => a.position - b.position).map(a => a.render);
 }
 function rangeAroundSelected(total, selected, max) {
     if (total <= max)
@@ -2758,6 +3062,8 @@ class CompletionTooltip {
         let cState = view.state.field(stateField);
         let { options, selected } = cState.open;
         let config = view.state.facet(completionConfig);
+        this.optionContent = optionContent(config);
+        this.optionClass = config.optionClass;
         this.range = rangeAroundSelected(options.length, selected, config.maxRenderedOptions);
         this.dom = document.createElement("div");
         this.dom.className = "cm-tooltip-autocomplete";
@@ -2770,7 +3076,7 @@ class CompletionTooltip {
                 }
             }
         });
-        this.list = this.dom.appendChild(createListBox(options, cState.id, this.range));
+        this.list = this.dom.appendChild(this.createListBox(options, cState.id, this.range));
         this.list.addEventListener("scroll", () => {
             if (this.info)
                 this.view.requestMeasure(this.placeInfo);
@@ -2790,7 +3096,7 @@ class CompletionTooltip {
         if (open.selected < this.range.from || open.selected >= this.range.to) {
             this.range = rangeAroundSelected(open.options.length, open.selected, this.view.state.facet(completionConfig).maxRenderedOptions);
             this.list.remove();
-            this.list = this.dom.appendChild(createListBox(open.options, cState.id, this.range));
+            this.list = this.dom.appendChild(this.createListBox(open.options, cState.id, this.range));
             this.list.addEventListener("scroll", () => {
                 if (this.info)
                     this.view.requestMeasure(this.placeInfo);
@@ -2801,12 +3107,30 @@ class CompletionTooltip {
                 this.info.remove();
                 this.info = null;
             }
-            let option = open.options[open.selected];
-            if (option.completion.info) {
-                this.info = this.dom.appendChild(createInfoDialog(option, this.view));
-                this.view.requestMeasure(this.placeInfo);
+            let { completion } = open.options[open.selected];
+            let { info } = completion;
+            if (!info)
+                return;
+            let infoResult = typeof info === 'string' ? document.createTextNode(info) : info(completion);
+            if (!infoResult)
+                return;
+            if ('then' in infoResult) {
+                infoResult.then(node => {
+                    if (node && this.view.state.field(this.stateField, false) == cState)
+                        this.addInfoPane(node);
+                }).catch(e => logException(this.view.state, e, "completion info"));
+            }
+            else {
+                this.addInfoPane(infoResult);
             }
         }
+    }
+    addInfoPane(content) {
+        let dom = this.info = document.createElement("div");
+        dom.className = "cm-tooltip cm-completionInfo";
+        dom.appendChild(content);
+        this.dom.appendChild(dom);
+        this.view.requestMeasure(this.placeInfo);
     }
     updateSelectedOption(selected) {
         let set = null;
@@ -2828,26 +3152,55 @@ class CompletionTooltip {
     }
     measureInfo() {
         let sel = this.dom.querySelector("[aria-selected]");
-        if (!sel)
+        if (!sel || !this.info)
             return null;
-        let rect = this.dom.getBoundingClientRect();
-        let top = sel.getBoundingClientRect().top - rect.top;
-        if (top < 0 || top > this.list.clientHeight - 10)
+        let listRect = this.dom.getBoundingClientRect();
+        let infoRect = this.info.getBoundingClientRect();
+        let selRect = sel.getBoundingClientRect();
+        if (selRect.top > Math.min(innerHeight, listRect.bottom) - 10 || selRect.bottom < Math.max(0, listRect.top) + 10)
             return null;
+        let top = Math.max(0, Math.min(selRect.top, innerHeight - infoRect.height)) - listRect.top;
         let left = this.view.textDirection == Direction.RTL;
-        let spaceLeft = rect.left, spaceRight = innerWidth - rect.right;
-        if (left && spaceLeft < Math.min(MaxInfoWidth, spaceRight))
+        let spaceLeft = listRect.left, spaceRight = innerWidth - listRect.right;
+        if (left && spaceLeft < Math.min(infoRect.width, spaceRight))
             left = false;
-        else if (!left && spaceRight < Math.min(MaxInfoWidth, spaceLeft))
+        else if (!left && spaceRight < Math.min(infoRect.width, spaceLeft))
             left = true;
         return { top, left };
     }
     positionInfo(pos) {
-        if (this.info && pos) {
-            this.info.style.top = pos.top + "px";
-            this.info.classList.toggle("cm-completionInfo-left", pos.left);
-            this.info.classList.toggle("cm-completionInfo-right", !pos.left);
+        if (this.info) {
+            this.info.style.top = (pos ? pos.top : -1e6) + "px";
+            if (pos) {
+                this.info.classList.toggle("cm-completionInfo-left", pos.left);
+                this.info.classList.toggle("cm-completionInfo-right", !pos.left);
+            }
         }
+    }
+    createListBox(options, id, range) {
+        const ul = document.createElement("ul");
+        ul.id = id;
+        ul.setAttribute("role", "listbox");
+        ul.setAttribute("aria-expanded", "true");
+        for (let i = range.from; i < range.to; i++) {
+            let { completion, match } = options[i];
+            const li = ul.appendChild(document.createElement("li"));
+            li.id = id + "-" + i;
+            li.setAttribute("role", "option");
+            let cls = this.optionClass(completion);
+            if (cls)
+                li.className = cls;
+            for (let source of this.optionContent) {
+                let node = source(completion, this.view.state, match);
+                if (node)
+                    li.appendChild(node);
+            }
+        }
+        if (range.from)
+            ul.classList.add("cm-completionListIncompleteTop");
+        if (range.to < options.length)
+            ul.classList.add("cm-completionListIncompleteBottom");
+        return ul;
     }
 }
 // We allocate a new function instance every time the completion
@@ -2889,12 +3242,12 @@ function sortOptions(active, state) {
                     }
             }
         }
-    options.sort(cmpOption);
     let result = [], prev = null;
     for (let opt of options.sort(cmpOption)) {
         if (result.length == MaxOptions)
             break;
-        if (!prev || prev.label != opt.completion.label || prev.detail != opt.completion.detail)
+        if (!prev || prev.label != opt.completion.label || prev.detail != opt.completion.detail ||
+            prev.type != opt.completion.type || prev.apply != opt.completion.apply)
             result.push(opt);
         else if (score(opt.completion) > score(prev))
             result[result.length - 1] = opt;
@@ -2914,21 +3267,23 @@ class CompletionDialog {
         return selected == this.selected || selected >= this.options.length ? this
             : new CompletionDialog(this.options, makeAttrs(id, selected), this.tooltip, this.timestamp, selected);
     }
-    static build(active, state, id, prev) {
+    static build(active, state, id, prev, conf) {
         let options = sortOptions(active, state);
         if (!options.length)
             return null;
         let selected = 0;
         if (prev && prev.selected) {
             let selectedValue = prev.options[prev.selected].completion;
-            for (let i = 0; i < options.length && !selected; i++) {
-                if (options[i].completion == selectedValue)
+            for (let i = 0; i < options.length; i++)
+                if (options[i].completion == selectedValue) {
                     selected = i;
-            }
+                    break;
+                }
         }
         return new CompletionDialog(options, makeAttrs(id, selected), {
             pos: active.reduce((a, b) => b.hasResult() ? Math.min(a, b.from) : a, 1e8),
-            create: completionTooltip(completionState)
+            create: completionTooltip(completionState),
+            above: conf.aboveCursor,
         }, prev ? prev.timestamp : Date.now(), selected);
     }
     map(changes) {
@@ -2956,7 +3311,7 @@ class CompletionState {
         if (active.length == this.active.length && active.every((a, i) => a == this.active[i]))
             active = this.active;
         let open = tr.selection || active.some(a => a.hasResult() && tr.changes.touchesRange(a.from, a.to)) ||
-            !sameResults(active, this.active) ? CompletionDialog.build(active, state, this.id, this.open)
+            !sameResults(active, this.active) ? CompletionDialog.build(active, state, this.id, this.open, conf)
             : this.open && tr.docChanged ? this.open.map(tr.changes) : this.open;
         if (!open && active.every(a => a.state != 1 /* Pending */) && active.some(a => a.hasResult()))
             active = active.map(a => a.hasResult() ? new ActiveSource(a.source, 0 /* Inactive */) : a);
@@ -2983,20 +3338,26 @@ function sameResults(a, b) {
             return false;
     }
 }
+const baseAttrs = {
+    "aria-autocomplete": "list"
+};
 function makeAttrs(id, selected) {
     return {
         "aria-autocomplete": "list",
+        "aria-haspopup": "listbox",
         "aria-activedescendant": id + "-" + selected,
-        "aria-owns": id
+        "aria-controls": id
     };
 }
-const baseAttrs = { "aria-autocomplete": "list" }, none$1 = [];
+const none$1 = [];
 function cmpOption(a, b) {
     let dScore = b.match[0] - a.match[0];
     if (dScore)
         return dScore;
-    let lA = a.completion.label, lB = b.completion.label;
-    return lA < lB ? -1 : lA == lB ? 0 : 1;
+    return a.completion.label.localeCompare(b.completion.label);
+}
+function getUserEvent(tr) {
+    return tr.isUserEvent("input.type") ? "input" : tr.isUserEvent("delete.backward") ? "delete" : null;
 }
 class ActiveSource {
     constructor(source, state, explicitPos = -1) {
@@ -3006,8 +3367,8 @@ class ActiveSource {
     }
     hasResult() { return false; }
     update(tr, conf) {
-        let event = tr.annotation(Transaction.userEvent), value = this;
-        if (event == "input" || event == "delete")
+        let event = getUserEvent(tr), value = this;
+        if (event)
             value = value.handleUserEvent(tr, event, conf);
         else if (tr.docChanged)
             value = value.handleChange(tr);
@@ -3047,7 +3408,9 @@ class ActiveResult extends ActiveSource {
     handleUserEvent(tr, type, conf) {
         let from = tr.changes.mapPos(this.from), to = tr.changes.mapPos(this.to, 1);
         let pos = cur(tr.state);
-        if ((this.explicitPos > -1 ? pos < from : pos <= from) || pos > to)
+        if ((this.explicitPos < 0 ? pos <= from : pos < this.from) ||
+            pos > to ||
+            type == "delete" && cur(tr.startState) == this.from)
             return new ActiveSource(this.source, type == "input" && conf.activateOnTyping ? 1 /* Pending */ : 0 /* Inactive */);
         let explicitPos = this.explicitPos < 0 ? -1 : tr.changes.mapPos(this.explicitPos);
         if (this.span && (from == to || this.span.test(tr.state.sliceDoc(from, to))))
@@ -3088,8 +3451,9 @@ function moveCompletionSelection(forward, by = "option") {
         if (!cState || !cState.open || Date.now() - cState.open.timestamp < CompletionInteractMargin)
             return false;
         let step = 1, tooltip;
-        if (by == "page" && (tooltip = view.dom.querySelector(".cm-tooltip-autocomplete")))
-            step = Math.max(2, Math.floor(tooltip.offsetHeight / tooltip.firstChild.offsetHeight));
+        if (by == "page" && (tooltip = getTooltip(view, cState.open.tooltip)))
+            step = Math.max(2, Math.floor(tooltip.dom.offsetHeight /
+                tooltip.dom.querySelector("li").offsetHeight) - 1);
         let selected = cState.open.selected + step * (forward ? 1 : -1), { length } = cState.open.options;
         if (selected < 0)
             selected = by == "page" ? 0 : length - 1;
@@ -3104,7 +3468,7 @@ Accept the current completion.
 */
 const acceptCompletion = (view) => {
     let cState = view.state.field(completionState, false);
-    if (!cState || !cState.open || Date.now() - cState.open.timestamp < CompletionInteractMargin)
+    if (view.state.readOnly || !cState || !cState.open || Date.now() - cState.open.timestamp < CompletionInteractMargin)
         return false;
     applyCompletion(view, cState.open.options[cState.open.selected]);
     return true;
@@ -3157,13 +3521,12 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
         if (!update.selectionSet && !update.docChanged && update.startState.field(completionState) == cState)
             return;
         let doesReset = update.transactions.some(tr => {
-            let event = tr.annotation(Transaction.userEvent);
-            return (tr.selection || tr.docChanged) && event != "input" && event != "delete";
+            return (tr.selection || tr.docChanged) && !getUserEvent(tr);
         });
         for (let i = 0; i < this.running.length; i++) {
             let query = this.running[i];
             if (doesReset ||
-                query.updates.length + update.transactions.length > MaxUpdateCount && query.time - Date.now() > MinAbortTime) {
+                query.updates.length + update.transactions.length > MaxUpdateCount && Date.now() - query.time > MinAbortTime) {
                 for (let handler of query.context.abortListeners) {
                     try {
                         handler();
@@ -3185,7 +3548,7 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
             ? setTimeout(() => this.startUpdate(), DebounceTime) : -1;
         if (this.composing != 0 /* None */)
             for (let tr of update.transactions) {
-                if (tr.annotation(Transaction.userEvent) == "input")
+                if (getUserEvent(tr) == "input")
                     this.composing = 2 /* Changed */;
                 else if (this.composing == 2 /* Changed */ && tr.selection)
                     this.composing = 3 /* ChangedAndMoved */;
@@ -3281,6 +3644,109 @@ const completionPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
     }
 });
 
+const baseTheme$4 = /*@__PURE__*/EditorView.baseTheme({
+    ".cm-tooltip.cm-tooltip-autocomplete": {
+        "& > ul": {
+            fontFamily: "monospace",
+            whiteSpace: "nowrap",
+            overflow: "hidden auto",
+            maxWidth_fallback: "700px",
+            maxWidth: "min(700px, 95vw)",
+            minWidth: "250px",
+            maxHeight: "10em",
+            listStyle: "none",
+            margin: 0,
+            padding: 0,
+            "& > li": {
+                overflowX: "hidden",
+                textOverflow: "ellipsis",
+                cursor: "pointer",
+                padding: "1px 3px",
+                lineHeight: 1.2
+            },
+        }
+    },
+    "&light .cm-tooltip-autocomplete ul li[aria-selected]": {
+        background: "#17c",
+        color: "white",
+    },
+    "&dark .cm-tooltip-autocomplete ul li[aria-selected]": {
+        background: "#347",
+        color: "white",
+    },
+    ".cm-completionListIncompleteTop:before, .cm-completionListIncompleteBottom:after": {
+        content: '"···"',
+        opacity: 0.5,
+        display: "block",
+        textAlign: "center"
+    },
+    ".cm-tooltip.cm-completionInfo": {
+        position: "absolute",
+        padding: "3px 9px",
+        width: "max-content",
+        maxWidth: "300px",
+    },
+    ".cm-completionInfo.cm-completionInfo-left": { right: "100%" },
+    ".cm-completionInfo.cm-completionInfo-right": { left: "100%" },
+    "&light .cm-snippetField": { backgroundColor: "#00000022" },
+    "&dark .cm-snippetField": { backgroundColor: "#ffffff22" },
+    ".cm-snippetFieldPosition": {
+        verticalAlign: "text-top",
+        width: 0,
+        height: "1.15em",
+        margin: "0 -0.7px -.7em",
+        borderLeft: "1.4px dotted #888"
+    },
+    ".cm-completionMatchedText": {
+        textDecoration: "underline"
+    },
+    ".cm-completionDetail": {
+        marginLeft: "0.5em",
+        fontStyle: "italic"
+    },
+    ".cm-completionIcon": {
+        fontSize: "90%",
+        width: ".8em",
+        display: "inline-block",
+        textAlign: "center",
+        paddingRight: ".6em",
+        opacity: "0.6"
+    },
+    ".cm-completionIcon-function, .cm-completionIcon-method": {
+        "&:after": { content: "'ƒ'" }
+    },
+    ".cm-completionIcon-class": {
+        "&:after": { content: "'○'" }
+    },
+    ".cm-completionIcon-interface": {
+        "&:after": { content: "'◌'" }
+    },
+    ".cm-completionIcon-variable": {
+        "&:after": { content: "'𝑥'" }
+    },
+    ".cm-completionIcon-constant": {
+        "&:after": { content: "'𝐶'" }
+    },
+    ".cm-completionIcon-type": {
+        "&:after": { content: "'𝑡'" }
+    },
+    ".cm-completionIcon-enum": {
+        "&:after": { content: "'∪'" }
+    },
+    ".cm-completionIcon-property": {
+        "&:after": { content: "'□'" }
+    },
+    ".cm-completionIcon-keyword": {
+        "&:after": { content: "'🔑\uFE0E'" } // Disable emoji rendering
+    },
+    ".cm-completionIcon-namespace": {
+        "&:after": { content: "'▢'" }
+    },
+    ".cm-completionIcon-text": {
+        "&:after": { content: "'abc'", fontSize: "50%", verticalAlign: "middle" }
+    }
+});
+
 /**
 Returns an extension that enables autocompletion.
 */
@@ -3313,7 +3779,7 @@ const completionKeymap = [
     { key: "PageUp", run: /*@__PURE__*/moveCompletionSelection(false, "page") },
     { key: "Enter", run: acceptCompletion }
 ];
-const completionKeymapExt = /*@__PURE__*/Prec.override(/*@__PURE__*/keymap.computeN([completionConfig], state => state.facet(completionConfig).defaultKeymap ? [completionKeymap] : []));
+const completionKeymapExt = /*@__PURE__*/Prec.highest(/*@__PURE__*/keymap.computeN([completionConfig], state => state.facet(completionConfig).defaultKeymap ? [completionKeymap] : []));
 
 /**
 Comment or uncomment the current selection. Will use line comments
@@ -3321,11 +3787,13 @@ if available, otherwise falling back to block comments.
 */
 const toggleComment = target => {
     let config = getConfig(target.state);
-    return config.line ? toggleLineComment(target) : config.block ? toggleBlockComment(target) : false;
+    return config.line ? toggleLineComment(target) : config.block ? toggleBlockCommentByLine(target) : false;
 };
 function command(f, option) {
     return ({ state, dispatch }) => {
-        let tr = f(option, state.selection.ranges, state);
+        if (state.readOnly)
+            return false;
+        let tr = f(option, state);
         if (!tr)
             return false;
         dispatch(state.update(tr));
@@ -3346,6 +3814,11 @@ The block comment syntax is taken from the
 data](https://codemirror.net/6/docs/ref/#state.EditorState.languageDataAt).
 */
 const toggleBlockComment = /*@__PURE__*/command(changeBlockComment, 0 /* Toggle */);
+/**
+Comment or uncomment the lines around the current selection using
+block comments.
+*/
+const toggleBlockCommentByLine = /*@__PURE__*/command((o, s) => changeBlockComment(o, s, selectedLineRanges(s)), 0 /* Toggle */);
 /**
 Default key bindings for this package.
 
@@ -3394,25 +3867,32 @@ function findBlockComment(state, { open, close }, from, to) {
     }
     return null;
 }
+function selectedLineRanges(state) {
+    let ranges = [];
+    for (let r of state.selection.ranges) {
+        let fromLine = state.doc.lineAt(r.from);
+        let toLine = r.to <= fromLine.to ? fromLine : state.doc.lineAt(r.to);
+        let last = ranges.length - 1;
+        if (last >= 0 && ranges[last].to > fromLine.from)
+            ranges[last].to = toLine.to;
+        else
+            ranges.push({ from: fromLine.from, to: toLine.to });
+    }
+    return ranges;
+}
 // Performs toggle, comment and uncomment of block comments in
 // languages that support them.
-function changeBlockComment(option, ranges, state) {
+function changeBlockComment(option, state, ranges = state.selection.ranges) {
     let tokens = ranges.map(r => getConfig(state, r.from).block);
     if (!tokens.every(c => c))
         return null;
     let comments = ranges.map((r, i) => findBlockComment(state, tokens[i], r.from, r.to));
     if (option != 2 /* Uncomment */ && !comments.every(c => c)) {
-        let index = 0;
-        return state.changeByRange(range => {
-            let { open, close } = tokens[index++];
-            if (comments[index])
-                return { range };
-            let shift = open.length + 1;
-            return {
-                changes: [{ from: range.from, insert: open + " " }, { from: range.to, insert: " " + close }],
-                range: EditorSelection.range(range.anchor + shift, range.head + shift)
-            };
-        });
+        return { changes: state.changes(ranges.map((range, i) => {
+                if (comments[i])
+                    return [];
+                return [{ from: range.from, insert: tokens[i].open + " " }, { from: range.to, insert: " " + tokens[i].close }];
+            })) };
     }
     else if (option != 1 /* Comment */ && comments.some(c => c)) {
         let changes = [];
@@ -3426,7 +3906,7 @@ function changeBlockComment(option, ranges, state) {
     return null;
 }
 // Performs toggle, comment and uncomment of line comments.
-function changeLineComment(option, ranges, state) {
+function changeLineComment(option, state, ranges = state.selection.ranges) {
     let lines = [];
     let prevLine = -1;
     for (let { from, to } of ranges) {
@@ -3493,10 +3973,12 @@ function rectangleFor(state, a, b) {
     else {
         let startCol = Math.min(a.col, b.col), endCol = Math.max(a.col, b.col);
         for (let i = startLine; i <= endLine; i++) {
-            let line = state.doc.line(i), str = line.length > MaxOff ? line.text.slice(0, 2 * endCol) : line.text;
-            let start = findColumn(str, 0, startCol, state.tabSize), end = findColumn(str, 0, endCol, state.tabSize);
-            if (!start.leftOver)
-                ranges.push(EditorSelection.range(line.from + start.offset, line.from + end.offset));
+            let line = state.doc.line(i);
+            let start = findColumn(line.text, startCol, state.tabSize, true);
+            if (start > -1) {
+                let end = findColumn(line.text, endCol, state.tabSize);
+                ranges.push(EditorSelection.range(line.from + start, line.from + end));
+            }
         }
     }
     return ranges;
@@ -3506,13 +3988,11 @@ function absoluteColumn(view, x) {
     return ref ? Math.round(Math.abs((ref.left - x) / view.defaultCharacterWidth)) : -1;
 }
 function getPos(view, event) {
-    let offset = view.posAtCoords({ x: event.clientX, y: event.clientY });
-    if (offset == null)
-        return null;
+    let offset = view.posAtCoords({ x: event.clientX, y: event.clientY }, false);
     let line = view.state.doc.lineAt(offset), off = offset - line.from;
     let col = off > MaxOff ? -1
         : off == line.length ? absoluteColumn(view, event.clientX)
-            : countColumn(line.text.slice(0, offset - line.from), 0, view.state.tabSize);
+            : countColumn(line.text, view.state.tabSize, offset - line.from);
     return { line: line.number, col, off };
 }
 function rectangleSelectionStyle(view, event) {
@@ -3542,14 +4022,59 @@ function rectangleSelectionStyle(view, event) {
         }
     };
 }
-/// Create an extension that enables rectangular selections. By
-/// default, it will react to left mouse drag with the Alt key held
-/// down. When such a selection occurs, the text within the rectangle
-/// that was dragged over will be selected, as one selection
-/// [range](#state.SelectionRange) per line.
+/**
+Create an extension that enables rectangular selections. By
+default, it will react to left mouse drag with the Alt key held
+down. When such a selection occurs, the text within the rectangle
+that was dragged over will be selected, as one selection
+[range](https://codemirror.net/6/docs/ref/#state.SelectionRange) per line.
+*/
 function rectangularSelection(options) {
     let filter = (options === null || options === void 0 ? void 0 : options.eventFilter) || (e => e.altKey && e.button == 0);
     return EditorView.mouseSelectionStyle.of((view, event) => filter(event) ? rectangleSelectionStyle(view, event) : null);
+}
+const keys = {
+    Alt: [18, e => e.altKey],
+    Control: [17, e => e.ctrlKey],
+    Shift: [16, e => e.shiftKey],
+    Meta: [91, e => e.metaKey]
+};
+const showCrosshair = { style: "cursor: crosshair" };
+/**
+Returns an extension that turns the pointer cursor into a
+crosshair when a given modifier key, defaulting to Alt, is held
+down. Can serve as a visual hint that rectangular selection is
+going to happen when paired with
+[`rectangularSelection`](https://codemirror.net/6/docs/ref/#rectangular-selection.rectangularSelection).
+*/
+function crosshairCursor(options = {}) {
+    let [code, getter] = keys[options.key || "Alt"];
+    let plugin = ViewPlugin.fromClass(class {
+        constructor(view) {
+            this.view = view;
+            this.isDown = false;
+        }
+        set(isDown) {
+            if (this.isDown != isDown) {
+                this.isDown = isDown;
+                this.view.update([]);
+            }
+        }
+    }, {
+        eventHandlers: {
+            keydown(e) {
+                this.set(e.keyCode == code || getter(e));
+            },
+            keyup(e) {
+                if (e.keyCode == code || !getter(e))
+                    this.set(false);
+            }
+        }
+    });
+    return [
+        plugin,
+        EditorView.contentAttributes.of(view => { var _a; return ((_a = view.plugin(plugin)) === null || _a === void 0 ? void 0 : _a.isDown) ? showCrosshair : null; })
+    ];
 }
 
 class SelectedDiagnostic {
@@ -3565,17 +4090,18 @@ class LintState {
         this.panel = panel;
         this.selected = selected;
     }
-    static init(diagnostics, panel) {
+    static init(diagnostics, panel, state) {
         let ranges = Decoration.set(diagnostics.map((d) => {
-            return d.from < d.to
-                ? Decoration.mark({
-                    attributes: { class: "cm-lintRange cm-lintRange-" + d.severity },
-                    diagnostic: d
-                }).range(d.from, d.to)
-                : Decoration.widget({
+            // For zero-length ranges or ranges covering only a line break, create a widget
+            return d.from == d.to || (d.from == d.to - 1 && state.doc.lineAt(d.from).to == d.from)
+                ? Decoration.widget({
                     widget: new DiagnosticWidget(d),
                     diagnostic: d
-                }).range(d.from);
+                }).range(d.from)
+                : Decoration.mark({
+                    attributes: { class: "cm-lintRange cm-lintRange-" + d.severity },
+                    diagnostic: d
+                }).range(d.from, d.to);
         }), true);
         return new LintState(ranges, panel, findDiagnostic(ranges));
     }
@@ -3590,9 +4116,9 @@ function findDiagnostic(diagnostics, diagnostic = null, after = 0) {
     });
     return found;
 }
-function maybeEnableLint(state, effects, diagnostics) {
+function maybeEnableLint(state, effects) {
     return state.field(lintState, false) ? effects : effects.concat(StateEffect.appendConfig.of([
-        diagnostics ? lintState.init(() => LintState.init(diagnostics, null)) : lintState,
+        lintState,
         EditorView.decorations.compute([lintState], state => {
             let { selected, panel } = state.field(lintState);
             return !selected || !panel || selected.from == selected.to ? Decoration.none : Decoration.set([
@@ -3603,6 +4129,10 @@ function maybeEnableLint(state, effects, diagnostics) {
         baseTheme$5
     ]));
 }
+/**
+The state effect that updates the set of active diagnostics. Can
+be useful when writing an extension that needs to track these.
+*/
 const setDiagnosticsEffect = /*@__PURE__*/StateEffect.define();
 const togglePanel$1 = /*@__PURE__*/StateEffect.define();
 const movePanelSelection = /*@__PURE__*/StateEffect.define();
@@ -3621,7 +4151,7 @@ const lintState = /*@__PURE__*/StateField.define({
         }
         for (let effect of tr.effects) {
             if (effect.is(setDiagnosticsEffect)) {
-                value = LintState.init(effect.value, value.panel);
+                value = LintState.init(effect.value, value.panel, tr.state);
             }
             else if (effect.is(togglePanel$1)) {
                 value = new LintState(value.diagnostics, effect.value ? LintPanel.open : null, value.selected);
@@ -3654,9 +4184,12 @@ function lintTooltip(view, pos, side) {
         end: stackEnd,
         above: view.state.doc.lineAt(stackStart).to < stackEnd,
         create() {
-            return { dom: crelt("ul", { class: "cm-tooltip-lint" }, found.map(d => renderDiagnostic(view, d, false))) };
+            return { dom: diagnosticsTooltip(view, found) };
         }
     };
+}
+function diagnosticsTooltip(view, diagnostics) {
+    return crelt("ul", { class: "cm-tooltip-lint" }, diagnostics.map(d => renderDiagnostic(view, d, false)));
 }
 /**
 Command to open and focus the lint panel.
@@ -3736,6 +4269,7 @@ function renderDiagnostic(view, diagnostic, inPanel) {
             crelt("u", name.slice(keyIndex, keyIndex + 1)),
             name.slice(keyIndex + 1)];
         return crelt("button", {
+            type: "button",
             class: "cm-diagnosticAction",
             onclick: click,
             onmousedown: click,
@@ -3786,7 +4320,7 @@ class LintPanel {
             else if (event.keyCode == 13) { // Enter
                 this.view.focus();
             }
-            else if (event.keyCode >= 65 && event.keyCode <= 90 && this.items.length) { // A-Z
+            else if (event.keyCode >= 65 && event.keyCode <= 90 && this.selectedIndex >= 0) { // A-Z
                 let { diagnostic } = this.items[this.selectedIndex], keys = assignKeys(diagnostic.actions);
                 for (let i = 0; i < keys.length; i++)
                     if (keys[i].toUpperCase().charCodeAt(0) == event.keyCode) {
@@ -3814,6 +4348,7 @@ class LintPanel {
             onclick
         });
         this.dom = crelt("div", { class: "cm-panel-lint" }, this.list, crelt("button", {
+            type: "button",
             name: "close",
             "aria-label": this.view.state.phrase("close"),
             onclick: () => closeLintPanel(this.view)
@@ -3887,7 +4422,7 @@ class LintPanel {
                 }
             });
         }
-        else if (!this.items.length) {
+        else if (this.selectedIndex < 0) {
             this.list.removeAttribute("aria-activedescendant");
         }
         if (needsSync)
@@ -3914,7 +4449,7 @@ class LintPanel {
             rm();
     }
     moveSelection(selectedIndex) {
-        if (this.items.length == 0)
+        if (this.selectedIndex < 0)
             return;
         let field = this.view.state.field(lintState);
         let selection = findDiagnostic(field.diagnostics, this.items[selectedIndex].diagnostic);
@@ -3928,13 +4463,11 @@ class LintPanel {
     }
     static open(view) { return new LintPanel(view); }
 }
+function svg(content, attrs = `viewBox="0 0 40 40"`) {
+    return `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" ${attrs}>${encodeURIComponent(content)}</svg>')`;
+}
 function underline(color) {
-    if (typeof btoa != "function")
-        return "none";
-    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="6" height="3">
-    <path d="m0 3 l2 -2 l1 0 l2 2 l1 0" stroke="${color}" fill="none" stroke-width=".7"/>
-  </svg>`;
-    return `url('data:image/svg+xml;base64,${btoa(svg)}')`;
+    return svg(`<path d="m0 2.5 l2 -1.5 l1 0 l2 1.5 l1 0" stroke="${color}" fill="none" stroke-width=".7"/>`, `width="6" height="3"`);
 }
 const baseTheme$5 = /*@__PURE__*/EditorView.baseTheme({
     ".cm-diagnostic": {
@@ -3961,7 +4494,8 @@ const baseTheme$5 = /*@__PURE__*/EditorView.baseTheme({
     },
     ".cm-lintRange": {
         backgroundPosition: "left bottom",
-        backgroundRepeat: "repeat-x"
+        backgroundRepeat: "repeat-x",
+        paddingBottom: "0.7px",
     },
     ".cm-lintRange-error": { backgroundImage: /*@__PURE__*/underline("#d11") },
     ".cm-lintRange-warning": { backgroundImage: /*@__PURE__*/underline("orange") },
@@ -4035,13 +4569,14 @@ Specifically, it includes...
  - [the undo history](https://codemirror.net/6/docs/ref/#history.history)
  - [a fold gutter](https://codemirror.net/6/docs/ref/#fold.foldGutter)
  - [custom selection drawing](https://codemirror.net/6/docs/ref/#view.drawSelection)
+ - [drop cursor](https://codemirror.net/6/docs/ref/#view.dropCursor)
  - [multiple selections](https://codemirror.net/6/docs/ref/#state.EditorState^allowMultipleSelections)
  - [reindentation on input](https://codemirror.net/6/docs/ref/#language.indentOnInput)
  - [the default highlight style](https://codemirror.net/6/docs/ref/#highlight.defaultHighlightStyle) (as fallback)
  - [bracket matching](https://codemirror.net/6/docs/ref/#matchbrackets.bracketMatching)
  - [bracket closing](https://codemirror.net/6/docs/ref/#closebrackets.closeBrackets)
  - [autocompletion](https://codemirror.net/6/docs/ref/#autocomplete.autocompletion)
- - [rectangular selection](https://codemirror.net/6/docs/ref/#rectangular-selection.rectangularSelection)
+ - [rectangular selection](https://codemirror.net/6/docs/ref/#rectangular-selection.rectangularSelection) and [crosshair cursor](https://codemirror.net/6/docs/ref/#rectangular-selection.crosshairCursor)
  - [active line highlighting](https://codemirror.net/6/docs/ref/#view.highlightActiveLine)
  - [active line gutter highlighting](https://codemirror.net/6/docs/ref/#gutter.highlightActiveLineGutter)
  - [selection match highlighting](https://codemirror.net/6/docs/ref/#search.highlightSelectionMatches)
@@ -4065,6 +4600,7 @@ const basicSetup = [
     /*@__PURE__*/history(),
     /*@__PURE__*/foldGutter(),
     /*@__PURE__*/drawSelection(),
+    /*@__PURE__*/dropCursor(),
     /*@__PURE__*/EditorState.allowMultipleSelections.of(true),
     /*@__PURE__*/indentOnInput(),
     defaultHighlightStyle.fallback,
@@ -4072,6 +4608,7 @@ const basicSetup = [
     /*@__PURE__*/closeBrackets(),
     /*@__PURE__*/autocompletion(),
     /*@__PURE__*/rectangularSelection(),
+    /*@__PURE__*/crosshairCursor(),
     /*@__PURE__*/highlightActiveLine(),
     /*@__PURE__*/highlightSelectionMatches(),
     /*@__PURE__*/keymap.of([

@@ -5,11 +5,9 @@ export class SideBySide extends BlockComponent {
   static componentType = "sideBySide";
   static renderChildren = true;
 
-  static get stateVariablesShadowedForReference() { return ["widths", "margins", "valigns"] };
 
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.width = {
       createComponentOfType: "_componentSize",
@@ -58,7 +56,7 @@ export class SideBySide extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: { nPanels: dependencyValues.blockChildren.length },
+          setValue: { nPanels: dependencyValues.blockChildren.length },
           checkForActualChange: { nPanels: true }
         }
       }
@@ -71,7 +69,8 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.essentialWidths = {
       isArray: true,
       entryPrefixes: ["essentialWidth"],
-      defaultEntryValue: undefined,
+      defaultValueByArrayKey: () => null,
+      hasEssential: true,
       returnArraySizeDependencies: () => ({
         nPanels: {
           dependencyType: "stateVariable",
@@ -86,7 +85,7 @@ export class SideBySide extends BlockComponent {
 
         let essentialWidths = {};
         for (let arrayKey of arrayKeys) {
-          essentialWidths[arrayKey] = {};
+          essentialWidths[arrayKey] = true;
         }
 
         return { useEssentialOrDefaultValue: { essentialWidths } }
@@ -101,7 +100,7 @@ export class SideBySide extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "essentialWidths",
+            setEssentialValue: "essentialWidths",
             value
           }]
         }
@@ -111,12 +110,7 @@ export class SideBySide extends BlockComponent {
 
 
     stateVariableDefinitions.allWidthsSpecified = {
-      additionalStateVariablesDefined: [{
-        variableName: "widthsAbsolute",
-        // public: true,
-        // componentType: "boolean",
-        // forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["widthsAbsolute"],
       returnDependencies() {
         return {
           nPanels: {
@@ -152,7 +146,7 @@ export class SideBySide extends BlockComponent {
       definition({ dependencyValues }) {
 
         let allWidthsSpecified = [];
-        let widthsAbsolute;
+        let widthsAbsolute = null;
 
         let nWidthsSpecifiedFromAttrs;
         let usingSingleWidth = false;
@@ -168,7 +162,7 @@ export class SideBySide extends BlockComponent {
 
         for (let ind = 0; ind < dependencyValues.nPanels; ind++) {
 
-          let thisAbsolute;
+          let thisAbsolute = null;
 
           if (ind < nWidthsSpecifiedFromAttrs) {
             if (usingSingleWidth) {
@@ -176,19 +170,19 @@ export class SideBySide extends BlockComponent {
                 allWidthsSpecified[ind] = dependencyValues.widthAttr.stateValues.componentSize.size;
                 thisAbsolute = Boolean(dependencyValues.widthAttr.stateValues.componentSize.isAbsolute);
               } else {
-                allWidthsSpecified[ind] = undefined;
+                allWidthsSpecified[ind] = null;
               }
             } else {
               if (dependencyValues.widthsAttr.stateValues.componentSizes[ind]) {
                 allWidthsSpecified[ind] = dependencyValues.widthsAttr.stateValues.componentSizes[ind].size;
                 thisAbsolute = Boolean(dependencyValues.widthsAttr.stateValues.componentSizes[ind].isAbsolute);
               } else {
-                allWidthsSpecified[ind] = undefined;
+                allWidthsSpecified[ind] = null;
               }
             }
           } else {
             if (dependencyValues.parentWidths) {
-              if (dependencyValues.essentialWidth[ind] === undefined) {
+              if (dependencyValues.essentialWidth[ind] === null) {
                 allWidthsSpecified[ind] = dependencyValues.parentWidths[ind];
               } else {
                 allWidthsSpecified[ind] = dependencyValues.essentialWidth[ind];
@@ -200,9 +194,9 @@ export class SideBySide extends BlockComponent {
             }
           }
 
-          if (widthsAbsolute === undefined) {
+          if (widthsAbsolute === null) {
             widthsAbsolute = thisAbsolute;
-          } else if (thisAbsolute !== undefined && widthsAbsolute !== thisAbsolute) {
+          } else if (thisAbsolute !== null && widthsAbsolute !== thisAbsolute) {
             throw Error(`SideBySide is not implemented for absolute measurements`);
             throw Error(`Cannot mix absolute and relative widths for sideBySide`)
           }
@@ -210,9 +204,9 @@ export class SideBySide extends BlockComponent {
         }
 
         // treat any non-numeric widths as being unspecified
-        allWidthsSpecified = allWidthsSpecified.map(x => Number.isFinite(x) ? x : undefined);
+        allWidthsSpecified = allWidthsSpecified.map(x => Number.isFinite(x) ? x : null);
 
-        return { newValues: { allWidthsSpecified, widthsAbsolute } };
+        return { setValue: { allWidthsSpecified, widthsAbsolute } };
 
       },
     }
@@ -220,7 +214,8 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.essentialMargins = {
       isArray: true,
       entryPrefixes: ["essentialMargin"],
-      defaultEntryValue: undefined,
+      hasEssential: true,
+      defaultValueByArrayKey: () => null,
       returnArraySizeDependencies: () => ({}),
       returnArraySize() {
         return [2];
@@ -230,7 +225,7 @@ export class SideBySide extends BlockComponent {
 
         let essentialMargins = {};
         for (let arrayKey of arrayKeys) {
-          essentialMargins[arrayKey] = {};
+          essentialMargins[arrayKey] = true;
         }
 
         return { useEssentialOrDefaultValue: { essentialMargins } }
@@ -246,7 +241,7 @@ export class SideBySide extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "essentialMargins",
+            setEssentialValue: "essentialMargins",
             value
           }]
         }
@@ -255,12 +250,7 @@ export class SideBySide extends BlockComponent {
 
 
     stateVariableDefinitions.allMarginsSpecified = {
-      additionalStateVariablesDefined: [{
-        variableName: "marginsAbsolute",
-        // public: true,
-        // componentType: "boolean",
-        // forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["marginsAbsolute"],
       returnDependencies() {
         return {
           nPanels: {
@@ -291,13 +281,13 @@ export class SideBySide extends BlockComponent {
       definition({ dependencyValues }) {
 
         let allMarginsSpecified = [];
-        let marginsAbsolute;
+        let marginsAbsolute = null;
 
         if (dependencyValues.marginsAttr === null) {
           if (dependencyValues.parentMargins) {
             marginsAbsolute = dependencyValues.parentMarginsAbsolute;
             for (let ind = 0; ind < 2; ind++) {
-              if (dependencyValues.essentialMargins[ind] === undefined) {
+              if (dependencyValues.essentialMargins[ind] === null) {
                 allMarginsSpecified[ind] = dependencyValues.parentMargins[ind];
               } else {
                 allMarginsSpecified[ind] = dependencyValues.essentialMargins[ind];
@@ -315,11 +305,11 @@ export class SideBySide extends BlockComponent {
             allMarginsSpecified[ind] = dependencyValues.essentialMargins[ind];
           }
         } else if (dependencyValues.marginsAttr.stateValues.nComponents === 1) {
-          let margin;
+          let margin = null;
           if (dependencyValues.marginsAttr.stateValues.componentSizes[0]) {
             margin = dependencyValues.marginsAttr.stateValues.componentSizes[0].size;
             if (!Number.isFinite(margin)) {
-              margin = undefined;
+              margin = null;
             }
             marginsAbsolute = Boolean(dependencyValues.marginsAttr.stateValues.componentSizes[0].isAbsolute);
           }
@@ -343,11 +333,11 @@ export class SideBySide extends BlockComponent {
             throw Error(`Cannot mix absolute and relative margins for sideBySide`)
           }
           allMarginsSpecified = dependencyValues.marginsAttr.stateValues.componentSizes
-            .slice(0, 2).map(x => x && Number.isFinite(x.size) ? x.size : undefined);
+            .slice(0, 2).map(x => x && Number.isFinite(x.size) ? x.size : null);
         }
 
 
-        return { newValues: { allMarginsSpecified, marginsAbsolute } };
+        return { setValue: { allMarginsSpecified, marginsAbsolute } };
 
       },
     }
@@ -355,7 +345,9 @@ export class SideBySide extends BlockComponent {
 
     stateVariableDefinitions.absoluteMeasurements = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         widthsAbsolute: {
@@ -369,14 +361,14 @@ export class SideBySide extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         let absoluteMeasurements;
-        if (dependencyValues.widthsAbsolute === undefined) {
-          if (dependencyValues.marginsAbsolute === undefined) {
+        if (dependencyValues.widthsAbsolute === null) {
+          if (dependencyValues.marginsAbsolute === null) {
             absoluteMeasurements = false;
           } else {
             absoluteMeasurements = dependencyValues.marginsAbsolute
           }
         } else {
-          if (dependencyValues.marginsAbsolute === undefined) {
+          if (dependencyValues.marginsAbsolute === null) {
             absoluteMeasurements = dependencyValues.widthsAbsolute;
           } else {
             if (dependencyValues.widthsAbsolute !== dependencyValues.marginsAbsolute) {
@@ -391,7 +383,7 @@ export class SideBySide extends BlockComponent {
           throw Error(`SideBySide is not implemented for absolute measurements`);
         }
 
-        return { newValues: { absoluteMeasurements } }
+        return { setValue: { absoluteMeasurements } }
       }
     }
 
@@ -401,7 +393,9 @@ export class SideBySide extends BlockComponent {
         {
           variableName: "gapWidth",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           forRenderer: true
         }
       ],
@@ -435,7 +429,7 @@ export class SideBySide extends BlockComponent {
 
         for (let ind = 0; ind < dependencyValues.nPanels; ind++) {
           let width = allWidths[ind];
-          if (width === undefined) {
+          if (width === null) {
             nWidthsUndefined++;
           } else {
             totalWidthSpecified += width;
@@ -447,7 +441,7 @@ export class SideBySide extends BlockComponent {
 
         for (let ind = 0; ind < 2; ind++) {
           let margin = allMargins[ind];
-          if (margin === undefined) {
+          if (margin === null) {
             nMarginsUndefined++;
           } else {
             totalMarginSpecified += margin;
@@ -458,12 +452,12 @@ export class SideBySide extends BlockComponent {
         if (!dependencyValues.absoluteMeasurements) {
           if (totalWidthSpecified + totalMarginSpecified >= 100) {
             // we are already over 100%
-            // anything undefined becomes width 0
+            // anything null becomes width 0
             // everything else is normalized to add up to 100
 
             let normalization = 100 / (totalWidthSpecified + totalMarginSpecified);
             for (let ind = 0; ind < dependencyValues.nPanels; ind++) {
-              if (allWidths[ind] === undefined) {
+              if (allWidths[ind] === null) {
                 allWidths[ind] = 0;
               } else {
                 allWidths[ind] *= normalization;
@@ -471,7 +465,7 @@ export class SideBySide extends BlockComponent {
             }
             for (let ind = 0; ind < 2; ind++) {
               let margin = allMargins[ind];
-              if (margin === undefined) {
+              if (margin === null) {
                 allMargins[ind] = 0;
               } else {
                 allMargins[ind] *= normalization;
@@ -480,10 +474,10 @@ export class SideBySide extends BlockComponent {
 
           } else {
             // since we are under 100%, we try the following to get to 100%
-            // 1. if there are any undefined widths,
+            // 1. if there are any null widths,
             //    define them to be the same value that makes the total 100%
-            //    and make any undefined margins be zero
-            // 2. else, if there are any undefined margins,
+            //    and make any null margins be zero
+            // 2. else, if there are any null margins,
             //    define them to be the same value that makes the total 100%
             // 3. else if there two or panels, set gapWidth to make the total 100%
             // 4. else if there is one panel, expand the right margin
@@ -493,14 +487,14 @@ export class SideBySide extends BlockComponent {
 
               let newWidth = (100 - (totalWidthSpecified + totalMarginSpecified)) / nWidthsUndefined;
               for (let ind = 0; ind < dependencyValues.nPanels; ind++) {
-                if (allWidths[ind] === undefined) {
+                if (allWidths[ind] === null) {
                   allWidths[ind] = newWidth;
                 }
               }
 
               for (let ind = 0; ind < 2; ind++) {
                 let margin = allMargins[ind];
-                if (margin === undefined) {
+                if (margin === null) {
                   allMargins[ind] = 0;
                 }
               }
@@ -508,7 +502,7 @@ export class SideBySide extends BlockComponent {
             } else if (nMarginsUndefined > 0) {
               let newMargin = (100 - (totalWidthSpecified + totalMarginSpecified)) / (nMarginsUndefined * dependencyValues.nPanels);
               for (let ind = 0; ind < 2; ind++) {
-                if (allMargins[ind] === undefined) {
+                if (allMargins[ind] === null) {
                   allMargins[ind] = newMargin;
                 }
               }
@@ -529,7 +523,7 @@ export class SideBySide extends BlockComponent {
           // absolute measurements before get this far
         }
 
-        return { newValues: { allWidths, allMargins, gapWidth } }
+        return { setValue: { allWidths, allMargins, gapWidth } }
 
       }
     }
@@ -538,7 +532,9 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.widths = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["width"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -599,7 +595,7 @@ export class SideBySide extends BlockComponent {
           widths[arrayKey] = globalDependencyValues.allWidths[arrayKey];
         }
 
-        return { newValues: { widths } }
+        return { setValue: { widths } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -668,7 +664,9 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.margins = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["margin"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({}),
@@ -718,7 +716,7 @@ export class SideBySide extends BlockComponent {
           margins[arrayKey] = globalDependencyValues.allMargins[arrayKey];
         }
 
-        return { newValues: { margins } }
+        return { setValue: { margins } }
 
 
       },
@@ -753,7 +751,7 @@ export class SideBySide extends BlockComponent {
             // if didn't specify the first margin, then set the first margin
             // to be equal to the second
             // (since if we didn't overwrite the non-numeric first margin,
-            // the margins would still be undefined)
+            // the margins would still be null)
             instructions.push({
               setDependency: "marginsAttr",
               desiredValue: {
@@ -823,7 +821,8 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.essentialValigns = {
       isArray: true,
       entryPrefixes: ["essentialValign"],
-      defaultEntryValue: undefined,
+      defaultValueByArrayKey: () => null,
+      hasEssential: true,
       returnArraySizeDependencies: () => ({
         nPanels: {
           dependencyType: "stateVariable",
@@ -838,7 +837,7 @@ export class SideBySide extends BlockComponent {
 
         let essentialValigns = {};
         for (let arrayKey of arrayKeys) {
-          essentialValigns[arrayKey] = {};
+          essentialValigns[arrayKey] = true;
         }
 
         return { useEssentialOrDefaultValue: { essentialValigns } }
@@ -853,7 +852,7 @@ export class SideBySide extends BlockComponent {
         return {
           success: true,
           instructions: [{
-            setStateVariable: "essentialValigns",
+            setEssentialValue: "essentialValigns",
             value
           }]
         }
@@ -865,7 +864,9 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.valigns = {
       public: true,
       isArray: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       entryPrefixes: ["valign"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -948,13 +949,13 @@ export class SideBySide extends BlockComponent {
             }
           } else {
             if (dependencyValuesByKey[arrayKey].parentValign) {
-              if (dependencyValuesByKey[arrayKey].essentialValign === undefined) {
+              if (dependencyValuesByKey[arrayKey].essentialValign === null) {
                 valigns[arrayKey] = dependencyValuesByKey[arrayKey].parentValign;
               } else {
                 valigns[arrayKey] = dependencyValuesByKey[arrayKey].essentialValign;
               }
             } else {
-              if (dependencyValuesByKey[arrayKey].essentialValign === undefined) {
+              if (dependencyValuesByKey[arrayKey].essentialValign === null) {
                 valigns[arrayKey] = "top";
               } else {
                 valigns[arrayKey] = dependencyValuesByKey[arrayKey].essentialValign;
@@ -963,7 +964,7 @@ export class SideBySide extends BlockComponent {
           }
         }
 
-        return { newValues: { valigns } }
+        return { setValue: { valigns } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues,
@@ -1029,20 +1030,35 @@ export class SideBySide extends BlockComponent {
 
     return stateVariableDefinitions;
   }
+
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
+
 }
 
 
 
 export class SbsGroup extends BlockComponent {
   static componentType = "sbsGroup";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
-  static get stateVariablesShadowedForReference() { return ["widths", "margins", "valigns"] };
-
-
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.width = {
       createComponentOfType: "_componentSize",
@@ -1090,7 +1106,7 @@ export class SbsGroup extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         return {
-          newValues: {
+          setValue: {
             maxNPanelsPerRow:
               me.math.max(
                 dependencyValues.sideBySideChildren.map(x => x.stateValues.nPanels)
@@ -1106,11 +1122,11 @@ export class SbsGroup extends BlockComponent {
       additionalStateVariablesDefined: [{
         variableName: "widthsAbsoluteArray",
         isArray: true,
-        defaultEntryValue: false,
       }],
       isArray: true,
       entryPrefixes: ["specifiedWidth"],
-      defaultEntryValue: undefined,
+      hasEssential: true,
+      defaultValueByArrayKey: () => null,
       returnArraySizeDependencies: () => ({
         maxNPanelsPerRow: {
           dependencyType: "stateVariable",
@@ -1148,8 +1164,8 @@ export class SbsGroup extends BlockComponent {
       },
       arrayDefinitionByKey({ globalDependencyValues, dependencyValuesByKey, arrayKeys, arraySize }) {
         let specifiedWidths = {};
+        let essentialSpecifiedWidths = {};
         let widthsAbsoluteArray = {};
-        let essentialWidths = {};
 
         let nWidthsSpecifiedFromAttrs;
         let usingSingleWidth = false;
@@ -1183,20 +1199,15 @@ export class SbsGroup extends BlockComponent {
               }
             }
           } else {
-            essentialWidths[arrayKey] = {};
-            widthsAbsoluteArray[arrayKey] = undefined;
+            essentialSpecifiedWidths[arrayKey] = true;
+            widthsAbsoluteArray[arrayKey] = null;
           }
         }
 
-        let result = { newValues: { widthsAbsoluteArray } };
+        let result = { setValue: { widthsAbsoluteArray, specifiedWidths } };
 
-        if (Object.keys(specifiedWidths).length > 0) {
-          result.newValues.specifiedWidths = specifiedWidths;
-        }
-        if (Object.keys(essentialWidths).length > 0) {
-          result.useEssentialOrDefaultValue = {
-            specifiedWidths: essentialWidths,
-          }
+        if (Object.keys(essentialSpecifiedWidths).length > 0) {
+          result.useEssentialOrDefaultValue = { specifiedWidths: essentialSpecifiedWidths }
         }
 
         return result;
@@ -1247,7 +1258,7 @@ export class SbsGroup extends BlockComponent {
             }
           } else {
             instructions.push({
-              setStateVariable: "specifiedWidths",
+              setEssentialValue: "specifiedWidths",
               value: { [arrayKey]: desiredStateVariableValues.specifiedWidths[arrayKey] },
             })
           }
@@ -1265,9 +1276,6 @@ export class SbsGroup extends BlockComponent {
     }
 
     stateVariableDefinitions.widthsAbsolute = {
-      // public: true,
-      // componentType: "boolean",
-      // forRenderer: true,
       returnDependencies: () => ({
         widthsAbsoluteArray: {
           dependencyType: "stateVariable",
@@ -1275,13 +1283,13 @@ export class SbsGroup extends BlockComponent {
         }
       }),
       definition({ dependencyValues }) {
-        let widthsAbsolute;
+        let widthsAbsolute = null;
 
         for (let ind in dependencyValues.widthsAbsoluteArray) {
           let thisAbsolute = dependencyValues.widthsAbsoluteArray[ind];
-          if (thisAbsolute !== undefined) {
+          if (thisAbsolute !== null) {
             thisAbsolute = Boolean(thisAbsolute);
-            if (widthsAbsolute === undefined) {
+            if (widthsAbsolute === null) {
               widthsAbsolute = thisAbsolute;
             } else if (widthsAbsolute !== thisAbsolute) {
               throw Error(`SbsGroup is not implemented for absolute measurements`);
@@ -1290,9 +1298,10 @@ export class SbsGroup extends BlockComponent {
           }
         }
 
-        return { newValues: { widthsAbsolute } }
+        return { setValue: { widthsAbsolute } }
       }
     }
+
 
 
     stateVariableDefinitions.specifiedMargins = {
@@ -1300,16 +1309,16 @@ export class SbsGroup extends BlockComponent {
         variableName: "marginsAbsoluteArray",
         isArray: true,
         entryPrefixes: ["marginAbsolute"],
-        defaultEntryValue: false,
       }],
       isArray: true,
       entryPrefixes: ["specifiedMargin"],
-      defaultEntryValue: undefined,
+      hasEssential: true,
+      defaultValueByArrayKey: () => null,
       returnArraySizeDependencies: () => ({}),
       returnArraySize() {
         return [2];
       },
-      returnArrayDependenciesByKey() {
+      returnArrayDependenciesByKey({ arrayKeys }) {
         let globalDependencies = {
           marginsAttr: {
             dependencyType: "attributeComponent",
@@ -1320,28 +1329,28 @@ export class SbsGroup extends BlockComponent {
             ]
           },
         }
+
         return { globalDependencies };
       },
-      arrayDefinitionByKey({ globalDependencyValues, arrayKeys }) {
+      arrayDefinitionByKey({ dependencyValuesByKey, globalDependencyValues, arrayKeys }) {
 
         let specifiedMargins = {};
+        let essentialSpecifiedMargins = {};
         let marginsAbsoluteArray = {};
-        let essentialMargins = {};
-
 
         if (globalDependencyValues.marginsAttr === null ||
           globalDependencyValues.marginsAttr.stateValues.nComponents === 0
         ) {
           for (let arrayKey of arrayKeys) {
-            essentialMargins[arrayKey] = {};
-            marginsAbsoluteArray[arrayKey] = undefined;
+            essentialSpecifiedMargins[arrayKey] = true;
+            marginsAbsoluteArray[arrayKey] = null;
           }
         } else if (globalDependencyValues.marginsAttr.stateValues.nComponents === 1) {
-          let margin, absolute;
+          let margin = null, absolute = null;
           if (globalDependencyValues.marginsAttr.stateValues.componentSize1) {
             margin = globalDependencyValues.marginsAttr.stateValues.componentSize1.size;
             if (!Number.isFinite(margin)) {
-              margin = undefined;
+              margin = null;
             }
             absolute = Boolean(globalDependencyValues.marginsAttr.stateValues.componentSize1.isAbsolute);
           }
@@ -1355,7 +1364,7 @@ export class SbsGroup extends BlockComponent {
             if (globalDependencyValues.marginsAttr.stateValues[`componentSize${Number(arrayKey) + 1}`]) {
               let margin = globalDependencyValues.marginsAttr.stateValues[`componentSize${Number(arrayKey) + 1}`].size;
               if (!Number.isFinite(margin)) {
-                margin = undefined;
+                margin = null;
               }
               let absolute = Boolean(globalDependencyValues.marginsAttr.stateValues[`componentSize${Number(arrayKey) + 1}`].isAbsolute);
 
@@ -1365,33 +1374,26 @@ export class SbsGroup extends BlockComponent {
           }
         }
 
-        let result = { newValues: { marginsAbsoluteArray } };
+        let result = { setValue: { marginsAbsoluteArray, specifiedMargins } };
 
-        if (Object.keys(specifiedMargins).length > 0) {
-          result.newValues.specifiedMargins = specifiedMargins;
-        }
-        if (Object.keys(essentialMargins).length > 0) {
-          result.useEssentialOrDefaultValue = {
-            specifiedMargins: essentialMargins,
-          }
+        if (Object.keys(essentialSpecifiedMargins).length > 0) {
+          result.useEssentialOrDefaultValue = { specifiedMargins: essentialSpecifiedMargins }
         }
 
         return result;
 
       },
       async inverseArrayDefinitionByKey({ desiredStateVariableValues,
-        globalDependencyValues, stateValues,
+        dependencyNamesByKey, globalDependencyValues, stateValues,
       }) {
 
         let instructions = [];
 
         if (globalDependencyValues.marginsAttr === null) {
-          for (let arrayKey in desiredStateVariableValues.specifiedMargins) {
-            instructions.push({
-              setStateVariable: "specifiedMargins",
-              value: { [arrayKey]: desiredStateVariableValues.specifiedMargins[arrayKey] },
-            })
-          }
+          instructions.push({
+            setEssentialValue: "specifiedMargins",
+            value: desiredStateVariableValues.specifiedMargins,
+          })
         } else if (!(
           globalDependencyValues.marginsAttr.stateValues.componentSize1 &&
           Number.isFinite(globalDependencyValues.marginsAttr.stateValues.componentSize1.size)
@@ -1410,7 +1412,7 @@ export class SbsGroup extends BlockComponent {
             // if didn't specify the first margin, then set the first margin
             // to be equal to the second
             // (since if we didn't overwrite the non-numeric first margin,
-            // the margins would still be undefined)
+            // the margins would still be null)
             instructions.push({
               setDependency: "marginsAttr",
               desiredValue: {
@@ -1479,9 +1481,6 @@ export class SbsGroup extends BlockComponent {
 
 
     stateVariableDefinitions.marginsAbsolute = {
-      // public: true,
-      // componentType: "boolean",
-      // forRenderer: true,
       returnDependencies: () => ({
         marginsAbsoluteArray: {
           dependencyType: "stateVariable",
@@ -1489,13 +1488,13 @@ export class SbsGroup extends BlockComponent {
         }
       }),
       definition({ dependencyValues }) {
-        let marginsAbsolute;
+        let marginsAbsolute = null;
 
         for (let ind in dependencyValues.marginsAbsoluteArray) {
           let thisAbsolute = dependencyValues.marginsAbsoluteArray[ind];
-          if (thisAbsolute !== undefined) {
+          if (thisAbsolute !== null) {
             thisAbsolute = Boolean(thisAbsolute);
-            if (marginsAbsolute === undefined) {
+            if (marginsAbsolute === null) {
               marginsAbsolute = thisAbsolute;
             } else if (marginsAbsolute !== thisAbsolute) {
               throw Error(`SbsGroup is not implemented for absolute measurements`);
@@ -1504,13 +1503,15 @@ export class SbsGroup extends BlockComponent {
           }
         }
 
-        return { newValues: { marginsAbsolute } }
+        return { setValue: { marginsAbsolute } }
       }
     }
 
     stateVariableDefinitions.absoluteMeasurements = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       // forRenderer: true,
       returnDependencies: () => ({
         widthsAbsolute: {
@@ -1524,14 +1525,14 @@ export class SbsGroup extends BlockComponent {
       }),
       definition({ dependencyValues }) {
         let absoluteMeasurements;
-        if (dependencyValues.widthsAbsolute === undefined) {
-          if (dependencyValues.marginsAbsolute === undefined) {
+        if (dependencyValues.widthsAbsolute === null) {
+          if (dependencyValues.marginsAbsolute === null) {
             absoluteMeasurements = false;
           } else {
             absoluteMeasurements = dependencyValues.marginsAbsolute
           }
         } else {
-          if (dependencyValues.marginsAbsolute === undefined) {
+          if (dependencyValues.marginsAbsolute === null) {
             absoluteMeasurements = dependencyValues.widthsAbsolute;
           } else {
             if (dependencyValues.widthsAbsolute !== dependencyValues.marginsAbsolute) {
@@ -1546,7 +1547,7 @@ export class SbsGroup extends BlockComponent {
           throw Error(`SbsGroup is not implemented for absolute measurements`);
         }
 
-        return { newValues: { absoluteMeasurements } }
+        return { setValue: { absoluteMeasurements } }
       }
     }
 
@@ -1556,7 +1557,9 @@ export class SbsGroup extends BlockComponent {
         {
           variableName: "gapWidth",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           // forRenderer: true
         }
       ],
@@ -1590,7 +1593,7 @@ export class SbsGroup extends BlockComponent {
 
         for (let ind = 0; ind < dependencyValues.maxNPanelsPerRow; ind++) {
           let width = allWidths[ind];
-          if (width === undefined) {
+          if (width === null) {
             nWidthsUndefined++;
           } else {
             totalWidthSpecified += width;
@@ -1602,7 +1605,7 @@ export class SbsGroup extends BlockComponent {
 
         for (let ind = 0; ind < 2; ind++) {
           let margin = allMargins[ind];
-          if (margin === undefined) {
+          if (margin === null) {
             nMarginsUndefined++;
           } else {
             totalMarginSpecified += margin;
@@ -1613,12 +1616,12 @@ export class SbsGroup extends BlockComponent {
         if (!dependencyValues.absoluteMeasurements) {
           if (totalWidthSpecified + totalMarginSpecified >= 100) {
             // we are already over 100%
-            // anything undefined becomes width 0
+            // anything null becomes width 0
             // everything else is normalized to add up to 100
 
             let normalization = 100 / (totalWidthSpecified + totalMarginSpecified);
             for (let ind = 0; ind < dependencyValues.maxNPanelsPerRow; ind++) {
-              if (allWidths[ind] === undefined) {
+              if (allWidths[ind] === null) {
                 allWidths[ind] = 0;
               } else {
                 allWidths[ind] *= normalization;
@@ -1626,7 +1629,7 @@ export class SbsGroup extends BlockComponent {
             }
             for (let ind = 0; ind < 2; ind++) {
               let margin = allMargins[ind];
-              if (margin === undefined) {
+              if (margin === null) {
                 allMargins[ind] = 0;
               } else {
                 allMargins[ind] *= normalization;
@@ -1635,10 +1638,10 @@ export class SbsGroup extends BlockComponent {
 
           } else {
             // since we are under 100%, we try the following to get to 100%
-            // 1. if there are any undefined widths,
+            // 1. if there are any null widths,
             //    define them to be the same value that makes the total 100%
-            //    and make any undefined margins be zero
-            // 2. else, if there are any undefined margins,
+            //    and make any null margins be zero
+            // 2. else, if there are any null margins,
             //    define them to be the same value that makes the total 100%
             // 3. else if there two or panels, set gapWidth to make the total 100%
             // 4. else if there is one panel, expand the right margin
@@ -1648,14 +1651,14 @@ export class SbsGroup extends BlockComponent {
 
               let newWidth = (100 - (totalWidthSpecified + totalMarginSpecified)) / nWidthsUndefined;
               for (let ind = 0; ind < dependencyValues.maxNPanelsPerRow; ind++) {
-                if (allWidths[ind] === undefined) {
+                if (allWidths[ind] === null) {
                   allWidths[ind] = newWidth;
                 }
               }
 
               for (let ind = 0; ind < 2; ind++) {
                 let margin = allMargins[ind];
-                if (margin === undefined) {
+                if (margin === null) {
                   allMargins[ind] = 0;
                 }
               }
@@ -1663,7 +1666,7 @@ export class SbsGroup extends BlockComponent {
             } else if (nMarginsUndefined > 0) {
               let newMargin = (100 - (totalWidthSpecified + totalMarginSpecified)) / (nMarginsUndefined * dependencyValues.maxNPanelsPerRow);
               for (let ind = 0; ind < 2; ind++) {
-                if (allMargins[ind] === undefined) {
+                if (allMargins[ind] === null) {
                   allMargins[ind] = newMargin;
                 }
               }
@@ -1684,7 +1687,7 @@ export class SbsGroup extends BlockComponent {
           // absolute measurements before get this far
         }
 
-        return { newValues: { allWidths, allMargins, gapWidth } }
+        return { setValue: { allWidths, allMargins, gapWidth } }
 
       }
     }
@@ -1693,7 +1696,9 @@ export class SbsGroup extends BlockComponent {
     stateVariableDefinitions.widths = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["width"],
       // forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -1734,7 +1739,7 @@ export class SbsGroup extends BlockComponent {
           widths[arrayKey] = globalDependencyValues.allWidths[arrayKey];
         }
 
-        return { newValues: { widths } }
+        return { setValue: { widths } }
 
       },
       inverseArrayDefinitionByKey({ desiredStateVariableValues, dependencyNamesByKey }) {
@@ -1762,7 +1767,9 @@ export class SbsGroup extends BlockComponent {
     stateVariableDefinitions.margins = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["margin"],
       // forRenderer: true,
       returnArraySizeDependencies: () => ({}),
@@ -1798,7 +1805,7 @@ export class SbsGroup extends BlockComponent {
           margins[arrayKey] = globalDependencyValues.allMargins[arrayKey];
         }
 
-        return { newValues: { margins } }
+        return { setValue: { margins } }
 
 
       },
@@ -1829,10 +1836,13 @@ export class SbsGroup extends BlockComponent {
     stateVariableDefinitions.valigns = {
       public: true,
       isArray: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       entryPrefixes: ["valign"],
-      defaultEntryValue: "top",
       // forRenderer: true,
+      hasEssential: true,
+      defaultValueByArrayKey: () => "top",
       returnArraySizeDependencies: () => ({
         maxNPanelsPerRow: {
           dependencyType: "stateVariable",
@@ -1899,19 +1909,17 @@ export class SbsGroup extends BlockComponent {
               valigns[arrayKey] = "top";
             }
           } else {
-            essentialValigns[arrayKey] = {};
+            essentialValigns[arrayKey] = true;
           }
         }
 
         let result = {};
 
         if (Object.keys(valigns).length > 0) {
-          result.newValues = { valigns };
+          result.setValue = { valigns };
         }
         if (Object.keys(essentialValigns).length > 0) {
-          result.useEssentialOrDefaultValue = {
-            valigns: essentialValigns,
-          }
+          result.useEssentialOrDefaultValue = { valigns: essentialValigns }
         }
 
         return result;
@@ -1961,7 +1969,7 @@ export class SbsGroup extends BlockComponent {
             }
           } else {
             instructions.push({
-              setStateVariable: "valigns",
+              setEssentialValue: "valigns",
               value: { [arrayKey]: desiredValue },
             })
           }
@@ -1980,12 +1988,30 @@ export class SbsGroup extends BlockComponent {
 
     return stateVariableDefinitions;
   }
+
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
+
 }
 
 
 export class Stack extends BlockComponent {
   static componentType = "stack";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
   static returnChildGroups() {
@@ -1995,6 +2021,22 @@ export class Stack extends BlockComponent {
       componentTypes: ["_base"]
     }]
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }
