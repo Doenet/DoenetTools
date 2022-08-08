@@ -1,6 +1,6 @@
 import React from 'react';
 import { atom, useRecoilValue } from 'recoil';
-import useMediaQuery from '../../_utils/hooks/useMediaQuery';
+// import useMediaQuery from '../../_utils/hooks/useMediaQuery';
 
 export const darkModeAtom = atom({
   key: 'darkModeAtom',
@@ -15,8 +15,8 @@ export const darkModeAtom = atom({
 });
 
 export default function DarkmodeController({ children }) {
-  const defaultDark = useMediaQuery('(prefers-color-scheme: dark)');
-  //const atomPrefernce = useRecoilValue(darkModeAtom);
+  // const defaultDark = useMediaQuery('(prefers-color-scheme: dark)');
+  const atomPrefernce = useRecoilValue(darkModeAtom);
 
-  return <div data-theme={defaultDark ? 'dark' : 'light'}>{children}</div>;
+  return <div data-theme={atomPrefernce ? 'dark' : 'light'}>{children}</div>;
 }
