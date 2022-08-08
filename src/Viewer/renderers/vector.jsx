@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 import me from 'math-expressions';
+import { MathJax } from 'better-react-mathjax';
 
-export default function Vector(props) {
+export default React.memo(function Vector(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Vector.ignoreActionsWithoutCore = true;
@@ -18,6 +19,7 @@ export default function Vector(props) {
   let pointsAtDown = useRef(false);
   let headBeingDragged = useRef(false);
   let tailBeingDragged = useRef(false);
+  let downOnPoint = useRef(null);
   let headcoords = useRef(null);
   let tailcoords = useRef(null);
 
@@ -27,13 +29,6 @@ export default function Vector(props) {
 
   lastPositionsFromCore.current = SVs.numericalEndpoints;
 
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  })
 
   useEffect(() => {
 
@@ -60,19 +55,23 @@ export default function Vector(props) {
     }
 
     let layer = 10 * SVs.layer + 7;
+    let fixed = !SVs.draggable || SVs.fixed;
 
     //things to be passed to JSXGraph as attributes
     var jsxVectorAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed,
       layer,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
+      highlight: !fixed,
       lastArrow: { type: 1, size: 3, highlightSize: 3 },
     };
 
@@ -88,10 +87,10 @@ export default function Vector(props) {
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
-      highlightFillColor: 'lightgray',
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: layer + 1,
     });
-    if (!SVs.draggable || SVs.fixed) {
+    if (fixed) {
       jsxPointAttributes.visible = false;
     }
 
@@ -108,6 +107,19 @@ export default function Vector(props) {
     let newPoint2JXG = board.create('point', endpoints[1], headPointAttributes);
 
 
+    jsxVectorAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxVectorAttributes.label.useMathJax = true
+    }
+
+    if (SVs.applyStyleToLabel) {
+      jsxVectorAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxVectorAttributes.label.strokeColor = "#000000";
+    }
+
     let newVectorJXG = board.create('arrow', [newPoint1JXG, newPoint2JXG], jsxVectorAttributes);
 
     newPoint1JXG.on('drag', e => onDragHandler(e, 0));
@@ -119,7 +131,12 @@ export default function Vector(props) {
           action: actions.moveVector,
           args: { tailcoords: tailcoords.current }
         });
+      } else if (!headBeingDragged.current && !tailBeingDragged.current) {
+        callAction({
+          action: actions.vectorClicked
+        });
       }
+      downOnPoint.current = null;
     });
     newPoint2JXG.on('up', e => {
       if (headBeingDragged.current && !tailBeingDragged.current) {
@@ -127,7 +144,12 @@ export default function Vector(props) {
           action: actions.moveVector,
           args: { headcoords: headcoords.current }
         });
+      } else if (!headBeingDragged.current && !tailBeingDragged.current) {
+        callAction({
+          action: actions.vectorClicked
+        });
       }
+      downOnPoint.current = null;
     });
     newVectorJXG.on('up', e => {
       if (headBeingDragged.current && tailBeingDragged.current) {
@@ -138,16 +160,25 @@ export default function Vector(props) {
             tailcoords: tailcoords.current
           }
         });
+      } else if (!headBeingDragged.current && !tailBeingDragged.current && downOnPoint.current === null) {
+        // Note: counting on fact that up on vector will trigger before up on points
+        callAction({
+          action: actions.vectorClicked
+        });
       }
     });
 
     newPoint1JXG.on('down', function (e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 1;
     });
     newPoint2JXG.on('down', function (e) {
       headBeingDragged.current = false;
       tailBeingDragged.current = false;
+      pointerAtDown.current = [e.x, e.y];
+      downOnPoint.current = 2;
     });
 
     // if drag vector, need to keep track of original point positions
@@ -163,45 +194,43 @@ export default function Vector(props) {
     });
 
     function onDragHandler(e, i) {
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
 
-      if (i === 0) {
-        tailBeingDragged.current = true;
-      } else if (i === 1) {
-        headBeingDragged.current = true;
-      } else {
-        headBeingDragged.current = true;
-        tailBeingDragged.current = true;
-      }
-
-      let instructions = { transient: true, skippable: true };
-
-      let performMove = false;
-
-      if (headBeingDragged.current) {
-        performMove = true;
-        if (i === -1) {
-          headcoords.current = calculatePointPosition(e, 1);
+        if (i === 0) {
+          tailBeingDragged.current = true;
+        } else if (i === 1) {
+          headBeingDragged.current = true;
         } else {
-          headcoords.current = [newVectorJXG.point2.X(), newVectorJXG.point2.Y()];
+          headBeingDragged.current = true;
+          tailBeingDragged.current = true;
         }
-        instructions.headcoords = headcoords.current;
-      }
-      if (tailBeingDragged.current) {
-        performMove = true;
-        if (i === -1) {
-          tailcoords.current = calculatePointPosition(e, 0);
-        } else {
-          tailcoords.current = [newVectorJXG.point1.X(), newVectorJXG.point1.Y()];
+
+        let instructions = { transient: true, skippable: true };
+
+        if (headBeingDragged.current) {
+          if (i === -1) {
+            headcoords.current = calculatePointPosition(e, 1);
+          } else {
+            headcoords.current = [newVectorJXG.point2.X(), newVectorJXG.point2.Y()];
+          }
+          instructions.headcoords = headcoords.current;
         }
-        instructions.tailcoords = tailcoords.current;
+        if (tailBeingDragged.current) {
+          if (i === -1) {
+            tailcoords.current = calculatePointPosition(e, 0);
+          } else {
+            tailcoords.current = [newVectorJXG.point1.X(), newVectorJXG.point1.Y()];
+          }
+          instructions.tailcoords = tailcoords.current;
 
-      }
+        }
 
-      if (i === 0 || i === 1) {
-        instructions.sourceInformation = { vertex: i };
-      }
+        if (i === 0 || i === 1) {
+          instructions.sourceInformation = { vertex: i };
+        }
 
-      if (performMove) {
         callAction({
           action: actions.moveVector,
           args: instructions
@@ -214,7 +243,6 @@ export default function Vector(props) {
         } else if (i === 1) {
           board.updateInfobox(newPoint2JXG);
         }
-
       }
 
     }
@@ -291,14 +319,19 @@ export default function Vector(props) {
 
       let visible = !SVs.hidden;
 
+      let fixed = !SVs.draggable || SVs.fixed;
+
+      vectorJXG.current.visProp.fixed = fixed;
+      vectorJXG.current.visProp.highlight = !fixed;
+
+
       if (validPoints) {
         vectorJXG.current.visProp["visible"] = visible;
         vectorJXG.current.visPropCalc["visible"] = visible;
         // vectorJXG.current.setAttribute({visible: visible})
 
 
-        if (SVs.draggable && !SVs.fixed) {
-          vectorJXG.current.visProp["fixed"] = false;
+        if (!fixed) {
 
           if (SVs.tailDraggable) {
             point1JXG.current.visProp["visible"] = visible;
@@ -320,7 +353,6 @@ export default function Vector(props) {
             point2JXG.current.visProp["fixed"] = true;
           }
         } else {
-          vectorJXG.current.visProp["fixed"] = true;
 
           point1JXG.current.visProp["visible"] = false;
           point1JXG.current.visPropCalc["visible"] = false;
@@ -356,18 +388,49 @@ export default function Vector(props) {
         }
       }
 
+
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = vectorJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        vectorJXG.current.setAttribute({ layer });
+        point1JXG.current.setAttribute({ layer: layer + 1 });
+        point2JXG.current.setAttribute({ layer: layer + 1 });
+      }
+
+      if (vectorJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        vectorJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        vectorJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (vectorJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        vectorJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+        vectorJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
+      }
+      if (vectorJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        vectorJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
+        vectorJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
+      if (vectorJXG.current.visProp.dash !== newDash) {
+        vectorJXG.current.visProp.dash = newDash;
+      }
+
       vectorJXG.current.name = SVs.label;
-      // vectorJXG.current.visProp.withlabel = this.showlabel && this.label !== "";
 
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
-        this.vectorJXG.current.setAttribute({ withlabel: withlabel });
+        vectorJXG.current.setAttribute({ withlabel: withlabel });
         previousWithLabel.current = withlabel;
       }
 
       vectorJXG.current.needsUpdate = true;
       vectorJXG.current.update()
       if (vectorJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          vectorJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          vectorJXG.current.label.visProp.strokecolor = "#000000";
+        }
         vectorJXG.current.label.needsUpdate = true;
         vectorJXG.current.label.update();
       }
@@ -390,9 +453,9 @@ export default function Vector(props) {
     return null;
   }
 
-  let mathJaxify = "\\(" + me.fromAst(SVs.displacementCoords).toLatex() + "\\)";
-  return <><a name={name} /><span id={name}>{mathJaxify}</span></>
-}
+  let mathJaxify = "\\(" + SVs.displacementCoordsLatex + "\\)";
+  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+})
 
 function styleToDash(style) {
   if (style === "solid") {

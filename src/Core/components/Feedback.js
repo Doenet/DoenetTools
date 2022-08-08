@@ -6,8 +6,8 @@ export default class Feedback extends BlockComponent {
 
   static primaryStateVariableForDefinition = "feedbackText";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     delete attributes.hide;
     attributes.condition = {
       createComponentOfType: "boolean"
@@ -168,7 +168,7 @@ export default class Feedback extends BlockComponent {
     return stateVariableDefinitions;
   }
 
-  async updateHide() {
+  async updateHide({actionId}) {
     let updateInstructions = [{
       updateType: "updateValue",
       componentName: this.componentName,
@@ -176,11 +176,24 @@ export default class Feedback extends BlockComponent {
       value: await this.stateValues.hideWhenUpdated,
     }]
 
-    return await this.coreFunctions.performUpdate({ updateInstructions });
+    return await this.coreFunctions.performUpdate({ updateInstructions, actionId });
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
   }
 
   actions = {
     updateHide: this.updateHide.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 }

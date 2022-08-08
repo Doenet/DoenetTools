@@ -117,7 +117,9 @@ export class ComponentSize extends InlineComponent {
 
     stateVariableDefinitions.componentSize = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       hasEssential: true,
       returnDependencies: () => ({
         componentSizeChild: {
@@ -353,7 +355,9 @@ export class ComponentSize extends InlineComponent {
 
     stateVariableDefinitions.number = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         componentSize: {
           dependencyType: "stateVariable",
@@ -396,7 +400,9 @@ export class ComponentSize extends InlineComponent {
 
     stateVariableDefinitions.isAbsolute = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         componentSize: {
           dependencyType: "stateVariable",
@@ -558,7 +564,9 @@ export class ComponentSizeList extends BaseComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
@@ -607,7 +615,9 @@ export class ComponentSizeList extends BaseComponent {
 
     stateVariableDefinitions.componentSizes = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       isArray: true,
       entryPrefixes: ["componentSize"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],

@@ -17,8 +17,8 @@ export default class TextList extends InlineComponent {
   // don't required composite replacements
   static descendantCompositesMustHaveAReplacement = false;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.unordered = {
       createComponentOfType: "boolean",
@@ -103,7 +103,9 @@ export default class TextList extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
@@ -170,7 +172,9 @@ export default class TextList extends InlineComponent {
 
     stateVariableDefinitions.texts = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       isArray: true,
       entryPrefixes: ["text"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
@@ -300,7 +304,9 @@ export default class TextList extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         texts: {
@@ -420,10 +426,13 @@ export default class TextList extends InlineComponent {
         return {
           setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
-      }
+      },
+      markStale: () => ({ updateRenderedChildren: true }),
     }
 
     return stateVariableDefinitions;
   }
+
+  static adapters = ["text"];
 
 }

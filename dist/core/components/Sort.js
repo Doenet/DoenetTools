@@ -9,8 +9,8 @@ export default class Sort extends CompositeComponent {
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
   static assignNamesToReplacements = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
@@ -155,7 +155,7 @@ export default class Sort extends CompositeComponent {
             } else {
               compValue = component.stateValues[`tailX${dependencyValues.sortByComponent}`];
             }
-            if(compValue) {
+            if (compValue) {
               numericalValue = compValue.evaluate_to_constant();
               if (numericalValue === null) {
                 numericalValue = NaN;
@@ -217,7 +217,9 @@ export default class Sort extends CompositeComponent {
 
         componentsCopied.push(replacementSource.componentName);
 
-        replacements.push(await replacementSource.serialize())
+        replacements.push(await replacementSource.serialize({
+          targetAttributesToIgnoreRecursively: ["isResponse"]
+        }))
       }
     }
 

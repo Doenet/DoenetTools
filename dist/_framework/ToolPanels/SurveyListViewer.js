@@ -25,7 +25,7 @@ export default function SurveyListViewer() {
   let surveyJSX = [];
   for (let survey of surveyList) {
     surveyJSX.push(/* @__PURE__ */ React.createElement("tr", {
-      style: {borderBottom: "1pt solid black"}
+      style: {borderBottom: "1pt solid var(--canvastext)"}
     }, /* @__PURE__ */ React.createElement("td", {
       style: {textAlign: "left"}
     }, survey.label), /* @__PURE__ */ React.createElement("td", null, /* @__PURE__ */ React.createElement(Button, {
@@ -45,7 +45,7 @@ export default function SurveyListViewer() {
   }, /* @__PURE__ */ React.createElement("table", {
     style: {borderCollapse: "collapse"}
   }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", {
-    style: {borderBottom: "2pt solid black"}
+    style: {borderBottom: "2pt solid var(--canvastext)"}
   }, /* @__PURE__ */ React.createElement("th", {
     style: {width: "300px"}
   }, "Survey Name"), /* @__PURE__ */ React.createElement("th", {

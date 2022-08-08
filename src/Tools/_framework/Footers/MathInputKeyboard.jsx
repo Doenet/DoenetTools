@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import MathJax from 'react-mathjax';
+import { MathJax } from "better-react-mathjax";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ToggleButton from '../../../_reactComponents/PanelHeaderComponents/ToggleButton';
 import ToggleButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup';
@@ -28,8 +28,8 @@ const Panel = styled.div`
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #fff;
-  color: white;
+  background-color: var(--canvas);
+  color: var(--canvas);
   display: flex;
   flex-direction: row;
   text-align: center;
@@ -86,8 +86,8 @@ const LettersSection = styled.div`
 const Button = styled.button`
   flex-basis: 23%;
   height: 30px;
-  color: ${doenetMainBlue};
-  border: 2px solid ${doenetMainBlue};
+  color: var(--mainBlue);
+  border: 2px solid var(--mainBlue);
   background: white;
   border-radius: 5px;
 `;
@@ -95,8 +95,8 @@ const Button = styled.button`
 const Button33 = styled.button`
   flex-basis: 30%;
   height: 30px;
-  color: ${doenetMainBlue};
-  border: 2px solid ${doenetMainBlue};
+  color: var(--mainBlue);
+  border: 2px solid var(--mainBlue);
   border-radius: 5px;
   background: white;
 `;
@@ -105,7 +105,7 @@ const White15Button = styled.button`
   flex-basis: 14%;
   margin: 1px;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -114,7 +114,7 @@ const White15Button = styled.button`
 const CursorButton = styled.button`
   flex-basis: 42%;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -123,7 +123,7 @@ const CursorButton = styled.button`
 const DeleteButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -132,7 +132,7 @@ const DeleteButton = styled.button`
 const EnterButton = styled.button`
   flex-basis: 90%;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -142,7 +142,7 @@ const White20Button = styled.button`
   flex-basis: 19%;
   margin: 1px;
   height: 30px;
-  background: ${doenetMainBlue};
+  background: var(--mainBlue);
   border: none;
   color: white;
   border-radius: 5px;
@@ -152,8 +152,8 @@ const LetterButton = styled.button`
   flex-basis: 9%;
   margin: 1px;
   height: 30px;
-  color: ${doenetMainBlue};
-  border: 2px solid ${doenetMainBlue};
+  color: var(--mainBlue);
+  border: 2px solid var(--mainBlue);
   background: white;
   border-radius: 5px;
 `;
@@ -203,212 +203,208 @@ export default function VirtualKeyboard() {
   if (toggleLetters) {
     if (toggleCase) {
       return (
-        <MathJax.Provider>
-          <Panel tabIndex="0" ref={containerRef}>
-            <LettersSection>
-              <LetterButton onClick={() => callback('write Q')}>Q</LetterButton>
-              <LetterButton onClick={() => callback('write W')}>W</LetterButton>
-              <LetterButton onClick={() => callback('write E')}>E</LetterButton>
-              <LetterButton onClick={() => callback('write R')}>R</LetterButton>
-              <LetterButton onClick={() => callback('write T')}>T</LetterButton>
-              <LetterButton onClick={() => callback('write Y')}>Y</LetterButton>
-              <LetterButton onClick={() => callback('write U')}>U</LetterButton>
-              <LetterButton onClick={() => callback('write I')}>I</LetterButton>
-              <LetterButton onClick={() => callback('write O')}>O</LetterButton>
-              <LetterButton onClick={() => callback('write P')}>P</LetterButton>
-              <LetterButton onClick={() => callback('write A')}>A</LetterButton>
-              <LetterButton onClick={() => callback('write S')}>S</LetterButton>
-              <LetterButton onClick={() => callback('write D')}>D</LetterButton>
-              <LetterButton onClick={() => callback('write F')}>F</LetterButton>
-              <LetterButton onClick={() => callback('write G')}>G</LetterButton>
-              <LetterButton onClick={() => callback('write H')}>H</LetterButton>
-              <LetterButton onClick={() => callback('write J')}>J</LetterButton>
-              <LetterButton onClick={() => callback('write K')}>K</LetterButton>
-              <LetterButton onClick={() => callback('write L')}>L</LetterButton>
-              <LetterButton onClick={() => callback('write \\tau')}>
-                <MathJax.Node inline formula={'\\tau'} />
-              </LetterButton>
-              <White15Button onClick={handleToggleCase}>
-                <FontAwesomeIcon icon={faArrowUp} />
-              </White15Button>
-              <LetterButton onClick={() => callback('write Z')}>Z</LetterButton>
-              <LetterButton onClick={() => callback('write X')}>X</LetterButton>
-              <LetterButton onClick={() => callback('write C')}>C</LetterButton>
-              <LetterButton onClick={() => callback('write V')}>V</LetterButton>
-              <LetterButton onClick={() => callback('write B')}>B</LetterButton>
-              <LetterButton onClick={() => callback('write N')}>N</LetterButton>
-              <LetterButton onClick={() => callback('write M')}>M</LetterButton>
-              <White15Button onClick={() => callback('keystroke Backspace')}>
-                <FontAwesomeIcon icon={faBackspace} />
-              </White15Button>
-              <White20Button onClick={handleToggleLetters}>123</White20Button>
-              <LetterButton onClick={() => callback('cmd ^')}>
-                <MathJax.Node inline formula={'a^b'} />
-              </LetterButton>
-              <LetterButton onClick={() => callback('write %')}>%</LetterButton>
-              <LetterButton onClick={() => callback('cmd ]')}>]</LetterButton>
-              <LetterButton
-                onClick={() => callback('cmd }')}
-              >{`}`}</LetterButton>
-              <LetterButton onClick={() => callback('write :')}>:</LetterButton>
-              <LetterButton onClick={() => callback("write '")}>'</LetterButton>
-              <White20Button onClick={() => returncallback()}>
-                Enter
-              </White20Button>
-            </LettersSection>
-          </Panel>
-        </MathJax.Provider>
+        <Panel tabIndex="0" ref={containerRef}>
+          <LettersSection>
+            <LetterButton onClick={() => callback('write Q')}>Q</LetterButton>
+            <LetterButton onClick={() => callback('write W')}>W</LetterButton>
+            <LetterButton onClick={() => callback('write E')}>E</LetterButton>
+            <LetterButton onClick={() => callback('write R')}>R</LetterButton>
+            <LetterButton onClick={() => callback('write T')}>T</LetterButton>
+            <LetterButton onClick={() => callback('write Y')}>Y</LetterButton>
+            <LetterButton onClick={() => callback('write U')}>U</LetterButton>
+            <LetterButton onClick={() => callback('write I')}>I</LetterButton>
+            <LetterButton onClick={() => callback('write O')}>O</LetterButton>
+            <LetterButton onClick={() => callback('write P')}>P</LetterButton>
+            <LetterButton onClick={() => callback('write A')}>A</LetterButton>
+            <LetterButton onClick={() => callback('write S')}>S</LetterButton>
+            <LetterButton onClick={() => callback('write D')}>D</LetterButton>
+            <LetterButton onClick={() => callback('write F')}>F</LetterButton>
+            <LetterButton onClick={() => callback('write G')}>G</LetterButton>
+            <LetterButton onClick={() => callback('write H')}>H</LetterButton>
+            <LetterButton onClick={() => callback('write J')}>J</LetterButton>
+            <LetterButton onClick={() => callback('write K')}>K</LetterButton>
+            <LetterButton onClick={() => callback('write L')}>L</LetterButton>
+            <LetterButton onClick={() => callback('write \\tau')}>
+              <MathJax dynamic>\(\tau\)</MathJax>
+            </LetterButton>
+            <White15Button onClick={handleToggleCase}>
+              <FontAwesomeIcon icon={faArrowUp} />
+            </White15Button>
+            <LetterButton onClick={() => callback('write Z')}>Z</LetterButton>
+            <LetterButton onClick={() => callback('write X')}>X</LetterButton>
+            <LetterButton onClick={() => callback('write C')}>C</LetterButton>
+            <LetterButton onClick={() => callback('write V')}>V</LetterButton>
+            <LetterButton onClick={() => callback('write B')}>B</LetterButton>
+            <LetterButton onClick={() => callback('write N')}>N</LetterButton>
+            <LetterButton onClick={() => callback('write M')}>M</LetterButton>
+            <White15Button onClick={() => callback('keystroke Backspace')}>
+              <FontAwesomeIcon icon={faBackspace} />
+            </White15Button>
+            <White20Button onClick={handleToggleLetters}>123</White20Button>
+            <LetterButton onClick={() => callback('cmd ^')}>
+              <MathJax dynamic>\(a^b\)</MathJax>
+            </LetterButton>
+            <LetterButton onClick={() => callback('write %')}>%</LetterButton>
+            <LetterButton onClick={() => callback('cmd ]')}>]</LetterButton>
+            <LetterButton
+              onClick={() => callback('cmd }')}
+            >{`}`}</LetterButton>
+            <LetterButton onClick={() => callback('write :')}>:</LetterButton>
+            <LetterButton onClick={() => callback("write '")}>'</LetterButton>
+            <White20Button onClick={() => returncallback()}>
+              Enter
+            </White20Button>
+          </LettersSection>
+        </Panel>
       );
     } else {
       return (
-        <MathJax.Provider>
-          <Panel tabIndex="0" ref={containerRef}>
-            <LettersSection>
-              <LetterButton onClick={() => callback('write q')}>q</LetterButton>
-              <LetterButton onClick={() => callback('write w')}>w</LetterButton>
-              <LetterButton onClick={() => callback('write e')}>e</LetterButton>
-              <LetterButton onClick={() => callback('write r')}>r</LetterButton>
-              <LetterButton onClick={() => callback('write t')}>t</LetterButton>
-              <LetterButton onClick={() => callback('write y')}>y</LetterButton>
-              <LetterButton onClick={() => callback('write u')}>u</LetterButton>
-              <LetterButton onClick={() => callback('write i')}>i</LetterButton>
-              <LetterButton onClick={() => callback('write o')}>o</LetterButton>
-              <LetterButton onClick={() => callback('write p')}>p</LetterButton>
-              <LetterButton onClick={() => callback('write a')}>a</LetterButton>
-              <LetterButton onClick={() => callback('write s')}>s</LetterButton>
-              <LetterButton onClick={() => callback('write d')}>d</LetterButton>
-              <LetterButton onClick={() => callback('write f')}>f</LetterButton>
-              <LetterButton onClick={() => callback('write g')}>g</LetterButton>
-              <LetterButton onClick={() => callback('write h')}>h</LetterButton>
-              <LetterButton onClick={() => callback('write j')}>j</LetterButton>
-              <LetterButton onClick={() => callback('write k')}>k</LetterButton>
-              <LetterButton onClick={() => callback('write l')}>l</LetterButton>
-              <LetterButton onClick={() => callback('write \\theta')}>
-                <MathJax.Node inline formula={'\\theta'} />
-              </LetterButton>
-              <White15Button onClick={handleToggleCase}>
-                <FontAwesomeIcon icon={faArrowUp} />
-              </White15Button>
-              <LetterButton onClick={() => callback('write z')}>z</LetterButton>
-              <LetterButton onClick={() => callback('write x')}>x</LetterButton>
-              <LetterButton onClick={() => callback('write c')}>c</LetterButton>
-              <LetterButton onClick={() => callback('write v')}>v</LetterButton>
-              <LetterButton onClick={() => callback('write b')}>b</LetterButton>
-              <LetterButton onClick={() => callback('write n')}>n</LetterButton>
-              <LetterButton onClick={() => callback('write m')}>m</LetterButton>
-              <White15Button onClick={() => callback('keystroke Backspace')}>
-                <FontAwesomeIcon icon={faBackspace} />
-              </White15Button>
-              <White20Button onClick={handleToggleLetters}>123</White20Button>
-              <LetterButton onClick={() => callback('cmd _')}>
-                <MathJax.Node inline formula={'a_b'} />
-              </LetterButton>
-              <LetterButton onClick={() => callback('write !')}>!</LetterButton>
-              <LetterButton onClick={() => callback('cmd [')}>[</LetterButton>
-              <LetterButton
-                onClick={() => callback('cmd {')}
-              >{`{`}</LetterButton>
-              <LetterButton onClick={() => callback('write ~')}>~</LetterButton>
-              <LetterButton onClick={() => callback('write ,')}>,</LetterButton>
-              <White20Button onClick={() => returncallback()}>
-                Enter
-              </White20Button>
-            </LettersSection>
-          </Panel>
-        </MathJax.Provider>
+        <Panel tabIndex="0" ref={containerRef}>
+          <LettersSection>
+            <LetterButton onClick={() => callback('write q')}>q</LetterButton>
+            <LetterButton onClick={() => callback('write w')}>w</LetterButton>
+            <LetterButton onClick={() => callback('write e')}>e</LetterButton>
+            <LetterButton onClick={() => callback('write r')}>r</LetterButton>
+            <LetterButton onClick={() => callback('write t')}>t</LetterButton>
+            <LetterButton onClick={() => callback('write y')}>y</LetterButton>
+            <LetterButton onClick={() => callback('write u')}>u</LetterButton>
+            <LetterButton onClick={() => callback('write i')}>i</LetterButton>
+            <LetterButton onClick={() => callback('write o')}>o</LetterButton>
+            <LetterButton onClick={() => callback('write p')}>p</LetterButton>
+            <LetterButton onClick={() => callback('write a')}>a</LetterButton>
+            <LetterButton onClick={() => callback('write s')}>s</LetterButton>
+            <LetterButton onClick={() => callback('write d')}>d</LetterButton>
+            <LetterButton onClick={() => callback('write f')}>f</LetterButton>
+            <LetterButton onClick={() => callback('write g')}>g</LetterButton>
+            <LetterButton onClick={() => callback('write h')}>h</LetterButton>
+            <LetterButton onClick={() => callback('write j')}>j</LetterButton>
+            <LetterButton onClick={() => callback('write k')}>k</LetterButton>
+            <LetterButton onClick={() => callback('write l')}>l</LetterButton>
+            <LetterButton onClick={() => callback('write \\theta')}>
+              <MathJax dynamic>\(\theta\)</MathJax>
+            </LetterButton>
+            <White15Button onClick={handleToggleCase}>
+              <FontAwesomeIcon icon={faArrowUp} />
+            </White15Button>
+            <LetterButton onClick={() => callback('write z')}>z</LetterButton>
+            <LetterButton onClick={() => callback('write x')}>x</LetterButton>
+            <LetterButton onClick={() => callback('write c')}>c</LetterButton>
+            <LetterButton onClick={() => callback('write v')}>v</LetterButton>
+            <LetterButton onClick={() => callback('write b')}>b</LetterButton>
+            <LetterButton onClick={() => callback('write n')}>n</LetterButton>
+            <LetterButton onClick={() => callback('write m')}>m</LetterButton>
+            <White15Button onClick={() => callback('keystroke Backspace')}>
+              <FontAwesomeIcon icon={faBackspace} />
+            </White15Button>
+            <White20Button onClick={handleToggleLetters}>123</White20Button>
+            <LetterButton onClick={() => callback('cmd _')}>
+              <MathJax dynamic>\(a_b\)</MathJax>
+            </LetterButton>
+            <LetterButton onClick={() => callback('write !')}>!</LetterButton>
+            <LetterButton onClick={() => callback('cmd [')}>[</LetterButton>
+            <LetterButton
+              onClick={() => callback('cmd {')}
+            >{`{`}</LetterButton>
+            <LetterButton onClick={() => callback('write ~')}>~</LetterButton>
+            <LetterButton onClick={() => callback('write ,')}>,</LetterButton>
+            <White20Button onClick={() => returncallback()}>
+              Enter
+            </White20Button>
+          </LettersSection>
+        </Panel>
       );
     }
   } else {
     let sectionSet = (
       <Section>
         <Button33 onClick={() => callback('write \\cup')}>
-          <MathJax.Node inline formula={'\\cup'} />
+          <MathJax dynamic>\(\cup\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\cap')}>
-          <MathJax.Node inline formula={'\\cap'} />
+          <MathJax dynamic>\(\cap\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\subset')}>
-          <MathJax.Node inline formula={'\\subset'} />
+          <MathJax dynamic>\(\subset\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\supset')}>
-          <MathJax.Node inline formula={'\\supset'} />
+          <MathJax dynamic>\(\supset\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\subseteq')}>
-          <MathJax.Node inline formula={'\\subseteq'} />
+          <MathJax dynamic>\(\subseteq\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\supseteq')}>
-          <MathJax.Node inline formula={'\\supseteq'} />
+          <MathJax dynamic>\(\supseteq\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\nsubseteq')}>
-          <MathJax.Node inline formula={'\\nsubseteq'} />
+          <MathJax dynamic>\(\nsubseteq\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\nsupseteq')}>
-          <MathJax.Node inline formula={'\\nsupseteq'} />
+          <MathJax dynamic>\(\nsupseteq\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\emptyset')}>
-          <MathJax.Node inline formula={'\\emptyset'} />
+          <MathJax dynamic>\(\emptyset\)</MathJax>
         </Button33>
       </Section>
     );
     let sectionTrig1 = (
       <Section>
         <Button33 onClick={() => callback('cmd \\sin')}>
-          <MathJax.Node inline formula={'\\sin'} />
+          <MathJax dynamic>\(\sin\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\cos')}>
-          <MathJax.Node inline formula={'\\cos'} />
+          <MathJax dynamic>\(\cos\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\tan')}>
-          <MathJax.Node inline formula={'\\tan'} />
+          <MathJax dynamic>\(\tan\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\sin^{-1}')}>
-          <MathJax.Node inline formula={'\\sin^{-1}'} />
+          <MathJax dynamic>{`\\(\\sin^{-1}\\)`}</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\cos^{-1}')}>
-          <MathJax.Node inline formula={'\\cos^{-1}'} />
+          <MathJax dynamic>{`\\(\\cos^{-1}\\)`}</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\tan^{-1}')}>
-          <MathJax.Node inline formula={'\\tan^{-1}'} />
+          <MathJax dynamic>{`\\(\\tan^{-1}\\)`}</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\sinh')}>
-          <MathJax.Node inline formula={'\\sinh'} />
+          <MathJax dynamic>\(\sinh\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\tanh')}>
-          <MathJax.Node inline formula={'\\tanh'} />
+          <MathJax dynamic>\(\tanh\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\cosh')}>
-          <MathJax.Node inline formula={'\\cosh'} />
+          <MathJax dynamic>\(\cosh\)</MathJax>
         </Button33>
       </Section>
     );
     let sectionTrig2 = (
       <Section>
         <Button33 onClick={() => callback('cmd \\csc')}>
-          <MathJax.Node inline formula={'\\csc'} />
+          <MathJax dynamic>\(\csc\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\sec')}>
-          <MathJax.Node inline formula={'\\sec'} />
+          <MathJax dynamic>\(\sec\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\cot')}>
-          <MathJax.Node inline formula={'\\cot'} />
+          <MathJax dynamic>\(\cot\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\csc^{-1}')}>
-          <MathJax.Node inline formula={'\\csc^{-1}'} />
+          <MathJax dynamic>{`\\(\\csc^{-1}\\)`}</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\sec^{-1}')}>
-          <MathJax.Node inline formula={'\\sec^{-1}'} />
+          <MathJax dynamic>{`\\(\\sec^{-1}\\)`}</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\cot^{-1}')}>
-          <MathJax.Node inline formula={'\\cot^{-1}'} />
+          <MathJax dynamic>{`\\(\\cot^{-1}\\)`}</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\csch')}>
-          <MathJax.Node inline formula={'csch'} />
+          <MathJax dynamic>\(\csch\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\coth')}>
-          <MathJax.Node inline formula={'\\coth'} />
+          <MathJax dynamic>\(\coth\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\sech')}>
-          <MathJax.Node inline formula={'sech'} />
+          <MathJax dynamic>\(\sech\)</MathJax>
         </Button33>
       </Section>
     );
@@ -417,19 +413,19 @@ export default function VirtualKeyboard() {
         <Button33
           onClick={() => callback('write \\frac{\\partial}{\\partial{x}}')}
         >
-          <MathJax.Node inline formula={'\\frac{\\partial}{\\partial x}'} />
+          <MathJax dynamic>{`\\(\\frac{\\partial}{\\partial x}\\)`}</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\int')}>
-          <MathJax.Node inline formula={'\\int'} />
+          <MathJax dynamic>\(\int\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\frac{d}{dx}')}>
-          <MathJax.Node inline formula={'\\frac{d}{dx}'} />
+          <MathJax dynamic>{`\\(\\frac{d}{dx}\\)`}</MathJax>
         </Button33>
         <Button33 onClick={() => callback('write \\log_{}')}>
-          <MathJax.Node inline formula={'\\log_ab'} />
+          <MathJax dynamic>\(\log_ab\)</MathJax>
         </Button33>
         <Button33 onClick={() => callback('cmd \\ln')}>
-          <MathJax.Node inline formula={'\\ln'} />
+          <MathJax dynamic>\(\ln\)</MathJax>
         </Button33>
         <Button33
           onClick={() => {
@@ -437,7 +433,7 @@ export default function VirtualKeyboard() {
             callback('keystroke Left');
           }}
         >
-          <MathJax.Node inline formula={'e^{x}'} />
+          <MathJax dynamic>{`\\(e^{x}\\)`}</MathJax>
         </Button33>
         <Button33
           onClick={() => {
@@ -445,7 +441,7 @@ export default function VirtualKeyboard() {
             callback('keystroke Left');
           }}
         >
-          <MathJax.Node inline formula={'10^{x}'} />
+          <MathJax dynamic>{`\\(10^{x}\\)`}</MathJax>
         </Button33>
       </Section>
     );
@@ -455,101 +451,108 @@ export default function VirtualKeyboard() {
     let sectionGreek1 = (
       <Section>
         <Button onClick={() => callback('write \\alpha')}>
-          <MathJax.Node inline formula={'\\alpha'} />
-        </Button>
-        <Button onClick={() => callback('write \\epsilon')}>
-          <MathJax.Node inline formula={'\\epsilon'} />
-        </Button>
-        <Button onClick={() => callback('write \\kappa')}>
-          <MathJax.Node inline formula={'\\kappa'} />
-        </Button>
-        <Button onClick={() => callback('write \\xi')}>
-          <MathJax.Node inline formula={'\\xi'} />
+          <MathJax dynamic>\(\alpha\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\beta')}>
-          <MathJax.Node inline formula={'\\beta'} />
-        </Button>
-        <Button onClick={() => callback('write \\zeta')}>
-          <MathJax.Node inline formula={'\\zeta'} />
-        </Button>
-        <Button onClick={() => callback('write \\lambda')}>
-          <MathJax.Node inline formula={'\\lambda'} />
-        </Button>
-        <Button onClick={() => callback('write \\pi')}>
-          <MathJax.Node inline formula={'\\pi'} />
+          <MathJax dynamic>\(\beta\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\gamma')}>
-          <MathJax.Node inline formula={'\\gamma'} />
-        </Button>
-        <Button onClick={() => callback('write \\eta')}>
-          <MathJax.Node inline formula={'\\eta'} />
-        </Button>
-        <Button onClick={() => callback('write \\mu')}>
-          <MathJax.Node inline formula={'\\mu'} />
-        </Button>
-        <Button onClick={() => callback('write \\rho')}>
-          <MathJax.Node inline formula={'\\rho'} />
+          <MathJax dynamic>\(\gamma\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\delta')}>
-          <MathJax.Node inline formula={'\\delta'} />
+          <MathJax dynamic>\(\delta\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\epsilon')}>
+          <MathJax dynamic>\(\epsilon\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\zeta')}>
+          <MathJax dynamic>\(\zeta\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\eta')}>
+          <MathJax dynamic>\(\eta\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\theta')}>
-          <MathJax.Node inline formula={'\\theta'} />
+          <MathJax dynamic>\(\theta\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\kappa')}>
+          <MathJax dynamic>\(\kappa\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\lambda')}>
+          <MathJax dynamic>\(\lambda\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\mu')}>
+          <MathJax dynamic>\(\mu\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\nu')}>
-          <MathJax.Node inline formula={'\\nu'} />
+          <MathJax dynamic>\(\nu\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\xi')}>
+          <MathJax dynamic>\(\xi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\pi')}>
+          <MathJax dynamic>\(\pi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\rho')}>
+          <MathJax dynamic>\(\rho\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\sigma')}>
-          <MathJax.Node inline formula={'\\sigma'} />
+          <MathJax dynamic>\(\sigma\)</MathJax>
         </Button>
       </Section>
     );
     let sectionGreek2 = (
       <Section>
         <Button onClick={() => callback('write \\tau')}>
-          <MathJax.Node inline formula={'\\tau'} />
-        </Button>
-        <Button onClick={() => callback('write \\Lambda')}>
-          <MathJax.Node inline formula={'\\Lambda'} />
-        </Button>
-        <Button onClick={() => callback('write \\Upsilon')}>
-          <MathJax.Node inline formula={'\\Upsilon'} />
-        </Button>
-        <Button onClick={() => callback('write \\Gamma')}>
-          <MathJax.Node inline formula={'\\Gamma'} />
+          <MathJax dynamic>\(\tau\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\phi')}>
-          <MathJax.Node inline formula={'\\phi'} />
-        </Button>
-        <Button onClick={() => callback('write \\Xi')}>
-          <MathJax.Node inline formula={'\\Xi'} />
-        </Button>
-        <Button onClick={() => callback('write \\Phi')}>
-          <MathJax.Node inline formula={'\\Phi'} />
-        </Button>
-        <Button onClick={() => callback('write \\Delta')}>
-          <MathJax.Node inline formula={'\\Delta'} />
+          <MathJax dynamic>\(\phi\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\psi')}>
-          <MathJax.Node inline formula={'\\psi'} />
-        </Button>
-        <Button onClick={() => callback('write \\Pi')}>
-          <MathJax.Node inline formula={'\\Pi'} />
-        </Button>
-        <Button onClick={() => callback('write \\Psi')}>
-          <MathJax.Node inline formula={'\\Psi'} />
-        </Button>
-        <Button onClick={() => callback('write \\Theta')}>
-          <MathJax.Node inline formula={'\\Theta'} />
+          <MathJax dynamic>\(\psi\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\omega')}>
-          <MathJax.Node inline formula={'\\omega'} />
+          <MathJax dynamic>\(\omega\)</MathJax>
+        </Button>
+
+
+        <Button onClick={() => callback('write \\Gamma')}>
+          <MathJax dynamic>\(\Gamma\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Delta')}>
+          <MathJax dynamic>\(\Delta\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Theta')}>
+          <MathJax dynamic>\(\Theta\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Lambda')}>
+          <MathJax dynamic>\(\Lambda\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\Xi')}>
+          <MathJax dynamic>\(\Xi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Pi')}>
+          <MathJax dynamic>\(\Pi\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\Sigma')}>
-          <MathJax.Node inline formula={'\\Sigma'} />
+          <MathJax dynamic>\(\Sigma\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Phi')}>
+          <MathJax dynamic>\(\Phi\)</MathJax>
+        </Button>
+
+        <Button onClick={() => callback('write \\Psi')}>
+          <MathJax dynamic>\(\Psi\)</MathJax>
+        </Button>
+        <Button onClick={() => callback('write \\Upsilon')}>
+          <MathJax dynamic>\(\Upsilon\)</MathJax>
         </Button>
         <Button onClick={() => callback('write \\Omega')}>
-          <MathJax.Node inline formula={'\\Omega'} />
+          <MathJax dynamic>\(\Omega\)</MathJax>
         </Button>
       </Section>
     );
@@ -557,52 +560,52 @@ export default function VirtualKeyboard() {
     let sectionXYZ = (
       <Section>
         <Button onClick={() => callback('write x')}>
-          <MathJax.Node inline formula={'x'} />
+          <MathJax dynamic>\(x\)</MathJax>
         </Button>
         <Button onClick={() => callback('write y')}>
-          <MathJax.Node inline formula={'y'} />
+          <MathJax dynamic>\(y\)</MathJax>
         </Button>
         <Button onClick={() => callback('type ^2')}>
-          <MathJax.Node inline formula={'a^2'} />
+          <MathJax dynamic>\(a^2\)</MathJax>
         </Button>
         <Button onClick={() => callback('cmd ^')}>
-          <MathJax.Node inline formula={'a^b'} />
+          <MathJax dynamic>\(a^b\)</MathJax>
         </Button>
         <Button onClick={() => callback('cmd (')}>
-          <MathJax.Node inline formula={'('} />
+          <MathJax dynamic>\((\)</MathJax>
         </Button>
         <Button onClick={() => callback('keystroke Right')}>
-          <MathJax.Node inline formula={')'} />
+          <MathJax dynamic>\()\)</MathJax>
         </Button>
         <Button onClick={() => callback('write <')}>
-          <MathJax.Node inline formula={'<'} />
+          <MathJax dynamic>\(&lt;\)</MathJax>
         </Button>
         <Button onClick={() => callback('write >')}>
-          <MathJax.Node inline formula={'>'} />
+          <MathJax dynamic>\(&gt;\)</MathJax>
         </Button>
         <Button onClick={() => callback('cmd |')}>
-          <MathJax.Node inline formula={'|a|'} />
+          <MathJax dynamic>\(|a|\)</MathJax>
         </Button>
         <Button onClick={() => callback('write ,')}>
-          <MathJax.Node inline formula={','} />
+          <MathJax dynamic>\(,\)</MathJax>
         </Button>
         <Button onClick={() => callback('type <=')}>
-          <MathJax.Node inline formula={'\\leq'} />
+          <MathJax dynamic>\(\leq\)</MathJax>
         </Button>
         <Button onClick={() => callback('type >=')}>
-          <MathJax.Node inline formula={'\\geq'} />
+          <MathJax dynamic>\(\geq\)</MathJax>
         </Button>
         <Button onClick={() => callback('cmd /')}>
-          <MathJax.Node inline formula={'\\div'} />
+          <MathJax dynamic>\(\div\)</MathJax>
         </Button>
         <Button onClick={() => callback('type sqrt')}>
-          <MathJax.Node inline formula={'\\sqrt{}'} />
+          <MathJax dynamic>{`\\(\\sqrt{}\\)`}</MathJax>
         </Button>
-        <Button onClick={() => callback('type theta')}>
-          <MathJax.Node inline formula={'\\theta'} />
+        <Button onClick={() => callback('write \\infty')}>
+          <MathJax dynamic>\(\infty\)</MathJax>
         </Button>
-        <Button onClick={() => callback('type pi')}>
-          <MathJax.Node inline formula={'\\pi'} />
+        <Button onClick={() => callback('cmd _')}>
+          <MathJax dynamic>\(a_b\)</MathJax>
         </Button>
       </Section>
     );
@@ -610,52 +613,52 @@ export default function VirtualKeyboard() {
     let section123 = (
       <Section>
         <Button onClick={() => callback('write 7')}>
-          <MathJax.Node inline formula={'7'} />
+          <MathJax dynamic>\(7\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 8')}>
-          <MathJax.Node inline formula={'8'} />
+          <MathJax dynamic>\(8\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 9')}>
-          <MathJax.Node inline formula={'9'} />
+          <MathJax dynamic>\(9\)</MathJax>
         </Button>
         <Button onClick={() => callback('cmd /')}>
-          <MathJax.Node inline formula={'\\div'} />
+          <MathJax dynamic>\(\div\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 4')}>
-          <MathJax.Node inline formula={'4'} />
+          <MathJax dynamic>\(4\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 5')}>
-          <MathJax.Node inline formula={'5'} />
+          <MathJax dynamic>\(5\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 6')}>
-          <MathJax.Node inline formula={'6'} />
+          <MathJax dynamic>\(6\)</MathJax>
         </Button>
         <Button onClick={() => callback('type *')}>
-          <MathJax.Node inline formula={'\\times'} />
+          <MathJax dynamic>\(\times\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 1')}>
-          <MathJax.Node inline formula={'1'} />
+          <MathJax dynamic>\(1\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 2')}>
-          <MathJax.Node inline formula={'2'} />
+          <MathJax dynamic>\(2\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 3')}>
-          <MathJax.Node inline formula={'3'} />
+          <MathJax dynamic>\(3\)</MathJax>
         </Button>
         <Button onClick={() => callback('cmd -')}>
-          <MathJax.Node inline formula={'-'} />
+          <MathJax dynamic>\(-\)</MathJax>
         </Button>
         <Button onClick={() => callback('write 0')}>
-          <MathJax.Node inline formula={'0'} />
+          <MathJax dynamic>\(0\)</MathJax>
         </Button>
         <Button onClick={() => callback('write .')}>
-          <MathJax.Node inline formula={'.'} />
+          <MathJax dynamic>\(.\)</MathJax>
         </Button>
         <Button onClick={() => callback('write =')}>
-          <MathJax.Node inline formula={'='} />
+          <MathJax dynamic>\(=\)</MathJax>
         </Button>
         <Button onClick={() => callback('write +')}>
-          <MathJax.Node inline formula={'+'} />
+          <MathJax dynamic>\(+\)</MathJax>
         </Button>
       </Section>
     );
@@ -664,10 +667,10 @@ export default function VirtualKeyboard() {
       <Section style={{ marginTop: '57px' }}>
         {/* <BlueButton onClick={handleToggleFunctions}>functions</BlueButton> */}
         <CursorButton onClick={() => callback('keystroke Left')}>
-          <MathJax.Node inline formula={'\\leftarrow'} />
+          <MathJax dynamic>\(\leftarrow\)</MathJax>
         </CursorButton>
         <CursorButton onClick={() => callback('keystroke Right')}>
-          <MathJax.Node inline formula={'\\rightarrow'} />
+          <MathJax dynamic>\(\rightarrow\)</MathJax>
         </CursorButton>
         <DeleteButton onClick={() => callback('keystroke Backspace')}>
           <FontAwesomeIcon icon={faBackspace} />
@@ -678,59 +681,57 @@ export default function VirtualKeyboard() {
     );
 
     return (
-      <MathJax.Provider>
-        <Panel tabIndex="0" ref={containerRef}>
-          <ContainerSection>
-            <ToggleButtonSection>
-              <ToggleButtonGroup onClick={handleGreekToggle}>
-                <ToggleButton value="Greek 1" />
-                <ToggleButton value="Greek 2" />
-              </ToggleButtonGroup>
-            </ToggleButtonSection>
-            {toggleGreek === 0
-              ? sectionGreek1
-              : toggleGreek === 1
+      <Panel tabIndex="0" ref={containerRef}>
+        <ContainerSection>
+          <ToggleButtonSection>
+            <ToggleButtonGroup onClick={handleGreekToggle}>
+              <ToggleButton value="Greek 1" />
+              <ToggleButton value="Greek 2" />
+            </ToggleButtonGroup>
+          </ToggleButtonSection>
+          {toggleGreek === 0
+            ? sectionGreek1
+            : toggleGreek === 1
               ? sectionGreek2
               : null}
-          </ContainerSection>
-          <VerticalDivider height="230px" marginTop="10px" />
-          <ContainerSection>
-            <ToggleButtonSection>
-              <ToggleButtonGroup onClick={handleFnToggle}>
-                <ToggleButton value="Trig 1" />
-                <ToggleButton value="Trig 2" />
-                <ToggleButton value="Set" />
-                <ToggleButton value="Fn" />
-              </ToggleButtonGroup>
-            </ToggleButtonSection>
-            {toggleFn === 0
-              ? sectionTrig1
-              : toggleFn === 1
+        </ContainerSection>
+        <VerticalDivider height="230px" marginTop="10px" />
+        <ContainerSection>
+          <ToggleButtonSection>
+            <ToggleButtonGroup onClick={handleFnToggle}>
+              <ToggleButton value="Trig 1" />
+              <ToggleButton value="Trig 2" />
+              <ToggleButton value="Set" />
+              <ToggleButton value="Fn" />
+            </ToggleButtonGroup>
+          </ToggleButtonSection>
+          {toggleFn === 0
+            ? sectionTrig1
+            : toggleFn === 1
               ? sectionTrig2
               : toggleFn === 2
-              ? sectionSet
-              : toggleFn === 3
-              ? sectionFn
-              : null}
-          </ContainerSection>
-          <VerticalDivider height="230px" marginTop="10px" />
-          <ContainerSection>
-            <ToggleButtonSection>
-              <ToggleButtonGroup onClick={handleNumpadToggle}>
-                <ToggleButton value="123" />
-                <ToggleButton value="xy" />
-              </ToggleButtonGroup>
-            </ToggleButtonSection>
-            {toggleNumpad === 0
-              ? section123
-              : toggleNumpad === 1
+                ? sectionSet
+                : toggleFn === 3
+                  ? sectionFn
+                  : null}
+        </ContainerSection>
+        <VerticalDivider height="230px" marginTop="10px" />
+        <ContainerSection>
+          <ToggleButtonSection>
+            <ToggleButtonGroup onClick={handleNumpadToggle}>
+              <ToggleButton value="123" />
+              <ToggleButton value="xy" />
+            </ToggleButtonGroup>
+          </ToggleButtonSection>
+          {toggleNumpad === 0
+            ? section123
+            : toggleNumpad === 1
               ? sectionXYZ
               : null}
-          </ContainerSection>
-          <VerticalDivider height="230px" marginTop="10px" />
-          <ControlSection>{sectionControl}</ControlSection>
-        </Panel>
-      </MathJax.Provider>
+        </ContainerSection>
+        <VerticalDivider height="230px" marginTop="10px" />
+        <ControlSection>{sectionControl}</ControlSection>
+      </Panel>
     );
   }
 

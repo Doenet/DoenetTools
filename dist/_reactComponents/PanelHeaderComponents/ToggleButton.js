@@ -1,50 +1,47 @@
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
-import {doenetMainBlue} from "./theme.js";
-import styled, {ThemeProvider} from "../../_snowpack/pkg/styled-components.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
-  border-style: solid;
-  border-color: ${doenetMainBlue};
+  border: ${(props) => props.alert ? "2px solid var(--mainRed)" : props.disabled ? "2px solid var(--mainGray)" : "2px solid var(--mainBlue)"};
   border-width: 2px;
-  color: ${doenetMainBlue};
-  background-color: #fff;
+  color: ${(props) => props.alert ? "var(--mainRed)" : props.disabled ? "var(--mainGray)" : "var(--mainBlue)"};
+  background-color: var(--canvas);
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
-  cursor: pointer;
+  cursor: ${(props) => props.disabled ? "not-allowed" : "pointer"};
   font-size: 12px;
-  textalign: center;
+  text-align: center;
+
+  &:hover {
+    // Button color lightens on hover
+    color: ${(props) => props.disabled ? "var(--mainGray)" : "black"};
+    background-color: ${(props) => props.alert ? "var(--lightRed)" : props.disabled ? "none" : "var(--lightBlue)"};
+  }
 `;
 Button.defaultProps = {
   theme: {
-    margin: "0px 4px 0px 4px",
-    borderRadius: "5px",
+    margin: "0px",
+    borderRadius: "var(--mainBorderRadius)",
     padding: "0px 10px 0px 10px"
   }
 };
 export default function ToggleButton(props) {
   const [isSelected, setSelected] = useState(props.isSelected ? props.isSelected : false);
-  const [labelVisible, setLabelVisible] = useState(props.label ? "static" : "none");
-  const [align, setAlign] = useState(props.vertical ? "static" : "flex");
+  const labelVisible = props.label ? "static" : "none";
+  const align = props.vertical ? "static" : "flex";
+  const alert = props.alert ? props.alert : null;
+  const disabled = props.disabled ? props.disabled : null;
   useEffect(() => {
     setSelected(props.isSelected);
   }, [props.isSelected]);
   var toggleButton = {
     value: "Toggle Button"
   };
-  if (props.disabled) {
-    toggleButton.color = "#e2e2e2";
-    toggleButton.cursor = "not-allowed";
-    toggleButton.border = "2px solid #e2e2e2";
-  }
-  if (props.alert) {
-    toggleButton.border = "2px solid #C1292E";
-    toggleButton.color = "#C1292E";
-  }
   var icon = "";
   var label = {
     value: "Label:",
-    fontSize: "12px",
+    fontSize: "14px",
     display: `${labelVisible}`,
     marginRight: "5px",
     marginBottom: `${align == "flex" ? "none" : "2px"}`
@@ -68,11 +65,11 @@ export default function ToggleButton(props) {
   if (isSelected === true) {
     if (!props.disabled) {
       if (!props.alert) {
-        toggleButton.backgroundColor = `${doenetMainBlue}`;
+        toggleButton.backgroundColor = "var(--mainBlue)";
       } else {
-        toggleButton.backgroundColor = "#C1292E";
+        toggleButton.backgroundColor = "var(--mainRed)";
       }
-      toggleButton.color = "#FFF";
+      toggleButton.color = "var(--canvas)";
       if (props.switch_value)
         toggleButton.value = props.switch_value;
     }
@@ -110,8 +107,10 @@ export default function ToggleButton(props) {
   }, /* @__PURE__ */ React.createElement("p", {
     style: label
   }, label.value), /* @__PURE__ */ React.createElement(Button, {
-    id: "toggleButton",
+    id: props.id,
     style: toggleButton,
+    disabled,
+    alert,
     onClick: () => {
       handleClick();
     }

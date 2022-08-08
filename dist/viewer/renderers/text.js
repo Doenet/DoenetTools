@@ -1,6 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Text(props) {
+export default React.memo(function Text(props) {
   let {name, SVs, actions, sourceOfUpdate} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -10,4 +10,4 @@ export default function Text(props) {
   }), /* @__PURE__ */ React.createElement("span", {
     id: name
   }, SVs.text));
-}
+});

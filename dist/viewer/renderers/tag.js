@@ -1,6 +1,6 @@
 import React from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
-export default function Tag(props) {
+export default React.memo(function Tag(props) {
   let {name, SVs, children} = useDoenetRender(props);
   if (SVs.hidden) {
     return null;
@@ -11,8 +11,9 @@ export default function Tag(props) {
     close = "/>";
   }
   return /* @__PURE__ */ React.createElement("code", {
-    id: name
+    id: name,
+    style: {color: "var(--mainGreen)"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), open, children, close);
-}
+});

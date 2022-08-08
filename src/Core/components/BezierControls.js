@@ -1,13 +1,13 @@
-import BaseComponent from './abstract/BaseComponent';
+import InlineComponent from './abstract/InlineComponent';
 import { breakEmbeddedStringsIntoParensPieces } from './commonsugar/breakstrings';
 import me from 'math-expressions';
 
-export default class BezierControls extends BaseComponent {
+export default class BezierControls extends InlineComponent {
   static componentType = "bezierControls";
-  static rendererType = "container";
+  static rendererType = "containerInline";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.alwaysVisible = {
       createComponentOfType: "boolean",

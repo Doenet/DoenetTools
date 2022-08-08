@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
 import { useRecoilValue, useSetRecoilState, useRecoilValueLoadable } from 'recoil';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Card from '../../../_reactComponents/PanelHeaderComponents/Card';
 import { pageToolViewAtom, searchParamAtomFamily, profileAtom } from '../NewToolRoot';
 import Next7Days from '../Widgets/Next7Days';
@@ -13,8 +11,7 @@ import { faCode, faUser, faChartPie, faTasks } from '@fortawesome/free-solid-svg
 
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const path = useRecoilValue(searchParamAtomFamily('path'));
-  const driveId = path.split(':')[0];
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const effectiveRole = useRecoilValue(effectiveRoleAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const loadProfile = useRecoilValueLoadable(profileAtom);
@@ -54,26 +51,26 @@ export default function Dashboard(props) {
                 page: 'course',
                 tool: 'enrollment',
                 view: '',
-                params: { driveId },
+                params: { courseId },
               })
             }
           />
           <Card 
-            name='Surveys' 
+            name='Data' 
             icon={<FontAwesomeIcon icon={faChartPie}/>}
-            value="Surveys"
+            value="Data"
             onClick={() =>
               setPageToolView({
                 page: 'course',
-                tool: 'surveyList',
+                tool: 'data',
                 view: '',
-                params: { driveId },
+                params: { courseId },
               })
             }
           />
           </>
           : null}
-          {effectiveRole === 'instructor' ?
+          {/* {effectiveRole === 'instructor' ?
           <Card 
             name='Gradebook' 
             icon={<FontAwesomeIcon icon={faTasks}/>}
@@ -83,7 +80,7 @@ export default function Dashboard(props) {
               page: 'course',
               tool: 'gradebook',
               view: was.view,
-              params: { driveId },
+              params: { courseId },
               }})
             } 
           />
@@ -98,16 +95,16 @@ export default function Dashboard(props) {
               page: 'course',
               tool: 'gradebookStudent',
               view: was.view,
-              params: { driveId, userId:profile.userId },
+              params: { courseId, userId:profile.userId },
               }})
 
             } 
           />
-          }
+          } */}
         </div>
       </div>
       <div style={{ marginTop: '10px', margin: '10px'}}>
-      <Next7Days driveId={driveId}/>
+      {/* <Next7Days driveId={courseId}/> */}
       </div>
     </div>
   );

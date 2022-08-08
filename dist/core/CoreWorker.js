@@ -1,7 +1,5 @@
 import Core from './Core.js';
-import { CIDFromDoenetML } from './utils/cid.js';
 import me from '../_snowpack/pkg/math-expressions.js';
-import { retrieveDoenetMLForCID } from './utils/retrieveDoenetML.js';
 
 let core;
 
@@ -11,34 +9,7 @@ onmessage = function (e) {
 
   if (e.data.messageType === "createCore") {
 
-    console.log('create core', e.data.args);
-
-    if (e.data.args.doenetML) {
-      // if have doenetML, then just create core using that
-      createCore(e.data.args)
-    } else {
-      // if don't have doenetML, then return doenetML from CID
-      // before creating core
-
-      let CID = e.data.args.CID;
-
-      retrieveDoenetMLForCID(CID)
-        .then(doenetML => {
-          let args = { ...e.data.args };
-          args.doenetML = doenetML;
-          createCore(args);
-        })
-        .catch(e => {
-          postMessage({
-            messageType: "inErrorState",
-            args: {
-              errMsg: `doenetML not found for CID: ${CID}`
-            }
-          })
-        })
-    }
-
-    //loadStateAndCreateCore(e.data.args);
+    createCore(e.data.args);
 
   } else if (e.data.messageType === "requestAction") {
     if (core?.initialized) {
@@ -56,20 +27,19 @@ onmessage = function (e) {
         args: componentsObj
       })
     });
-  } else if (e.data.messageType === "allowSolutionView") {
-    let messageId = e.data.args.messageId;
-    let resolveRecordSolutionView = core.resolveRecordSolutionView[messageId];
-    if (resolveRecordSolutionView) {
-      resolveRecordSolutionView(e.data.args)
-      delete core.resolveRecordSolutionView[messageId];
-    }
+  } else if (e.data.messageType === "visibilityChange") {
+    core.handleVisibilityChange(e.data.args)
+  } else if (e.data.messageType === "terminate") {
+    core.terminate().then(() => {
+      postMessage({ messageType: "terminated" });
+    })
   }
 }
 
 
-
-
 async function createCore(args) {
+
+  // console.log('createCore', args)
 
   // userId is typically undefined unless attempting to look up
   // state from another user
@@ -80,15 +50,28 @@ async function createCore(args) {
   //   //TODO: Investigate for memory leaks
   // }
 
-  // this.setTimeout(() => {
-  //   core = new Core(e.data.args)
+  // setTimeout(() => {
+  //   core = new Core(args)
   //   core.getInitializedPromise().then(() => {
   //     console.log('actions to process', queuedRequestActions)
   //     for (let action of queuedRequestActions) {
   //       core.requestAction(action);
   //     }
+  //     queuedRequestActions = [];
   //   })
   // }, 10000)
+
+  // let tot = 0;
+  // for(let i=0; i< 10; i++) {
+  //   let sum = 0;
+  //   for(let j=0; j< 5000000; j++) {
+  //     sum += Math.sin(j);
+  //   }
+  //   tot += sum;
+  //   console.log(`waiting to create core, ${i}=${tot}`);
+  // }
+
+
   core = new Core(args)
   core.getInitializedPromise().then(() => {
     // console.log('actions to process', queuedRequestActions)
@@ -102,8 +85,12 @@ async function createCore(args) {
 }
 
 
-
 async function returnAllStateVariables(core) {
+
+  if (!core.components) {
+    return {};
+  }
+
   let componentsObj = {};
   for (let componentName in core.components) {
     let component = core.components[componentName];
@@ -113,24 +100,33 @@ async function returnAllStateVariables(core) {
       stateValues: {}
     }
     for (let vName in component.state) {
-      compObj.stateValues[vName] = preprocessForPostMessage(await component.state[vName].value);
+      compObj.stateValues[vName] = removeFunctionsMathExpressionClass(await component.state[vName].value);
     }
-    compObj.activeChildren = component.activeChildren.map(x => x.componentName ? x.componentName : x)
+    compObj.activeChildren = component.activeChildren.map(x => x.componentName ? { componentName: x.componentName, componentType: x.componentType } : x)
+    if (component.replacements) {
+      compObj.replacements = component.replacements.map(x => x.componentName ? { componentName: x.componentName, componentType: x.componentType } : x)
+      if (component.replacementsToWithhold !== undefined) {
+        compObj.replacementsToWithhold = component.replacementsToWithhold;
+      }
+    }
   }
+
+
+  componentsObj[core.documentName].sharedParameters = removeFunctionsMathExpressionClass(core.components[core.documentName].sharedParameters);
   return componentsObj;
 }
 
-export function preprocessForPostMessage(value) {
+export function removeFunctionsMathExpressionClass(value) {
   if (value instanceof me.class) {
     value = value.tree;
   } else if (typeof value === "function") {
     value = undefined;
   } else if (Array.isArray(value)) {
-    value = value.map(x => preprocessForPostMessage(x))
+    value = value.map(x => removeFunctionsMathExpressionClass(x))
   } else if (typeof value === "object" && value !== null) {
     let valueCopy = {}
     for (let key in value) {
-      valueCopy[key] = preprocessForPostMessage(value[key]);
+      valueCopy[key] = removeFunctionsMathExpressionClass(value[key]);
     }
     value = valueCopy;
   }

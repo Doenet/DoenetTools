@@ -11,8 +11,8 @@ export default class CodeEditor extends BlockComponent {
     return ["value"]
   };
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.prefill = {
       createComponentOfType: "text",
       createStateVariable: "prefill",
@@ -151,7 +151,9 @@ export default class CodeEditor extends BlockComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       hasEssential: true,
       forRenderer: true,
       returnDependencies: () => ({
@@ -204,7 +206,9 @@ export default class CodeEditor extends BlockComponent {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       hasEssential: true,
       forRenderer: true,
       returnDependencies: () => ({
@@ -213,12 +217,12 @@ export default class CodeEditor extends BlockComponent {
           variableName: "value"
         }
       }),
-      definition: function ({ dependencyValues, changes }) {
+      definition: function ({ dependencyValues, changes, justUpdatedForNewComponent }) {
         // console.log(`definition of immediateValue`)
         // console.log(dependencyValues)
         // console.log(changes);
 
-        if (changes.value) {
+        if (changes.value && !justUpdatedForNewComponent) {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
@@ -265,7 +269,9 @@ export default class CodeEditor extends BlockComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -282,13 +288,28 @@ export default class CodeEditor extends BlockComponent {
       definition: () => ({ setValue: { componentType: "text" } })
     }
 
+    stateVariableDefinitions.viewerChild = {
+      returnDependencies: () => ({
+        viewerChild: {
+          dependencyType: "child",
+          childGroups: ["codeViewers"]
+        }
+      }),
+      definition({ dependencyValues }) {
+        if (dependencyValues.viewerChild.length > 0) {
+          return { setValue: { viewerChild: dependencyValues.viewerChild } }
+        } else {
+          return { setValue: { viewerChild: null } }
+        }
+      }
+    }
 
     return stateVariableDefinitions;
 
   }
 
 
-  updateImmediateValue({ text }) {
+  updateImmediateValue({ text, actionId }) {
     if (!this.stateValues.disabled) {
       return this.coreFunctions.performUpdate({
         updateInstructions: [{
@@ -296,12 +317,15 @@ export default class CodeEditor extends BlockComponent {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
-        }]
+        }],
+        actionId
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
-  updateValue() {
+  updateValue({ actionId }) {
     //Only update when value is out of date
     if (!this.stateValues.disabled &&
       this.stateValues.immediateValue !== this.stateValues.value
@@ -347,6 +371,7 @@ export default class CodeEditor extends BlockComponent {
 
       return this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event
       }).then(() => {
         this.coreFunctions.triggerChainedActions({
@@ -362,6 +387,8 @@ export default class CodeEditor extends BlockComponent {
         }
       });
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -383,10 +410,23 @@ export default class CodeEditor extends BlockComponent {
     }
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     updateImmediateValue: this.updateImmediateValue.bind(this),
     updateValue: this.updateValue.bind(this),
     updateComponents: this.updateComponents.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 }

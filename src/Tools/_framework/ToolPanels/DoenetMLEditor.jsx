@@ -1,193 +1,133 @@
 import React, { useRef, useEffect } from 'react';
-import { editorDoenetIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom } from '../ToolPanels/EditorViewer'
-import { 
+import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom } from '../ToolPanels/EditorViewer'
+import {
   atom,
-  useRecoilValue, 
+  useRecoilValue,
   // useRecoilState,
   useSetRecoilState,
   // atom,
   useRecoilCallback,
 } from 'recoil';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { currentDraftSelectedAtom } from '../Menus/VersionHistory'
 
 import CodeMirror from '../CodeMirror';
-import { itemHistoryAtom, fileByContentId } from '../ToolHandlers/CourseToolHandler';
 import axios from "axios";
-import { nanoid } from 'nanoid';
-import { CIDFromDoenetML } from '../../../Core/utils/cid';
+import { fileByPageId } from '../ToolHandlers/CourseToolHandler';
+import { courseIdAtom } from '../../../_reactComponents/Course/CourseActions';
 
-export const editorSaveTimestamp = atom({
-  key:"",
-  default:null
-})
+export function useSaveDraft(){
+  const saveDraft = useRecoilCallback(({ snapshot, set }) => async ({pageId, courseId, backup=false}) => {
+    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+  
+    //Save in localStorage
+    // localStorage.setItem(cid,doenetML)
+  
+    try {
+      const params = {
+        doenetML,
+        pageId,
+        courseId,
+        backup,
+      }
+      const { data } = await axios.post("/api/saveDoenetML.php", params);
+      set(fileByPageId(pageId),doenetML);
+      if (!data.success) {
+      //   //TODO: Toast here
+        console.log("ERROR", data.message)
+      }
+      return {success:data.success};
+  
+    } catch (error) {
+      console.log("ERROR", error)
+      return {success:false};
+    }
+  
+  
+  }, []);
 
-
-
-function buildTimestamp(){
-  const dt = new Date();
-  return `${
-    dt.getFullYear().toString().padStart(2, '0')}-${
-    (dt.getMonth()+1).toString().padStart(2, '0')}-${
-    dt.getDate().toString().padStart(2, '0')} ${
-    dt.getHours().toString().padStart(2, '0')}:${
-    dt.getMinutes().toString().padStart(2, '0')}:${
-    dt.getSeconds().toString().padStart(2, '0')}`
+  return { saveDraft }
 }
 
-export default function DoenetMLEditor(props){
-  console.log(">>>===DoenetMLEditor")
+
+export default function DoenetMLEditor(props) {
+  // console.log(">>>===DoenetMLEditor")
 
   // const [editorDoenetML,setEditorDoenetML] = useRecoilState(textEditorDoenetMLAtom);
   const setEditorDoenetML = useSetRecoilState(textEditorDoenetMLAtom);
   const updateInternalValue = useRecoilValue(updateTextEditorDoenetMLAtom);
-
-  const paramDoenetId = useRecoilValue(searchParamAtomFamily('doenetId')) 
-  const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
-  const isCurrentDraft = useRecoilValue(currentDraftSelectedAtom)
+  const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom)
+  const paramPageId = useRecoilValue(searchParamAtomFamily('pageId'))
+  const courseId = useRecoilValue(courseIdAtom)
+  
+  const initializedPageId = useRecoilValue(editorPageIdInitAtom);
   let editorRef = useRef(null);
   let timeout = useRef(null);
-  let autosavetimeout = useRef(null);
+  let backupOldDraft = useRef(true);
 
-  const saveDraft = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    const isCurrentDraft = await snapshot.getPromise(currentDraftSelectedAtom);
-    //Only save draft if it's being edited
-    if (isCurrentDraft){
-      const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-      const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
-      let newDraft = {...oldVersions.draft};
-  
-      const contentId = await CIDFromDoenetML(doenetML);
-  
-      newDraft.contentId = contentId;
-      newDraft.timestamp = buildTimestamp();
-  
-      set(itemHistoryAtom(doenetId),(was)=>{
-        let asyncDraft = {...was.draft}
-        asyncDraft.contentId = contentId;
-        asyncDraft.timestamp = newDraft.timestamp;
-        let asyncReplacement = {...was}
-        asyncReplacement.draft = asyncDraft;
-        return asyncReplacement})
-      set(fileByContentId(contentId),doenetML)
-      //Save in localStorage
-      // localStorage.setItem(contentId,doenetML)
-  
-      let newDBVersion = {...newDraft,
-        doenetML,
-        doenetId
-      }
+  const { saveDraft } = useSaveDraft();
 
-      try {
-        const { data } = await axios.post("/api/saveNewVersion.php",newDBVersion)
-        if (data.success){
-          set(editorSaveTimestamp,new Date());
-        }else{
-          //TODO: Toast here
-          console.log("ERROR",data.message)
+  
+
+  // save draft when leave page
+  useEffect(() => {
+    return () => {
+      if (initializedPageId !== "") {
+        // save and stop timers
+        saveDraft({pageId:initializedPageId, courseId, backup:backupOldDraft.current})
+        if (timeout.current !== null) {
+          clearTimeout(timeout.current)
         }
-      } catch (error) {
-        console.log("ERROR",error)
+        timeout.current = null;
       }
     }
-    
-  },[]);
+  }, [initializedPageId, saveDraft, courseId])
 
-  const autoSave = useRecoilCallback(({snapshot,set})=> async (doenetId)=>{
-    const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-    const contentId = await CIDFromDoenetML(doenetML);
-    const timestamp = buildTimestamp();
-    const versionId = nanoid();
-
-    let newVersion = {
-      contentId,
-      versionId,
-      timestamp,
-      isDraft:'0',
-      isNamed:'0',
-      isReleased:'0',
-      title:'Autosave'
-    }
-    let newDBVersion = {...newVersion,
-      doenetML,
-      doenetId
-    }
-      set(itemHistoryAtom(doenetId),
-        (was)=>{
-        let newVersions = {...was}
-        newVersions.autoSaves = [newVersion,...was.autoSaves]
-          return newVersions
-        })
-
-      set(fileByContentId(contentId),doenetML);
-  
-    try {
-      const resp = await axios.post("/api/saveNewVersion.php",newDBVersion)
-      if (resp.data.success){
-        set(editorSaveTimestamp,new Date());
-      }else{
-        //TODO: Toast here
-        console.log("ERROR",resp.data.message)
+  // save draft when click the update button
+  useEffect(() => {
+    if (initializedPageId !== "") {
+      // save and stop timers
+      saveDraft({pageId:initializedPageId, courseId, backup:backupOldDraft.current}).then(({success})=>{
+        if (success){
+          backupOldDraft.current = false;
+        }
+      })
+      
+      if (timeout.current !== null) {
+        clearTimeout(timeout.current)
       }
-    } catch (error) {
-      console.log("ERROR",error)
-    }
-  
-  });
-
-  useEffect(()=>{
-
-    return ()=>{
-
-      if (initilizedDoenetId !== ""){
-    // save and stop timers
-      saveDraft(initilizedDoenetId) //Always save on leave
-      if (timeout.current !== null){
-      clearTimeout(timeout.current)
-      }
-      if (autosavetimeout.current !== null){
-        autoSave(initilizedDoenetId);
-        clearTimeout(autosavetimeout.current)
-      }
-      autosavetimeout.current = null;
       timeout.current = null;
-
-      }
     }
-  },[initilizedDoenetId, saveDraft, autoSave])
+  }, [viewerDoenetML])
 
-  if (paramDoenetId !== initilizedDoenetId){
-    //DoenetML is changing to another DoenetID
+
+  if (paramPageId !== initializedPageId) {
+    //DoenetML is changing to another PageId
+    backupOldDraft.current = true;
     return null;
   }
-  
-  // console.log(`>>>Show CodeMirror with value -${updateInternalValue}-`)
-  // console.log('>>>DoenetViewer Read Only:',!isCurrentDraft)
 
-  return  <div><CodeMirror
-    key = "codemirror"
-      editorRef = {editorRef}
-      setInternalValue = {updateInternalValue}
-      readOnly = {!isCurrentDraft}
-      // value={editorDoenetML} 
-      onBeforeChange={(value) => {
-        // if (isCurrentDraft) { //READ ONLY SHOULD STOP TIMERS
-          setEditorDoenetML(value);
-          //Start just one timer
-          if (timeout.current === null){
-            timeout.current = setTimeout(function(){
-              saveDraft(initilizedDoenetId);
-              timeout.current = null;
-            },3000)//3 seconds
+  // console.log(`>>>Show CodeMirror with value -${updateInternalValue}-`)
+
+  return <div><CodeMirror
+    key="codemirror"
+    editorRef={editorRef}
+    setInternalValue={updateInternalValue}
+    // value={editorDoenetML} 
+    onBeforeChange={(value) => {
+      setEditorDoenetML(value);
+      // Debounce save to server at 3 seconds
+      clearTimeout(timeout.current);
+
+      timeout.current = setTimeout(function () {
+        saveDraft({pageId:initializedPageId, courseId, backup:backupOldDraft.current}).then(({success})=>{
+          if (success){
+            backupOldDraft.current = false;
           }
-          if (autosavetimeout.current === null){
-            autosavetimeout.current = setTimeout(function(){
-              autoSave(initilizedDoenetId);
-              autosavetimeout.current = null;
-          },60000) //1 minute
-          }
-        // }
-      }}
-    />
-    </div>
+        })
+
+        timeout.current = null;
+      }, 3000)//3 seconds
+    }}
+  />
+  </div>
 }

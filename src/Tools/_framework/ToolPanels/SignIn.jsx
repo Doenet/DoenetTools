@@ -3,8 +3,8 @@ import Cookies from 'js-cookie'; // import Textinput from "../imports/Textinput"
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import {useToast, toastType} from "../Toast.jsx";
-
+import { useToast, toastType } from '../Toast.jsx';
+import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 
 export default function SignIn(props) {
   let [email, setEmail] = useState('');
@@ -21,8 +21,8 @@ export default function SignIn(props) {
   let [sendEmailDisabled, setSendEmailDisabled] = useState(true);
   let [signInDisabled, setSignInDisabled] = useState(true);
 
-  console.log(signInStage)
- 
+  console.log(signInStage);
+
   const jwt = Cookies.get();
 
   const emailRef = useRef(null);
@@ -40,22 +40,22 @@ export default function SignIn(props) {
       setValidEmail(false);
       setSendEmailAlert(true);
     }
-  };
+  }
 
   useEffect(() => {
-      if (/\d{9}/.test(nineCode)) {
-        setSignInDisabled(false);
-        setValidCode(true);
-        setSignInAlert(false);
-      } else if (nineCode === '') {
-        setSignInDisabled(true);
-        setValidCode(false);
-        setSignInAlert(false);
-      } else {
-        setSignInDisabled(true);
-        setValidCode(false);
-        setSignInAlert(true);
-      }
+    if (/\d{9}/.test(nineCode)) {
+      setSignInDisabled(false);
+      setValidCode(true);
+      setSignInAlert(false);
+    } else if (nineCode === '') {
+      setSignInDisabled(true);
+      setValidCode(false);
+      setSignInAlert(false);
+    } else {
+      setSignInDisabled(true);
+      setValidCode(false);
+      setSignInAlert(true);
+    }
 
     if (codeRef.current !== null && !validCode) {
       codeRef.current.focus();
@@ -67,20 +67,21 @@ export default function SignIn(props) {
   //If already signed in go to course
   if (Object.keys(jwt).includes('JWT_JS')) {
     axios
-    .get('/api/loadProfile.php', {params: {}})
-    .then((resp) => {
-      if (resp.data.success === '1') {
-        localStorage.setItem("Profile",JSON.stringify(resp.data.profile));
-        location.href = '/#/course';
-      }else{
-        //  Error currently does nothing
-      }})
+      .get('/api/loadProfile.php', { params: {} })
+      .then((resp) => {
+        if (resp.data.success === '1') {
+          localStorage.setItem('Profile', JSON.stringify(resp.data.profile));
+          location.href = '/#/course';
+        } else {
+          //  Error currently does nothing
+        }
+      })
       .catch((error) => {
-        console.log(error)
+        console.log(error);
         //  Error currently does nothing
       });
 
-      return null;
+    return null;
   }
 
   // ** *** *** *** *** **
@@ -160,26 +161,27 @@ export default function SignIn(props) {
         }
       })
       .catch((error) => {
-        console.error(error)
+        console.error(error);
       });
-      setSignInStage('Loading');
+    setSignInStage('Loading');
 
-    return null
+    return null;
   }
   if (signInStage === 'Loading') {
     return (
       <div>
-      <div
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          margin: '20',
-        }}
-      >
-        <h2 style={{ textAlign: 'center' }}>Signing in...</h2>
-      </div></div>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            margin: '20',
+          }}
+        >
+          <h2 style={{ textAlign: 'center' }}>Signing in...</h2>
+        </div>
+      </div>
     );
   }
   if (signInStage === 'Code expired') {
@@ -195,7 +197,7 @@ export default function SignIn(props) {
       >
         <h2 style={{ textAlign: 'center' }}>Code Expired</h2>
         <Button
-           onClick={() => {
+          onClick={() => {
             location.href = '/#/signin';
           }}
           value="Restart Signin"
@@ -239,61 +241,71 @@ export default function SignIn(props) {
 
     return (
       <div style={props.style}>
-      <div
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          margin: '20',
-        }}
-      >
-        {heading}
-        <div style={{ weight: 'bold', fontSize: '14px' }}>Device Name: {deviceName}</div>
-        <div>
-          <p style={{ fontSize: '14px' }}>Check your email for a code to complete sign in.</p>
-        </div>
-        <p>
-          <Textfield
-            label="Code (9 digit code):"
-            // type="text"
-            ref={codeRef}
-            value={nineCode}
-            data-cy="signinCodeInput"
-            alert={signInAlert}
-            onKeyDown={(e) => {
-              // Trying to make it so the user can copy and paste a correct code --> enable sign-in button
-              // Basically trying to make it so the valid/invalid email is detected when the cursor is still within the textfield
-
-              // if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && validCode) {
-                if (e.key === 'Enter' && validCode) {
-                setSignInStage('check code');
-              // } else if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && !validCode) {
-                } else if (e.key === 'Enter' && !validCode) {
-                toast('Invalid code format. Please enter 9 digits.', toastType.ERROR);
-              }
-            }}
-            onBlur={() => {
-              if (!validCode && !signInAlert) {
-                toast('Invalid code format. Please enter 9 digits.', toastType.ERROR);
-              }
-            }}
-            onChange={(e) => {
-              setNineCode(e.target.value);
-            }}
-          ></Textfield>
-        </p>
-        <Button
-          disabled={signInDisabled}
-          onClick={() => {
-            if (validCode) {
-              setSignInStage('check code');
-            }  
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            margin: '20',
           }}
-          data-cy="signInButton"
-          value="Sign In"
-        ></Button>
-      </div>
+        >
+          {heading}
+          <div style={{ weight: 'bold', fontSize: '14px' }}>
+            Device Name: {deviceName}
+          </div>
+          <div>
+            <p style={{ fontSize: '14px' }}>
+              Check your email for a code to complete sign in.
+            </p>
+          </div>
+          <p>
+            <Textfield
+              label="Code (9 digit code):"
+              // type="text"
+              ref={codeRef}
+              value={nineCode}
+              data-test="signinCodeInput"
+              alert={signInAlert}
+              onKeyDown={(e) => {
+                // Trying to make it so the user can copy and paste a correct code --> enable sign-in button
+                // Basically trying to make it so the valid/invalid email is detected when the cursor is still within the textfield
+
+                // if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && validCode) {
+                if (e.key === 'Enter' && validCode) {
+                  setSignInStage('check code');
+                  // } else if (((e.key === 'Enter') || ((e.ctrlKey || e.metaKey) && e.keyCode == 86)) && !validCode) {
+                } else if (e.key === 'Enter' && !validCode) {
+                  toast(
+                    'Invalid code format. Please enter 9 digits.',
+                    toastType.ERROR,
+                  );
+                }
+              }}
+              onBlur={() => {
+                if (!validCode && !signInAlert) {
+                  toast(
+                    'Invalid code format. Please enter 9 digits.',
+                    toastType.ERROR,
+                  );
+                }
+              }}
+              onChange={(e) => {
+                setNineCode(e.target.value);
+              }}
+            ></Textfield>
+          </p>
+          <Button
+            disabled={signInDisabled}
+            onClick={() => {
+              if (validCode) {
+                setSignInStage('check code');
+              }
+            }}
+            data-test="signInButton"
+            value="Sign In"
+          ></Button>
+        </div>
       </div>
     );
   }
@@ -305,6 +317,84 @@ export default function SignIn(props) {
     }
     return (
       <div style={props.style}>
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '20',
+          }}
+        >
+          <img
+            style={{ width: '250px', height: '250px' }}
+            alt="Doenet Logo"
+            src={'/media/Doenet_Logo_Frontpage.png'}
+          />
+          <div>
+            <p style={{ marginLeft: '2px' }}>
+              <Textfield
+                label="Email Address:"
+                // type="text"
+                ref={emailRef}
+                value={email}
+                alert={sendEmailAlert}
+                data-test="signinEmailInput"
+                onKeyDown={(e) => {
+                  validateEmail(email);
+                  if (e.key === 'Enter' && validEmail) {
+                    setSignInStage('enter code');
+                  } else if (e.key === 'Enter' && !validEmail) {
+                    toast('Invalid email. Please try again.', toastType.ERROR);
+                  }
+                }}
+                onBlur={() => {
+                  validateEmail(email);
+                  if (!validEmail && !sendEmailAlert) {
+                    toast('Invalid email. Please try again.', toastType.ERROR);
+                  }
+                }}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              ></Textfield>
+            </p>
+            <p style={{ fontSize: '14px' }}>
+              <Checkbox
+                checked={stay}
+                onClick={(e) => {
+                  if (!stay) {
+                    // console.log('stay');
+                    setMaxAge(240000); //2147483647 sec
+                  } else {
+                    // console.log('not stay');
+                    setMaxAge(0);
+                  }
+                }}
+              />{' '}
+              Stay Logged In
+            </p>
+            <Button
+              disabled={sendEmailDisabled}
+              onClick={() => {
+                if (validEmail) {
+                  setSignInStage('enter code');
+                }
+              }}
+              data-test="sendEmailButton"
+              value="Send Email"
+            ></Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={props.style}>
       <div
         style={{
           position: 'absolute',
@@ -317,85 +407,8 @@ export default function SignIn(props) {
           margin: '20',
         }}
       >
-        <img
-          style={{ width: '250px', height: '250px' }}
-          alt="Doenet Logo"
-          src={'/media/Doenet_Logo_Frontpage.png'}
-        />
-        <div>
-          <p style={{ marginLeft: '2px' }}>
-            <Textfield
-              label="Email Address:"
-              // type="text"
-              ref={emailRef}
-              value={email}
-              alert={sendEmailAlert}
-              data-cy="signinEmailInput"
-              onKeyDown={(e) => {
-                validateEmail(email);
-                if (e.key === 'Enter' && validEmail) {
-                  setSignInStage('enter code');
-                } else if (e.key === 'Enter' && !validEmail) {
-                  toast('Invalid email. Please try again.', toastType.ERROR);
-                }
-              }}
-              onBlur={() => {
-                validateEmail(email); 
-                if (!validEmail && !sendEmailAlert) {
-                  toast('Invalid email. Please try again.', toastType.ERROR);
-                }
-              }}
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-            ></Textfield>
-          </p>
-          <p style={{ fontSize: '14px' }}>
-            <input
-              type="checkbox"
-              checked={stay}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  // console.log('stay')
-                  setMaxAge(240000); //2147483647 sec
-                } else {
-                  // console.log('not stay')
-                  setMaxAge(0);
-                }
-              }}
-            />{' '}
-            Stay Logged In
-          </p>
-          <Button
-            disabled={sendEmailDisabled}
-            onClick={() => {
-              if (validEmail) {
-                setSignInStage('enter code')
-              }
-            }}
-            data-cy="sendEmailButton"
-            value="Send Email"
-          ></Button>
-        </div>
-      </div></div>
-    );
-  }
-
-  return (
-    <div style={props.style}>
-    <div
-      style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: '20',
-      }}
-    >
-      <h2 style={{ textAlign: 'center' }}>Loading...</h2>
-    </div></div>
+        <h2 style={{ textAlign: 'center' }}>Loading...</h2>
+      </div>
+    </div>
   );
 }

@@ -15,8 +15,8 @@ export default class CallAction extends InlineComponent {
   }
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
     attributes.label = {
@@ -42,6 +42,10 @@ export default class CallAction extends InlineComponent {
     }
 
     attributes.triggerWithTargets = {
+      createPrimitiveOfType: "string"
+    }
+
+    attributes.triggerWhenTargetsClicked = {
       createPrimitiveOfType: "string"
     }
 
@@ -139,6 +143,10 @@ export default class CallAction extends InlineComponent {
           dependencyType: "attributePrimitive",
           attributeName: "triggerWithTargets"
         },
+        triggerWhenTargetsClicked: {
+          dependencyType: "attributePrimitive",
+          attributeName: "triggerWhenTargetsClicked"
+        },
         triggerWhen: {
           dependencyType: "attributeComponent",
           attributeName: "triggerWhen"
@@ -149,48 +157,74 @@ export default class CallAction extends InlineComponent {
         }
       }),
       definition({ dependencyValues }) {
-        if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet
-          || dependencyValues.triggerWithTargets === null
-        ) {
+        if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet) {
           return { setValue: { triggerWithTargets: null } }
         } else {
-          return {
-            setValue: {
-              triggerWithTargets: dependencyValues.triggerWithTargets
-                .split(/\s+/).filter(s => s)
+
+          let triggerWithTargets = [];
+          if (dependencyValues.triggerWithTargets !== null) {
+            for (let target of dependencyValues.triggerWithTargets.split(/\s+/).filter(s => s)) {
+              triggerWithTargets.push({ target })
             }
           }
+          if (dependencyValues.triggerWhenTargetsClicked !== null) {
+            for (let target of dependencyValues.triggerWhenTargetsClicked.split(/\s+/).filter(s => s)) {
+              triggerWithTargets.push({ target, triggeringAction: "click" })
+            }
+          }
+
+          if (triggerWithTargets.length === 0) {
+            triggerWithTargets = null;
+          }
+
+          return { setValue: { triggerWithTargets } }
         }
       }
     }
 
-    stateVariableDefinitions.triggerWithTargetComponentNames = {
+    stateVariableDefinitions.triggerWithTargetIds = {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "callAction"
       },
       stateVariablesDeterminingDependencies: ["triggerWithTargets"],
       returnDependencies({ stateValues }) {
-        let dependencies = {};
+        let dependencies = {
+          triggerWithTargets: {
+            dependencyType: "stateVariable",
+            variableName: "triggerWithTargets"
+          }
+        };
         if (stateValues.triggerWithTargets) {
-          for (let [ind, target] of stateValues.triggerWithTargets.entries()) {
+          for (let [ind, targetObj] of stateValues.triggerWithTargets.entries()) {
 
             dependencies[`triggerWithTargetComponentName${ind}`] = {
               dependencyType: "expandTargetName",
-              target
+              target: targetObj.target
             }
           }
         }
         return dependencies;
       },
       definition({ dependencyValues }) {
-        let triggerWithTargetComponentNames = [];
-        let n = Object.keys(dependencyValues).length - 1;
+        let triggerWithTargetIds = [];
 
-        for (let i = 0; i < n; i++) {
-          triggerWithTargetComponentNames.push(dependencyValues[`triggerWithTargetComponentName${i}`])
+        if (dependencyValues.triggerWithTargets) {
+          for (let [ind, targetObj] of dependencyValues.triggerWithTargets.entries()) {
+
+            let id = dependencyValues[`triggerWithTargetComponentName${ind}`];
+
+            if (targetObj.triggeringAction) {
+              id += "|" + targetObj.triggeringAction;
+            };
+
+            if (!triggerWithTargetIds.includes(id)) {
+              triggerWithTargetIds.push(id);
+            }
+
+          }
         }
 
-        return { setValue: { triggerWithTargetComponentNames } }
+        return { setValue: { triggerWithTargetIds } }
       },
       markStale() {
         return { updateActionChaining: true }
@@ -234,7 +268,7 @@ export default class CallAction extends InlineComponent {
   }
 
 
-  async callAction() {
+  async callAction({ actionId }) {
 
     let targetName = await this.stateValues.targetName;
     let actionName = await this.stateValues.actionName;
@@ -251,6 +285,9 @@ export default class CallAction extends InlineComponent {
         args.numbers = await this.attributes.numbers.component.stateValues.numbers;
       }
 
+      if (actionId) {
+        args.actionId = actionId;
+      }
 
       await this.coreFunctions.performAction({
         componentName: targetName,
@@ -270,17 +307,21 @@ export default class CallAction extends InlineComponent {
       });
 
 
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
 
   }
 
-  async callActionIfTriggerNewlyTrue({ stateValues, previousValues }) {
+  async callActionIfTriggerNewlyTrue({ stateValues, previousValues, actionId }) {
     // Note: explicitly test if previous value is false
     // so don't trigger on initialization when it is undefined
     if (stateValues.triggerWhen && previousValues.triggerWhen === false &&
       !await this.stateValues.insideTriggerSet
     ) {
-      return await this.callAction();
+      return await this.callAction({ actionId });
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

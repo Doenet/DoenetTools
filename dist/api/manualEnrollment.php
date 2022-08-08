@@ -101,7 +101,7 @@ echo $enrollUserId;
 // 	INSERT INTO enrollment
 // 	(driveId,userId,firstName,lastName,email,dateEnrolled,section)
 // 	VALUES
-// 	('$driveId','$userId','$firstName','$lastName','$email',NOW(),'NULL')
+// 	('$driveId','$userId','$firstName','$lastName','$email',CONVERT_TZ(NOW(), @@session.time_zone, '+00:00'),'NULL')
 // 	";
 // 	$result = $conn->query($sql);
 // 	$sql = "

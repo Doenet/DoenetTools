@@ -2,7 +2,8 @@ import React, {useEffect, useContext, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
-export default function Angle(props) {
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
+export default React.memo(function Angle(props) {
   let {name, SVs} = useDoenetRender(props);
   const board = useContext(BoardContext);
   let point1JXG = useRef(null);
@@ -10,13 +11,6 @@ export default function Angle(props) {
   let point3JXG = useRef(null);
   let angleJXG = useRef(null);
   let previousWithLabel = useRef(null);
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  });
   useEffect(() => {
     return () => {
       deleteGraphicalObject();
@@ -38,7 +32,7 @@ export default function Angle(props) {
     if (SVs.numericalPoints.length !== 3 || SVs.numericalPoints.some((x) => x.length !== 2) || !(Number.isFinite(SVs.numericalRadius) && SVs.numericalRadius > 0)) {
       return null;
     }
-    let angleColor = "#FF7F00";
+    let angleColor = getComputedStyle(document.documentElement).getPropertyValue("--solidLightBlue");
     var jsxAngleAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
@@ -48,12 +42,17 @@ export default function Angle(props) {
       radius: SVs.numericalRadius,
       fillColor: angleColor,
       strokeColor: angleColor,
-      highlightFillColor: angleColor,
-      highlightStrokeColor: angleColor
+      highlight: false
     };
+    jsxAngleAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxAngleAttributes.label.useMathJax = true;
+    }
     previousWithLabel.current = SVs.showLabel && SVs.label !== "";
     let through;
-    if (SVs.renderAsAcuteAngle && SVs.degrees.evaluate_to_constant() % 360 > 180) {
+    if (SVs.swapPointOrder) {
       through = [
         [...SVs.numericalPoints[2]],
         [...SVs.numericalPoints[1]],
@@ -84,7 +83,7 @@ export default function Angle(props) {
       deleteGraphicalObject();
     } else {
       let through;
-      if (SVs.renderAsAcuteAngle && SVs.degrees.evaluate_to_constant() % 360 > 180) {
+      if (SVs.swapPointOrder) {
         through = [
           [...SVs.numericalPoints[2]],
           [...SVs.numericalPoints[1]],
@@ -119,15 +118,14 @@ export default function Angle(props) {
       name
     }));
   }
-  let mathJaxify;
-  if (SVs.inDegrees) {
-    mathJaxify = "\\(" + me.fromAst(SVs.degrees).toLatex() + "^\\circ \\)";
-  } else {
-    mathJaxify = "\\(" + me.fromAst(SVs.radians).toLatex() + "\\)";
-  }
+  let mathJaxify = "\\(" + SVs.latexForRenderer + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {
     id: name
-  }, mathJaxify));
-}
+  }, /* @__PURE__ */ React.createElement(MathJax, {
+    hideUntilTypeset: "first",
+    inline: true,
+    dynamic: true
+  }, mathJaxify)));
+});

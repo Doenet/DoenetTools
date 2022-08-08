@@ -19,8 +19,8 @@ export default class MathList extends InlineComponent {
   // don't required composite replacements
   static descendantCompositesMustHaveAReplacement = false;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.unordered = {
       createComponentOfType: "boolean",
@@ -57,6 +57,12 @@ export default class MathList extends InlineComponent {
       valueForTrue: 1E-14,
       valueForFalse: 0,
       defaultValue: 0,
+      public: true,
+    };
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
       public: true,
     };
 
@@ -132,7 +138,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.mergeMathLists = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         mergeMathListsPreliminary: {
           dependencyType: "stateVariable",
@@ -164,7 +172,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["mergeMathLists"],
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies({ stateValues }) {
@@ -282,7 +292,10 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.maths = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       isArray: true,
       entryPrefixes: ["math"],
       stateVariablesDeterminingDependencies: ["mergeMathLists", "childIndexByArrayKey"],
@@ -418,6 +431,33 @@ export default class MathList extends InlineComponent {
       }
     }
 
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      returnDependencies: () => ({
+        maths: {
+          dependencyType: "stateVariable",
+          variableName: "maths"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let math;
+        if (dependencyValues.maths.length === 0) {
+          math = me.fromAst("\uff3f");
+        } else if (dependencyValues.maths.length === 1) {
+          math = dependencyValues.maths[0]
+        } else {
+          math = me.fromAst(["list", ...dependencyValues.maths.map(x => x.tree)]);
+        }
+
+        return { setValue: { math } }
+
+      }
+    }
+
     stateVariableDefinitions.nValues = {
       isAlias: true,
       targetVariableName: "nComponents"
@@ -431,7 +471,9 @@ export default class MathList extends InlineComponent {
     stateVariableDefinitions.latex = {
       additionalStateVariablesDefined: ["latexs"],
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         mathAndMathListChildren: {
@@ -464,10 +506,23 @@ export default class MathList extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displaySmallAsZero"
         },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         let latexs = [];
-
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
         if (dependencyValues.mathAndMathListChildren.length > 0) {
           for (let child of dependencyValues.mathAndMathListChildren) {
 
@@ -477,7 +532,7 @@ export default class MathList extends InlineComponent {
 
               if (dependencyValues.mergeMathLists && Array.isArray(childValue.tree) && childValue.tree[0] === "list") {
                 for (let i = 0; i < childValue.tree.length - 1; i++) {
-                  latexs.push(childValue.get_component(i).toLatex());
+                  latexs.push(childValue.get_component(i).toLatex(params));
                 }
               } else {
                 latexs.push(child.stateValues.latex);
@@ -492,7 +547,7 @@ export default class MathList extends InlineComponent {
             roundForDisplay({
               value: x,
               dependencyValues, usedDefault
-            }).toLatex())
+            }).toLatex(params))
 
         }
 
@@ -512,7 +567,9 @@ export default class MathList extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: ["texts"],
       returnDependencies: () => ({
         mathAndMathListChildren: {
@@ -678,10 +735,19 @@ export default class MathList extends InlineComponent {
         return {
           setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
-      }
+      },
+      markStale: () => ({ updateRenderedChildren: true }),
     }
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "math",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+    },
+    "text"
+  ];
 
 }

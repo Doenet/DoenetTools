@@ -26,7 +26,9 @@ export default class InlineRenderInlineChildren extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         inlineChildren: {
           dependencyType: "child",

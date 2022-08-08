@@ -1,8 +1,7 @@
 import React, {useContext, useEffect, useState, useRef} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
-import me from "../../_snowpack/pkg/math-expressions.js";
-export default function Ray(props) {
+export default React.memo(function Ray(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Ray.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -28,36 +27,53 @@ export default function Ray(props) {
       rayJXG.current = null;
       return;
     }
+    let fixed = !SVs.draggable || SVs.fixed;
     var jsxRayAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
       layer: 10 * SVs.layer + 7,
+      fixed,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
+      highlight: !fixed,
       straightFirst: false
     };
+    jsxRayAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxRayAttributes.label.useMathJax = true;
+    }
+    if (SVs.applyStyleToLabel) {
+      jsxRayAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxRayAttributes.label.strokeColor = "#000000";
+    }
     let through = [
       [...SVs.numericalEndpoint],
       [...SVs.numericalThroughpoint]
     ];
     let newRayJXG = board.create("line", through, jsxRayAttributes);
     newRayJXG.on("drag", function(e) {
-      dragged.current = true;
-      pointCoords.current = calculatePointPositions(e);
-      callAction({
-        action: actions.moveRay,
-        args: {
-          endpointcoords: pointCoords.current[0],
-          throughcoords: pointCoords.current[1],
-          transient: true,
-          skippable: true
-        }
-      });
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
+        pointCoords.current = calculatePointPositions(e);
+        callAction({
+          action: actions.moveRay,
+          args: {
+            endpointcoords: pointCoords.current[0],
+            throughcoords: pointCoords.current[1],
+            transient: true,
+            skippable: true
+          }
+        });
+      }
       rayJXG.current.point1.coords.setCoordinates(JXG.COORDS_BY_USER, lastEndpointFromCore.current);
       rayJXG.current.point2.coords.setCoordinates(JXG.COORDS_BY_USER, lastThroughpointFromCore.current);
     });
@@ -69,6 +85,10 @@ export default function Ray(props) {
             endpointcoords: pointCoords.current[0],
             throughcoords: pointCoords.current[1]
           }
+        });
+      } else {
+        callAction({
+          action: actions.rayClicked
         });
       }
     });
@@ -129,6 +149,30 @@ export default function Ray(props) {
         rayJXG.current.visProp["visible"] = false;
         rayJXG.current.visPropCalc["visible"] = false;
       }
+      let fixed = !SVs.draggable || SVs.fixed;
+      rayJXG.current.visProp.fixed = fixed;
+      rayJXG.current.visProp.highlight = !fixed;
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = rayJXG.current.visProp.layer !== layer;
+      if (layerChanged) {
+        rayJXG.current.setAttribute({layer});
+      }
+      if (rayJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        rayJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        rayJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (rayJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        rayJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+        rayJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth;
+      }
+      if (rayJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        rayJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        rayJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
+      if (rayJXG.current.visProp.dash !== newDash) {
+        rayJXG.current.visProp.dash = newDash;
+      }
       rayJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";
       if (withlabel != previousWithLabel.current) {
@@ -138,6 +182,11 @@ export default function Ray(props) {
       rayJXG.current.needsUpdate = true;
       rayJXG.current.update();
       if (rayJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          rayJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        } else {
+          rayJXG.current.label.visProp.strokecolor = "#000000";
+        }
         rayJXG.current.label.needsUpdate = true;
         rayJXG.current.label.update();
       }
@@ -150,7 +199,7 @@ export default function Ray(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }));
-}
+});
 function styleToDash(style) {
   if (style === "solid") {
     return 0;

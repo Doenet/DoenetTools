@@ -11,8 +11,8 @@ export default class Pluralize extends Text {
   static componentType = "pluralize";
   static rendererType = "text";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.pluralForm = {
       createComponentOfType: "text",
       createStateVariable: "pluralForm",
@@ -43,7 +43,9 @@ export default class Pluralize extends Text {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         valuePrePluralize: {
           dependencyType: "stateVariable",
@@ -182,7 +184,9 @@ export default class Pluralize extends Text {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {

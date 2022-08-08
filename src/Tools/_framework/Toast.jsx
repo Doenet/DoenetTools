@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { animated, useSpring } from '@react-spring/web';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
+// import { toastType } from './ToastTypes';
 
 const ToastContainer = styled.div`
   position: fixed;
@@ -36,10 +37,10 @@ const Message = styled(animated.div)`
 `;
 
 const Content = styled('div')`
-  color: black;
+  color: var(--canvastext);
   /* background:  */
   /* opacity: 0.9; */
-  background: white;
+  background: var(--canvas);
   padding: 12px 22px;
   font-size: 1em;
   display: grid;
@@ -49,7 +50,7 @@ const Content = styled('div')`
   overflow: hidden;
   height: auto;
   border-radius: 3px;
-  border: 2px solid #e2e2e2;
+  border: 2px solid var(--mainGray);
   border-left: 12px solid;
   border-left-color: ${({ type }) => type?.background};
 `;
@@ -59,7 +60,7 @@ const Life = styled(animated.div)`
   bottom: ${(props) => (props.top ? '10px' : '0')};
   left: 0px;
   width: auto;
-  background-image: linear-gradient(130deg, #1a5a99, #8fb8de);
+  background-image: linear-gradient(130deg, var(--mainBlue), var(--solidLightBlue));
   height: 5px;
 `;
 
@@ -75,26 +76,58 @@ const Button = styled('button')`
   margin: 0;
   padding: 0;
   padding-bottom: 14px;
-  // color: rgba(255, 255, 255, 0.7);
+  // color: var(--canvas);
   // :hover {
-  //   color: rgba(255, 255, 255, 0.9);
+  //   color: var(--canvas);
   // }
-  color: black;
+  color: var(--canvastext);
   font-size: 1em;
 `;
+
+const toastStack = atom({
+  key: 'toastStack',
+  default: [],
+});
+
+let id = 0;
+
+export const recoilAddToast = ({ set }) =>
+(msg, type = toastType.INFO, action = null) => {
+  set(toastStack, (old) => [
+    ...old,
+    <ToastMessage
+      key={id}
+      type={type}
+      action={action}
+      duration={type.timeout}
+      tId={id}
+    >
+      {msg}
+    </ToastMessage>,
+  ]);
+  id++;
+}
+
+export const useToast = () => {
+  const addToast = useRecoilCallback(
+    recoilAddToast,
+    [],
+  );
+  return addToast;
+};
 
 export const toastType = Object.freeze({
   //Color contrast with accessibility -- no text on color
   ERROR: {
     // process failed or error occured, user must dissmis
     timeout: -1,
-    background: 'rgba(193, 41, 46, 1)',
+    background: 'var(--mainRed)',
     gradientEnd: 'rgba()',
   },
   ALERT: {
     // user attetion reqired to dissmiss
     timeout: -1,
-    background: 'rgba(255, 230, 0, 1)',
+    background: 'var(--lightYellow)',
   },
   ACTION: {
     // requires user interaction
@@ -104,49 +137,19 @@ export const toastType = Object.freeze({
   INFO: {
     // non-interactive information
     timeout: 3000,
-    background: 'rgba(26, 90, 153,1)',
+    background: 'var(--mainBlue)',
   },
   SUCCESS: {
     // confirm action
     timeout: 3000,
-    background: 'rgba(41, 193, 67,  1)',
+    background: 'var(--mainGreen)',
   },
   CONFIRMATION: {
     //confirm action and offer undo
     timeout: 5000,
-    background: 'rgba(26,90,153,1)',
+    background: 'var(--mainBlue)',
   },
 });
-
-const toastStack = atom({
-  key: 'toastStack',
-  default: [],
-});
-
-let id = 0;
-
-export const useToast = () => {
-  const addToast = useRecoilCallback(
-    ({ set }) =>
-      (msg, type = toastType.INFO, action = null) => {
-        set(toastStack, (old) => [
-          ...old,
-          <ToastMessage
-            key={id}
-            type={type}
-            action={action}
-            duration={type.timeout}
-            tId={id}
-          >
-            {msg}
-          </ToastMessage>,
-        ]);
-        id++;
-      },
-    [],
-  );
-  return addToast;
-};
 
 export default function Toast() {
   const toasts = useRecoilValue(toastStack);
@@ -185,10 +188,11 @@ function ToastMessage({
   });
   return (
     <Message style={props}>
-      <Content ref={ref} key={tId} type={type}>
+      <Content ref={ref} key={tId} type={type} data-test="toast">
         <Life style={{ right: props.life }} />
         <p>{children}</p>
         <Button
+        data-test="toast cancel button"
           onClick={(e) => {
             e.stopPropagation();
             ref.current.cancel();

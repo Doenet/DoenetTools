@@ -6,7 +6,7 @@ const ColorBox = styled.button`
   background: ${(props) => `${props.color}`};
   cursor: pointer;
   margin: 3px;
-  border: ${(props) => props.selected ? "1px solid black" : "none"};
+  border: ${(props) => props.selected ? "1px solid var(--canvastext)" : "none"};
   border-radius: 3px;
 `;
 const HexBoxContainer = styled.div`
@@ -14,16 +14,16 @@ width:100%;
 text-align:right;
 `;
 const ColorPickerHexButton = styled.div`
- border:1px solid black;
+ border:1px solid var(--canvastext);
  width: 50px;
- background: rgba(0, 0, 0, 0);
+ background: var(--canvas);
  cursor: pointer;
  padding:0px 5px 0px 5px;
  `;
 const ColorPickerHexValue = styled.div`
  border: none;
  width: 20px;
- background: rgba(0, 0, 0, 0);
+ background: var(--canvas);
  cursor: pointer;
  `;
 const ColorPickerContainer = styled.div`
@@ -33,10 +33,10 @@ const ColorPickerContainer = styled.div`
 const ColorList = styled.ul`
  padding: 4px;
  list-style-type: none;
- /* border: 1px solid #505050; */
+ /* border: 1px solid var(--canvastext); */
  border-radius: 3px;
- box-shadow: 3px 3px 7px #888888;
- background: #ffffff;
+ box-shadow: 3px 3px 7px var(--mainGray);
+ background: var(--canvas);
  margin: 0 auto;
  text-align: left;
  `;

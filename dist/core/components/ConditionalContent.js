@@ -10,25 +10,31 @@ export default class ConditionalContent extends CompositeComponent {
   static includeBlankStringChildren = true;
 
   static assignNamesToReplacements = true;
-  static originalNamesAreConsistent = true;
 
   static createsVariants = true;
-  static alwaysSetUpVariant = true;
 
   static stateVariableToEvaluateAfterReplacements = "readyToExpandWhenResolved";
 
 
   // keep serialized all children other othan cases or else
-  static keepChildrenSerialized({ serializedComponent }) {
+  static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
       return [];
     }
+
+    let componentTypeIsSpecifiedType = (cType, specifiedCType) => componentInfoObjects.isInheritedComponentType({
+      inheritedComponentType: cType,
+      baseComponentType: specifiedCType
+    });
+
+    let componentIsSpecifiedType = (comp, specifiedCType) =>
+      componentTypeIsSpecifiedType(comp.componentType, specifiedCType)
+      || componentTypeIsSpecifiedType(comp.attributes?.createComponentOfType?.primitive, specifiedCType)
+
     let keepSerializedInds = [];
     for (let [ind, child] of serializedComponent.children.entries()) {
-      if (!["case", "else"].includes(child.componentType)) {
-        if (!(child.attributes && child.attributes.componentType && ["case", "else"].includes(child.attributes.componentType.primitive))) {
-          keepSerializedInds.push(ind)
-        }
+      if (!(componentIsSpecifiedType(child, "case") || componentIsSpecifiedType(child, "else"))) {
+        keepSerializedInds.push(ind)
       }
     }
 
@@ -36,8 +42,8 @@ export default class ConditionalContent extends CompositeComponent {
   }
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
@@ -221,7 +227,7 @@ export default class ConditionalContent extends CompositeComponent {
         },
         variantDescendants: {
           dependencyType: "descendant",
-          componentTypes: Object.keys(componentInfoObjects.componentTypeWithPotentialVariants),
+          componentTypes: Object.keys(componentInfoObjects.componentTypesCreatingVariants),
           variableNames: [
             "isVariantComponent",
             "generatedVariantInfo",
@@ -230,7 +236,7 @@ export default class ConditionalContent extends CompositeComponent {
           recurseToMatchedChildren: false,
           variablesOptional: true,
           includeNonActiveChildren: true,
-          ignoreReplacementsOfMatchedComposites: true,
+          ignoreReplacementsOfEncounteredComposites: true,
         },
 
       }),
@@ -273,9 +279,9 @@ export default class ConditionalContent extends CompositeComponent {
     workspace.previousSelectedIndices = [...await component.stateValues.selectedIndices];
     workspace.previousBaseConditionSatisfied = await component.stateValues.baseConditionSatisfied;
 
-    console.log(`replacements for ${component.componentName}`)
-    console.log(JSON.parse(JSON.stringify(replacements)));
-    console.log(replacements);
+    // console.log(`replacements for ${component.componentName}`)
+    // console.log(JSON.parse(JSON.stringify(replacements)));
+    // console.log(replacements);
 
     return { replacements };
 
@@ -335,7 +341,7 @@ export default class ConditionalContent extends CompositeComponent {
       }
     }
 
-    let newNamespace = component.attributes.newNamespace && component.attributes.newNamespace.primitive;
+    let newNamespace = component.attributes.newNamespace?.primitive;
 
     let processResult = processAssignNames({
       assignNames: component.doenetAttributes.assignNames,
@@ -343,8 +349,7 @@ export default class ConditionalContent extends CompositeComponent {
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
       componentInfoObjects,
-      originalNamesAreConsistent: newNamespace
-        || !component.doenetAttributes.assignNames,
+      originalNamesAreConsistent: true,
     });
 
 
@@ -354,9 +359,9 @@ export default class ConditionalContent extends CompositeComponent {
 
   static async calculateReplacementChanges({ component, componentChanges, components, workspace, componentInfoObjects }) {
 
-    console.log(`calculate replacement changes for selectByCondition ${component.componentName}`)
-    console.log(workspace.previousSelectedIndices);
-    console.log(component.stateValues.selectedIndices);
+    // console.log(`calculate replacement changes for selectByCondition ${component.componentName}`)
+    // console.log(workspace.previousSelectedIndices);
+    // console.log(component.stateValues.selectedIndices);
 
     let selectedIndices = await component.stateValues.selectedIndices;
     let baseConditionSatisfied = await component.stateValues.baseConditionSatisfied;

@@ -2,10 +2,14 @@ import React, {useRef, useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
-export default function BooleanInput(props) {
-  let {name, SVs, actions, ignoreUpdate, callAction} = useDoenetRender(props);
+import {rendererState} from "./useDoenetRenderer.js";
+import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.js";
+export default React.memo(function BooleanInput(props) {
+  let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   BooleanInput.baseStateVariable = "value";
   const [rendererValue, setRendererValue] = useState(SVs.value);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
   let valueWhenSetState = useRef(null);
   if (!ignoreUpdate && valueWhenSetState.current !== SVs.value) {
     setRendererValue(SVs.value);
@@ -24,9 +28,14 @@ export default function BooleanInput(props) {
     }
   }
   function onChangeHandler(e) {
-    let newValue = e.target.checked;
+    let newValue = !rendererValue;
     setRendererValue(newValue);
     valueWhenSetState.current = SVs.value;
+    setRendererState((was) => {
+      let newObj = {...was};
+      newObj.ignoreUpdate = true;
+      return newObj;
+    });
     callAction({
       action: actions.updateBoolean,
       args: {
@@ -99,7 +108,7 @@ export default function BooleanInput(props) {
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkStyle.backgroundColor = "var(--mainRed)";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
             id: name + "_incorrect",
             style: checkWorkStyle
@@ -123,16 +132,29 @@ export default function BooleanInput(props) {
       checkWorkButton = /* @__PURE__ */ React.createElement(React.Fragment, null, checkWorkButton, /* @__PURE__ */ React.createElement("span", null, "(attempts remaining: ", SVs.numberOfAttemptsLeft, ")"));
     }
   }
+  let input;
+  if (SVs.asToggleButton) {
+    input = /* @__PURE__ */ React.createElement(ToggleButton, {
+      id: inputKey,
+      key: inputKey,
+      isSelected: rendererValue,
+      onClick: onChangeHandler,
+      value: SVs.label,
+      disabled
+    });
+  } else {
+    input = /* @__PURE__ */ React.createElement("label", null, /* @__PURE__ */ React.createElement("input", {
+      type: "checkbox",
+      key: inputKey,
+      id: inputKey,
+      checked: rendererValue,
+      onChange: onChangeHandler,
+      disabled
+    }), SVs.label);
+  }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
     id: name
   }, /* @__PURE__ */ React.createElement("a", {
     name
-  }), /* @__PURE__ */ React.createElement("label", null, /* @__PURE__ */ React.createElement("input", {
-    type: "checkbox",
-    key: inputKey,
-    id: inputKey,
-    checked: rendererValue,
-    onChange: onChangeHandler,
-    disabled
-  }), SVs.label), checkWorkButton));
-}
+  }), input, checkWorkButton));
+});

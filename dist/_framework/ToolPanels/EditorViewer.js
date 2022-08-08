@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from "../../_snowpack/pkg/react.js";
-import DoenetViewer from "../../viewer/DoenetViewer.js";
+import PageViewer from "../../viewer/PageViewer.js";
 import {
   useRecoilValue,
   atom,
@@ -7,13 +7,13 @@ import {
   useRecoilState,
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
-import {searchParamAtomFamily} from "../NewToolRoot.js";
+import {searchParamAtomFamily, suppressMenusAtom} from "../NewToolRoot.js";
 import {
-  itemHistoryAtom,
-  fileByContentId,
-  variantInfoAtom,
-  variantPanelAtom
+  fileByPageId,
+  pageVariantInfoAtom,
+  pageVariantPanelAtom
 } from "../ToolHandlers/CourseToolHandler.js";
+import {itemByDoenetId, courseIdAtom, useInitCourseItems, useSetCourseIdFromDoenetId} from "../../_reactComponents/Course/CourseActions.js";
 export const viewerDoenetMLAtom = atom({
   key: "viewerDoenetMLAtom",
   default: ""
@@ -26,8 +26,8 @@ export const updateTextEditorDoenetMLAtom = atom({
   key: "updateTextEditorDoenetMLAtom",
   default: ""
 });
-export const editorDoenetIdInitAtom = atom({
-  key: "editorDoenetIdInitAtom",
+export const editorPageIdInitAtom = atom({
+  key: "editorPageIdInitAtom",
   default: ""
 });
 export const refreshNumberAtom = atom({
@@ -40,70 +40,82 @@ export const editorViewerErrorStateAtom = atom({
 });
 export default function EditorViewer() {
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
-  const paramDoenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
-  const initilizedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
-  const [variantInfo, setVariantInfo] = useRecoilState(variantInfoAtom);
-  const setVariantPanel = useSetRecoilState(variantPanelAtom);
-  const setEditorInit = useSetRecoilState(editorDoenetIdInitAtom);
+  const paramPageId = useRecoilValue(searchParamAtomFamily("pageId"));
+  const courseId = useRecoilValue(courseIdAtom);
+  const doenetId = useRecoilValue(searchParamAtomFamily("doenetId"));
+  const initializedPageId = useRecoilValue(editorPageIdInitAtom);
+  const [variantInfo, setVariantInfo] = useRecoilState(pageVariantInfoAtom);
+  const setVariantPanel = useSetRecoilState(pageVariantPanelAtom);
+  const setEditorInit = useSetRecoilState(editorPageIdInitAtom);
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
-  let initDoenetML = useRecoilCallback(({snapshot, set}) => async (doenetId) => {
-    const versionHistory = await snapshot.getPromise(itemHistoryAtom(doenetId));
-    const contentId = versionHistory.draft.contentId;
-    let response = await snapshot.getPromise(fileByContentId(contentId));
-    if (typeof response === "object") {
-      response = response.data;
+  const pageObj = useRecoilValue(itemByDoenetId(paramPageId));
+  const activityObj = useRecoilValue(itemByDoenetId(doenetId));
+  const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  useSetCourseIdFromDoenetId(doenetId);
+  useInitCourseItems(courseId);
+  let pageInitiated = false;
+  let label = null;
+  if (Object.keys(pageObj).length > 0) {
+    pageInitiated = true;
+    if (activityObj.isSinglePage) {
+      label = activityObj.label;
+    } else {
+      label = pageObj.label;
     }
+  }
+  useEffect(() => {
+    const prevTitle = document.title;
+    if (label) {
+      document.title = `${label} - Doenet`;
+    }
+    return () => {
+      document.title = prevTitle;
+    };
+  }, [label]);
+  let initDoenetML = useRecoilCallback(({snapshot, set}) => async (pageId) => {
+    let response = await snapshot.getPromise(fileByPageId(pageId));
+    let pageObj2 = await snapshot.getPromise(itemByDoenetId(pageId));
+    let containingObj = await snapshot.getPromise(itemByDoenetId(pageObj2.containingDoenetId));
     const doenetML = response;
     set(updateTextEditorDoenetMLAtom, doenetML);
     set(textEditorDoenetMLAtom, doenetML);
     set(viewerDoenetMLAtom, doenetML);
-    set(editorDoenetIdInitAtom, doenetId);
-  }, []);
+    set(editorPageIdInitAtom, pageId);
+    let suppress = [];
+    if (containingObj.type == "bank") {
+      suppress.push("AssignmentSettingsMenu");
+    }
+    setSuppressMenus(suppress);
+  }, [setSuppressMenus]);
   useEffect(() => {
-    if (paramDoenetId !== "") {
-      initDoenetML(paramDoenetId);
+    if (paramPageId !== "" && pageInitiated) {
+      initDoenetML(paramPageId);
     }
     return () => {
       setEditorInit("");
     };
-  }, [paramDoenetId]);
-  if (paramDoenetId !== initilizedDoenetId) {
+  }, [paramPageId, pageInitiated]);
+  if (courseId === "__not_found__") {
+    return /* @__PURE__ */ React.createElement("h1", null, "Content not found or no permission to view content");
+  } else if (paramPageId !== initializedPageId) {
     return null;
   }
   let attemptNumber = 1;
   let solutionDisplayMode = "button";
-  if (variantInfo.lastUpdatedIndexOrName === "Index") {
-    setVariantInfo((was) => {
-      let newObj = {...was};
-      newObj.lastUpdatedIndexOrName = null;
-      newObj.requestedVariant = {index: variantInfo.index};
-      return newObj;
-    });
-  } else if (variantInfo.lastUpdatedIndexOrName === "Name") {
-    setVariantInfo((was) => {
-      let newObj = {...was};
-      newObj.lastUpdatedIndexOrName = null;
-      newObj.requestedVariant = {name: variantInfo.name};
-      return newObj;
-    });
-  }
-  function variantCallback(generatedVariantInfo, allPossibleVariants) {
+  function variantCallback(generatedVariantInfo, allPossibleVariants, variantIndicesToIgnore = []) {
     const cleanGeneratedVariant = JSON.parse(JSON.stringify(generatedVariantInfo));
-    cleanGeneratedVariant.lastUpdatedIndexOrName = null;
     setVariantPanel({
       index: cleanGeneratedVariant.index,
-      name: cleanGeneratedVariant.name,
-      allPossibleVariants
+      allPossibleVariants,
+      variantIndicesToIgnore
     });
-    setVariantInfo((was) => {
-      let newObj = {...was};
-      Object.assign(newObj, cleanGeneratedVariant);
-      return newObj;
+    setVariantInfo({
+      index: cleanGeneratedVariant.index
     });
   }
-  return /* @__PURE__ */ React.createElement(MemoDoenetViewer, {
-    key: `doenetviewer${refreshNumber}`,
+  return /* @__PURE__ */ React.createElement(PageViewer, {
+    key: `pageViewer${refreshNumber}`,
     doenetML: viewerDoenetML,
     flags: {
       showCorrectness: true,
@@ -111,27 +123,17 @@ export default function EditorViewer() {
       solutionDisplayMode,
       showFeedback: true,
       showHints: true,
-      allowLoadPageState: false,
-      allowSavePageState: false,
-      allowLocalPageState: false,
+      allowLoadState: false,
+      allowSaveState: false,
+      allowLocalState: false,
       allowSaveSubmissions: false,
       allowSaveEvents: false
     },
+    doenetId,
     attemptNumber,
     generatedVariantCallback: variantCallback,
-    requestedVariant: variantInfo.requestedVariant,
-    setIsInErrorState
+    requestedVariantIndex: variantInfo.index,
+    setIsInErrorState,
+    pageIsActive: true
   });
 }
-const MemoDoenetViewer = React.memo(DoenetViewer, (prev, next) => {
-  if (prev.doenetML !== next.doenetML) {
-    return false;
-  }
-  if (prev.requestedVariant?.name !== next.requestedVariant?.name) {
-    return false;
-  }
-  if (prev.requestedVariant?.index !== next.requestedVariant?.index) {
-    return false;
-  }
-  return true;
-});

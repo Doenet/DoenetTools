@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Cell(props) {
+export default React.memo(function Cell(props) {
   let {name, SVs, children} = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -48,5 +48,5 @@ export default function Cell(props) {
     } else {
       return <td id={name} {...properties}>{content}</td>
     }
-}
+})
 

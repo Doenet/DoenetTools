@@ -13,6 +13,8 @@ export default function checkEquality({
   allowedErrorIsAbsolute = false,
   nSignErrorsMatched = 0,
   nPeriodicSetMatchesRequired = 3,
+  caseInsensitiveMatch = false,
+  matchBlanks = false,
 }) {
 
   /*
@@ -77,7 +79,11 @@ export default function checkEquality({
       x = me.fromAst(x);
     }
 
-    x = x.normalize_function_names().normalize_applied_functions();;
+    x = x.normalize_function_names().normalize_applied_functions();
+
+    if (caseInsensitiveMatch) {
+      x = me.fromAst(setStringsInTreeToLowerCase(x.tree));
+    }
 
     if (simplify === "none") {
       if (allowedErrorInNumbers > 0) {
@@ -122,6 +128,7 @@ export default function checkEquality({
               allowed_error_in_numbers: allowedErrorInNumbers,
               include_error_in_number_exponents: includeErrorInNumberExponents,
               allowed_error_is_absolute: allowedErrorIsAbsolute,
+              allow_blanks: matchBlanks,
             })
           }
           // temporary fix to keep complex numbers from crashing math-expressions
@@ -149,6 +156,7 @@ export default function checkEquality({
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
             allowed_error_is_absolute: allowedErrorIsAbsolute,
+            allow_blanks: matchBlanks
           })
           return { fraction_equal: equality ? 1 : 0 };
         }
@@ -162,6 +170,11 @@ export default function checkEquality({
         }
         if (!(b instanceof me.class)) {
           expr_b = me.fromAst(b);
+        }
+
+        if (caseInsensitiveMatch) {
+          expr_a = me.fromAst(setStringsInTreeToLowerCase(expr_a.tree));
+          expr_b = me.fromAst(setStringsInTreeToLowerCase(expr_b.tree));
         }
 
         // let aIsPeriodicSet = Array.isArray(a) && a[0] === "periodic_set";
@@ -201,6 +214,7 @@ export default function checkEquality({
               allowed_error_in_numbers: allowedErrorInNumbers,
               include_error_in_number_exponents: includeErrorInNumberExponents,
               allowed_error_is_absolute: allowedErrorIsAbsolute,
+              allow_blanks: matchBlanks,
             })
           }
           // temporary fix to keep complex numbers from crashing math-expressions
@@ -225,6 +239,7 @@ export default function checkEquality({
             allowed_error_in_numbers: allowedErrorInNumbers,
             include_error_in_number_exponents: includeErrorInNumberExponents,
             allowed_error_is_absolute: allowedErrorIsAbsolute,
+            allow_blanks: matchBlanks
           })
           return { fraction_equal: equality ? 1 : 0 };
         }
@@ -232,7 +247,13 @@ export default function checkEquality({
     }
 
   } else {
-    check_equality = (a, b) => ({ fraction_equal: deepCompare(a, b) ? 1 : 0 });
+    check_equality = (a, b) => {
+      if(caseInsensitiveMatch) {
+        a = convertStringsToLowerCase(a);
+        b = convertStringsToLowerCase(b);
+      }
+      return { fraction_equal: deepCompare(a, b) ? 1 : 0 }
+    };
   }
 
   if (haveMathExpressions) {
@@ -553,6 +574,8 @@ export default function checkEquality({
         allowedErrorIsAbsolute,
         nSignErrorsMatched,
         nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch,
+        matchBlanks,
       })
       n_matches += sub_results.fraction_equal;
     }
@@ -599,6 +622,8 @@ export default function checkEquality({
           allowedErrorIsAbsolute,
           nSignErrorsMatched,
           nPeriodicSetMatchesRequired,
+          caseInsensitiveMatch,
+          matchBlanks,
         })
         C[i + 1][j + 1] = Math.max(C[i][j] + sub_results.fraction_equal,
           C[i + 1][j], C[i][j + 1])
@@ -640,6 +665,8 @@ export default function checkEquality({
         allowedErrorIsAbsolute,
         nSignErrorsMatched,
         nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch,
+        matchBlanks,
       })
       if (sub_results.fraction_equal > best_match) {
         best_match = sub_results.fraction_equal;
@@ -666,5 +693,31 @@ export default function checkEquality({
 
   return results
 
+
+}
+
+function setStringsInTreeToLowerCase(tree) {
+
+  if (typeof tree === "string") {
+    return tree.toLowerCase();
+  }
+
+  if (!Array.isArray(tree)) {
+    return tree;
+  }
+
+  return [tree[0], ...tree.slice(1).map(setStringsInTreeToLowerCase)];
+
+}
+
+function convertStringsToLowerCase(x) {
+  if (typeof x === "string") {
+    return x.toLowerCase();
+  }
+  if (!Array.isArray(x)) {
+    return x;
+  }
+
+  return x.map(convertStringsToLowerCase);
 
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+import { BrowserRouter as Router,Routes, Link, Route, Outlet,useParams } from 'react-router-dom';
 import styled from 'styled-components';
 
 //=== COMPONENT IMPORTS ===
@@ -15,7 +15,7 @@ import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.js
 import TextArea from '../../_reactComponents/PanelHeaderComponents/TextArea.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faFish } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
@@ -24,6 +24,10 @@ import ColorImagePicker from '../../_reactComponents/PanelHeaderComponents/Color
 import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
+import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
+import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox.jsx';
+
+
 
 // === HOW TO ADD TO UI DOCS ===
 // 1. Import the component in the COMPONENT IMPORTS SECTION above
@@ -48,8 +52,8 @@ const NavBar = styled.div`
   width: 240px;
   height: 100vh;
   position: fixed;
-  background-color: #8fb8de;
-  color: #000;
+  background-color: var(--solidLightBlue);
+  color: var(--canvastext);
   top: 0;
   left: 0;
   overflow-x: hidden;
@@ -60,12 +64,13 @@ const Content = styled.div`
 `;
 
 const List = styled.ul`
-  color: black;
+  color: var(--canvastext);
 `;
 
 export default function attempt() {
   const font = () => {};
   const vertical = () => {};
+  const verticalLabel = () => {};
   const disabled = () => {};
   const absolute = () => {};
   const left = () => {};
@@ -119,7 +124,7 @@ export default function attempt() {
         },
         {
           name: 'Vertical Label',
-          propPreview: '<ActionButton label="What: vertical"/>',
+          propPreview: '<ActionButton label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to componenet on top',
         },
@@ -171,6 +176,18 @@ export default function attempt() {
           propPreview: '<ActionButtonGroup vertical />',
           propCode: { vertical },
           description: 'Aligns buttons vertically',
+        },
+        {
+          name: 'Label',
+          propPreview: '<ActionButtonGroup label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to button',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<ActionButtonGroup label="What: " verticalLabel/>',
+          propCode: { label: 'What: ', verticalLabel },
+          description: 'Adds label to componenet on top',
         },
       ],
     },
@@ -332,6 +349,45 @@ export default function attempt() {
       ],
     },
     {
+        name: 'Checkbox',
+        id: 'checkbox', 
+        code: Checkbox, 
+        codePreview: '<Checkbox/>',
+        req_props: null,
+        req_children: null,
+        use: 'Shows state of item',
+        props: [
+            {name: 'Checked',
+            propPreview: '<Checkbox checked></Checkbox>',
+            propCode: {checked: 'true'},
+            description: 'Sets state of checkbox'},
+            {name: 'Checked Icon',
+            propPreview: '<Checkbox checked checkedIcon={icon: <FontAwesomeIcon icon={faCode} />}></Checkbox>',
+            propCode: {checkedIcon: <FontAwesomeIcon icon={faCode} />, checked: 'true'},
+            description: 'Sets icon when checked'},
+            {name: 'Unchecked Icon',
+            propPreview: '<Checkbox uncheckedIcon={icon: <FontAwesomeIcon icon={faFish} />}></Checkbox>',
+            propCode: {uncheckedIcon: <FontAwesomeIcon icon={faFish} />},
+            description: 'Sets icon when unchecked'},
+            {
+              name: 'Label',
+              propPreview: '<Checkbox label="What: "/>',
+              propCode: { label: 'What: ' },
+              description: 'Adds label to button',
+            },
+            {
+              name: 'Vertical Label',
+              propPreview: '<Checkbox label="What: " vertical/>',
+              propCode: { label: 'What: ', vertical },
+              description: 'Adds label to component on top',
+            },
+            {name: 'Disabled',
+            propPreview: '<Checkbox disabled></Checkbox>',
+            propCode: {disabled: 'true'},
+            description: 'Sets to disabled'},
+        ]
+      },
+    {
       name: 'CollapseSection',
       id: 'collapsesection',
       code: CollapseSection,
@@ -381,6 +437,12 @@ export default function attempt() {
       req_children: null,
       use: 'Allows user to pick date and time',
       props: [
+        {
+          name: 'Width',
+          propPreview: '<DateTime width="300px" />',
+          propCode: { width: '300px' },
+          description: 'Sets width to fill menu panel width',
+        },
         {
           name: 'Value',
           propPreview: '<DateTime value={new Date("09/23/2000")}/>',
@@ -636,7 +698,7 @@ export default function attempt() {
         {
           name: 'Max',
           propPreview: '<Increment max={5}/>',
-          propCode: { min: 5 },
+          propCode: { max: 5 },
           description:
             'Restricts the menu to have values smaller or equal to max',
         },
@@ -704,7 +766,7 @@ export default function attempt() {
         },
         {
           name: 'onKeyDown',
-          propPreview: '<Increment onKewDown={(e) => console.log(e.key)} />',
+          propPreview: '<Increment onKeyDown={(e) => console.log(e.key)} />',
           propCode: { onKeyDown: (e) => console.log(e.key) },
           description: 'Function called when a key is pressed',
         },
@@ -715,11 +777,17 @@ export default function attempt() {
           description: 'Add a placeholder for the field',
         },
         {
+          name: 'Deactivate Dropdown',
+          propPreview: '<Increment deactivateDropdown />',
+          propCode: { deactivateDropdown: true },
+          description: 'Deactivates the default dropdown when the increment menu is clicked.',
+        },
+        {
           name: 'Disabled',
           propPreview: '<Increment disabled />',
           propCode: { disabled: true },
           description: 'Makes button not able to be used.',
-        },
+        }
       ],
     },
     {
@@ -776,6 +844,95 @@ export default function attempt() {
       ],
     },
     {
+      name: 'RelatedItems',
+      id: 'relateditems',
+      code: RelatedItems,
+      codePreview: '<RelatedItems/>',
+      req_props: null,
+      req_children: null,
+      use: 'Currently used to track version history. The styling on this component could be improved in the future by making <option> a part of RelatedItems.',
+      props: [
+        {
+          name: 'Options',
+          propPreview: "<RelatedItems options={[<option value='apple'>apple</option>, <option value='pear'>pear</option>, <option value='banana'>banana</option>]} />",
+          propCode: { options: [<option value='apple'>apple</option>, <option value='pear'>pear</option>, <option value='banana'>banana</option>] },
+          description: 'Adds options to the select component',
+        },
+        {
+          name: 'Width - Menu Panel',
+          propPreview: '<RelatedItems width="menu" />',
+          propCode: { width: 'menu' },
+          description: 'Sets width to fill menu panel width',
+        },
+        {
+          name: 'Width',
+          propPreview: '<RelatedItems width="100px" />',
+          propCode: { width: '100px' },
+          description: 'Sets width to custom amount',
+        },
+        {
+          name: 'Size',
+          propPreview: '<RelatedItems size="8" />',
+          propCode: { size: '8' },
+          description: 'Sets size (height) to custom amount',
+        },
+        {
+          name: 'Label',
+          propPreview: '<RelatedItems label="What: "/>',
+          propCode: { label: 'What: ' },
+          description: 'Adds label to componenet',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview: '<RelatedItems label="What: " vertical/>',
+          propCode: { label: 'What: ', vertical },
+          description: 'Adds label to component on top',
+        },
+        {
+          name: 'Aria Label',
+            propPreview: '<RelatedItems ariaLabel="Related Items"/>',
+            propCode: { ariaLabel: 'Related Items' },
+            description: 'Adds aria label to component'
+        },
+        {
+          name: 'onChange',
+          propPreview: '<RelatedItems onChange={(data) => console.log(data)} />',
+          propCode: {onChange: (data) => console.log(data)},
+          description: 'Function called when data changes'
+        },
+        {
+          name: 'onClick',
+          propPreview: '<RelatedItems onClick={() => console.log("clicked")} />',
+          propCode: {onClick: () => console.log("clicked")},
+          description: 'Function called when component is clicked'
+        },
+        {
+          name: 'onBlur',
+          propPreview: '<RelatedItems onBlur={(e) => console.log(e.target.value)} />',
+          propCode: {onBlur: (e) => console.log(e.target.value)},
+          description: 'Function called when component blurs'
+        },
+        {
+          name: 'onKeyDown',
+          propPreview: '<RelatedItems onKeyDown={(e) => console.log(e.key)} />',
+          propCode: {onKeyDown: (e) => console.log(e.key)},
+          description: 'Function called when key hit with focus on component'
+        },
+        {
+          name: 'Alert',
+          propPreview: '<RelatedItems alert/>',
+          propCode: {alert},
+          description: 'Changes to alert mode (border is red)'
+        },
+        {
+          name: 'Disabled',
+          propPreview: '<RelatedItems disabled />',
+          propCode: {disabled},
+          description: 'Makes component not able to be used'
+        },
+      ],
+    },
+    {
       name: 'SearchBar',
       id: 'searchbar',
       code: SearchBar,
@@ -793,7 +950,7 @@ export default function attempt() {
         {
           name: 'No Search Button',
           propPreview: '<SearchBar noSearchButton />',
-          propCode: { noSearchButton },
+          propCode: { noSearchButton, width: "menu" },
           description: 'Removes button from search bar',
         },
         {
@@ -846,7 +1003,7 @@ export default function attempt() {
         },
         {
           name: 'Disabled',
-          propPreview: '<Increment disabled />',
+          propPreview: '<SearchBar disabled />',
           propCode: { disabled },
           description: 'Makes button not able to be used.',
         },
@@ -1078,7 +1235,7 @@ export default function attempt() {
     {
       name: 'ToggleButton',
       id: 'togglebutton',
-      use: 'This is button toggles back and forth',
+      use: 'This is button toggles back and forth. It is a controlled component, so you must always pass the button the status of its state using isSelected.',
       code: ToggleButton,
       codePreview: '<ToggleButton/>',
       req_props: null,
@@ -1096,10 +1253,10 @@ export default function attempt() {
           propCode: { value: 'Select me' },
           description: 'Changes the value',
         },
-        // {name: 'isSelected',
-        // propPreview: '<ToggleButton isSelected/>',
-        // propCode: {'isSelected'},
-        // description: 'If added, starts the button in selected state.'},
+        {name: 'isSelected',
+        propPreview: '<ToggleButton isSelected=true/>',
+        propCode: {isSelected: true},
+        description: 'Sets state of toggle button'},
         {
           name: 'Switch Value',
           propPreview: '<ToggleButton switch_value="frog"/>',
@@ -1145,7 +1302,7 @@ export default function attempt() {
           propPreview: '<ToggleButton onClick={(data) => console.log(data)} />',
           propCode: { onClick: (data) => console.log(data) },
           description:
-            'Function called when toggle button is clicked. Returns true when untoggled/unclicked? and clicked(white) and true when already toggled and clicked(blue)',
+            'Function called when toggle button is clicked. Use with isSelected to change state on click',
         },
         {
           name: 'Disabled',
@@ -1465,9 +1622,10 @@ export default function attempt() {
   }
 
   //COMPONENT PAGES
-  function Components({ match }) {
+  function Components() {
+    const {componentId} = useParams();
     const component = dataStructure.find(
-      ({ id }) => id === match.params.componentId,
+      ({ id }) => id === componentId,
     );
     var display = component.code;
     var children = component.req_children;
@@ -1514,40 +1672,46 @@ export default function attempt() {
     );
   }
 
-  //ROUTER SECTION
-  return (
-    <Router>
-      <div>
+  //CENTRAL LAYOUT
+  function Layout() {
+    return (
+      <>
         <NavBar>
           <div style={{ marginLeft: '10px' }}>
             <h1>Components</h1>
             {/* <SearchBar width='110px'/> */}
           </div>
           <h3>
-            <Link to={`/uiDocs/new_components`} style={{ color: 'black' }}>
+            <Link to={`new_components`} style={{ color: 'black' }}>
               New Component Guidelines
             </Link>
           </h3>
           <List>
             {dataStructure.map(({ name, id }) => (
               <li key={id}>
-                <Link to={`/uiDocs/component/${id}`} style={{ color: 'black' }}>
+                <Link to={`component/${id}`} style={{ color: 'black' }}>
                   {name}
                 </Link>
               </li>
             ))}
           </List>
         </NavBar>
-
         <Content>
-          <Route exact path="/uiDocs" component={Home}></Route>
-          <Route exact path={`/uiDocs/new_components`} component={New}></Route>
-          <Route
-            path={`/uiDocs/component/:componentId`}
-            component={Components}
-          ></Route>
+          <Outlet/>
         </Content>
-      </div>
+      </>
+  )}
+
+  //ROUTER SECTION
+  return (
+    <Router>
+      <Routes>
+        <Route path="/uiDocs" element={<Layout/>}>
+          <Route index element={<Home/>} />
+          <Route path={`new_components`} element={<New/>} />
+          <Route path={`component/:componentId`} element={<Components/>} />
+        </Route>
+      </Routes>
     </Router>
   );
 }

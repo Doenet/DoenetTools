@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 
-export default function Polyline(props) {
+export default React.memo(function Polyline(props) {
   let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Polyline.ignoreActionsWithoutCore = true;
@@ -15,6 +15,7 @@ export default function Polyline(props) {
 
   let pointCoords = useRef(null);
   let draggedPoint = useRef(null);
+  let downOnPoint = useRef(null);
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
   let previousNVertices = useRef(null);
@@ -57,18 +58,24 @@ export default function Polyline(props) {
       }
     }
 
+    let fixed = !SVs.draggable || SVs.fixed;
+
     //things to be passed to JSXGraph as attributes
     let jsxPolylineAttributes = {
       name: SVs.label,
       visible: !SVs.hidden && validCoords,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
       layer: 10 * SVs.layer + 7,
+      fixed,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
+      highlight: !fixed,
+      lineCap: "butt"
     };
 
 
@@ -78,11 +85,22 @@ export default function Polyline(props) {
       fillColor: 'none',
       strokeColor: 'none',
       highlightStrokeColor: 'none',
-      highlightFillColor: 'lightgray',
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
       layer: 10 * SVs.layer + 9,
     });
-    if (!SVs.draggable || SVs.fixed || SVs.hidden || !validCoords) {
+    if (fixed || SVs.hidden || !validCoords) {
       jsxPointAttributes.current.visible = false;
+    }
+    jsxPolylineAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxPolylineAttributes.label.useMathJax = true
+    }
+    if (SVs.applyStyleToLabel) {
+      jsxPolylineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxPolylineAttributes.label.strokeColor = "#000000";
     }
 
     // create invisible points at endpoints
@@ -99,9 +117,13 @@ export default function Polyline(props) {
     let newPolylineJXG = board.create('curve', [x, y], jsxPolylineAttributes);
 
     for (let i = 0; i < SVs.nVertices; i++) {
-      pointsJXG.current[i].on('drag', () => dragHandler(i));
+      pointsJXG.current[i].on('drag', (e) => dragHandler(i, e));
       pointsJXG.current[i].on('up', () => upHandler(i));
-      pointsJXG.current[i].on('down', () => draggedPoint.current = null);
+      pointsJXG.current[i].on('down', (e) => {
+        draggedPoint.current = null;
+        pointerAtDown.current = [e.x, e.y];
+        downOnPoint.current = i;
+      });
     }
 
     newPolylineJXG.on('drag', e => dragHandler(-1, e));
@@ -140,69 +162,80 @@ export default function Polyline(props) {
   }
 
   function dragHandler(i, e) {
-    draggedPoint.current = i;
+    //Protect against very small unintended drags
+    if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+      Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+      draggedPoint.current = i;
 
-    if (i === -1) {
-      pointCoords.current = calculatePointPositions(e);
+      if (i === -1) {
+        pointCoords.current = calculatePointPositions(e);
 
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true,
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true,
+          }
+        })
+
+        polylineJXG.current.updateTransformMatrix();
+        let shiftX = polylineJXG.current.transformMat[1][0];
+        let shiftY = polylineJXG.current.transformMat[2][0];
+
+
+        for (let j = 0; j < SVs.nVertices; j++) {
+          pointsJXG.current[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
+          polylineJXG.current.dataX[j] = lastPositionsFromCore.current[j][0] - shiftX;
+          polylineJXG.current.dataY[j] = lastPositionsFromCore.current[j][1] - shiftY;
+
         }
-      })
-
-      polylineJXG.current.updateTransformMatrix();
-      let shiftX = polylineJXG.current.transformMat[1][0];
-      let shiftY = polylineJXG.current.transformMat[2][0];
-
-
-      for (let j = 0; j < SVs.nVertices; j++) {
-        pointsJXG.current[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
-        polylineJXG.current.dataX[j] = lastPositionsFromCore.current[j][0] - shiftX;
-        polylineJXG.current.dataY[j] = lastPositionsFromCore.current[j][1] - shiftY;
+      } else {
+        pointCoords.current = {};
+        pointCoords.current[i] = [pointsJXG.current[i].X(), pointsJXG.current[i].Y()];
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true,
+            sourceInformation: { vertex: i }
+          }
+        })
+        pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
+        board.updateInfobox(pointsJXG.current[i])
 
       }
-    } else {
-      pointCoords.current = {};
-      pointCoords.current[i] = [pointsJXG.current[i].X(), pointsJXG.current[i].Y()];
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true,
-          sourceInformation: { vertex: i }
-        }
-      })
-      pointsJXG.current[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
-      board.updateInfobox(pointsJXG.current[i])
-
     }
   }
 
   function upHandler(i) {
-    if (draggedPoint.current !== i) {
-      return;
+    if (draggedPoint.current === i) {
+      if (i === -1) {
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+          }
+        })
+      } else {
+        callAction({
+          action: actions.movePolyline,
+          args: {
+            pointCoords: pointCoords.current,
+            sourceInformation: { vertex: i }
+          }
+        })
+      }
+    } else if (draggedPoint.current === null && (downOnPoint.current === null || i !== -1)) {
+      // Note: counting on fact that up on polyline itself (i===-1) will trigger before up on points
+      callAction({
+        action: actions.polylineClicked
+      });
     }
 
-    if (i === -1) {
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-        }
-      })
-    } else {
-      callAction({
-        action: actions.movePolyline,
-        args: {
-          pointCoords: pointCoords.current,
-          sourceInformation: { vertex: i }
-        }
-      })
+    if (i !== -1) {
+      downOnPoint.current = null;
     }
   }
 
@@ -251,6 +284,20 @@ export default function Polyline(props) {
         }
       }
 
+      let fixed = !SVs.draggable || SVs.fixed;
+
+      polylineJXG.current.visProp.fixed = fixed;
+      polylineJXG.current.visProp.highlight = !fixed;
+
+      let polylineLayer = 10 * SVs.layer + 7;
+      let layerChanged = polylineJXG.current.visProp.layer !== polylineLayer;
+
+      if (layerChanged) {
+        polylineJXG.current.setAttribute({ layer: polylineLayer });
+        jsxPointAttributes.current.layer = polylineLayer + 2;
+      }
+
+
       // add or delete points as required and change data array size
       if (SVs.nVertices > previousNVertices.current) {
         for (let i = previousNVertices.current; i < SVs.nVertices; i++) {
@@ -296,7 +343,7 @@ export default function Polyline(props) {
         polylineJXG.current.visPropCalc["visible"] = visible;
         // polylineJXG.current.setAttribute({visible: visible})
 
-        let pointsVisible = visible && SVs.draggable && !SVs.fixed;
+        let pointsVisible = visible && !fixed;
 
         for (let i = 0; i < SVs.nVertices; i++) {
           pointsJXG.current[i].visProp["visible"] = pointsVisible;
@@ -314,6 +361,36 @@ export default function Polyline(props) {
         }
       }
 
+      if (polylineJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        polylineJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        polylineJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (polylineJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        polylineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+        polylineJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
+      }
+      if (polylineJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        polylineJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity
+        polylineJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
+      if (polylineJXG.current.visProp.dash !== newDash) {
+        polylineJXG.current.visProp.dash = newDash;
+      }
+
+
+      polylineJXG.current.name = SVs.label;
+
+      if (polylineJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          polylineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          polylineJXG.current.label.visProp.strokecolor = "#000000";
+        }
+        polylineJXG.current.label.needsUpdate = true;
+        polylineJXG.current.label.update();
+      }
+
       if (sourceOfUpdate.sourceInformation &&
         name in sourceOfUpdate.sourceInformation
       ) {
@@ -327,6 +404,9 @@ export default function Polyline(props) {
       polylineJXG.current.needsUpdate = true;
       polylineJXG.current.update().updateVisibility();
       for (let i = 0; i < SVs.nVertices; i++) {
+        if (layerChanged) {
+          pointsJXG.current[i].setAttribute({ layer: polylineLayer + 2 });
+        }
         pointsJXG.current[i].needsUpdate = true;
         pointsJXG.current[i].update();
       }
@@ -341,7 +421,7 @@ export default function Polyline(props) {
 
   // don't think we want to return anything if not in board
   return <><a name={name} /></>
-}
+})
 
 function styleToDash(style) {
   if (style === "solid") {

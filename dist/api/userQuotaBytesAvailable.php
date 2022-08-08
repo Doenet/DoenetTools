@@ -7,7 +7,7 @@ function getBytesAvailable($conn,$userId){
 //Based on unique contentIds, so bytes countent just once
 $sql = "
 SELECT SUM(sizeInBytes) AS totalBytes FROM
-(SELECT DISTINCT(contentId), sizeInBytes
+(SELECT DISTINCT(cid), sizeInBytes
 FROM support_files
 WHERE userId='$userId'
 AND NOT (isListed='1' AND isPublic='1')) T1

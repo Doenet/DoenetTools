@@ -3,8 +3,8 @@ import Template from './Template.js';
 export default class Case extends Template {
   static componentType = "case";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.condition = {
       createComponentOfType: "boolean",
@@ -20,7 +20,9 @@ export default class Case extends Template {
 
     stateVariableDefinitions.conditionSatisfied = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       returnDependencies: () => ({
         condition: {
           dependencyType: "attributeComponent",

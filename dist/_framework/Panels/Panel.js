@@ -1,7 +1,7 @@
 import React, {useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
 import {animated, useSpring} from "../../_snowpack/pkg/@react-spring/web.js";
-import {useGesture} from "../../_snowpack/pkg/react-use-gesture.js";
+import {useGesture} from "../../_snowpack/pkg/@use-gesture/react.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {
   faGripLinesVertical,
@@ -49,17 +49,17 @@ const Background = styled.div`
   height: ${({$vertical}) => $vertical ? "100%" : ""};
   width: ${({$vertical}) => $vertical ? "" : "100%"};
   border-radius: 4px;
-  background-color: hsl(0, 0%, 100%);
+  background-color: var(--canvas);
 `;
 const DragHandle = styled.div`
   flex: 0 0 ${({$handleSize}) => $handleSize}px;
   display: flex;
   justify-content: center;
-  color: rgb(246, 248, 255);
+  color: white;
   font-size: ${(props) => props.id === "keyboard" ? 16 : 12};
   padding: 0;
   cursor: ${({$vertical}) => $vertical ? "ew-resize" : "ns-resize"};
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
   height: ${({$vertical}) => $vertical ? "23%" : ""};
   width: ${({$vertical}) => $vertical ? "" : "25%"};
   box-sizing: border-box;
@@ -139,7 +139,10 @@ export default function DragPanel({
     $vertical: direction.vertical,
     $rounding: direction.rounding,
     $handleSize: handleSize,
-    ...bindX()
+    ...bindX(),
+    onClick: () => {
+      setOpen(!open);
+    }
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: id === "keyboard" ? faKeyboard : direction.vertical ? faGripLinesVertical : faGripLines
   })));

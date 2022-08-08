@@ -1,6 +1,8 @@
 import React, { useCallback, useState, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 // import parse from 'csv-parse';
 import {
   useSetRecoilState,
@@ -69,7 +71,7 @@ function EditableText({text,submit}){
   let textSpanStyle = {width:'110px',display: "inline-block",textOverflow:"ellipsis",whiteSpace:"nowrap"}
   if (displayText === ''){
     displayText = ' *Required';
-    textSpanStyle['border'] = "solid 2px #C1292E";
+    textSpanStyle['border'] = "solid 2px var(--mainRed)";
   }
 
   if (!editingMode){
@@ -103,26 +105,25 @@ function EditableText({text,submit}){
 export default function SupportingFilesMenu(props){
   const addToast = useToast();
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const [{ canUpload, userQuotaBytesAvailable, supportingFiles, quotaBytes},setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
+  const [{ canUpload, userQuotaBytesAvailable, supportingFiles, quotaBytes, canEditContent},setSupportFileInfo] = useRecoilState(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
   // const { canUpload, userQuotaBytesAvailable, supportingFiles} = useRecoilValue(supportingFilesAndPermissionByDoenetIdSelector(doenetId));
   // console.log("supportingFiles",{ canUpload, userQuotaBytesAvailable, supportingFiles})
   // let userQuotaBytesAvailable = 1073741824; //1 GB in bytes
   // let userQuotaBytesAvailable = supportingFiles.userQuotaBytesAvailable
-  let typesAllowed = ["image/jpeg","image/png"]
-  // let typesAllowed = ["text/csv","image/jpeg","image/png"]
+  let typesAllowed = ["text/csv","image/jpeg","image/png"]
   let [uploadProgress,setUploadProgress] = useState([]); // {fileName,size,progressPercent}
   let numberOfFilesUploading = useRef(0);
 
-  const updateDescription = useRecoilCallback(({set})=> async (description,contentId)=>{
-    // console.log("updateDescription",description,contentId,doenetId);
-    let { data } = await axios.get('/api/updateFileDescription.php',{params:{doenetId,contentId,description}});
+  const updateDescription = useRecoilCallback(({set})=> async (description,cid)=>{
+    // console.log("updateDescription",description,cid,doenetId);
+    let { data } = await axios.get('/api/updateFileDescription.php',{params:{doenetId,cid,description}});
     // console.log("updateDescription data",data)
     // let { userQuotaBytesAvailable } = data;
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
       let newObj = {...was};
       let newSupportingFiles = [...was.supportingFiles];
       newSupportingFiles.map((file,index)=>{
-        if (file.contentId === contentId){
+        if (file.cid === cid){
           newSupportingFiles[index] = {...newSupportingFiles[index]}
           newSupportingFiles[index].description = description;
         }
@@ -132,16 +133,16 @@ export default function SupportingFilesMenu(props){
     })
   },[doenetId]);
 
-  const updateAsFileName = useRecoilCallback(({set})=> async (asFileName,contentId)=>{
-    // console.log("updateasFileName",asFileName,contentId,doenetId);
-    let { data } = await axios.get('/api/updateFileAsFileName.php',{params:{doenetId,contentId,asFileName}});
+  const updateAsFileName = useRecoilCallback(({set})=> async (asFileName,cid)=>{
+    // console.log("updateasFileName",asFileName,cid,doenetId);
+    let { data } = await axios.get('/api/updateFileAsFileName.php',{params:{doenetId,cid,asFileName}});
     // console.log("updateasFileName data",data)
     // let { userQuotaBytesAvailable } = data;
     set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
       let newObj = {...was};
       let newSupportingFiles = [...was.supportingFiles];
       newSupportingFiles.map((file,index)=>{
-        if (file.contentId === contentId){
+        if (file.cid === cid){
           newSupportingFiles[index] = {...newSupportingFiles[index]}
           newSupportingFiles[index].asFileName = asFileName;
         }
@@ -151,18 +152,34 @@ export default function SupportingFilesMenu(props){
     })
   },[doenetId]);
 
-  const deleteFile = useRecoilCallback(({set})=> async (contentId)=>{
-    // console.log("Delete file",{doenetId,contentId});
-    //Update quota info using the server's records
-    let { data } = await axios.get('/api/deleteFile.php',{params:{doenetId,contentId}});
-    // console.log("deleteFile data",data)
-    let { userQuotaBytesAvailable } = data;
-    set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
-      let newObj = {...was};
-      newObj.supportingFiles = was.supportingFiles.filter((file)=>file.contentId !== contentId);
-      newObj.userQuotaBytesAvailable = userQuotaBytesAvailable;
-      return newObj;
-    })
+  const deleteFile = useRecoilCallback(({set})=> async (cid)=>{
+    try {
+      //Update quota info using the server's records
+      let resp = await axios.get('/api/deleteFile.php',{params:{doenetId,cid}});
+      // console.log("deleteFile resp.data",resp.data)
+      if (resp.status < 300 && resp?.data?.success) {
+        addToast('File deleted.')
+
+        let { userQuotaBytesAvailable } = resp.data;
+        set(supportingFilesAndPermissionByDoenetIdSelector(doenetId),(was)=>{
+          let newObj = {...was};
+          newObj.supportingFiles = was.supportingFiles.filter((file)=>file.cid !== cid);
+          newObj.userQuotaBytesAvailable = userQuotaBytesAvailable;
+          return newObj;
+        })
+
+      } else {
+        if (resp?.data?.success == false){
+          addToast(resp?.data?.message,toastType.ERROR)
+        }else{
+          throw new Error(`response code: ${resp.status}`);
+        }
+      }
+    } catch (err) {
+      throw new Error(`Error deleting file ${err}`);
+    }
+    
+    
 
   },[doenetId])
 
@@ -196,7 +213,6 @@ export default function SupportingFilesMenu(props){
       }
     })
 
-
     //If file sizes are over quota or any files aren't right type then abort
     if (!success){ return; }
 
@@ -223,7 +239,6 @@ export default function SupportingFilesMenu(props){
         const uploadData = new FormData();
         uploadData.append('file',file);
         uploadData.append('doenetId',doenetId);
-  
           axios.post('/api/upload.php',uploadData,{onUploadProgress: (progressEvent)=>{
         const totalLength = progressEvent.lengthComputable ? progressEvent.total : progressEvent.target.getResponseHeader('content-length') || progressEvent.target.getResponseHeader('x-decompressed-content-length');
             if (totalLength !== null) {
@@ -243,7 +258,7 @@ export default function SupportingFilesMenu(props){
         //test if all uploads are finished then clear it out
         numberOfFilesUploading.current = numberOfFilesUploading.current - 1;
         if (numberOfFilesUploading.current < 1){setUploadProgress([])}
-        let {success, fileName, contentId, asFileName, width, height, msg, userQuotaBytesAvailable} = data;
+        let {success, fileName, cid, asFileName, width, height, msg, userQuotaBytesAvailable} = data;
         // console.log(">>data",data)
         // console.log("FILE UPLOAD COMPLETE: Update UI",file,data)
         if (msg){
@@ -258,7 +273,7 @@ export default function SupportingFilesMenu(props){
             let newObj = {...was}
             let newSupportingFiles = [...was.supportingFiles];
             newSupportingFiles.push({
-              contentId,
+              cid,
               fileName,
               fileType:file.type,
               width,
@@ -300,7 +315,7 @@ export default function SupportingFilesMenu(props){
     )}
     </div>
     <CollapseSection title="Accepted File Types" collapsed={true} >
-      <div><b>Image</b>.jpg .png</div>
+      <div><b>Image</b>.jpg .png .csv</div>
       {/* <div><b>Data</b>.csv</div> */}
       {/* <div><b>Audio</b></div> */}
     </CollapseSection>
@@ -311,7 +326,7 @@ export default function SupportingFilesMenu(props){
   let supportFilesJSX = [];
 
   supportingFiles.map(({
-    contentId,
+    cid,
     fileName,
     fileType,
     width,
@@ -320,14 +335,10 @@ export default function SupportingFilesMenu(props){
     asFileName
   })=>{
     let doenetMLCode = 'Error';
-    let source = `doenet:cid=${contentId}`;
+    let source = `doenet:cid=${cid}`;
     if (fileType === 'image/jpeg' || fileType === 'image/png'){
       doenetMLCode = `<image source='${source}' description='${description}' asfilename='${asFileName}' width='${width}' height='${height}' mimeType='${fileType}' />`
-    }else if (fileType === 'text/csv'){
-      doenetMLCode = `<dataset source='${source}' />`
-    }
-
-    let description_required_css = {};
+      let description_required_css = {};
     // if (description === ''){
     //   description_required_css = {border:"solid 2px #C1292E"}
     // }
@@ -336,24 +347,63 @@ export default function SupportingFilesMenu(props){
     <div>
       <div>
         <span style={{width:'116px'}}>asFileName:</span>
-        <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,contentId)}}/>
+        <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,cid)}}/>
       </div>
       <div style={description_required_css}>
         <span style={{width:'116px'}}>description:</span>
-        <EditableText text={description} submit={(text)=>{updateDescription(text,contentId)}}/>
+        <EditableText text={description} submit={(text)=>{updateDescription(text,cid)}}/>
       </div>
       <div>
-        <button onClick={()=>{
-          deleteFile(contentId);
-        }}>delete</button>
+        <ActionButtonGroup width="menu">
+          {canUpload ? 
+          <ActionButton alert value="Delete" onClick={()=>{
+            deleteFile(cid);
+          }}/>
+          : null}
+          
         <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
-          <button onClick={()=>{
-            
-          }}>Code <FontAwesomeIcon icon={faClipboard}/></button> 
-          </CopyToClipboard>
+          <ActionButton disabled={description == ''}  icon={<FontAwesomeIcon icon={faClipboard}/>} value="Copy Code"/>
+        </CopyToClipboard>
+        </ActionButtonGroup>
+       
       </div>
       <hr />
     </div>)
+    }else if (fileType === 'text/csv'){
+      doenetMLCode = `<dataFrame source='${source}' hasHeader="true" />`
+      let description_required_css = {};
+    // if (description === ''){
+    //   description_required_css = {border:"solid 2px #C1292E"}
+    // }
+
+    //TODO:
+    //Checkbox for hasHeader attr hasHeader={T/F} default is true Also in DB
+    
+    supportFilesJSX.push(
+    <div>
+      <div>
+        <span style={{width:'116px'}}>fileName: <EditableText text={asFileName} submit={(text)=>{updateAsFileName(text,cid)}}/></span>
+        
+      </div>
+      <div>
+        <ActionButtonGroup width="menu">
+          {canUpload ? 
+          <ActionButton alert value="Delete" onClick={()=>{
+            deleteFile(cid);
+          }}/>
+          : null}
+          
+        <CopyToClipboard onCopy={()=>addToast('Code copied to clipboard!', toastType.SUCCESS)} text={doenetMLCode}>
+          <ActionButton icon={<FontAwesomeIcon icon={faClipboard}/>} value="Copy Code"/>
+        </CopyToClipboard>
+        </ActionButtonGroup>
+       
+      </div>
+      <hr />
+    </div>)
+    }
+
+    
    
   })
   

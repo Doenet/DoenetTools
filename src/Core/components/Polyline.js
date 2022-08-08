@@ -6,11 +6,12 @@ export default class Polyline extends GraphicalComponent {
 
   actions = {
     movePolyline: this.movePolyline.bind(this),
-    finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
+    finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
+    polylineClicked: this.polylineClicked.bind(this)
   };
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",
@@ -34,7 +35,9 @@ export default class Polyline extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -43,28 +46,48 @@ export default class Polyline extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-
-        let styleDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          styleDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          styleDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          styleDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          styleDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColor;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
+
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
 
         return { setValue: { styleDescription } };
       }
     }
 
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " polyline";
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
     stateVariableDefinitions.nVertices = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         vertices: {
@@ -85,7 +108,9 @@ export default class Polyline extends GraphicalComponent {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies() {
         return {
           vertices: {
@@ -113,20 +138,22 @@ export default class Polyline extends GraphicalComponent {
 
     stateVariableDefinitions.vertices = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "vertexX") {
+            return [];
+          } else {
+            // vertex or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["vertexX", "vertex"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "vertexX") {
-          return [];
-        } else {
-          // vertex or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "vertexX") {
           // vertexX1_2 is the 2nd component of the first vertex
@@ -208,6 +235,19 @@ export default class Polyline extends GraphicalComponent {
           return getAllArrayKeysSub(arraySize);
         }
 
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "vertices") {
+          return "vertex" + propIndex;
+        }
+        if (varName.slice(0, 6) === "vertex") {
+          // could be vertex or vertexX
+          let vertexNum = Number(varName.slice(6));
+          if (Number.isInteger(vertexNum) && vertexNum > 0) {
+            return `vertexX${vertexNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nVertices: {
@@ -417,8 +457,8 @@ export default class Polyline extends GraphicalComponent {
               let closestDistance2 = Infinity;
               let closestResult = {};
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
               let prevPtx, prevPty;
               let nextPtx = numericalVertices[0][0];
@@ -483,7 +523,7 @@ export default class Polyline extends GraphicalComponent {
   }
 
 
-  async movePolyline({ pointCoords, transient, sourceInformation }) {
+  async movePolyline({ pointCoords, transient, sourceInformation, actionId }) {
 
     let vertexComponents = {};
     for (let ind in pointCoords) {
@@ -501,6 +541,7 @@ export default class Polyline extends GraphicalComponent {
           sourceInformation
         }],
         transient,
+        actionId,
       });
     } else {
 
@@ -512,6 +553,7 @@ export default class Polyline extends GraphicalComponent {
           value: vertexComponents,
           sourceInformation
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -538,5 +580,16 @@ export default class Polyline extends GraphicalComponent {
     });
   }
 
+
+  async polylineClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 
 }

@@ -4,8 +4,8 @@ export default class Table extends BlockComponent {
   static componentType = "table";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.suppressTableNameInTitle = {
       createComponentOfType: "boolean",
@@ -42,13 +42,17 @@ export default class Table extends BlockComponent {
 
     stateVariableDefinitions.tableEnumeration = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["number"],
       additionalStateVariablesDefined: [{
         variableName: "tableName",
         public: true,
-        componentType: "text",
+        shadowingInstructions: {
+          createComponentOfType: "text",
+        },
         forRenderer: true,
       }],
       returnDependencies({ stateValues }) {
@@ -98,7 +102,9 @@ export default class Table extends BlockComponent {
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
@@ -120,6 +126,22 @@ export default class Table extends BlockComponent {
 
 
     return stateVariableDefinitions;
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

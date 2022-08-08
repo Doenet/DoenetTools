@@ -9,12 +9,13 @@ import {
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { itemHistoryAtom } from '../ToolHandlers/CourseToolHandler';
 import { 
-  editorDoenetIdInitAtom, 
+  editorPageIdInitAtom, 
   updateTextEditorDoenetMLAtom,
   textEditorDoenetMLAtom,
   viewerDoenetMLAtom,
 } from '../ToolPanels/EditorViewer';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
 import { 
   buildTimestamp, 
   ClipboardLinkButtons, 
@@ -26,7 +27,6 @@ import { useToast, toastType } from '@Toast';
 import { folderDictionary } from '../../../_reactComponents/Drive/NewDrive';
 import { editorSaveTimestamp } from '../ToolPanels/DoenetMLEditor'; 
 import { DateToUTCDateString } from '../../../_utils/dateUtilityFunction';
-import { CIDFromDoenetML } from '../../../Core/utils/cid';
 
 export const currentDraftSelectedAtom = atom({
   key:"currentDraftSelectedAtom",
@@ -43,7 +43,7 @@ console.log(">>>===VersionHistory")
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const path = decodeURIComponent(useRecoilValue(searchParamAtomFamily('path')));
   const versionHistory = useRecoilValueLoadable(itemHistoryAtom(doenetId))
-  const initializedDoenetId = useRecoilValue(editorDoenetIdInitAtom);
+  const initializedDoenetId = useRecoilValue(editorPageIdInitAtom);
   const selectedVersionId = useRecoilValue(selectedVersionIdAtom);
   const addToast = useToast();
   const currentDraftSelected = useRecoilValue(currentDraftSelectedAtom)
@@ -138,7 +138,7 @@ console.log(">>>===VersionHistory")
     set(itemHistoryAtom(doenetId),newItemHistory)
 
     //set viewer's and text editor's doenetML (Currently not needed)
-    // let doenetML = await snapshot.getPromise(fileByContentId(newDraft.contentId));
+    // let doenetML = await snapshot.getPromise(fileByContentId(newDraft.cid));
     // set(viewerDoenetMLAtom,doenetML)
     // set(updateTextEditorDoenetMLAtom,doenetML)
     // set(textEditorDoenetMLAtom,doenetML)
@@ -151,7 +151,7 @@ console.log(">>>===VersionHistory")
       let newDBVersion = {...newDraft,
         isSetAsCurrent:'1',
         newDraftVersionId,
-        newDraftContentId:newDraft.contentId,
+        newDraftContentId:newDraft.cid,
         doenetId,
         newTitle:title,
       }
@@ -165,7 +165,7 @@ console.log(">>>===VersionHistory")
 
     const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const timestamp = buildTimestamp();
-    const contentId = await CIDFromDoenetML(doenetML);
+    const cid = await cidFromText(doenetML);
     const versionId = nanoid();
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newVersions = {...oldVersions};
@@ -179,7 +179,7 @@ console.log(">>>===VersionHistory")
       isReleased:'0',
       isDraft:'0',
       isNamed:'1',
-      contentId
+      cid
     }
     let newDBVersion = {...newVersion,
       doenetML,
@@ -190,7 +190,7 @@ console.log(">>>===VersionHistory")
     newVersions.named = [newVersion,...oldVersions.named];
 
     set(itemHistoryAtom(doenetId),newVersions)
-    set(fileByContentId(contentId),doenetML);
+    set(fileByContentId(cid),doenetML);
     
     //TODO: Errors don't seem to fire when offline
     axios.post("/api/saveNewVersion.php",newDBVersion)
@@ -215,7 +215,7 @@ console.log(">>>===VersionHistory")
 
       const doenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
       const timestamp = DateToUTCDateString(new Date());
-      const contentId = await CIDFromDoenetML(doenetML);
+      const cid = await cidFromText(doenetML);
       const versionId = nanoid();
 
       const { data } = await axios.post("/api/releaseDraft.php",{
@@ -232,7 +232,7 @@ console.log(">>>===VersionHistory")
           addToast(message, toastType.ERROR)
       }
 
-      set(fileByContentId(contentId),doenetML);
+      set(fileByContentId(cid),doenetML);
 
       //Update data structures 
     set(itemHistoryAtom(doenetId),(was)=>{
@@ -252,7 +252,7 @@ console.log(">>>===VersionHistory")
         isReleased:'1',
         isDraft:'0',
         isNamed:'1',
-        contentId
+        cid
       }
       newNamed.unshift(newVersion);
 
@@ -294,18 +294,18 @@ console.log(">>>===VersionHistory")
     const oldVersions = await snapshot.getPromise(itemHistoryAtom(doenetId));
     let newVersions = {...oldVersions};
 
-    let oldDraftContentId = oldVersions.draft.contentId;
+    let oldDraftContentId = oldVersions.draft.cid;
     if (!isCurrentDraft){
       const wasDraftSelected = await snapshot.getPromise(currentDraftSelectedAtom);
       if (wasDraftSelected){
         //we left the draft and it needs to be saved
         const newDraftDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
-        const newDraftContentId = await CIDFromDoenetML(newDraftDoenetML);
+        const newDraftContentId = await cidFromText(newDraftDoenetML);
         if (newDraftContentId !== oldDraftContentId){
 
           //Save new draft
           let newDraft = {...oldVersions.draft};
-          newDraft.contentId = newDraftContentId;
+          newDraft.cid = newDraftContentId;
           newDraft.timestamp = buildTimestamp();
           
 
@@ -333,11 +333,11 @@ console.log(">>>===VersionHistory")
       }
     }
     //Assume user just selected the draft version
-    let displayContentId = newVersions.draft.contentId;
-    //If selected version is named use that contentId
+    let displayContentId = newVersions.draft.cid;
+    //If selected version is named use that cid
     for (let version of newVersions.named){
       if (version.versionId === versionId){
-        displayContentId = version.contentId;
+        displayContentId = version.cid;
         break;
       }
     }
@@ -379,7 +379,7 @@ if (initializedDoenetId !== doenetId){
     if (version.isReleased === '1'){
       released = "(Released)";
     }
-    options.push(<option key={`option${version.versionId}`} value={version.versionId} selected={selected}>{released} {version.title}</option>,)
+    options.push(<option key={`option${version.versionId}`} value={version.versionId} selected={selected} >{released} {version.title}</option>,)
   }
 
   const version = versionsObj[inUseVersionId];
@@ -389,32 +389,42 @@ if (initializedDoenetId !== doenetId){
   }
      
   return <>
-     <div style={{padding:"6px 0px 6px 0px"}}>   
-    <select 
-    size='2' 
-    style={{width:'230px'}}
-    onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:true})}}>
-    {/* <option value={version.versionId} selected={selected}>{released} {version.title}</option> */}
-    <option value={versionHistory.contents.draft.versionId} selected={currentDraftSelected}>Current Draft</option>
-  </select>
-  </div>
-  <div style={{margin:"0px 0px 6px 0px"}}>
-    <Button disabled={!currentDraftSelected} width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
+    <div style={{padding:"6px 0px 6px 0px"}}>   
+      <RelatedItems
+        size='2' 
+        // style={{width:'230px'}}
+        width="menu"
+        onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:true})}}
+        options={<option value={versionHistory.contents.draft.versionId} selected={currentDraftSelected}>Current Draft</option>}
+      >
+        {/* <option value={version.versionId} selected={selected}>{released} {version.title}</option> */}
+        {/* <option value={versionHistory.contents.draft.versionId} selected={currentDraftSelected}>Current Draft</option> */}
+      </RelatedItems>
+    </div>
+    <div style={{margin:"0px 0px 6px 0px"}}>
+      <Button disabled={!currentDraftSelected} width="menu" value="Save Version" onClick={()=>saveVersion(doenetId)} />
     </div>
     <div style={{margin:"6px 0px 6px 0px"}}>
-    <Button disabled={!currentDraftSelected} width="menu" value="Release Current" onClick={()=> {
-      saveAndReleaseCurrent({doenetId,driveId,folderId,itemId});
-    }}/>
+      <Button disabled={!currentDraftSelected} 
+        width="menu" 
+        value="Release Current" 
+        onClick={()=> {
+          saveAndReleaseCurrent({doenetId,driveId,folderId,itemId});
+        }}
+      />
     </div>
     <div>History</div>
-  <select 
-    size='8' 
-    style={{width:'230px'}}
-    onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:false})}}>
-    {options}
-  </select>
+    <RelatedItems
+      size='8' 
+      // style={{width:'230px'}}
+      width="menu"
+      onChange={(e)=>{setSelectedVersionId({doenetId,versionId:e.target.value,isCurrentDraft:false})}}
+      options={options}
+    >
+      {/* {options} */}
+    </RelatedItems>
   <div>Name: {version?.title}</div>
-  <ClipboardLinkButtons disabled={currentDraftSelected} contentId={version?.contentId} doenetId={doenetId} />
+  <ClipboardLinkButtons disabled={currentDraftSelected} cid={version?.cid} doenetId={doenetId} />
         <div><RenameVersionControl key={version?.versionId} disabled={currentDraftSelected} doenetId={doenetId} title={version?.title} versionId={version?.versionId} /></div>
        {/* <div><button onClick={()=>versionHistoryActive(version)} >View</button></div>  */}
        <div><Button disabled={currentDraftSelected} onClick={()=>setAsCurrent({doenetId,versionId:version.versionId})} value="Set As Current" /></div> 

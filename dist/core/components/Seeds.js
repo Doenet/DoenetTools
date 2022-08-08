@@ -53,7 +53,9 @@ export default class Seeds extends InlineComponent {
 
     stateVariableDefinitions.nSeeds = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         stringChildren: {
           dependencyType: "child",
@@ -67,7 +69,9 @@ export default class Seeds extends InlineComponent {
 
     stateVariableDefinitions.seeds = {
       public: true,
-      componentType: "seed",
+      shadowingInstructions: {
+        createComponentOfType: "seed",
+      },
       isArray: true,
       entryPrefixes: ["seed"],
       returnArraySizeDependencies: () => ({

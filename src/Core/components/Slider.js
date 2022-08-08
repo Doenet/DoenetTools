@@ -15,8 +15,8 @@ export default class Slider extends BaseComponent {
 
   static variableForPlainMacro = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.type = {
       createPrimitiveOfType: "string",
       createStateVariable: "type",
@@ -45,11 +45,13 @@ export default class Slider extends BaseComponent {
       defaultValue: null,
     }
     attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: null,
+      createComponentOfType: "label",
+    };
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true
     };
     attributes.showControls = {
       createComponentOfType: "boolean",
@@ -132,6 +134,9 @@ export default class Slider extends BaseComponent {
     }, {
       group: "markers",
       componentTypes: ["markers"]
+    }, {
+      group: "labels",
+      componentTypes: ["label"]
     }]
 
   }
@@ -141,10 +146,74 @@ export default class Slider extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    stateVariableDefinitions.label = {
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "label",
+      },
+      hasEssential: true,
+      defaultValue: "",
+      additionalStateVariablesDefined: [{
+        variableName: "labelHasLatex",
+        forRenderer: true,
+      }],
+      returnDependencies: () => ({
+        labelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "label",
+          variableNames: ["value", "hasLatex"]
+        },
+        labelChild: {
+          dependencyType: "child",
+          childGroups: ["labels"],
+          variableNames: ["value", "hasLatex"]
+        },
+        labelIsName: {
+          dependencyType: "stateVariable",
+          variableName: "labelIsName"
+        }
+      }),
+      definition({ dependencyValues, componentName }) {
+        if (dependencyValues.labelChild.length > 0) {
+          return {
+            setValue: {
+              label: dependencyValues.labelChild[0].stateValues.value,
+              labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.labelAttr) {
+          return {
+            setValue: {
+              label: dependencyValues.labelAttr.stateValues.value,
+              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
+            }
+          }
+        } else if (dependencyValues.labelIsName) {
+          let lastSlash = componentName.lastIndexOf('/');
+          // &#95; is HTML entity for underscore, so JSXgraph won't replace it with subscript
+          let label = componentName.substring(lastSlash + 1).replaceAll("_", "&#95;");
+          return {
+            setValue: {
+              label,
+              labelHasLatex: false
+            }
+          }
+        } else {
+          return {
+            useEssentialOrDefaultValue: { label: true },
+            setValue: { labelHasLatex: false }
+          }
+        }
+      }
+    }
+
     stateVariableDefinitions.items = {
       forRenderer: true,
       public: true,
-      hasVariableComponentType: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       // isArray: true,
       // entryPrefixes: ["item"],
       // entireArrayAtOnce: true,
@@ -200,7 +269,7 @@ export default class Slider extends BaseComponent {
 
         return {
           setValue: { items },
-          setComponentType: { items: dependencyValues.type },
+          setCreateComponentOfType: { items: dependencyValues.type },
         };
       }
     }
@@ -209,7 +278,9 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.nItems = {
       forRenderer: true,
       public: true,
-      componentType: "integer",
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
       returnDependencies: () => ({
         items: {
           dependencyType: "stateVariable",
@@ -488,7 +559,9 @@ export default class Slider extends BaseComponent {
     stateVariableDefinitions.value = {
       forRenderer: true,
       public: true,
-      hasVariableComponentType: true,
+      shadowingInstructions: {
+        hasVariableComponentType: true,
+      },
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -522,7 +595,7 @@ export default class Slider extends BaseComponent {
 
         return {
           setValue: { value },
-          setComponentType: { value: dependencyValues.type },
+          setCreateComponentOfType: { value: dependencyValues.type },
         }
 
       },
@@ -632,7 +705,7 @@ export default class Slider extends BaseComponent {
   }
 
 
-  async changeValue({ value, transient }) {
+  async changeValue({ value, transient, actionId }) {
     if (!await this.stateValues.disabled) {
       if (transient) {
         return await this.coreFunctions.performUpdate({
@@ -642,7 +715,8 @@ export default class Slider extends BaseComponent {
             stateVariable: "value",
             value
           }],
-          transient
+          transient,
+          actionId
         });
       } else {
         return await this.coreFunctions.performUpdate({
@@ -652,6 +726,7 @@ export default class Slider extends BaseComponent {
             stateVariable: "value",
             value
           }],
+          actionId,
           event: {
             verb: "selected",
             object: {
@@ -665,6 +740,8 @@ export default class Slider extends BaseComponent {
           }
         });
       }
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 

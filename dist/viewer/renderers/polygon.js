@@ -1,13 +1,14 @@
 import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
-export default function Polygon(props) {
+export default React.memo(function Polygon(props) {
   let {name, SVs, actions, sourceOfUpdate, callAction} = useDoenetRender(props);
   Polygon.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
   let polygonJXG = useRef(null);
   let pointCoords = useRef(null);
   let draggedPoint = useRef(null);
+  let downOnPoint = useRef(null);
   let pointerAtDown = useRef(null);
   let pointsAtDown = useRef(null);
   let previousNVertices = useRef(null);
@@ -25,21 +26,25 @@ export default function Polygon(props) {
     if (!(SVs.nVertices >= 2)) {
       return null;
     }
+    let fixed = !SVs.draggable || SVs.fixed;
     jsxPointAttributes.current = {
       fillColor: "none",
       strokeColor: "none",
       highlightStrokeColor: "none",
-      highlightFillColor: "lightgray",
-      visible: SVs.draggable && !SVs.fixed,
+      highlightFillColor: getComputedStyle(document.documentElement).getPropertyValue("--mainGray"),
+      visible: !fixed && !SVs.hidden,
       withLabel: false,
       layer: 10 * SVs.layer + 9
     };
     let jsxBorderAttributes = {
       highlight: false,
       visible: !SVs.hidden,
-      layer: 10 * SVs.layer + 6,
+      layer: 10 * SVs.layer + 8,
+      fixed: true,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle)
@@ -48,21 +53,35 @@ export default function Polygon(props) {
       name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed,
       layer: 10 * SVs.layer + 7,
-      fillColor: "none",
-      highlight: false,
+      fillColor: SVs.selectedStyle.fillColor,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
+      highlightFillColor: SVs.selectedStyle.fillColor,
+      highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
+      highlight: !fixed,
       vertices: jsxPointAttributes.current,
       borders: jsxBorderAttributes
     };
-    if (SVs.selectedStyle.fillColor !== "none") {
-      jsxPolygonAttributes.fillColor = SVs.selectedStyle.fillColor;
+    jsxPolygonAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxPolygonAttributes.label.useMathJax = true;
     }
-    let pts = [];
-    SVs.numericalVertices.forEach((z) => {
-      pts.push([z[0], z[1]]);
-    });
+    if (SVs.applyStyleToLabel) {
+      jsxPolygonAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxPolygonAttributes.label.strokeColor = "#000000";
+    }
+    if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
+      jsxPolygonAttributes.hasInnerPoints = true;
+    }
     board.suspendUpdate();
+    let pts = [];
+    for (let p of SVs.numericalVertices) {
+      pts.push(board.create("point", [...p], jsxPointAttributes.current));
+    }
     let newPolygonJXG = board.create("polygon", pts, jsxPolygonAttributes);
     initializePoints(newPolygonJXG);
     newPolygonJXG.on("drag", (e) => dragHandler(-1, e));
@@ -80,11 +99,15 @@ export default function Polygon(props) {
     for (let i = 0; i < SVs.nVertices; i++) {
       let vertex = polygon.vertices[i];
       vertex.off("drag");
-      vertex.on("drag", () => dragHandler(i));
+      vertex.on("drag", (e) => dragHandler(i, e));
       vertex.off("up");
       vertex.on("up", () => upHandler(i));
       vertex.off("down");
-      vertex.on("down", () => draggedPoint.current = null);
+      vertex.on("down", (e) => {
+        draggedPoint.current = null;
+        pointerAtDown.current = [e.x, e.y];
+        downOnPoint.current = i;
+      });
     }
   }
   function deletePolygonJXG() {
@@ -100,55 +123,63 @@ export default function Polygon(props) {
     polygonJXG.current = null;
   }
   function dragHandler(i, e) {
-    draggedPoint.current = i;
-    if (i === -1) {
-      pointCoords.current = calculatePointPositions(e);
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true
+    if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+      draggedPoint.current = i;
+      if (i === -1) {
+        pointCoords.current = calculatePointPositions(e);
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true
+          }
+        });
+        for (let j = 0; j < SVs.nVertices; j++) {
+          polygonJXG.current.vertices[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
         }
-      });
-      for (let j = 0; j < SVs.nVertices; j++) {
-        polygonJXG.current.vertices[j].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[j]]);
+      } else {
+        pointCoords.current = {};
+        pointCoords.current[i] = [polygonJXG.current.vertices[i].X(), polygonJXG.current.vertices[i].Y()];
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            transient: true,
+            skippable: true,
+            sourceInformation: {vertex: i}
+          }
+        });
+        polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
+        board.updateInfobox(polygonJXG.current.vertices[i]);
       }
-    } else {
-      pointCoords.current = {};
-      pointCoords.current[i] = [polygonJXG.current.vertices[i].X(), polygonJXG.current.vertices[i].Y()];
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-          transient: true,
-          skippable: true,
-          sourceInformation: {vertex: i}
-        }
-      });
-      polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...lastPositionsFromCore.current[i]]);
-      board.updateInfobox(polygonJXG.current.vertices[i]);
     }
   }
   function upHandler(i) {
-    if (draggedPoint.current !== i) {
-      return;
+    if (draggedPoint.current === i) {
+      if (i === -1) {
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current
+          }
+        });
+      } else {
+        callAction({
+          action: actions.movePolygon,
+          args: {
+            pointCoords: pointCoords.current,
+            sourceInformation: {vertex: i}
+          }
+        });
+      }
+    } else if (draggedPoint.current === null && (downOnPoint.current === null || i !== -1)) {
+      callAction({
+        action: actions.polygonClicked
+      });
     }
-    if (i === -1) {
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current
-        }
-      });
-    } else {
-      callAction({
-        action: actions.movePolygon,
-        args: {
-          pointCoords: pointCoords.current,
-          sourceInformation: {vertex: i}
-        }
-      });
+    if (i !== -1) {
+      downOnPoint.current = null;
     }
   }
   function calculatePointPositions(e) {
@@ -191,10 +222,14 @@ export default function Polygon(props) {
         }
         initializePoints(polygonJXG.current);
       }
+      let fixed = !SVs.draggable || SVs.fixed;
+      let verticesVisible = !fixed && !SVs.hidden;
       for (let i = 0; i < SVs.nVertices; i++) {
         polygonJXG.current.vertices[i].coords.setCoordinates(JXG.COORDS_BY_USER, [...SVs.numericalVertices[i]]);
         polygonJXG.current.vertices[i].needsUpdate = true;
         polygonJXG.current.vertices[i].update();
+        polygonJXG.current.vertices[i].visProp["visible"] = verticesVisible;
+        polygonJXG.current.vertices[i].visPropCalc["visible"] = verticesVisible;
       }
       if (sourceOfUpdate.sourceInformation && name in sourceOfUpdate.sourceInformation) {
         let ind = sourceOfUpdate.sourceInformation[name].vertex;
@@ -206,17 +241,69 @@ export default function Polygon(props) {
       if (!validCoords) {
         visibleNow = false;
       }
-      polygonJXG.current.visProp.borders["visible"] = visibleNow;
+      polygonJXG.current.visProp.fixed = fixed;
+      polygonJXG.current.visProp.highlight = !fixed;
       polygonJXG.current.visProp["visible"] = visibleNow;
       polygonJXG.current.visPropCalc["visible"] = visibleNow;
+      let polygonLayer = 10 * SVs.layer + 7;
+      let layerChanged = polygonJXG.current.visProp.layer !== polygonLayer;
+      if (layerChanged) {
+        polygonJXG.current.setAttribute({layer: polygonLayer});
+      }
+      polygonJXG.current.name = SVs.label;
+      if (polygonJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          polygonJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        } else {
+          polygonJXG.current.label.visProp.strokecolor = "#000000";
+        }
+        polygonJXG.current.label.needsUpdate = true;
+        polygonJXG.current.label.update();
+      }
+      if (polygonJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
+        polygonJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
+        polygonJXG.current.visProp.highlightfillcolor = SVs.selectedStyle.fillColor;
+        polygonJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
+      }
+      if (polygonJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        polygonJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+        polygonJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
+      }
       polygonJXG.current.needsUpdate = true;
       polygonJXG.current.update().updateVisibility();
       for (let i = 0; i < polygonJXG.current.borders.length; i++) {
         let border = polygonJXG.current.borders[i];
         border.visProp.visible = visibleNow;
         border.visPropCalc.visible = visibleNow;
+        if (layerChanged) {
+          border.setAttribute({layer: polygonLayer + 1});
+        }
+        if (border.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+          border.visProp.strokecolor = SVs.selectedStyle.lineColor;
+          border.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+        }
+        if (border.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+          border.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+          border.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+        }
+        let newDash = styleToDash(SVs.selectedStyle.lineStyle);
+        if (border.visProp.dash !== newDash) {
+          border.visProp.dash = newDash;
+        }
+        if (border.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+          border.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+          border.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth;
+        }
         border.needsUpdate = true;
         border.update();
+      }
+      if (layerChanged) {
+        jsxPointAttributes.current.layer = polygonLayer + 2;
+        for (let vertex of polygonJXG.current.vertices) {
+          vertex.setAttribute({layer: polygonLayer + 2});
+          vertex.needsUpdate = true;
+          vertex.update();
+        }
       }
       previousNVertices.current = SVs.nVertices;
       board.updateRenderer();
@@ -228,7 +315,7 @@ export default function Polygon(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }));
-}
+});
 function styleToDash(style) {
   if (style === "solid") {
     return 0;

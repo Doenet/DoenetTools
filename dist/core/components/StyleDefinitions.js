@@ -6,8 +6,8 @@ export class StyleDefinition extends BaseComponent {
   static componentType = "styleDefinition";
   static rendererType = undefined;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.styleNumber = {
       createPrimitiveOfType: "number",
@@ -52,6 +52,10 @@ export class StyleDefinition extends BaseComponent {
 
             styleDefinition[styleAttr] =
               dependencyValues[styleAttr].stateValues.value;
+
+            if(typeof styleDefinition[styleAttr] === "string") {
+              styleDefinition[styleAttr] = styleDefinition[styleAttr].toLowerCase();
+            }
           }
         }
 

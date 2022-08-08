@@ -1,8 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
-export default function Table(props) {
-  let { name, SVs, children } = useDoenetRender(props);
+export default React.memo(function Table(props) {
+  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (SVs.hidden) {
     return null;
@@ -31,7 +48,7 @@ export default function Table(props) {
       title = SVs.title;
     }
 
-    if (!SVs.suppressTableNameInCaption) {
+    if (!SVs.suppressTableNameInTitle) {
       let tableName = <strong>{SVs.tableName}</strong>
       if (title) {
         title = <>{tableName}: {title}</>
@@ -42,9 +59,13 @@ export default function Table(props) {
 
     heading = <div id={name + "_title"}>{title}</div>
 
-    return <div id={name} >
-      <a name={name} />
-      {heading}
-      {childrenToRender}
-    </div>
-}
+    return (
+      <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+      <div id={name} style={{ margin: "12px 0" }}>
+        <a name={name} />
+        {heading}
+        {childrenToRender}
+      </div>
+      </VisibilitySensor>
+    )
+})

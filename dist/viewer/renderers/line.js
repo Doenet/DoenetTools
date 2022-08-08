@@ -2,7 +2,8 @@ import React, {useContext, useEffect, useRef} from "../../_snowpack/pkg/react.js
 import useDoenetRender from "./useDoenetRenderer.js";
 import {BoardContext} from "./graph.js";
 import me from "../../_snowpack/pkg/math-expressions.js";
-export default function Line(props) {
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
+export default React.memo(function Line(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
   Line.ignoreActionsWithoutCore = true;
   const board = useContext(BoardContext);
@@ -15,13 +16,6 @@ export default function Line(props) {
   let lastPositionsFromCore = useRef(null);
   lastPositionsFromCore.current = SVs.numericalPoints;
   useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({showProcessingMessages: false, "fast-preview": {disabled: true}});
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  });
-  useEffect(() => {
     return () => {
       if (Object.keys(lineJXG.current).length !== 0) {
         deleteLineJXG();
@@ -33,25 +27,42 @@ export default function Line(props) {
       lineJXG.current = {};
       return;
     }
+    let fixed = !SVs.draggable || SVs.fixed;
     var jsxLineAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed,
       layer: 10 * SVs.layer + 7,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
-      dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed)
+      dash: styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed),
+      highlight: !fixed
     };
+    jsxLineAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxLineAttributes.label.useMathJax = true;
+    }
+    if (SVs.applyStyleToLabel) {
+      jsxLineAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+    } else {
+      jsxLineAttributes.label.strokeColor = "#000000";
+    }
     let through = [
       [...SVs.numericalPoints[0]],
       [...SVs.numericalPoints[1]]
     ];
     let newLineJXG = board.create("line", through, jsxLineAttributes);
     newLineJXG.on("drag", function(e) {
-      dragged.current = true;
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
+      }
       calculatePointPositions(e);
       callAction({
         action: actions.moveLine,
@@ -77,6 +88,13 @@ export default function Line(props) {
       } else if (SVs.switchable && !SVs.fixed) {
         callAction({
           action: actions.switchLine
+        });
+        callAction({
+          action: actions.lineClicked
+        });
+      } else {
+        callAction({
+          action: actions.lineClicked
         });
       }
     });
@@ -136,21 +154,29 @@ export default function Line(props) {
         lineJXG.current.visProp["visible"] = false;
         lineJXG.current.visPropCalc["visible"] = false;
       }
-      if (SVs.draggable && !SVs.fixed) {
-        lineJXG.current.visProp.fixed = false;
-      } else {
-        lineJXG.current.visProp.fixed = true;
+      let fixed = !SVs.draggable || SVs.fixed;
+      lineJXG.current.visProp.fixed = fixed;
+      lineJXG.current.visProp.highlight = !fixed;
+      let layer = 10 * SVs.layer + 7;
+      let layerChanged = lineJXG.current.visProp.layer !== layer;
+      if (layerChanged) {
+        lineJXG.current.setAttribute({layer});
       }
       if (lineJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         lineJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         lineJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
       }
+      if (lineJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        lineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+        lineJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth;
+      }
+      if (lineJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        lineJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        lineJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
       let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
       if (lineJXG.current.visProp.dash !== newDash) {
         lineJXG.current.visProp.dash = newDash;
-      }
-      if (lineJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
-        lineJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
       }
       lineJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";
@@ -161,6 +187,11 @@ export default function Line(props) {
       lineJXG.current.needsUpdate = true;
       lineJXG.current.update();
       if (lineJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          lineJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        } else {
+          lineJXG.current.label.visProp.strokecolor = "#000000";
+        }
         lineJXG.current.label.needsUpdate = true;
         lineJXG.current.label.update();
       }
@@ -178,8 +209,12 @@ export default function Line(props) {
     name
   }), /* @__PURE__ */ React.createElement("span", {
     id: name
-  }, mathJaxify));
-}
+  }, /* @__PURE__ */ React.createElement(MathJax, {
+    hideUntilTypeset: "first",
+    inline: true,
+    dynamic: true
+  }, mathJaxify)));
+});
 function styleToDash(style, dash) {
   if (style === "dashed" || dash) {
     return 2;

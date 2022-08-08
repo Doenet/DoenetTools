@@ -1,19 +1,20 @@
 import GraphicalComponent from './abstract/GraphicalComponent.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
 import { returnBreakStringsSugarFunction } from './commonsugar/breakstrings.js';
-import { convertValueToMathExpression } from '../utils/math.js';
+import { convertValueToMathExpression, roundForDisplay } from '../utils/math.js';
 
 export default class Vector extends GraphicalComponent {
   static componentType = "vector";
 
   actions = {
     moveVector: this.moveVector.bind(this),
+    vectorClicked: this.vectorClicked.bind(this),
   }
 
   static primaryStateVariableForDefinition = "displacementShadow";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",
@@ -57,6 +58,36 @@ export default class Vector extends GraphicalComponent {
     };
     attributes.tail = {
       createComponentOfType: "point",
+    };
+
+    attributes.displayDigits = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDigits",
+      defaultValue: 10,
+      public: true,
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
+    };
+
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
     };
 
     return attributes;
@@ -124,13 +155,17 @@ export default class Vector extends GraphicalComponent {
 
   static returnChildGroups() {
 
-    return [{
+    let childGroups = super.returnChildGroups();
+
+    childGroups.push(...[{
       group: "points",
       componentTypes: ["point"]
     }, {
       group: "vectors",
       componentTypes: ["vector"]
-    }]
+    }])
+
+    return childGroups;
 
   }
 
@@ -141,7 +176,9 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -150,22 +187,40 @@ export default class Vector extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let lineDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          lineDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          lineDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          lineDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          lineDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColor;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
 
-        return { setValue: { styleDescription: lineDescription } };
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
 
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " vector";
+
+        return { setValue: { styleDescriptionWithNoun } };
       }
     }
 
@@ -716,7 +771,9 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         basedOnHead: {
           dependencyType: "stateVariable",
@@ -795,21 +852,24 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.displacement = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "x") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <vector> and <xs>
+            return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["x"],
       hasEssential: true,
       essentialVarName: "displacement2", // since "displacement" used for displacementShadow
       set: convertValueToMathExpression,
-      returnWrappingComponents(prefix) {
-        if (prefix === "x") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <vector> and <xs>
-          return [["vector", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: ["basedOnDisplacement", "basedOnHead", "sourceOfDisplacement"],
       returnArraySizeDependencies: () => ({
         nDimDisplacement: {
@@ -1120,19 +1180,22 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.head = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "headX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["headX"],
       set: convertValueToMathExpression,
-      returnWrappingComponents(prefix) {
-        if (prefix === "headX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: ["basedOnHead"],
       returnArraySizeDependencies: () => ({
         nDimHead: {
@@ -1301,22 +1364,25 @@ export default class Vector extends GraphicalComponent {
 
     stateVariableDefinitions.tail = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "tailX") {
+            return [];
+          } else {
+            // entire array
+            // wrap by both <point> and <xs>
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       entryPrefixes: ["tailX"],
       hasEssential: true,
       defaultValueByArrayKey: () => me.fromAst(0),
       essentialVarName: "tail2",  // since tailShadow uses "tail"
       set: convertValueToMathExpression,
-      returnWrappingComponents(prefix) {
-        if (prefix === "tailX") {
-          return [];
-        } else {
-          // entire array
-          // wrap by both <point> and <xs>
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       stateVariablesDeterminingDependencies: ["basedOnTail", "basedOnHead", "basedOnDisplacement"],
       returnArraySizeDependencies: () => ({
         nDimTail: {
@@ -1563,7 +1629,6 @@ export default class Vector extends GraphicalComponent {
     }
 
     stateVariableDefinitions.displacementCoords = {
-      forRenderer: true,
       returnDependencies: () => ({
         displacement: {
           dependencyType: "stateVariable",
@@ -1611,6 +1676,52 @@ export default class Vector extends GraphicalComponent {
 
       }
     }
+
+    stateVariableDefinitions.displacementCoordsLatex = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        displacementCoords: {
+          dependencyType: "stateVariable",
+          variableName: "displacementCoords"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        let displacementCoordsLatex = roundForDisplay({
+          value: dependencyValues.displacementCoords,
+          dependencyValues, usedDefault
+        }).toLatex(params);
+
+        return { setValue: { displacementCoordsLatex } }
+
+      }
+    }
+
 
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
@@ -1693,9 +1804,10 @@ export default class Vector extends GraphicalComponent {
   static adapters = [{
     stateVariable: "displacementCoords",
     componentType: "coords",
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
   }];
 
-  async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation }) {
+  async moveVector({ tailcoords, headcoords, transient, skippable, sourceInformation, actionId }) {
 
     let updateInstructions = [];
 
@@ -1806,11 +1918,13 @@ export default class Vector extends GraphicalComponent {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
         transient,
-        skippable
+        skippable,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
         updateInstructions,
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -1824,6 +1938,17 @@ export default class Vector extends GraphicalComponent {
         }
       });
     }
+
+  }
+
+  async vectorClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

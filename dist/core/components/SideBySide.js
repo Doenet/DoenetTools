@@ -6,8 +6,8 @@ export class SideBySide extends BlockComponent {
   static renderChildren = true;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.width = {
       createComponentOfType: "_componentSize",
@@ -110,12 +110,7 @@ export class SideBySide extends BlockComponent {
 
 
     stateVariableDefinitions.allWidthsSpecified = {
-      additionalStateVariablesDefined: [{
-        variableName: "widthsAbsolute",
-        // public: true,
-        // componentType: "boolean",
-        // forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["widthsAbsolute"],
       returnDependencies() {
         return {
           nPanels: {
@@ -255,12 +250,7 @@ export class SideBySide extends BlockComponent {
 
 
     stateVariableDefinitions.allMarginsSpecified = {
-      additionalStateVariablesDefined: [{
-        variableName: "marginsAbsolute",
-        // public: true,
-        // componentType: "boolean",
-        // forRenderer: true,
-      }],
+      additionalStateVariablesDefined: ["marginsAbsolute"],
       returnDependencies() {
         return {
           nPanels: {
@@ -289,8 +279,6 @@ export class SideBySide extends BlockComponent {
         }
       },
       definition({ dependencyValues }) {
-
-        console.log(dependencyValues)
 
         let allMarginsSpecified = [];
         let marginsAbsolute = null;
@@ -357,7 +345,9 @@ export class SideBySide extends BlockComponent {
 
     stateVariableDefinitions.absoluteMeasurements = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         widthsAbsolute: {
@@ -403,7 +393,9 @@ export class SideBySide extends BlockComponent {
         {
           variableName: "gapWidth",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           forRenderer: true
         }
       ],
@@ -540,7 +532,9 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.widths = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["width"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -670,7 +664,9 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.margins = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["margin"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({}),
@@ -868,7 +864,9 @@ export class SideBySide extends BlockComponent {
     stateVariableDefinitions.valigns = {
       public: true,
       isArray: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       entryPrefixes: ["valign"],
       forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -1032,17 +1030,35 @@ export class SideBySide extends BlockComponent {
 
     return stateVariableDefinitions;
   }
+
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
+
 }
 
 
 
 export class SbsGroup extends BlockComponent {
   static componentType = "sbsGroup";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.width = {
       createComponentOfType: "_componentSize",
@@ -1260,9 +1276,6 @@ export class SbsGroup extends BlockComponent {
     }
 
     stateVariableDefinitions.widthsAbsolute = {
-      // public: true,
-      // componentType: "boolean",
-      // forRenderer: true,
       returnDependencies: () => ({
         widthsAbsoluteArray: {
           dependencyType: "stateVariable",
@@ -1468,9 +1481,6 @@ export class SbsGroup extends BlockComponent {
 
 
     stateVariableDefinitions.marginsAbsolute = {
-      // public: true,
-      // componentType: "boolean",
-      // forRenderer: true,
       returnDependencies: () => ({
         marginsAbsoluteArray: {
           dependencyType: "stateVariable",
@@ -1499,7 +1509,9 @@ export class SbsGroup extends BlockComponent {
 
     stateVariableDefinitions.absoluteMeasurements = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       // forRenderer: true,
       returnDependencies: () => ({
         widthsAbsolute: {
@@ -1545,7 +1557,9 @@ export class SbsGroup extends BlockComponent {
         {
           variableName: "gapWidth",
           public: true,
-          componentType: "number",
+          shadowingInstructions: {
+            createComponentOfType: "number",
+          },
           // forRenderer: true
         }
       ],
@@ -1682,7 +1696,9 @@ export class SbsGroup extends BlockComponent {
     stateVariableDefinitions.widths = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["width"],
       // forRenderer: true,
       returnArraySizeDependencies: () => ({
@@ -1751,7 +1767,9 @@ export class SbsGroup extends BlockComponent {
     stateVariableDefinitions.margins = {
       public: true,
       isArray: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       entryPrefixes: ["margin"],
       // forRenderer: true,
       returnArraySizeDependencies: () => ({}),
@@ -1818,7 +1836,9 @@ export class SbsGroup extends BlockComponent {
     stateVariableDefinitions.valigns = {
       public: true,
       isArray: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       entryPrefixes: ["valign"],
       // forRenderer: true,
       hasEssential: true,
@@ -1968,12 +1988,30 @@ export class SbsGroup extends BlockComponent {
 
     return stateVariableDefinitions;
   }
+
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
+
 }
 
 
 export class Stack extends BlockComponent {
   static componentType = "stack";
-  static rendererType = "container";
+  static rendererType = "containerBlock";
   static renderChildren = true;
 
   static returnChildGroups() {
@@ -1983,6 +2021,22 @@ export class Stack extends BlockComponent {
       componentTypes: ["_base"]
     }]
 
+  }
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
+  actions = {
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 }

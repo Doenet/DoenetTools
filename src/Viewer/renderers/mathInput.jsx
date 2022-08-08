@@ -1,6 +1,7 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import styled from 'styled-components';
 import {
   faCheck,
   faLevelDownAlt,
@@ -19,16 +20,46 @@ import {
 } from '../../Tools/_framework/Footers/MathInputSelector';
 
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { rendererState } from './useDoenetRenderer';
+
+// Moved most of checkWorkStyle styling into Button
+const Button = styled.button`
+    position: relative;
+    width: 24px;
+    height: 24px;
+    color: #ffffff;
+    background-color: var(--mainBlue);
+    display: inline-block;
+    text-align: center;
+    padding: 2px;
+    z-index: 0;
+    /* border: var(--mainBorder); */
+    border: none;
+    border-radius: var(--mainBorderRadius);
+    margin: 0px 10px 12px 10px;
+
+    &:hover {
+      background-color: var(--lightBlue);
+      color: black;
+    };
+  `;
 
 export default function MathInput(props) {
-  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, callAction } =
+  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } =
     useDoenetRender(props);
 
   MathInput.baseStateVariable = 'rawRendererValue';
 
   const [mathField, setMathField] = useState(null);
 
-  let rendererValue = useRef(null);
+  const setRendererState = useSetRecoilState(rendererState(rendererName));
+
+  let rendererValue = useRef(SVs.rawRendererValue);
+
+  // Need to use ref for includeCheckWork
+  // or handlePressEnter doesn't get the new value when the SV changes
+  let includeCheckWork = useRef(SVs.includeCheckWork);
+  includeCheckWork.current = SVs.includeCheckWork;
 
   if (!ignoreUpdate) {
     rendererValue.current = SVs.rawRendererValue;
@@ -90,7 +121,7 @@ export default function MathInput(props) {
       baseVariableValue: rendererValue.current,
     });
 
-    if (SVs.includeCheckWork && validationState.current === 'unvalidated') {
+    if (includeCheckWork.current && validationState.current === 'unvalidated') {
       callAction({
         action: actions.submitAnswer,
       });
@@ -117,7 +148,7 @@ export default function MathInput(props) {
         action: actions.updateValue,
         baseVariableValue: rendererValue.current,
       });
-      //console.log(">>>", e.target, e.currentTarget, e.relatedTarget);
+      // console.log(">>>", e.relatedTarget.id, checkWorkButton.props.id);
       setFocusedField(() => handleDefaultVirtualKeyboardClick);
       setFocusedFieldReturn(() => handleDefaultVirtualKeyboardReturn);
       setFocusedFieldID(null);
@@ -125,8 +156,16 @@ export default function MathInput(props) {
   };
 
   const onChangeHandler = (text) => {
-    if (text !== rendererValue.current) {
+    // whitespace differences and whether or not a single character exponent has braces
+    // do not count as a difference for changing raw renderer value
+    if (text.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1') !== rendererValue.current?.replace(/\s/g, '').replace(/\^{(\w)}/g, '^$1')) {
       rendererValue.current = text;
+
+      setRendererState((was) => {
+        let newObj = { ...was };
+        newObj.ignoreUpdate = true;
+        return newObj;
+      })
 
       callAction({
         action: actions.updateRawValue,
@@ -150,27 +189,19 @@ export default function MathInput(props) {
   let checkWorkButton = null;
   if (SVs.includeCheckWork) {
     let checkWorkStyle = {
-      position: 'relative',
-      width: '30px',
-      height: '24px',
-      fontSize: '20px',
-      fontWeight: 'bold',
-      color: '#ffffff',
-      display: 'inline-block',
-      textAlign: 'center',
-      top: '3px',
-      padding: '2px',
-      zIndex: '0',
-    };
+      cursor: 'pointer',
+    }
+
+
 
     if (validationState.current === 'unvalidated') {
       if (SVs.disabled) {
-        checkWorkStyle.backgroundColor = 'rgb(200,200,200)';
-      } else {
-        checkWorkStyle.backgroundColor = 'rgb(2, 117, 216)';
+        checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGray");
+        checkWorkStyle.cursor = 'not-allowed'
+          ;
       }
       checkWorkButton = (
-        <button
+        <Button
           id={name + '_submit'}
           tabIndex="0"
           disabled={SVs.disabled}
@@ -189,16 +220,16 @@ export default function MathInput(props) {
           }}
         >
           <FontAwesomeIcon icon={faLevelDownAlt} transform={{ rotate: 90 }} />
-        </button>
+        </Button>
       );
     } else {
       if (SVs.showCorrectness) {
         if (validationState.current === 'correct') {
-          checkWorkStyle.backgroundColor = 'rgb(92, 184, 92)';
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
           checkWorkButton = (
-            <span id={name + '_correct'} style={checkWorkStyle}>
+            <Button id={name + '_correct'} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faCheck} />
-            </span>
+            </Button>
           );
         } else if (validationState.current === 'partialcorrect') {
           //partial credit
@@ -209,26 +240,26 @@ export default function MathInput(props) {
 
           checkWorkStyle.backgroundColor = '#efab34';
           checkWorkButton = (
-            <span id={name + '_partial'} style={checkWorkStyle}>
+            <Button id={name + '_partial'} style={checkWorkStyle}>
               {partialCreditContents}
-            </span>
+            </Button>
           );
         } else {
           //incorrect
-          checkWorkStyle.backgroundColor = 'rgb(187, 0, 0)';
+          checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
           checkWorkButton = (
-            <span id={name + '_incorrect'} style={checkWorkStyle}>
+            <Button id={name + '_incorrect'} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faTimes} />
-            </span>
+            </Button>
           );
         }
       } else {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = 'rgb(74, 3, 217)';
         checkWorkButton = (
-          <span id={name + '_saved'} style={checkWorkStyle}>
+          <Button id={name + '_saved'} style={checkWorkStyle}>
             <FontAwesomeIcon icon={faCloud} />
-          </span>
+          </Button>
         );
       }
     }
@@ -240,11 +271,18 @@ export default function MathInput(props) {
           <span>(no attempts remaining)</span>
         </>
       );
+    } else if (SVs.numberOfAttemptsLeft == 1) {
+      checkWorkButton = (
+        <>
+          {checkWorkButton}
+          <span>(1 attempt remaining)</span>
+        </>
+      );
     } else if (Number.isFinite(SVs.numberOfAttemptsLeft)) {
       checkWorkButton = (
         <>
           {checkWorkButton}
-          <span>(attempts remaining: {SVs.numberOfAttemptsLeft})</span>
+          <span>({SVs.numberOfAttemptsLeft} attempts remaining)</span>
         </>
       );
     }
@@ -254,9 +292,10 @@ export default function MathInput(props) {
     <React.Fragment>
       <a name={name} />
 
-      <span className="textInputSurroundingBox" id={name}>
-        <span style={{ margin: '10px' }}>
+      <span className="textInputSurroundingBox" id={name} style={{ marginBottom: "12px" }}>
+        <span>
           <EditableMathField
+            style={{ border: "var(--mainBorder)" }}
             latex={rendererValue.current}
             config={{
               autoCommands:

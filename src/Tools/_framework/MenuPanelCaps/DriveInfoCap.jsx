@@ -1,48 +1,47 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
-import { fetchDrivesQuery } from '../../../_reactComponents/Drive/NewDrive';
+import {  coursePermissionsAndSettingsByCourseId } from '../../../_reactComponents/Course/CourseActions';
 import { searchParamAtomFamily } from '../NewToolRoot';
 import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 export default function DriveInfoCap(){
-  let path = useRecoilValue(searchParamAtomFamily('path'));
-  let driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const tool = useRecoilValue(searchParamAtomFamily('tool'));
+  let course = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
 
-  if (!driveId){
-    driveId = path.split(':')[0]
-  }
-  const driveInfo = useRecoilValue(fetchDrivesQuery)
-  let roles;
-  let image;
-  let color;
-  let label = "";
- for (let info of driveInfo.driveIdsAndLabels){
-   if (info.driveId === driveId){
-     roles = [...info.role];
-     color = info.color;
-     image = info.image;
-     label = info.label;
-     break;
-   }
- }
-
+if (!course || Object.keys(course).length == 0){
+  return null;
+}
+let roles = [...course.roleLabels];
+let color = course.color;
+let image = course.image;
+let label = course.label;
  
  if (image != 'none'){
   image = 'url(/media/drive_pictures/' + image + ')';
-  console.log('there is an image??');
  }
  if (color != 'none'){
   color = '#' + color;
  }
+
+ let toolText = ""
+ if (tool == "navigation"){
+   toolText = "Course Navigation"
+ }else if (tool == "dashboard"){
+   toolText = "Dashboard"
+ }else if (tool == "data"){
+    toolText = "Data"
+ }
  
  return <>
-    <div style={{position: 'relative', paddingBottom: '135px'}}>
-    <img style={{position: "absolute", height: "135px", objectFit: 'cover', backgroundColor: color, backgroundImage: image}}   width='240px' />
+    <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
+      <img style={{ position: "absolute", width: "100%", height: "100%", backgroundSize: 'cover', backgroundPosition: 'center', backgroundImage: image, backgroundColor: color }}  />
     </div>
-    <div style={{padding:'8px'}}>
-    <div>{label}</div>
-    <div>{roles}</div>
-    <div><RoleDropdown /></div>
+    <b>{toolText}</b>
+    <div style={{ padding:'16px 12px' }}>
+      <span style={{ marginBottom: "15px" }}>{label}</span> <br />
+      <span style={{ marginBottom: "15px" }}>{roles}</span> <br />
+      <RoleDropdown />
     </div>
   </>
 }

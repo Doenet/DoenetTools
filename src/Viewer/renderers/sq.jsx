@@ -1,7 +1,7 @@
 import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Sq(props) {
+export default React.memo(function Sq(props) {
   let { name, SVs, children } = useDoenetRender(props);
 
   if (SVs.hidden) {
@@ -10,4 +10,4 @@ export default function Sq(props) {
 
   return <><a name={name} />&lsquo;{children}&rsquo;</>
 
-}
+})

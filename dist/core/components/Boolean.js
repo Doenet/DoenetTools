@@ -11,8 +11,8 @@ export default class BooleanComponent extends InlineComponent {
   static descendantCompositesDefaultReplacementType = "math";
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.symbolicEquality = {
       createComponentOfType: "boolean",
       createStateVariable: "symbolicEquality",
@@ -86,12 +86,13 @@ export default class BooleanComponent extends InlineComponent {
       group: "strings",
       componentTypes: ["string"]
     }, {
-      group: "mathsNumbersTextsBooleans",
+      group: "comparableTypes",
       componentTypes: [
         "math", "mathList",
         "number", "numberList",
         "text", "textList",
-        "boolean", "booleanList"
+        "boolean", "booleanList",
+        "orbitalDiagram"
       ]
     }]
 
@@ -109,7 +110,7 @@ export default class BooleanComponent extends InlineComponent {
       returnDependencies: () => ({
         allChildren: {
           dependencyType: "child",
-          childGroups: ["strings", "mathsNumbersTextsBooleans"],
+          childGroups: ["strings", "comparableTypes"],
         },
         stringChildren: {
           dependencyType: "child",
@@ -127,11 +128,12 @@ export default class BooleanComponent extends InlineComponent {
         "numberChildrenByCode", "numberListChildrenByCode",
         "textChildrenByCode", "textListChildrenByCode",
         "booleanChildrenByCode", "booleanListChildrenByCode",
+        "otherChildrenByCode",
       ],
       returnDependencies: () => ({
         allChildren: {
           dependencyType: "child",
-          childGroups: ["strings", "mathsNumbersTextsBooleans"],
+          childGroups: ["strings", "comparableTypes"],
           variableNames: ["value", "texts", "maths", "numbers", "booleans", "fractionSatisfied", "unordered"],
           variablesOptional: true,
         },
@@ -150,6 +152,7 @@ export default class BooleanComponent extends InlineComponent {
         let textListChildrenByCode = {};
         let booleanChildrenByCode = {};
         let booleanListChildrenByCode = {};
+        let otherChildrenByCode = {};
         let subnum = 0;
 
         let codePre = dependencyValues.codePre;
@@ -194,8 +197,13 @@ export default class BooleanComponent extends InlineComponent {
               baseComponentType: "boolean"
             })) {
               booleanChildrenByCode[code] = child;
-            } else {
+            } else if (componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: child.componentType,
+              baseComponentType: "booleanList"
+            })) {
               booleanListChildrenByCode[code] = child;
+            } else {
+              otherChildrenByCode[code] = child;
             }
             subnum += 1;
 
@@ -208,6 +216,7 @@ export default class BooleanComponent extends InlineComponent {
             numberChildrenByCode, numberListChildrenByCode,
             textChildrenByCode, textListChildrenByCode,
             booleanChildrenByCode, booleanListChildrenByCode,
+            otherChildrenByCode,
           }
         }
       }
@@ -217,14 +226,14 @@ export default class BooleanComponent extends InlineComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+        attributesToShadow: ["fixed"]
+      },
       forRenderer: true,
       hasEssential: true,
       defaultValue: false,
       set: Boolean,
-      stateVariablesPrescribingAdditionalAttributes: {
-        fixed: "fixed",
-      },
       returnDependencies: () => ({
         symbolicEquality: {
           dependencyType: "stateVariable",
@@ -272,7 +281,7 @@ export default class BooleanComponent extends InlineComponent {
         },
         allChildren: {
           dependencyType: "child",
-          childGroups: ["strings", "mathsNumbersTextsBooleans"],
+          childGroups: ["strings", "comparableTypes"],
           variableNames: ["value"],
           variablesOptional: true,
         },
@@ -307,6 +316,10 @@ export default class BooleanComponent extends InlineComponent {
         numberListChildrenByCode: {
           dependencyType: "stateVariable",
           variableName: "numberListChildrenByCode",
+        },
+        otherChildrenByCode: {
+          dependencyType: "stateVariable",
+          variableName: "otherChildrenByCode",
         },
       }),
       definition({ dependencyValues, usedDefault }) {
@@ -389,7 +402,9 @@ export default class BooleanComponent extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         value: {

@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
-export default function Circle(props) {
+export default React.memo(function Circle(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
 
   Circle.ignoreActionsWithoutCore = true;
@@ -20,8 +20,10 @@ export default function Circle(props) {
   let centerCoords = useRef(null);
 
   let lastCenterFromCore = useRef(null);
+  let throughAnglesFromCore = useRef(null);
 
   lastCenterFromCore.current = SVs.numericalCenter;
+  throughAnglesFromCore.current = SVs.throughAngles;
 
   useEffect(() => {
 
@@ -44,19 +46,48 @@ export default function Circle(props) {
       return null;
     }
 
+    let fixed = !SVs.draggable || SVs.fixed;
+
     //things to be passed to JSXGraph as attributes
     var jsxCircleAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
       dash: styleToDash(SVs.selectedStyle.lineStyle),
+      fillColor: SVs.selectedStyle.fillColor,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
+      highlightFillColor: SVs.selectedStyle.fillColor,
+      highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
+      highlight: !fixed,
     };
+
+
+    if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
+      jsxCircleAttributes.hasInnerPoints = true;
+    }
+
+    jsxCircleAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxCircleAttributes.label.useMathJax = true
+    }
+
+    if (SVs.showLabel && SVs.label !== "") {
+      if (SVs.applyStyleToLabel) {
+        jsxCircleAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
+      } else {
+        jsxCircleAttributes.label.strokeColor = "#000000";
+      }
+    }
 
     let newCircleJXG = board.create('circle',
       [[...SVs.numericalCenter], SVs.numericalRadius],
@@ -65,7 +96,11 @@ export default function Circle(props) {
 
 
     newCircleJXG.on('drag', function (e) {
-      dragged.current = true;
+      //Protect against very small unintended drags
+      if (Math.abs(e.x - pointerAtDown.current[0]) > .1 ||
+        Math.abs(e.y - pointerAtDown.current[1]) > .1) {
+        dragged.current = true;
+      }
 
       centerCoords.current = calculateCenterPosition(e);
       callAction({
@@ -93,6 +128,10 @@ export default function Circle(props) {
             throughAngles: throughAnglesAtDown.current,
           }
         })
+      } else {
+        callAction({
+          action: actions.circleClicked
+        });
       }
     });
 
@@ -101,7 +140,7 @@ export default function Circle(props) {
       pointerAtDown.current = [e.x, e.y];
       centerAtDown.current = [...newCircleJXG.center.coords.scrCoords];
       radiusAtDown.current = newCircleJXG.radius;
-      throughAnglesAtDown.current = [...SVs.throughAngles];
+      throughAnglesAtDown.current = [...throughAnglesFromCore.current];
     });
 
     previousWithLabel.current = SVs.showLabel && SVs.label !== "";
@@ -183,6 +222,46 @@ export default function Circle(props) {
         // circleJXG.current.setAttribute({visible: false})
       }
 
+      let fixed = !SVs.draggable || SVs.fixed;
+
+
+      circleJXG.current.visProp.fixed = fixed;
+      circleJXG.current.visProp.highlight = !fixed;
+
+      let layer = 10 * SVs.layer + 5;
+      let layerChanged = circleJXG.current.visProp.layer !== layer;
+
+      if (layerChanged) {
+        circleJXG.current.setAttribute({ layer });
+      }
+
+      if (circleJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
+        circleJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
+        circleJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
+      }
+      if (circleJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        circleJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        circleJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
+      if (circleJXG.current.visProp.dash !== newDash) {
+        circleJXG.current.visProp.dash = newDash;
+      }
+      if (circleJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
+        circleJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth
+        circleJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth
+      }
+
+      if (circleJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
+        circleJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.highlightfillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
+      }
+      if (circleJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        circleJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+        circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
+      }
+
       circleJXG.current.name = SVs.label;
 
       let withlabel = SVs.showLabel && SVs.label !== "";
@@ -192,8 +271,14 @@ export default function Circle(props) {
       }
 
       circleJXG.current.needsUpdate = true;
-      circleJXG.current.update()
+      circleJXG.current.update();
+
       if (circleJXG.current.hasLabel) {
+        if (SVs.applyStyleToLabel) {
+          circleJXG.current.label.visProp.strokecolor = SVs.selectedStyle.lineColor
+        } else {
+          circleJXG.current.label.visProp.strokecolor = "#000000";
+        }
         circleJXG.current.label.needsUpdate = true;
         circleJXG.current.label.update();
       }
@@ -207,7 +292,7 @@ export default function Circle(props) {
 
   return <a name={name} />
 
-}
+})
 
 
 

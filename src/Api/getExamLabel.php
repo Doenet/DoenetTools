@@ -33,7 +33,7 @@ if ($userId == ""){
 
 if ($success){
 
-	$contentId = null;
+	$cid = null;
 
 	$sql = "
 		SELECT label

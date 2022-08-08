@@ -110,7 +110,7 @@ if ($success){
         ";
     }else{
         $sql = "
-        INSERT INTO user_assignment_attempt (doenetId,contentId,userId,attemptNumber,credit,creditOverride)
+        INSERT INTO user_assignment_attempt (doenetId,cid,userId,attemptNumber,credit,creditOverride)
         VALUES
         ('$doenetId','e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855','$emailUserId','$attemptNumber','$credit','$credit')
         ";
@@ -173,7 +173,7 @@ if ($success){
     if ($need_insert){
         // insert credit in user_assigment
         $sql = "
-        INSERT INTO user_assignment (doenetId,contentId,userId,credit)
+        INSERT INTO user_assignment (doenetId,cid,userId,credit)
         VALUES
         ('$doenetId','e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855','$emailUserId','$credit_for_assignment')
         ";

@@ -1,10 +1,11 @@
-import { d as fails, _ as _export, J as objectGetOwnPropertyNamesExternal, g as global_1, K as objectToArray, L as toAbsoluteIndex, G as stringRepeat } from './common/es.string.starts-with-d5b5fac4.js';
+import { g as engineIsIos, h as engineIsNode, t as task$1, i as speciesConstructor, o as objectToArray, s as stringRepeat } from './common/es.string.starts-with-96c3abce.js';
+import { h as fails, _ as _export, aq as objectGetOwnPropertyNamesExternal, ar as defineWellKnownSymbol, as as setToStringTag, am as getBuiltIn, g as global_1, e as engineUserAgent, $ as functionBindContext, y as objectGetOwnPropertyDescriptor, R as wellKnownSymbol, i as isCallable, I as isForced_1, at as inspectSource, C as engineV8Version, D as aCallable, aa as internalState, K as defineBuiltIn, u as objectSetPrototypeOf, a9 as setSpecies, af as anInstance, m as functionCall, j as isObject$1, au as checkCorrectnessOfIteration, ag as iterate, n as anObject, av as mathTrunc, f as functionUncurryThis, H as toAbsoluteIndex } from './common/es.function.name-3b0da0e4.js';
 import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-f5d70792.js';
-import './common/es.string.ends-with-e8fa5a41.js';
+import './common/es.string.ends-with-176c3fe0.js';
 
 var getOwnPropertyNames = objectGetOwnPropertyNamesExternal.f;
 
-// eslint-disable-next-line es/no-object-getownpropertynames -- required for testing
+// eslint-disable-next-line es-x/no-object-getownpropertynames -- required for testing
 var FAILS_ON_PRIMITIVES = fails(function () { return !Object.getOwnPropertyNames(1); });
 
 // `Object.getOwnPropertyNames` method
@@ -13,761 +14,605 @@ _export({ target: 'Object', stat: true, forced: FAILS_ON_PRIMITIVES }, {
   getOwnPropertyNames: getOwnPropertyNames
 });
 
-var runtime_1 = createCommonjsModule(function (module) {
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+// `Symbol.asyncIterator` well-known symbol
+// https://tc39.es/ecma262/#sec-symbol.asynciterator
+defineWellKnownSymbol('asyncIterator');
 
-var runtime = (function (exports) {
+// `Symbol.toStringTag` well-known symbol
+// https://tc39.es/ecma262/#sec-symbol.tostringtag
+defineWellKnownSymbol('toStringTag');
 
-  var Op = Object.prototype;
-  var hasOwn = Op.hasOwnProperty;
-  var undefined$1; // More compressible than void 0.
-  var $Symbol = typeof Symbol === "function" ? Symbol : {};
-  var iteratorSymbol = $Symbol.iterator || "@@iterator";
-  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
-  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+// `Symbol.prototype[@@toStringTag]` property
+// https://tc39.es/ecma262/#sec-symbol.prototype-@@tostringtag
+setToStringTag(getBuiltIn('Symbol'), 'Symbol');
 
-  function define(obj, key, value) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-    return obj[key];
-  }
-  try {
-    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
-    define({}, "");
-  } catch (err) {
-    define = function(obj, key, value) {
-      return obj[key] = value;
-    };
-  }
+// JSON[@@toStringTag] property
+// https://tc39.es/ecma262/#sec-json-@@tostringtag
+setToStringTag(global_1.JSON, 'JSON', true);
 
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
-    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
-    var generator = Object.create(protoGenerator.prototype);
-    var context = new Context(tryLocsList || []);
+// Math[@@toStringTag] property
+// https://tc39.es/ecma262/#sec-math-@@tostringtag
+setToStringTag(Math, 'Math', true);
 
-    // The ._invoke method unifies the implementations of the .next,
-    // .throw, and .return methods.
-    generator._invoke = makeInvokeMethod(innerFn, self, context);
+var engineIsIosPebble = /ipad|iphone|ipod/i.test(engineUserAgent) && global_1.Pebble !== undefined;
 
-    return generator;
-  }
-  exports.wrap = wrap;
+var engineIsWebosWebkit = /web0s(?!.*chrome)/i.test(engineUserAgent);
 
-  // Try/catch helper to minimize deoptimizations. Returns a completion
-  // record like context.tryEntries[i].completion. This interface could
-  // have been (and was previously) designed to take a closure to be
-  // invoked without arguments, but in all the cases we care about we
-  // already have an existing method we want to call, so there's no need
-  // to create a new function object. We can even get away with assuming
-  // the method takes exactly one argument, since that happens to be true
-  // in every case, so we don't have to touch the arguments object. The
-  // only additional allocation required is the completion record, which
-  // has a stable shape and so hopefully should be cheap to allocate.
-  function tryCatch(fn, obj, arg) {
-    try {
-      return { type: "normal", arg: fn.call(obj, arg) };
-    } catch (err) {
-      return { type: "throw", arg: err };
-    }
-  }
+var getOwnPropertyDescriptor = objectGetOwnPropertyDescriptor.f;
+var macrotask = task$1.set;
 
-  var GenStateSuspendedStart = "suspendedStart";
-  var GenStateSuspendedYield = "suspendedYield";
-  var GenStateExecuting = "executing";
-  var GenStateCompleted = "completed";
 
-  // Returning this object from the innerFn has the same effect as
-  // breaking out of the dispatch switch statement.
-  var ContinueSentinel = {};
 
-  // Dummy constructor functions that we use as the .constructor and
-  // .constructor.prototype properties for functions that return Generator
-  // objects. For full spec compliance, you may wish to configure your
-  // minifier not to mangle the names of these two functions.
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
 
-  // This is a polyfill for %IteratorPrototype% for environments that
-  // don't natively support it.
-  var IteratorPrototype = {};
-  IteratorPrototype[iteratorSymbol] = function () {
-    return this;
+
+var MutationObserver = global_1.MutationObserver || global_1.WebKitMutationObserver;
+var document = global_1.document;
+var process = global_1.process;
+var Promise$1 = global_1.Promise;
+// Node.js 11 shows ExperimentalWarning on getting `queueMicrotask`
+var queueMicrotaskDescriptor = getOwnPropertyDescriptor(global_1, 'queueMicrotask');
+var queueMicrotask = queueMicrotaskDescriptor && queueMicrotaskDescriptor.value;
+
+var flush, head, last, notify, toggle, node, promise, then;
+
+// modern engines have queueMicrotask method
+if (!queueMicrotask) {
+  flush = function () {
+    var parent, fn;
+    if (engineIsNode && (parent = process.domain)) parent.exit();
+    while (head) {
+      fn = head.fn;
+      head = head.next;
+      try {
+        fn();
+      } catch (error) {
+        if (head) notify();
+        else last = undefined;
+        throw error;
+      }
+    } last = undefined;
+    if (parent) parent.enter();
   };
 
-  var getProto = Object.getPrototypeOf;
-  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
-  if (NativeIteratorPrototype &&
-      NativeIteratorPrototype !== Op &&
-      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
-    // This environment has a native %IteratorPrototype%; use it instead
-    // of the polyfill.
-    IteratorPrototype = NativeIteratorPrototype;
+  // browsers with MutationObserver, except iOS - https://github.com/zloirock/core-js/issues/339
+  // also except WebOS Webkit https://github.com/zloirock/core-js/issues/898
+  if (!engineIsIos && !engineIsNode && !engineIsWebosWebkit && MutationObserver && document) {
+    toggle = true;
+    node = document.createTextNode('');
+    new MutationObserver(flush).observe(node, { characterData: true });
+    notify = function () {
+      node.data = toggle = !toggle;
+    };
+  // environments with maybe non-completely correct, but existent Promise
+  } else if (!engineIsIosPebble && Promise$1 && Promise$1.resolve) {
+    // Promise.resolve without an argument throws an error in LG WebOS 2
+    promise = Promise$1.resolve(undefined);
+    // workaround of WebKit ~ iOS Safari 10.1 bug
+    promise.constructor = Promise$1;
+    then = functionBindContext(promise.then, promise);
+    notify = function () {
+      then(flush);
+    };
+  // Node.js without promises
+  } else if (engineIsNode) {
+    notify = function () {
+      process.nextTick(flush);
+    };
+  // for other environments - macrotask based on:
+  // - setImmediate
+  // - MessageChannel
+  // - window.postMessage
+  // - onreadystatechange
+  // - setTimeout
+  } else {
+    // strange IE + webpack dev server bug - use .bind(global)
+    macrotask = functionBindContext(macrotask, global_1);
+    notify = function () {
+      macrotask(flush);
+    };
   }
+}
 
-  var Gp = GeneratorFunctionPrototype.prototype =
-    Generator.prototype = Object.create(IteratorPrototype);
-  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunction.displayName = define(
-    GeneratorFunctionPrototype,
-    toStringTagSymbol,
-    "GeneratorFunction"
-  );
+var microtask = queueMicrotask || function (fn) {
+  var task = { fn: fn, next: undefined };
+  if (last) last.next = task;
+  if (!head) {
+    head = task;
+    notify();
+  } last = task;
+};
 
-  // Helper for defining the .next, .throw, and .return methods of the
-  // Iterator interface in terms of a single ._invoke method.
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function(method) {
-      define(prototype, method, function(arg) {
-        return this._invoke(method, arg);
+var hostReportErrors = function (a, b) {
+  var console = global_1.console;
+  if (console && console.error) {
+    arguments.length == 1 ? console.error(a) : console.error(a, b);
+  }
+};
+
+var perform = function (exec) {
+  try {
+    return { error: false, value: exec() };
+  } catch (error) {
+    return { error: true, value: error };
+  }
+};
+
+var Queue = function () {
+  this.head = null;
+  this.tail = null;
+};
+
+Queue.prototype = {
+  add: function (item) {
+    var entry = { item: item, next: null };
+    if (this.head) this.tail.next = entry;
+    else this.head = entry;
+    this.tail = entry;
+  },
+  get: function () {
+    var entry = this.head;
+    if (entry) {
+      this.head = entry.next;
+      if (this.tail === entry) this.tail = null;
+      return entry.item;
+    }
+  }
+};
+
+var queue = Queue;
+
+var promiseNativeConstructor = global_1.Promise;
+
+var engineIsBrowser = typeof window == 'object' && typeof Deno != 'object';
+
+var NativePromisePrototype = promiseNativeConstructor && promiseNativeConstructor.prototype;
+var SPECIES = wellKnownSymbol('species');
+var SUBCLASSING = false;
+var NATIVE_PROMISE_REJECTION_EVENT = isCallable(global_1.PromiseRejectionEvent);
+
+var FORCED_PROMISE_CONSTRUCTOR = isForced_1('Promise', function () {
+  var PROMISE_CONSTRUCTOR_SOURCE = inspectSource(promiseNativeConstructor);
+  var GLOBAL_CORE_JS_PROMISE = PROMISE_CONSTRUCTOR_SOURCE !== String(promiseNativeConstructor);
+  // V8 6.6 (Node 10 and Chrome 66) have a bug with resolving custom thenables
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=830565
+  // We can't detect it synchronously, so just check versions
+  if (!GLOBAL_CORE_JS_PROMISE && engineV8Version === 66) return true;
+  // We can't use @@species feature detection in V8 since it causes
+  // deoptimization and performance degradation
+  // https://github.com/zloirock/core-js/issues/679
+  if (engineV8Version >= 51 && /native code/.test(PROMISE_CONSTRUCTOR_SOURCE)) return false;
+  // Detect correctness of subclassing with @@species support
+  var promise = new promiseNativeConstructor(function (resolve) { resolve(1); });
+  var FakePromise = function (exec) {
+    exec(function () { /* empty */ }, function () { /* empty */ });
+  };
+  var constructor = promise.constructor = {};
+  constructor[SPECIES] = FakePromise;
+  SUBCLASSING = promise.then(function () { /* empty */ }) instanceof FakePromise;
+  if (!SUBCLASSING) return true;
+  // Unhandled rejections tracking support, NodeJS Promise without it fails @@species test
+  return !GLOBAL_CORE_JS_PROMISE && engineIsBrowser && !NATIVE_PROMISE_REJECTION_EVENT;
+});
+
+var promiseConstructorDetection = {
+  CONSTRUCTOR: FORCED_PROMISE_CONSTRUCTOR,
+  REJECTION_EVENT: NATIVE_PROMISE_REJECTION_EVENT,
+  SUBCLASSING: SUBCLASSING
+};
+
+var PromiseCapability = function (C) {
+  var resolve, reject;
+  this.promise = new C(function ($$resolve, $$reject) {
+    if (resolve !== undefined || reject !== undefined) throw TypeError('Bad Promise constructor');
+    resolve = $$resolve;
+    reject = $$reject;
+  });
+  this.resolve = aCallable(resolve);
+  this.reject = aCallable(reject);
+};
+
+// `NewPromiseCapability` abstract operation
+// https://tc39.es/ecma262/#sec-newpromisecapability
+var f = function (C) {
+  return new PromiseCapability(C);
+};
+
+var newPromiseCapability = {
+	f: f
+};
+
+var task = task$1.set;
+
+
+
+
+
+
+
+
+
+var PROMISE = 'Promise';
+var FORCED_PROMISE_CONSTRUCTOR$1 = promiseConstructorDetection.CONSTRUCTOR;
+var NATIVE_PROMISE_REJECTION_EVENT$1 = promiseConstructorDetection.REJECTION_EVENT;
+var NATIVE_PROMISE_SUBCLASSING = promiseConstructorDetection.SUBCLASSING;
+var getInternalPromiseState = internalState.getterFor(PROMISE);
+var setInternalState = internalState.set;
+var NativePromisePrototype$1 = promiseNativeConstructor && promiseNativeConstructor.prototype;
+var PromiseConstructor = promiseNativeConstructor;
+var PromisePrototype = NativePromisePrototype$1;
+var TypeError$1 = global_1.TypeError;
+var document$1 = global_1.document;
+var process$1 = global_1.process;
+var newPromiseCapability$1 = newPromiseCapability.f;
+var newGenericPromiseCapability = newPromiseCapability$1;
+
+var DISPATCH_EVENT = !!(document$1 && document$1.createEvent && global_1.dispatchEvent);
+var UNHANDLED_REJECTION = 'unhandledrejection';
+var REJECTION_HANDLED = 'rejectionhandled';
+var PENDING = 0;
+var FULFILLED = 1;
+var REJECTED = 2;
+var HANDLED = 1;
+var UNHANDLED = 2;
+
+var Internal, OwnPromiseCapability, PromiseWrapper, nativeThen;
+
+// helpers
+var isThenable = function (it) {
+  var then;
+  return isObject$1(it) && isCallable(then = it.then) ? then : false;
+};
+
+var callReaction = function (reaction, state) {
+  var value = state.value;
+  var ok = state.state == FULFILLED;
+  var handler = ok ? reaction.ok : reaction.fail;
+  var resolve = reaction.resolve;
+  var reject = reaction.reject;
+  var domain = reaction.domain;
+  var result, then, exited;
+  try {
+    if (handler) {
+      if (!ok) {
+        if (state.rejection === UNHANDLED) onHandleUnhandled(state);
+        state.rejection = HANDLED;
+      }
+      if (handler === true) result = value;
+      else {
+        if (domain) domain.enter();
+        result = handler(value); // can throw
+        if (domain) {
+          domain.exit();
+          exited = true;
+        }
+      }
+      if (result === reaction.promise) {
+        reject(TypeError$1('Promise-chain cycle'));
+      } else if (then = isThenable(result)) {
+        functionCall(then, result, resolve, reject);
+      } else resolve(result);
+    } else reject(value);
+  } catch (error) {
+    if (domain && !exited) domain.exit();
+    reject(error);
+  }
+};
+
+var notify$1 = function (state, isReject) {
+  if (state.notified) return;
+  state.notified = true;
+  microtask(function () {
+    var reactions = state.reactions;
+    var reaction;
+    while (reaction = reactions.get()) {
+      callReaction(reaction, state);
+    }
+    state.notified = false;
+    if (isReject && !state.rejection) onUnhandled(state);
+  });
+};
+
+var dispatchEvent = function (name, promise, reason) {
+  var event, handler;
+  if (DISPATCH_EVENT) {
+    event = document$1.createEvent('Event');
+    event.promise = promise;
+    event.reason = reason;
+    event.initEvent(name, false, true);
+    global_1.dispatchEvent(event);
+  } else event = { promise: promise, reason: reason };
+  if (!NATIVE_PROMISE_REJECTION_EVENT$1 && (handler = global_1['on' + name])) handler(event);
+  else if (name === UNHANDLED_REJECTION) hostReportErrors('Unhandled promise rejection', reason);
+};
+
+var onUnhandled = function (state) {
+  functionCall(task, global_1, function () {
+    var promise = state.facade;
+    var value = state.value;
+    var IS_UNHANDLED = isUnhandled(state);
+    var result;
+    if (IS_UNHANDLED) {
+      result = perform(function () {
+        if (engineIsNode) {
+          process$1.emit('unhandledRejection', value, promise);
+        } else dispatchEvent(UNHANDLED_REJECTION, promise, value);
+      });
+      // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should
+      state.rejection = engineIsNode || isUnhandled(state) ? UNHANDLED : HANDLED;
+      if (result.error) throw result.value;
+    }
+  });
+};
+
+var isUnhandled = function (state) {
+  return state.rejection !== HANDLED && !state.parent;
+};
+
+var onHandleUnhandled = function (state) {
+  functionCall(task, global_1, function () {
+    var promise = state.facade;
+    if (engineIsNode) {
+      process$1.emit('rejectionHandled', promise);
+    } else dispatchEvent(REJECTION_HANDLED, promise, state.value);
+  });
+};
+
+var bind = function (fn, state, unwrap) {
+  return function (value) {
+    fn(state, value, unwrap);
+  };
+};
+
+var internalReject = function (state, value, unwrap) {
+  if (state.done) return;
+  state.done = true;
+  if (unwrap) state = unwrap;
+  state.value = value;
+  state.state = REJECTED;
+  notify$1(state, true);
+};
+
+var internalResolve = function (state, value, unwrap) {
+  if (state.done) return;
+  state.done = true;
+  if (unwrap) state = unwrap;
+  try {
+    if (state.facade === value) throw TypeError$1("Promise can't be resolved itself");
+    var then = isThenable(value);
+    if (then) {
+      microtask(function () {
+        var wrapper = { done: false };
+        try {
+          functionCall(then, value,
+            bind(internalResolve, wrapper, state),
+            bind(internalReject, wrapper, state)
+          );
+        } catch (error) {
+          internalReject(wrapper, error, state);
+        }
+      });
+    } else {
+      state.value = value;
+      state.state = FULFILLED;
+      notify$1(state, false);
+    }
+  } catch (error) {
+    internalReject({ done: false }, error, state);
+  }
+};
+
+// constructor polyfill
+if (FORCED_PROMISE_CONSTRUCTOR$1) {
+  // 25.4.3.1 Promise(executor)
+  PromiseConstructor = function Promise(executor) {
+    anInstance(this, PromisePrototype);
+    aCallable(executor);
+    functionCall(Internal, this);
+    var state = getInternalPromiseState(this);
+    try {
+      executor(bind(internalResolve, state), bind(internalReject, state));
+    } catch (error) {
+      internalReject(state, error);
+    }
+  };
+
+  PromisePrototype = PromiseConstructor.prototype;
+
+  // eslint-disable-next-line no-unused-vars -- required for `.length`
+  Internal = function Promise(executor) {
+    setInternalState(this, {
+      type: PROMISE,
+      done: false,
+      notified: false,
+      parent: false,
+      reactions: new queue(),
+      rejection: false,
+      state: PENDING,
+      value: undefined
+    });
+  };
+
+  // `Promise.prototype.then` method
+  // https://tc39.es/ecma262/#sec-promise.prototype.then
+  Internal.prototype = defineBuiltIn(PromisePrototype, 'then', function then(onFulfilled, onRejected) {
+    var state = getInternalPromiseState(this);
+    var reaction = newPromiseCapability$1(speciesConstructor(this, PromiseConstructor));
+    state.parent = true;
+    reaction.ok = isCallable(onFulfilled) ? onFulfilled : true;
+    reaction.fail = isCallable(onRejected) && onRejected;
+    reaction.domain = engineIsNode ? process$1.domain : undefined;
+    if (state.state == PENDING) state.reactions.add(reaction);
+    else microtask(function () {
+      callReaction(reaction, state);
+    });
+    return reaction.promise;
+  });
+
+  OwnPromiseCapability = function () {
+    var promise = new Internal();
+    var state = getInternalPromiseState(promise);
+    this.promise = promise;
+    this.resolve = bind(internalResolve, state);
+    this.reject = bind(internalReject, state);
+  };
+
+  newPromiseCapability.f = newPromiseCapability$1 = function (C) {
+    return C === PromiseConstructor || C === PromiseWrapper
+      ? new OwnPromiseCapability(C)
+      : newGenericPromiseCapability(C);
+  };
+
+  if ( isCallable(promiseNativeConstructor) && NativePromisePrototype$1 !== Object.prototype) {
+    nativeThen = NativePromisePrototype$1.then;
+
+    if (!NATIVE_PROMISE_SUBCLASSING) {
+      // make `Promise#then` return a polyfilled `Promise` for native promise-based APIs
+      defineBuiltIn(NativePromisePrototype$1, 'then', function then(onFulfilled, onRejected) {
+        var that = this;
+        return new PromiseConstructor(function (resolve, reject) {
+          functionCall(nativeThen, that, resolve, reject);
+        }).then(onFulfilled, onRejected);
+      // https://github.com/zloirock/core-js/issues/640
+      }, { unsafe: true });
+    }
+
+    // make `.constructor === Promise` work for native promise-based APIs
+    try {
+      delete NativePromisePrototype$1.constructor;
+    } catch (error) { /* empty */ }
+
+    // make `instanceof Promise` work for native promise-based APIs
+    if (objectSetPrototypeOf) {
+      objectSetPrototypeOf(NativePromisePrototype$1, PromisePrototype);
+    }
+  }
+}
+
+_export({ global: true, constructor: true, wrap: true, forced: FORCED_PROMISE_CONSTRUCTOR$1 }, {
+  Promise: PromiseConstructor
+});
+
+setToStringTag(PromiseConstructor, PROMISE, false);
+setSpecies(PROMISE);
+
+var FORCED_PROMISE_CONSTRUCTOR$2 = promiseConstructorDetection.CONSTRUCTOR;
+
+var promiseStaticsIncorrectIteration = FORCED_PROMISE_CONSTRUCTOR$2 || !checkCorrectnessOfIteration(function (iterable) {
+  promiseNativeConstructor.all(iterable).then(undefined, function () { /* empty */ });
+});
+
+// `Promise.all` method
+// https://tc39.es/ecma262/#sec-promise.all
+_export({ target: 'Promise', stat: true, forced: promiseStaticsIncorrectIteration }, {
+  all: function all(iterable) {
+    var C = this;
+    var capability = newPromiseCapability.f(C);
+    var resolve = capability.resolve;
+    var reject = capability.reject;
+    var result = perform(function () {
+      var $promiseResolve = aCallable(C.resolve);
+      var values = [];
+      var counter = 0;
+      var remaining = 1;
+      iterate(iterable, function (promise) {
+        var index = counter++;
+        var alreadyCalled = false;
+        remaining++;
+        functionCall($promiseResolve, C, promise).then(function (value) {
+          if (alreadyCalled) return;
+          alreadyCalled = true;
+          values[index] = value;
+          --remaining || resolve(values);
+        }, reject);
+      });
+      --remaining || resolve(values);
+    });
+    if (result.error) reject(result.value);
+    return capability.promise;
+  }
+});
+
+var FORCED_PROMISE_CONSTRUCTOR$3 = promiseConstructorDetection.CONSTRUCTOR;
+
+
+
+
+
+var NativePromisePrototype$2 = promiseNativeConstructor && promiseNativeConstructor.prototype;
+
+// `Promise.prototype.catch` method
+// https://tc39.es/ecma262/#sec-promise.prototype.catch
+_export({ target: 'Promise', proto: true, forced: FORCED_PROMISE_CONSTRUCTOR$3, real: true }, {
+  'catch': function (onRejected) {
+    return this.then(undefined, onRejected);
+  }
+});
+
+// makes sure that native promise-based APIs `Promise#catch` properly works with patched `Promise#then`
+if ( isCallable(promiseNativeConstructor)) {
+  var method = getBuiltIn('Promise').prototype['catch'];
+  if (NativePromisePrototype$2['catch'] !== method) {
+    defineBuiltIn(NativePromisePrototype$2, 'catch', method, { unsafe: true });
+  }
+}
+
+// `Promise.race` method
+// https://tc39.es/ecma262/#sec-promise.race
+_export({ target: 'Promise', stat: true, forced: promiseStaticsIncorrectIteration }, {
+  race: function race(iterable) {
+    var C = this;
+    var capability = newPromiseCapability.f(C);
+    var reject = capability.reject;
+    var result = perform(function () {
+      var $promiseResolve = aCallable(C.resolve);
+      iterate(iterable, function (promise) {
+        functionCall($promiseResolve, C, promise).then(capability.resolve, reject);
       });
     });
+    if (result.error) reject(result.value);
+    return capability.promise;
   }
+});
 
-  exports.isGeneratorFunction = function(genFun) {
-    var ctor = typeof genFun === "function" && genFun.constructor;
-    return ctor
-      ? ctor === GeneratorFunction ||
-        // For the native GeneratorFunction constructor, the best we can
-        // do is to check its .name property.
-        (ctor.displayName || ctor.name) === "GeneratorFunction"
-      : false;
-  };
+var FORCED_PROMISE_CONSTRUCTOR$4 = promiseConstructorDetection.CONSTRUCTOR;
 
-  exports.mark = function(genFun) {
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
-    } else {
-      genFun.__proto__ = GeneratorFunctionPrototype;
-      define(genFun, toStringTagSymbol, "GeneratorFunction");
-    }
-    genFun.prototype = Object.create(Gp);
-    return genFun;
-  };
-
-  // Within the body of any async function, `await x` is transformed to
-  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-  // `hasOwn.call(value, "__await")` to determine if the yielded value is
-  // meant to be awaited.
-  exports.awrap = function(arg) {
-    return { __await: arg };
-  };
-
-  function AsyncIterator(generator, PromiseImpl) {
-    function invoke(method, arg, resolve, reject) {
-      var record = tryCatch(generator[method], generator, arg);
-      if (record.type === "throw") {
-        reject(record.arg);
-      } else {
-        var result = record.arg;
-        var value = result.value;
-        if (value &&
-            typeof value === "object" &&
-            hasOwn.call(value, "__await")) {
-          return PromiseImpl.resolve(value.__await).then(function(value) {
-            invoke("next", value, resolve, reject);
-          }, function(err) {
-            invoke("throw", err, resolve, reject);
-          });
-        }
-
-        return PromiseImpl.resolve(value).then(function(unwrapped) {
-          // When a yielded Promise is resolved, its final value becomes
-          // the .value of the Promise<{value,done}> result for the
-          // current iteration.
-          result.value = unwrapped;
-          resolve(result);
-        }, function(error) {
-          // If a rejected Promise was yielded, throw the rejection back
-          // into the async generator function so it can be handled there.
-          return invoke("throw", error, resolve, reject);
-        });
-      }
-    }
-
-    var previousPromise;
-
-    function enqueue(method, arg) {
-      function callInvokeWithMethodAndArg() {
-        return new PromiseImpl(function(resolve, reject) {
-          invoke(method, arg, resolve, reject);
-        });
-      }
-
-      return previousPromise =
-        // If enqueue has been called before, then we want to wait until
-        // all previous Promises have been resolved before calling invoke,
-        // so that results are always delivered in the correct order. If
-        // enqueue has not been called before, then it is important to
-        // call invoke immediately, without waiting on a callback to fire,
-        // so that the async generator function has the opportunity to do
-        // any necessary setup in a predictable way. This predictability
-        // is why the Promise constructor synchronously invokes its
-        // executor callback, and why async functions synchronously
-        // execute code before the first await. Since we implement simple
-        // async functions in terms of async generators, it is especially
-        // important to get this right, even though it requires care.
-        previousPromise ? previousPromise.then(
-          callInvokeWithMethodAndArg,
-          // Avoid propagating failures to Promises returned by later
-          // invocations of the iterator.
-          callInvokeWithMethodAndArg
-        ) : callInvokeWithMethodAndArg();
-    }
-
-    // Define the unified helper method that is used to implement .next,
-    // .throw, and .return (see defineIteratorMethods).
-    this._invoke = enqueue;
+// `Promise.reject` method
+// https://tc39.es/ecma262/#sec-promise.reject
+_export({ target: 'Promise', stat: true, forced: FORCED_PROMISE_CONSTRUCTOR$4 }, {
+  reject: function reject(r) {
+    var capability = newPromiseCapability.f(this);
+    functionCall(capability.reject, undefined, r);
+    return capability.promise;
   }
+});
 
-  defineIteratorMethods(AsyncIterator.prototype);
-  AsyncIterator.prototype[asyncIteratorSymbol] = function () {
-    return this;
-  };
-  exports.AsyncIterator = AsyncIterator;
+var promiseResolve = function (C, x) {
+  anObject(C);
+  if (isObject$1(x) && x.constructor === C) return x;
+  var promiseCapability = newPromiseCapability.f(C);
+  var resolve = promiseCapability.resolve;
+  resolve(x);
+  return promiseCapability.promise;
+};
 
-  // Note that simple async functions are implemented on top of
-  // AsyncIterator objects; they just return a Promise for the value of
-  // the final result produced by the iterator.
-  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
-    if (PromiseImpl === void 0) PromiseImpl = Promise;
+var FORCED_PROMISE_CONSTRUCTOR$5 = promiseConstructorDetection.CONSTRUCTOR;
 
-    var iter = new AsyncIterator(
-      wrap(innerFn, outerFn, self, tryLocsList),
-      PromiseImpl
-    );
 
-    return exports.isGeneratorFunction(outerFn)
-      ? iter // If outerFn is a generator, return the full iterator.
-      : iter.next().then(function(result) {
-          return result.done ? result.value : iter.next();
-        });
-  };
+var PromiseConstructorWrapper = getBuiltIn('Promise');
 
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = GenStateSuspendedStart;
-
-    return function invoke(method, arg) {
-      if (state === GenStateExecuting) {
-        throw new Error("Generator is already running");
-      }
-
-      if (state === GenStateCompleted) {
-        if (method === "throw") {
-          throw arg;
-        }
-
-        // Be forgiving, per 25.3.3.3.3 of the spec:
-        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
-        return doneResult();
-      }
-
-      context.method = method;
-      context.arg = arg;
-
-      while (true) {
-        var delegate = context.delegate;
-        if (delegate) {
-          var delegateResult = maybeInvokeDelegate(delegate, context);
-          if (delegateResult) {
-            if (delegateResult === ContinueSentinel) continue;
-            return delegateResult;
-          }
-        }
-
-        if (context.method === "next") {
-          // Setting context._sent for legacy support of Babel's
-          // function.sent implementation.
-          context.sent = context._sent = context.arg;
-
-        } else if (context.method === "throw") {
-          if (state === GenStateSuspendedStart) {
-            state = GenStateCompleted;
-            throw context.arg;
-          }
-
-          context.dispatchException(context.arg);
-
-        } else if (context.method === "return") {
-          context.abrupt("return", context.arg);
-        }
-
-        state = GenStateExecuting;
-
-        var record = tryCatch(innerFn, self, context);
-        if (record.type === "normal") {
-          // If an exception is thrown from innerFn, we leave state ===
-          // GenStateExecuting and loop back for another invocation.
-          state = context.done
-            ? GenStateCompleted
-            : GenStateSuspendedYield;
-
-          if (record.arg === ContinueSentinel) {
-            continue;
-          }
-
-          return {
-            value: record.arg,
-            done: context.done
-          };
-
-        } else if (record.type === "throw") {
-          state = GenStateCompleted;
-          // Dispatch the exception by looping back around to the
-          // context.dispatchException(context.arg) call above.
-          context.method = "throw";
-          context.arg = record.arg;
-        }
-      }
-    };
+// `Promise.resolve` method
+// https://tc39.es/ecma262/#sec-promise.resolve
+_export({ target: 'Promise', stat: true, forced:  FORCED_PROMISE_CONSTRUCTOR$5 }, {
+  resolve: function resolve(x) {
+    return promiseResolve( this, x);
   }
-
-  // Call delegate.iterator[context.method](context.arg) and handle the
-  // result, either by returning a { value, done } result from the
-  // delegate iterator, or by modifying context.method and context.arg,
-  // setting context.delegate to null, and returning the ContinueSentinel.
-  function maybeInvokeDelegate(delegate, context) {
-    var method = delegate.iterator[context.method];
-    if (method === undefined$1) {
-      // A .throw or .return when the delegate iterator has no .throw
-      // method always terminates the yield* loop.
-      context.delegate = null;
-
-      if (context.method === "throw") {
-        // Note: ["return"] must be used for ES3 parsing compatibility.
-        if (delegate.iterator["return"]) {
-          // If the delegate iterator has a return method, give it a
-          // chance to clean up.
-          context.method = "return";
-          context.arg = undefined$1;
-          maybeInvokeDelegate(delegate, context);
-
-          if (context.method === "throw") {
-            // If maybeInvokeDelegate(context) changed context.method from
-            // "return" to "throw", let that override the TypeError below.
-            return ContinueSentinel;
-          }
-        }
-
-        context.method = "throw";
-        context.arg = new TypeError(
-          "The iterator does not provide a 'throw' method");
-      }
-
-      return ContinueSentinel;
-    }
-
-    var record = tryCatch(method, delegate.iterator, context.arg);
-
-    if (record.type === "throw") {
-      context.method = "throw";
-      context.arg = record.arg;
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    var info = record.arg;
-
-    if (! info) {
-      context.method = "throw";
-      context.arg = new TypeError("iterator result is not an object");
-      context.delegate = null;
-      return ContinueSentinel;
-    }
-
-    if (info.done) {
-      // Assign the result of the finished delegate to the temporary
-      // variable specified by delegate.resultName (see delegateYield).
-      context[delegate.resultName] = info.value;
-
-      // Resume execution at the desired location (see delegateYield).
-      context.next = delegate.nextLoc;
-
-      // If context.method was "throw" but the delegate handled the
-      // exception, let the outer generator proceed normally. If
-      // context.method was "next", forget context.arg since it has been
-      // "consumed" by the delegate iterator. If context.method was
-      // "return", allow the original .return call to continue in the
-      // outer generator.
-      if (context.method !== "return") {
-        context.method = "next";
-        context.arg = undefined$1;
-      }
-
-    } else {
-      // Re-yield the result returned by the delegate method.
-      return info;
-    }
-
-    // The delegate iterator is finished, so forget it and continue with
-    // the outer generator.
-    context.delegate = null;
-    return ContinueSentinel;
-  }
-
-  // Define Generator.prototype.{next,throw,return} in terms of the
-  // unified ._invoke helper method.
-  defineIteratorMethods(Gp);
-
-  define(Gp, toStringTagSymbol, "Generator");
-
-  // A Generator should always return itself as the iterator object when the
-  // @@iterator function is called on it. Some browsers' implementations of the
-  // iterator prototype chain incorrectly implement this, causing the Generator
-  // object to not be returned from this call. This ensures that doesn't happen.
-  // See https://github.com/facebook/regenerator/issues/274 for more details.
-  Gp[iteratorSymbol] = function() {
-    return this;
-  };
-
-  Gp.toString = function() {
-    return "[object Generator]";
-  };
-
-  function pushTryEntry(locs) {
-    var entry = { tryLoc: locs[0] };
-
-    if (1 in locs) {
-      entry.catchLoc = locs[1];
-    }
-
-    if (2 in locs) {
-      entry.finallyLoc = locs[2];
-      entry.afterLoc = locs[3];
-    }
-
-    this.tryEntries.push(entry);
-  }
-
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal";
-    delete record.arg;
-    entry.completion = record;
-  }
-
-  function Context(tryLocsList) {
-    // The root entry object (effectively a try statement without a catch
-    // or a finally block) gives us a place to store values thrown from
-    // locations where there is no enclosing try statement.
-    this.tryEntries = [{ tryLoc: "root" }];
-    tryLocsList.forEach(pushTryEntry, this);
-    this.reset(true);
-  }
-
-  exports.keys = function(object) {
-    var keys = [];
-    for (var key in object) {
-      keys.push(key);
-    }
-    keys.reverse();
-
-    // Rather than returning an object with a next method, we keep
-    // things simple and return the next function itself.
-    return function next() {
-      while (keys.length) {
-        var key = keys.pop();
-        if (key in object) {
-          next.value = key;
-          next.done = false;
-          return next;
-        }
-      }
-
-      // To avoid creating an additional object, we just hang the .value
-      // and .done properties off the next function object itself. This
-      // also ensures that the minifier will not anonymize the function.
-      next.done = true;
-      return next;
-    };
-  };
-
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) {
-        return iteratorMethod.call(iterable);
-      }
-
-      if (typeof iterable.next === "function") {
-        return iterable;
-      }
-
-      if (!isNaN(iterable.length)) {
-        var i = -1, next = function next() {
-          while (++i < iterable.length) {
-            if (hasOwn.call(iterable, i)) {
-              next.value = iterable[i];
-              next.done = false;
-              return next;
-            }
-          }
-
-          next.value = undefined$1;
-          next.done = true;
-
-          return next;
-        };
-
-        return next.next = next;
-      }
-    }
-
-    // Return an iterator with no values.
-    return { next: doneResult };
-  }
-  exports.values = values;
-
-  function doneResult() {
-    return { value: undefined$1, done: true };
-  }
-
-  Context.prototype = {
-    constructor: Context,
-
-    reset: function(skipTempReset) {
-      this.prev = 0;
-      this.next = 0;
-      // Resetting context._sent for legacy support of Babel's
-      // function.sent implementation.
-      this.sent = this._sent = undefined$1;
-      this.done = false;
-      this.delegate = null;
-
-      this.method = "next";
-      this.arg = undefined$1;
-
-      this.tryEntries.forEach(resetTryEntry);
-
-      if (!skipTempReset) {
-        for (var name in this) {
-          // Not sure about the optimal order of these conditions:
-          if (name.charAt(0) === "t" &&
-              hasOwn.call(this, name) &&
-              !isNaN(+name.slice(1))) {
-            this[name] = undefined$1;
-          }
-        }
-      }
-    },
-
-    stop: function() {
-      this.done = true;
-
-      var rootEntry = this.tryEntries[0];
-      var rootRecord = rootEntry.completion;
-      if (rootRecord.type === "throw") {
-        throw rootRecord.arg;
-      }
-
-      return this.rval;
-    },
-
-    dispatchException: function(exception) {
-      if (this.done) {
-        throw exception;
-      }
-
-      var context = this;
-      function handle(loc, caught) {
-        record.type = "throw";
-        record.arg = exception;
-        context.next = loc;
-
-        if (caught) {
-          // If the dispatched exception was caught by a catch block,
-          // then let that catch block handle the exception normally.
-          context.method = "next";
-          context.arg = undefined$1;
-        }
-
-        return !! caught;
-      }
-
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        var record = entry.completion;
-
-        if (entry.tryLoc === "root") {
-          // Exception thrown outside of any try block that could handle
-          // it, so set the completion value of the entire function to
-          // throw the exception.
-          return handle("end");
-        }
-
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc");
-          var hasFinally = hasOwn.call(entry, "finallyLoc");
-
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            } else if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            }
-
-          } else if (hasFinally) {
-            if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else {
-            throw new Error("try statement without catch or finally");
-          }
-        }
-      }
-    },
-
-    abrupt: function(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev &&
-            hasOwn.call(entry, "finallyLoc") &&
-            this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
-          break;
-        }
-      }
-
-      if (finallyEntry &&
-          (type === "break" ||
-           type === "continue") &&
-          finallyEntry.tryLoc <= arg &&
-          arg <= finallyEntry.finallyLoc) {
-        // Ignore the finally entry if control is not jumping to a
-        // location outside the try/catch block.
-        finallyEntry = null;
-      }
-
-      var record = finallyEntry ? finallyEntry.completion : {};
-      record.type = type;
-      record.arg = arg;
-
-      if (finallyEntry) {
-        this.method = "next";
-        this.next = finallyEntry.finallyLoc;
-        return ContinueSentinel;
-      }
-
-      return this.complete(record);
-    },
-
-    complete: function(record, afterLoc) {
-      if (record.type === "throw") {
-        throw record.arg;
-      }
-
-      if (record.type === "break" ||
-          record.type === "continue") {
-        this.next = record.arg;
-      } else if (record.type === "return") {
-        this.rval = this.arg = record.arg;
-        this.method = "return";
-        this.next = "end";
-      } else if (record.type === "normal" && afterLoc) {
-        this.next = afterLoc;
-      }
-
-      return ContinueSentinel;
-    },
-
-    finish: function(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) {
-          this.complete(entry.completion, entry.afterLoc);
-          resetTryEntry(entry);
-          return ContinueSentinel;
-        }
-      }
-    },
-
-    "catch": function(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if (record.type === "throw") {
-            var thrown = record.arg;
-            resetTryEntry(entry);
-          }
-          return thrown;
-        }
-      }
-
-      // The context.catch method must only be called with a location
-      // argument that corresponds to a known catch block.
-      throw new Error("illegal catch attempt");
-    },
-
-    delegateYield: function(iterable, resultName, nextLoc) {
-      this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      };
-
-      if (this.method === "next") {
-        // Deliberately forget the last sent value so that we don't
-        // accidentally pass it on to the delegate.
-        this.arg = undefined$1;
-      }
-
-      return ContinueSentinel;
-    }
-  };
-
-  // Regardless of whether this script is executing as a CommonJS module
-  // or not, return the runtime object so that we can declare the variable
-  // regeneratorRuntime in the outer scope, which allows this module to be
-  // injected easily by `bin/regenerator --include-runtime script.js`.
-  return exports;
-
-}(
-  // If this script is executing as a CommonJS module, use module.exports
-  // as the regeneratorRuntime namespace. Otherwise create a new empty
-  // object. Either way, the resulting object will be used to initialize
-  // the regeneratorRuntime variable at the top of this file.
-   module.exports 
-));
-
-try {
-  regeneratorRuntime = runtime;
-} catch (accidentalStrictMode) {
-  // This module should not be running in strict mode, so the above
-  // assignment should always work unless something is misconfigured. Just
-  // in case runtime.js accidentally runs in strict mode, we can escape
-  // strict mode using a global Function call. This could conceivably fail
-  // if a Content Security Policy forbids using Function, but in that case
-  // the proper solution is to fix the accidental strict mode problem. If
-  // you've misconfigured your bundler to force strict mode and applied a
-  // CSP to forbid Function, and you're not willing to fix either of those
-  // problems, please detail your unique predicament in a GitHub issue.
-  Function("r", "regeneratorRuntime = r")(runtime);
-}
 });
 
 var globalIsFinite = global_1.isFinite;
 
 // `Number.isFinite` method
 // https://tc39.es/ecma262/#sec-number.isfinite
-// eslint-disable-next-line es/no-number-isfinite -- safe
+// eslint-disable-next-line es-x/no-number-isfinite -- safe
 var numberIsFinite = Number.isFinite || function isFinite(it) {
   return typeof it == 'number' && globalIsFinite(it);
 };
@@ -794,15 +639,15 @@ function _assertThisInitialized(self) { if (self === void 0) { throw new Referen
 
 function _wrapNativeSuper(Class) { var _cache = typeof Map === "function" ? new Map() : undefined; _wrapNativeSuper = function _wrapNativeSuper(Class) { if (Class === null || !_isNativeFunction(Class)) return Class; if (typeof Class !== "function") { throw new TypeError("Super expression must either be null or a function"); } if (typeof _cache !== "undefined") { if (_cache.has(Class)) return _cache.get(Class); _cache.set(Class, Wrapper); } function Wrapper() { return _construct(Class, arguments, _getPrototypeOf(this).constructor); } Wrapper.prototype = Object.create(Class.prototype, { constructor: { value: Wrapper, enumerable: false, writable: true, configurable: true } }); return _setPrototypeOf(Wrapper, Class); }; return _wrapNativeSuper(Class); }
 
-function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct; } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
+function _construct(Parent, args, Class) { if (_isNativeReflectConstruct()) { _construct = Reflect.construct.bind(); } else { _construct = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf(instance, Class.prototype); return instance; }; } return _construct.apply(null, arguments); }
 
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
 function _isNativeFunction(fn) { return Function.toString.call(fn).indexOf("[native code]") !== -1; }
 
-function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
 
-function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
 /**
  * @license
@@ -1473,6 +1318,274 @@ function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Co
 function _defineProperties$1(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass$1(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var ReferenceType;
+
+(function (ReferenceType) {
+  ReferenceType["RELATIVE"] = "RELATIVE";
+  ReferenceType["ABSOLUTE"] = "ABSOLUTE";
+})(ReferenceType || (ReferenceType = {}));
+
+var ColumnAddress = /*#__PURE__*/function () {
+  function ColumnAddress(type, col, sheet) {
+    _classCallCheck$1(this, ColumnAddress);
+
+    this.type = type;
+    this.col = col;
+    this.sheet = sheet;
+  }
+
+  _createClass$1(ColumnAddress, [{
+    key: "isColumnAbsolute",
+    value: function isColumnAbsolute() {
+      return this.type === ReferenceType.ABSOLUTE;
+    }
+  }, {
+    key: "isColumnRelative",
+    value: function isColumnRelative() {
+      return this.type === ReferenceType.RELATIVE;
+    }
+  }, {
+    key: "isAbsolute",
+    value: function isAbsolute() {
+      return this.type === ReferenceType.ABSOLUTE && this.sheet !== undefined;
+    }
+  }, {
+    key: "moved",
+    value: function moved(toSheet, toRight, _toBottom) {
+      var newSheet = this.sheet === undefined ? undefined : toSheet;
+      return new ColumnAddress(this.type, this.col + toRight, newSheet);
+    }
+  }, {
+    key: "shiftedByColumns",
+    value: function shiftedByColumns(numberOfColumns) {
+      return new ColumnAddress(this.type, this.col + numberOfColumns, this.sheet);
+    }
+  }, {
+    key: "toSimpleColumnAddress",
+    value: function toSimpleColumnAddress(baseAddress) {
+      var sheet = absoluteSheetReference(this, baseAddress);
+      var column = this.col;
+
+      if (this.isColumnRelative()) {
+        column = baseAddress.col + this.col;
+      }
+
+      return simpleColumnAddress(sheet, column);
+    }
+  }, {
+    key: "shiftRelativeDimensions",
+    value: function shiftRelativeDimensions(toRight, _toBottom) {
+      var col = this.isColumnRelative() ? this.col + toRight : this.col;
+      return new ColumnAddress(this.type, col, this.sheet);
+    }
+  }, {
+    key: "shiftAbsoluteDimensions",
+    value: function shiftAbsoluteDimensions(toRight, _toBottom) {
+      var col = this.isColumnAbsolute() ? this.col + toRight : this.col;
+      return new ColumnAddress(this.type, col, this.sheet);
+    }
+  }, {
+    key: "withSheet",
+    value: function withSheet(sheet) {
+      return new ColumnAddress(this.type, this.col, sheet);
+    }
+  }, {
+    key: "isInvalid",
+    value: function isInvalid(baseAddress) {
+      return this.toSimpleColumnAddress(baseAddress).col < 0;
+    }
+  }, {
+    key: "hash",
+    value: function hash(withSheet) {
+      var sheetPart = withSheet && this.sheet !== undefined ? "#".concat(this.sheet) : '';
+
+      switch (this.type) {
+        case ReferenceType.RELATIVE:
+          {
+            return "".concat(sheetPart, "#COLR").concat(this.col);
+          }
+
+        case ReferenceType.ABSOLUTE:
+          {
+            return "".concat(sheetPart, "#COLA").concat(this.col);
+          }
+      }
+    }
+  }, {
+    key: "unparse",
+    value: function unparse(baseAddress) {
+      var simpleAddress = this.toSimpleColumnAddress(baseAddress);
+
+      if (invalidSimpleColumnAddress(simpleAddress)) {
+        return undefined;
+      }
+
+      var column = columnIndexToLabel(simpleAddress.col);
+      var dollar = this.type === ReferenceType.ABSOLUTE ? '$' : '';
+      return "".concat(dollar).concat(column);
+    }
+  }, {
+    key: "exceedsSheetSizeLimits",
+    value: function exceedsSheetSizeLimits(maxColumns) {
+      return this.col >= maxColumns;
+    }
+  }], [{
+    key: "absolute",
+    value: function absolute(column, sheet) {
+      return new ColumnAddress(ReferenceType.ABSOLUTE, column, sheet);
+    }
+  }, {
+    key: "relative",
+    value: function relative(column, sheet) {
+      return new ColumnAddress(ReferenceType.RELATIVE, column, sheet);
+    }
+  }, {
+    key: "compareByAbsoluteAddress",
+    value: function compareByAbsoluteAddress(baseAddress) {
+      return function (colA, colB) {
+        return colA.toSimpleColumnAddress(baseAddress).col - colB.toSimpleColumnAddress(baseAddress).col;
+      };
+    }
+  }]);
+
+  return ColumnAddress;
+}();
+
+function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties$2(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass$2(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$2(Constructor.prototype, protoProps); if (staticProps) _defineProperties$2(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+var RowAddress = /*#__PURE__*/function () {
+  function RowAddress(type, row, sheet) {
+    _classCallCheck$2(this, RowAddress);
+
+    this.type = type;
+    this.row = row;
+    this.sheet = sheet;
+  }
+
+  _createClass$2(RowAddress, [{
+    key: "isRowAbsolute",
+    value: function isRowAbsolute() {
+      return this.type === ReferenceType.ABSOLUTE;
+    }
+  }, {
+    key: "isRowRelative",
+    value: function isRowRelative() {
+      return this.type === ReferenceType.RELATIVE;
+    }
+  }, {
+    key: "isAbsolute",
+    value: function isAbsolute() {
+      return this.type === ReferenceType.ABSOLUTE && this.sheet !== undefined;
+    }
+  }, {
+    key: "moved",
+    value: function moved(toSheet, toRight, toBottom) {
+      var newSheet = this.sheet === undefined ? undefined : toSheet;
+      return new RowAddress(this.type, this.row + toBottom, newSheet);
+    }
+  }, {
+    key: "shiftedByRows",
+    value: function shiftedByRows(numberOfColumns) {
+      return new RowAddress(this.type, this.row + numberOfColumns, this.sheet);
+    }
+  }, {
+    key: "toSimpleRowAddress",
+    value: function toSimpleRowAddress(baseAddress) {
+      var sheet = absoluteSheetReference(this, baseAddress);
+      var row = this.row;
+
+      if (this.isRowRelative()) {
+        row = baseAddress.row + this.row;
+      }
+
+      return simpleRowAddress(sheet, row);
+    }
+  }, {
+    key: "shiftRelativeDimensions",
+    value: function shiftRelativeDimensions(toRight, toBottom) {
+      var row = this.isRowRelative() ? this.row + toBottom : this.row;
+      return new RowAddress(this.type, row, this.sheet);
+    }
+  }, {
+    key: "shiftAbsoluteDimensions",
+    value: function shiftAbsoluteDimensions(toRight, toBottom) {
+      var row = this.isRowAbsolute() ? this.row + toBottom : this.row;
+      return new RowAddress(this.type, row, this.sheet);
+    }
+  }, {
+    key: "withSheet",
+    value: function withSheet(sheet) {
+      return new RowAddress(this.type, this.row, sheet);
+    }
+  }, {
+    key: "isInvalid",
+    value: function isInvalid(baseAddress) {
+      return this.toSimpleRowAddress(baseAddress).row < 0;
+    }
+  }, {
+    key: "hash",
+    value: function hash(withSheet) {
+      var sheetPart = withSheet && this.sheet !== undefined ? "#".concat(this.sheet) : '';
+
+      switch (this.type) {
+        case ReferenceType.RELATIVE:
+          {
+            return "".concat(sheetPart, "#ROWR").concat(this.row);
+          }
+
+        case ReferenceType.ABSOLUTE:
+          {
+            return "".concat(sheetPart, "#ROWA").concat(this.row);
+          }
+      }
+    }
+  }, {
+    key: "unparse",
+    value: function unparse(baseAddress) {
+      var simpleAddress = this.toSimpleRowAddress(baseAddress);
+
+      if (invalidSimpleRowAddress(simpleAddress)) {
+        return undefined;
+      }
+
+      var dollar = this.type === ReferenceType.ABSOLUTE ? '$' : '';
+      return "".concat(dollar).concat(simpleAddress.row + 1);
+    }
+  }, {
+    key: "exceedsSheetSizeLimits",
+    value: function exceedsSheetSizeLimits(maxRows) {
+      return this.row >= maxRows;
+    }
+  }], [{
+    key: "absolute",
+    value: function absolute(row, sheet) {
+      return new RowAddress(ReferenceType.ABSOLUTE, row, sheet);
+    }
+  }, {
+    key: "relative",
+    value: function relative(row, sheet) {
+      return new RowAddress(ReferenceType.RELATIVE, row, sheet);
+    }
+  }, {
+    key: "compareByAbsoluteAddress",
+    value: function compareByAbsoluteAddress(baseAddress) {
+      return function (rowA, rowB) {
+        return rowA.toSimpleRowAddress(baseAddress).row - rowB.toSimpleRowAddress(baseAddress).row;
+      };
+    }
+  }]);
+
+  return RowAddress;
+}();
+
+function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties$3(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass$3(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$3(Constructor.prototype, protoProps); if (staticProps) _defineProperties$3(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 /** Possible kinds of cell references */
 
 var CellReferenceType;
@@ -1493,7 +1606,7 @@ var CellReferenceType;
 
 var CellAddress = /*#__PURE__*/function () {
   function CellAddress(col, row, type, sheet) {
-    _classCallCheck$1(this, CellAddress);
+    _classCallCheck$3(this, CellAddress);
 
     this.col = col;
     this.row = row;
@@ -1501,7 +1614,7 @@ var CellAddress = /*#__PURE__*/function () {
     this.sheet = sheet;
   }
 
-  _createClass$1(CellAddress, [{
+  _createClass$3(CellAddress, [{
     key: "toSimpleCellAddress",
     value:
     /**
@@ -1521,6 +1634,18 @@ var CellAddress = /*#__PURE__*/function () {
       } else {
         return simpleCellAddress(sheet, baseAddress.col + this.col, baseAddress.row + this.row);
       }
+    }
+  }, {
+    key: "toColumnAddress",
+    value: function toColumnAddress() {
+      var refType = this.isColumnRelative() ? ReferenceType.RELATIVE : ReferenceType.ABSOLUTE;
+      return new ColumnAddress(refType, this.col, this.sheet);
+    }
+  }, {
+    key: "toRowAddress",
+    value: function toRowAddress() {
+      var refType = this.isRowRelative() ? ReferenceType.RELATIVE : ReferenceType.ABSOLUTE;
+      return new RowAddress(refType, this.row, this.sheet);
     }
   }, {
     key: "toSimpleColumnAddress",
@@ -1588,8 +1713,8 @@ var CellAddress = /*#__PURE__*/function () {
       return new CellAddress(this.col + toRight, this.row + toBottom, this.type, newSheet);
     }
   }, {
-    key: "withAbsoluteSheet",
-    value: function withAbsoluteSheet(sheet) {
+    key: "withSheet",
+    value: function withSheet(sheet) {
       return new CellAddress(this.col, this.row, this.type, sheet);
     }
   }, {
@@ -1658,6 +1783,15 @@ var CellAddress = /*#__PURE__*/function () {
       return this.row >= maxRows || this.col >= maxColumns;
     }
   }], [{
+    key: "fromColAndRow",
+    value: function fromColAndRow(col, row, sheet) {
+      var factoryMethod = col.isColumnAbsolute() && row.isRowAbsolute() ? CellAddress.absolute.bind(this) : col.isColumnAbsolute() ? CellAddress.absoluteCol.bind(this) : row.isRowAbsolute() ? CellAddress.absoluteRow.bind(this) // this is because `CellAddress.relative` expects arguments in a different order
+      : function (col, row, sheet) {
+        return CellAddress.relative(row, col, sheet);
+      };
+      return factoryMethod(col.col, row.row, sheet);
+    }
+  }, {
     key: "relative",
     value: function relative(row, col, sheet) {
       return new CellAddress(col, row, CellReferenceType.CELL_REFERENCE_RELATIVE, sheet);
@@ -1680,137 +1814,6 @@ var CellAddress = /*#__PURE__*/function () {
   }]);
 
   return CellAddress;
-}();
-
-function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties$2(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass$2(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$2(Constructor.prototype, protoProps); if (staticProps) _defineProperties$2(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-var ReferenceType;
-
-(function (ReferenceType) {
-  ReferenceType["RELATIVE"] = "RELATIVE";
-  ReferenceType["ABSOLUTE"] = "ABSOLUTE";
-})(ReferenceType || (ReferenceType = {}));
-
-var ColumnAddress = /*#__PURE__*/function () {
-  function ColumnAddress(type, col, sheet) {
-    _classCallCheck$2(this, ColumnAddress);
-
-    this.type = type;
-    this.col = col;
-    this.sheet = sheet;
-  }
-
-  _createClass$2(ColumnAddress, [{
-    key: "isColumnAbsolute",
-    value: function isColumnAbsolute() {
-      return this.type === ReferenceType.ABSOLUTE;
-    }
-  }, {
-    key: "isColumnRelative",
-    value: function isColumnRelative() {
-      return this.type === ReferenceType.RELATIVE;
-    }
-  }, {
-    key: "isAbsolute",
-    value: function isAbsolute() {
-      return this.type === ReferenceType.ABSOLUTE && this.sheet !== undefined;
-    }
-  }, {
-    key: "moved",
-    value: function moved(toSheet, toRight, _toBottom) {
-      var newSheet = this.sheet === undefined ? undefined : toSheet;
-      return new ColumnAddress(this.type, this.col + toRight, newSheet);
-    }
-  }, {
-    key: "shiftedByColumns",
-    value: function shiftedByColumns(numberOfColumns) {
-      return new ColumnAddress(this.type, this.col + numberOfColumns, this.sheet);
-    }
-  }, {
-    key: "toSimpleColumnAddress",
-    value: function toSimpleColumnAddress(baseAddress) {
-      var sheet = absoluteSheetReference(this, baseAddress);
-      var column = this.col;
-
-      if (this.isColumnRelative()) {
-        column = baseAddress.col + this.col;
-      }
-
-      return simpleColumnAddress(sheet, column);
-    }
-  }, {
-    key: "shiftRelativeDimensions",
-    value: function shiftRelativeDimensions(toRight, _toBottom) {
-      var col = this.isColumnRelative() ? this.col + toRight : this.col;
-      return new ColumnAddress(this.type, col, this.sheet);
-    }
-  }, {
-    key: "shiftAbsoluteDimensions",
-    value: function shiftAbsoluteDimensions(toRight, _toBottom) {
-      var col = this.isColumnAbsolute() ? this.col + toRight : this.col;
-      return new ColumnAddress(this.type, col, this.sheet);
-    }
-  }, {
-    key: "withAbsoluteSheet",
-    value: function withAbsoluteSheet(sheet) {
-      return new ColumnAddress(this.type, this.col, sheet);
-    }
-  }, {
-    key: "isInvalid",
-    value: function isInvalid(baseAddress) {
-      return this.toSimpleColumnAddress(baseAddress).col < 0;
-    }
-  }, {
-    key: "hash",
-    value: function hash(withSheet) {
-      var sheetPart = withSheet && this.sheet !== undefined ? "#".concat(this.sheet) : '';
-
-      switch (this.type) {
-        case ReferenceType.RELATIVE:
-          {
-            return "".concat(sheetPart, "#COLR").concat(this.col);
-          }
-
-        case ReferenceType.ABSOLUTE:
-          {
-            return "".concat(sheetPart, "#COLA").concat(this.col);
-          }
-      }
-    }
-  }, {
-    key: "unparse",
-    value: function unparse(baseAddress) {
-      var simpleAddress = this.toSimpleColumnAddress(baseAddress);
-
-      if (invalidSimpleColumnAddress(simpleAddress)) {
-        return undefined;
-      }
-
-      var column = columnIndexToLabel(simpleAddress.col);
-      var dollar = this.type === ReferenceType.ABSOLUTE ? '$' : '';
-      return "".concat(dollar).concat(column);
-    }
-  }, {
-    key: "exceedsSheetSizeLimits",
-    value: function exceedsSheetSizeLimits(maxColumns) {
-      return this.col >= maxColumns;
-    }
-  }], [{
-    key: "absolute",
-    value: function absolute(column, sheet) {
-      return new ColumnAddress(ReferenceType.ABSOLUTE, column, sheet);
-    }
-  }, {
-    key: "relative",
-    value: function relative(column, sheet) {
-      return new ColumnAddress(ReferenceType.RELATIVE, column, sheet);
-    }
-  }]);
-
-  return ColumnAddress;
 }();
 
 /*
@@ -1871,7 +1874,7 @@ function flatten(arr) {
 function first(arr) {
     return isEmpty(arr) ? undefined : arr[0];
 }
-function last(arr) {
+function last$1(arr) {
     var len = arr && arr.length;
     return len ? arr[len - 1] : undefined;
 }
@@ -4737,7 +4740,7 @@ var Lexer = /** @class */ (function () {
             }
             else {
                 modeStack.pop();
-                var newMode = last(modeStack);
+                var newMode = last$1(modeStack);
                 patternIdxToConfig = _this.patternIdxToConfig[newMode];
                 currCharCodeToPatternIdxToConfig = _this
                     .charCodeToPatternIdxToConfig[newMode];
@@ -6375,7 +6378,7 @@ function nextPossibleTokensAfter(initialDef, tokenVector, tokMatcher, maxLookAhe
         // skip alternatives if no more results can be found (assuming deterministic grammar with fixed lookahead)
         if (currPath === EXIT_ALTERNATIVE) {
             if (foundCompletePath &&
-                last(possiblePaths).idx <= minimalAlternativesIndex) {
+                last$1(possiblePaths).idx <= minimalAlternativesIndex) {
                 // remove irrelevant alternative
                 possiblePaths.pop();
             }
@@ -10502,6 +10505,8 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToAr
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 var RANGE_OPERATOR = ':';
 var ABSOLUTE_OPERATOR = '$';
+var ALL_WHITESPACE_REGEXP = /\s+/;
+var ODFF_WHITESPACE_REGEXP = /[ \t\n\r]+/;
 /* arithmetic */
 // abstract for + -
 
@@ -10645,16 +10650,15 @@ var ErrorLiteral = createToken({
   name: 'ErrorLiteral',
   pattern: /#[A-Za-z0-9\/]+[?!]?/
 });
-/* skipping whitespaces */
-
-var WhiteSpace = createToken({
-  name: 'WhiteSpace',
-  pattern: /[ \t\n\r]+/
-});
 var buildLexerConfig = function buildLexerConfig(config) {
   var offsetProcedureNameLiteral = config.translationPackage.getFunctionTranslation('OFFSET');
   var errorMapping = config.errorMapping;
   var functionMapping = config.translationPackage.buildFunctionMapping();
+  var whitespaceTokenRegexp = config.ignoreWhiteSpace === 'standard' ? ODFF_WHITESPACE_REGEXP : ALL_WHITESPACE_REGEXP;
+  var WhiteSpace = createToken({
+    name: 'WhiteSpace',
+    pattern: whitespaceTokenRegexp
+  });
   var ArrayRowSeparator = createToken({
     name: 'ArrayRowSep',
     pattern: config.arrayRowSeparator
@@ -10698,6 +10702,7 @@ var buildLexerConfig = function buildLexerConfig(config) {
     OffsetProcedureName: OffsetProcedureName,
     ArrayRowSeparator: ArrayRowSeparator,
     ArrayColSeparator: ArrayColSeparator,
+    WhiteSpace: WhiteSpace,
     allTokens: allTokens,
     errorMapping: errorMapping,
     functionMapping: functionMapping,
@@ -10706,129 +10711,6 @@ var buildLexerConfig = function buildLexerConfig(config) {
     maxRows: config.maxRows
   };
 };
-
-function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties$3(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass$3(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$3(Constructor.prototype, protoProps); if (staticProps) _defineProperties$3(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-var RowAddress = /*#__PURE__*/function () {
-  function RowAddress(type, row, sheet) {
-    _classCallCheck$3(this, RowAddress);
-
-    this.type = type;
-    this.row = row;
-    this.sheet = sheet;
-  }
-
-  _createClass$3(RowAddress, [{
-    key: "isRowAbsolute",
-    value: function isRowAbsolute() {
-      return this.type === ReferenceType.ABSOLUTE;
-    }
-  }, {
-    key: "isRowRelative",
-    value: function isRowRelative() {
-      return this.type === ReferenceType.RELATIVE;
-    }
-  }, {
-    key: "isAbsolute",
-    value: function isAbsolute() {
-      return this.type === ReferenceType.ABSOLUTE && this.sheet !== undefined;
-    }
-  }, {
-    key: "moved",
-    value: function moved(toSheet, toRight, toBottom) {
-      var newSheet = this.sheet === undefined ? undefined : toSheet;
-      return new RowAddress(this.type, this.row + toBottom, newSheet);
-    }
-  }, {
-    key: "shiftedByRows",
-    value: function shiftedByRows(numberOfColumns) {
-      return new RowAddress(this.type, this.row + numberOfColumns, this.sheet);
-    }
-  }, {
-    key: "toSimpleRowAddress",
-    value: function toSimpleRowAddress(baseAddress) {
-      var sheet = absoluteSheetReference(this, baseAddress);
-      var row = this.row;
-
-      if (this.isRowRelative()) {
-        row = baseAddress.row + this.row;
-      }
-
-      return simpleRowAddress(sheet, row);
-    }
-  }, {
-    key: "shiftRelativeDimensions",
-    value: function shiftRelativeDimensions(toRight, toBottom) {
-      var row = this.isRowRelative() ? this.row + toBottom : this.row;
-      return new RowAddress(this.type, row, this.sheet);
-    }
-  }, {
-    key: "shiftAbsoluteDimensions",
-    value: function shiftAbsoluteDimensions(toRight, toBottom) {
-      var row = this.isRowAbsolute() ? this.row + toBottom : this.row;
-      return new RowAddress(this.type, row, this.sheet);
-    }
-  }, {
-    key: "withAbsoluteSheet",
-    value: function withAbsoluteSheet(sheet) {
-      return new RowAddress(this.type, this.row, sheet);
-    }
-  }, {
-    key: "isInvalid",
-    value: function isInvalid(baseAddress) {
-      return this.toSimpleRowAddress(baseAddress).row < 0;
-    }
-  }, {
-    key: "hash",
-    value: function hash(withSheet) {
-      var sheetPart = withSheet && this.sheet !== undefined ? "#".concat(this.sheet) : '';
-
-      switch (this.type) {
-        case ReferenceType.RELATIVE:
-          {
-            return "".concat(sheetPart, "#ROWR").concat(this.row);
-          }
-
-        case ReferenceType.ABSOLUTE:
-          {
-            return "".concat(sheetPart, "#ROWA").concat(this.row);
-          }
-      }
-    }
-  }, {
-    key: "unparse",
-    value: function unparse(baseAddress) {
-      var simpleAddress = this.toSimpleRowAddress(baseAddress);
-
-      if (invalidSimpleRowAddress(simpleAddress)) {
-        return undefined;
-      }
-
-      var dollar = this.type === ReferenceType.ABSOLUTE ? '$' : '';
-      return "".concat(dollar).concat(simpleAddress.row + 1);
-    }
-  }, {
-    key: "exceedsSheetSizeLimits",
-    value: function exceedsSheetSizeLimits(maxRows) {
-      return this.row >= maxRows;
-    }
-  }], [{
-    key: "absolute",
-    value: function absolute(row, sheet) {
-      return new RowAddress(ReferenceType.ABSOLUTE, row, sheet);
-    }
-  }, {
-    key: "relative",
-    value: function relative(row, sheet) {
-      return new RowAddress(ReferenceType.RELATIVE, row, sheet);
-    }
-  }]);
-
-  return RowAddress;
-}();
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray$1(arr, i) || _nonIterableRest(); }
 
@@ -11603,13 +11485,13 @@ function _defineProperties$6(target, props) { for (var i = 0; i < props.length; 
 
 function _createClass$6(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$6(Constructor.prototype, protoProps); if (staticProps) _defineProperties$6(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get; } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
+function _get() { if (typeof Reflect !== "undefined" && Reflect.get) { _get = Reflect.get.bind(); } else { _get = function _get(target, property, receiver) { var base = _superPropBase(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get.apply(this, arguments); }
 
 function _superPropBase(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf$1(object); if (object === null) break; } return object; }
 
 function _inherits$1(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$1(subClass, superClass); }
 
-function _setPrototypeOf$1(o, p) { _setPrototypeOf$1 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$1(o, p); }
+function _setPrototypeOf$1(o, p) { _setPrototypeOf$1 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$1(o, p); }
 
 function _createSuper$1(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$1(); return function _createSuperInternal() { var Super = _getPrototypeOf$1(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$1(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$1(this, result); }; }
 
@@ -11619,7 +11501,7 @@ function _assertThisInitialized$1(self) { if (self === void 0) { throw new Refer
 
 function _isNativeReflectConstruct$1() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$1(o) { _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$1(o); }
+function _getPrototypeOf$1(o) { _getPrototypeOf$1 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$1(o); }
 /**
  * LL(k) formula parser described using Chevrotain DSL
  *
@@ -11739,33 +11621,36 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
           startImage = _range$image$split2[0],
           endImage = _range$image$split2[1];
 
-      var start = _this.ACTION(function () {
+      var firstAddress = _this.ACTION(function () {
         return columnAddressFromString(_this.sheetMapping, startImage, _this.formulaAddress);
       });
 
-      var end = _this.ACTION(function () {
+      var secondAddress = _this.ACTION(function () {
         return columnAddressFromString(_this.sheetMapping, endImage, _this.formulaAddress);
       });
 
-      if (start === undefined || end === undefined) {
+      if (firstAddress === undefined || secondAddress === undefined) {
         return buildCellErrorAst(new CellError(ErrorType.REF));
       }
 
-      if (start.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns) || end.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns)) {
+      if (firstAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns) || secondAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxColumns)) {
         return buildErrorWithRawInputAst(range.image, new CellError(ErrorType.NAME), range.leadingWhitespace);
       }
 
-      if (start.sheet === undefined && end.sheet !== undefined) {
+      if (firstAddress.sheet === undefined && secondAddress.sheet !== undefined) {
         return _this.parsingError(ParsingErrorType.ParserError, 'Malformed range expression');
       }
 
-      var sheetReferenceType = _this.rangeSheetReferenceType(start.sheet, end.sheet);
+      var _FormulaParser$fixShe = FormulaParser.fixSheetIdsForRangeEnds(firstAddress, secondAddress),
+          firstEnd = _FormulaParser$fixShe.firstEnd,
+          secondEnd = _FormulaParser$fixShe.secondEnd,
+          sheetRefType = _FormulaParser$fixShe.sheetRefType;
 
-      if (start.sheet !== undefined && end.sheet === undefined) {
-        end = end.withAbsoluteSheet(start.sheet);
-      }
+      var _this$orderColumnRang = _this.orderColumnRangeEnds(firstEnd, secondEnd),
+          start = _this$orderColumnRang.start,
+          end = _this$orderColumnRang.end;
 
-      return buildColumnRangeAst(start, end, sheetReferenceType, range.leadingWhitespace);
+      return buildColumnRangeAst(start, end, sheetRefType, range.leadingWhitespace);
     });
     /**
      * Rule for row range, e.g. 1:2, Sheet1!1:2, Sheet1!1:Sheet1!2
@@ -11779,33 +11664,36 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
           startImage = _range$image$split4[0],
           endImage = _range$image$split4[1];
 
-      var start = _this.ACTION(function () {
+      var firstAddress = _this.ACTION(function () {
         return rowAddressFromString(_this.sheetMapping, startImage, _this.formulaAddress);
       });
 
-      var end = _this.ACTION(function () {
+      var secondAddress = _this.ACTION(function () {
         return rowAddressFromString(_this.sheetMapping, endImage, _this.formulaAddress);
       });
 
-      if (start === undefined || end === undefined) {
+      if (firstAddress === undefined || secondAddress === undefined) {
         return buildCellErrorAst(new CellError(ErrorType.REF));
       }
 
-      if (start.exceedsSheetSizeLimits(_this.lexerConfig.maxRows) || end.exceedsSheetSizeLimits(_this.lexerConfig.maxRows)) {
+      if (firstAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxRows) || secondAddress.exceedsSheetSizeLimits(_this.lexerConfig.maxRows)) {
         return buildErrorWithRawInputAst(range.image, new CellError(ErrorType.NAME), range.leadingWhitespace);
       }
 
-      if (start.sheet === undefined && end.sheet !== undefined) {
+      if (firstAddress.sheet === undefined && secondAddress.sheet !== undefined) {
         return _this.parsingError(ParsingErrorType.ParserError, 'Malformed range expression');
       }
 
-      var sheetReferenceType = _this.rangeSheetReferenceType(start.sheet, end.sheet);
+      var _FormulaParser$fixShe2 = FormulaParser.fixSheetIdsForRangeEnds(firstAddress, secondAddress),
+          firstEnd = _FormulaParser$fixShe2.firstEnd,
+          secondEnd = _FormulaParser$fixShe2.secondEnd,
+          sheetRefType = _FormulaParser$fixShe2.sheetRefType;
 
-      if (start.sheet !== undefined && end.sheet === undefined) {
-        end = end.withAbsoluteSheet(start.sheet);
-      }
+      var _this$orderRowRangeEn = _this.orderRowRangeEnds(firstEnd, secondEnd),
+          start = _this$orderRowRangeEn.start,
+          end = _this$orderRowRangeEn.end;
 
-      return buildRowRangeAst(start, end, sheetReferenceType, range.leadingWhitespace);
+      return buildRowRangeAst(start, end, sheetRefType, range.leadingWhitespace);
     });
     /**
      * Rule for cell reference expression (e.g. A1, $A1, A$1, $A$1, $Sheet42!A$17)
@@ -11883,15 +11771,7 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
           }
 
           if (offsetProcedure.type === AstNodeType.CELL_REFERENCE) {
-            var end = offsetProcedure.reference;
-            var sheetReferenceType = RangeSheetReferenceType.RELATIVE;
-
-            if (startAddress.sheet !== undefined) {
-              sheetReferenceType = RangeSheetReferenceType.START_ABSOLUTE;
-              end = end.withAbsoluteSheet(startAddress.sheet);
-            }
-
-            return buildCellRangeAst(startAddress, end, sheetReferenceType, (_a = start.leadingWhitespace) === null || _a === void 0 ? void 0 : _a.image);
+            return _this.buildCellRange(startAddress, offsetProcedure.reference, (_a = start.leadingWhitespace) === null || _a === void 0 ? void 0 : _a.image);
           } else {
             return _this.parsingError(ParsingErrorType.RangeOffsetNotAllowed, 'Range offset not allowed here');
           }
@@ -11948,15 +11828,7 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
           var offsetProcedure = _this.SUBRULE(_this.offsetProcedureExpression);
 
           if (offsetProcedure.type === AstNodeType.CELL_REFERENCE) {
-            var end = offsetProcedure.reference;
-            var sheetReferenceType = RangeSheetReferenceType.RELATIVE;
-
-            if (start.reference.sheet !== undefined) {
-              sheetReferenceType = RangeSheetReferenceType.START_ABSOLUTE;
-              end = end.withAbsoluteSheet(start.reference.sheet);
-            }
-
-            return buildCellRangeAst(start.reference, end, sheetReferenceType, start.leadingWhitespace);
+            return _this.buildCellRange(start.reference, offsetProcedure.reference, start.leadingWhitespace);
           } else {
             return _this.parsingError(ParsingErrorType.RangeOffsetNotAllowed, 'Range offset not allowed here');
           }
@@ -11964,12 +11836,12 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       }]);
     });
     /**
-     * Rule for expressions that start with OFFSET() function
+     * Rule for expressions that start with the OFFSET function.
      *
-     * OFFSET() function can occur as cell reference or part of cell range.
-     * In order to preserve LL(k) properties, expressions that starts with OFFSET() functions needs to have separate rule.
+     * The OFFSET function can occur as a cell reference, or as a part of a cell range.
+     * To preserve LL(k) properties, expressions that start with the OFFSET function need a separate rule.
      *
-     * Proper {@link Ast} node type is built depending on the presence of {@link RangeSeparator}
+     * Depending on the presence of the {@link RangeSeparator}, a proper {@link Ast} node type is built.
      */
 
     _this.offsetExpression = _this.RULE('offsetExpression', function () {
@@ -12355,28 +12227,106 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
     }
   }, {
     key: "buildCellRange",
-    value: function buildCellRange(startAddress, endAddress, leadingWhitespace) {
-      if (startAddress.sheet === undefined && endAddress.sheet !== undefined) {
+    value: function buildCellRange(firstAddress, secondAddress, leadingWhitespace) {
+      if (firstAddress.sheet === undefined && secondAddress.sheet !== undefined) {
         return this.parsingError(ParsingErrorType.ParserError, 'Malformed range expression');
       }
 
-      var sheetReferenceType = this.rangeSheetReferenceType(startAddress.sheet, endAddress.sheet);
+      var _FormulaParser$fixShe3 = FormulaParser.fixSheetIdsForRangeEnds(firstAddress, secondAddress),
+          firstEnd = _FormulaParser$fixShe3.firstEnd,
+          secondEnd = _FormulaParser$fixShe3.secondEnd,
+          sheetRefType = _FormulaParser$fixShe3.sheetRefType;
 
-      if (startAddress.sheet !== undefined && endAddress.sheet === undefined) {
-        endAddress = endAddress.withAbsoluteSheet(startAddress.sheet);
-      }
+      var _this$orderCellRangeE = this.orderCellRangeEnds(firstEnd, secondEnd),
+          start = _this$orderCellRangeE.start,
+          end = _this$orderCellRangeE.end;
 
-      return buildCellRangeAst(startAddress, endAddress, sheetReferenceType, leadingWhitespace);
+      return buildCellRangeAst(start, end, sheetRefType, leadingWhitespace);
     }
+  }, {
+    key: "orderCellRangeEnds",
+    value: function orderCellRangeEnds(endA, endB) {
+      var ends = [endA, endB];
+
+      var _ends$map$sort = ends.map(function (e) {
+        return e.toColumnAddress();
+      }).sort(ColumnAddress.compareByAbsoluteAddress(this.formulaAddress)),
+          _ends$map$sort2 = _slicedToArray$1(_ends$map$sort, 2),
+          startCol = _ends$map$sort2[0],
+          endCol = _ends$map$sort2[1];
+
+      var _ends$map$sort3 = ends.map(function (e) {
+        return e.toRowAddress();
+      }).sort(RowAddress.compareByAbsoluteAddress(this.formulaAddress)),
+          _ends$map$sort4 = _slicedToArray$1(_ends$map$sort3, 2),
+          startRow = _ends$map$sort4[0],
+          endRow = _ends$map$sort4[1];
+
+      var _ends$map$sort5 = ends.map(function (e) {
+        return e.sheet;
+      }).sort(FormulaParser.compareSheetIds.bind(this)),
+          _ends$map$sort6 = _slicedToArray$1(_ends$map$sort5, 2),
+          startSheet = _ends$map$sort6[0],
+          endSheet = _ends$map$sort6[1];
+
+      return {
+        start: CellAddress.fromColAndRow(startCol, startRow, startSheet),
+        end: CellAddress.fromColAndRow(endCol, endRow, endSheet)
+      };
+    }
+  }, {
+    key: "orderColumnRangeEnds",
+    value: function orderColumnRangeEnds(endA, endB) {
+      var ends = [endA, endB];
+
+      var _ends$sort = ends.sort(ColumnAddress.compareByAbsoluteAddress(this.formulaAddress)),
+          _ends$sort2 = _slicedToArray$1(_ends$sort, 2),
+          startCol = _ends$sort2[0],
+          endCol = _ends$sort2[1];
+
+      var _ends$map$sort7 = ends.map(function (e) {
+        return e.sheet;
+      }).sort(FormulaParser.compareSheetIds.bind(this)),
+          _ends$map$sort8 = _slicedToArray$1(_ends$map$sort7, 2),
+          startSheet = _ends$map$sort8[0],
+          endSheet = _ends$map$sort8[1];
+
+      return {
+        start: new ColumnAddress(startCol.type, startCol.col, startSheet),
+        end: new ColumnAddress(endCol.type, endCol.col, endSheet)
+      };
+    }
+  }, {
+    key: "orderRowRangeEnds",
+    value: function orderRowRangeEnds(endA, endB) {
+      var ends = [endA, endB];
+
+      var _ends$sort3 = ends.sort(RowAddress.compareByAbsoluteAddress(this.formulaAddress)),
+          _ends$sort4 = _slicedToArray$1(_ends$sort3, 2),
+          startRow = _ends$sort4[0],
+          endRow = _ends$sort4[1];
+
+      var _ends$map$sort9 = ends.map(function (e) {
+        return e.sheet;
+      }).sort(FormulaParser.compareSheetIds.bind(this)),
+          _ends$map$sort10 = _slicedToArray$1(_ends$map$sort9, 2),
+          startSheet = _ends$map$sort10[0],
+          endSheet = _ends$map$sort10[1];
+
+      return {
+        start: new RowAddress(startRow.type, startRow.row, startSheet),
+        end: new RowAddress(endRow.type, endRow.row, endSheet)
+      };
+    }
+  }, {
+    key: "handleOffsetHeuristic",
+    value:
     /**
      * Returns {@link CellReferenceAst} or {@link CellRangeAst} based on OFFSET function arguments
      *
      * @param args - OFFSET function arguments
      */
-
-  }, {
-    key: "handleOffsetHeuristic",
-    value: function handleOffsetHeuristic(args) {
+    function handleOffsetHeuristic(args) {
       var cellArg = args[0];
 
       if (cellArg.type !== AstNodeType.CELL_REFERENCE) {
@@ -12473,6 +12423,24 @@ var FormulaParser = /*#__PURE__*/function (_EmbeddedActionsParse) {
       this.customParsingError = parsingError(type, message);
       return buildParsingErrorAst();
     }
+  }], [{
+    key: "fixSheetIdsForRangeEnds",
+    value: function fixSheetIdsForRangeEnds(firstEnd, secondEnd) {
+      var sheetRefType = FormulaParser.rangeSheetReferenceType(firstEnd.sheet, secondEnd.sheet);
+      var secondEndFixed = firstEnd.sheet !== undefined && secondEnd.sheet === undefined ? secondEnd.withSheet(firstEnd.sheet) : secondEnd;
+      return {
+        firstEnd: firstEnd,
+        secondEnd: secondEndFixed,
+        sheetRefType: sheetRefType
+      };
+    }
+  }, {
+    key: "compareSheetIds",
+    value: function compareSheetIds(sheetA, sheetB) {
+      sheetA = sheetA != null ? sheetA : Infinity;
+      sheetB = sheetB != null ? sheetB : Infinity;
+      return sheetA - sheetB;
+    }
   }, {
     key: "rangeSheetReferenceType",
     value: function rangeSheetReferenceType(start, end) {
@@ -12518,20 +12486,31 @@ var FormulaLexer = /*#__PURE__*/function () {
   }, {
     key: "skipWhitespacesInsideRanges",
     value: function skipWhitespacesInsideRanges(tokens) {
-      return this.filterTokensByNeighbors(tokens, function (previous, current, next) {
-        return (tokenMatcher(previous, CellReference) || tokenMatcher(previous, RangeSeparator)) && tokenMatcher(current, WhiteSpace) && (tokenMatcher(next, CellReference) || tokenMatcher(next, RangeSeparator));
+      var _this2 = this;
+
+      return FormulaLexer.filterTokensByNeighbors(tokens, function (previous, current, next) {
+        return (tokenMatcher(previous, CellReference) || tokenMatcher(previous, RangeSeparator)) && tokenMatcher(current, _this2.lexerConfig.WhiteSpace) && (tokenMatcher(next, CellReference) || tokenMatcher(next, RangeSeparator));
       });
     }
   }, {
     key: "skipWhitespacesBeforeArgSeparators",
     value: function skipWhitespacesBeforeArgSeparators(tokens) {
-      var _this2 = this;
+      var _this3 = this;
 
-      return this.filterTokensByNeighbors(tokens, function (previous, current, next) {
-        return !tokenMatcher(previous, _this2.lexerConfig.ArgSeparator) && tokenMatcher(current, WhiteSpace) && tokenMatcher(next, _this2.lexerConfig.ArgSeparator);
+      return FormulaLexer.filterTokensByNeighbors(tokens, function (previous, current, next) {
+        return !tokenMatcher(previous, _this3.lexerConfig.ArgSeparator) && tokenMatcher(current, _this3.lexerConfig.WhiteSpace) && tokenMatcher(next, _this3.lexerConfig.ArgSeparator);
       });
     }
   }, {
+    key: "trimTrailingWhitespaces",
+    value: function trimTrailingWhitespaces(tokens) {
+      if (tokens.length > 0 && tokenMatcher(tokens[tokens.length - 1], this.lexerConfig.WhiteSpace)) {
+        tokens.pop();
+      }
+
+      return tokens;
+    }
+  }], [{
     key: "filterTokensByNeighbors",
     value: function filterTokensByNeighbors(tokens, shouldBeSkipped) {
       if (tokens.length < 3) {
@@ -12551,15 +12530,6 @@ var FormulaLexer = /*#__PURE__*/function () {
 
       filteredTokens.push(tokens[i]);
       return filteredTokens;
-    }
-  }, {
-    key: "trimTrailingWhitespaces",
-    value: function trimTrailingWhitespaces(tokens) {
-      if (tokens.length > 0 && tokenMatcher(tokens[tokens.length - 1], WhiteSpace)) {
-        tokens.pop();
-      }
-
-      return tokens;
     }
   }]);
 
@@ -12791,7 +12761,7 @@ var ParserWithCaching = /*#__PURE__*/function () {
   _createClass$8(ParserWithCaching, [{
     key: "parse",
     value: function parse(text, formulaAddress) {
-      var lexerResult = this.lexer.tokenizeFormula(text);
+      var lexerResult = this.tokenizeFormula(text);
 
       if (lexerResult.errors.length > 0) {
         var errors = lexerResult.errors.map(function (e) {
@@ -12815,7 +12785,7 @@ var ParserWithCaching = /*#__PURE__*/function () {
       if (cacheResult !== undefined) {
         ++this.statsCacheUsed;
       } else {
-        var processedTokens = bindWhitespacesToTokens(lexerResult.tokens);
+        var processedTokens = this.bindWhitespacesToTokens(lexerResult.tokens);
         var parsingResult = this.formulaParser.parseFromTokens(processedTokens, formulaAddress);
 
         if (parsingResult.errors.length > 0) {
@@ -13042,36 +13012,43 @@ var ParserWithCaching = /*#__PURE__*/function () {
           }
       }
     }
+  }, {
+    key: "bindWhitespacesToTokens",
+    value: function bindWhitespacesToTokens(tokens) {
+      var processedTokens = [];
+      var first = tokens[0];
+
+      if (!tokenMatcher(first, this.lexerConfig.WhiteSpace)) {
+        processedTokens.push(first);
+      }
+
+      for (var i = 1; i < tokens.length; ++i) {
+        var current = tokens[i];
+
+        if (tokenMatcher(current, this.lexerConfig.WhiteSpace)) {
+          continue;
+        }
+
+        var previous = tokens[i - 1];
+
+        if (tokenMatcher(previous, this.lexerConfig.WhiteSpace)) {
+          current.leadingWhitespace = previous;
+        }
+
+        processedTokens.push(current);
+      }
+
+      return processedTokens;
+    }
+  }, {
+    key: "tokenizeFormula",
+    value: function tokenizeFormula(text) {
+      return this.lexer.tokenizeFormula(text);
+    }
   }]);
 
   return ParserWithCaching;
 }();
-function bindWhitespacesToTokens(tokens) {
-  var processedTokens = [];
-  var first = tokens[0];
-
-  if (!tokenMatcher(first, WhiteSpace)) {
-    processedTokens.push(first);
-  }
-
-  for (var i = 1; i < tokens.length; ++i) {
-    var current = tokens[i];
-
-    if (tokenMatcher(current, WhiteSpace)) {
-      continue;
-    }
-
-    var previous = tokens[i - 1];
-
-    if (tokenMatcher(previous, WhiteSpace)) {
-      current.leadingWhitespace = previous;
-    }
-
-    processedTokens.push(current);
-  }
-
-  return processedTokens;
-}
 
 var collectDependenciesFn = function collectDependenciesFn(ast, functionRegistry, dependenciesSet, needArgument) {
   switch (ast.type) {
@@ -13264,6 +13241,10 @@ var NamedExpressionDependency = /*#__PURE__*/function () {
   return NamedExpressionDependency;
 }();
 
+function _typeof$2(obj) { "@babel/helpers - typeof"; return _typeof$2 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$2(obj); }
+
+function _regeneratorRuntime() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$2(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
 function _classCallCheck$a(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties$a(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -13312,9 +13293,9 @@ var RowsSpan = /*#__PURE__*/function () {
     }
   }, {
     key: "rows",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function rows() {
+    value: /*#__PURE__*/_regeneratorRuntime().mark(function rows() {
       var col;
-      return regeneratorRuntime.wrap(function rows$(_context) {
+      return _regeneratorRuntime().wrap(function rows$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -13414,9 +13395,9 @@ var ColumnsSpan = /*#__PURE__*/function () {
     }
   }, {
     key: "columns",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function columns() {
+    value: /*#__PURE__*/_regeneratorRuntime().mark(function columns() {
       var col;
-      return regeneratorRuntime.wrap(function columns$(_context2) {
+      return _regeneratorRuntime().wrap(function columns$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -13481,17 +13462,19 @@ var ColumnsSpan = /*#__PURE__*/function () {
 
 function _inherits$2(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$2(subClass, superClass); }
 
-function _setPrototypeOf$2(o, p) { _setPrototypeOf$2 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$2(o, p); }
+function _setPrototypeOf$2(o, p) { _setPrototypeOf$2 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$2(o, p); }
 
 function _createSuper$2(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$2(); return function _createSuperInternal() { var Super = _getPrototypeOf$2(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$2(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$2(this, result); }; }
 
-function _possibleConstructorReturn$2(self, call) { if (call && (_typeof$2(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$2(self); }
+function _possibleConstructorReturn$2(self, call) { if (call && (_typeof$3(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$2(self); }
 
 function _assertThisInitialized$2(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$2() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$2(o) { _getPrototypeOf$2 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$2(o); }
+function _getPrototypeOf$2(o) { _getPrototypeOf$2 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$2(o); }
+
+function _regeneratorRuntime$1() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$1 = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$3(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 
 function _classCallCheck$b(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -13499,10 +13482,10 @@ function _defineProperties$b(target, props) { for (var i = 0; i < props.length; 
 
 function _createClass$b(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$b(Constructor.prototype, protoProps); if (staticProps) _defineProperties$b(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _typeof$2(obj) { "@babel/helpers - typeof"; return _typeof$2 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$2(obj); }
+function _typeof$3(obj) { "@babel/helpers - typeof"; return _typeof$3 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$3(obj); }
 var WRONG_RANGE_SIZE = 'AbsoluteCellRange: Wrong range size';
 function isSimpleCellRange(obj) {
-  if (obj && (_typeof$2(obj) === 'object' || typeof obj === 'function')) {
+  if (obj && (_typeof$3(obj) === 'object' || typeof obj === 'function')) {
     return 'start' in obj && isSimpleCellAddress(obj.start) && 'end' in obj && isSimpleCellAddress(obj.end);
   } else {
     return false;
@@ -13765,10 +13748,10 @@ var AbsoluteCellRange = /*#__PURE__*/function () {
     }
   }, {
     key: "addressesWithDirection",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function addressesWithDirection(right, bottom, dependencyGraph) {
+    value: /*#__PURE__*/_regeneratorRuntime$1().mark(function addressesWithDirection(right, bottom, dependencyGraph) {
       var currentRow, currentColumn, _currentRow, _currentColumn, _currentRow2, _currentColumn2, _currentRow3, _currentColumn3;
 
-      return regeneratorRuntime.wrap(function addressesWithDirection$(_context) {
+      return _regeneratorRuntime$1().wrap(function addressesWithDirection$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -14711,21 +14694,21 @@ function collatorFromConfig(config) {
   });
 }
 
-function _typeof$3(obj) { "@babel/helpers - typeof"; return _typeof$3 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$3(obj); }
+function _typeof$4(obj) { "@babel/helpers - typeof"; return _typeof$4 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$4(obj); }
 
 function _inherits$3(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$3(subClass, superClass); }
 
-function _setPrototypeOf$3(o, p) { _setPrototypeOf$3 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$3(o, p); }
+function _setPrototypeOf$3(o, p) { _setPrototypeOf$3 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$3(o, p); }
 
 function _createSuper$3(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$3(); return function _createSuperInternal() { var Super = _getPrototypeOf$3(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$3(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$3(this, result); }; }
 
-function _possibleConstructorReturn$3(self, call) { if (call && (_typeof$3(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$3(self); }
+function _possibleConstructorReturn$3(self, call) { if (call && (_typeof$4(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$3(self); }
 
 function _assertThisInitialized$3(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$3() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$3(o) { _getPrototypeOf$3 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$3(o); }
+function _getPrototypeOf$3(o) { _getPrototypeOf$3 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$3(o); }
 
 function _classCallCheck$d(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -16007,7 +15990,7 @@ var FunctionPlugin = /*#__PURE__*/function () {
     this.runFunction = function (args, state, metadata, fn) {
       var _a, _b, _c, _d, _e;
 
-      var argumentDefinitions = metadata.parameters;
+      var argumentDefinitions = metadata.parameters || [];
       var argValues;
 
       if (metadata.expandRanges) {
@@ -16591,11 +16574,15 @@ var ArraySizePredictor = /*#__PURE__*/function () {
   return ArraySizePredictor;
 }();
 
+function _typeof$5(obj) { "@babel/helpers - typeof"; return _typeof$5 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$5(obj); }
+
 function _createForOfIteratorHelper$3(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$7(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray$7(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$7(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$7(o, minLen); }
 
 function _arrayLikeToArray$7(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _regeneratorRuntime$2() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$2 = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$5(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 
 function _classCallCheck$h(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -16656,9 +16643,9 @@ var SimpleRangeValue = /*#__PURE__*/function () {
     }
   }, {
     key: "effectiveAddressesFromData",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function effectiveAddressesFromData(leftCorner) {
+    value: /*#__PURE__*/_regeneratorRuntime$2().mark(function effectiveAddressesFromData(leftCorner) {
       var row, rowData, col;
-      return regeneratorRuntime.wrap(function effectiveAddressesFromData$(_context) {
+      return _regeneratorRuntime$2().wrap(function effectiveAddressesFromData$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -16701,9 +16688,9 @@ var SimpleRangeValue = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromTopLeftCorner",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromTopLeftCorner(leftCorner) {
+    value: /*#__PURE__*/_regeneratorRuntime$2().mark(function entriesFromTopLeftCorner(leftCorner) {
       var row, col;
-      return regeneratorRuntime.wrap(function entriesFromTopLeftCorner$(_context2) {
+      return _regeneratorRuntime$2().wrap(function entriesFromTopLeftCorner$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -16746,8 +16733,8 @@ var SimpleRangeValue = /*#__PURE__*/function () {
     })
   }, {
     key: "iterateValuesFromTopLeftCorner",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function iterateValuesFromTopLeftCorner() {
-      return regeneratorRuntime.wrap(function iterateValuesFromTopLeftCorner$(_context3) {
+    value: /*#__PURE__*/_regeneratorRuntime$2().mark(function iterateValuesFromTopLeftCorner() {
+      return _regeneratorRuntime$2().wrap(function iterateValuesFromTopLeftCorner$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
@@ -17131,7 +17118,7 @@ var Statistics = /*#__PURE__*/function () {
   return Statistics;
 }();
 
-function _typeof$4(obj) { "@babel/helpers - typeof"; return _typeof$4 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$4(obj); }
+function _typeof$6(obj) { "@babel/helpers - typeof"; return _typeof$6 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$6(obj); }
 
 function _classCallCheck$k(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -17141,17 +17128,17 @@ function _createClass$k(Constructor, protoProps, staticProps) { if (protoProps) 
 
 function _inherits$4(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$4(subClass, superClass); }
 
-function _setPrototypeOf$4(o, p) { _setPrototypeOf$4 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$4(o, p); }
+function _setPrototypeOf$4(o, p) { _setPrototypeOf$4 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$4(o, p); }
 
 function _createSuper$4(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$4(); return function _createSuperInternal() { var Super = _getPrototypeOf$4(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$4(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$4(this, result); }; }
 
-function _possibleConstructorReturn$4(self, call) { if (call && (_typeof$4(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$4(self); }
+function _possibleConstructorReturn$4(self, call) { if (call && (_typeof$6(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$4(self); }
 
 function _assertThisInitialized$4(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$4() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$4(o) { _getPrototypeOf$4 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$4(o); }
+function _getPrototypeOf$4(o) { _getPrototypeOf$4 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$4(o); }
 /** Do not store stats in the memory. Stats are not needed on daily basis */
 
 var EmptyStatistics = /*#__PURE__*/function (_Statistics) {
@@ -17194,6 +17181,8 @@ var EmptyStatistics = /*#__PURE__*/function (_Statistics) {
   return EmptyStatistics;
 }(Statistics);
 
+function _typeof$7(obj) { "@babel/helpers - typeof"; return _typeof$7 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$7(obj); }
+
 function _slicedToArray$5(arr, i) { return _arrayWithHoles$5(arr) || _iterableToArrayLimit$5(arr, i) || _unsupportedIterableToArray$9(arr, i) || _nonIterableRest$5(); }
 
 function _nonIterableRest$5() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -17207,6 +17196,8 @@ function _createForOfIteratorHelper$5(o, allowArrayLike) { var it = typeof Symbo
 function _unsupportedIterableToArray$9(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$9(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$9(o, minLen); }
 
 function _arrayLikeToArray$9(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
+function _regeneratorRuntime$3() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$3 = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$7(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 
 function _classCallCheck$l(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -17446,8 +17437,8 @@ var AddressMapping = /*#__PURE__*/function () {
     }
   }, {
     key: "verticesFromRowsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromRowsSpan(rowsSpan) {
-      return regeneratorRuntime.wrap(function verticesFromRowsSpan$(_context) {
+    value: /*#__PURE__*/_regeneratorRuntime$3().mark(function verticesFromRowsSpan(rowsSpan) {
+      return _regeneratorRuntime$3().wrap(function verticesFromRowsSpan$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -17462,8 +17453,8 @@ var AddressMapping = /*#__PURE__*/function () {
     })
   }, {
     key: "verticesFromColumnsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromColumnsSpan(columnsSpan) {
-      return regeneratorRuntime.wrap(function verticesFromColumnsSpan$(_context2) {
+    value: /*#__PURE__*/_regeneratorRuntime$3().mark(function verticesFromColumnsSpan(columnsSpan) {
+      return _regeneratorRuntime$3().wrap(function verticesFromColumnsSpan$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -17478,8 +17469,8 @@ var AddressMapping = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromRowsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromRowsSpan(rowsSpan) {
-      return regeneratorRuntime.wrap(function entriesFromRowsSpan$(_context3) {
+    value: /*#__PURE__*/_regeneratorRuntime$3().mark(function entriesFromRowsSpan(rowsSpan) {
+      return _regeneratorRuntime$3().wrap(function entriesFromRowsSpan$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
@@ -17494,8 +17485,8 @@ var AddressMapping = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromColumnsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromColumnsSpan(columnsSpan) {
-      return regeneratorRuntime.wrap(function entriesFromColumnsSpan$(_context4) {
+    value: /*#__PURE__*/_regeneratorRuntime$3().mark(function entriesFromColumnsSpan(columnsSpan) {
+      return _regeneratorRuntime$3().wrap(function entriesFromColumnsSpan$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
@@ -17510,10 +17501,10 @@ var AddressMapping = /*#__PURE__*/function () {
     })
   }, {
     key: "entries",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entries() {
+    value: /*#__PURE__*/_regeneratorRuntime$3().mark(function entries() {
       var _iterator, _step, _step$value, sheet, mapping;
 
-      return regeneratorRuntime.wrap(function entries$(_context5) {
+      return _regeneratorRuntime$3().wrap(function entries$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
@@ -17561,9 +17552,9 @@ var AddressMapping = /*#__PURE__*/function () {
     })
   }, {
     key: "sheetEntries",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function sheetEntries(sheet) {
+    value: /*#__PURE__*/_regeneratorRuntime$3().mark(function sheetEntries(sheet) {
       var sheetMapping;
-      return regeneratorRuntime.wrap(function sheetEntries$(_context6) {
+      return _regeneratorRuntime$3().wrap(function sheetEntries$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
@@ -17594,6 +17585,10 @@ var AddressMapping = /*#__PURE__*/function () {
 
   return AddressMapping;
 }();
+
+function _typeof$8(obj) { "@babel/helpers - typeof"; return _typeof$8 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$8(obj); }
+
+function _regeneratorRuntime$4() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$4 = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$8(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 
 function _slicedToArray$6(arr, i) { return _arrayWithHoles$6(arr) || _iterableToArrayLimit$6(arr, i) || _unsupportedIterableToArray$a(arr, i) || _nonIterableRest$6(); }
 
@@ -17658,10 +17653,10 @@ var ArrayMapping = /*#__PURE__*/function () {
     }
   }, {
     key: "arraysInRows",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function arraysInRows(rowsSpan) {
+    value: /*#__PURE__*/_regeneratorRuntime$4().mark(function arraysInRows(rowsSpan) {
       var _iterator, _step, _step$value, mtxKey, mtx;
 
-      return regeneratorRuntime.wrap(function arraysInRows$(_context) {
+      return _regeneratorRuntime$4().wrap(function arraysInRows$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -17716,10 +17711,10 @@ var ArrayMapping = /*#__PURE__*/function () {
     })
   }, {
     key: "arraysInCols",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function arraysInCols(col) {
+    value: /*#__PURE__*/_regeneratorRuntime$4().mark(function arraysInCols(col) {
       var _iterator2, _step2, _step2$value, mtxKey, mtx;
 
-      return regeneratorRuntime.wrap(function arraysInCols$(_context2) {
+      return _regeneratorRuntime$4().wrap(function arraysInCols$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -18205,21 +18200,21 @@ var ErroredArray = /*#__PURE__*/function () {
   return ErroredArray;
 }();
 
-function _typeof$5(obj) { "@babel/helpers - typeof"; return _typeof$5 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$5(obj); }
+function _typeof$9(obj) { "@babel/helpers - typeof"; return _typeof$9 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$9(obj); }
 
 function _inherits$5(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$5(subClass, superClass); }
 
-function _setPrototypeOf$5(o, p) { _setPrototypeOf$5 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$5(o, p); }
+function _setPrototypeOf$5(o, p) { _setPrototypeOf$5 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$5(o, p); }
 
 function _createSuper$5(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$5(); return function _createSuperInternal() { var Super = _getPrototypeOf$5(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$5(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$5(this, result); }; }
 
-function _possibleConstructorReturn$5(self, call) { if (call && (_typeof$5(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$5(self); }
+function _possibleConstructorReturn$5(self, call) { if (call && (_typeof$9(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$5(self); }
 
 function _assertThisInitialized$5(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$5() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$5(o) { _getPrototypeOf$5 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$5(o); }
+function _getPrototypeOf$5(o) { _getPrototypeOf$5 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$5(o); }
 
 function _slicedToArray$7(arr, i) { return _arrayWithHoles$7(arr) || _iterableToArrayLimit$7(arr, i) || _unsupportedIterableToArray$c(arr, i) || _nonIterableRest$7(); }
 
@@ -18689,7 +18684,7 @@ var RangeVertex = /*#__PURE__*/function () {
   return RangeVertex;
 }();
 
-var collectAddressesDependentToRange = function collectAddressesDependentToRange(funcitonRegistry, vertex, range, lazilyTransformingAstService, dependencyGraph) {
+var collectAddressesDependentToRange = function collectAddressesDependentToRange(functionRegistry, vertex, range, lazilyTransformingAstService, dependencyGraph) {
   if (vertex instanceof RangeVertex) {
     var intersection = vertex.range.intersectionWith(range);
 
@@ -18710,7 +18705,7 @@ var collectAddressesDependentToRange = function collectAddressesDependentToRange
     return [];
   }
 
-  return collectDependencies(formula, funcitonRegistry).filter(function (d) {
+  return collectDependencies(formula, functionRegistry).filter(function (d) {
     return d instanceof AddressDependency;
   }).map(function (d) {
     return d.dependency.toSimpleCellAddress(address);
@@ -19140,6 +19135,10 @@ var Graph = /*#__PURE__*/function () {
   return Graph;
 }();
 
+function _typeof$a(obj) { "@babel/helpers - typeof"; return _typeof$a = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$a(obj); }
+
+function _regeneratorRuntime$5() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$5 = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$a(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
 function _slicedToArray$8(arr, i) { return _arrayWithHoles$8(arr) || _iterableToArrayLimit$8(arr, i) || _unsupportedIterableToArray$e(arr, i) || _nonIterableRest$8(); }
 
 function _nonIterableRest$8() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -19381,9 +19380,9 @@ var RangeMapping = /*#__PURE__*/function () {
     }
   }, {
     key: "rangesInSheet",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function rangesInSheet(sheet) {
+    value: /*#__PURE__*/_regeneratorRuntime$5().mark(function rangesInSheet(sheet) {
       var sheetMap;
-      return regeneratorRuntime.wrap(function rangesInSheet$(_context) {
+      return _regeneratorRuntime$5().wrap(function rangesInSheet$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -19408,10 +19407,10 @@ var RangeMapping = /*#__PURE__*/function () {
     })
   }, {
     key: "rangeVerticesContainedInRange",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function rangeVerticesContainedInRange(sourceRange) {
+    value: /*#__PURE__*/_regeneratorRuntime$5().mark(function rangeVerticesContainedInRange(sourceRange) {
       var _iterator2, _step2, rangeVertex;
 
-      return regeneratorRuntime.wrap(function rangeVerticesContainedInRange$(_context2) {
+      return _regeneratorRuntime$5().wrap(function rangeVerticesContainedInRange$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -19492,9 +19491,9 @@ var RangeMapping = /*#__PURE__*/function () {
     }
   }, {
     key: "entriesFromSheet",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromSheet(sheet) {
+    value: /*#__PURE__*/_regeneratorRuntime$5().mark(function entriesFromSheet(sheet) {
       var sheetMap;
-      return regeneratorRuntime.wrap(function entriesFromSheet$(_context3) {
+      return _regeneratorRuntime$5().wrap(function entriesFromSheet$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
@@ -19781,6 +19780,10 @@ var UIElement;
   UIElement["NEW_SHEET_PREFIX"] = "NEW_SHEET_PREFIX";
 })(UIElement || (UIElement = {}));
 
+function _typeof$b(obj) { "@babel/helpers - typeof"; return _typeof$b = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$b(obj); }
+
+function _regeneratorRuntime$6() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$6 = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$b(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
 function _createForOfIteratorHelper$b(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$g(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray$g(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$g(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$g(o, minLen); }
@@ -19885,10 +19888,10 @@ var SheetMapping = /*#__PURE__*/function () {
     }
   }, {
     key: "displayNames",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function displayNames() {
+    value: /*#__PURE__*/_regeneratorRuntime$6().mark(function displayNames() {
       var _iterator, _step, sheet;
 
-      return regeneratorRuntime.wrap(function displayNames$(_context) {
+      return _regeneratorRuntime$6().wrap(function displayNames$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -20001,11 +20004,15 @@ var SheetMapping = /*#__PURE__*/function () {
   return SheetMapping;
 }();
 
-function _construct$1(Parent, args, Class) { if (_isNativeReflectConstruct$6()) { _construct$1 = Reflect.construct; } else { _construct$1 = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf$6(instance, Class.prototype); return instance; }; } return _construct$1.apply(null, arguments); }
+function _typeof$c(obj) { "@babel/helpers - typeof"; return _typeof$c = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$c(obj); }
+
+function _construct$1(Parent, args, Class) { if (_isNativeReflectConstruct$6()) { _construct$1 = Reflect.construct.bind(); } else { _construct$1 = function _construct(Parent, args, Class) { var a = [null]; a.push.apply(a, args); var Constructor = Function.bind.apply(Parent, a); var instance = new Constructor(); if (Class) _setPrototypeOf$6(instance, Class.prototype); return instance; }; } return _construct$1.apply(null, arguments); }
 
 function _isNativeReflectConstruct$6() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _setPrototypeOf$6(o, p) { _setPrototypeOf$6 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$6(o, p); }
+function _setPrototypeOf$6(o, p) { _setPrototypeOf$6 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$6(o, p); }
+
+function _regeneratorRuntime$7() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$7 = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$c(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 
 function _toConsumableArray$5(arr) { return _arrayWithoutHoles$5(arr) || _iterableToArray$5(arr) || _unsupportedIterableToArray$h(arr) || _nonIterableSpread$5(); }
 
@@ -20992,10 +20999,10 @@ var DependencyGraph = /*#__PURE__*/function () {
     }
   }, {
     key: "arrayFormulaNodes",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function arrayFormulaNodes() {
+    value: /*#__PURE__*/_regeneratorRuntime$7().mark(function arrayFormulaNodes() {
       var _iterator27, _step27, vertex;
 
-      return regeneratorRuntime.wrap(function arrayFormulaNodes$(_context) {
+      return _regeneratorRuntime$7().wrap(function arrayFormulaNodes$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -21050,8 +21057,8 @@ var DependencyGraph = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromRowsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromRowsSpan(rowsSpan) {
-      return regeneratorRuntime.wrap(function entriesFromRowsSpan$(_context2) {
+    value: /*#__PURE__*/_regeneratorRuntime$7().mark(function entriesFromRowsSpan(rowsSpan) {
+      return _regeneratorRuntime$7().wrap(function entriesFromRowsSpan$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -21066,8 +21073,8 @@ var DependencyGraph = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromColumnsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromColumnsSpan(columnsSpan) {
-      return regeneratorRuntime.wrap(function entriesFromColumnsSpan$(_context3) {
+    value: /*#__PURE__*/_regeneratorRuntime$7().mark(function entriesFromColumnsSpan(columnsSpan) {
+      return _regeneratorRuntime$7().wrap(function entriesFromColumnsSpan$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
@@ -21209,10 +21216,10 @@ var DependencyGraph = /*#__PURE__*/function () {
     }
   }, {
     key: "rawValuesFromRange",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function rawValuesFromRange(range) {
+    value: /*#__PURE__*/_regeneratorRuntime$7().mark(function rawValuesFromRange(range) {
       var _iterator29, _step29, address, value;
 
-      return regeneratorRuntime.wrap(function rawValuesFromRange$(_context4) {
+      return _regeneratorRuntime$7().wrap(function rawValuesFromRange$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
@@ -21268,10 +21275,10 @@ var DependencyGraph = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromRange",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromRange(range) {
+    value: /*#__PURE__*/_regeneratorRuntime$7().mark(function entriesFromRange(range) {
       var _iterator30, _step30, address;
 
-      return regeneratorRuntime.wrap(function entriesFromRange$(_context5) {
+      return _regeneratorRuntime$7().wrap(function entriesFromRange$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
@@ -21517,10 +21524,10 @@ var DependencyGraph = /*#__PURE__*/function () {
     }
   }, {
     key: "formulaDirectDependenciesToArray",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function formulaDirectDependenciesToArray(vertex, array) {
+    value: /*#__PURE__*/_regeneratorRuntime$7().mark(function formulaDirectDependenciesToArray(vertex, array) {
       var _a, _ref5, _ref6, formulaDependencies, _iterator37, _step37, dependency, _vertex;
 
-      return regeneratorRuntime.wrap(function formulaDirectDependenciesToArray$(_context6) {
+      return _regeneratorRuntime$7().wrap(function formulaDirectDependenciesToArray$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
@@ -21594,10 +21601,10 @@ var DependencyGraph = /*#__PURE__*/function () {
     })
   }, {
     key: "rangeDirectDependenciesToArray",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function rangeDirectDependenciesToArray(vertex, array) {
+    value: /*#__PURE__*/_regeneratorRuntime$7().mark(function rangeDirectDependenciesToArray(vertex, array) {
       var _this$rangeMapping$fi2, range, _iterator38, _step38, address, cell;
 
-      return regeneratorRuntime.wrap(function rangeDirectDependenciesToArray$(_context7) {
+      return _regeneratorRuntime$7().wrap(function rangeDirectDependenciesToArray$(_context7) {
         while (1) {
           switch (_context7.prev = _context7.next) {
             case 0:
@@ -21654,10 +21661,10 @@ var DependencyGraph = /*#__PURE__*/function () {
     })
   }, {
     key: "adjacentArrayVertices",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function adjacentArrayVertices(vertex) {
+    value: /*#__PURE__*/_regeneratorRuntime$7().mark(function adjacentArrayVertices(vertex) {
       var adjacentNodes, _iterator39, _step39, item;
 
-      return regeneratorRuntime.wrap(function adjacentArrayVertices$(_context8) {
+      return _regeneratorRuntime$7().wrap(function adjacentArrayVertices$(_context8) {
         while (1) {
           switch (_context8.prev = _context8.next) {
             case 0:
@@ -22310,6 +22317,10 @@ var ParsingErrorVertex = /*#__PURE__*/function () {
   return ParsingErrorVertex;
 }();
 
+function _typeof$d(obj) { "@babel/helpers - typeof"; return _typeof$d = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$d(obj); }
+
+function _regeneratorRuntime$8() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$8 = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$d(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
 function _slicedToArray$a(arr, i) { return _arrayWithHoles$a(arr) || _iterableToArrayLimit$a(arr, i) || _unsupportedIterableToArray$i(arr, i) || _nonIterableRest$a(); }
 
 function _nonIterableRest$a() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -22487,10 +22498,10 @@ var SparseStrategy = /*#__PURE__*/function () {
     }
   }, {
     key: "getEntries",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function getEntries(sheet) {
+    value: /*#__PURE__*/_regeneratorRuntime$8().mark(function getEntries(sheet) {
       var _iterator, _step, _step$value, colNumber, col, _iterator2, _step2, _step2$value, rowNumber, value;
 
-      return regeneratorRuntime.wrap(function getEntries$(_context) {
+      return _regeneratorRuntime$8().wrap(function getEntries$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -22572,10 +22583,10 @@ var SparseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "verticesFromColumn",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromColumn(column) {
+    value: /*#__PURE__*/_regeneratorRuntime$8().mark(function verticesFromColumn(column) {
       var colMapping, _iterator3, _step3, _step3$value, vertex;
 
-      return regeneratorRuntime.wrap(function verticesFromColumn$(_context2) {
+      return _regeneratorRuntime$8().wrap(function verticesFromColumn$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -22634,10 +22645,10 @@ var SparseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "verticesFromRow",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromRow(row) {
+    value: /*#__PURE__*/_regeneratorRuntime$8().mark(function verticesFromRow(row) {
       var _iterator4, _step4, colMapping, rowVertex;
 
-      return regeneratorRuntime.wrap(function verticesFromRow$(_context3) {
+      return _regeneratorRuntime$8().wrap(function verticesFromRow$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
@@ -22693,10 +22704,10 @@ var SparseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "verticesFromColumnsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromColumnsSpan(columnsSpan) {
+    value: /*#__PURE__*/_regeneratorRuntime$8().mark(function verticesFromColumnsSpan(columnsSpan) {
       var _iterator5, _step5, column, colMapping, _iterator6, _step6, _step6$value, vertex;
 
-      return regeneratorRuntime.wrap(function verticesFromColumnsSpan$(_context4) {
+      return _regeneratorRuntime$8().wrap(function verticesFromColumnsSpan$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
@@ -22788,10 +22799,10 @@ var SparseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "verticesFromRowsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromRowsSpan(rowsSpan) {
+    value: /*#__PURE__*/_regeneratorRuntime$8().mark(function verticesFromRowsSpan(rowsSpan) {
       var _iterator7, _step7, colMapping, _iterator8, _step8, row, rowVertex;
 
-      return regeneratorRuntime.wrap(function verticesFromRowsSpan$(_context5) {
+      return _regeneratorRuntime$8().wrap(function verticesFromRowsSpan$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
@@ -22880,10 +22891,10 @@ var SparseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromRowsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromRowsSpan(rowsSpan) {
+    value: /*#__PURE__*/_regeneratorRuntime$8().mark(function entriesFromRowsSpan(rowsSpan) {
       var _iterator9, _step9, _step9$value, col, colMapping, _iterator10, _step10, row, rowVertex;
 
-      return regeneratorRuntime.wrap(function entriesFromRowsSpan$(_context6) {
+      return _regeneratorRuntime$8().wrap(function entriesFromRowsSpan$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
@@ -22972,10 +22983,10 @@ var SparseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromColumnsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromColumnsSpan(columnsSpan) {
+    value: /*#__PURE__*/_regeneratorRuntime$8().mark(function entriesFromColumnsSpan(columnsSpan) {
       var _iterator11, _step11, col, colMapping, _iterator12, _step12, _step12$value, row, vertex;
 
-      return regeneratorRuntime.wrap(function entriesFromColumnsSpan$(_context7) {
+      return _regeneratorRuntime$8().wrap(function entriesFromColumnsSpan$(_context7) {
         while (1) {
           switch (_context7.prev = _context7.next) {
             case 0:
@@ -23064,10 +23075,10 @@ var SparseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "vertices",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function vertices() {
+    value: /*#__PURE__*/_regeneratorRuntime$8().mark(function vertices() {
       var _iterator13, _step13, _step13$value, col, _iterator14, _step14, _step14$value, value;
 
-      return regeneratorRuntime.wrap(function vertices$(_context8) {
+      return _regeneratorRuntime$8().wrap(function vertices$(_context8) {
         while (1) {
           switch (_context8.prev = _context8.next) {
             case 0:
@@ -23157,6 +23168,10 @@ var SparseStrategy = /*#__PURE__*/function () {
 
   return SparseStrategy;
 }();
+
+function _typeof$e(obj) { "@babel/helpers - typeof"; return _typeof$e = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$e(obj); }
+
+function _regeneratorRuntime$9() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$9 = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$e(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 
 function _toConsumableArray$6(arr) { return _arrayWithoutHoles$6(arr) || _iterableToArray$6(arr) || _unsupportedIterableToArray$j(arr) || _nonIterableSpread$6(); }
 
@@ -23301,9 +23316,9 @@ var DenseStrategy = /*#__PURE__*/function () {
     }
   }, {
     key: "getEntries",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function getEntries(sheet) {
+    value: /*#__PURE__*/_regeneratorRuntime$9().mark(function getEntries(sheet) {
       var y, x, vertex;
-      return regeneratorRuntime.wrap(function getEntries$(_context) {
+      return _regeneratorRuntime$9().wrap(function getEntries$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -23352,9 +23367,9 @@ var DenseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "verticesFromColumn",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromColumn(column) {
+    value: /*#__PURE__*/_regeneratorRuntime$9().mark(function verticesFromColumn(column) {
       var y, vertex;
-      return regeneratorRuntime.wrap(function verticesFromColumn$(_context2) {
+      return _regeneratorRuntime$9().wrap(function verticesFromColumn$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -23390,9 +23405,9 @@ var DenseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "verticesFromRow",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromRow(row) {
+    value: /*#__PURE__*/_regeneratorRuntime$9().mark(function verticesFromRow(row) {
       var x, vertex;
-      return regeneratorRuntime.wrap(function verticesFromRow$(_context3) {
+      return _regeneratorRuntime$9().wrap(function verticesFromRow$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
@@ -23428,9 +23443,9 @@ var DenseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "verticesFromColumnsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromColumnsSpan(columnsSpan) {
+    value: /*#__PURE__*/_regeneratorRuntime$9().mark(function verticesFromColumnsSpan(columnsSpan) {
       var x, y, vertex;
-      return regeneratorRuntime.wrap(function verticesFromColumnsSpan$(_context4) {
+      return _regeneratorRuntime$9().wrap(function verticesFromColumnsSpan$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
@@ -23479,9 +23494,9 @@ var DenseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "verticesFromRowsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function verticesFromRowsSpan(rowsSpan) {
+    value: /*#__PURE__*/_regeneratorRuntime$9().mark(function verticesFromRowsSpan(rowsSpan) {
       var x, y, vertex;
-      return regeneratorRuntime.wrap(function verticesFromRowsSpan$(_context5) {
+      return _regeneratorRuntime$9().wrap(function verticesFromRowsSpan$(_context5) {
         while (1) {
           switch (_context5.prev = _context5.next) {
             case 0:
@@ -23530,9 +23545,9 @@ var DenseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromRowsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromRowsSpan(rowsSpan) {
+    value: /*#__PURE__*/_regeneratorRuntime$9().mark(function entriesFromRowsSpan(rowsSpan) {
       var x, y, vertex;
-      return regeneratorRuntime.wrap(function entriesFromRowsSpan$(_context6) {
+      return _regeneratorRuntime$9().wrap(function entriesFromRowsSpan$(_context6) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
@@ -23581,9 +23596,9 @@ var DenseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "entriesFromColumnsSpan",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function entriesFromColumnsSpan(columnsSpan) {
+    value: /*#__PURE__*/_regeneratorRuntime$9().mark(function entriesFromColumnsSpan(columnsSpan) {
       var y, x, vertex;
-      return regeneratorRuntime.wrap(function entriesFromColumnsSpan$(_context7) {
+      return _regeneratorRuntime$9().wrap(function entriesFromColumnsSpan$(_context7) {
         while (1) {
           switch (_context7.prev = _context7.next) {
             case 0:
@@ -23632,9 +23647,9 @@ var DenseStrategy = /*#__PURE__*/function () {
     })
   }, {
     key: "vertices",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function vertices() {
+    value: /*#__PURE__*/_regeneratorRuntime$9().mark(function vertices() {
       var y, x, vertex;
-      return regeneratorRuntime.wrap(function vertices$(_context8) {
+      return _regeneratorRuntime$9().wrap(function vertices$(_context8) {
         while (1) {
           switch (_context8.prev = _context8.next) {
             case 0:
@@ -23693,7 +23708,7 @@ var DenseStrategy = /*#__PURE__*/function () {
   return DenseStrategy;
 }();
 
-function _typeof$6(obj) { "@babel/helpers - typeof"; return _typeof$6 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$6(obj); }
+function _typeof$f(obj) { "@babel/helpers - typeof"; return _typeof$f = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$f(obj); }
 
 function _classCallCheck$A(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -23894,7 +23909,7 @@ var addressKey = function addressKey(address) {
   return "".concat(address.sheet, ",").concat(address.row, ",").concat(address.col);
 };
 function isSimpleCellAddress(obj) {
-  if (obj && (_typeof$6(obj) === 'object' || typeof obj === 'function')) {
+  if (obj && (_typeof$f(obj) === 'object' || typeof obj === 'function')) {
     return 'col' in obj && typeof obj.col === 'number' && 'row' in obj && typeof obj.row === 'number' && 'sheet' in obj && typeof obj.sheet === 'number';
   } else {
     return false;
@@ -23952,12 +23967,13 @@ function _unsupportedIterableToArray$k(o, minLen) { if (!o) return; if (typeof o
 
 function _arrayLikeToArray$k(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-function _typeof$7(obj) { "@babel/helpers - typeof"; return _typeof$7 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$7(obj); }
+function _typeof$g(obj) { "@babel/helpers - typeof"; return _typeof$g = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$g(obj); }
+
 function configValueFromParam(inputValue, expectedType, paramName) {
   if (typeof inputValue === 'undefined') {
     return Config.defaultConfig[paramName];
   } else if (typeof expectedType === 'string') {
-    if (_typeof$7(inputValue) === expectedType) {
+    if (_typeof$g(inputValue) === expectedType) {
       return inputValue;
     } else {
       throw new ExpectedValueOfTypeError(expectedType, paramName);
@@ -24032,9 +24048,10 @@ function configCheckIfParametersNotInConflict() {
     }).join('; ');
     throw new Error("Config initialization failed. Parameters in conflict: ".concat(paramNames));
   }
-}
+} // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function validateArgToType(inputValue, expectedType, paramName) {
-  if (_typeof$7(inputValue) !== expectedType) {
+  if (_typeof$g(inputValue) !== expectedType) {
     throw new ExpectedValueOfTypeError(expectedType, paramName);
   }
 }
@@ -24258,18 +24275,18 @@ function _defineProperties$C(target, props) { for (var i = 0; i < props.length; 
 
 function _createClass$C(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$C(Constructor.prototype, protoProps); if (staticProps) _defineProperties$C(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _typeof$8(obj) { "@babel/helpers - typeof"; return _typeof$8 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$8(obj); }
+function _typeof$h(obj) { "@babel/helpers - typeof"; return _typeof$h = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$h(obj); }
 var numDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 var prefSumDays = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
 function instanceOfSimpleDate(obj) {
-  if (obj && (_typeof$8(obj) === 'object' || typeof obj === 'function')) {
+  if (obj && (_typeof$h(obj) === 'object' || typeof obj === 'function')) {
     return 'year' in obj && typeof obj.year === 'number' && 'month' in obj && typeof obj.month === 'number' && 'day' in obj && typeof obj.day === 'number';
   } else {
     return false;
   }
 }
 function instanceOfSimpleTime(obj) {
-  if (obj && (_typeof$8(obj) === 'object' || typeof obj === 'function')) {
+  if (obj && (_typeof$h(obj) === 'object' || typeof obj === 'function')) {
     return 'hours' in obj && typeof obj.hours === 'number' && 'minutes' in obj && typeof obj.minutes === 'number' && 'seconds' in obj && typeof obj.seconds === 'number';
   } else {
     return false;
@@ -25188,7 +25205,7 @@ function checkLicenseKeyValidity(licenseKey) {
     /* VALID */
     ;
   } else if (typeof licenseKey === 'string' && checkKeySchema(licenseKey)) {
-    var _split = ("11/01/2022" ).split('/'),
+    var _split = ("14/06/2022" ).split('/'),
         _split2 = _slicedToArray$d(_split, 3),
         day = _split2[0],
         month = _split2[1],
@@ -25473,6 +25490,10 @@ var CellContentParser = /*#__PURE__*/function () {
   return CellContentParser;
 }();
 
+function _typeof$i(obj) { "@babel/helpers - typeof"; return _typeof$i = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$i(obj); }
+
+function _regeneratorRuntime$a() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$a = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$i(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
 function _classCallCheck$F(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties$F(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -25507,9 +25528,9 @@ var Clipboard = /*#__PURE__*/function () {
 
   _createClass$F(Clipboard, [{
     key: "getContent",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function getContent(leftCorner) {
+    value: /*#__PURE__*/_regeneratorRuntime$a().mark(function getContent(leftCorner) {
       var y, x;
-      return regeneratorRuntime.wrap(function getContent$(_context) {
+      return _regeneratorRuntime$a().wrap(function getContent$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -26273,7 +26294,7 @@ var Transformer = /*#__PURE__*/function () {
   return Transformer;
 }();
 
-function _typeof$9(obj) { "@babel/helpers - typeof"; return _typeof$9 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$9(obj); }
+function _typeof$j(obj) { "@babel/helpers - typeof"; return _typeof$j = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$j(obj); }
 
 function _classCallCheck$I(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26283,17 +26304,17 @@ function _createClass$I(Constructor, protoProps, staticProps) { if (protoProps) 
 
 function _inherits$6(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$7(subClass, superClass); }
 
-function _setPrototypeOf$7(o, p) { _setPrototypeOf$7 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$7(o, p); }
+function _setPrototypeOf$7(o, p) { _setPrototypeOf$7 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$7(o, p); }
 
 function _createSuper$6(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$7(); return function _createSuperInternal() { var Super = _getPrototypeOf$6(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$6(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$6(this, result); }; }
 
-function _possibleConstructorReturn$6(self, call) { if (call && (_typeof$9(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$6(self); }
+function _possibleConstructorReturn$6(self, call) { if (call && (_typeof$j(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$6(self); }
 
 function _assertThisInitialized$6(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$7() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$6(o) { _getPrototypeOf$6 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$6(o); }
+function _getPrototypeOf$6(o) { _getPrototypeOf$6 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$6(o); }
 var AddColumnsTransformer = /*#__PURE__*/function (_Transformer) {
   _inherits$6(AddColumnsTransformer, _Transformer);
 
@@ -26432,7 +26453,7 @@ var AddColumnsTransformer = /*#__PURE__*/function (_Transformer) {
   return AddColumnsTransformer;
 }(Transformer);
 
-function _typeof$a(obj) { "@babel/helpers - typeof"; return _typeof$a = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$a(obj); }
+function _typeof$k(obj) { "@babel/helpers - typeof"; return _typeof$k = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$k(obj); }
 
 function _classCallCheck$J(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26442,17 +26463,17 @@ function _createClass$J(Constructor, protoProps, staticProps) { if (protoProps) 
 
 function _inherits$7(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$8(subClass, superClass); }
 
-function _setPrototypeOf$8(o, p) { _setPrototypeOf$8 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$8(o, p); }
+function _setPrototypeOf$8(o, p) { _setPrototypeOf$8 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$8(o, p); }
 
 function _createSuper$7(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$8(); return function _createSuperInternal() { var Super = _getPrototypeOf$7(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$7(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$7(this, result); }; }
 
-function _possibleConstructorReturn$7(self, call) { if (call && (_typeof$a(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$7(self); }
+function _possibleConstructorReturn$7(self, call) { if (call && (_typeof$k(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$7(self); }
 
 function _assertThisInitialized$7(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$8() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$7(o) { _getPrototypeOf$7 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$7(o); }
+function _getPrototypeOf$7(o) { _getPrototypeOf$7 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$7(o); }
 var AddRowsTransformer = /*#__PURE__*/function (_Transformer) {
   _inherits$7(AddRowsTransformer, _Transformer);
 
@@ -26589,7 +26610,7 @@ var AddRowsTransformer = /*#__PURE__*/function (_Transformer) {
   return AddRowsTransformer;
 }(Transformer);
 
-function _typeof$b(obj) { "@babel/helpers - typeof"; return _typeof$b = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$b(obj); }
+function _typeof$l(obj) { "@babel/helpers - typeof"; return _typeof$l = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$l(obj); }
 
 function _classCallCheck$K(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26599,17 +26620,17 @@ function _createClass$K(Constructor, protoProps, staticProps) { if (protoProps) 
 
 function _inherits$8(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$9(subClass, superClass); }
 
-function _setPrototypeOf$9(o, p) { _setPrototypeOf$9 = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$9(o, p); }
+function _setPrototypeOf$9(o, p) { _setPrototypeOf$9 = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$9(o, p); }
 
 function _createSuper$8(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$9(); return function _createSuperInternal() { var Super = _getPrototypeOf$8(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$8(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$8(this, result); }; }
 
-function _possibleConstructorReturn$8(self, call) { if (call && (_typeof$b(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$8(self); }
+function _possibleConstructorReturn$8(self, call) { if (call && (_typeof$l(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$8(self); }
 
 function _assertThisInitialized$8(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$9() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$8(o) { _getPrototypeOf$8 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$8(o); }
+function _getPrototypeOf$8(o) { _getPrototypeOf$8 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$8(o); }
 var CleanOutOfScopeDependenciesTransformer = /*#__PURE__*/function (_Transformer) {
   _inherits$8(CleanOutOfScopeDependenciesTransformer, _Transformer);
 
@@ -26660,7 +26681,7 @@ var CleanOutOfScopeDependenciesTransformer = /*#__PURE__*/function (_Transformer
   return CleanOutOfScopeDependenciesTransformer;
 }(Transformer);
 
-function _typeof$c(obj) { "@babel/helpers - typeof"; return _typeof$c = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$c(obj); }
+function _typeof$m(obj) { "@babel/helpers - typeof"; return _typeof$m = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$m(obj); }
 
 function _classCallCheck$L(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26670,17 +26691,17 @@ function _createClass$L(Constructor, protoProps, staticProps) { if (protoProps) 
 
 function _inherits$9(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$a(subClass, superClass); }
 
-function _setPrototypeOf$a(o, p) { _setPrototypeOf$a = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$a(o, p); }
+function _setPrototypeOf$a(o, p) { _setPrototypeOf$a = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$a(o, p); }
 
 function _createSuper$9(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$a(); return function _createSuperInternal() { var Super = _getPrototypeOf$9(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$9(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$9(this, result); }; }
 
-function _possibleConstructorReturn$9(self, call) { if (call && (_typeof$c(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$9(self); }
+function _possibleConstructorReturn$9(self, call) { if (call && (_typeof$m(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$9(self); }
 
 function _assertThisInitialized$9(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$a() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$9(o) { _getPrototypeOf$9 = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$9(o); }
+function _getPrototypeOf$9(o) { _getPrototypeOf$9 = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$9(o); }
 var MoveCellsTransformer = /*#__PURE__*/function (_Transformer) {
   _inherits$9(MoveCellsTransformer, _Transformer);
 
@@ -26867,7 +26888,7 @@ var DependentFormulaTransformer = /*#__PURE__*/function (_Transformer2) {
   return DependentFormulaTransformer;
 }(Transformer);
 
-function _typeof$d(obj) { "@babel/helpers - typeof"; return _typeof$d = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$d(obj); }
+function _typeof$n(obj) { "@babel/helpers - typeof"; return _typeof$n = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$n(obj); }
 
 function _classCallCheck$M(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -26877,17 +26898,17 @@ function _createClass$M(Constructor, protoProps, staticProps) { if (protoProps) 
 
 function _inherits$a(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$b(subClass, superClass); }
 
-function _setPrototypeOf$b(o, p) { _setPrototypeOf$b = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$b(o, p); }
+function _setPrototypeOf$b(o, p) { _setPrototypeOf$b = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$b(o, p); }
 
 function _createSuper$a(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$b(); return function _createSuperInternal() { var Super = _getPrototypeOf$a(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$a(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$a(this, result); }; }
 
-function _possibleConstructorReturn$a(self, call) { if (call && (_typeof$d(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$a(self); }
+function _possibleConstructorReturn$a(self, call) { if (call && (_typeof$n(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$a(self); }
 
 function _assertThisInitialized$a(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$b() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$a(o) { _getPrototypeOf$a = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$a(o); }
+function _getPrototypeOf$a(o) { _getPrototypeOf$a = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$a(o); }
 var RemoveColumnsTransformer = /*#__PURE__*/function (_Transformer) {
   _inherits$a(RemoveColumnsTransformer, _Transformer);
 
@@ -27058,7 +27079,7 @@ var RemoveColumnsTransformer = /*#__PURE__*/function (_Transformer) {
   return RemoveColumnsTransformer;
 }(Transformer);
 
-function _typeof$e(obj) { "@babel/helpers - typeof"; return _typeof$e = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$e(obj); }
+function _typeof$o(obj) { "@babel/helpers - typeof"; return _typeof$o = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$o(obj); }
 
 function _classCallCheck$N(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -27068,17 +27089,17 @@ function _createClass$N(Constructor, protoProps, staticProps) { if (protoProps) 
 
 function _inherits$b(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$c(subClass, superClass); }
 
-function _setPrototypeOf$c(o, p) { _setPrototypeOf$c = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$c(o, p); }
+function _setPrototypeOf$c(o, p) { _setPrototypeOf$c = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$c(o, p); }
 
 function _createSuper$b(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$c(); return function _createSuperInternal() { var Super = _getPrototypeOf$b(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$b(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$b(this, result); }; }
 
-function _possibleConstructorReturn$b(self, call) { if (call && (_typeof$e(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$b(self); }
+function _possibleConstructorReturn$b(self, call) { if (call && (_typeof$o(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$b(self); }
 
 function _assertThisInitialized$b(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$c() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$b(o) { _getPrototypeOf$b = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$b(o); }
+function _getPrototypeOf$b(o) { _getPrototypeOf$b = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$b(o); }
 var RemoveRowsTransformer = /*#__PURE__*/function (_Transformer) {
   _inherits$b(RemoveRowsTransformer, _Transformer);
 
@@ -27249,7 +27270,7 @@ var RemoveRowsTransformer = /*#__PURE__*/function (_Transformer) {
   return RemoveRowsTransformer;
 }(Transformer);
 
-function _typeof$f(obj) { "@babel/helpers - typeof"; return _typeof$f = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$f(obj); }
+function _typeof$p(obj) { "@babel/helpers - typeof"; return _typeof$p = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$p(obj); }
 
 function _slicedToArray$g(arr, i) { return _arrayWithHoles$g(arr) || _iterableToArrayLimit$g(arr, i) || _unsupportedIterableToArray$r(arr, i) || _nonIterableRest$g(); }
 
@@ -27273,17 +27294,17 @@ function _createClass$O(Constructor, protoProps, staticProps) { if (protoProps) 
 
 function _inherits$c(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$d(subClass, superClass); }
 
-function _setPrototypeOf$d(o, p) { _setPrototypeOf$d = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$d(o, p); }
+function _setPrototypeOf$d(o, p) { _setPrototypeOf$d = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$d(o, p); }
 
 function _createSuper$c(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$d(); return function _createSuperInternal() { var Super = _getPrototypeOf$c(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$c(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$c(this, result); }; }
 
-function _possibleConstructorReturn$c(self, call) { if (call && (_typeof$f(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$c(self); }
+function _possibleConstructorReturn$c(self, call) { if (call && (_typeof$p(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$c(self); }
 
 function _assertThisInitialized$c(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$d() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$c(o) { _getPrototypeOf$c = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$c(o); }
+function _getPrototypeOf$c(o) { _getPrototypeOf$c = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$c(o); }
 var RemoveSheetTransformer = /*#__PURE__*/function (_Transformer) {
   _inherits$c(RemoveSheetTransformer, _Transformer);
 
@@ -28764,7 +28785,7 @@ function isRowOrColumnRange(leftCorner, width, height) {
   return leftCorner.row === 0 && isPositiveInteger(width) && height === Number.POSITIVE_INFINITY || leftCorner.col === 0 && isPositiveInteger(height) && width === Number.POSITIVE_INFINITY;
 }
 
-function _typeof$g(obj) { "@babel/helpers - typeof"; return _typeof$g = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$g(obj); }
+function _typeof$q(obj) { "@babel/helpers - typeof"; return _typeof$q = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$q(obj); }
 
 function _slicedToArray$i(arr, i) { return _arrayWithHoles$i(arr) || _iterableToArrayLimit$i(arr, i) || _unsupportedIterableToArray$t(arr, i) || _nonIterableRest$i(); }
 
@@ -28780,19 +28801,21 @@ function _unsupportedIterableToArray$t(o, minLen) { if (!o) return; if (typeof o
 
 function _arrayLikeToArray$t(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+function _regeneratorRuntime$b() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$b = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$q(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
 function _inherits$d(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$e(subClass, superClass); }
 
-function _setPrototypeOf$e(o, p) { _setPrototypeOf$e = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$e(o, p); }
+function _setPrototypeOf$e(o, p) { _setPrototypeOf$e = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$e(o, p); }
 
 function _createSuper$d(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$e(); return function _createSuperInternal() { var Super = _getPrototypeOf$d(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$d(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$d(this, result); }; }
 
-function _possibleConstructorReturn$d(self, call) { if (call && (_typeof$g(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$d(self); }
+function _possibleConstructorReturn$d(self, call) { if (call && (_typeof$q(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$d(self); }
 
 function _assertThisInitialized$d(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$e() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$d(o) { _getPrototypeOf$d = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$d(o); }
+function _getPrototypeOf$d(o) { _getPrototypeOf$d = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$d(o); }
 
 function _defineProperties$Q(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -29420,9 +29443,9 @@ var BatchUndoEntry = /*#__PURE__*/function (_BaseUndoEntry20) {
     }
   }, {
     key: "reversedOperations",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function reversedOperations() {
+    value: /*#__PURE__*/_regeneratorRuntime$b().mark(function reversedOperations() {
       var i;
-      return regeneratorRuntime.wrap(function reversedOperations$(_context) {
+      return _regeneratorRuntime$b().wrap(function reversedOperations$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -31036,12 +31059,15 @@ var Evaluator = /*#__PURE__*/function () {
 var log = Math.log;
 var LOG10E = Math.LOG10E;
 
+// eslint-disable-next-line es-x/no-math-log10 -- safe
+var mathLog10 = Math.log10 || function log10(x) {
+  return log(x) * LOG10E;
+};
+
 // `Math.log10` method
 // https://tc39.es/ecma262/#sec-math.log10
 _export({ target: 'Math', stat: true }, {
-  log10: function log10(x) {
-    return log(x) * LOG10E;
-  }
+  log10: mathLog10
 });
 
 function _slicedToArray$k(arr, i) { return _arrayWithHoles$k(arr) || _iterableToArrayLimit$k(arr, i) || _unsupportedIterableToArray$w(arr, i) || _nonIterableRest$k(); }
@@ -31381,7 +31407,7 @@ var SimpleStrategy = /*#__PURE__*/function () {
   return SimpleStrategy;
 }();
 
-function _typeof$h(obj) { "@babel/helpers - typeof"; return _typeof$h = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$h(obj); }
+function _typeof$r(obj) { "@babel/helpers - typeof"; return _typeof$r = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$r(obj); }
 
 function _classCallCheck$V(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -31391,17 +31417,17 @@ function _createClass$V(Constructor, protoProps, staticProps) { if (protoProps) 
 
 function _inherits$e(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$f(subClass, superClass); }
 
-function _setPrototypeOf$f(o, p) { _setPrototypeOf$f = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$f(o, p); }
+function _setPrototypeOf$f(o, p) { _setPrototypeOf$f = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$f(o, p); }
 
 function _createSuper$e(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$f(); return function _createSuperInternal() { var Super = _getPrototypeOf$e(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$e(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$e(this, result); }; }
 
-function _possibleConstructorReturn$e(self, call) { if (call && (_typeof$h(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$e(self); }
+function _possibleConstructorReturn$e(self, call) { if (call && (_typeof$r(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$e(self); }
 
 function _assertThisInitialized$e(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$f() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$e(o) { _getPrototypeOf$e = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$e(o); }
+function _getPrototypeOf$e(o) { _getPrototypeOf$e = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$e(o); }
 var LICENSE_STATUS_MAP = new Map([['gpl-v3', 1], ["missing"
 /* MISSING */
 , 2], ["invalid"
@@ -31454,6 +31480,10 @@ VersionPlugin.implementedFunctions = {
     parameters: []
   }
 };
+
+function _typeof$s(obj) { "@babel/helpers - typeof"; return _typeof$s = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$s(obj); }
+
+function _regeneratorRuntime$c() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$c = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$s(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
 
 function _toConsumableArray$8(arr) { return _arrayWithoutHoles$8(arr) || _iterableToArray$8(arr) || _unsupportedIterableToArray$x(arr) || _nonIterableSpread$8(); }
 
@@ -31879,10 +31909,10 @@ var FunctionRegistry = /*#__PURE__*/function () {
     }
   }, {
     key: "protectedFunctions",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function protectedFunctions() {
+    value: /*#__PURE__*/_regeneratorRuntime$c().mark(function protectedFunctions() {
       var _iterator8, _step8, _step8$value, functionId, plugin;
 
-      return regeneratorRuntime.wrap(function protectedFunctions$(_context) {
+      return _regeneratorRuntime$c().wrap(function protectedFunctions$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -31937,10 +31967,10 @@ var FunctionRegistry = /*#__PURE__*/function () {
     })
   }, {
     key: "protectedPlugins",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function protectedPlugins() {
+    value: /*#__PURE__*/_regeneratorRuntime$c().mark(function protectedPlugins() {
       var _iterator9, _step9, _step9$value, plugin;
 
-      return regeneratorRuntime.wrap(function protectedPlugins$(_context2) {
+      return _regeneratorRuntime$c().wrap(function protectedPlugins$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
@@ -32375,31 +32405,6 @@ var Interpreter = /*#__PURE__*/function () {
       }
 
       return wrapperForRootVertex(val, state.formulaVertex);
-    }
-  }, {
-    key: "getGpuInstance",
-    value: function getGpuInstance() {
-      var mode = this.config.gpuMode;
-      var gpujs = this.config.gpujs;
-
-      if (gpujs === undefined) {
-        throw Error('Cannot instantiate GPU.js. Constructor not provided.');
-      }
-
-      if (!this.gpu) {
-        this.gpu = new gpujs({
-          mode: mode
-        });
-      }
-
-      return this.gpu;
-    }
-  }, {
-    key: "destroyGpu",
-    value: function destroyGpu() {
-      var _a;
-
-      (_a = this.gpu) === null || _a === void 0 ? void 0 : _a.destroy();
     }
     /**
      * Calculates cell value from formula abstract syntax tree
@@ -32946,6 +32951,10 @@ var CombinedTransformer = /*#__PURE__*/function () {
   return CombinedTransformer;
 }();
 
+function _typeof$t(obj) { "@babel/helpers - typeof"; return _typeof$t = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$t(obj); }
+
+function _regeneratorRuntime$d() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$d = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$t(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
 function _slicedToArray$o(arr, i) { return _arrayWithHoles$o(arr) || _iterableToArrayLimit$o(arr, i) || _unsupportedIterableToArray$A(arr, i) || _nonIterableRest$o(); }
 
 function _nonIterableRest$o() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -33031,9 +33040,9 @@ var LazilyTransformingAstService = /*#__PURE__*/function () {
     }
   }, {
     key: "getTransformationsFrom",
-    value: /*#__PURE__*/regeneratorRuntime.mark(function getTransformationsFrom(version, filter) {
+    value: /*#__PURE__*/_regeneratorRuntime$d().mark(function getTransformationsFrom(version, filter) {
       var v, transformation;
-      return regeneratorRuntime.wrap(function getTransformationsFrom$(_context) {
+      return _regeneratorRuntime$d().wrap(function getTransformationsFrom$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
@@ -33072,7 +33081,7 @@ var LazilyTransformingAstService = /*#__PURE__*/function () {
   return LazilyTransformingAstService;
 }();
 
-function _typeof$i(obj) { "@babel/helpers - typeof"; return _typeof$i = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$i(obj); }
+function _typeof$u(obj) { "@babel/helpers - typeof"; return _typeof$u = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$u(obj); }
 /*
 * If key exists returns first index of key element in range of sorted values
 * Otherwise returns first index of greatest element smaller than key
@@ -33104,7 +33113,7 @@ function rangeLowerBound(range, key, dependencyGraph, coordinate) {
 
   var pos = lowerBound(centerValueFn, key, start, end);
 
-  if (_typeof$i(centerValueFn(pos)) !== _typeof$i(key)) {
+  if (_typeof$u(centerValueFn(pos)) !== _typeof$u(key)) {
     return -1;
   } else {
     return pos - start;
@@ -33139,7 +33148,7 @@ function lowerBound(value, key, start, end) {
 * */
 
 function compare(left, right) {
-  if (_typeof$i(left) === _typeof$i(right)) {
+  if (_typeof$u(left) === _typeof$u(right)) {
     if (left === EmptyValue) {
       return 0;
     }
@@ -33215,7 +33224,7 @@ var AdvancedFind = /*#__PURE__*/function () {
   return AdvancedFind;
 }();
 
-function _typeof$j(obj) { "@babel/helpers - typeof"; return _typeof$j = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$j(obj); }
+function _typeof$v(obj) { "@babel/helpers - typeof"; return _typeof$v = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$v(obj); }
 
 function _classCallCheck$10(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -33225,17 +33234,17 @@ function _createClass$10(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$f(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$g(subClass, superClass); }
 
-function _setPrototypeOf$g(o, p) { _setPrototypeOf$g = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$g(o, p); }
+function _setPrototypeOf$g(o, p) { _setPrototypeOf$g = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$g(o, p); }
 
 function _createSuper$f(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$g(); return function _createSuperInternal() { var Super = _getPrototypeOf$f(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$f(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$f(this, result); }; }
 
-function _possibleConstructorReturn$f(self, call) { if (call && (_typeof$j(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$f(self); }
+function _possibleConstructorReturn$f(self, call) { if (call && (_typeof$v(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$f(self); }
 
 function _assertThisInitialized$f(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$g() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$f(o) { _getPrototypeOf$f = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$f(o); }
+function _getPrototypeOf$f(o) { _getPrototypeOf$f = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$f(o); }
 var ColumnBinarySearch = /*#__PURE__*/function (_AdvancedFind) {
   _inherits$f(ColumnBinarySearch, _AdvancedFind);
 
@@ -34276,7 +34285,7 @@ var tinyEmitter = E;
 var TinyEmitter = E;
 tinyEmitter.TinyEmitter = TinyEmitter;
 
-function _typeof$k(obj) { "@babel/helpers - typeof"; return _typeof$k = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$k(obj); }
+function _typeof$w(obj) { "@babel/helpers - typeof"; return _typeof$w = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$w(obj); }
 
 function _classCallCheck$15(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -34284,23 +34293,23 @@ function _defineProperties$15(target, props) { for (var i = 0; i < props.length;
 
 function _createClass$15(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$15(Constructor.prototype, protoProps); if (staticProps) _defineProperties$15(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-function _get$1() { if (typeof Reflect !== "undefined" && Reflect.get) { _get$1 = Reflect.get; } else { _get$1 = function _get(target, property, receiver) { var base = _superPropBase$1(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get$1.apply(this, arguments); }
+function _get$1() { if (typeof Reflect !== "undefined" && Reflect.get) { _get$1 = Reflect.get.bind(); } else { _get$1 = function _get(target, property, receiver) { var base = _superPropBase$1(target, property); if (!base) return; var desc = Object.getOwnPropertyDescriptor(base, property); if (desc.get) { return desc.get.call(arguments.length < 3 ? target : receiver); } return desc.value; }; } return _get$1.apply(this, arguments); }
 
 function _superPropBase$1(object, property) { while (!Object.prototype.hasOwnProperty.call(object, property)) { object = _getPrototypeOf$g(object); if (object === null) break; } return object; }
 
 function _inherits$g(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$h(subClass, superClass); }
 
-function _setPrototypeOf$h(o, p) { _setPrototypeOf$h = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$h(o, p); }
+function _setPrototypeOf$h(o, p) { _setPrototypeOf$h = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$h(o, p); }
 
 function _createSuper$g(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$h(); return function _createSuperInternal() { var Super = _getPrototypeOf$g(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$g(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$g(this, result); }; }
 
-function _possibleConstructorReturn$g(self, call) { if (call && (_typeof$k(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$g(self); }
+function _possibleConstructorReturn$g(self, call) { if (call && (_typeof$w(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$g(self); }
 
 function _assertThisInitialized$g(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$h() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$g(o) { _getPrototypeOf$g = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$g(o); }
+function _getPrototypeOf$g(o) { _getPrototypeOf$g = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$g(o); }
 var Events;
 
 (function (Events) {
@@ -34371,13 +34380,13 @@ function _createClass$16(Constructor, protoProps, staticProps) { if (protoProps)
  * `destroy` method when it's no longer needed to free the resources.
  *
  * The instance can be seen as a workbook where worksheets can be created and
- * manipulated. They are organized within a widely know structure of columns and rows
+ * manipulated. They are organized within a widely known structure of columns and rows
  * which can be manipulated as well. The smallest possible data unit are the cells, which
  * may contain simple values or formulas to be calculated.
  *
  * All CRUD methods are called directly on HyperFormula instance and will trigger
  * corresponding lifecycle events. The events are marked accordingly, as well as thrown
- * errors so they can be correctly handled.
+ * errors, so they can be correctly handled.
  */
 
 var HyperFormula = /*#__PURE__*/function () {
@@ -34410,7 +34419,7 @@ var HyperFormula = /*#__PURE__*/function () {
    * const defaultConfig = HyperFormula.defaultConfig;
    * ```
    *
-   * @category Static Properties
+   * @category Static Accessors
    */
 
 
@@ -34419,7 +34428,7 @@ var HyperFormula = /*#__PURE__*/function () {
     get:
     /**
      * Calls the `graph` method on the dependency graph.
-     * Allows to execute `graph` directly without a need to refer to `dependencyGraph`.
+     * Allows for executing `graph` directly, without a need to refer to `dependencyGraph`.
      *
      * @internal
      */
@@ -34428,7 +34437,7 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Calls the `rangeMapping` method on the dependency graph.
-     * Allows to execute `rangeMapping` directly without a need to refer to `dependencyGraph`.
+     * Allows for executing `rangeMapping` directly, without a need to refer to `dependencyGraph`.
      *
      * @internal
      */
@@ -34440,7 +34449,7 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Calls the `arrayMapping` method on the dependency graph.
-     * Allows to execute `arrayMapping` directly without a need to refer to `dependencyGraph`.
+     * Allows for executing `arrayMapping` directly, without a need to refer to `dependencyGraph`.
      *
      * @internal
      */
@@ -34452,7 +34461,7 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Calls the `sheetMapping` method on the dependency graph.
-     * Allows to execute `sheetMapping` directly without a need to refer to `dependencyGraph`.
+     * Allows for executing `sheetMapping` directly, without a need to refer to `dependencyGraph`.
      *
      * @internal
      */
@@ -34464,7 +34473,7 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Calls the `addressMapping` method on the dependency graph.
-     * Allows to execute `addressMapping` directly without a need to refer to `dependencyGraph`.
+     * Allows for executing `addressMapping` directly, without a need to refer to `dependencyGraph`.
      *
      * @internal
      */
@@ -34999,7 +35008,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * // perform CRUD operation, for example remove the second row
      * hfInstance.removeRows(0, [1, 1]);
      *
-     * // do an undo, it should return the changes
+     * // undo the operation, it should return the changes
      * const changes = hfInstance.undo();
      * ```
      *
@@ -35033,7 +35042,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * // perform CRUD operation, for example remove the second row
      * hfInstance.removeRows(0, [1, 1]);
      *
-     * // do an undo, it should return prvious values: [['1'], ['2'], ['3']]
+     * // undo the operation, it should return previous values: [['1'], ['2'], ['3']]
      * hfInstance.undo();
      *
      * // do a redo, it should return the values after removing the second row: [['1'], ['3']]
@@ -35527,7 +35536,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * //   address: { sheet: 0, col: 0, row: 1 },
      * //   newValue: null,
      * // }]
-     * const changes = hfInstance.setColumnOrder(0, [2, 1, 0]]);
+     * const changes = hfInstance.setColumnOrder(0, [2, 1, 0]);
      * ```
      *
      * @category Columns
@@ -35543,7 +35552,7 @@ var HyperFormula = /*#__PURE__*/function () {
       return this.swapColumnIndexes(sheetId, mapping);
     }
     /**
-     * Checks if it possible to reorder columns of a sheet according to a permutation.
+     * Checks if it is possible to reorder columns of a sheet according to a permutation.
      *
      * @param {number} sheetId - ID of a sheet to operate on
      * @param {number[]} newColumnOrder - permutation of columns
@@ -35558,10 +35567,10 @@ var HyperFormula = /*#__PURE__*/function () {
      * ]);
      *
      * // returns true
-     * hfInstance.isItPossibleToSetColumnOrder(0, [2, 1, 0]]);
+     * hfInstance.isItPossibleToSetColumnOrder(0, [2, 1, 0]);
      *
      * // returns false
-     * hfInstance.isItPossibleToSetColumnOrder(0, [1]]);
+     * hfInstance.isItPossibleToSetColumnOrder(0, [1]);
      * ```
      *
      * @category Columns
@@ -35959,7 +35968,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * Returns information whether it is possible to move cells to a specified position in a given sheet.
      * Checks against particular rules to ascertain that moveCells can be called.
      * If returns `true`, doing [[moveCells]] operation won't throw any errors.
-     * Returns `false` if the operation might be disrupted and causes side-effects by the fact that there is an array inside the selected columns, the target location has array or the provided address is invalid.
+     * Returns `false` if the operation might be disrupted and causes side effects by the fact that there is an array inside the selected columns, the target location has array or the provided address is invalid.
      *
      * @param {SimpleCellRange} source - range for a moved block
      * @param {SimpleCellAddress} destinationLeftCorner - upper left address of the target cell block
@@ -36068,7 +36077,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * Returns information whether it is possible to move a particular number of rows to a specified position in a given sheet.
      * Checks against particular rules to ascertain that moveRows can be called.
      * If returns `true`, doing [[moveRows]] operation won't throw any errors.
-     * Returns `false` if the operation might be disrupted and causes side-effects by the fact that there is an array inside the selected rows, the target location has array or the provided address is invalid.
+     * Returns `false` if the operation might be disrupted and causes side effects by the fact that there is an array inside the selected rows, the target location has array or the provided address is invalid.
      *
      * @param {number} sheetId - a sheet number in which the operation will be performed
      * @param {number} startRow - number of the first row to move
@@ -36157,7 +36166,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * Returns information whether it is possible to move a particular number of columns to a specified position in a given sheet.
      * Checks against particular rules to ascertain that moveColumns can be called.
      * If returns `true`, doing [[moveColumns]] operation won't throw any errors.
-     * Returns `false` if the operation might be disrupted and causes side-effects by the fact that there is an array inside the selected columns, the target location has array or the provided address is invalid.
+     * Returns `false` if the operation might be disrupted and causes side effects by the fact that there is an array inside the selected columns, the target location has array or the provided address is invalid.
      *
      * @param {number} sheetId - a sheet number in which the operation will be performed
      * @param {number} startColumn - number of the first column to move
@@ -36606,7 +36615,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * const hfInstance = HyperFormula.buildFromArray([[1, '=A1'], ['=$A$1', '2']]);
      *
      * // should return [['2', '=$A$1', '2'], ['=A3', 1, '=C3'], ['2', '=$A$1', '2']]
-     * hfInstance.getFillRangeData( {start: {sheet: 0, row: 0, col: 0}}, end: {sheet: 0, row: 1, col: 1}},
+     * hfInstance.getFillRangeData( {start: {sheet: 0, row: 0, col: 0}, end: {sheet: 0, row: 1, col: 1}},
      * {start: {sheet: 0, row: 1, col: 1}, end: {sheet: 0, row: 3, col: 3}});
      * ```
      *
@@ -36646,10 +36655,10 @@ var HyperFormula = /*#__PURE__*/function () {
     /**
      * Returns information whether it is possible to add a sheet to the engine.
      * Checks against particular rules to ascertain that addSheet can be called.
-     * If returns `true`, doing [[addSheet]] operation won't throw any errors and it possible to add sheet with provided name.
+     * If returns `true`, doing [[addSheet]] operation won't throw any errors, and it is possible to add sheet with provided name.
      * Returns `false` if the chosen name is already used.
      *
-     * @param {string} sheetName - sheet name, case insensitive
+     * @param {string} sheetName - sheet name, case-insensitive
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
      *
@@ -36723,8 +36732,8 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns information whether it is possible to remove sheet for the engine.
-     * Returns `true` if the provided name of a sheet exists and therefore it can be removed, doing [[removeSheet]] operation won't throw any errors.
-     * Returns `false` if there is no sheet with a given name.
+     * Returns `true` if the provided sheet exists, and therefore it can be removed, doing [[removeSheet]] operation won't throw any errors.
+     * Returns `false` otherwise
      *
      * @param {number} sheetId - sheet ID.
      *
@@ -36758,7 +36767,7 @@ var HyperFormula = /*#__PURE__*/function () {
       }
     }
     /**
-     * Removes sheet with a specified name.
+     * Removes a sheet
      *
      * Note that this method may trigger dependency graph recalculation.
      *
@@ -36768,7 +36777,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * @fires [[valuesUpdated]] if recalculation was triggered by this change
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
-     * @throws [[NoSheetWithIdError]] when the given sheet ID does not exists
+     * @throws [[NoSheetWithIdError]] when the given sheet ID does not exist
      *
      * @example
      * ```js
@@ -36805,8 +36814,8 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns information whether it is possible to clear a specified sheet.
-     * If returns `true`, doing [[clearSheet]] operation won't throw any errors, provided name of a sheet exists and then its content can be cleared.
-     * Returns `false` if there is no sheet with a given name.
+     * If returns `true`, doing [[clearSheet]] operation won't throw any errors, provided sheet exists and its content can be cleared.
+     * Returns `false` otherwise
      *
      * @param {number} sheetId - sheet ID.
      *
@@ -36840,8 +36849,7 @@ var HyperFormula = /*#__PURE__*/function () {
       }
     }
     /**
-     * Clears the sheet content. Based on that the method finds the ID of a sheet to be cleared.
-     * Double-checks if the sheet exists.
+     * Clears the sheet content. Double-checks if the sheet exists.
      *
      * Note that this method may trigger dependency graph recalculation.
      *
@@ -36850,7 +36858,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * @fires [[valuesUpdated]] if recalculation was triggered by this change
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
-     * @throws [[NoSheetWithIdError]] when the given sheet ID does not exists
+     * @throws [[NoSheetWithIdError]] when the given sheet ID does not exist
      *
      * @example
      * ```js
@@ -36882,8 +36890,8 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns information whether it is possible to replace the sheet content.
-     * If returns `true`, doing [[setSheetContent]] operation won't throw any errors, the provided name of a sheet exists and then its content can be replaced.
-     * Returns `false` if there is no sheet with a given name.
+     * If returns `true`, doing [[setSheetContent]] operation won't throw any errors, the provided sheet exists and then its content can be replaced.
+     * Returns `false` otherwise
      *
      * @param {number} sheetId - sheet ID.
      * @param {RawCellContent[][]} values - array of new values
@@ -36897,7 +36905,7 @@ var HyperFormula = /*#__PURE__*/function () {
      *  MySheet2: [ ['10'] ],
      * });
      *
-     * // should return 'true' because 'MySheet1' (sheetId=0) exists
+     * // should return 'true' because sheet of ID 0 exists
      * // and the provided content can be placed in this sheet
      * const isReplaceable = hfInstance.isItPossibleToReplaceSheetContent(0, [['50'], ['60']]);
      * ```
@@ -36922,14 +36930,12 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Replaces the sheet content with new values.
-     * The new value is to be provided as an array of arrays of [[RawCellContent]].
-     * The method finds sheet ID based on the provided sheet name.
      *
      * @param {number} sheetId - sheet ID.
      * @param {RawCellContent[][]} values - array of new values
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
-     * @throws [[NoSheetWithIdError]] when the given sheet ID does not exists
+     * @throws [[NoSheetWithIdError]] when the given sheet ID does not exist
      * @throws [[InvalidArgumentsError]] when values is not an array of arrays
      *
      * @example
@@ -37087,7 +37093,11 @@ var HyperFormula = /*#__PURE__*/function () {
       return simpleCellRangeToString(this.sheetMapping.fetchDisplayName, cellRange, sheetId);
     }
     /**
-     * Returns all addresses and ranges whose computation depends on input address or range provided.
+     * Returns all the out-neighbors in the [dependency graph](../../guide/dependency-graph.md) for a given cell address or range. Including:
+     * - All cells with formulas that contain the given cell address or range
+     * - Some of the ranges that contain the given cell address or range
+     *
+     * The exact result depends on the optimizations applied by the HyperFormula to the dependency graph, some of which are described in the section ["Optimizations for large ranges"](../../guide/dependency-graph.md#optimizations-for-large-ranges).
      *
      * @param {SimpleCellAddress | SimpleCellRange} address - object representation of an absolute address or range of addresses
      *
@@ -37100,7 +37110,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * const hfInstance = HyperFormula.buildFromArray( [ ['1', '=A1', '=A1+B1'] ] );
      *
      * hfInstance.getCellDependents({ sheet: 0, col: 0, row: 0});
-     * // should return [{ sheet: 0, col: 1, row: 0}, { sheet: 0, col: 2, row: 0}]
+     * // returns [{ sheet: 0, col: 1, row: 0}, { sheet: 0, col: 2, row: 0}]
      * ```
      *
      * @category Helpers
@@ -37126,7 +37136,9 @@ var HyperFormula = /*#__PURE__*/function () {
       return this._dependencyGraph.getAdjacentNodesAddresses(vertex);
     }
     /**
-     * Returns all addresses and ranges necessary for computation of a given address or range.
+     * Returns all the in-neighbors in the [dependency graph](../../guide/dependency-graph.md) for a given cell address or range. In particular:
+     * - If the argument is a single cell, `getCellPrecedents()` returns all cells and ranges contained in that cell's formula.
+     * - If the argument is a range of cells, `getCellPrecedents()` returns some of the cell addresses and smaller ranges contained in that range (but not all of them). The exact result depends on the optimizations applied by the HyperFormula to the dependency graph, some of which are described in the section ["Optimizations for large ranges"](../../guide/dependency-graph.md#optimizations-for-large-ranges).
      *
      * @param {SimpleCellAddress | SimpleCellRange} address - object representation of an absolute address or range of addresses
      *
@@ -37139,7 +37151,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * const hfInstance = HyperFormula.buildFromArray( [ ['1', '=A1', '=A1+B1'] ] );
      *
      * hfInstance.getCellPrecedents({ sheet: 0, col: 2, row: 0});
-     * // should return [{ sheet: 0, col: 0, row: 0}, { sheet: 0, col: 1, row: 0}]
+     * // returns [{ sheet: 0, col: 0, row: 0}, { sheet: 0, col: 1, row: 0}]
      * ```
      *
      * @category Helpers
@@ -37217,7 +37229,7 @@ var HyperFormula = /*#__PURE__*/function () {
     /**
      * Returns a unique sheet ID assigned to the sheet with a given name or `undefined` if the sheet does not exist.
      *
-     * @param {string} sheetName - name of the sheet, for which we want to retrieve ID, case insensitive.
+     * @param {string} sheetName - name of the sheet, for which we want to retrieve ID, case-insensitive.
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
      *
@@ -37242,9 +37254,9 @@ var HyperFormula = /*#__PURE__*/function () {
       return this.sheetMapping.get(sheetName);
     }
     /**
-     * Returns `true` whether sheet with a given name exists. The methods accepts sheet name to be checked.
+     * Returns `true` whether sheet with a given name exists. The method accepts sheet name to be checked.
      *
-     * @param {string} sheetName - name of the sheet, case insensitive.
+     * @param {string} sheetName - name of the sheet, case-insensitive.
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
      *
@@ -37269,8 +37281,8 @@ var HyperFormula = /*#__PURE__*/function () {
       return this.sheetMapping.hasSheetWithName(sheetName);
     }
     /**
-     * Returns type of a specified cell of a given address.
-     * The methods accepts cell coordinates as object with column, row and sheet numbers.
+     * Returns the type of a cell at a given address.
+     * The method accepts cell coordinates as object with column, row and sheet numbers.
      *
      * @param {SimpleCellAddress} cellAddress - cell coordinates
      *
@@ -37305,7 +37317,7 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns `true` if the specified cell contains a simple value.
-     * The methods accepts cell coordinates as object with column, row and sheet numbers.
+     * The method accepts cell coordinates as object with column, row and sheet numbers.
      *
      * @param {SimpleCellAddress} cellAddress - cell coordinates
      *
@@ -37339,7 +37351,7 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns `true` if the specified cell contains a formula.
-     * The methods accepts cell coordinates as object with column, row and sheet numbers.
+     * The method accepts cell coordinates as object with column, row and sheet numbers.
      *
      * @param {SimpleCellAddress} cellAddress - cell coordinates
      *
@@ -37374,7 +37386,7 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns`true` if the specified cell is empty.
-     * The methods accepts cell coordinates as object with column, row and sheet numbers.
+     * The method accepts cell coordinates as object with column, row and sheet numbers.
      *
      * @param {SimpleCellAddress} cellAddress - cell coordinates
      *
@@ -37407,8 +37419,8 @@ var HyperFormula = /*#__PURE__*/function () {
       return this.getCellType(cellAddress) === CellType.EMPTY;
     }
     /**
-     * Returns `true` if a given cell is a part of a array.
-     * The methods accepts cell coordinates as object with column, row and sheet numbers.
+     * Returns `true` if a given cell is a part of an array.
+     * The method accepts cell coordinates as object with column, row and sheet numbers.
      *
      * @param {SimpleCellAddress} cellAddress - cell coordinates
      *
@@ -37421,7 +37433,7 @@ var HyperFormula = /*#__PURE__*/function () {
      *    ['{=TRANSPOSE(B1:B1)}'],
      * ]);
      *
-     * // should return 'true', cell of provided coordinates is a part of a array
+     * // should return 'true', cell of provided coordinates is a part of an array
      * const isPartOfArray = hfInstance.isCellPartOfArray({ sheet: 0, col: 0, row: 0 });
      * ```
      *
@@ -37440,7 +37452,7 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns type of the cell value of a given address.
-     * The methods accepts cell coordinates as object with column, row and sheet numbers.
+     * The method accepts cell coordinates as object with column, row and sheet numbers.
      *
      * @param {SimpleCellAddress} cellAddress - cell coordinates
      *
@@ -37477,7 +37489,7 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Returns detailed type of the cell value of a given address.
-     * The methods accepts cell coordinates as object with column, row and sheet numbers.
+     * The method accepts cell coordinates as object with column, row and sheet numbers.
      *
      * @param {SimpleCellAddress} cellAddress - cell coordinates
      *
@@ -37513,8 +37525,8 @@ var HyperFormula = /*#__PURE__*/function () {
       return getCellValueDetailedType(value);
     }
     /**
-     * Returns auxilary format information of the cell value of a given address.
-     * The methods accepts cell coordinates as object with column, row and sheet numbers.
+     * Returns auxiliary format information of the cell value of a given address.
+     * The method accepts cell coordinates as object with column, row and sheet numbers.
      *
      * @param {SimpleCellAddress} cellAddress - cell coordinates
      *
@@ -37611,7 +37623,7 @@ var HyperFormula = /*#__PURE__*/function () {
     /**
      * Renames a specified sheet.
      *
-     * @param {number} sheetId - a sheet number
+     * @param {number} sheetId - a sheet ID
      * @param {string} newName - a name of the sheet to be given, if is the same as the old one the method does nothing
      *
      * @fires [[sheetRenamed]] after the sheet was renamed
@@ -37721,7 +37733,7 @@ var HyperFormula = /*#__PURE__*/function () {
      *
      * // perform operations
      * hfInstance.setCellContents({ col: 3, row: 0, sheet: 0 }, [['=B1']]);
-     * hfInstance.setSheetContent('MySheet2', [['50'], ['60']]);
+     * hfInstance.setSheetContent(1, [['50'], ['60']]);
      *
      * // use resumeEvaluation to resume
      * const changes = hfInstance.resumeEvaluation();
@@ -37760,7 +37772,7 @@ var HyperFormula = /*#__PURE__*/function () {
      *
      * // perform operations
      * hfInstance.setCellContents({ col: 3, row: 0, sheet: 0 }, [['=B1']]);
-     * hfInstance.setSheetContent('MySheet2', [['50'], ['60']]);
+     * hfInstance.setSheetContent(1, [['50'], ['60']]);
      *
      * // resume the evaluation
      * const changes = hfInstance.resumeEvaluation();
@@ -37904,9 +37916,9 @@ var HyperFormula = /*#__PURE__*/function () {
     }
     /**
      * Gets specified named expression value.
-     * Returns a [[CellValue]] or undefined if the given named expression does not exists.
+     * Returns a [[CellValue]] or undefined if the given named expression does not exist.
      *
-     * @param {string} expressionName - expression name, case insensitive.
+     * @param {string} expressionName - expression name, case-insensitive.
      * @param {number?} scope - scope definition, `sheetId` for local scope or `undefined` for global scope
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
@@ -37952,7 +37964,7 @@ var HyperFormula = /*#__PURE__*/function () {
     /**
      * Returns a normalized formula string for given named expression, or `undefined` for a named expression that does not exist or does not hold a formula.
      *
-     * @param {string} expressionName - expression name, case insensitive.
+     * @param {string} expressionName - expression name, case-insensitive.
      * @param {number?} scope - scope definition, `sheetId` for local scope or `undefined` for global scope
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
@@ -37997,7 +38009,7 @@ var HyperFormula = /*#__PURE__*/function () {
     /**
      * Returns a named expression, or `undefined` for a named expression that does not exist or does not hold a formula.
      *
-     * @param {string} expressionName - expression name, case insensitive.
+     * @param {string} expressionName - expression name, case-insensitive.
      * @param {number?} scope - scope definition, `sheetId` for local scope or `undefined` for global scope
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
@@ -38054,7 +38066,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * If returns `true`, doing [[changeNamedExpression]] operation won't throw any errors.
      * Returns `false` if the operation might be disrupted.
      *
-     * @param {string} expressionName - an expression name, case insensitive.
+     * @param {string} expressionName - an expression name, case-insensitive.
      * @param {RawCellContent} newExpression - a new expression
      * @param {number?} scope - scope definition, `sheetId` for local scope or `undefined` for global scope
      *
@@ -38099,7 +38111,7 @@ var HyperFormula = /*#__PURE__*/function () {
      *
      * Note that this method may trigger dependency graph recalculation.
      *
-     * @param {string} expressionName - an expression name, case insensitive.
+     * @param {string} expressionName - an expression name, case-insensitive.
      * @param {RawCellContent} newExpression - a new expression
      * @param {number?} scope - scope definition, `sheetId` for local scope or `undefined` for global scope
      * @param {NamedExpressionOptions?} options - additional metadata related to named expression
@@ -38147,7 +38159,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * If returns `true`, doing [[removeNamedExpression]] operation won't throw any errors.
      * Returns `false` if the operation might be disrupted.
      *
-     * @param {string} expressionName - an expression name, case insensitive.
+     * @param {string} expressionName - an expression name, case-insensitive.
      * @param {number?} scope - scope definition, `sheetId` for local scope or `undefined` for global scope
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
@@ -38191,7 +38203,7 @@ var HyperFormula = /*#__PURE__*/function () {
      *
      * Note that this method may trigger dependency graph recalculation.
      *
-     * @param {string} expressionName - expression name, case insensitive.
+     * @param {string} expressionName - expression name, case-insensitive.
      * @param {number?} scope - scope definition, `sheetId` for local scope or `undefined` for global scope
      *
      * @fires [[namedExpressionRemoved]] after the expression was removed
@@ -38322,7 +38334,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * @param {string} formulaString - a formula in a proper format - it must start with "="
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
-     * @throws [[NotAFormulaError]] when the provided string is not a valid formula, i.e does not start with "="
+     * @throws [[NotAFormulaError]] when the provided string is not a valid formula, i.e. does not start with "="
      *
      * @example
      * ```js
@@ -38513,7 +38525,7 @@ var HyperFormula = /*#__PURE__*/function () {
     /**
      * Interprets number as a date + time.
      *
-     * @param {number} inputNumber - number of days since nullDate, should be nonnegative, fractions are interpreted as hours/minutes/seconds.
+     * @param {number} inputNumber - number of days since nullDate, should be non-negative, fractions are interpreted as hours/minutes/seconds.
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
      *
@@ -38540,9 +38552,9 @@ var HyperFormula = /*#__PURE__*/function () {
     /**
      * Interprets number as a date.
      *
-     * @param {number} inputNumber - number of days since nullDate, should be nonnegative, fractions are ignored.
-        * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
-        * @example
+     * @param {number} inputNumber - number of days since nullDate, should be non-negative, fractions are ignored.
+         * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
+         * @example
      * ```js
      * const hfInstance = HyperFormula.buildEmpty();
      *
@@ -38692,8 +38704,6 @@ var HyperFormula = /*#__PURE__*/function () {
   }, {
     key: "destroy",
     value: function destroy() {
-      this._evaluator.interpreter.destroyGpu();
-
       objectDestroy(this);
     }
   }, {
@@ -38949,7 +38959,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * @example
      * ```js
      * // should return all registered language codes: ['enGB', 'plPL']
-     * const registeredLangugaes = HyperFormula.getRegisteredLanguagesCodes();
+     * const registeredLanguages = HyperFormula.getRegisteredLanguagesCodes();
      * ```
      *
      * @category Static Methods
@@ -39016,7 +39026,7 @@ var HyperFormula = /*#__PURE__*/function () {
      * @param translations
      *
      * @throws [[ExpectedValueOfTypeError]] if any of its basic type argument is of wrong type
-     * @throws [[FunctionPluginValidationError]] when function with a given id does not exists in plugin or plugin class definition is not consistent with metadata
+     * @throws [[FunctionPluginValidationError]] when function with a given id does not exist in plugin or plugin class definition is not consistent with metadata
      * @throws [[ProtectedFunctionTranslationError]] when trying to register translation for protected function
      *
      * @example
@@ -39165,21 +39175,21 @@ var HyperFormula = /*#__PURE__*/function () {
  * @category Static Properties
  */
 
-HyperFormula.version = "1.3.1";
+HyperFormula.version = "2.0.1";
 /**
  * Latest build date.
  *
  * @category Static Properties
  */
 
-HyperFormula.buildDate = "11/01/2022 10:43:03";
+HyperFormula.buildDate = "14/06/2022 13:58:16";
 /**
  * A release date.
  *
  * @category Static Properties
  */
 
-HyperFormula.releaseDate = "11/01/2022";
+HyperFormula.releaseDate = "14/06/2022";
 /**
  * Contains all available languages to use in registerLanguage.
  *
@@ -39206,7 +39216,6 @@ function _classCallCheck$17(instance, Constructor) { if (!(instance instanceof C
 function _defineProperties$17(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
 function _createClass$17(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$17(Constructor.prototype, protoProps); if (staticProps) _defineProperties$17(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-var PossibleGPUModeString = ['gpu', 'cpu', 'dev'];
 var privatePool = new WeakMap();
 var Config = /*#__PURE__*/function () {
   function Config() {
@@ -39226,12 +39235,11 @@ var Config = /*#__PURE__*/function () {
         evaluateNullToZero = options.evaluateNullToZero,
         functionArgSeparator = options.functionArgSeparator,
         functionPlugins = options.functionPlugins,
-        gpujs = options.gpujs,
-        gpuMode = options.gpuMode,
         ignorePunctuation = options.ignorePunctuation,
         leapYear1900 = options.leapYear1900,
         localeLang = options.localeLang,
         language = options.language,
+        ignoreWhiteSpace = options.ignoreWhiteSpace,
         licenseKey = options.licenseKey,
         matchWholeCell = options.matchWholeCell,
         arrayColumnSeparator = options.arrayColumnSeparator,
@@ -39256,7 +39264,7 @@ var Config = /*#__PURE__*/function () {
         useWildcards = options.useWildcards;
 
     if (showDeprecatedWarns) {
-      this.warnDeprecatedOptions(options);
+      Config.warnDeprecatedOptions(options);
     }
 
     this.useArrayArithmetic = configValueFromParam(useArrayArithmetic, 'boolean', 'useArrayArithmetic');
@@ -39270,14 +39278,13 @@ var Config = /*#__PURE__*/function () {
     this.functionArgSeparator = configValueFromParam(functionArgSeparator, 'string', 'functionArgSeparator');
     this.decimalSeparator = configValueFromParam(decimalSeparator, ['.', ','], 'decimalSeparator');
     this.language = configValueFromParam(language, 'string', 'language');
+    this.ignoreWhiteSpace = configValueFromParam(ignoreWhiteSpace, ['standard', 'any'], 'ignoreWhiteSpace');
     this.licenseKey = configValueFromParam(licenseKey, 'string', 'licenseKey');
     this.thousandSeparator = configValueFromParam(thousandSeparator, ['', ',', ' ', '.'], 'thousandSeparator');
     this.arrayColumnSeparator = configValueFromParam(arrayColumnSeparator, [',', ';'], 'arrayColumnSeparator');
     this.arrayRowSeparator = configValueFromParam(arrayRowSeparator, [';', '|'], 'arrayRowSeparator');
     this.localeLang = configValueFromParam(localeLang, 'string', 'localeLang');
     this.functionPlugins = _toConsumableArray$c(functionPlugins !== null && functionPlugins !== void 0 ? functionPlugins : Config.defaultConfig.functionPlugins);
-    this.gpujs = gpujs !== null && gpujs !== void 0 ? gpujs : Config.defaultConfig.gpujs;
-    this.gpuMode = configValueFromParam(gpuMode, PossibleGPUModeString, 'gpuMode');
     this.smartRounding = configValueFromParam(smartRounding, 'boolean', 'smartRounding');
     this.evaluateNullToZero = configValueFromParam(evaluateNullToZero, 'boolean', 'evaluateNullToZero');
     this.nullYear = configValueFromParam(nullYear, 'number', 'nullYear');
@@ -39305,16 +39312,7 @@ var Config = /*#__PURE__*/function () {
     this.maxRows = configValueFromParam(maxRows, 'number', 'maxRows');
     validateNumberToBeAtLeast(this.maxRows, 'maxRows', 1);
     this.maxColumns = configValueFromParam(maxColumns, 'number', 'maxColumns');
-    this.currencySymbol = _toConsumableArray$c(configValueFromParamCheck(currencySymbol, Array.isArray, 'array', 'currencySymbol'));
-    this.currencySymbol.forEach(function (val) {
-      if (typeof val !== 'string') {
-        throw new ExpectedValueOfTypeError('string[]', 'currencySymbol');
-      }
-
-      if (val === '') {
-        throw new ConfigValueEmpty('currencySymbol');
-      }
-    });
+    this.currencySymbol = this.setupCurrencySymbol(currencySymbol);
     validateNumberToBeAtLeast(this.maxColumns, 'maxColumns', 1);
     privatePool.set(this, {
       licenseKeyValidityState: checkLicenseKeyValidity(this.licenseKey)
@@ -39337,15 +39335,31 @@ var Config = /*#__PURE__*/function () {
       name: 'arrayColumnSeparator'
     });
   }
-  /**
-   * Proxied property to its private counterpart. This makes the property
-   * as accessible as the other Config options but without ability to change the value.
-   *
-   * @internal
-   */
-
 
   _createClass$17(Config, [{
+    key: "setupCurrencySymbol",
+    value: function setupCurrencySymbol(currencySymbol) {
+      var valueAfterCheck = _toConsumableArray$c(configValueFromParamCheck(currencySymbol, Array.isArray, 'array', 'currencySymbol'));
+
+      valueAfterCheck.forEach(function (val) {
+        if (typeof val !== 'string') {
+          throw new ExpectedValueOfTypeError('string[]', 'currencySymbol');
+        }
+
+        if (val === '') {
+          throw new ConfigValueEmpty('currencySymbol');
+        }
+      });
+      return valueAfterCheck;
+    }
+    /**
+     * Proxied property to its private counterpart. This makes the property
+     * as accessible as the other Config options but without ability to change the value.
+     *
+     * @internal
+     */
+
+  }, {
     key: "licenseKeyValidityState",
     get: function get() {
       return privatePool.get(this).licenseKeyValidityState;
@@ -39359,19 +39373,15 @@ var Config = /*#__PURE__*/function () {
     key: "mergeConfig",
     value: function mergeConfig(init) {
       var mergedConfig = Object.assign({}, this.getConfig(), init);
-      this.warnDeprecatedOptions(init);
+      Config.warnDeprecatedOptions(init);
       return new Config(mergedConfig, false);
     }
-  }, {
+  }], [{
     key: "warnDeprecatedOptions",
     value: function warnDeprecatedOptions(options) {
-      this.warnDeprecatedIfUsed(options.binarySearchThreshold, 'binarySearchThreshold', '1.1');
-      this.warnDeprecatedIfUsed(options.gpujs, 'gpujs', '1.2');
+      Config.warnDeprecatedIfUsed(options.binarySearchThreshold, 'binarySearchThreshold', '1.1');
+    } // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-      if (options.gpuMode !== Config.defaultConfig.gpuMode) {
-        this.warnDeprecatedIfUsed(options.gpuMode, 'gpuMode', '1.2');
-      }
-    }
   }, {
     key: "warnDeprecatedIfUsed",
     value: function warnDeprecatedIfUsed(inputValue, paramName, fromVersion, replacementName) {
@@ -39399,10 +39409,9 @@ Config.defaultConfig = {
   evaluateNullToZero: false,
   functionArgSeparator: ',',
   functionPlugins: [],
-  gpujs: undefined,
-  gpuMode: 'gpu',
   ignorePunctuation: false,
   language: 'enGB',
+  ignoreWhiteSpace: 'standard',
   licenseKey: '',
   leapYear1900: false,
   localeLang: 'en',
@@ -39434,7 +39443,8 @@ Config.defaultConfig = {
 };
 
 function getFullConfigFromPartial(partialConfig) {
-  var _a;
+  var _a; // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 
   var ret = {};
 
@@ -39868,7 +39878,7 @@ var dictionary = {
   }
 };
 
-function _typeof$l(obj) { "@babel/helpers - typeof"; return _typeof$l = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$l(obj); }
+function _typeof$x(obj) { "@babel/helpers - typeof"; return _typeof$x = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$x(obj); }
 
 function _toConsumableArray$d(arr) { return _arrayWithoutHoles$d(arr) || _iterableToArray$d(arr) || _unsupportedIterableToArray$G(arr) || _nonIterableSpread$d(); }
 
@@ -39892,17 +39902,17 @@ function _createClass$18(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$h(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$i(subClass, superClass); }
 
-function _setPrototypeOf$i(o, p) { _setPrototypeOf$i = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$i(o, p); }
+function _setPrototypeOf$i(o, p) { _setPrototypeOf$i = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$i(o, p); }
 
 function _createSuper$h(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$i(); return function _createSuperInternal() { var Super = _getPrototypeOf$h(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$h(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$h(this, result); }; }
 
-function _possibleConstructorReturn$h(self, call) { if (call && (_typeof$l(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$h(self); }
+function _possibleConstructorReturn$h(self, call) { if (call && (_typeof$x(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$h(self); }
 
 function _assertThisInitialized$h(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$i() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$h(o) { _getPrototypeOf$h = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$h(o); }
+function _getPrototypeOf$h(o) { _getPrototypeOf$h = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$h(o); }
 var ArrayPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$h(ArrayPlugin, _FunctionPlugin);
 
@@ -40115,7 +40125,7 @@ ArrayPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$m(obj) { "@babel/helpers - typeof"; return _typeof$m = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$m(obj); }
+function _typeof$y(obj) { "@babel/helpers - typeof"; return _typeof$y = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$y(obj); }
 
 function _classCallCheck$19(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40125,17 +40135,17 @@ function _createClass$19(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$i(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$j(subClass, superClass); }
 
-function _setPrototypeOf$j(o, p) { _setPrototypeOf$j = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$j(o, p); }
+function _setPrototypeOf$j(o, p) { _setPrototypeOf$j = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$j(o, p); }
 
 function _createSuper$i(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$j(); return function _createSuperInternal() { var Super = _getPrototypeOf$i(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$i(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$i(this, result); }; }
 
-function _possibleConstructorReturn$i(self, call) { if (call && (_typeof$m(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$i(self); }
+function _possibleConstructorReturn$i(self, call) { if (call && (_typeof$y(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$i(self); }
 
 function _assertThisInitialized$i(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$j() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$i(o) { _getPrototypeOf$i = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$i(o); }
+function _getPrototypeOf$i(o) { _getPrototypeOf$i = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$i(o); }
 var AbsPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$i(AbsPlugin, _FunctionPlugin);
 
@@ -40165,7 +40175,7 @@ AbsPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$n(obj) { "@babel/helpers - typeof"; return _typeof$n = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$n(obj); }
+function _typeof$z(obj) { "@babel/helpers - typeof"; return _typeof$z = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$z(obj); }
 
 function _classCallCheck$1a(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40175,17 +40185,17 @@ function _createClass$1a(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$j(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$k(subClass, superClass); }
 
-function _setPrototypeOf$k(o, p) { _setPrototypeOf$k = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$k(o, p); }
+function _setPrototypeOf$k(o, p) { _setPrototypeOf$k = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$k(o, p); }
 
 function _createSuper$j(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$k(); return function _createSuperInternal() { var Super = _getPrototypeOf$j(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$j(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$j(this, result); }; }
 
-function _possibleConstructorReturn$j(self, call) { if (call && (_typeof$n(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$j(self); }
+function _possibleConstructorReturn$j(self, call) { if (call && (_typeof$z(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$j(self); }
 
 function _assertThisInitialized$j(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$k() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$j(o) { _getPrototypeOf$j = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$j(o); }
+function _getPrototypeOf$j(o) { _getPrototypeOf$j = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$j(o); }
 var MAX_48BIT_INTEGER = 281474976710655;
 var SHIFT_MIN_POSITIONS = -53;
 var SHIFT_MAX_POSITIONS = 53;
@@ -40263,7 +40273,7 @@ function validate(result) {
   }
 }
 
-function _typeof$o(obj) { "@babel/helpers - typeof"; return _typeof$o = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$o(obj); }
+function _typeof$A(obj) { "@babel/helpers - typeof"; return _typeof$A = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$A(obj); }
 
 function _classCallCheck$1b(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40273,17 +40283,17 @@ function _createClass$1b(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$k(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$l(subClass, superClass); }
 
-function _setPrototypeOf$l(o, p) { _setPrototypeOf$l = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$l(o, p); }
+function _setPrototypeOf$l(o, p) { _setPrototypeOf$l = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$l(o, p); }
 
 function _createSuper$k(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$l(); return function _createSuperInternal() { var Super = _getPrototypeOf$k(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$k(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$k(this, result); }; }
 
-function _possibleConstructorReturn$k(self, call) { if (call && (_typeof$o(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$k(self); }
+function _possibleConstructorReturn$k(self, call) { if (call && (_typeof$A(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$k(self); }
 
 function _assertThisInitialized$k(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$l() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$k(o) { _getPrototypeOf$k = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$k(o); }
+function _getPrototypeOf$k(o) { _getPrototypeOf$k = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$k(o); }
 var BitwiseLogicOperationsPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$k(BitwiseLogicOperationsPlugin, _FunctionPlugin);
 
@@ -40353,7 +40363,7 @@ BitwiseLogicOperationsPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$p(obj) { "@babel/helpers - typeof"; return _typeof$p = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$p(obj); }
+function _typeof$B(obj) { "@babel/helpers - typeof"; return _typeof$B = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$B(obj); }
 
 function _classCallCheck$1c(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40363,17 +40373,17 @@ function _createClass$1c(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$l(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$m(subClass, superClass); }
 
-function _setPrototypeOf$m(o, p) { _setPrototypeOf$m = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$m(o, p); }
+function _setPrototypeOf$m(o, p) { _setPrototypeOf$m = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$m(o, p); }
 
 function _createSuper$l(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$m(); return function _createSuperInternal() { var Super = _getPrototypeOf$l(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$l(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$l(this, result); }; }
 
-function _possibleConstructorReturn$l(self, call) { if (call && (_typeof$p(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$l(self); }
+function _possibleConstructorReturn$l(self, call) { if (call && (_typeof$B(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$l(self); }
 
 function _assertThisInitialized$l(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$m() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$l(o) { _getPrototypeOf$l = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$l(o); }
+function _getPrototypeOf$l(o) { _getPrototypeOf$l = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$l(o); }
 /**
  * Interpreter plugin containing boolean functions
  */
@@ -40671,27 +40681,24 @@ BooleanPlugin.implementedFunctions = {
   }
 };
 
-var ceil = Math.ceil;
-var floor = Math.floor;
-
 // `Math.trunc` method
 // https://tc39.es/ecma262/#sec-math.trunc
 _export({ target: 'Math', stat: true }, {
-  trunc: function trunc(it) {
-    return (it > 0 ? floor : ceil)(it);
-  }
+  trunc: mathTrunc
 });
 
+var $RangeError = RangeError;
 var fromCharCode = String.fromCharCode;
-// eslint-disable-next-line es/no-string-fromcodepoint -- required for testing
+// eslint-disable-next-line es-x/no-string-fromcodepoint -- required for testing
 var $fromCodePoint = String.fromCodePoint;
+var join = functionUncurryThis([].join);
 
 // length should be 1, old FF problem
 var INCORRECT_LENGTH = !!$fromCodePoint && $fromCodePoint.length != 1;
 
 // `String.fromCodePoint` method
 // https://tc39.es/ecma262/#sec-string.fromcodepoint
-_export({ target: 'String', stat: true, forced: INCORRECT_LENGTH }, {
+_export({ target: 'String', stat: true, arity: 1, forced: INCORRECT_LENGTH }, {
   // eslint-disable-next-line no-unused-vars -- required for `.length`
   fromCodePoint: function fromCodePoint(x) {
     var elements = [];
@@ -40700,16 +40707,15 @@ _export({ target: 'String', stat: true, forced: INCORRECT_LENGTH }, {
     var code;
     while (length > i) {
       code = +arguments[i++];
-      if (toAbsoluteIndex(code, 0x10FFFF) !== code) throw RangeError(code + ' is not a valid code point');
-      elements.push(code < 0x10000
+      if (toAbsoluteIndex(code, 0x10FFFF) !== code) throw $RangeError(code + ' is not a valid code point');
+      elements[i] = code < 0x10000
         ? fromCharCode(code)
-        : fromCharCode(((code -= 0x10000) >> 10) + 0xD800, code % 0x400 + 0xDC00)
-      );
-    } return elements.join('');
+        : fromCharCode(((code -= 0x10000) >> 10) + 0xD800, code % 0x400 + 0xDC00);
+    } return join(elements, '');
   }
 });
 
-function _typeof$q(obj) { "@babel/helpers - typeof"; return _typeof$q = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$q(obj); }
+function _typeof$C(obj) { "@babel/helpers - typeof"; return _typeof$C = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$C(obj); }
 
 function _classCallCheck$1d(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40719,17 +40725,17 @@ function _createClass$1d(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$m(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$n(subClass, superClass); }
 
-function _setPrototypeOf$n(o, p) { _setPrototypeOf$n = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$n(o, p); }
+function _setPrototypeOf$n(o, p) { _setPrototypeOf$n = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$n(o, p); }
 
 function _createSuper$m(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$n(); return function _createSuperInternal() { var Super = _getPrototypeOf$m(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$m(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$m(this, result); }; }
 
-function _possibleConstructorReturn$m(self, call) { if (call && (_typeof$q(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$m(self); }
+function _possibleConstructorReturn$m(self, call) { if (call && (_typeof$C(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$m(self); }
 
 function _assertThisInitialized$m(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$n() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$m(o) { _getPrototypeOf$m = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$m(o); }
+function _getPrototypeOf$m(o) { _getPrototypeOf$m = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$m(o); }
 var CharPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$m(CharPlugin, _FunctionPlugin);
 
@@ -40782,7 +40788,7 @@ CharPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$r(obj) { "@babel/helpers - typeof"; return _typeof$r = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$r(obj); }
+function _typeof$D(obj) { "@babel/helpers - typeof"; return _typeof$D = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$D(obj); }
 
 function _classCallCheck$1e(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40792,17 +40798,17 @@ function _createClass$1e(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$n(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$o(subClass, superClass); }
 
-function _setPrototypeOf$o(o, p) { _setPrototypeOf$o = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$o(o, p); }
+function _setPrototypeOf$o(o, p) { _setPrototypeOf$o = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$o(o, p); }
 
 function _createSuper$n(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$o(); return function _createSuperInternal() { var Super = _getPrototypeOf$n(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$n(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$n(this, result); }; }
 
-function _possibleConstructorReturn$n(self, call) { if (call && (_typeof$r(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$n(self); }
+function _possibleConstructorReturn$n(self, call) { if (call && (_typeof$D(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$n(self); }
 
 function _assertThisInitialized$n(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$o() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$n(o) { _getPrototypeOf$n = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$n(o); }
+function _getPrototypeOf$n(o) { _getPrototypeOf$n = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$n(o); }
 var CodePlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$n(CodePlugin, _FunctionPlugin);
 
@@ -40853,7 +40859,7 @@ CodePlugin.implementedFunctions = {
   }
 };
 
-function _typeof$s(obj) { "@babel/helpers - typeof"; return _typeof$s = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$s(obj); }
+function _typeof$E(obj) { "@babel/helpers - typeof"; return _typeof$E = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$E(obj); }
 
 function _classCallCheck$1f(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40863,17 +40869,17 @@ function _createClass$1f(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$o(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$p(subClass, superClass); }
 
-function _setPrototypeOf$p(o, p) { _setPrototypeOf$p = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$p(o, p); }
+function _setPrototypeOf$p(o, p) { _setPrototypeOf$p = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$p(o, p); }
 
 function _createSuper$o(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$p(); return function _createSuperInternal() { var Super = _getPrototypeOf$o(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$o(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$o(this, result); }; }
 
-function _possibleConstructorReturn$o(self, call) { if (call && (_typeof$s(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$o(self); }
+function _possibleConstructorReturn$o(self, call) { if (call && (_typeof$E(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$o(self); }
 
 function _assertThisInitialized$o(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$p() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$o(o) { _getPrototypeOf$o = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$o(o); }
+function _getPrototypeOf$o(o) { _getPrototypeOf$o = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$o(o); }
 /**
  * Interpreter plugin containing MEDIAN function
  */
@@ -40922,7 +40928,7 @@ CountBlankPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$t(obj) { "@babel/helpers - typeof"; return _typeof$t = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$t(obj); }
+function _typeof$F(obj) { "@babel/helpers - typeof"; return _typeof$F = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$F(obj); }
 
 function _classCallCheck$1g(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -40932,17 +40938,17 @@ function _createClass$1g(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$p(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$q(subClass, superClass); }
 
-function _setPrototypeOf$q(o, p) { _setPrototypeOf$q = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$q(o, p); }
+function _setPrototypeOf$q(o, p) { _setPrototypeOf$q = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$q(o, p); }
 
 function _createSuper$p(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$q(); return function _createSuperInternal() { var Super = _getPrototypeOf$p(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$p(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$p(this, result); }; }
 
-function _possibleConstructorReturn$p(self, call) { if (call && (_typeof$t(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$p(self); }
+function _possibleConstructorReturn$p(self, call) { if (call && (_typeof$F(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$p(self); }
 
 function _assertThisInitialized$p(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$q() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$p(o) { _getPrototypeOf$p = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$p(o); }
+function _getPrototypeOf$p(o) { _getPrototypeOf$p = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$p(o); }
 /**
  * Interpreter plugin containing COUNTUNIQUE function
  */
@@ -41006,7 +41012,7 @@ CountUniquePlugin.implementedFunctions = {
   }
 };
 
-function _typeof$u(obj) { "@babel/helpers - typeof"; return _typeof$u = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$u(obj); }
+function _typeof$G(obj) { "@babel/helpers - typeof"; return _typeof$G = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$G(obj); }
 
 function _toConsumableArray$e(arr) { return _arrayWithoutHoles$e(arr) || _iterableToArray$e(arr) || _unsupportedIterableToArray$H(arr) || _nonIterableSpread$e(); }
 
@@ -41038,17 +41044,17 @@ function _createClass$1h(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$q(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$r(subClass, superClass); }
 
-function _setPrototypeOf$r(o, p) { _setPrototypeOf$r = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$r(o, p); }
+function _setPrototypeOf$r(o, p) { _setPrototypeOf$r = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$r(o, p); }
 
 function _createSuper$q(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$r(); return function _createSuperInternal() { var Super = _getPrototypeOf$q(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$q(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$q(this, result); }; }
 
-function _possibleConstructorReturn$q(self, call) { if (call && (_typeof$u(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$q(self); }
+function _possibleConstructorReturn$q(self, call) { if (call && (_typeof$G(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$q(self); }
 
 function _assertThisInitialized$q(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$r() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$q(o) { _getPrototypeOf$q = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$q(o); }
+function _getPrototypeOf$q(o) { _getPrototypeOf$q = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$q(o); }
 /**
  * Interpreter plugin containing date-specific functions
  */
@@ -42070,7 +42076,7 @@ function computeWeekendPattern(weekend) {
 var weekdayOffsets = new Map([[1, 0], [2, 1], [11, 1], [12, 2], [13, 3], [14, 4], [15, 5], [16, 6], [17, 0]]);
 var workdayPatterns = new Map([[1, '0000011'], [2, '1000001'], [3, '1100000'], [4, '0110000'], [5, '0011000'], [6, '0001100'], [7, '0000110'], [11, '0000001'], [12, '1000000'], [13, '0100000'], [14, '0010000'], [15, '0001000'], [16, '0000100'], [17, '0000010']]);
 
-function _typeof$v(obj) { "@babel/helpers - typeof"; return _typeof$v = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$v(obj); }
+function _typeof$H(obj) { "@babel/helpers - typeof"; return _typeof$H = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$H(obj); }
 
 function _classCallCheck$1i(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -42080,17 +42086,17 @@ function _createClass$1i(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$r(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$s(subClass, superClass); }
 
-function _setPrototypeOf$s(o, p) { _setPrototypeOf$s = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$s(o, p); }
+function _setPrototypeOf$s(o, p) { _setPrototypeOf$s = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$s(o, p); }
 
 function _createSuper$r(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$s(); return function _createSuperInternal() { var Super = _getPrototypeOf$r(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$r(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$r(this, result); }; }
 
-function _possibleConstructorReturn$r(self, call) { if (call && (_typeof$v(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$r(self); }
+function _possibleConstructorReturn$r(self, call) { if (call && (_typeof$H(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$r(self); }
 
 function _assertThisInitialized$r(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$s() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$r(o) { _getPrototypeOf$r = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$r(o); }
+function _getPrototypeOf$r(o) { _getPrototypeOf$r = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$r(o); }
 var DegreesPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$r(DegreesPlugin, _FunctionPlugin);
 
@@ -42122,7 +42128,7 @@ DegreesPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$w(obj) { "@babel/helpers - typeof"; return _typeof$w = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$w(obj); }
+function _typeof$I(obj) { "@babel/helpers - typeof"; return _typeof$I = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$I(obj); }
 
 function _classCallCheck$1j(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -42132,17 +42138,17 @@ function _createClass$1j(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$s(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$t(subClass, superClass); }
 
-function _setPrototypeOf$t(o, p) { _setPrototypeOf$t = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$t(o, p); }
+function _setPrototypeOf$t(o, p) { _setPrototypeOf$t = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$t(o, p); }
 
 function _createSuper$s(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$t(); return function _createSuperInternal() { var Super = _getPrototypeOf$s(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$s(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$s(this, result); }; }
 
-function _possibleConstructorReturn$s(self, call) { if (call && (_typeof$w(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$s(self); }
+function _possibleConstructorReturn$s(self, call) { if (call && (_typeof$I(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$s(self); }
 
 function _assertThisInitialized$s(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$t() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$s(o) { _getPrototypeOf$s = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$s(o); }
+function _getPrototypeOf$s(o) { _getPrototypeOf$s = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$s(o); }
 var DeltaPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$s(DeltaPlugin, _FunctionPlugin);
 
@@ -42177,7 +42183,7 @@ DeltaPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$x(obj) { "@babel/helpers - typeof"; return _typeof$x = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$x(obj); }
+function _typeof$J(obj) { "@babel/helpers - typeof"; return _typeof$J = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$J(obj); }
 
 function _classCallCheck$1k(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -42187,17 +42193,17 @@ function _createClass$1k(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$t(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$u(subClass, superClass); }
 
-function _setPrototypeOf$u(o, p) { _setPrototypeOf$u = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$u(o, p); }
+function _setPrototypeOf$u(o, p) { _setPrototypeOf$u = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$u(o, p); }
 
 function _createSuper$t(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$u(); return function _createSuperInternal() { var Super = _getPrototypeOf$t(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$t(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$t(this, result); }; }
 
-function _possibleConstructorReturn$t(self, call) { if (call && (_typeof$x(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$t(self); }
+function _possibleConstructorReturn$t(self, call) { if (call && (_typeof$J(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$t(self); }
 
 function _assertThisInitialized$t(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$u() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$t(o) { _getPrototypeOf$t = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$t(o); }
+function _getPrototypeOf$t(o) { _getPrototypeOf$t = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$t(o); }
 var ExpPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$t(ExpPlugin, _FunctionPlugin);
 
@@ -42236,7 +42242,7 @@ ExpPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$y(obj) { "@babel/helpers - typeof"; return _typeof$y = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$y(obj); }
+function _typeof$K(obj) { "@babel/helpers - typeof"; return _typeof$K = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$K(obj); }
 
 function _createForOfIteratorHelper$w(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$I(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -42252,17 +42258,17 @@ function _createClass$1l(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$u(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$v(subClass, superClass); }
 
-function _setPrototypeOf$v(o, p) { _setPrototypeOf$v = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$v(o, p); }
+function _setPrototypeOf$v(o, p) { _setPrototypeOf$v = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$v(o, p); }
 
 function _createSuper$u(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$v(); return function _createSuperInternal() { var Super = _getPrototypeOf$u(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$u(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$u(this, result); }; }
 
-function _possibleConstructorReturn$u(self, call) { if (call && (_typeof$y(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$u(self); }
+function _possibleConstructorReturn$u(self, call) { if (call && (_typeof$K(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$u(self); }
 
 function _assertThisInitialized$u(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$v() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$u(o) { _getPrototypeOf$u = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$u(o); }
+function _getPrototypeOf$u(o) { _getPrototypeOf$u = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$u(o); }
 var FinancialPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$u(FinancialPlugin, _FunctionPlugin);
 
@@ -42470,13 +42476,14 @@ var FinancialPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "rate",
     value: function rate(ast, state) {
+      // Newton's method: https://en.wikipedia.org/wiki/Newton%27s_method
       return this.runFunction(ast.args, state, this.metadata('RATE'), function (periods, payment, present, future, type, guess) {
         if (guess <= -1) {
           return new CellError(ErrorType.VALUE);
         }
 
-        var epsMax = 1e-10;
-        var iterMax = 20;
+        var epsMax = 1e-7;
+        var iterMax = 50;
         var rate = guess;
         type = type ? 1 : 0;
 
@@ -43326,7 +43333,7 @@ function npvCore(rate, args) {
   return acc;
 }
 
-function _typeof$z(obj) { "@babel/helpers - typeof"; return _typeof$z = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$z(obj); }
+function _typeof$L(obj) { "@babel/helpers - typeof"; return _typeof$L = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$L(obj); }
 
 function _classCallCheck$1m(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -43336,17 +43343,17 @@ function _createClass$1m(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$v(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$w(subClass, superClass); }
 
-function _setPrototypeOf$w(o, p) { _setPrototypeOf$w = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$w(o, p); }
+function _setPrototypeOf$w(o, p) { _setPrototypeOf$w = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$w(o, p); }
 
 function _createSuper$v(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$w(); return function _createSuperInternal() { var Super = _getPrototypeOf$v(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$v(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$v(this, result); }; }
 
-function _possibleConstructorReturn$v(self, call) { if (call && (_typeof$z(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$v(self); }
+function _possibleConstructorReturn$v(self, call) { if (call && (_typeof$L(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$v(self); }
 
 function _assertThisInitialized$v(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$w() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$v(o) { _getPrototypeOf$v = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$v(o); }
+function _getPrototypeOf$v(o) { _getPrototypeOf$v = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$v(o); }
 var FormulaTextPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$v(FormulaTextPlugin, _FunctionPlugin);
 
@@ -43396,7 +43403,7 @@ FormulaTextPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$A(obj) { "@babel/helpers - typeof"; return _typeof$A = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$A(obj); }
+function _typeof$M(obj) { "@babel/helpers - typeof"; return _typeof$M = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$M(obj); }
 
 function _classCallCheck$1n(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -43406,17 +43413,17 @@ function _createClass$1n(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$w(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$x(subClass, superClass); }
 
-function _setPrototypeOf$x(o, p) { _setPrototypeOf$x = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$x(o, p); }
+function _setPrototypeOf$x(o, p) { _setPrototypeOf$x = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$x(o, p); }
 
 function _createSuper$w(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$x(); return function _createSuperInternal() { var Super = _getPrototypeOf$w(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$w(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$w(this, result); }; }
 
-function _possibleConstructorReturn$w(self, call) { if (call && (_typeof$A(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$w(self); }
+function _possibleConstructorReturn$w(self, call) { if (call && (_typeof$M(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$w(self); }
 
 function _assertThisInitialized$w(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$x() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$w(o) { _getPrototypeOf$w = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$w(o); }
+function _getPrototypeOf$w(o) { _getPrototypeOf$w = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$w(o); }
 /**
  * Interpreter plugin containing information functions
  */
@@ -43979,7 +43986,7 @@ InformationPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$B(obj) { "@babel/helpers - typeof"; return _typeof$B = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$B(obj); }
+function _typeof$N(obj) { "@babel/helpers - typeof"; return _typeof$N = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$N(obj); }
 
 function _classCallCheck$1o(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -43989,17 +43996,17 @@ function _createClass$1o(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$x(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$y(subClass, superClass); }
 
-function _setPrototypeOf$y(o, p) { _setPrototypeOf$y = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$y(o, p); }
+function _setPrototypeOf$y(o, p) { _setPrototypeOf$y = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$y(o, p); }
 
 function _createSuper$x(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$y(); return function _createSuperInternal() { var Super = _getPrototypeOf$x(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$x(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$x(this, result); }; }
 
-function _possibleConstructorReturn$x(self, call) { if (call && (_typeof$B(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$x(self); }
+function _possibleConstructorReturn$x(self, call) { if (call && (_typeof$N(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$x(self); }
 
 function _assertThisInitialized$x(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$y() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$x(o) { _getPrototypeOf$x = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$x(o); }
+function _getPrototypeOf$x(o) { _getPrototypeOf$x = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$x(o); }
 var IsEvenPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$x(IsEvenPlugin, _FunctionPlugin);
 
@@ -44031,7 +44038,7 @@ IsEvenPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$C(obj) { "@babel/helpers - typeof"; return _typeof$C = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$C(obj); }
+function _typeof$O(obj) { "@babel/helpers - typeof"; return _typeof$O = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$O(obj); }
 
 function _classCallCheck$1p(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -44041,17 +44048,17 @@ function _createClass$1p(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$y(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$z(subClass, superClass); }
 
-function _setPrototypeOf$z(o, p) { _setPrototypeOf$z = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$z(o, p); }
+function _setPrototypeOf$z(o, p) { _setPrototypeOf$z = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$z(o, p); }
 
 function _createSuper$y(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$z(); return function _createSuperInternal() { var Super = _getPrototypeOf$y(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$y(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$y(this, result); }; }
 
-function _possibleConstructorReturn$y(self, call) { if (call && (_typeof$C(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$y(self); }
+function _possibleConstructorReturn$y(self, call) { if (call && (_typeof$O(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$y(self); }
 
 function _assertThisInitialized$y(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$z() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$y(o) { _getPrototypeOf$y = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$y(o); }
+function _getPrototypeOf$y(o) { _getPrototypeOf$y = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$y(o); }
 var IsOddPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$y(IsOddPlugin, _FunctionPlugin);
 
@@ -44083,7 +44090,7 @@ IsOddPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$D(obj) { "@babel/helpers - typeof"; return _typeof$D = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$D(obj); }
+function _typeof$P(obj) { "@babel/helpers - typeof"; return _typeof$P = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$P(obj); }
 
 function _classCallCheck$1q(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -44093,17 +44100,17 @@ function _createClass$1q(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$z(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$A(subClass, superClass); }
 
-function _setPrototypeOf$A(o, p) { _setPrototypeOf$A = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$A(o, p); }
+function _setPrototypeOf$A(o, p) { _setPrototypeOf$A = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$A(o, p); }
 
 function _createSuper$z(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$A(); return function _createSuperInternal() { var Super = _getPrototypeOf$z(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$z(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$z(this, result); }; }
 
-function _possibleConstructorReturn$z(self, call) { if (call && (_typeof$D(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$z(self); }
+function _possibleConstructorReturn$z(self, call) { if (call && (_typeof$P(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$z(self); }
 
 function _assertThisInitialized$z(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$A() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$z(o) { _getPrototypeOf$z = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$z(o); }
+function _getPrototypeOf$z(o) { _getPrototypeOf$z = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$z(o); }
 var LogarithmPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$z(LogarithmPlugin, _FunctionPlugin);
 
@@ -44162,7 +44169,7 @@ LogarithmPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$E(obj) { "@babel/helpers - typeof"; return _typeof$E = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$E(obj); }
+function _typeof$Q(obj) { "@babel/helpers - typeof"; return _typeof$Q = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$Q(obj); }
 
 function _classCallCheck$1r(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -44172,17 +44179,17 @@ function _createClass$1r(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$A(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$B(subClass, superClass); }
 
-function _setPrototypeOf$B(o, p) { _setPrototypeOf$B = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$B(o, p); }
+function _setPrototypeOf$B(o, p) { _setPrototypeOf$B = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$B(o, p); }
 
 function _createSuper$A(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$B(); return function _createSuperInternal() { var Super = _getPrototypeOf$A(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$A(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$A(this, result); }; }
 
-function _possibleConstructorReturn$A(self, call) { if (call && (_typeof$E(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$A(self); }
+function _possibleConstructorReturn$A(self, call) { if (call && (_typeof$Q(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$A(self); }
 
 function _assertThisInitialized$A(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$B() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$A(o) { _getPrototypeOf$A = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$A(o); }
+function _getPrototypeOf$A(o) { _getPrototypeOf$A = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$A(o); }
 var PI = parseFloat(Math.PI.toFixed(14));
 var MathConstantsPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$A(MathConstantsPlugin, _FunctionPlugin);
@@ -44227,7 +44234,7 @@ MathConstantsPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$F(obj) { "@babel/helpers - typeof"; return _typeof$F = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$F(obj); }
+function _typeof$R(obj) { "@babel/helpers - typeof"; return _typeof$R = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$R(obj); }
 
 function _slicedToArray$s(arr, i) { return _arrayWithHoles$s(arr) || _iterableToArrayLimit$s(arr, i) || _unsupportedIterableToArray$J(arr, i) || _nonIterableRest$s(); }
 
@@ -44249,17 +44256,17 @@ function _createClass$1s(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$B(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$C(subClass, superClass); }
 
-function _setPrototypeOf$C(o, p) { _setPrototypeOf$C = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$C(o, p); }
+function _setPrototypeOf$C(o, p) { _setPrototypeOf$C = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$C(o, p); }
 
 function _createSuper$B(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$C(); return function _createSuperInternal() { var Super = _getPrototypeOf$B(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$B(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$B(this, result); }; }
 
-function _possibleConstructorReturn$B(self, call) { if (call && (_typeof$F(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$B(self); }
+function _possibleConstructorReturn$B(self, call) { if (call && (_typeof$R(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$B(self); }
 
 function _assertThisInitialized$B(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$C() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$B(o) { _getPrototypeOf$B = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$B(o); }
+function _getPrototypeOf$B(o) { _getPrototypeOf$B = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$B(o); }
 
 function arraySizeForMultiplication(leftArraySize, rightArraySize) {
   return new ArraySize(rightArraySize.width, leftArraySize.height);
@@ -44274,55 +44281,16 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
   var _super = _createSuper$B(MatrixPlugin);
 
-  function MatrixPlugin(interpreter) {
-    var _this;
-
+  function MatrixPlugin() {
     _classCallCheck$1s(this, MatrixPlugin);
 
-    _this = _super.call(this, interpreter);
-
-    _this.createCpuKernel = function (kernel, outputSize) {
-      return function () {
-        var result = [];
-
-        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-          args[_key] = arguments[_key];
-        }
-
-        for (var y = 0; y < outputSize.height; ++y) {
-          result.push([]);
-
-          for (var x = 0; x < outputSize.width; ++x) {
-            result[y][x] = kernel.apply({
-              thread: {
-                x: x,
-                y: y
-              }
-            }, args);
-          }
-        }
-
-        return result;
-      };
-    };
-
-    _this.createGpuJsKernel = function (kernel, outputSize) {
-      return _this.interpreter.getGpuInstance().createKernel(kernel).setPrecision('unsigned').setOutput([outputSize.width, outputSize.height]);
-    };
-
-    if (_this.config.gpujs === undefined) {
-      _this.createKernel = _this.createCpuKernel;
-    } else {
-      _this.createKernel = _this.createGpuJsKernel;
-    }
-
-    return _this;
+    return _super.apply(this, arguments);
   }
 
   _createClass$1s(MatrixPlugin, [{
     key: "mmult",
     value: function mmult(ast, state) {
-      var _this2 = this;
+      var _this = this;
 
       return this.runFunction(ast.args, state, this.metadata('MMULT'), function (leftMatrix, rightMatrix) {
         if (!leftMatrix.hasOnlyNumbers() || !rightMatrix.hasOnlyNumbers()) {
@@ -44335,7 +44303,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var outputSize = arraySizeForMultiplication(leftMatrix.size, rightMatrix.size);
 
-        var result = _this2.createKernel(function (a, b, width) {
+        var result = _this.createKernel(function (a, b, width) {
           var sum = 0;
 
           for (var i = 0; i < width; ++i) {
@@ -44351,7 +44319,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "mmultArraySize",
     value: function mmultArraySize(ast, state) {
-      var _this3 = this;
+      var _this2 = this;
 
       if (ast.args.length !== 2) {
         return ArraySize.error();
@@ -44361,7 +44329,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
       var subChecks = ast.args.map(function (arg) {
         var _a;
 
-        return _this3.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
+        return _this2.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
       });
 
       var _subChecks = _slicedToArray$s(subChecks, 2),
@@ -44373,7 +44341,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "maxpool",
     value: function maxpool(ast, state) {
-      var _this4 = this;
+      var _this3 = this;
 
       return this.runFunction(ast.args, state, this.metadata('MAXPOOL'), function (matrix, windowSize) {
         var stride = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : windowSize;
@@ -44384,7 +44352,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var outputSize = arraySizeForPoolFunction(matrix.size, windowSize, stride);
 
-        var result = _this4.createKernel(function (a, windowSize, stride) {
+        var result = _this3.createKernel(function (a, windowSize, stride) {
           var leftCornerX = this.thread.x * stride;
           var leftCornerY = this.thread.y * stride;
           var currentMax = a[leftCornerY][leftCornerX];
@@ -44404,7 +44372,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "medianpool",
     value: function medianpool(ast, state) {
-      var _this5 = this;
+      var _this4 = this;
 
       return this.runFunction(ast.args, state, this.metadata('MEDIANPOOL'), function (matrix, windowSize) {
         var stride = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : windowSize;
@@ -44415,7 +44383,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
 
         var outputSize = arraySizeForPoolFunction(matrix.size, windowSize, stride);
 
-        var result = _this5.createKernel(function (a, windowSize, stride) {
+        var result = _this4.createKernel(function (a, windowSize, stride) {
           var leftCornerX = this.thread.x * stride;
           var leftCornerY = this.thread.y * stride;
           var currentMax = a[leftCornerY][leftCornerX];
@@ -44481,7 +44449,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "maxpoolArraySize",
     value: function maxpoolArraySize(ast, state) {
-      var _this6 = this;
+      var _this5 = this;
 
       if (ast.args.length < 2 || ast.args.length > 3) {
         return ArraySize.error();
@@ -44491,7 +44459,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
       var subChecks = ast.args.map(function (arg) {
         var _a;
 
-        return _this6.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
+        return _this5.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
       });
       var array = subChecks[0];
       var windowArg = ast.args[1];
@@ -44548,7 +44516,7 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   }, {
     key: "transposeArraySize",
     value: function transposeArraySize(ast, state) {
-      var _this7 = this;
+      var _this6 = this;
 
       if (ast.args.length !== 1) {
         return ArraySize.error();
@@ -44558,13 +44526,39 @@ var MatrixPlugin = /*#__PURE__*/function (_FunctionPlugin) {
       var subChecks = ast.args.map(function (arg) {
         var _a;
 
-        return _this7.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
+        return _this6.arraySizeForAst(arg, new InterpreterState(state.formulaAddress, state.arraysFlag || ((_a = metadata === null || metadata === void 0 ? void 0 : metadata.arrayFunction) !== null && _a !== void 0 ? _a : false)));
       });
 
       var _subChecks2 = _slicedToArray$s(subChecks, 1),
           size = _subChecks2[0];
 
       return new ArraySize(size.height, size.width);
+    }
+  }, {
+    key: "createKernel",
+    value: function createKernel(kernel, outputSize) {
+      return function () {
+        var result = [];
+
+        for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+
+        for (var y = 0; y < outputSize.height; ++y) {
+          result.push([]);
+
+          for (var x = 0; x < outputSize.width; ++x) {
+            result[y][x] = kernel.apply({
+              thread: {
+                x: x,
+                y: y
+              }
+            }, args);
+          }
+        }
+
+        return result;
+      };
     }
   }]);
 
@@ -44617,7 +44611,7 @@ MatrixPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$G(obj) { "@babel/helpers - typeof"; return _typeof$G = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$G(obj); }
+function _typeof$S(obj) { "@babel/helpers - typeof"; return _typeof$S = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$S(obj); }
 
 function _classCallCheck$1t(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -44627,17 +44621,17 @@ function _createClass$1t(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$C(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$D(subClass, superClass); }
 
-function _setPrototypeOf$D(o, p) { _setPrototypeOf$D = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$D(o, p); }
+function _setPrototypeOf$D(o, p) { _setPrototypeOf$D = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$D(o, p); }
 
 function _createSuper$C(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$D(); return function _createSuperInternal() { var Super = _getPrototypeOf$C(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$C(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$C(this, result); }; }
 
-function _possibleConstructorReturn$C(self, call) { if (call && (_typeof$G(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$C(self); }
+function _possibleConstructorReturn$C(self, call) { if (call && (_typeof$S(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$C(self); }
 
 function _assertThisInitialized$C(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$D() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$C(o) { _getPrototypeOf$C = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$C(o); }
+function _getPrototypeOf$C(o) { _getPrototypeOf$C = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$C(o); }
 /**
  * Interpreter plugin containing MEDIAN function
  */
@@ -44773,7 +44767,7 @@ MedianPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$H(obj) { "@babel/helpers - typeof"; return _typeof$H = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$H(obj); }
+function _typeof$T(obj) { "@babel/helpers - typeof"; return _typeof$T = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$T(obj); }
 
 function _classCallCheck$1u(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -44783,17 +44777,17 @@ function _createClass$1u(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$D(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$E(subClass, superClass); }
 
-function _setPrototypeOf$E(o, p) { _setPrototypeOf$E = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$E(o, p); }
+function _setPrototypeOf$E(o, p) { _setPrototypeOf$E = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$E(o, p); }
 
 function _createSuper$D(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$E(); return function _createSuperInternal() { var Super = _getPrototypeOf$D(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$D(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$D(this, result); }; }
 
-function _possibleConstructorReturn$D(self, call) { if (call && (_typeof$H(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$D(self); }
+function _possibleConstructorReturn$D(self, call) { if (call && (_typeof$T(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$D(self); }
 
 function _assertThisInitialized$D(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$E() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$D(o) { _getPrototypeOf$D = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$D(o); }
+function _getPrototypeOf$D(o) { _getPrototypeOf$D = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$D(o); }
 var ModuloPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$D(ModuloPlugin, _FunctionPlugin);
 
@@ -44831,7 +44825,7 @@ ModuloPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$I(obj) { "@babel/helpers - typeof"; return _typeof$I = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$I(obj); }
+function _typeof$U(obj) { "@babel/helpers - typeof"; return _typeof$U = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$U(obj); }
 
 function _createForOfIteratorHelper$x(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$K(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -44841,17 +44835,17 @@ function _arrayLikeToArray$K(arr, len) { if (len == null || len > arr.length) le
 
 function _inherits$E(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$F(subClass, superClass); }
 
-function _setPrototypeOf$F(o, p) { _setPrototypeOf$F = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$F(o, p); }
+function _setPrototypeOf$F(o, p) { _setPrototypeOf$F = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$F(o, p); }
 
 function _createSuper$E(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$F(); return function _createSuperInternal() { var Super = _getPrototypeOf$E(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$E(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$E(this, result); }; }
 
-function _possibleConstructorReturn$E(self, call) { if (call && (_typeof$I(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$E(self); }
+function _possibleConstructorReturn$E(self, call) { if (call && (_typeof$U(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$E(self); }
 
 function _assertThisInitialized$E(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$F() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$E(o) { _getPrototypeOf$E = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$E(o); }
+function _getPrototypeOf$E(o) { _getPrototypeOf$E = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$E(o); }
 
 function _classCallCheck$1v(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -45687,7 +45681,7 @@ function numbersBooleans(arg) {
   }
 }
 
-function _typeof$J(obj) { "@babel/helpers - typeof"; return _typeof$J = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$J(obj); }
+function _typeof$V(obj) { "@babel/helpers - typeof"; return _typeof$V = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$V(obj); }
 
 function _classCallCheck$1w(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -45697,17 +45691,17 @@ function _createClass$1w(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$F(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$G(subClass, superClass); }
 
-function _setPrototypeOf$G(o, p) { _setPrototypeOf$G = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$G(o, p); }
+function _setPrototypeOf$G(o, p) { _setPrototypeOf$G = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$G(o, p); }
 
 function _createSuper$F(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$G(); return function _createSuperInternal() { var Super = _getPrototypeOf$F(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$F(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$F(this, result); }; }
 
-function _possibleConstructorReturn$F(self, call) { if (call && (_typeof$J(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$F(self); }
+function _possibleConstructorReturn$F(self, call) { if (call && (_typeof$V(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$F(self); }
 
 function _assertThisInitialized$F(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$G() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$F(o) { _getPrototypeOf$F = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$F(o); }
+function _getPrototypeOf$F(o) { _getPrototypeOf$F = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$F(o); }
 var PowerPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$F(PowerPlugin, _FunctionPlugin);
 
@@ -45739,7 +45733,7 @@ PowerPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$K(obj) { "@babel/helpers - typeof"; return _typeof$K = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$K(obj); }
+function _typeof$W(obj) { "@babel/helpers - typeof"; return _typeof$W = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$W(obj); }
 
 function _classCallCheck$1x(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -45749,17 +45743,17 @@ function _createClass$1x(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$G(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$H(subClass, superClass); }
 
-function _setPrototypeOf$H(o, p) { _setPrototypeOf$H = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$H(o, p); }
+function _setPrototypeOf$H(o, p) { _setPrototypeOf$H = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$H(o, p); }
 
 function _createSuper$G(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$H(); return function _createSuperInternal() { var Super = _getPrototypeOf$G(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$G(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$G(this, result); }; }
 
-function _possibleConstructorReturn$G(self, call) { if (call && (_typeof$K(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$G(self); }
+function _possibleConstructorReturn$G(self, call) { if (call && (_typeof$W(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$G(self); }
 
 function _assertThisInitialized$G(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$H() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$G(o) { _getPrototypeOf$G = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$G(o); }
+function _getPrototypeOf$G(o) { _getPrototypeOf$G = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$G(o); }
 var RadiansPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$G(RadiansPlugin, _FunctionPlugin);
 
@@ -45791,7 +45785,7 @@ RadiansPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$L(obj) { "@babel/helpers - typeof"; return _typeof$L = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$L(obj); }
+function _typeof$X(obj) { "@babel/helpers - typeof"; return _typeof$X = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$X(obj); }
 
 function _classCallCheck$1y(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -45801,17 +45795,17 @@ function _createClass$1y(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$H(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$I(subClass, superClass); }
 
-function _setPrototypeOf$I(o, p) { _setPrototypeOf$I = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$I(o, p); }
+function _setPrototypeOf$I(o, p) { _setPrototypeOf$I = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$I(o, p); }
 
 function _createSuper$H(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$I(); return function _createSuperInternal() { var Super = _getPrototypeOf$H(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$H(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$H(this, result); }; }
 
-function _possibleConstructorReturn$H(self, call) { if (call && (_typeof$L(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$H(self); }
+function _possibleConstructorReturn$H(self, call) { if (call && (_typeof$X(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$H(self); }
 
 function _assertThisInitialized$H(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$I() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$H(o) { _getPrototypeOf$H = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$H(o); }
+function _getPrototypeOf$H(o) { _getPrototypeOf$H = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$H(o); }
 var MAX_LENGTH = 10;
 var DECIMAL_NUMBER_OF_BITS = 255;
 var MIN_BASE = 2;
@@ -46194,7 +46188,7 @@ function twoComplementToDecimal(value, base) {
   return parsed >= offset / 2 ? parsed - offset : parsed;
 }
 
-function _typeof$M(obj) { "@babel/helpers - typeof"; return _typeof$M = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$M(obj); }
+function _typeof$Y(obj) { "@babel/helpers - typeof"; return _typeof$Y = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$Y(obj); }
 
 function _classCallCheck$1z(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -46204,17 +46198,17 @@ function _createClass$1z(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$I(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$J(subClass, superClass); }
 
-function _setPrototypeOf$J(o, p) { _setPrototypeOf$J = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$J(o, p); }
+function _setPrototypeOf$J(o, p) { _setPrototypeOf$J = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$J(o, p); }
 
 function _createSuper$I(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$J(); return function _createSuperInternal() { var Super = _getPrototypeOf$I(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$I(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$I(this, result); }; }
 
-function _possibleConstructorReturn$I(self, call) { if (call && (_typeof$M(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$I(self); }
+function _possibleConstructorReturn$I(self, call) { if (call && (_typeof$Y(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$I(self); }
 
 function _assertThisInitialized$I(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$J() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$I(o) { _getPrototypeOf$I = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$I(o); }
+function _getPrototypeOf$I(o) { _getPrototypeOf$I = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$I(o); }
 var RandomPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$I(RandomPlugin, _FunctionPlugin);
 
@@ -46280,7 +46274,7 @@ RandomPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$N(obj) { "@babel/helpers - typeof"; return _typeof$N = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$N(obj); }
+function _typeof$Z(obj) { "@babel/helpers - typeof"; return _typeof$Z = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$Z(obj); }
 
 function _classCallCheck$1A(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -46290,17 +46284,17 @@ function _createClass$1A(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$J(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$K(subClass, superClass); }
 
-function _setPrototypeOf$K(o, p) { _setPrototypeOf$K = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$K(o, p); }
+function _setPrototypeOf$K(o, p) { _setPrototypeOf$K = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$K(o, p); }
 
 function _createSuper$J(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$K(); return function _createSuperInternal() { var Super = _getPrototypeOf$J(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$J(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$J(this, result); }; }
 
-function _possibleConstructorReturn$J(self, call) { if (call && (_typeof$N(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$J(self); }
+function _possibleConstructorReturn$J(self, call) { if (call && (_typeof$Z(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$J(self); }
 
 function _assertThisInitialized$J(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$K() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$J(o) { _getPrototypeOf$J = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$J(o); }
+function _getPrototypeOf$J(o) { _getPrototypeOf$J = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$J(o); }
 function findNextOddNumber(arg) {
   var ceiled = Math.ceil(arg);
   return ceiled % 2 === 1 ? ceiled : ceiled + 1;
@@ -46602,7 +46596,7 @@ RoundingPlugin.aliases = {
   'TRUNC': 'ROUNDDOWN'
 };
 
-function _typeof$O(obj) { "@babel/helpers - typeof"; return _typeof$O = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$O(obj); }
+function _typeof$_(obj) { "@babel/helpers - typeof"; return _typeof$_ = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$_(obj); }
 
 function _classCallCheck$1B(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -46612,17 +46606,17 @@ function _createClass$1B(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$K(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$L(subClass, superClass); }
 
-function _setPrototypeOf$L(o, p) { _setPrototypeOf$L = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$L(o, p); }
+function _setPrototypeOf$L(o, p) { _setPrototypeOf$L = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$L(o, p); }
 
 function _createSuper$K(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$L(); return function _createSuperInternal() { var Super = _getPrototypeOf$K(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$K(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$K(this, result); }; }
 
-function _possibleConstructorReturn$K(self, call) { if (call && (_typeof$O(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$K(self); }
+function _possibleConstructorReturn$K(self, call) { if (call && (_typeof$_(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$K(self); }
 
 function _assertThisInitialized$K(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$L() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$K(o) { _getPrototypeOf$K = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$K(o); }
+function _getPrototypeOf$K(o) { _getPrototypeOf$K = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$K(o); }
 var SqrtPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$K(SqrtPlugin, _FunctionPlugin);
 
@@ -46652,14 +46646,18 @@ SqrtPlugin.implementedFunctions = {
   }
 };
 
-var _marked = /*#__PURE__*/regeneratorRuntime.mark(empty);
+function _typeof$$(obj) { "@babel/helpers - typeof"; return _typeof$$ = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$$(obj); }
+
+function _regeneratorRuntime$e() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$e = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$$(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
+var _marked = /*#__PURE__*/_regeneratorRuntime$e().mark(empty);
 
 /**
  * @license
  * Copyright (c) 2021 Handsoncode. All rights reserved.
  */
 function empty() {
-  return regeneratorRuntime.wrap(function empty$(_context) {
+  return _regeneratorRuntime$e().wrap(function empty$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
@@ -46688,8 +46686,12 @@ function split(iterable) {
   }
 }
 
-var _marked$1 = /*#__PURE__*/regeneratorRuntime.mark(getRangeValues),
-    _marked2 = /*#__PURE__*/regeneratorRuntime.mark(ifFilter);
+function _typeof$10(obj) { "@babel/helpers - typeof"; return _typeof$10 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$10(obj); }
+
+function _regeneratorRuntime$f() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime$f = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof$10(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+
+var _marked$1 = /*#__PURE__*/_regeneratorRuntime$f().mark(getRangeValues),
+    _marked2 = /*#__PURE__*/_regeneratorRuntime$f().mark(ifFilter);
 
 function _slicedToArray$t(arr, i) { return _arrayWithHoles$t(arr) || _iterableToArrayLimit$t(arr, i) || _unsupportedIterableToArray$L(arr, i) || _nonIterableRest$t(); }
 
@@ -46908,7 +46910,7 @@ var Condition = /*#__PURE__*/_createClass$1C(function Condition(conditionRange, 
 function getRangeValues(dependencyGraph, cellRange) {
   var _iterator3, _step3, cellFromRange;
 
-  return regeneratorRuntime.wrap(function getRangeValues$(_context) {
+  return _regeneratorRuntime$f().wrap(function getRangeValues$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
@@ -46959,7 +46961,7 @@ function getRangeValues(dependencyGraph, cellRange) {
 function ifFilter(criterionLambdas, conditionalIterables, computableIterable) {
   var _iterator4, _step4, computable, conditionalSplits, conditionalFirsts;
 
-  return regeneratorRuntime.wrap(function ifFilter$(_context2) {
+  return _regeneratorRuntime$f().wrap(function ifFilter$(_context2) {
     while (1) {
       switch (_context2.prev = _context2.next) {
         case 0:
@@ -47051,21 +47053,21 @@ function zip(arr1, arr2) {
   return result;
 }
 
-function _typeof$P(obj) { "@babel/helpers - typeof"; return _typeof$P = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$P(obj); }
+function _typeof$11(obj) { "@babel/helpers - typeof"; return _typeof$11 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$11(obj); }
 
 function _inherits$L(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$M(subClass, superClass); }
 
-function _setPrototypeOf$M(o, p) { _setPrototypeOf$M = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$M(o, p); }
+function _setPrototypeOf$M(o, p) { _setPrototypeOf$M = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$M(o, p); }
 
 function _createSuper$L(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$M(); return function _createSuperInternal() { var Super = _getPrototypeOf$L(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$L(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$L(this, result); }; }
 
-function _possibleConstructorReturn$L(self, call) { if (call && (_typeof$P(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$L(self); }
+function _possibleConstructorReturn$L(self, call) { if (call && (_typeof$11(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$L(self); }
 
 function _assertThisInitialized$L(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$M() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$L(o) { _getPrototypeOf$L = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$L(o); }
+function _getPrototypeOf$L(o) { _getPrototypeOf$L = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$L(o); }
 
 function _toConsumableArray$f(arr) { return _arrayWithoutHoles$f(arr) || _iterableToArray$f(arr) || _unsupportedIterableToArray$M(arr) || _nonIterableSpread$f(); }
 
@@ -47360,7 +47362,7 @@ SumifPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$Q(obj) { "@babel/helpers - typeof"; return _typeof$Q = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$Q(obj); }
+function _typeof$12(obj) { "@babel/helpers - typeof"; return _typeof$12 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$12(obj); }
 
 function _createForOfIteratorHelper$z(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$N(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -47376,17 +47378,17 @@ function _createClass$1E(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$M(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$N(subClass, superClass); }
 
-function _setPrototypeOf$N(o, p) { _setPrototypeOf$N = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$N(o, p); }
+function _setPrototypeOf$N(o, p) { _setPrototypeOf$N = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$N(o, p); }
 
 function _createSuper$M(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$N(); return function _createSuperInternal() { var Super = _getPrototypeOf$M(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$M(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$M(this, result); }; }
 
-function _possibleConstructorReturn$M(self, call) { if (call && (_typeof$Q(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$M(self); }
+function _possibleConstructorReturn$M(self, call) { if (call && (_typeof$12(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$M(self); }
 
 function _assertThisInitialized$M(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$N() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$M(o) { _getPrototypeOf$M = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$M(o); }
+function _getPrototypeOf$M(o) { _getPrototypeOf$M = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$M(o); }
 var SumprodPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$M(SumprodPlugin, _FunctionPlugin);
 
@@ -47479,7 +47481,7 @@ _export({ target: 'String', proto: true }, {
   repeat: stringRepeat
 });
 
-function _typeof$R(obj) { "@babel/helpers - typeof"; return _typeof$R = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$R(obj); }
+function _typeof$13(obj) { "@babel/helpers - typeof"; return _typeof$13 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$13(obj); }
 
 function _classCallCheck$1F(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -47489,17 +47491,17 @@ function _createClass$1F(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$N(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$O(subClass, superClass); }
 
-function _setPrototypeOf$O(o, p) { _setPrototypeOf$O = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$O(o, p); }
+function _setPrototypeOf$O(o, p) { _setPrototypeOf$O = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$O(o, p); }
 
 function _createSuper$N(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$O(); return function _createSuperInternal() { var Super = _getPrototypeOf$N(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$N(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$N(this, result); }; }
 
-function _possibleConstructorReturn$N(self, call) { if (call && (_typeof$R(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$N(self); }
+function _possibleConstructorReturn$N(self, call) { if (call && (_typeof$13(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$N(self); }
 
 function _assertThisInitialized$N(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$O() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$N(o) { _getPrototypeOf$N = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$N(o); }
+function _getPrototypeOf$N(o) { _getPrototypeOf$N = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$N(o); }
 /**
  * Interpreter plugin containing text-specific functions
  */
@@ -47901,7 +47903,7 @@ TextPlugin.implementedFunctions = {
   }
 };
 
-// eslint-disable-next-line es/no-math-expm1 -- safe
+// eslint-disable-next-line es-x/no-math-expm1 -- safe
 var $expm1 = Math.expm1;
 var exp = Math.exp;
 
@@ -47913,7 +47915,8 @@ var mathExpm1 = (!$expm1
   // Tor Browser bug
   || $expm1(-2e-17) != -2e-17
 ) ? function expm1(x) {
-  return (x = +x) == 0 ? x : x > -1e-6 && x < 1e-6 ? x + x * x / 2 : exp(x) - 1;
+  var n = +x;
+  return n == 0 ? n : n > -1e-6 && n < 1e-6 ? n + n * n / 2 : exp(n) - 1;
 } : $expm1;
 
 var abs = Math.abs;
@@ -47921,7 +47924,7 @@ var exp$1 = Math.exp;
 var E$1 = Math.E;
 
 var FORCED = fails(function () {
-  // eslint-disable-next-line es/no-math-sinh -- required for testing
+  // eslint-disable-next-line es-x/no-math-sinh -- required for testing
   return Math.sinh(-2e-17) != -2e-17;
 });
 
@@ -47930,17 +47933,19 @@ var FORCED = fails(function () {
 // V8 near Chromium 38 has a problem with very small numbers
 _export({ target: 'Math', stat: true, forced: FORCED }, {
   sinh: function sinh(x) {
-    return abs(x = +x) < 1 ? (mathExpm1(x) - mathExpm1(-x)) / 2 : (exp$1(x - 1) - exp$1(-x - 1)) * (E$1 / 2);
+    var n = +x;
+    return abs(n) < 1 ? (mathExpm1(n) - mathExpm1(-n)) / 2 : (exp$1(n - 1) - exp$1(-n - 1)) * (E$1 / 2);
   }
 });
 
-// eslint-disable-next-line es/no-math-asinh -- required for testing
+// eslint-disable-next-line es-x/no-math-asinh -- required for testing
 var $asinh = Math.asinh;
 var log$1 = Math.log;
 var sqrt = Math.sqrt;
 
 function asinh(x) {
-  return !isFinite(x = +x) || x == 0 ? x : x < 0 ? -asinh(-x) : log$1(x + sqrt(x * x + 1));
+  var n = +x;
+  return !isFinite(n) || n == 0 ? n : n < 0 ? -asinh(-n) : log$1(n + sqrt(n * n + 1));
 }
 
 // `Math.asinh` method
@@ -47950,7 +47955,7 @@ _export({ target: 'Math', stat: true, forced: !($asinh && 1 / $asinh(0) > 0) }, 
   asinh: asinh
 });
 
-// eslint-disable-next-line es/no-math-cosh -- required for testing
+// eslint-disable-next-line es-x/no-math-cosh -- required for testing
 var $cosh = Math.cosh;
 var abs$1 = Math.abs;
 var E$2 = Math.E;
@@ -47968,12 +47973,13 @@ var log$2 = Math.log;
 
 // `Math.log1p` method implementation
 // https://tc39.es/ecma262/#sec-math.log1p
-// eslint-disable-next-line es/no-math-log1p -- safe
+// eslint-disable-next-line es-x/no-math-log1p -- safe
 var mathLog1p = Math.log1p || function log1p(x) {
-  return (x = +x) > -1e-8 && x < 1e-8 ? x - x * x / 2 : log$2(1 + x);
+  var n = +x;
+  return n > -1e-8 && n < 1e-8 ? n - n * n / 2 : log$2(1 + n);
 };
 
-// eslint-disable-next-line es/no-math-acosh -- required for testing
+// eslint-disable-next-line es-x/no-math-acosh -- required for testing
 var $acosh = Math.acosh;
 var log$3 = Math.log;
 var sqrt$1 = Math.sqrt;
@@ -47989,9 +47995,10 @@ var FORCED$1 = !$acosh
 // https://tc39.es/ecma262/#sec-math.acosh
 _export({ target: 'Math', stat: true, forced: FORCED$1 }, {
   acosh: function acosh(x) {
-    return (x = +x) < 1 ? NaN : x > 94906265.62425156
-      ? log$3(x) + LN2
-      : mathLog1p(x - 1 + sqrt$1(x - 1) * sqrt$1(x + 1));
+    var n = +x;
+    return n < 1 ? NaN : n > 94906265.62425156
+      ? log$3(n) + LN2
+      : mathLog1p(n - 1 + sqrt$1(n - 1) * sqrt$1(n + 1));
   }
 });
 
@@ -48001,13 +48008,14 @@ var exp$2 = Math.exp;
 // https://tc39.es/ecma262/#sec-math.tanh
 _export({ target: 'Math', stat: true }, {
   tanh: function tanh(x) {
-    var a = mathExpm1(x = +x);
-    var b = mathExpm1(-x);
-    return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp$2(x) + exp$2(-x));
+    var n = +x;
+    var a = mathExpm1(n);
+    var b = mathExpm1(-n);
+    return a == Infinity ? 1 : b == Infinity ? -1 : (a - b) / (exp$2(n) + exp$2(-n));
   }
 });
 
-// eslint-disable-next-line es/no-math-atanh -- required for testing
+// eslint-disable-next-line es-x/no-math-atanh -- required for testing
 var $atanh = Math.atanh;
 var log$4 = Math.log;
 
@@ -48016,11 +48024,12 @@ var log$4 = Math.log;
 // Tor Browser bug: Math.atanh(-0) -> 0
 _export({ target: 'Math', stat: true, forced: !($atanh && 1 / $atanh(-0) < 0) }, {
   atanh: function atanh(x) {
-    return (x = +x) == 0 ? x : log$4((1 + x) / (1 - x)) / 2;
+    var n = +x;
+    return n == 0 ? n : log$4((1 + n) / (1 - n)) / 2;
   }
 });
 
-function _typeof$S(obj) { "@babel/helpers - typeof"; return _typeof$S = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$S(obj); }
+function _typeof$14(obj) { "@babel/helpers - typeof"; return _typeof$14 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$14(obj); }
 
 function _classCallCheck$1G(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -48030,17 +48039,17 @@ function _createClass$1G(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$O(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$P(subClass, superClass); }
 
-function _setPrototypeOf$P(o, p) { _setPrototypeOf$P = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$P(o, p); }
+function _setPrototypeOf$P(o, p) { _setPrototypeOf$P = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$P(o, p); }
 
 function _createSuper$O(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$P(); return function _createSuperInternal() { var Super = _getPrototypeOf$O(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$O(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$O(this, result); }; }
 
-function _possibleConstructorReturn$O(self, call) { if (call && (_typeof$S(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$O(self); }
+function _possibleConstructorReturn$O(self, call) { if (call && (_typeof$14(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$O(self); }
 
 function _assertThisInitialized$O(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$P() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$O(o) { _getPrototypeOf$O = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$O(o); }
+function _getPrototypeOf$O(o) { _getPrototypeOf$O = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$O(o); }
 /**
  * Interpreter plugin containing trigonometric functions
  */
@@ -48327,7 +48336,7 @@ TrigonometryPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$T(obj) { "@babel/helpers - typeof"; return _typeof$T = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$T(obj); }
+function _typeof$15(obj) { "@babel/helpers - typeof"; return _typeof$15 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$15(obj); }
 
 function _classCallCheck$1H(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -48337,17 +48346,17 @@ function _createClass$1H(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$P(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$Q(subClass, superClass); }
 
-function _setPrototypeOf$Q(o, p) { _setPrototypeOf$Q = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$Q(o, p); }
+function _setPrototypeOf$Q(o, p) { _setPrototypeOf$Q = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$Q(o, p); }
 
 function _createSuper$P(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$Q(); return function _createSuperInternal() { var Super = _getPrototypeOf$P(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$P(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$P(this, result); }; }
 
-function _possibleConstructorReturn$P(self, call) { if (call && (_typeof$T(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$P(self); }
+function _possibleConstructorReturn$P(self, call) { if (call && (_typeof$15(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$P(self); }
 
 function _assertThisInitialized$P(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$Q() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$P(o) { _getPrototypeOf$P = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$P(o); }
+function _getPrototypeOf$P(o) { _getPrototypeOf$P = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$P(o); }
 var RowSearchStrategy = /*#__PURE__*/function (_AdvancedFind) {
   _inherits$P(RowSearchStrategy, _AdvancedFind);
 
@@ -48390,7 +48399,7 @@ var RowSearchStrategy = /*#__PURE__*/function (_AdvancedFind) {
   return RowSearchStrategy;
 }(AdvancedFind);
 
-function _typeof$U(obj) { "@babel/helpers - typeof"; return _typeof$U = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$U(obj); }
+function _typeof$16(obj) { "@babel/helpers - typeof"; return _typeof$16 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$16(obj); }
 
 function _classCallCheck$1I(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -48400,17 +48409,17 @@ function _createClass$1I(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$Q(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$R(subClass, superClass); }
 
-function _setPrototypeOf$R(o, p) { _setPrototypeOf$R = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$R(o, p); }
+function _setPrototypeOf$R(o, p) { _setPrototypeOf$R = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$R(o, p); }
 
 function _createSuper$Q(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$R(); return function _createSuperInternal() { var Super = _getPrototypeOf$Q(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$Q(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$Q(this, result); }; }
 
-function _possibleConstructorReturn$Q(self, call) { if (call && (_typeof$U(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$Q(self); }
+function _possibleConstructorReturn$Q(self, call) { if (call && (_typeof$16(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$Q(self); }
 
 function _assertThisInitialized$Q(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$R() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$Q(o) { _getPrototypeOf$Q = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$Q(o); }
+function _getPrototypeOf$Q(o) { _getPrototypeOf$Q = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$Q(o); }
 var LookupPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$Q(LookupPlugin, _FunctionPlugin);
 
@@ -48643,7 +48652,7 @@ LookupPlugin.implementedFunctions = {
   }
 };
 
-function _typeof$V(obj) { "@babel/helpers - typeof"; return _typeof$V = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$V(obj); }
+function _typeof$17(obj) { "@babel/helpers - typeof"; return _typeof$17 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$17(obj); }
 
 function _classCallCheck$1J(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -48653,17 +48662,17 @@ function _createClass$1J(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$R(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$S(subClass, superClass); }
 
-function _setPrototypeOf$S(o, p) { _setPrototypeOf$S = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$S(o, p); }
+function _setPrototypeOf$S(o, p) { _setPrototypeOf$S = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$S(o, p); }
 
 function _createSuper$R(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$S(); return function _createSuperInternal() { var Super = _getPrototypeOf$R(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$R(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$R(this, result); }; }
 
-function _possibleConstructorReturn$R(self, call) { if (call && (_typeof$V(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$R(self); }
+function _possibleConstructorReturn$R(self, call) { if (call && (_typeof$17(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$R(self); }
 
 function _assertThisInitialized$R(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$S() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$R(o) { _getPrototypeOf$R = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$R(o); }
+function _getPrototypeOf$R(o) { _getPrototypeOf$R = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$R(o); }
 var RomanPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$R(RomanPlugin, _FunctionPlugin);
 
@@ -48947,7 +48956,7 @@ function absorb(valAcc, token, lower, upper) {
   }
 }
 
-function _typeof$W(obj) { "@babel/helpers - typeof"; return _typeof$W = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$W(obj); }
+function _typeof$18(obj) { "@babel/helpers - typeof"; return _typeof$18 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$18(obj); }
 
 function _classCallCheck$1K(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -48957,17 +48966,17 @@ function _createClass$1K(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$S(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$T(subClass, superClass); }
 
-function _setPrototypeOf$T(o, p) { _setPrototypeOf$T = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$T(o, p); }
+function _setPrototypeOf$T(o, p) { _setPrototypeOf$T = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$T(o, p); }
 
 function _createSuper$S(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$T(); return function _createSuperInternal() { var Super = _getPrototypeOf$S(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$S(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$S(this, result); }; }
 
-function _possibleConstructorReturn$S(self, call) { if (call && (_typeof$W(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$S(self); }
+function _possibleConstructorReturn$S(self, call) { if (call && (_typeof$18(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$S(self); }
 
 function _assertThisInitialized$S(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$T() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$S(o) { _getPrototypeOf$S = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$S(o); }
+function _getPrototypeOf$S(o) { _getPrototypeOf$S = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$S(o); }
 var SimpleArithmerticPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$S(SimpleArithmerticPlugin, _FunctionPlugin);
 
@@ -50722,7 +50731,7 @@ function corrcoeff(arr1, arr2) {
   return covariance(arr1, arr2) / stdev(arr1, 1) / stdev(arr2, 1);
 }
 
-function _typeof$X(obj) { "@babel/helpers - typeof"; return _typeof$X = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$X(obj); }
+function _typeof$19(obj) { "@babel/helpers - typeof"; return _typeof$19 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$19(obj); }
 
 function _classCallCheck$1L(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -50732,17 +50741,17 @@ function _createClass$1L(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$T(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$U(subClass, superClass); }
 
-function _setPrototypeOf$U(o, p) { _setPrototypeOf$U = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$U(o, p); }
+function _setPrototypeOf$U(o, p) { _setPrototypeOf$U = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$U(o, p); }
 
 function _createSuper$T(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$U(); return function _createSuperInternal() { var Super = _getPrototypeOf$T(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$T(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$T(this, result); }; }
 
-function _possibleConstructorReturn$T(self, call) { if (call && (_typeof$X(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$T(self); }
+function _possibleConstructorReturn$T(self, call) { if (call && (_typeof$19(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$T(self); }
 
 function _assertThisInitialized$T(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$U() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$T(o) { _getPrototypeOf$T = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$T(o); }
+function _getPrototypeOf$T(o) { _getPrototypeOf$T = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$T(o); }
 var StatisticalPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$T(StatisticalPlugin, _FunctionPlugin);
 
@@ -51779,11 +51788,11 @@ StatisticalPlugin.aliases = {
 
 // `Number.MAX_SAFE_INTEGER` constant
 // https://tc39.es/ecma262/#sec-number.max_safe_integer
-_export({ target: 'Number', stat: true }, {
+_export({ target: 'Number', stat: true, nonConfigurable: true, nonWritable: true }, {
   MAX_SAFE_INTEGER: 0x1FFFFFFFFFFFFF
 });
 
-function _typeof$Y(obj) { "@babel/helpers - typeof"; return _typeof$Y = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$Y(obj); }
+function _typeof$1a(obj) { "@babel/helpers - typeof"; return _typeof$1a = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$1a(obj); }
 
 function _createForOfIteratorHelper$A(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$O(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -51799,17 +51808,17 @@ function _createClass$1M(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$U(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$V(subClass, superClass); }
 
-function _setPrototypeOf$V(o, p) { _setPrototypeOf$V = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$V(o, p); }
+function _setPrototypeOf$V(o, p) { _setPrototypeOf$V = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$V(o, p); }
 
 function _createSuper$U(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$V(); return function _createSuperInternal() { var Super = _getPrototypeOf$U(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$U(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$U(this, result); }; }
 
-function _possibleConstructorReturn$U(self, call) { if (call && (_typeof$Y(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$U(self); }
+function _possibleConstructorReturn$U(self, call) { if (call && (_typeof$1a(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$U(self); }
 
 function _assertThisInitialized$U(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$V() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$U(o) { _getPrototypeOf$U = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$U(o); }
+function _getPrototypeOf$U(o) { _getPrototypeOf$U = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$U(o); }
 var MathPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$U(MathPlugin, _FunctionPlugin);
 
@@ -52337,7 +52346,7 @@ function binaryLCM(a, b) {
   return a * (b / binaryGCD(a, b));
 }
 
-function _typeof$Z(obj) { "@babel/helpers - typeof"; return _typeof$Z = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$Z(obj); }
+function _typeof$1b(obj) { "@babel/helpers - typeof"; return _typeof$1b = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$1b(obj); }
 
 function _createForOfIteratorHelper$B(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$P(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -52361,17 +52370,17 @@ function _createClass$1N(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$V(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$W(subClass, superClass); }
 
-function _setPrototypeOf$W(o, p) { _setPrototypeOf$W = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$W(o, p); }
+function _setPrototypeOf$W(o, p) { _setPrototypeOf$W = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$W(o, p); }
 
 function _createSuper$V(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$W(); return function _createSuperInternal() { var Super = _getPrototypeOf$V(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$V(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$V(this, result); }; }
 
-function _possibleConstructorReturn$V(self, call) { if (call && (_typeof$Z(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$V(self); }
+function _possibleConstructorReturn$V(self, call) { if (call && (_typeof$1b(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$V(self); }
 
 function _assertThisInitialized$V(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$W() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$V(o) { _getPrototypeOf$V = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$V(o); }
+function _getPrototypeOf$V(o) { _getPrototypeOf$V = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$V(o); }
 var ComplexPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$V(ComplexPlugin, _FunctionPlugin);
 
@@ -52951,7 +52960,7 @@ function power(arg, n) {
   return exp$3([n * re, n * im]);
 }
 
-function _typeof$_(obj) { "@babel/helpers - typeof"; return _typeof$_ = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$_(obj); }
+function _typeof$1c(obj) { "@babel/helpers - typeof"; return _typeof$1c = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$1c(obj); }
 
 function _createForOfIteratorHelper$C(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$Q(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -52967,17 +52976,17 @@ function _createClass$1O(Constructor, protoProps, staticProps) { if (protoProps)
 
 function _inherits$W(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$X(subClass, superClass); }
 
-function _setPrototypeOf$X(o, p) { _setPrototypeOf$X = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$X(o, p); }
+function _setPrototypeOf$X(o, p) { _setPrototypeOf$X = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$X(o, p); }
 
 function _createSuper$W(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$X(); return function _createSuperInternal() { var Super = _getPrototypeOf$W(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$W(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$W(this, result); }; }
 
-function _possibleConstructorReturn$W(self, call) { if (call && (_typeof$_(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$W(self); }
+function _possibleConstructorReturn$W(self, call) { if (call && (_typeof$1c(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$W(self); }
 
 function _assertThisInitialized$W(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$X() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$W(o) { _getPrototypeOf$W = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$W(o); }
+function _getPrototypeOf$W(o) { _getPrototypeOf$W = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$W(o); }
 var StatisticalAggregationPlugin = /*#__PURE__*/function (_FunctionPlugin) {
   _inherits$W(StatisticalAggregationPlugin, _FunctionPlugin);
 
@@ -53738,7 +53747,7 @@ var plugins = /*#__PURE__*/Object.freeze({
   StatisticalAggregationPlugin: StatisticalAggregationPlugin
 });
 
-function _typeof$$(obj) { "@babel/helpers - typeof"; return _typeof$$ = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$$(obj); }
+function _typeof$1d(obj) { "@babel/helpers - typeof"; return _typeof$1d = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof$1d(obj); }
 
 function _createForOfIteratorHelper$D(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$R(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 
@@ -53754,17 +53763,17 @@ function _classCallCheck$1P(instance, Constructor) { if (!(instance instanceof C
 
 function _inherits$X(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf$Y(subClass, superClass); }
 
-function _setPrototypeOf$Y(o, p) { _setPrototypeOf$Y = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$Y(o, p); }
+function _setPrototypeOf$Y(o, p) { _setPrototypeOf$Y = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf$Y(o, p); }
 
 function _createSuper$X(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct$Y(); return function _createSuperInternal() { var Super = _getPrototypeOf$X(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf$X(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn$X(this, result); }; }
 
-function _possibleConstructorReturn$X(self, call) { if (call && (_typeof$$(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$X(self); }
+function _possibleConstructorReturn$X(self, call) { if (call && (_typeof$1d(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized$X(self); }
 
 function _assertThisInitialized$X(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 
 function _isNativeReflectConstruct$Y() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 
-function _getPrototypeOf$X(o) { _getPrototypeOf$X = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$X(o); }
+function _getPrototypeOf$X(o) { _getPrototypeOf$X = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf$X(o); }
 /** @internal */
 
 var HyperFormulaNS = /*#__PURE__*/function (_HyperFormula) {

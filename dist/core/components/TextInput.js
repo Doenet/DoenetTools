@@ -33,8 +33,8 @@ export default class Textinput extends Input {
 
   static variableForPlainMacro = "value";
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.prefill = {
       createComponentOfType: "text",
       createStateVariable: "prefill",
@@ -82,7 +82,9 @@ export default class Textinput extends Input {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       hasEssential: true,
       shadowVariable: true,
       returnDependencies: () => ({
@@ -134,7 +136,9 @@ export default class Textinput extends Input {
 
     stateVariableDefinitions.immediateValue = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       hasEssential: true,
       shadowVariable: true,
@@ -144,12 +148,12 @@ export default class Textinput extends Input {
           variableName: "value"
         }
       }),
-      definition: function ({ dependencyValues, changes }) {
+      definition: function ({ dependencyValues, changes, justUpdatedForNewComponent }) {
         // console.log(`definition of immediateValue`)
         // console.log(dependencyValues)
         // console.log(changes);
 
-        if (changes.value) {
+        if (changes.value && !justUpdatedForNewComponent) {
           // only update to value when it changes
           // (otherwise, let its essential value change)
           return {
@@ -196,7 +200,9 @@ export default class Textinput extends Input {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         value: {
           dependencyType: "stateVariable",
@@ -227,10 +233,12 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "immediateValue",
           value: text,
-          sourceInformation: { actionId }
         }],
         transient: true,
+        actionId,
       })
+    } else {
+      this.coreFunctions.resolveAction({ actionId });
     }
   }
 
@@ -245,7 +253,6 @@ export default class Textinput extends Input {
           componentName: this.componentName,
           stateVariable: "value",
           value: immediateValue,
-          sourceInformation: { actionId }
         },
         // in case value ended up being a different value than requested
         // we set immediate value to whatever was the result
@@ -283,6 +290,7 @@ export default class Textinput extends Input {
 
         await this.coreFunctions.performUpdate({
           updateInstructions,
+          actionId,
           event
         });
 
@@ -293,6 +301,9 @@ export default class Textinput extends Input {
       }
 
     }
+    
+    this.coreFunctions.resolveAction({ actionId });
+    
   }
 
 }

@@ -17,8 +17,8 @@ export default class BooleanList extends InlineComponent {
   // don't required composite replacements
   static descendantCompositesMustHaveAReplacement = false;
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.unordered = {
       createComponentOfType: "boolean",
       createStateVariable: "unordered",
@@ -89,7 +89,9 @@ export default class BooleanList extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
@@ -148,7 +150,9 @@ export default class BooleanList extends InlineComponent {
 
     stateVariableDefinitions.booleans = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       isArray: true,
       entryPrefixes: ["boolean"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
@@ -377,7 +381,8 @@ export default class BooleanList extends InlineComponent {
         return {
           setValue: { nComponentsToDisplayByChild, nChildrenToRender },
         }
-      }
+      },
+      markStale: () => ({ updateRenderedChildren: true }),
     }
 
     return stateVariableDefinitions;

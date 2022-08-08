@@ -8,8 +8,8 @@ export class Extremum extends BaseComponent {
   static rendererType = undefined;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.location = {
       createComponentOfType: "math"
@@ -143,13 +143,17 @@ export class Extremum extends BaseComponent {
 
     stateVariableDefinitions.value = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       defaultValue: null,
       hasEssential: true,
       additionalStateVariablesDefined: [{
         variableName: "location",
         public: true,
-        componentType: "math",
+        shadowingInstructions: {
+          createComponentOfType: "math",
+        },
         defaultValue: null,
         hasEssential: true,
       }],
@@ -397,6 +401,30 @@ export class Extrema extends BaseComponent {
         } else {
           return extremaClass.componentTypeSingular + "Value" + (Number(ind1) + 1)
         }
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === extremaClass.componentType) {
+          return extremaClass.componentTypeSingular + propIndex;
+        }
+        if (varName === extremaClass.componentTypeSingular + "Locations") {
+          return extremaClass.componentTypeSingular + "Location" + propIndex;
+        }
+        if (varName === extremaClass.componentTypeSingular + "Values") {
+          return extremaClass.componentTypeSingular + "Value" + propIndex;
+        }
+        let typeLen = extremaClass.componentTypeSingular.length;
+        if (varName.slice(0, typeLen) === extremaClass.componentTypeSingular) {
+          // could be extremaClass.componentTypeSingular, or with "Location" or "Value" appended
+          let componentNum = Number(varName.slice(typeLen));
+          if (Number.isInteger(componentNum) && componentNum > 0) {
+            if (propIndex === 1) {
+              return extremaClass.componentTypeSingular + "Location" + componentNum
+            } else if (propIndex === 2) {
+              return extremaClass.componentTypeSingular + "Value" + componentNum
+            }
+          }
+        }
+        return null;
       },
       returnArraySizeDependencies: () => ({
         nChildren: {

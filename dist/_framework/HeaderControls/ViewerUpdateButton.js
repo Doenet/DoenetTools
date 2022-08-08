@@ -13,14 +13,15 @@ export default function ViewerUpdateButton(props) {
   const updateViewer = useRecoilCallback(({snapshot, set}) => async () => {
     const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
     const isErrorState = await snapshot.getPromise(editorViewerErrorStateAtom);
+    set(viewerDoenetMLAtom, textEditorDoenetML);
     if (isErrorState) {
       set(refreshNumberAtom, (was) => was + 1);
     }
-    set(viewerDoenetMLAtom, textEditorDoenetML);
   });
   return /* @__PURE__ */ React.createElement("div", {
     style: props.style
   }, /* @__PURE__ */ React.createElement(Button, {
+    "data-test": "Viewer Update Button",
     value: "Update",
     onClick: updateViewer
   }));

@@ -7,12 +7,13 @@ export default class Line extends GraphicalComponent {
 
   actions = {
     moveLine: this.moveLine.bind(this),
-    switchLine: this.switchLine.bind(this)
+    switchLine: this.switchLine.bind(this),
+    lineClicked: this.lineClicked.bind(this)
   };
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
 
     attributes.draggable = {
       createComponentOfType: "boolean",
@@ -42,17 +43,51 @@ export default class Line extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let stringAndMacrosToEquationAttribute = function ({ matchedChildren }) {
+    let nonLabelToEquationAttribute = function ({ matchedChildren, componentInfoObjects }) {
 
       if (matchedChildren.length === 0) {
         return { success: false };
       }
 
-      // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
-        typeof child === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
-      )) {
+      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
+        inheritedComponentType: cType,
+        baseComponentType: "label"
+      });
+
+
+      // wrap first group of non-label children becomes equation
+
+      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.attributes?.createComponentOfType?.primitive));
+
+      let childrenToWrap = [], childrenToNotWrap = [];
+
+      if (childIsLabel.filter(x => x).length === 0) {
+        childrenToWrap = matchedChildren
+      } else {
+        if (childIsLabel[0]) {
+          // started with label, find first non-label child
+          let firstNonLabelInd = childIsLabel.indexOf(false);
+          if (firstNonLabelInd !== -1) {
+            childrenToNotWrap.push(...matchedChildren.slice(0, firstNonLabelInd));
+            matchedChildren = matchedChildren.slice(firstNonLabelInd);
+            childIsLabel = childIsLabel.slice(firstNonLabelInd)
+          }
+        }
+
+        // now we don't have label at the beginning
+        // find first label ind
+        let firstLabelInd = childIsLabel.indexOf(true);
+        if (firstLabelInd === -1) {
+          childrenToWrap = matchedChildren;
+        } else {
+          childrenToWrap = matchedChildren.slice(0, firstLabelInd);
+          childrenToNotWrap.push(...matchedChildren.slice(firstLabelInd));
+        }
+
+
+      }
+
+      if (childrenToWrap.length === 0) {
         return { success: false }
       }
 
@@ -62,16 +97,17 @@ export default class Line extends GraphicalComponent {
           equation: {
             component: {
               componentType: "math",
-              children: matchedChildren
+              children: childrenToWrap
             }
           }
-        }
+        },
+        newChildren: childrenToNotWrap
       }
 
     }
 
     sugarInstructions.push({
-      replacementFunction: stringAndMacrosToEquationAttribute
+      replacementFunction: nonLabelToEquationAttribute
     });
 
     return sugarInstructions;
@@ -85,7 +121,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -94,29 +132,48 @@ export default class Line extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-
-        let lineDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          lineDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          lineDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          lineDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          lineDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColor;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
 
-        return { setValue: { styleDescription: lineDescription } };
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { styleDescription } };
       }
     }
 
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " line";
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["equationIdentity"],
       returnDependencies: function ({ stateValues }) {
         if (stateValues.equationIdentity === null) {
@@ -239,7 +296,9 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.variables = {
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
@@ -391,20 +450,22 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.points = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        returnWrappingComponents(prefix) {
+          if (prefix === "pointX") {
+            return [];
+          } else {
+            // point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["pointX", "point"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "pointX") {
-          return [];
-        } else {
-          // point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "pointX") {
           // pointX1_2 is the 2nd component of the first point
@@ -448,6 +509,19 @@ export default class Line extends GraphicalComponent {
           }
         }
 
+      },
+      arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "points") {
+          return "point" + propIndex;
+        }
+        if (varName.slice(0, 5) === "point") {
+          // could be point or pointX
+          let pointNum = Number(varName.slice(5));
+          if (Number.isInteger(pointNum) && pointNum > 0) {
+            return `pointX${pointNum}_${propIndex}`
+          }
+        }
+        return null;
       },
       stateVariablesDeterminingDependencies: [
         "equationIdentity", "nPointsPrescribed", "basedOnSlope"
@@ -881,24 +955,32 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.equation = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["equationIdentity"],
       additionalStateVariablesDefined: [
         {
           variableName: "coeff0",
           public: true,
-          componentType: "math",
+          shadowingInstructions: {
+            createComponentOfType: "math",
+          },
         },
         {
           variableName: "coeffvar1",
           public: true,
-          componentType: "math",
+          shadowingInstructions: {
+            createComponentOfType: "math",
+          },
         },
         {
           variableName: "coeffvar2",
           public: true,
-          componentType: "math",
+          shadowingInstructions: {
+            createComponentOfType: "math",
+          },
         }
       ],
       returnDependencies: function ({ stateValues }) {
@@ -1210,7 +1292,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.slope = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         coeffvar1: {
           dependencyType: "stateVariable",
@@ -1233,7 +1317,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.xintercept = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         coeff0: {
           dependencyType: "stateVariable",
@@ -1258,7 +1344,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.yintercept = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+      },
       returnDependencies: () => ({
         coeff0: {
           dependencyType: "stateVariable",
@@ -1337,7 +1425,7 @@ export default class Line extends GraphicalComponent {
 
         return {
           setValue: {
-            nearestPoint: function ({ variables, scales }) {
+            nearestPoint: function ({ variables, scales = [1, 1] }) {
 
               if (skip) {
                 return {};
@@ -1351,8 +1439,8 @@ export default class Line extends GraphicalComponent {
 
               let denom = a * a + b * b;
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
 
               if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
@@ -1387,7 +1475,7 @@ export default class Line extends GraphicalComponent {
 
   static adapters = ["equation"];
 
-  async moveLine({ point1coords, point2coords, transient }) {
+  async moveLine({ point1coords, point2coords, transient, actionId }) {
 
     let desiredPoints = {
       "0,0": me.fromAst(point1coords[0]),
@@ -1407,6 +1495,7 @@ export default class Line extends GraphicalComponent {
           value: desiredPoints
         }],
         transient: true,
+        actionId,
       });
     } else {
       return await this.coreFunctions.performUpdate({
@@ -1416,6 +1505,7 @@ export default class Line extends GraphicalComponent {
           stateVariable: "points",
           value: desiredPoints
         }],
+        actionId,
         event: {
           verb: "interacted",
           object: {
@@ -1436,6 +1526,17 @@ export default class Line extends GraphicalComponent {
 
   }
 
+  async lineClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
 
 }
 
@@ -1450,6 +1551,10 @@ function calculateCoeffsFromEquation({ equation, variables }) {
   let var2String = var2.toString();
 
   equation = equation.expand().simplify();
+
+  if (!(Array.isArray(equation.tree) && equation.tree[0] === "=" && equation.tree.length === 3)) {
+    return { success: false }
+  }
 
   let rhs = me.fromAst(['+', equation.tree[2], ['-', equation.tree[1]]]).expand().simplify();
   // divide rhs into terms

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
-export default function Footnote(props) {
+export default React.memo(function Footnote(props) {
   let { name, SVs } = useDoenetRender(props,false);
   let [isVisible,setIsVisible] = useState(false);
 
@@ -45,5 +45,5 @@ return (
 </>
 );
 
-}
+})
 

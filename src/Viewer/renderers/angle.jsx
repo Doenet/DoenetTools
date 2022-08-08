@@ -2,8 +2,9 @@ import React, { useEffect, useContext, useRef } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 import me from 'math-expressions';
+import { MathJax } from 'better-react-mathjax';
 
-export default function Angle(props) {
+export default React.memo(function Angle(props) {
   let { name, SVs } = useDoenetRender(props);
 
   const board = useContext(BoardContext);
@@ -14,13 +15,6 @@ export default function Angle(props) {
   let angleJXG = useRef(null)
   let previousWithLabel = useRef(null);
 
-  useEffect(() => {
-    if (!board && window.MathJax) {
-      window.MathJax.Hub.Config({ showProcessingMessages: false, "fast-preview": { disabled: true } });
-      window.MathJax.Hub.processSectionDelay = 0;
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, "#" + name]);
-    }
-  })
 
   useEffect(() => {
     //On unmount
@@ -52,7 +46,7 @@ export default function Angle(props) {
       return null;
     }
 
-    let angleColor = "#FF7F00";
+    let angleColor = getComputedStyle(document.documentElement).getPropertyValue("--solidLightBlue");
 
     var jsxAngleAttributes = {
       name: SVs.label,
@@ -63,16 +57,21 @@ export default function Angle(props) {
       radius: SVs.numericalRadius,
       fillColor: angleColor,
       strokeColor: angleColor,
-      highlightFillColor: angleColor,
-      highlightStrokeColor: angleColor,
+      highlight: false
     };
 
+    jsxAngleAttributes.label = {
+      highlight: false
+    }
+    if (SVs.labelHasLatex) {
+      jsxAngleAttributes.label.useMathJax = true;
+    }
 
     previousWithLabel.current = SVs.showLabel && SVs.label !== "";
 
     let through;
 
-    if (SVs.renderAsAcuteAngle && (SVs.degrees.evaluate_to_constant() % 360) > 180) {
+    if (SVs.swapPointOrder) {
       through = [
         [...SVs.numericalPoints[2]],
         [...SVs.numericalPoints[1]],
@@ -117,7 +116,7 @@ export default function Angle(props) {
       //update
 
       let through;
-      if (SVs.renderAsAcuteAngle && (SVs.degrees.evaluate_to_constant() % 360) > 180) {
+      if (SVs.swapPointOrder) {
         through = [
           [...SVs.numericalPoints[2]],
           [...SVs.numericalPoints[1]],
@@ -162,14 +161,9 @@ export default function Angle(props) {
 
 
 
-  let mathJaxify;
-  if (SVs.inDegrees) {
-    mathJaxify = "\\(" + me.fromAst(SVs.degrees).toLatex() + "^\\circ \\)";
-  } else {
-    mathJaxify = "\\(" + me.fromAst(SVs.radians).toLatex() + "\\)";
-  }
+  let mathJaxify = "\\(" + SVs.latexForRenderer + "\\)";
 
-  return <><a name={name} /><span id={name}>{mathJaxify}</span></>
-}
+  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+})
 
 

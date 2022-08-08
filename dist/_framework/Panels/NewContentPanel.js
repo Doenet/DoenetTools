@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   grid-area: contentPanel;
   display: grid;
   grid-template:
-    'mainControls handle supportControls' ${({$hasRespCont}) => $hasRespCont ? 40 : 0}px
+    'mainControls handle supportControls' ${(props) => props.hasNoHeaderPanel === true ? 0 : 40}px
     'mainPanel handle supportPanel' 1fr
     / ${({$proportion}) => `${$proportion}fr auto ${1 - $proportion}fr`};
   overflow: hidden;
@@ -26,10 +26,10 @@ const DragHandle = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: hsl(0, 0%, 99%);
+  color: white;
   padding: 0;
   cursor: ew-resize;
-  background-color: #1A5A99;
+  background-color: var(--mainBlue);
   width: 8px;
   box-sizing: border-box;
 `;
@@ -58,7 +58,7 @@ export const supportPanelHandleLeft = atom({
   key: "supportPanelHandleLeft",
   default: null
 });
-export default function ContentPanel({main, support}) {
+export default function ContentPanel({main, support, hasNoHeaderPanel}) {
   const wrapperRef = useRef();
   const hasRespCont = true;
   const setDivider = useSupportDividerController();
@@ -119,6 +119,7 @@ export default function ContentPanel({main, support}) {
     onMouseMove,
     onMouseLeave: onMouseUp,
     ref: wrapperRef,
+    hasNoHeaderPanel,
     $hasRespCont: hasRespCont,
     $proportion: panelProportion
   }, main, !support?.props?.hide ? /* @__PURE__ */ React.createElement(DragHandle, {

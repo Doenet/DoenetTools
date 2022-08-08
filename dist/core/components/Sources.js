@@ -2,12 +2,12 @@ import BaseComponent from './abstract/BaseComponent.js';
 
 export default class Sources extends BaseComponent {
   static componentType = "sources";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
 
-  static createAttributesObject(args) {
-    let attributes = super.createAttributesObject(args);
+  static createAttributesObject() {
+    let attributes = super.createAttributesObject();
     attributes.alias = {
       createPrimitiveOfType: "string",
       validationFunction: function (value) {

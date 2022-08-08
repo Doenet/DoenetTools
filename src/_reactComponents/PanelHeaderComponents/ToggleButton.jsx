@@ -1,26 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { doenetMainBlue } from './theme';
-import styled, { ThemeProvider } from 'styled-components';
+import styled from 'styled-components';
+import { MathJax } from "better-react-mathjax";
 
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
-  border-style: solid;
-  border-color: ${doenetMainBlue};
+  border: ${(props) =>
+    props.alert
+      ? '2px solid var(--mainRed)'
+      : props.disabled
+      ? '2px solid var(--mainGray)'
+      : '2px solid var(--mainBlue)'};
   border-width: 2px;
-  color: ${doenetMainBlue};
-  background-color: #fff;
+  color: ${(props) =>
+    props.alert
+      ? 'var(--mainRed)'
+      : props.disabled
+      ? 'var(--mainGray)'
+      : 'var(--mainBlue)'};
+  background-color: var(--canvas);
   border-radius: ${(props) => props.theme.borderRadius};
   padding: ${(props) => props.theme.padding};
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   font-size: 12px;
-  textalign: center;
+  text-align: center;
+
+  &:hover {
+    // Button color lightens on hover
+    color: ${(props) => (props.disabled ? 'var(--mainGray)' : 'black')};
+    background-color: ${(props) =>
+      props.alert
+        ? 'var(--lightRed)'
+        : props.disabled
+        ? 'none'
+        : 'var(--lightBlue)'};
+  }
 `;
 
 Button.defaultProps = {
   theme: {
-    margin: '0px 4px 0px 4px',
-    borderRadius: '5px',
+    margin: '0px',
+    borderRadius: 'var(--mainBorderRadius)',
     padding: '0px 10px 0px 10px',
   },
 };
@@ -41,11 +61,10 @@ export default function ToggleButton(props) {
   const [isSelected, setSelected] = useState(
     props.isSelected ? props.isSelected : false,
   );
-  const [labelVisible, setLabelVisible] = useState(
-    props.label ? 'static' : 'none',
-  );
-  const [align, setAlign] = useState(props.vertical ? 'static' : 'flex');
-  // var color = props.alert ? '#C1292E' : `${doenetMainBlue}`;
+  const labelVisible = props.label ? 'static' : 'none';
+  const align = props.vertical ? 'static' : 'flex';
+  const alert = props.alert ? props.alert : null;
+  const disabled = props.disabled ? props.disabled : null;
 
   useEffect(() => {
     setSelected(props.isSelected);
@@ -55,20 +74,10 @@ export default function ToggleButton(props) {
     value: 'Toggle Button',
   };
 
-  if (props.disabled) {
-    toggleButton.color = '#e2e2e2';
-    toggleButton.cursor = 'not-allowed';
-    toggleButton.border = '2px solid #e2e2e2';
-  }
-
-  if (props.alert) {
-    toggleButton.border = '2px solid #C1292E';
-    toggleButton.color = '#C1292E';
-  }
   var icon = '';
   var label = {
     value: 'Label:',
-    fontSize: '12px',
+    fontSize: '14px',
     display: `${labelVisible}`,
     marginRight: '5px',
     marginBottom: `${align == 'flex' ? 'none' : '2px'}`,
@@ -79,6 +88,7 @@ export default function ToggleButton(props) {
     width: 'auto',
     alignItems: 'center',
   };
+
   if (props.value || props.icon) {
     if (props.value && props.icon) {
       icon = props.icon;
@@ -89,28 +99,34 @@ export default function ToggleButton(props) {
       icon = props.icon;
       toggleButton.value = '';
     }
+    if(props.value && props.valueHasLatex) {
+      toggleButton.value = <MathJax hideUntilTypeset={"first"} inline dynamic >{toggleButton.value}</MathJax>
+    }
   }
+
   if (isSelected === true) {
     if (!props.disabled) {
       if (!props.alert) {
-        toggleButton.backgroundColor = `${doenetMainBlue}`;
+        toggleButton.backgroundColor = 'var(--mainBlue)';
       } else {
-        toggleButton.backgroundColor = '#C1292E';
+        toggleButton.backgroundColor = 'var(--mainRed)';
       }
-      toggleButton.color = '#FFF';
-      // toggleButton.border = '2px solid #FFF';
+      toggleButton.color = 'var(--canvas)';
       if (props.switch_value) toggleButton.value = props.switch_value;
     }
   }
+
   function handleClick() {
     if (props.onClick)
       props.onClick(
         props.index !== null && props.index !== undefined ? props.index : null,
       );
   }
+
   if (props.label) {
     label.value = props.label;
   }
+
   if (props.width) {
     if (props.width === 'menu') {
       toggleButton.width = '235px';
@@ -120,6 +136,7 @@ export default function ToggleButton(props) {
       }
     }
   }
+
   if (props.num === 'first') {
     toggleButton.borderRadius = '5px 0px 0px 5px';
   }
@@ -135,13 +152,16 @@ export default function ToggleButton(props) {
   if (props.num === 'last_vert') {
     toggleButton.borderRadius = '0px 0px 5px 5px';
   }
+
   return (
     <>
       <div style={container}>
         <p style={label}>{label.value}</p>
         <Button
-          id="toggleButton"
+          id={props.id}
           style={toggleButton}
+          disabled={disabled}
+          alert={alert}
           onClick={() => {
             handleClick();
           }}
