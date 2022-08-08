@@ -1328,7 +1328,7 @@ describe('Sectioning Tag Tests', function () {
         <p>Hello</p>
       </section>
     
-      <section name="revised" copyTarget="sec">
+      <section name="revised" copySource="sec">
         <title>A better title</title>
         <p>Good day!</p>
       </section>

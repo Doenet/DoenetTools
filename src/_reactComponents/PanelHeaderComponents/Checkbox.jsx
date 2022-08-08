@@ -73,6 +73,9 @@ export default function CheckboxButton(props) {
       ref={buttonRef}
       disabled={disabled}
       cursor={cursor}
+      aria-labelledby={labelValue} 
+      aria-label={"Checkbox"}
+      aria-checked={props.checked}
       onClick={(e) => {
         // console.log('contains click', buttonRef.current.contains(e.target));
         if (props.onClick){

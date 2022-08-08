@@ -621,7 +621,7 @@ describe('PeriodicSet Tag Tests', function () {
     <setup>
       <periodicSet offsets="$collected_offsets" period="$period" name="userPeriodicSet" />
       <conditionalContent hide assignNames="(maxCreditRedund)">
-        <case condition="$(userPeriodicSet{prop='redundantOffsets'})">
+        <case condition="$(userPeriodicSet.redundantOffsets)">
           <number>0.8</number>
         </case>
         <else>

@@ -748,7 +748,7 @@ describe('Polyline Tag Tests', function () {
   <polyline vertices="(-9,6)(-3,7)(4,0)(8,5)" name="pg" />
   </graph>
   <graph name="g2" newNamespace>
-    <polyline vertices="$(../g1/pg{prop='vertices'})" name="pg" />
+    <polyline vertices="$(../g1/pg.vertices)" name="pg" />
   </graph>
   <copy target="g2" assignNames="g3" />
   <copy target="g1/pg" prop="vertices" assignNames="p1 p2 p3 p4" />
@@ -968,7 +968,7 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <graph>
-      <polyline name="parallelogram" vertices="(1,2) (3,4) (-5,6) ($(parallelogram{fixed prop='vertexX1_1'})+$(parallelogram{fixed prop='vertexX3_1'})-$(parallelogram{prop='vertexX2_1'}), $(parallelogram{fixed prop='vertexX1_2'})+$(parallelogram{fixed prop='vertexX3_2'})-$(parallelogram{prop='vertexX2_2'}))" />
+      <polyline name="parallelogram" vertices="(1,2) (3,4) (-5,6) ($(parallelogram.vertexX1_1{fixed})+$(parallelogram.vertexX3_1{fixed})-$(parallelogram.vertexX2_1), $(parallelogram.vertexX1_2{fixed})+$(parallelogram.vertexX3_2{fixed})-$(parallelogram.vertexX2_2))" />
     </graph>
 
     <copy target="parallelogram" prop="vertices" assignNames="p1 p2 p3 p4" />
@@ -1096,7 +1096,7 @@ describe('Polyline Tag Tests', function () {
     <polyline vertices="(-9,6)(-3,7)(4,0)(8,5)" />
   </graph>
   <graph>
-    <polyline vertices="$(_polyline1{prop='vertex1'}) ($(_polyline1{prop='vertexX2_2'}), $(_polyline1{prop='vertexX2_1'})) $(_polyline1{prop='vertex3'}) ($(_polyline1{prop='vertexX4_2'}), $(_polyline1{prop='vertexX4_1'}))" />
+    <polyline vertices="$(_polyline1.vertex1) ($(_polyline1.vertexX2_2), $(_polyline1.vertexX2_1)) $(_polyline1.vertex3) ($(_polyline1.vertexX4_2), $(_polyline1.vertexX4_1))" />
   </graph>
   <copy target="_polyline2" prop="vertices" assignNames="p1 p2 p3 p4" />
   `}, "*");
@@ -1193,7 +1193,7 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline vertices="(1,2) (3,4) (-5,6) ($(_polyline1{fixed prop='vertexX3_1'})+$(_polyline1{fixed prop='vertexX2_1'})-$(_polyline1{prop='vertexX1_1'}), $(_polyline1{fixed prop='vertexX3_2'})+$(_polyline1{fixed prop='vertexX2_2'})-$(_polyline1{prop='vertexX1_2'}))" />
+  <polyline vertices="(1,2) (3,4) (-5,6) ($(_polyline1.vertexX3_1{fixed})+$(_polyline1.vertexX2_1{fixed})-$(_polyline1.vertexX1_1), $(_polyline1.vertexX3_2{fixed})+$(_polyline1.vertexX2_2{fixed})-$(_polyline1.vertexX1_2))" />
   </graph>
   <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4" />
 
@@ -1321,7 +1321,7 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline vertices="(1,2) (3,4)(-5,6) $(_polyline1{prop='vertex1' createComponentOfType='point'})" />
+  <polyline vertices="(1,2) (3,4)(-5,6) $(_polyline1.vertex1{createComponentOfType='point'})" />
   </graph>
   <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4" />
   `}, "*");
@@ -1442,7 +1442,7 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline vertices="$(_polyline1{prop='vertex4' createComponentOfType='point' }) (3,4) (-5,6) (1,2)" />
+  <polyline vertices="$(_polyline1.vertex4{ createComponentOfType='point' }) (3,4) (-5,6) (1,2)" />
   </graph>
   <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4" />
   
@@ -1565,7 +1565,7 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline vertices="$(_polyline1{prop='vertex4' createComponentOfType='point'}) (3,4)(-5,6) (1,2) ($(_polyline1{prop='vertexX1_1'})+1,2)" />
+  <polyline vertices="$(_polyline1.vertex4{createComponentOfType='point'}) (3,4)(-5,6) (1,2) ($(_polyline1.vertexX1_1)+1,2)" />
   </graph>
   <copy target="_polyline1" prop="vertices" assignNames="p1 p2 p3 p4 p5" />
   
@@ -1720,7 +1720,7 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline name="P" vertices="$(P{prop='vertex4' createComponentOfType='point'}) (1,2) (3,4) $(P{prop='vertex7' createComponentOfType='point'}) (5,7) (-5,7) $(P{prop='vertex10' createComponentOfType='point'}) (3,1) (5,0) (-5,-1)" />
+  <polyline name="P" vertices="$(P.vertex4{createComponentOfType='point'}) (1,2) (3,4) $(P.vertex7{createComponentOfType='point'}) (5,7) (-5,7) $(P.vertex10{createComponentOfType='point'}) (3,1) (5,0) (-5,-1)" />
   </graph>
   <copy target="P" prop="vertices" assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10" />
   
@@ -2049,7 +2049,7 @@ describe('Polyline Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <polyline name="P" vertices="($(P{prop='vertexX4_1'})+1,$(P{prop='vertexX4_2'})+1) (1,2) (3,4) ($(P{prop='vertexX7_1'})+1,$(P{prop='vertexX7_2'})+1) (5,7) (-5,7) ($(P{prop='vertexX10_1'})+1,$(P{prop='vertexX10_2'})+1) (3,1) (5,0) (-5,-1)" />
+  <polyline name="P" vertices="($(P.vertexX4_1)+1,$(P.vertexX4_2)+1) (1,2) (3,4) ($(P.vertexX7_1)+1,$(P.vertexX7_2)+1) (5,7) (-5,7) ($(P.vertexX10_1)+1,$(P.vertexX10_2)+1) (3,1) (5,0) (-5,-1)" />
   </graph>
   <copy target="P" prop="vertices" assignNames="p1 p2 p3 p4 p5 p6 p7 p8 p9 p10" />
   
@@ -3216,10 +3216,10 @@ describe('Polyline Tag Tests', function () {
     let t2x = 3, t2y = 4;
     let t3x = -3, t3y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P3 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
@@ -3244,6 +3244,69 @@ describe('Polyline Tag Tests', function () {
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
+
+
+  });
+
+  it('copy propIndex of vertices, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <polyline vertices="(2,-3) (3,4) (-3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy source="_polyline1.vertices[$n]" assignNames="P1 P2 P3" /></p>
+
+    <p><copy source="_polyline1.vertex2[$n]" assignNames="x" /></p>
+
+    <p><copy source="_polyline1.vertices[2][$n]" assignNames="xa" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = 4;
+    let t3x = -3, t3y = 4;
+
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get('#\\/xa .mjx-mrow').should('not.exist');
 
 
   });

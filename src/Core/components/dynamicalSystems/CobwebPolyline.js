@@ -266,13 +266,19 @@ export default class CobwebPolyline extends Polyline {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "originalVertices") {
-          return "originalVertex" + propIndex;
+          if (propIndex.length === 1) {
+            return "originalVertex" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `originalVertexX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 14) === "originalVertex") {
           // could be originalVertex or originalVertexX
           let originalVertexNum = Number(varName.slice(14));
           if (Number.isInteger(originalVertexNum) && originalVertexNum > 0) {
-            return `originalVertexX${originalVertexNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `originalVertexX${originalVertexNum}_${propIndex[0]}`
           }
         }
         return null;

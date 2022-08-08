@@ -1,4 +1,5 @@
 import { deepClone } from '../utils/deepFunctions.js';
+import { returnLabelStateVariableDefinitions } from '../utils/label.js';
 import InlineComponent from './abstract/InlineComponent.js';
 
 export default class CallAction extends InlineComponent {
@@ -6,11 +7,19 @@ export default class CallAction extends InlineComponent {
 
   static acceptTarget = true;
 
-  static keepChildrenSerialized({ serializedComponent }) {
+  static keepChildrenSerialized({ serializedComponent, componentInfoObjects }) {
     if (serializedComponent.children === undefined) {
       return [];
     } else {
-      return Object.keys(serializedComponent.children)
+
+      let keepSerializedInds = [];
+      for (let [ind, child] of serializedComponent.children.entries()) {
+        if (!componentInfoObjects.componentIsSpecifiedType(child, "label")) {
+          keepSerializedInds.push(ind)
+        }
+      }
+
+      return keepSerializedInds;
     }
   }
 
@@ -20,11 +29,14 @@ export default class CallAction extends InlineComponent {
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
     attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "call action",
+      createComponentOfType: "label",
+    };
+
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true,
     };
 
     attributes.actionName = {
@@ -62,10 +74,23 @@ export default class CallAction extends InlineComponent {
   }
 
 
+  static returnChildGroups() {
+
+    return [{
+      group: "labels",
+      componentTypes: ["label"]
+    }]
+
+  }
+
 
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.target = {
       returnDependencies: () => ({
@@ -300,6 +325,7 @@ export default class CallAction extends InlineComponent {
             componentType: this.componentType,
           },
         },
+        caseInsensitiveMatch: true,
       })
 
       await this.coreFunctions.triggerChainedActions({

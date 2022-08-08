@@ -7,6 +7,7 @@ export default React.memo(function CallAction(props) {
     return null;
   }
   return /* @__PURE__ */ React.createElement("div", {
+    id: name,
     style: {margin: "12px 0", display: "inline-block"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
@@ -14,6 +15,7 @@ export default React.memo(function CallAction(props) {
     id: name + "_button",
     onClick: () => callAction({action: actions.callAction}),
     disabled: SVs.disabled,
-    value: SVs.label
+    value: SVs.label,
+    valueHasLatex: SVs.labelHasLatex
   }));
 });

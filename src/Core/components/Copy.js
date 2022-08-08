@@ -51,13 +51,25 @@ export default class Copy extends CompositeComponent {
       createPrimitiveOfType: "number",
     };
     attributes.componentIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
     };
+    attributes.sourceSubnames = {
+      createPrimitiveOfType: "stringArray",
+      createStateVariable: "targetSubnames",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.sourceSubnamesComponentIndex = {
+      createComponentOfType: "numberList",
+      createStateVariable: "targetSubnamesComponentIndex",
+      defaultValue: null,
+      public: true,
+    };
     attributes.propIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
@@ -68,15 +80,15 @@ export default class Copy extends CompositeComponent {
       defaultValue: null,
       public: true,
     };
-    attributes.targetAttributesToIgnore = {
+    attributes.sourceAttributesToIgnore = {
       createPrimitiveOfType: "stringArray",
-      createStateVariable: "targetAttributesToIgnore",
+      createStateVariable: "sourceAttributesToIgnore",
       defaultValue: ["hide"],
       public: true,
     };
-    attributes.targetAttributesToIgnoreRecursively = {
+    attributes.sourceAttributesToIgnoreRecursively = {
       createPrimitiveOfType: "stringArray",
-      createStateVariable: "targetAttributesToIgnoreRecursively",
+      createStateVariable: "sourceAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
     };
@@ -404,9 +416,37 @@ export default class Copy extends CompositeComponent {
           dependencyType: "doenetAttribute",
           attributeName: "isPlainMacro"
         },
+        targetComponent: {
+          dependencyType: "stateVariable",
+          variableName: "targetComponent"
+        }
       }),
-      definition: function ({ dependencyValues }) {
-        return { setValue: { isPlainMacro: dependencyValues.isPlainMacro } }
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let isPlainMacro = dependencyValues.isPlainMacro
+          && !componentInfoObjects.isCompositeComponent({
+            componentType: dependencyValues.targetComponent?.componentType,
+          })
+        return { setValue: { isPlainMacro } }
+      }
+    }
+
+    stateVariableDefinitions.isPlainCopy = {
+      returnDependencies: () => ({
+        isPlainCopy: {
+          dependencyType: "doenetAttribute",
+          attributeName: "isPlainCopy"
+        },
+        targetComponent: {
+          dependencyType: "stateVariable",
+          variableName: "targetComponent"
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let isPlainCopy = dependencyValues.isPlainCopy
+          && !componentInfoObjects.isCompositeComponent({
+            componentType: dependencyValues.targetComponent?.componentType,
+          })
+        return { setValue: { isPlainCopy } }
       }
     }
 
@@ -433,6 +473,7 @@ export default class Copy extends CompositeComponent {
     stateVariableDefinitions.replacementSourceIdentities = {
       stateVariablesDeterminingDependencies: [
         "targetComponent", "componentIndex", "propName",
+        "targetSubnames", "targetSubnamesComponentIndex",
         "obtainPropFromComposite", "linkAttrForDetermineDeps"
       ],
       additionalStateVariablesDefined: ["addLevelToAssignNames"],
@@ -456,11 +497,18 @@ export default class Copy extends CompositeComponent {
             if (stateValues.linkAttrForDetermineDeps) {
 
               useReplacements = true;
+
+              let targetSubnamesComponentIndex = stateValues.targetSubnamesComponentIndex;
+              if(targetSubnamesComponentIndex) {
+                targetSubnamesComponentIndex = [...targetSubnamesComponentIndex]
+              }
               dependencies.targets = {
                 dependencyType: "replacement",
                 compositeName: stateValues.targetComponent.componentName,
                 recursive: true,
                 componentIndex: stateValues.componentIndex,
+                targetSubnames: stateValues.targetSubnames,
+                targetSubnamesComponentIndex
               }
             } else {
               addLevelToAssignNames = true;
@@ -508,7 +556,7 @@ export default class Copy extends CompositeComponent {
     // when resolve determineDependencies
     stateVariableDefinitions.replacementSources = {
       stateVariablesDeterminingDependencies: [
-        "replacementSourceIdentities", "propName", "propIndex", "isPlainMacro",
+        "replacementSourceIdentities", "propName", "propIndex", "isPlainMacro", "isPlainCopy",
       ],
       additionalStateVariablesDefined: ["effectivePropNameBySource"],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
@@ -538,6 +586,9 @@ export default class Copy extends CompositeComponent {
             if (stateValues.isPlainMacro) {
               thisPropName = componentInfoObjects.allComponentClasses[source.componentType]
                 .variableForPlainMacro
+            } else if (stateValues.isPlainCopy) {
+              thisPropName = componentInfoObjects.allComponentClasses[source.componentType]
+                .variableForPlainCopy
             }
 
             let thisTarget;
@@ -549,13 +600,20 @@ export default class Copy extends CompositeComponent {
                 value: thisPropName,
               }
 
+              let propIndex = stateValues.propIndex;
+              if (propIndex) {
+                // make propIndex be a shallow copy
+                // so that can detect if it changed
+                // when update dependencies
+                propIndex = [...propIndex]
+              }
               thisTarget = {
                 dependencyType: "stateVariable",
                 componentName: source.componentName,
                 variableName: thisPropName,
                 returnAsComponentObject: true,
                 variablesOptional: true,
-                propIndex: stateValues.propIndex,
+                propIndex,
                 caseInsensitiveVariableMatch: true,
                 publicStateVariablesOnly: true,
                 useMappedVariableNames: true,
@@ -594,7 +652,7 @@ export default class Copy extends CompositeComponent {
               }
               if (!propName && dependencyValues["propName" + ind]) {
                 // a propName was specified, but it just wasn't found
-                propName = dependencyValues["propName" + ind];
+                propName = "__prop_name_not_found";
               }
               effectivePropNameBySource.push(propName)
             }
@@ -620,7 +678,10 @@ export default class Copy extends CompositeComponent {
         let nComponentsSpecified;
 
         if (dependencyValues.typeAttr) {
-          if (!(dependencyValues.typeAttr in componentInfoObjects.allComponentClasses)) {
+          let componentType = componentInfoObjects.
+            componentTypeLowerCaseMapping[dependencyValues.typeAttr.toLowerCase()];
+
+          if (!(componentType in componentInfoObjects.allComponentClasses)) {
             throw Error(`Invalid componentType ${dependencyValues.typeAttr} of copy.`)
           }
           if (dependencyValues.nComponentsAttr !== null) {
@@ -1038,7 +1099,9 @@ export default class Copy extends CompositeComponent {
         // even though don't have valid target,
         // if have copyTarget, then include children added directly to component
 
-        let componentType = component.attributes.createComponentOfType.primitive;
+        let componentType = componentInfoObjects.
+          componentTypeLowerCaseMapping[component.attributes.createComponentOfType.primitive.toLowerCase()];
+
         let componentClass = componentInfoObjects.allComponentClasses[componentType];
 
         let attributesFromComposite = convertAttributesForComponentType({
@@ -1307,6 +1370,7 @@ export default class Copy extends CompositeComponent {
       requiredLength = 1;
     }
 
+    requiredComponentType = componentInfoObjects.componentTypeLowerCaseMapping[requiredComponentType.toLowerCase()];
 
     if (replacementTypes.length !== requiredLength ||
       !replacementTypes.every(x => x === requiredComponentType)) {
@@ -1480,14 +1544,14 @@ export default class Copy extends CompositeComponent {
     // if creating copy directly from the target component,
     // create a serialized copy of the entire component
 
-    let targetAttributesToIgnore = await component.stateValues.targetAttributesToIgnore;
-    let targetAttributesToIgnoreRecursively = await component.stateValues.targetAttributesToIgnoreRecursively;
+    let sourceAttributesToIgnore = await component.stateValues.sourceAttributesToIgnore;
+    let sourceAttributesToIgnoreRecursively = await component.stateValues.sourceAttributesToIgnoreRecursively;
 
     let serializedReplacements = [
       await replacementSourceComponent.serialize({
         copyAll: !link, copyVariants: !link,
-        targetAttributesToIgnore,
-        targetAttributesToIgnoreRecursively
+        sourceAttributesToIgnore,
+        sourceAttributesToIgnoreRecursively
       })
     ];
 
@@ -2161,7 +2225,9 @@ export async function replacementFromProp({ component, components,
   })[0];
 
   if (varName === undefined || varName.slice(0, 12) === "__not_public") {
-    console.warn(`Could not find prop ${propName} on a component of type ${replacementSource.componentType}`)
+    if (propName !== "__prop_name_not_found") {
+      console.warn(`Could not find prop ${propName} on a component of type ${replacementSource.componentType}`)
+    }
     return {
       serializedReplacements: [],
       propVariablesCopiedByReplacement: [],
@@ -2433,12 +2499,13 @@ export async function replacementFromProp({ component, components,
             Object.assign(attributesForReplacement, attributesFromComposite)
 
 
-            let primaryStateVariableForDefinition = "value";
+            let primaryEssentialStateVariable = "value";
             let componentClass = componentInfoObjects.allComponentClasses[createComponentOfType];
-            if (componentClass.primaryStateVariableForDefinition) {
-              primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+            if (componentClass.primaryEssentialStateVariable) {
+              primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
+            } else if (componentClass.primaryStateVariableForDefinition) {
+              primaryEssentialStateVariable = componentClass.primaryStateVariableForDefinition;
             }
-
 
             let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
             if (!Array.isArray(arrayIndex)) {
@@ -2453,7 +2520,7 @@ export async function replacementFromProp({ component, components,
               componentType: createComponentOfType,
               attributes: attributesForReplacement,
               state: {
-                [primaryStateVariableForDefinition]: propStateValue
+                [primaryEssentialStateVariable]: propStateValue
               },
               uniqueIdentifier,
             }
@@ -2629,12 +2696,13 @@ export async function replacementFromProp({ component, components,
               }
 
 
-              let primaryStateVariableForDefinition = "value";
+              let primaryEssentialStateVariable = "value";
               let componentClass = componentInfoObjects.allComponentClasses[createComponentOfType];
-              if (componentClass.primaryStateVariableForDefinition) {
-                primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+              if (componentClass.primaryEssentialStateVariable) {
+                primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
+              } else if (componentClass.primaryStateVariableForDefinition) {
+                primaryEssentialStateVariable = componentClass.primaryStateVariableForDefinition;
               }
-
 
               let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
               if (!Array.isArray(arrayIndex)) {
@@ -2651,7 +2719,7 @@ export async function replacementFromProp({ component, components,
                 componentType: createComponentOfType,
                 attributes: attributesForReplacement,
                 state: {
-                  [primaryStateVariableForDefinition]: propStateValue
+                  [primaryEssentialStateVariable]: propStateValue
                 },
                 uniqueIdentifier,
               }
@@ -2934,18 +3002,19 @@ export async function replacementFromProp({ component, components,
         Object.assign(attributesForReplacement, attributesFromComposite)
 
 
-        let primaryStateVariableForDefinition = "value";
+        let primaryEssentialStateVariable = "value";
         let componentClass = componentInfoObjects.allComponentClasses[stateVarObj.shadowingInstructions.createComponentOfType];
-        if (componentClass.primaryStateVariableForDefinition) {
-          primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+        if (componentClass.primaryEssentialStateVariable) {
+          primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
+        } else if (componentClass.primaryStateVariableForDefinition) {
+          primaryEssentialStateVariable = componentClass.primaryStateVariableForDefinition;
         }
-
 
         let serializedComponent = {
           componentType: stateVarObj.shadowingInstructions.createComponentOfType,
           attributes: attributesForReplacement,
           state: {
-            [primaryStateVariableForDefinition]: stateVarValue
+            [primaryEssentialStateVariable]: stateVarValue
           },
           uniqueIdentifier,
         }

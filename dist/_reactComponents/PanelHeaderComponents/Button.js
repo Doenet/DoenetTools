@@ -1,5 +1,6 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 const ButtonStyling = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
@@ -72,6 +73,13 @@ export default function Button(props) {
     } else if (props.icon) {
       icon = props.icon;
       button.value = "";
+    }
+    if (props.value && props.valueHasLatex) {
+      button.value = /* @__PURE__ */ React.createElement(MathJax, {
+        hideUntilTypeset: "first",
+        inline: true,
+        dynamic: true
+      }, button.value);
     }
   }
   ;
