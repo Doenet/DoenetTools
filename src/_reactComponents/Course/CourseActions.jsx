@@ -2174,6 +2174,7 @@ export const useCourse = (courseId) => {
                 //if source is destination delete page from destination
                 if (destinationContainingObj.doenetId == containingObj.doenetId){
                   destinationJSON = deletePageFromActivity({content:destinationJSON,needleDoenetId:cutObj.doenetId})
+                  destinationContainingObj.content = destinationJSON;
                 }
               }else if (containingObj.type == 'bank'){
                 //Remove from Collection
