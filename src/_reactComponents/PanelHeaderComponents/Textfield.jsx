@@ -1,4 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components';
+
+const TextfieldStyling = styled.input`
+  margin: 0px 4px 0px 0px;
+  height: 24px;
+  border: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--canvastext)')};
+  font-family: Arial;
+  border-radius: var(--mainBorderRadius);
+  color: var(--canvastext);
+  resize: none;
+  white-space: nowrap;
+  padding: 0px 5px 0px 5px;
+  line-height: 24px;
+  font-size: 14px;
+  background-color: var(--canvas);
+  cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+  pointer-events: ${props => props.disabled ? 'none' : 'auto'};
+  width: ${props => props.inputWidth};
+  &:focus {
+    outline: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--canvastext)')};
+    outline-offset: 2px;
+  }
+`
 
 export default function Textfield(props) {
   const labelVisible = props.label ? 'static' : 'none';
@@ -8,20 +31,8 @@ export default function Textfield(props) {
   const inputRef = useRef(null);
   //Assume small
 
-  var textfield = {
-    margin: '0px 4px 0px 0px',
-    height: '24px',
-    border: 'var(--mainBorder)',
-    fontFamily: 'Arial',
-    borderRadius: 'var(--mainBorderRadius)',
-    color: 'var(--canvastext)',
+  var textfieldValue = {
     value: `${props.value}`,
-    resize:'none',
-    whiteSpace: 'nowrap',
-    padding:"0px 5px 0px 5px",
-    lineHeight:"24px",
-    fontSize: "14px",
-    backgroundColor:"var(--canvas)"
   };
 
   var label ={
@@ -43,36 +54,30 @@ export default function Textfield(props) {
     inputRef.current.selectionEnd = cursorEnd;
   });
 
-  if (props.alert) {
-    textfield.border = '2px solid var(--mainRed)'
-  };
 
   if (props.label) {
     label.value = props.label;
   };
 
   if (props.value) {
-    textfield.value = props.value;
+    textfieldValue.value = props.value;
   };
 
   if (props.placeholder) {
-    textfield.placeholder = props.placeholder;
-  };
-
-  if (props.ariaLabel) {
-    textfield.ariaLabel = props.ariaLabel;
+    textfieldValue.placeholder = props.placeholder;
   };
 
   var disable = "";
+  var read_only = false
   if (props.disabled) {
-    textfield.border = '2px solid var(--mainGray)';
-    textfield.cursor = 'not-allowed';
     disable = "disabled";
+    read_only = true
   };
 
+  var inputWidth=""
   if (props.width) {
     if (props.width === "menu") {
-      textfield.width = '200px';
+      inputWidth = '200px';
       if (props.label) {
         container.width = '200px';
       }
@@ -96,8 +101,8 @@ export default function Textfield(props) {
   return (
     <>
       <div style={container}>
-            <p style={label}>{label.value}</p>
-            <input type="text" ref={inputRef} value={props.value} placeholder={textfield.placeholder} aria-label={textfield.ariaLabel} style={textfield} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }} disabled={disable}></input>
+            <p style={label} id="textfield-label">{label.value}</p>
+            <TextfieldStyling aria-disabled={props.disabled ? true : false} aria-labelledby="textfield-label" type="text" inputWidth={inputWidth} readOnly={read_only} alert={props.alert} disabled={props.disabled} ref={inputRef} value={props.value} placeholder={textfieldValue.placeholder} aria-label={textfieldValue.ariaLabel} style={textfieldValue} onChange={(e) => { handleChange(e) }} onBlur={(e) => { handleBlur(e) }} onKeyDown={(e) => { handleKeyDown(e) }}></TextfieldStyling>
       </div>
     </>
   )

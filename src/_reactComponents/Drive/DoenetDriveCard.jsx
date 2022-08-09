@@ -17,9 +17,12 @@ const DriveCardContainer = styled.figure`
   display: flex; // added
   flex-direction: column; // added
   justify-content: space-between;
-  
   border: 2px solid var(--canvastext);
   cursor: pointer;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+}
 `;
 
 const Image = styled.img`
@@ -31,7 +34,9 @@ const Image = styled.img`
   background-color: ${(props) => props.color == 'none' ? 'none' : "#" + props.color};
   background-size: cover;
   background-position: center;
+  
 `;
+
 const Info = styled.figcaption`
   border-radius: 0px 0px 5px 5px;
   // position: absolute;
@@ -39,7 +44,6 @@ const Info = styled.figcaption`
   height: 65px;
   width: inherit;
   background: var(--canvas);
-  
 `;
 
 const LabelContainer = styled.p`
@@ -62,10 +66,8 @@ const DriveCard = (props) => {
 
 /* reduces the top margin on the h2, bottom on the p, and leaves a 0.5rem gap between the two */
 
-/* reduces the top margin on the h2, bottom on the p, and leaves a 0.5rem gap between the two */
-
   return (
-    <DriveCardContainer data-test="driveCard" url={imageURL} color={props.color} width={props.width} height={props.height}>
+    <DriveCardContainer data-test="driveCard" aria-labelledby="card-label role-label" data-cy="driveCard" url={imageURL} color={props.color} width={props.width} height={props.height}>
       <Image url={imageURL} color={props.color} />
       <Info
         style={{
@@ -73,14 +75,14 @@ const DriveCard = (props) => {
           backgroundColor: props.isSelected ? 'var(--lightBlue)' : '',
         }}
       >
-        <LabelContainer textAlign={props.textAlign} lineHeight={props.lineHeight} whiteSpace={props.whiteSpace} 
+        <LabelContainer id="card-label" textAlign={props.textAlign} lineHeight={props.lineHeight} whiteSpace={props.whiteSpace} 
         style={{
           color: props.isSelected ? 'black' : 'var(--canvastext)',
         }}>
           <b data-test="driveCardLabel">{props.label}</b>
         </LabelContainer>
         {props?.role?.map((item) => {
-          return <LabelContainer key={item} style={{color:props.isSelected ? 'black' : 'var(--canvastext)'}}>{item}</LabelContainer>;
+          return <LabelContainer id="role-label" key={item} style={{color:props.isSelected ? 'black' : 'var(--canvastext)'}}>{item}</LabelContainer>;
         })}
       </Info>
     </DriveCardContainer>

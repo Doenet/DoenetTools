@@ -3,7 +3,7 @@
   "scripts": {
     "start": "docker compose up",
     "start:ci": "docker compose up -d",
-    "start:dev": "npm install --no-optional && npx snowpack dev",
+    "start:dev": "npm install --omit=optional && npx snowpack dev",
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
     "dev:cmd": "docker compose exec dev",
     "dev:restart": "docker compose restart dev",
@@ -20,7 +20,7 @@
     "buildx:mysql": "docker buildx build --platform linux/amd64 -f doenet_docker/mysql/Dockerfile -t lyanthropos/doenet_test:mysql-dev .",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
-    "publish:db": "docker compose up -d mysql && docker exec --privileged -w /var/lib/mysql mysql mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
+    "publish:db": "docker compose exec -T -w /var/lib/mysql mysql mysqldump -u root -phelloworld --databases --add-drop-database --add-drop-table doenet_local > ./doenet_docker/volumes/db_init/db_template.sql",
     "reset:db": "docker compose exec -T mysql mysql -u root -phelloworld doenet_local < ./doenet_docker/volumes/db_init/db_template.sql",
     "reset:volumes": "docker volume rm doenet_node_modules doenet_vendor",
     "format": "prettier --write \"src/**/*.{js,jsx,json}\"",
@@ -79,7 +79,6 @@
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-select": "^4.3.1",
-    "react-spring": "^9.2.4",
     "react-table": "^7.7.0",
     "react-use-measure": "^2.1.1",
     "react-visibility-sensor-v2": "^1.0.0",
@@ -143,7 +142,7 @@
       "react-hooks/exhaustive-deps": [
         "warn",
         {
-          "additionalHooks": "useRecoilCallback"
+          "additionalHooks": "(useRecoilCallback)"
         }
       ]
     },

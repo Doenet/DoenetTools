@@ -22,6 +22,10 @@ const FormInput = styled.input `
   font-size: 14px;
   line-height: 20px;
   cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+  &:focus {
+    outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : 'var(--canvastext)'};
+    outline-offset: 2px;
+  }
 `;
 
 const CancelButton = styled.button `
@@ -34,7 +38,10 @@ const CancelButton = styled.button `
   visibility: ${props => props.cancelShown};
   color: var(--canvastext);
   overflow: hidden;
-  outline: none;
+  border-radius: 5px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+  }
 `;
 
 const SubmitButton = styled.button `
@@ -54,6 +61,10 @@ const SubmitButton = styled.button `
   &:hover {
     color: var(--canvastext);
     background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
+  }
+  &:focus {
+    outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : 'var(--canvastext)'};
+    outline-offset: 2px;
   }
 `;
 
@@ -133,11 +144,6 @@ export default function Form(props) {
     label = props.label;
   };
 
-  var ariaLabel = "";
-  if (props.ariaLabel) {
-    ariaLabel = props.ariaLabel;
-  };
-
   function handleChange(e) {
     if (cleared) {
       setText("");
@@ -189,7 +195,7 @@ export default function Form(props) {
 
   return (
     <Container align={align}>
-      <Label labelVisible={labelVisible} align={align}>{label}</Label>
+      <Label id="form-label" labelVisible={labelVisible} align={align}>{label}</Label>
       <div>
         <FormInput
           id="textarea"
@@ -209,7 +215,8 @@ export default function Form(props) {
           onKeyDown={(e) => { handleKeyDown(e) }}
           disabled={disable}
           alert={alert}
-          ariaLabel={ariaLabel}
+          aria-labelledby="form-label"
+          aria-disabled={props.disabled ? true : false}
         />
         {clearButton}
         <SubmitButton

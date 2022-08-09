@@ -35,6 +35,11 @@ const Button = styled.button`
         ? 'none'
         : 'var(--lightBlue)'};
   }
+
+  &:focus {
+    outline: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--mainBlue)')};
+    outline-offset: 2px;
+  }
 `;
 
 Button.defaultProps = {
@@ -156,8 +161,11 @@ export default function ToggleButton(props) {
   return (
     <>
       <div style={container}>
-        <p style={label}>{label.value}</p>
+        <p id="toggle-button-label" style={label}>{label.value}</p>
         <Button
+          aria-labelledby="toggle-button-label"
+          aria-pressed={props.isSelected}
+          aria-disabled={props.disabled ? true : false}
           id={props.id}
           style={toggleButton}
           disabled={disabled}
