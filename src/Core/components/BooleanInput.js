@@ -1,3 +1,4 @@
+import { returnLabelStateVariableDefinitions } from '../utils/label';
 import Input from './abstract/Input';
 
 export default class BooleanInput extends Input {
@@ -30,6 +31,7 @@ export default class BooleanInput extends Input {
   static componentType = "booleanInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -41,6 +43,12 @@ export default class BooleanInput extends Input {
     };
     attributes.label = {
       createComponentOfType: "label",
+    };
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
+      public: true,
     };
     attributes.asToggleButton = {
       createComponentOfType: "boolean",
@@ -69,53 +77,9 @@ export default class BooleanInput extends Input {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.label = {
-      forRenderer: true,
-      public: true,
-      shadowingInstructions: {
-        createComponentOfType: "label",
-      },
-      hasEssential: true,
-      defaultValue: "",
-      additionalStateVariablesDefined: [{
-        variableName: "labelHasLatex",
-        forRenderer: true,
-      }],
-      returnDependencies: () => ({
-        labelAttr: {
-          dependencyType: "attributeComponent",
-          attributeName: "label",
-          variableNames: ["value", "hasLatex"]
-        },
-        labelChild: {
-          dependencyType: "child",
-          childGroups: ["labels"],
-          variableNames: ["value", "hasLatex"]
-        },
-      }),
-      definition({ dependencyValues }) {
-        if (dependencyValues.labelChild.length > 0) {
-          return {
-            setValue: {
-              label: dependencyValues.labelChild[0].stateValues.value,
-              labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
-            }
-          }
-        } else if (dependencyValues.labelAttr) {
-          return {
-            setValue: {
-              label: dependencyValues.labelAttr.stateValues.value,
-              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
-            }
-          }
-        } else {
-          return {
-            useEssentialOrDefaultValue: { label: true },
-            setValue: { labelHasLatex: false }
-          }
-        }
-      }
-    }
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.value = {
       public: true,
@@ -196,6 +160,8 @@ export default class BooleanInput extends Input {
     return stateVariableDefinitions;
 
   }
+
+  static adapters = ["value"];
 
   async updateBoolean({ boolean, actionId }) {
     if (!await this.stateValues.disabled) {

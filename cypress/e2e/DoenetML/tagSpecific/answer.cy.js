@@ -8976,7 +8976,7 @@ describe('Answer Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <setup>
-    <award name="aw1" targetsAreResponses="_mathinput1 _mathinput2"><when>$_mathinput1+$_mathinput2 = 3x</when></award>
+    <award name="aw1" sourcesAreResponses="_mathinput1 _mathinput2"><when>$_mathinput1+$_mathinput2 = 3x</when></award>
     <award name="aw2" credit="0.5"><when>$_mathinput1+$_mathinput2 = 3</when></award>
   </setup>
 
@@ -10047,7 +10047,7 @@ describe('Answer Tag Tests', function () {
   Enter enter number larger than 5 or less than 2: 
   <answer>
   <mathinput name="m" />
-  <award targetsAreResponses="m"><when>$m > 5</when></award>
+  <award sourcesAreResponses="m"><when>$m > 5</when></award>
   <award><when>$m < <math>2</math></when></award>
   </answer>
   <p>Submitted response: <copy assignNames="sr" prop="submittedResponse" target="_answer1" /></p>
@@ -16130,7 +16130,7 @@ describe('Answer Tag Tests', function () {
         <p>Say hello: <textinput/></p>
         
         <answer name="a" matchpartial> 
-         <award targetsAreResponses="_mathinput1 _textinput1"><when>
+         <award sourcesAreResponses="_mathinput1 _textinput1"><when>
           $_mathinput1 > 1 
           and
           $_textinput1 = hello
@@ -16419,7 +16419,7 @@ describe('Answer Tag Tests', function () {
         <p>Enter value larger than $min: <mathinput name="val" /></p>
         
         <answer name="a"> 
-         <award targetsAreResponses="val"><when>$val > $min</when></award>
+         <award sourcesAreResponses="val"><when>$val > $min</when></award>
         </answer>
         
         <p>Current response <copy assignNames="cr" prop="currentResponses" target="a" createComponentOfType="math" /></p>
@@ -16496,7 +16496,7 @@ describe('Answer Tag Tests', function () {
 
         <answer name="a">
           <considerAsResponses>$P $Q</considerAsResponses>
-         <award><when>$(QQ{prop='x'}) > $(PP{prop='x'}) and $(QQ{prop='y'}) > $(PP{prop='y'})</when></award>
+         <award><when>$(QQ.x) > $(PP.x) and $(QQ.y) > $(PP.y)</when></award>
         </answer>
         
         <p>Current responses <aslist><copy assignNames="cr1 cr2" prop="currentResponses" target="a" createComponentOfType="math" nComponents="2" /></aslist></p>
@@ -16669,14 +16669,14 @@ describe('Answer Tag Tests', function () {
   });
 
 
-  it('isResponse from targetsAreResponses is not copied', () => {
+  it('isResponse from sourcesAreResponses is not copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
         <p>a1: <mathinput name="mi" />
         <answer name="ans">
-          <award targetsAreResponses="mi">
+          <award sourcesAreResponses="mi">
             <when><copy prop="value" target="mi" assignNames="v" name="cm" /> = x</when>
           </award>
           <award credit="0.9">
@@ -16733,21 +16733,21 @@ describe('Answer Tag Tests', function () {
 
   });
 
-  it('isResponse from targetsAreResponses is not recursively copied', () => {
+  it('isResponse from sourcesAreResponses is not recursively copied', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
         <text>a</text>
         <p>a1: <mathinput name="mi" />
         <answer name="ans">
-          <award targetsAreResponses="mi">
+          <award sourcesAreResponses="mi">
             <when><math name="m">$mi</math> = x</when>
           </award>
           <award credit="0.9">
             <when>$m = y</when>
           </award>
           <award credit="0.8">
-            <when>$(m{prop='value'}) = z</when>
+            <when>$m.value = z</when>
           </award>
         </answer>
         </p>
@@ -16806,7 +16806,7 @@ describe('Answer Tag Tests', function () {
         <p>Enter value larger than 3: <mathinput name="val" /></p>
         
         <answer name="a"> 
-         <award targetsAreResponses="val"><when>$val > 3</when></award>
+         <award sourcesAreResponses="val"><when>$val > 3</when></award>
         </answer>
         
         <p>Current response: <copy assignNames="cr" prop="currentResponses" target="a" createComponentOfType="math" /></p>
@@ -17099,8 +17099,8 @@ describe('Answer Tag Tests', function () {
         <mathinput name="mi1" />
         <mathinput name="mi2" />
         <answer nAwardsCredited="$nawards" name="a">
-          <award feedbackText="First is greater than 3" credit="0.4" targetsAreResponses="mi1"><when>$mi1 > 3</when></award>
-          <award feedbackText="Second is greater than 3" credit="0.4" targetsAreResponses="mi2"><when>$mi2 > 3</when></award>
+          <award feedbackText="First is greater than 3" credit="0.4" sourcesAreResponses="mi1"><when>$mi1 > 3</when></award>
+          <award feedbackText="Second is greater than 3" credit="0.4" sourcesAreResponses="mi2"><when>$mi2 > 3</when></award>
           <award feedbackText="Distinct and greater than 3" credit="$creditForCombined"><when>$mi1 > 3 and $mi2 > 3 and $mi1 != $mi2</when></award>
           <award feedbackText="At least the first is a number" credit="0"><when><isNumber>$mi1</isNumber></when></award>
           <award feedbackText="At least the second is a number" credit="0"><when>isnumber($mi2)</when></award>
@@ -17556,9 +17556,9 @@ describe('Answer Tag Tests', function () {
         <mathinput name="mi2" />
         <mathinput name="mi3" />
         <answer nAwardsCredited="3" name="a">
-          <award feedbackText="First is positive" credit="0.2" targetsAreResponses="mi1"><when>$mi1 > 0</when></award>
-          <award feedbackText="Second is positive" credit="0.2" targetsAreResponses="mi2"><when>$mi2 > 0</when></award>
-          <award feedbackText="Third is positive" credit="0.2" targetsAreResponses="mi3"><when>$mi3 > 0</when></award>
+          <award feedbackText="First is positive" credit="0.2" sourcesAreResponses="mi1"><when>$mi1 > 0</when></award>
+          <award feedbackText="Second is positive" credit="0.2" sourcesAreResponses="mi2"><when>$mi2 > 0</when></award>
+          <award feedbackText="Third is positive" credit="0.2" sourcesAreResponses="mi3"><when>$mi3 > 0</when></award>
           <award feedbackText="First is larger than second" credit="0.1"><when>$mi1 > $mi2</when></award>
           <award feedbackText="First is larger than third" credit="0.1"><when>$mi1 > $mi3</when></award>
           <award feedbackText="Second is larger than third" credit="0.1"><when>$mi2 > $mi3</when></award>
@@ -17846,7 +17846,7 @@ describe('Answer Tag Tests', function () {
         <mathinput name="mi2" />
         <mathinput name="mi3" />
         <answer nAwardsCredited="3" name="a">
-          <award targetsAreResponses="mi1 mi2 mi3" matchPartial>
+          <award sourcesAreResponses="mi1 mi2 mi3" matchPartial>
             <when>$mi1=x and $mi2=y and $mi3=z</when>
           </award>
           <award credit="0" feedbackText="Nothing is in the right spot">
@@ -18780,24 +18780,24 @@ describe('Answer Tag Tests', function () {
 
   <p>Move point to <m>(3,4)</m>: </p>
   <p><answer>
-    <award targetsAreResponses="A">
+    <award sourcesAreResponses="A">
       <when>$A = (3,4)</when>
     </award>
   </answer></p>
   <p><answer disableAfterCorrect>
-    <award targetsAreResponses="A">
+    <award sourcesAreResponses="A">
       <when>$A = (3,4)</when>
     </award>
   </answer></p>
 
   <p>Move point to <m>(-5,6)</m>: </p>
   <p><answer>
-    <award targetsAreResponses="A">
+    <award sourcesAreResponses="A">
       <when>$A = (-5,6)</when>
     </award>
   </answer></p>
   <p><answer disableAfterCorrect>
-    <award targetsAreResponses="A">
+    <award sourcesAreResponses="A">
       <when>$A = (-5,6)</when>
     </award>
   </answer></p>
@@ -18806,18 +18806,18 @@ describe('Answer Tag Tests', function () {
 
   <p>Enter <m>x</m> in above blank.</p>
   <p><answer>
-    <award targetsAreResponses="mi"><when>$mi=x</when></award>
+    <award sourcesAreResponses="mi"><when>$mi=x</when></award>
   </answer></p>
   <p><answer disableAfterCorrect>
-    <award targetsAreResponses="mi"><when>$mi=x</when></award>
+    <award sourcesAreResponses="mi"><when>$mi=x</when></award>
   </answer></p>
 
   <p>Enter <m>y</m> in above blank.</p>
   <p><answer>
-    <award targetsAreResponses="mi"><when>$mi=y</when></award>
+    <award sourcesAreResponses="mi"><when>$mi=y</when></award>
   </answer></p>
   <p><answer disableAfterCorrect>
-    <award targetsAreResponses="mi"><when>$mi=y</when></award>
+    <award sourcesAreResponses="mi"><when>$mi=y</when></award>
   </answer></p>
 
    `}, "*");
@@ -18974,7 +18974,7 @@ describe('Answer Tag Tests', function () {
 
   });
 
-  it('with split symbols', () => {
+  it('with split symbols, specified directly on mathinput and math', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -18982,7 +18982,7 @@ describe('Answer Tag Tests', function () {
   <p>split symbols: <booleaninput name="split" /></p>
   <p>Answer: <math name="ans" splitSymbols="$split">xyz</math></p>
   <answer>
-    <mathinput name="mi" splitSymbols="$(ans{prop='splitSymbols'})" />
+    <mathinput name="mi" splitSymbols="$ans.splitSymbols" />
     <award>$ans</award>
   </answer>
    `}, "*");
@@ -19001,7 +19001,7 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/split_input').click();
 
-    // modify textinput so that recalculates value
+    // modify mathinput so that recalculates value
     cy.get('#\\/mi textarea').type("{end}a{backspace}", { force: true })
     cy.get('#\\/mi_submit').click();
     cy.get('#\\/mi_correct').should('be.visible')
@@ -19015,7 +19015,185 @@ describe('Answer Tag Tests', function () {
 
     cy.get('#\\/split_input').click();
 
-    // modify textinput so that recalculates value
+    // modify mathinput so that recalculates value
+    cy.get('#\\/mi textarea').type("{end}b{backspace}", { force: true })
+    cy.get('#\\/mi_submit').click();
+
+    cy.get('#\\/mi_correct').should('be.visible')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ans"].stateValues.value).eqls("xyz");
+      expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
+    })
+
+  });
+
+  it('with split symbols, sugared answer', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>split symbols: <booleaninput name="split" /></p>
+  <answer splitSymbols="$split">xyz</answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathName = stateVariables[stateVariables["/_answer1"].activeChildren[1].componentName].activeChildren[0].componentName;
+
+      cy.get(mathinputAnchor).type("xyz{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls("xyz");
+        expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
+      })
+
+      cy.get('#\\/split_input').click();
+
+      // modify mathinput so that recalculates value
+      cy.get(mathinputAnchor).type("{end}a{backspace}", { force: true })
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls(["*", "x", "y", "z"]);
+        expect(stateVariables[mathinputName].stateValues.value).eqls(["*", "x", "y", "z"]);
+      })
+
+
+      cy.get('#\\/split_input').click();
+
+      // modify mathinput so that recalculates value
+      cy.get(mathinputAnchor).type("{end}b{backspace}", { force: true })
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls("xyz");
+        expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
+      })
+    })
+  });
+
+  it('with split symbols, shortcut award, sugared math', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>split symbols: <booleaninput name="split" /></p>
+  <answer splitSymbols="$split">
+    <award>xyz</award>
+  </answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let mathinputName = stateVariables['/_answer1'].stateValues.inputChildren[0].componentName
+      let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
+      let mathinputSubmitAnchor = cesc('#' + mathinputName + '_submit');
+      let mathinputCorrectAnchor = cesc('#' + mathinputName + '_correct');
+      let mathinputIncorrectAnchor = cesc('#' + mathinputName + '_incorrect');
+      let mathName = stateVariables["/_award1"].activeChildren[0].componentName;
+
+      cy.get(mathinputAnchor).type("xyz{enter}", { force: true })
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls("xyz");
+        expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
+      })
+
+      cy.get('#\\/split_input').click();
+
+      // modify mathinput so that recalculates value
+      cy.get(mathinputAnchor).type("{end}a{backspace}", { force: true })
+      cy.get(mathinputSubmitAnchor).click();
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls(["*", "x", "y", "z"]);
+        expect(stateVariables[mathinputName].stateValues.value).eqls(["*", "x", "y", "z"]);
+      })
+
+
+      cy.get('#\\/split_input').click();
+
+      // modify mathinput so that recalculates value
+      cy.get(mathinputAnchor).type("{end}b{backspace}", { force: true })
+      cy.get(mathinputSubmitAnchor).click();
+
+      cy.get(mathinputCorrectAnchor).should('be.visible')
+
+      cy.window().then(async (win) => {
+        let stateVariables = await win.returnAllStateVariables1();
+        expect(stateVariables[mathName].stateValues.value).eqls("xyz");
+        expect(stateVariables[mathinputName].stateValues.value).eqls("xyz");
+      })
+    })
+  });
+
+  it('with split symbols, explicit mathinput and math, but inferred split symbols', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>split symbols: <booleaninput name="split" /></p>
+  <answer splitSymbols="$split">
+    <mathinput name="mi" />
+    <award><math name="ans">xyz</math></award>
+  </answer>
+   `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/mi textarea').type("xyz{enter}", { force: true })
+    cy.get('#\\/mi_correct').should('be.visible')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ans"].stateValues.value).eqls("xyz");
+      expect(stateVariables["/mi"].stateValues.value).eqls("xyz");
+    })
+
+    cy.get('#\\/split_input').click();
+
+    // modify mathinput so that recalculates value
+    cy.get('#\\/mi textarea').type("{end}a{backspace}", { force: true })
+    cy.get('#\\/mi_submit').click();
+    cy.get('#\\/mi_correct').should('be.visible')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/ans"].stateValues.value).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables["/mi"].stateValues.value).eqls(["*", "x", "y", "z"]);
+    })
+
+
+    cy.get('#\\/split_input').click();
+
+    // modify mathinput so that recalculates value
     cy.get('#\\/mi textarea').type("{end}b{backspace}", { force: true })
     cy.get('#\\/mi_submit').click();
 
@@ -19054,7 +19232,7 @@ describe('Answer Tag Tests', function () {
     <mathinput name="mi" />
     <award>1</award>
   </answer>
-  <conditionalContent condition="$(ans{prop='justSubmitted'})" assignNames="just">
+  <conditionalContent condition="$ans.justSubmitted" assignNames="just">
     <p>The answer was just submitted.</p>
   </conditionalContent>
    `}, "*");
@@ -19161,8 +19339,8 @@ describe('Answer Tag Tests', function () {
   <p>Current Response: <copy target="a" prop="currentResponse" assignNames="cr" /></p>
   <p>Submitted Response: <copy target="a" prop="submittedResponse" assignNames="sr" /></p>
   
-  <p>Change current response: <mathinput bindValueTo="$(a{prop='currentResponse'})" name="micr" /></p>
-  <p>Change submitted response: <mathinput bindValueTo="$(a{prop='submittedResponse'})" name="misr"  /></p>
+  <p>Change current response: <mathinput bindValueTo="$a.currentResponse" name="micr" /></p>
+  <p>Change submitted response: <mathinput bindValueTo="$a.submittedResponse" name="misr"  /></p>
    `}, "*");
     });
 
@@ -19331,8 +19509,8 @@ describe('Answer Tag Tests', function () {
   <p>
   <mathinput name="mi" />
   <answer name="an">
-    <award name="aw" targetsAreResponses="mi"><when>$mi=1.1</when></award>
-    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" createComponentOfType="award" targetsAreResponses="" />
+    <award name="aw" sourcesAreResponses="mi"><when>$mi=1.1</when></award>
+    <copy target="aw" credit="0.5" allowedErrorInNumbers="0.001" createComponentOfType="award" sourcesAreResponses="" />
   </answer></p>
   <p>Number of responses: <copy prop="nResponses" target="an" assignNames="nr" /></p>
   <p>Submitted response: <copy prop="submittedResponses" target="an" assignNames="sr" /></p>
@@ -19384,7 +19562,7 @@ describe('Answer Tag Tests', function () {
   <p>Submitted response: <copy prop="submittedResponse" target="ans1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans1" assignNames="ca1" /></p>
 
-  <p><copy target="ans1" assignNames="ans2" /></p>
+  <p><answer copySource="ans1" name="ans2" /></p>
   <p>Current response: <copy prop="currentResponse" target="ans2" assignNames="cr2" /></p>
   <p>Submitted response: <copy prop="submittedResponse" target="ans2" createComponentOfType='math' assignNames="sr2" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans2" assignNames="ca2" /></p>
@@ -19551,7 +19729,7 @@ describe('Answer Tag Tests', function () {
   <p>Submitted response: <copy prop="submittedResponse" target="ans1" createComponentOfType='math' assignNames="sr1" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans1" assignNames="ca1" /></p>
 
-  <p><copy target="ans1" assignNames="ans2" link='false' /></p>
+  <p><answer copySource="ans1" name="ans2" link='false' /></p>
   <p>Current response: <copy prop="currentResponse" target="ans2" assignNames="cr2" /></p>
   <p>Submitted response: <copy prop="submittedResponse" target="ans2" createComponentOfType='math' assignNames="sr2" /></p>
   <p>Credit for submitted response: <copy prop="creditAchieved" target="ans2" assignNames="ca2" /></p>
@@ -20359,7 +20537,7 @@ describe('Answer Tag Tests', function () {
   </graph>
   <answer nAwardsCredited="2">
     <award credit="0.6"><math>x^2</math></award>
-    <award credit="0.4" targetsAreResponses="P">
+    <award credit="0.4" sourcesAreResponses="P">
       <when><copy prop="x" target="P"/> > 0</when>
     </award>
   </answer>
@@ -20444,7 +20622,7 @@ describe('Answer Tag Tests', function () {
   <text>a</text>
   <p>What is the derivative of <function name="f">x^2</function>?
   <answer><derivative>$f</derivative</answer></p>
-  <p>Submitted response: <aslist><math name="sr" prop="submittedResponses" copyTarget="_answer1" /></aslist></p>
+  <p>Submitted response: <aslist><math name="sr" copySource="_answer1.submittedResponses" /></aslist></p>
   `}, "*");
     });
 
@@ -20572,13 +20750,13 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAwardSubmitAnchor).should('not.exist');
       cy.get(mathinputAwardCorrectAnchor).should('not.exist');
       cy.get(mathinputAwardIncorrectAnchor).should('not.exist');
-      cy.get(mathinputAwardPartialAnchor).should('have.text','50 %');
+      cy.get(mathinputAwardPartialAnchor).should('have.text', '50 %');
 
       cy.get(mathinputFullAnchor).type(`x+y{enter}`, { force: true });
       cy.get(mathinputFullSubmitAnchor).should('not.exist');
       cy.get(mathinputFullCorrectAnchor).should('not.exist');
       cy.get(mathinputFullIncorrectAnchor).should('not.exist');
-      cy.get(mathinputFullPartialAnchor).should('have.text','50 %');
+      cy.get(mathinputFullPartialAnchor).should('have.text', '50 %');
 
 
       cy.log("correct case")
@@ -20620,13 +20798,13 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAwardSubmitAnchor).should('not.exist');
       cy.get(mathinputAwardCorrectAnchor).should('not.exist');
       cy.get(mathinputAwardIncorrectAnchor).should('not.exist');
-      cy.get(mathinputAwardPartialAnchor).should('have.text','50 %');
+      cy.get(mathinputAwardPartialAnchor).should('have.text', '50 %');
 
       cy.get(mathinputFullAnchor).type(`{end}{backspace}{backspace}{backspace}X+Y{enter}`, { force: true });
       cy.get(mathinputFullSubmitAnchor).should('not.exist');
       cy.get(mathinputFullCorrectAnchor).should('not.exist');
       cy.get(mathinputFullIncorrectAnchor).should('not.exist');
-      cy.get(mathinputFullPartialAnchor).should('have.text','50 %');
+      cy.get(mathinputFullPartialAnchor).should('have.text', '50 %');
 
 
 
@@ -20668,13 +20846,13 @@ describe('Answer Tag Tests', function () {
       cy.get(mathinputAwardSubmitAnchor).should('not.exist');
       cy.get(mathinputAwardCorrectAnchor).should('not.exist');
       cy.get(mathinputAwardIncorrectAnchor).should('not.exist');
-      cy.get(mathinputAwardPartialAnchor).should('have.text','50 %');
+      cy.get(mathinputAwardPartialAnchor).should('have.text', '50 %');
 
       cy.get(mathinputFullAnchor).type(`{end}+y{enter}`, { force: true });
       cy.get(mathinputFullSubmitAnchor).should('not.exist');
       cy.get(mathinputFullCorrectAnchor).should('not.exist');
       cy.get(mathinputFullIncorrectAnchor).should('not.exist');
-      cy.get(mathinputFullPartialAnchor).should('have.text','50 %');
+      cy.get(mathinputFullPartialAnchor).should('have.text', '50 %');
 
 
     })
@@ -20761,13 +20939,13 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAwardSubmitAnchor).should('not.exist');
       cy.get(textinputAwardCorrectAnchor).should('not.exist');
       cy.get(textinputAwardIncorrectAnchor).should('not.exist');
-      cy.get(textinputAwardPartialAnchor).should('have.text','50 %');
+      cy.get(textinputAwardPartialAnchor).should('have.text', '50 %');
 
       cy.get(textinputFullAnchor).type(`hello there!{enter}`);
       cy.get(textinputFullSubmitAnchor).should('not.exist');
       cy.get(textinputFullCorrectAnchor).should('not.exist');
       cy.get(textinputFullIncorrectAnchor).should('not.exist');
-      cy.get(textinputFullPartialAnchor).should('have.text','50 %');
+      cy.get(textinputFullPartialAnchor).should('have.text', '50 %');
 
 
       cy.log("correct case")
@@ -20809,13 +20987,13 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAwardSubmitAnchor).should('not.exist');
       cy.get(textinputAwardCorrectAnchor).should('not.exist');
       cy.get(textinputAwardIncorrectAnchor).should('not.exist');
-      cy.get(textinputAwardPartialAnchor).should('have.text','50 %');
+      cy.get(textinputAwardPartialAnchor).should('have.text', '50 %');
 
       cy.get(textinputFullAnchor).clear().type(`Hello There!{enter}`);
       cy.get(textinputFullSubmitAnchor).should('not.exist');
       cy.get(textinputFullCorrectAnchor).should('not.exist');
       cy.get(textinputFullIncorrectAnchor).should('not.exist');
-      cy.get(textinputFullPartialAnchor).should('have.text','50 %');
+      cy.get(textinputFullPartialAnchor).should('have.text', '50 %');
 
 
 
@@ -20857,13 +21035,164 @@ describe('Answer Tag Tests', function () {
       cy.get(textinputAwardSubmitAnchor).should('not.exist');
       cy.get(textinputAwardCorrectAnchor).should('not.exist');
       cy.get(textinputAwardIncorrectAnchor).should('not.exist');
-      cy.get(textinputAwardPartialAnchor).should('have.text','50 %');
+      cy.get(textinputAwardPartialAnchor).should('have.text', '50 %');
 
       cy.get(textinputFullAnchor).clear().type(`hello There!{enter}`);
       cy.get(textinputFullSubmitAnchor).should('not.exist');
       cy.get(textinputFullCorrectAnchor).should('not.exist');
       cy.get(textinputFullIncorrectAnchor).should('not.exist');
-      cy.get(textinputFullPartialAnchor).should('have.text','50 %');
+      cy.get(textinputFullPartialAnchor).should('have.text', '50 %');
+
+
+    })
+  });
+
+  it('match blanks', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <p>Default, sugar: <answer name="defSugar">_6^14C</answer></p>
+  <p>Match blanks, sugar: <answer matchBlanks name="blankSugar">_6^14C</answer></p>
+  <p>Default, shortcut award: 
+    <answer name="defShort"><award>_6^14C</award></answer>
+  </p>
+  <p>Match blanks, shortcut award: 
+    <answer name="blankShort" matchBlanks><award>_6^14C</award></answer>
+  </p>
+  <p>Default, full syntax: 
+    <answer name="defFull">
+      <mathinput name="deffullmi" />
+      <award><when>$deffullmi = _6^14C</when></award>
+    </answer>
+  </p>
+  <p>Match blanks, full syntax: 
+    <answer name="blankFull">
+      <mathinput name="blankfullmi" />
+      <award><when matchBlanks>$blankfullmi = _6^14C</when></award>
+    </answer>
+  </p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      let mathinputDefSugarName = stateVariables['/defSugar'].stateValues.inputChildren[0].componentName
+      let mathinputDefSugarAnchor = cesc('#' + mathinputDefSugarName) + " textarea";
+      let mathinputDefSugarSubmitAnchor = cesc('#' + mathinputDefSugarName + '_submit');
+      let mathinputDefSugarCorrectAnchor = cesc('#' + mathinputDefSugarName + '_correct');
+      let mathinputDefSugarIncorrectAnchor = cesc('#' + mathinputDefSugarName + '_incorrect');
+      let mathinputBlankSugarName = stateVariables['/blankSugar'].stateValues.inputChildren[0].componentName
+      let mathinputBlankSugarAnchor = cesc('#' + mathinputBlankSugarName) + " textarea";
+      let mathinputBlankSugarSubmitAnchor = cesc('#' + mathinputBlankSugarName + '_submit');
+      let mathinputBlankSugarCorrectAnchor = cesc('#' + mathinputBlankSugarName + '_correct');
+      let mathinputBlankSugarIncorrectAnchor = cesc('#' + mathinputBlankSugarName + '_incorrect');
+      let mathinputDefShortName = stateVariables['/defShort'].stateValues.inputChildren[0].componentName
+      let mathinputDefShortAnchor = cesc('#' + mathinputDefShortName) + " textarea";
+      let mathinputDefShortSubmitAnchor = cesc('#' + mathinputDefShortName + '_submit');
+      let mathinputDefShortCorrectAnchor = cesc('#' + mathinputDefShortName + '_correct');
+      let mathinputDefShortIncorrectAnchor = cesc('#' + mathinputDefShortName + '_incorrect');
+      let mathinputBlankShortName = stateVariables['/blankShort'].stateValues.inputChildren[0].componentName
+      let mathinputBlankShortAnchor = cesc('#' + mathinputBlankShortName) + " textarea";
+      let mathinputBlankShortSubmitAnchor = cesc('#' + mathinputBlankShortName + '_submit');
+      let mathinputBlankShortCorrectAnchor = cesc('#' + mathinputBlankShortName + '_correct');
+      let mathinputBlankShortIncorrectAnchor = cesc('#' + mathinputBlankShortName + '_incorrect');
+      let mathinputDefFullName = '/deffullmi';
+      let mathinputDefFullAnchor = cesc('#' + mathinputDefFullName) + " textarea";
+      let mathinputDefFullSubmitAnchor = cesc('#' + mathinputDefFullName + '_submit');
+      let mathinputDefFullCorrectAnchor = cesc('#' + mathinputDefFullName + '_correct');
+      let mathinputDefFullIncorrectAnchor = cesc('#' + mathinputDefFullName + '_incorrect');
+      let mathinputBlankFullName = '/blankfullmi';
+      let mathinputBlankFullAnchor = cesc('#' + mathinputBlankFullName) + " textarea";
+      let mathinputBlankFullSubmitAnchor = cesc('#' + mathinputBlankFullName + '_submit');
+      let mathinputBlankFullCorrectAnchor = cesc('#' + mathinputBlankFullName + '_correct');
+      let mathinputBlankFullIncorrectAnchor = cesc('#' + mathinputBlankFullName + '_incorrect');
+
+      cy.get(mathinputDefSugarSubmitAnchor).should('be.visible');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarSubmitAnchor).should('be.visible');
+      cy.get(mathinputBlankSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarIncorrectAnchor).should('not.exist');
+      cy.get(mathinputDefShortSubmitAnchor).should('be.visible');
+      cy.get(mathinputDefShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefShortIncorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankShortSubmitAnchor).should('be.visible');
+      cy.get(mathinputBlankShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankShortIncorrectAnchor).should('not.exist');
+      cy.get(mathinputDefFullSubmitAnchor).should('be.visible');
+      cy.get(mathinputDefFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefFullIncorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankFullSubmitAnchor).should('be.visible');
+      cy.get(mathinputBlankFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankFullIncorrectAnchor).should('not.exist');
+
+
+      cy.log("wrong answer")
+      cy.get(mathinputDefSugarAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankSugarAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputBlankSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputDefShortAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputDefShortSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefShortIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankShortAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputBlankShortSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankShortIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputDefFullAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputDefFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefFullIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankFullAnchor).type(`C_6{rightArrow}^14{enter}`, { force: true });
+      cy.get(mathinputBlankFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputBlankFullIncorrectAnchor).should('be.visible');
+
+
+
+      cy.log("correct answer")
+      cy.get(mathinputDefSugarAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputDefSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefSugarCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefSugarIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankSugarAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputBlankSugarSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankSugarCorrectAnchor).should('be.visible');
+      cy.get(mathinputBlankSugarIncorrectAnchor).should('not.exist');
+
+      cy.get(mathinputDefShortAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputDefShortSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefShortCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefShortIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankShortAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputBlankShortSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankShortCorrectAnchor).should('be.visible');
+      cy.get(mathinputBlankShortIncorrectAnchor).should('not.exist');
+
+      cy.get(mathinputDefFullAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputDefFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputDefFullCorrectAnchor).should('not.exist');
+      cy.get(mathinputDefFullIncorrectAnchor).should('be.visible');
+
+      cy.get(mathinputBlankFullAnchor).type(`{ctrl+home}{rightarrow}{backspace}{ctrl+end}C{enter}`, { force: true });
+      cy.get(mathinputBlankFullSubmitAnchor).should('not.exist');
+      cy.get(mathinputBlankFullCorrectAnchor).should('be.visible');
+      cy.get(mathinputBlankFullIncorrectAnchor).should('not.exist');
 
 
     })

@@ -10,7 +10,7 @@ export var appliedFunctionSymbolsDefault = [
   'arg',
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
-  'sum', 'prod', 'var', 'std',
+  'sum', 'prod', 'variance', 'std',
   'count', 'mod'
 ];
 

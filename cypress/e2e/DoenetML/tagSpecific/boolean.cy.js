@@ -558,6 +558,35 @@ describe('Boolean Tag Tests', function () {
 
   })
 
+  it('match blanks', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <boolean name="b1">/a = /a</boolean>
+    <boolean name="b2" matchBlanks>/a = /a</boolean>
+    <boolean name="b3"><math>/a</math> = <math>/a</math></boolean>
+    <boolean name="b4" matchBlanks><math>/a</math> = <math>/a</math></boolean>
+    <boolean name="b5"><math>/a</math> = /a</boolean>
+    <boolean name="b6" matchBlanks><math>/a</math> = /a</boolean>
+    <boolean name="b7"><math>_6^14C</math> = <math>_6^14C</math></boolean>
+    <boolean name="b8" matchBlanks><math>_6^14C</math> = <math>_6^14C</math></boolean>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+    cy.get('#\\/b1').should('have.text', "false")
+    cy.get('#\\/b2').should('have.text', "true")
+    cy.get('#\\/b3').should('have.text', "false")
+    cy.get('#\\/b4').should('have.text', "true")
+    cy.get('#\\/b5').should('have.text', "false")
+    cy.get('#\\/b6').should('have.text', "true")
+    cy.get('#\\/b7').should('have.text', "false")
+    cy.get('#\\/b8').should('have.text', "true")
+
+  })
+
 })
 
 

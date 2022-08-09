@@ -204,7 +204,7 @@ export default React.memo(function Line(props) {
   if (SVs.hidden) {
     return null;
   }
-  let mathJaxify = "\\(" + me.fromAst(SVs.equation).toLatex() + "\\)";
+  let mathJaxify = "\\(" + SVs.latex + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {

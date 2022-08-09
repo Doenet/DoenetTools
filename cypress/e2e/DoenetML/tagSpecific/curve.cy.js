@@ -452,7 +452,7 @@ describe('Curve Tag Tests', function () {
 
 
     <p>Temp way to change controls 1:
-    <choiceInput name="dir1" bindValueTo="$(_curve1{prop='vectorcontroldirection1'})" >
+    <choiceInput name="dir1" bindValueTo="$_curve1.vectorcontroldirection1" >
       <group>
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -461,7 +461,7 @@ describe('Curve Tag Tests', function () {
         <choice>next</choice>
       </group>
     </choiceInput>
-    <choiceInput name="dir4" bindValueTo="$(_curve1{prop='vectorcontroldirection4'})" >
+    <choiceInput name="dir4" bindValueTo="$_curve1.vectorcontroldirection4" >
       <group>
         <choice>none</choice>
         <choice>symmetric</choice>
@@ -1166,7 +1166,7 @@ describe('Curve Tag Tests', function () {
     <curve through="(-9,6) (-3,7) (4,0) (8,5)" />
     </graph>
     <graph>
-    <curve through="$(_curve1{prop='throughPoint1'}) ($(_curve1{prop='throughPointX2_2'}),$(_curve1{prop='throughPointX2_1'})) $(_curve1{prop='throughPoint3'}) ($(_curve1{prop='throughPointX4_2'}),$(_curve1{prop='throughPointX4_1'}))" />
+    <curve through="$(_curve1.throughPoint1) ($(_curve1.throughPointX2_2),$(_curve1.throughPointX2_1)) $(_curve1.throughPoint3) ($(_curve1.throughPointX4_2),$(_curve1.throughPointX4_1))" />
     </graph>
     `}, "*");
     });
@@ -1317,11 +1317,11 @@ describe('Curve Tag Tests', function () {
     <math hide fixed name="fixed4">4</math>
     <point hide>(1,2)</point>
     <graph>
-      <curve through="$_point1 ($(_point1{prop='y'}), $(_point1{prop='x'}))" /> 
-      <point name="x1" x="$(_curve1{prop='throughPointX1_1'})" y="$fixed3" />
-      <point name="x2" x="$(_curve1{prop='throughPointX2_1'})" y="$fixed4" />
-      <point name="y1" y="$(_curve1{prop='throughPointX1_2'})" x="$fixed3" />
-      <point name="y2" y="$(_curve1{prop='throughPointX2_2'})" x="$fixed4" />
+      <curve through="$_point1 ($_point1.y, $_point1.x)" /> 
+      <point name="x1" x="$(_curve1.throughPointX1_1)" y="$fixed3" />
+      <point name="x2" x="$(_curve1.throughPointX2_1)" y="$fixed4" />
+      <point name="y1" y="$(_curve1.throughPointX1_2)" x="$fixed3" />
+      <point name="y2" y="$(_curve1.throughPointX2_2)" x="$fixed4" />
     </graph>
     `}, "*");
     });

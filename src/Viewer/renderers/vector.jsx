@@ -453,7 +453,7 @@ export default React.memo(function Vector(props) {
     return null;
   }
 
-  let mathJaxify = "\\(" + SVs.displacementCoordsLatex + "\\)";
+  let mathJaxify = "\\(" + SVs.latex + "\\)";
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 })
 

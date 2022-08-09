@@ -107,6 +107,13 @@ export default class Award extends BaseComponent {
       public: true,
       fallBackToParentStateVariable: "caseInsensitiveMatch",
     };
+    attributes.matchBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchBlanks",
+      defaultValue: false,
+      public: true,
+      fallBackToParentStateVariable: "matchBlanks",
+    };
     attributes.feedbackCodes = {
       createComponentOfType: "textList",
       createStateVariable: "feedbackCodes",
@@ -119,8 +126,16 @@ export default class Award extends BaseComponent {
       defaultValue: null,
       public: true,
     };
-    attributes.targetsAreResponses = {
+    attributes.sourcesAreResponses = {
       createPrimitiveOfType: "string"
+    }
+
+    attributes.splitSymbols = {
+      createComponentOfType: "boolean",
+      createStateVariable: "splitSymbols",
+      defaultValue: true,
+      public: true,
+      fallBackToParentStateVariable: "splitSymbols",
     }
 
     return attributes;
@@ -128,8 +143,8 @@ export default class Award extends BaseComponent {
   }
 
   static preprocessSerializedChildren({ serializedChildren, attributes, componentName }) {
-    if (attributes.targetsAreResponses) {
-      let targetNames = attributes.targetsAreResponses.primitive.split(/\s+/).filter(s => s);
+    if (attributes.sourcesAreResponses) {
+      let targetNames = attributes.sourcesAreResponses.primitive.split(/\s+/).filter(s => s);
       let nameSpace;
       if (attributes.newNamespace?.primitive) {
         nameSpace = componentName + "/";
@@ -441,6 +456,10 @@ export default class Award extends BaseComponent {
         caseInsensitiveMatch: {
           dependencyType: "stateVariable",
           variableName: "caseInsensitiveMatch",
+        },
+        matchBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "matchBlanks",
         },
       }),
       definition: function ({ dependencyValues, usedDefault }) {

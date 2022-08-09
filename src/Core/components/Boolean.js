@@ -82,6 +82,12 @@ export default class BooleanComponent extends InlineComponent {
       defaultValue: false,
       public: true,
     };
+    attributes.matchBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "matchBlanks",
+      defaultValue: false,
+      public: true,
+    };
     return attributes;
   }
 
@@ -284,6 +290,10 @@ export default class BooleanComponent extends InlineComponent {
         caseInsensitiveMatch: {
           dependencyType: "stateVariable",
           variableName: "caseInsensitiveMatch",
+        },
+        matchBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "matchBlanks",
         },
         parsedExpression: {
           dependencyType: "stateVariable",

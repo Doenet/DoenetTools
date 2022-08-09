@@ -21,7 +21,7 @@ describe('MatrixInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p>Matrix 1: <matrixInput name="mi1" /></p>
-    <p>Matrix 2: <copy target="mi1" assignNames="mi2" /></p>
+    <p>Matrix 2: <copy target="mi1" assignNames="mi2" createComponentOfType="matrixInput" /></p>
     <p>Matrix 3: <copy prop="value" target="mi1" assignNames="m1" /></p>
     <p>Matrix 4: <copy prop="immediateValue" target="mi1" assignNames="m2" /></p>
     `}, "*");
@@ -2978,8 +2978,8 @@ describe('MatrixInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p>Number of rows: <mathinput name="numRows" bindValueTo="$(mi1{prop='numRows'})" /></p>
-    <p>Number of columns: <mathinput name="numColumns" bindValueTo="$(mi1{prop='numColumns'})" /></p>
+    <p>Number of rows: <mathinput name="numRows" bindValueTo="$(mi1.numRows)" /></p>
+    <p>Number of columns: <mathinput name="numColumns" bindValueTo="$(mi1.numColumns)" /></p>
 
     <p>Matrix 1: <math name="m1" format="latex">\\begin{matrix}a & b\\\\c & d\\end{matrix}</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
@@ -3400,8 +3400,8 @@ describe('MatrixInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p>Number of rows: <mathinput name="numRows" bindValueTo="$(mi1{prop='numRows'})" /></p>
-    <p>Number of columns: <mathinput name="numColumns" bindValueTo="$(mi1{prop='numColumns'})" /></p>
+    <p>Number of rows: <mathinput name="numRows" bindValueTo="$(mi1.numRows)" /></p>
+    <p>Number of columns: <mathinput name="numColumns" bindValueTo="$(mi1.numColumns)" /></p>
 
     <p>Vector 1: <math name="m1">(a,b)</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
@@ -4115,8 +4115,8 @@ describe('MatrixInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p>Number of rows: <mathinput name="numRows" bindValueTo="$(mi1{prop='numRows'})" /></p>
-    <p>Number of columns: <mathinput name="numColumns" bindValueTo="$(mi1{prop='numColumns'})" /></p>
+    <p>Number of rows: <mathinput name="numRows" bindValueTo="$(mi1.numRows)" /></p>
+    <p>Number of columns: <mathinput name="numColumns" bindValueTo="$(mi1.numColumns)" /></p>
 
     <p>Vector 1: <math name="m1">(a,b)^T</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>
@@ -4645,8 +4645,8 @@ describe('MatrixInput Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <p>Number of rows: <mathinput name="numRows" bindValueTo="$(mi1{prop='numRows'})" /></p>
-    <p>Number of columns: <mathinput name="numColumns" bindValueTo="$(mi1{prop='numColumns'})" /></p>
+    <p>Number of rows: <mathinput name="numRows" bindValueTo="$(mi1.numRows)" /></p>
+    <p>Number of columns: <mathinput name="numColumns" bindValueTo="$(mi1.numColumns)" /></p>
 
     <p>Vector 1: <math name="m1">(a,b)'</math></p>
     <p>Matrix 2: <matrixInput name="mi1" bindValueTo="$m1" /></p>

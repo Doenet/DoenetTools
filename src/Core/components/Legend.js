@@ -72,7 +72,7 @@ export default class Legend extends GraphicalComponent {
           labelChildren: {
             dependencyType: "child",
             childGroups: ["labels"],
-            variableNames: ["value", "hasLatex", "forTargetComponentName"]
+            variableNames: ["value", "hasLatex", "forObjectComponentName"]
           },
           displayClosedSwatches: {
             dependencyType: "stateVariable",
@@ -95,6 +95,11 @@ export default class Legend extends GraphicalComponent {
               dependencyType: "adapterSource",
               componentName: cName,
             }
+            dependencies[`graphicalElement${ind}ShadowSource`] = {
+              dependencyType: "shadowSourceIdentity",
+              componentName: cName,
+            }
+            
           }
         }
 
@@ -116,9 +121,17 @@ export default class Legend extends GraphicalComponent {
             let adapter = dependencyValues[`graphicalElement${ind}AdapterSource`];
             if (adapter) {
               // if have adapter, use that componentName instead,
-              // since that would be the name used in forTargetComponentName
+              // since that would be the name used in forObjectComponentName
               graphicalElement = { ...graphicalElement };
               graphicalElement.componentName = adapter.componentName;
+            }
+            if(graphicalElement.componentName.slice(0,3) === "/__") {
+              let shadowSource = dependencyValues[`graphicalElement${ind}ShadowSource`];
+              if(shadowSource) {
+              // if have shadow source, use that componentName instead,
+              graphicalElement = { ...graphicalElement };
+              graphicalElement.componentName = shadowSource.componentName;
+              }
             }
             graphicalDescendantsLeft.push(graphicalElement);
           }
@@ -133,13 +146,13 @@ export default class Legend extends GraphicalComponent {
               value: labelChild.stateValues.value,
               hasLatex: labelChild.stateValues.hasLatex
             }
-            if (labelChild.stateValues.forTargetComponentName) {
-              labelsByComponentName[labelChild.stateValues.forTargetComponentName] = labelInfo;
+            if (labelChild.stateValues.forObjectComponentName) {
+              labelsByComponentName[labelChild.stateValues.forObjectComponentName] = labelInfo;
 
               // in this first pass, we only mark the styleNumber as being taken
               // so that in the second pass, undesignated labels skip this style number
               // even if they come before this label
-              let ind = graphicalDescendantComponentNamesLeft.indexOf(labelChild.stateValues.forTargetComponentName);
+              let ind = graphicalDescendantComponentNamesLeft.indexOf(labelChild.stateValues.forObjectComponentName);
               if (ind !== -1) {
                 let comp = graphicalDescendantsLeft[ind];
                 if (componentInfoObjects.isInheritedComponentType({
@@ -157,7 +170,7 @@ export default class Legend extends GraphicalComponent {
             }
             labelsInOrder.push({
               labelInfo,
-              forTarget: labelChild.stateValues.forTargetComponentName
+              forObject: labelChild.stateValues.forObjectComponentName
             })
 
           }
@@ -167,8 +180,8 @@ export default class Legend extends GraphicalComponent {
 
           for (let label of labelsInOrder) {
             let componentForLabel;
-            if (label.forTarget) {
-              let ind = graphicalDescendantComponentNamesLeft.indexOf(label.forTarget);
+            if (label.forObject) {
+              let ind = graphicalDescendantComponentNamesLeft.indexOf(label.forObject);
               if (ind !== -1) {
                 componentForLabel = graphicalDescendantsLeft[ind];
                 graphicalDescendantsLeft.splice(ind, 1);

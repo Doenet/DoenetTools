@@ -349,7 +349,7 @@ describe('CallAction Tag Tests', function () {
     
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="rs">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="rs">
     <point>(3,4)</point>
     </callAction>
 
@@ -449,7 +449,7 @@ describe('CallAction Tag Tests', function () {
         
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="rs in">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="rs in">
     <point>(3,4)</point>
     </callAction>
 
@@ -580,7 +580,7 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P.x)>0 and $(P.y)>0" /></p>
     `}, "*");
     });
 
@@ -767,7 +767,7 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhenTargetsClicked="P" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhenObjectsClicked="P" /></p>
     `}, "*");
     });
 
@@ -905,9 +905,9 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWith="addPoint" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P.x)>0 and $(P.y)>0" >
     <point>(3,4)</point>
     </callAction>
 
@@ -1135,9 +1135,9 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWith="addPoint" triggerWhen="$(P.x)<0 and $(P.y)<0" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P.x)>0 and $(P.y)>0" >
     <point>(3,4)</point>
     </callAction>
     `}, "*");
@@ -1471,7 +1471,7 @@ describe('CallAction Tag Tests', function () {
       </callAction>
     </triggerSet>
 
-    <callAction name="sub" target="ans" actionName="submitAnswer" triggerWithTargets="tset" />
+    <callAction name="sub" target="ans" actionName="submitAnswer" triggerWith="tset" />
 
     `}, "*");
     });
@@ -1592,12 +1592,12 @@ describe('CallAction Tag Tests', function () {
     
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="addOne">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="addOne">
     <point>(3,4)</point>
     </callAction>
 
     <p>Count: <number name="n">1</number></p>
-    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWithTargets="rs" />
+    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWith="rs" />
 
 
     `}, "*");
@@ -1697,6 +1697,27 @@ describe('CallAction Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/rs'].stateValues.label).eq("Hi \\(\\sum_{i=1}^5x_i\\)");
+    });
+
+  })
+
+  it('label is name', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p><callAction target="s" actionName="resample" name="resample_numbers" labelIsName /></p>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/resample_numbers').should('contain.text', 'resample numbers')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/resample_numbers'].stateValues.label).eq("resample numbers");
     });
 
   })

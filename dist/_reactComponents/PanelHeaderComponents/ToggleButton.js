@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
@@ -60,6 +61,13 @@ export default function ToggleButton(props) {
     } else if (props.icon) {
       icon = props.icon;
       toggleButton.value = "";
+    }
+    if (props.value && props.valueHasLatex) {
+      toggleButton.value = /* @__PURE__ */ React.createElement(MathJax, {
+        hideUntilTypeset: "first",
+        inline: true,
+        dynamic: true
+      }, toggleButton.value);
     }
   }
   if (isSelected === true) {

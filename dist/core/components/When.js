@@ -24,7 +24,9 @@ export default class When extends BooleanComponent {
       "allowedErrorInNumbers", "includeErrorInNumberExponents",
       "allowedErrorIsAbsolute",
       "nSignErrorsMatched",
-      "nPeriodicSetMatchesRequired"
+      "nPeriodicSetMatchesRequired",
+      "caseInsensitiveMatch",
+      "matchBlanks"
     ]) {
       attributes[attrName].fallBackToParentStateVariable = attrName;
     }
@@ -102,6 +104,14 @@ export default class When extends BooleanComponent {
         nPeriodicSetMatchesRequired: {
           dependencyType: "stateVariable",
           variableName: "nPeriodicSetMatchesRequired",
+        },
+        caseInsensitiveMatch: {
+          dependencyType: "stateVariable",
+          variableName: "caseInsensitiveMatch",
+        },
+        matchBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "matchBlanks",
         },
         parsedExpression: {
           dependencyType: "stateVariable",

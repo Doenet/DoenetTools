@@ -544,7 +544,15 @@ export const useCourse = (courseId) => {
     }
     return {content: null, previousDoenetId: null};
   }
-  const create = useRecoilCallback(({set, snapshot}) => async ({itemType, parentDoenetId, previousDoenetId, previousContainingDoenetId}) => {
+  const defaultFailure = useCallback((err) => {
+    addToast(`${err}`, toastType.ERROR);
+  }, [addToast]);
+  const create = useRecoilCallback(({set, snapshot}) => async ({
+    itemType,
+    parentDoenetId,
+    previousDoenetId,
+    previousContainingDoenetId
+  }, successCallback, failureCallback = defaultFailure) => {
     let authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
     let newAuthorItemDoenetIds = [...authorItemDoenetIds];
     let sectionId = await snapshot.getPromise(searchParamAtomFamily("sectionId"));
@@ -892,11 +900,9 @@ export const useCourse = (courseId) => {
         }
       }
     }
+    successCallback();
     return newDoenetId;
   });
-  const defaultFailure = useCallback((err) => {
-    addToast(`${err}`, toastType.ERROR);
-  }, [addToast]);
   const modifyCourse = useRecoilCallback(({set}) => async (modifications, successCallback, failureCallback = defaultFailure) => {
     try {
       let resp = await axios.post("/api/modifyCourse.php", {
@@ -1069,13 +1075,9 @@ ${childrenString}</document>`;
           return nextContent;
         }
         let childContent = updateOrder({content: item.content, needleDoenetId, changesObj});
-        console.log(">>childContent", childContent);
-        console.log(">>nextContent", nextContent);
         if (childContent != null) {
-          console.log("childContent", childContent);
           let nextOrderObj = {...item};
           nextOrderObj.content = childContent;
-          console.log(">>nextOrderObj", nextOrderObj);
           nextContent.splice(i, 1, nextOrderObj);
           return nextContent;
         }

@@ -142,8 +142,8 @@ describe('TriggerSet Tag Tests', function () {
       <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
     </triggerSet>
 
-    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWithTargets="tset" />
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point"  triggerWithTargets="tset" >
+    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWith="tset" />
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point"  triggerWith="tset" >
       <point>(3,4)</point>
     </callAction>
     `}, "*");
@@ -256,7 +256,7 @@ describe('TriggerSet Tag Tests', function () {
       <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTargets="tset" >
+    <triggerSet label="perform updates" triggerWith="tset" >
       <updateValue target="n" newValue="$n+1" type="number"  />
       <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
         <point>(3,4)</point>
@@ -374,7 +374,7 @@ describe('TriggerSet Tag Tests', function () {
       <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTargets="tset in" >
+    <triggerSet label="perform updates" triggerWith="tset in" >
       <updateValue target="n" newValue="$n+1" type="number"  />
       <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
         <point>(3,4)</point>
@@ -464,7 +464,7 @@ describe('TriggerSet Tag Tests', function () {
   <math name="x">x</math>
   <math name="y">y</math>
   
-  <triggerSet triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+  <triggerSet triggerWhen="$(P.x)>0 and $(P.y)>0" >
     <updateValue name="trip" target="x" newValue="3$x" simplify />
     <updateValue name="quad" target="y" newValue="4$y" simplify />
   </triggerSet>
@@ -611,7 +611,7 @@ describe('TriggerSet Tag Tests', function () {
   <math name="x">x</math>
   <math name="y">y</math>
   
-  <triggerSet triggerWhenTargetsClicked="P" >
+  <triggerSet triggerWhenObjectsClicked="P" >
     <updateValue name="trip" target="x" newValue="3$x" simplify />
     <updateValue name="quad" target="y" newValue="4$y" simplify />
   </triggerSet>
@@ -718,12 +718,12 @@ describe('TriggerSet Tag Tests', function () {
     <p>Count: <number name="n">1</number></p>
     <p>Count down: <number name="m">5</number></p>
 
-    <triggerSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+    <triggerSet label="perform updates" triggerWhen="$(P.x)>0 and $(P.y)>0">
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
     </triggerSet>
 
-    <triggerSet label="perform updates" triggerWithTargets="_triggerset1" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" >
+    <triggerSet label="perform updates" triggerWith="_triggerset1" triggerWhen="$(P.x)<0 and $(P.y)<0" >
       <updateValue target="n" newValue="$n+1" type="number"  />
       <updateValue target="m" newValue="$m-1" type="number"  />
     </triggerSet>
@@ -854,11 +854,11 @@ describe('TriggerSet Tag Tests', function () {
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
 
-    <triggerSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+    <triggerSet label="perform updates" triggerWhen="$(P.x)>0 and $(P.y)>0">
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
-      <updateValue target="n" newValue="$n+1" type="number" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
-      <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
+      <updateValue target="n" newValue="$n+1" type="number" triggerWhen="$(P.x)<0 and $(P.y)<0" />
+      <callAction target="s" actionName="resample" label="roll dice and add point" name="rs" triggerWhen="$(P.x)<0 and $(P.y)<0" />
       <callAction name="addPoint" target="g" actionName="addChildren" label="add point" >
         <point>(3,4)</point>
       </callAction>
@@ -1073,16 +1073,16 @@ describe('TriggerSet Tag Tests', function () {
     <p>Count: <number name="n">1</number></p>
     <p>Count down: <number name="m">5</number></p>
 
-    <triggerSet label="perform updates" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0">
+    <triggerSet label="perform updates" triggerWhen="$(P.x)>0 and $(P.y)>0">
       <updateValue target="b" newValue="not$b" type="boolean" />
       <updateValue target="hello" newValue="$hello hello" type="text" />
-      <updateValue target="n" newValue="$n+1" type="number" triggerWithTargets="uv" />
-      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="uv" >
+      <updateValue target="n" newValue="$n+1" type="number" triggerWith="uv" />
+      <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="uv" >
         <point>(3,4)</point>
       </callAction>
     </triggerSet>
 
-    <updateValue name="uv" target="m" newValue="$m-1" type="number" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" />
+    <updateValue name="uv" target="m" newValue="$m-1" type="number" triggerWhen="$(P.x)<0 and $(P.y)<0" />
 
     `}, "*");
     });
@@ -1256,6 +1256,31 @@ describe('TriggerSet Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/tset'].stateValues.label).eq("It is \\(\\frac{ \\partial f }{ \\partial x }\\)");
+    });
+
+
+  })
+
+  it('triggerSet with label is name', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Boolean to swap: <boolean name="b" /></p>
+
+    <triggerSet name="trigger-me" labelIsName>
+      <updateValue name="flip" target="b" newValue="not$b" type="boolean" />
+    </triggerSet>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/trigger-me').should('contain.text', 'trigger me')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/trigger-me'].stateValues.label).eq("trigger me");
     });
 
 

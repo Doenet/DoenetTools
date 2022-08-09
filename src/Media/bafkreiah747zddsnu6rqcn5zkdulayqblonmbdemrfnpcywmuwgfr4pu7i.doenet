@@ -24,17 +24,17 @@
     <customAttribute componentType="point" attribute="defaultPoint" defaultValue="" assignNames="defaultPoint" />
   </setup>
 
-  <copy uri="doenet:cid=bafkreib5kjxqt4r4rxtzrrda245u73akndgu2hsvjok3fcsabtzmksc45m&doenetId=2dnQm1B4zsbGzreEn0GKa" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" timeVariable="$timeVariable" showCalculatedValues="$showCalculatedValues" grid="$grid" defaultPoint="$defaultPoint" />
+  <copy uri="doenet:cid=bafkreiesnx6d22xnohmsmhy2pgqr4nbmquqm3sz3qims2ok7yfuggqplq4&doenetId=2dnQm1B4zsbGzreEn0GKa" assignNames="cobwebApplet" function="$f" x0="$x0" initialInitialValue="$initialInitialValue" initialValueDx="$initialValueDx" initialValueOffset="$initialValueOffset" nIterationsRequired="$nIterationsRequired" width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" showNavigation="$showNavigation" attractThreshold="$attractThreshold" variable="$variable" timeVariable="$timeVariable" showCalculatedValues="$showCalculatedValues" grid="$grid" defaultPoint="$defaultPoint" />
 
   <conditionalContent condition="$checkInitialCondition">
     <p>Initial condition:
       <answer name="initialCorrect" weight="$initialConditionWeight">
         <award>
-          <when><copy target="cobwebApplet/initialCorrect" /></when>
+          <when><copy source="cobwebApplet/initialCorrect" /></when>
         </award>
         <considerAsResponses>
-          <copy target="cobwebApplet/initialPoint" />
-          <copy target="cobwebApplet/atLeastOnePoint" />
+          <copy source="cobwebApplet/initialPoint" />
+          <copy source="cobwebApplet/atLeastOnePoint" />
         </considerAsResponses>
       </answer>
     </p>
@@ -44,19 +44,19 @@
     <answer name="correctCobwebbing" weight="$cobwebbingWeight">
       <award credit="$(cobwebApplet/fractionCorrectCobweb)"><when>true</when></award>
       <considerAsResponses>
-        <copy prop="nIterateValues" target="cobwebApplet/cobwebPolyline" />
-        <and><copy prop="correctVertices" target="cobwebApplet/cobwebPolyline" /></and>
-        <copy prop="vertices" target="cobwebApplet/cobwebPolyline" />
+        <copy prop="nIterateValues" source="cobwebApplet/cobwebPolyline" />
+        <and><copy prop="correctVertices" source="cobwebApplet/cobwebPolyline" /></and>
+        <copy prop="vertices" source="cobwebApplet/cobwebPolyline" />
       </considerAsResponses>
     </answer>
   </p>
-  <feedback condition="$(correctCobwebbing{prop='submittedResponse1'}) = 1" name="startFeedback">
+  <feedback condition="$(correctCobwebbing.submittedResponse1) = 1" name="startFeedback">
     To start cobwebbing, click the "Add line" button and move the point at the end of the line.
   </feedback>
-  <feedback condition="$(correctCobwebbing{prop='submittedResponse2'}) = false" name="incorrectFeedback">
+  <feedback condition="$(correctCobwebbing.submittedResponse2) = false" name="incorrectFeedback">
     At least one point on cobweb plot is incorrect.
   </feedback>
-  <feedback condition="$(correctCobwebbing{prop='submittedResponse2'}) = true and $(correctCobwebbing{prop='submittedResponse1'}) > 1 and $(correctCobwebbing{prop='submittedResponse1'}) <= $nIterationsRequired" name="insufficientFeedback">
+  <feedback condition="$(correctCobwebbing.submittedResponse2) = true and $(correctCobwebbing.submittedResponse1) > 1 and $(correctCobwebbing.submittedResponse1) <= $nIterationsRequired" name="insufficientFeedback">
     For full credit, calculate at least $nIterationsRequired iterates (i.e., to <m>x_{$nIterationsRequired}</m>).
   </feedback>
 

@@ -854,7 +854,7 @@ describe('Point location validation tests', function () {
       </point>
     </graph>
     <p><answer>
-      <award matchPartial unorderedCompare targetsAreResponses="A B">
+      <award matchPartial unorderedCompare sourcesAreResponses="A B">
         <when>
           ($A, $B) = ($goal1, $goal2)
         </when>
@@ -1212,7 +1212,7 @@ describe('Point location validation tests', function () {
       </point>
     </graph>
     <p><answer>
-      <award matchPartial targetsAreResponses="A B">
+      <award matchPartial sourcesAreResponses="A B">
         <when>
           ($A, $B) = ($goal1, $goal2)
         </when>
@@ -1574,7 +1574,7 @@ describe('Point location validation tests', function () {
       </point>
     </graph>
     <p><answer>
-      <award matchPartial unorderedCompare targetsAreResponses="A B">
+      <award matchPartial unorderedCompare sourcesAreResponses="A B">
         <when>
           ($A, $B) = ((-4.1, 7.4), (6.8, 9.1))
         </when>
@@ -1931,7 +1931,7 @@ describe('Point location validation tests', function () {
       </point>
     </graph>
     <p><answer>
-      <award matchPartial targetsAreResponses="A B">
+      <award matchPartial sourcesAreResponses="A B">
         <when>
           ($A, $B) = ((-4.1, 7.4), (6.8, 9.1))
         </when>
@@ -2288,7 +2288,7 @@ describe('Point location validation tests', function () {
       </point>
     </graph>
     <p><answer>
-      <award matchPartial unorderedCompare targetsAreResponses="A B">
+      <award matchPartial unorderedCompare sourcesAreResponses="A B">
         <when>
           <mathlist>$A $B</mathlist> = <mathlist>$goal1 $goal2</mathlist>
         </when>
@@ -2645,7 +2645,7 @@ describe('Point location validation tests', function () {
       </map>
     </graph>
     <p><answer>
-      <award matchPartial unorderedCompare targetsAreResponses="map1">
+      <award matchPartial unorderedCompare sourcesAreResponses="map1">
         <when>
           <mathlist>$map1</mathlist> = <mathlist>$goal1 $goal2</mathlist>
         </when>
@@ -2988,7 +2988,7 @@ describe('Point location validation tests', function () {
       </map>
     </graph>
     <p><answer>
-      <award matchPartial unorderedCompare targetsAreResponses="map1">
+      <award matchPartial unorderedCompare sourcesAreResponses="map1">
         <when>
           <mathlist>$map1</mathlist> = <mathlist>$goal1 $goal2</mathlist>
         </when>

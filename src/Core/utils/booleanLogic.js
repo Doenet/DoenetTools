@@ -631,6 +631,7 @@ export function evaluateLogic({ logicTree,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
         caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }));
 
       // return average of fraction_equal
@@ -653,6 +654,7 @@ export function evaluateLogic({ logicTree,
           nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
           nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
           caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+          matchBlanks: dependencyValues.matchBlanks,
         }
       ).fraction_equal === 1) ? 1 : 0;
     }
@@ -675,6 +677,7 @@ export function evaluateLogic({ logicTree,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
         caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }
     ).fraction_equal;
 
@@ -707,6 +710,7 @@ export function evaluateLogic({ logicTree,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
         caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }));
 
       let max_fraction = results.reduce((a, c) => Math.max(a, c.fraction_equal), 0);
@@ -733,6 +737,7 @@ export function evaluateLogic({ logicTree,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
         caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }).fraction_equal === 1);
 
       if (operator === "in") {

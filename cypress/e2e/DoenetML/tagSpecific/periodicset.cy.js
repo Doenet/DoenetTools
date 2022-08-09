@@ -212,7 +212,7 @@ describe('PeriodicSet Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
 
-      expect((stateVariables['/s1'].stateValues.value)).eq('\uff3f');
+      // expect((stateVariables['/s1'].stateValues.value)).eq('\uff3f');
       expect(stateVariables['/_answer1'].stateValues.creditAchieved).eq(0);
     });
 
@@ -621,7 +621,7 @@ describe('PeriodicSet Tag Tests', function () {
     <setup>
       <periodicSet offsets="$collected_offsets" period="$period" name="userPeriodicSet" />
       <conditionalContent hide assignNames="(maxCreditRedund)">
-        <case condition="$(userPeriodicSet{prop='redundantOffsets'})">
+        <case condition="$(userPeriodicSet.redundantOffsets)">
           <number>0.8</number>
         </case>
         <else>
