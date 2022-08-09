@@ -97,6 +97,7 @@ export default function PageViewer(props) {
           cancelAnimationFrame(e.data.args);
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
+          preventMoreAnimations.current = false;
           setStage("coreCreated");
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
@@ -123,7 +124,7 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
         } else if (e.data.messageType === "terminated") {
-          coreWorker.current.terminate();
+          terminateCoreAndAnimations();
         }
       };
     }
@@ -176,6 +177,15 @@ export default function PageViewer(props) {
       }
     });
   });
+  function terminateCoreAndAnimations() {
+    preventMoreAnimations.current = true;
+    coreWorker.current.terminate();
+    coreWorker.current = null;
+    for (let id in animationInfo.current) {
+      cancelAnimationFrame(id);
+    }
+    animationInfo.current = {};
+  }
   async function callAction({action, args, baseVariableValue, componentName, rendererType}) {
     if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
       let actionId = nanoid();
@@ -464,7 +474,7 @@ export default function PageViewer(props) {
   }
   function startCore() {
     if (coreWorker.current) {
-      coreWorker.current.terminate();
+      terminateCoreAndAnimations();
     }
     coreWorker.current = new Worker(props.unbundledCore ? "core/CoreWorker.js" : "/viewer/core.js", {type: "module"});
     coreWorker.current.postMessage({
@@ -551,11 +561,11 @@ export default function PageViewer(props) {
   }
   async function cancelAnimationFrame(animationId) {
     let animationInfoObj = animationInfo.current[animationId];
-    let timeoutId = animationInfoObj.timeoutId;
+    let timeoutId = animationInfoObj?.timeoutId;
     if (timeoutId !== void 0) {
       window.clearTimeout(timeoutId);
     }
-    let animationFrameID = animationInfoObj.animationFrameID;
+    let animationFrameID = animationInfoObj?.animationFrameID;
     if (animationFrameID !== void 0) {
       window.cancelAnimationFrame(animationFrameID);
     }
@@ -605,6 +615,9 @@ export default function PageViewer(props) {
     changedState = true;
   }
   if (changedState) {
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
+    }
     setStage("recalcParams");
     coreId.current = nanoid();
     setPageContentChanged(true);
@@ -630,7 +643,7 @@ export default function PageViewer(props) {
   if (stage === "readyToCreateCore" && props.pageIsActive) {
     startCore();
   } else if (stage === "waitingOnCore" && !props.pageIsActive) {
-    coreWorker.current.terminate();
+    terminateCoreAndAnimations();
     coreWorker.current = null;
     setStage("readyToCreateCore");
   }

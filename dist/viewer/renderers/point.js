@@ -326,7 +326,7 @@ export default React.memo(function Point(props) {
   if (SVs.hidden) {
     return null;
   }
-  let mathJaxify = "\\(" + SVs.coordsLatex + "\\)";
+  let mathJaxify = "\\(" + SVs.latex + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {

@@ -7,6 +7,7 @@ export default class SubsetOfRealsInput extends BlockComponent {
   static componentType = "subsetOfRealsInput";
 
   static variableForPlainMacro = "subsetValue";
+  static variableForPlainCopy = "subsetValue";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

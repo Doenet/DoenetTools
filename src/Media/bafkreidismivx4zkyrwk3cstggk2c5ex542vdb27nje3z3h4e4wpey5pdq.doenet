@@ -30,17 +30,17 @@
     <number name="P1StyleNum">1</number>
     <boolean name="P1Placed">$nPoints >= 1 and $P1 = ($x0,0)</boolean>
     <number name="v1StyleNum">1</number>
-    <boolean name="v1Placed">$nVlines >= 1 and $(pv11{prop='x'}) = $x0</boolean>
+    <boolean name="v1Placed">$nVlines >= 1 and $pv11.x = $x0</boolean>
     <number name="h1StyleNum">1</number>
-    <boolean name="h1Placed">$nHlines >= 1 and $(ph11{prop='y'}) = $x1</boolean>
+    <boolean name="h1Placed">$nHlines >= 1 and $ph11.y = $x1</boolean>
     <number name="P2StyleNum">1</number>
     <boolean name="P2Placed">$nPoints >= 2 and $P2 = (0,$x1)</boolean>
     <number name="P3StyleNum">1</number>
     <boolean name="P3Placed">$nPoints >= 2 and $P3 = ($x1,0)</boolean>
     <number name="v2StyleNum">1</number>
-    <boolean name="v2Placed">$nVlines >= 2 and $(pv21{prop='x'}) = $x1</boolean>
+    <boolean name="v2Placed">$nVlines >= 2 and $pv21.x = $x1</boolean>
     <number name="h2StyleNum">1</number>
-    <boolean name="h2Placed">$nHlines >= 2 and $(ph21{prop='y'}) = $x2</boolean>
+    <boolean name="h2Placed">$nHlines >= 2 and $ph21.y = $x2</boolean>
     <number name="P4StyleNum">1</number>
     <boolean name="P4Placed">$nPoints >= 4 and $P4 = (0,$x2)</boolean>
     <boolean name="previewShortcut">false</boolean>
@@ -151,18 +151,18 @@
       </constraints>
     </point>
 
-    <copy target="P1" prop="coords" assignNames="P1coords" />
-    <copy target="P2" prop="coords" assignNames="P2coords" />
-    <copy target="P3" prop="coords" assignNames="P3coords" />
-    <copy target="P4" prop="coords" assignNames="P4coords" />
-    <copy target="pv11" prop="coords" assignNames="pv11coords" />
-    <copy target="pv12" prop="coords" assignNames="pv12coords" />
-    <copy target="pv21" prop="coords" assignNames="pv21coords" />
-    <copy target="pv22" prop="coords" assignNames="pv22coords" />
-    <copy target="ph11" prop="coords" assignNames="ph11coords" />
-    <copy target="ph12" prop="coords" assignNames="ph12coords" />
-    <copy target="ph21" prop="coords" assignNames="ph21coords" />
-    <copy target="ph22" prop="coords" assignNames="ph22coords" />
+    <copy source="P1" prop="coords" assignNames="P1coords" />
+    <copy source="P2" prop="coords" assignNames="P2coords" />
+    <copy source="P3" prop="coords" assignNames="P3coords" />
+    <copy source="P4" prop="coords" assignNames="P4coords" />
+    <copy source="pv11" prop="coords" assignNames="pv11coords" />
+    <copy source="pv12" prop="coords" assignNames="pv12coords" />
+    <copy source="pv21" prop="coords" assignNames="pv21coords" />
+    <copy source="pv22" prop="coords" assignNames="pv22coords" />
+    <copy source="ph11" prop="coords" assignNames="ph11coords" />
+    <copy source="ph12" prop="coords" assignNames="ph12coords" />
+    <copy source="ph21" prop="coords" assignNames="ph21coords" />
+    <copy source="ph22" prop="coords" assignNames="ph22coords" />
 
     <number name="pflash">1</number>
     <boolean name="flashShortcut">false</boolean>
@@ -174,10 +174,10 @@
 
   <graph width="$width" height="$height" xmin="$xmin" xmax="$xmax" ymin="$ymin" ymax="$ymax" xlabel="$(variable)_n" ylabel="$(variable)_{n+1}" showNavigation="$showNavigation" identicalAxisScales >
 
-    <curve styleNumber="3" fixed><copy target="f" /></curve>
+    <curve styleNumber="3" fixed><copy source="f" /></curve>
     <line styleNumber="4" equation="y=x" fixed />
   
-    <point label="($(variable)_0,0)" name="P1" hide="$nPoints < 1" x="$(initX{prop='value' link='false'})" y="$(initY{prop='value' link='false'})" fixed='$step > 1' styleNumber='$P1StyleNum'>
+    <point label="($(variable)_0,0)" name="P1" hide="$nPoints < 1" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 1' styleNumber='$P1StyleNum'>
       <constraints>
         <attractTo threshold="$attractThreshold"><point x="$x0" y="0" ></point></attractTo>
       </constraints>
@@ -187,13 +187,13 @@
 
     <line name="h1" through="$ph11 $ph12" hide="$nHlines < 1" fixed="$nPoints > 1" styleNumber="$h1StyleNum" />
 
-    <point label="(0, $(variable)_1)" name="P2" hide="$nPoints < 2" x="$(initX{prop='value' link='false'})" y="$(initY{prop='value' link='false'})" fixed='$step > 3' styleNumber='$P2StyleNum'>
+    <point label="(0, $(variable)_1)" name="P2" hide="$nPoints < 2" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 3' styleNumber='$P2StyleNum'>
       <constraints>
         <attractTo threshold="$attractThreshold"><point x="0" y="$x1" ></point></attractTo>
       </constraints>
     </point>
 
-    <point label="($(variable)_1,0)" name="P3" hide="$nPoints < 3" x="$(initX{prop='value' link='false'})" y="$(initY{prop='value' link='false'})" fixed='$step > 4' styleNumber='$P3StyleNum'>
+    <point label="($(variable)_1,0)" name="P3" hide="$nPoints < 3" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 4' styleNumber='$P3StyleNum'>
       <constraints>
         <attractTo threshold="$attractThreshold"><point x="$x1" y="0" ></point></attractTo>
       </constraints>
@@ -203,7 +203,7 @@
 
     <line name="h2" through="$ph21 $ph22" hide="$nHlines < 2" fixed="$nPoints > 3" styleNumber="$h2StyleNum" />
 
-    <point label="(0, $(variable)_2)" name="P4" hide="$nPoints < 4" x="$(initX{prop='value' link='false'})" y="$(initY{prop='value' link='false'})" fixed='$step > 6' styleNumber='$P4StyleNum'>
+    <point label="(0, $(variable)_2)" name="P4" hide="$nPoints < 4" x="$(initX.value{link='false'})" y="$(initY.value{link='false'})" fixed='$step > 6' styleNumber='$P4StyleNum'>
       <constraints>
         <attractTo threshold="$attractThreshold"><point x="0" y="$x2" ></point></attractTo>
       </constraints>
@@ -292,7 +292,7 @@
         <conditionalContent maximumNumberToShow="1">
           <case condition="$nPoints = 0">
             <p>Click 
-              <updateValue label="add point" name="addPoint1"  target="nPoints" newValue="1" />
+              <updateValue label="add point" name="addPoint1" target="nPoints" newValue="1" />
               to create a point for the initial condition.</p>
           </case>
           <case condition="not $P1Placed">
@@ -455,10 +455,10 @@
       <updateValue target="previewShortcut" newValue="false" type="boolean" />
       <updateValue target="stepCompleted" newValue="0" />
     </triggerSet>
-    <callAction triggerWithTnames="resetTutorial" target="ans" actionName="submitAnswer" />
+    <callAction triggerWith="resetTutorial" target="ans" actionName="submitAnswer" />
     
     <updateValue label="Next" name="next" disabled="$stepCompleted < $step" target="step" newValue="$step+1" />
-    <callAction triggerWithTnames="next" target="ans" actionName="submitAnswer" />
+    <callAction triggerWith="next" target="ans" actionName="submitAnswer" />
 
     <answer name="ans" hide weight="$answerWeight">
       <award credit="$stepCompleted/6"><when>true</when></award>

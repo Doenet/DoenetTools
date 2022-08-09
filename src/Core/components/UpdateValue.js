@@ -39,14 +39,14 @@ export default class UpdateValue extends InlineComponent {
     }
 
     attributes.componentIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
     };
 
     attributes.propIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
@@ -59,11 +59,11 @@ export default class UpdateValue extends InlineComponent {
       triggerActionOnChange: "updateValueIfTriggerNewlyTrue"
     }
 
-    attributes.triggerWithTargets = {
+    attributes.triggerWith = {
       createPrimitiveOfType: "string"
     }
 
-    attributes.triggerWhenTargetsClicked = {
+    attributes.triggerWhenObjectsClicked = {
       createPrimitiveOfType: "string"
     }
 
@@ -211,13 +211,20 @@ export default class UpdateValue extends InlineComponent {
             let thisTarget;
 
             if (stateValues.propName) {
+              let propIndex = stateValues.propIndex;
+              if (propIndex) {
+                // make propIndex be a shallow copy
+                // so that can detect if it changed
+                // when update dependencies
+                propIndex = [...propIndex]
+              }
               thisTarget = {
                 dependencyType: "stateVariable",
                 componentName: source.componentName,
                 variableName: stateValues.propName,
                 returnAsComponentObject: true,
                 variablesOptional: true,
-                propIndex: stateValues.propIndex,
+                propIndex,
                 caseInsensitiveVariableMatch: true,
                 publicStateVariablesOnly: true,
                 useMappedVariableNames: true,
@@ -311,15 +318,15 @@ export default class UpdateValue extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.triggerWithTargets = {
+    stateVariableDefinitions.triggerWith = {
       returnDependencies: () => ({
-        triggerWithTargets: {
+        triggerWith: {
           dependencyType: "attributePrimitive",
-          attributeName: "triggerWithTargets"
+          attributeName: "triggerWith"
         },
-        triggerWhenTargetsClicked: {
+        triggerWhenObjectsClicked: {
           dependencyType: "attributePrimitive",
-          attributeName: "triggerWhenTargetsClicked"
+          attributeName: "triggerWhenObjectsClicked"
         },
         triggerWhen: {
           dependencyType: "attributeComponent",
@@ -332,26 +339,26 @@ export default class UpdateValue extends InlineComponent {
       }),
       definition({ dependencyValues }) {
         if (dependencyValues.triggerWhen || dependencyValues.insideTriggerSet) {
-          return { setValue: { triggerWithTargets: null } }
+          return { setValue: { triggerWith: null } }
         } else {
 
-          let triggerWithTargets = [];
-          if (dependencyValues.triggerWithTargets !== null) {
-            for (let target of dependencyValues.triggerWithTargets.split(/\s+/).filter(s => s)) {
-              triggerWithTargets.push({ target })
+          let triggerWith = [];
+          if (dependencyValues.triggerWith !== null) {
+            for (let target of dependencyValues.triggerWith.split(/\s+/).filter(s => s)) {
+              triggerWith.push({ target })
             }
           }
-          if (dependencyValues.triggerWhenTargetsClicked !== null) {
-            for (let target of dependencyValues.triggerWhenTargetsClicked.split(/\s+/).filter(s => s)) {
-              triggerWithTargets.push({ target, triggeringAction: "click" })
+          if (dependencyValues.triggerWhenObjectsClicked !== null) {
+            for (let target of dependencyValues.triggerWhenObjectsClicked.split(/\s+/).filter(s => s)) {
+              triggerWith.push({ target, triggeringAction: "click" })
             }
           }
 
-          if (triggerWithTargets.length === 0) {
-            triggerWithTargets = null;
+          if (triggerWith.length === 0) {
+            triggerWith = null;
           }
 
-          return { setValue: { triggerWithTargets } }
+          return { setValue: { triggerWith } }
         }
       }
     }
@@ -360,16 +367,16 @@ export default class UpdateValue extends InlineComponent {
       chainActionOnActionOfStateVariableTargets: {
         triggeredAction: "updateValue"
       },
-      stateVariablesDeterminingDependencies: ["triggerWithTargets"],
+      stateVariablesDeterminingDependencies: ["triggerWith"],
       returnDependencies({ stateValues }) {
         let dependencies = {
-          triggerWithTargets: {
+          triggerWith: {
             dependencyType: "stateVariable",
-            variableName: "triggerWithTargets"
+            variableName: "triggerWith"
           }
         };
-        if (stateValues.triggerWithTargets) {
-          for (let [ind, targetObj] of stateValues.triggerWithTargets.entries()) {
+        if (stateValues.triggerWith) {
+          for (let [ind, targetObj] of stateValues.triggerWith.entries()) {
 
             dependencies[`triggerWithTargetComponentName${ind}`] = {
               dependencyType: "expandTargetName",
@@ -382,8 +389,8 @@ export default class UpdateValue extends InlineComponent {
       definition({ dependencyValues }) {
         let triggerWithTargetIds = [];
 
-        if (dependencyValues.triggerWithTargets) {
-          for (let [ind, targetObj] of dependencyValues.triggerWithTargets.entries()) {
+        if (dependencyValues.triggerWith) {
+          for (let [ind, targetObj] of dependencyValues.triggerWith.entries()) {
 
             let id = dependencyValues[`triggerWithTargetComponentName${ind}`];
 
@@ -415,9 +422,9 @@ export default class UpdateValue extends InlineComponent {
         dependencyType: "attributeComponent",
         attributeName: "triggerWhen"
       };
-      dependencies.triggerWithTargets = {
+      dependencies.triggerWith = {
         dependencyType: "stateVariable",
-        variableName: "triggerWithTargets"
+        variableName: "triggerWith"
       }
       dependencies.insideTriggerSet = {
         dependencyType: "stateVariable",
@@ -428,7 +435,7 @@ export default class UpdateValue extends InlineComponent {
 
     stateVariableDefinitions.hidden.definition = function (args) {
       if (args.dependencyValues.triggerWhen ||
-        args.dependencyValues.triggerWithTargets ||
+        args.dependencyValues.triggerWith ||
         args.dependencyValues.insideTriggerSet
       ) {
         return { setValue: { hidden: true } }

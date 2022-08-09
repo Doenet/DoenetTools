@@ -96,7 +96,7 @@ export default class Graph extends BlockComponent {
       forRenderer: true
     };
     attributes.xlabel = {
-      createComponentOfType: "text",
+      createComponentOfType: "label",
       createStateVariable: "xlabel",
       defaultValue: "",
       public: true,
@@ -119,7 +119,7 @@ export default class Graph extends BlockComponent {
       forRenderer: true,
     }
     attributes.ylabel = {
-      createComponentOfType: "text",
+      createComponentOfType: "label",
       createStateVariable: "ylabel",
       defaultValue: "",
       public: true,
@@ -169,9 +169,6 @@ export default class Graph extends BlockComponent {
     };
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     };
 
     attributes.displayDecimals = {
@@ -212,6 +209,101 @@ export default class Graph extends BlockComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
+      }
+    }
+
+    stateVariableDefinitions.xlabelHasLatex = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        xlabelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "xlabel",
+          variableNames: ["hasLatex"]
+        }
+      }),
+      definition({dependencyValues}) {
+        return {
+          setValue: {
+            xlabelHasLatex: dependencyValues.xlabelAttr?.stateValues.hasLatex || false
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.ylabelHasLatex = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        ylabelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "ylabel",
+          variableNames: ["hasLatex"]
+        }
+      }),
+      definition({dependencyValues}) {
+        return {
+          setValue: {
+            ylabelHasLatex: dependencyValues.ylabelAttr?.stateValues.hasLatex || false
+          }
+        }
+      }
+    }
 
     stateVariableDefinitions.graphicalDescendants = {
       forRenderer: true,
@@ -447,10 +539,10 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.xmin = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -542,10 +634,10 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.xmax = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -649,10 +741,10 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.ymin = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {
@@ -744,10 +836,10 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.ymax = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       forRenderer: true,
       returnDependencies({ stateValues }) {

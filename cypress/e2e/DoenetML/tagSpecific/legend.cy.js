@@ -383,7 +383,7 @@ describe('Legend Tag Tests', function () {
 
   });
 
-  it('legend with forTargets', () => {
+  it('legend with forObject', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -412,12 +412,12 @@ describe('Legend Tag Tests', function () {
       <curve through="(-9,-9) (-8, -8) (-7, -9)" styleNumber="4" />
 
       <legend displayClosedSwatches="$closedSwatches">
-        <label forTarget="f">targeted function</label>
+        <label forObject="f">targeted function</label>
         <label>first one</label>
         <label>second one <m>x^2</m></label>
-        <label forTarget="B">targeted point <m>B</m></label>
+        <label forObject="B">targeted point <m>B</m></label>
         <label>third one</label>
-        <label forTarget="incorrect">This will be unused</label>
+        <label forObject="incorrect">This will be unused</label>
         <label>fourth one</label>
         </legend>
     </graph>
@@ -545,6 +545,53 @@ describe('Legend Tag Tests', function () {
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].lineOpacity).eq(0.8);
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].fillColor).eq("orange");
       expect(stateVariables['/_legend1'].stateValues.legendElements[5].fillOpacity).eq(0.4);
+
+
+    })
+  });
+
+  it('legend with forObject, use names of shadow sources', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph>
+      <point name="p" labelIsName>(3,4)</point>
+      <point name="Q" styleNumber="2" labelIsName>(4,5)</point>
+      <legend>
+        <label forObject="p">point p</label>
+        <label forObject="Q">point Q</label>
+      </legend> 
+    </graph>
+    
+    
+    <graph>
+      $p
+      $Q
+      <legend>
+      <label forObject="Q">point Q</label>
+      <label forObject="p">point p</label>
+      </legend> 
+    </graph>
+  
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      expect(stateVariables['/_legend1'].stateValues.legendElements[0].swatchType).eq("marker")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[0].label.value).eq("point p")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[1].swatchType).eq("marker")
+      expect(stateVariables['/_legend1'].stateValues.legendElements[1].label.value).eq("point Q")
+      expect(stateVariables['/_legend2'].stateValues.legendElements[0].swatchType).eq("marker")
+      expect(stateVariables['/_legend2'].stateValues.legendElements[0].label.value).eq("point Q")
+      expect(stateVariables['/_legend2'].stateValues.legendElements[1].swatchType).eq("marker")
+      expect(stateVariables['/_legend2'].stateValues.legendElements[1].label.value).eq("point p")
 
 
     })

@@ -162,10 +162,12 @@ function ToastMessage({
   }, /* @__PURE__ */ React.createElement(Content, {
     ref,
     key: tId,
-    type
+    type,
+    "data-test": "toast"
   }, /* @__PURE__ */ React.createElement(Life, {
     style: {right: props.life}
   }), /* @__PURE__ */ React.createElement("p", null, children), /* @__PURE__ */ React.createElement(Button, {
+    "data-test": "toast cancel button",
     onClick: (e) => {
       e.stopPropagation();
       ref.current.cancel();

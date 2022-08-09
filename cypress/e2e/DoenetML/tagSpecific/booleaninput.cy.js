@@ -136,7 +136,7 @@ describe('BooleanInput Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <p><booleaninput prefill="true" label="green" name="bi1" /></p>
-    <p><copy target="bi1" assignNames="bi1a" /></p>
+    <p><booleanInput copySource="bi1" name="bi1a" /></p>
     <p><copy prop="value" target="bi1" assignNames="v1" /></p>
     <p><booleaninput label="red" name="bi2" /></p>
     <p><copy prop="value" target="bi2" assignNames="v2" /></p>
@@ -312,7 +312,7 @@ describe('BooleanInput Tag Tests', function () {
     <text>a</text>
     <booleaninput name="bi" />
     <number name="n">1</number>
-    <updateValue triggerWithTargets="bi" target="n" newValue="$n+1" type="number" />
+    <updateValue triggerWith="bi" target="n" newValue="$n+1" type="number" />
     `}, "*");
     });
 
@@ -507,7 +507,7 @@ describe('BooleanInput Tag Tests', function () {
     <p><booleanInput name="asToggleButton" labelIsName /></p>
     <p><booleanInput name="AnotherInput" asToggleButton="$asToggleButton" labelIsName /></p>
 
-    <boolean copyTarget="asToggleButton" name="v" />
+    <boolean copySource="asToggleButton" name="v" />
     `}, "*");
     });
 

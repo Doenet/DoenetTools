@@ -2380,8 +2380,12 @@ class Dependency {
       this.useMappedVariableNames = true;
     }
 
-    if (Number.isInteger(dependencyDefinition.propIndex)) {
-      this.propIndex = dependencyDefinition.propIndex;
+    if (dependencyDefinition.propIndex) {
+      if (dependencyDefinition.propIndex.every(Number.isFinite)) {
+        this.propIndex = dependencyDefinition.propIndex.map(Math.round);
+      } else {
+        this.propIndex = [];
+      }
     }
 
     // if returnSingleVariableValue, then
@@ -3863,6 +3867,8 @@ class AttributeComponentDependency extends Dependency {
 
     this.returnSingleComponent = true;
 
+    this.shadowDepth = 0;
+
   }
 
   async determineDownstreamComponents() {
@@ -3907,6 +3913,7 @@ class AttributeComponentDependency extends Dependency {
     }
 
     let attribute = parent.attributes[this.attributeName];
+    this.shadowDepth = 0;
 
     if (attribute?.component) {
       // have an attribute that is a component
@@ -3940,19 +3947,21 @@ class AttributeComponentDependency extends Dependency {
         }
       } else {
         let composite = this.dependencyHandler._components[shadows.compositeName];
-        if ("targetAttributesToIgnoreRecursively" in composite.state) {
-          let targetAttributesToIgnoreRecursively = await composite.stateValues.targetAttributesToIgnoreRecursively;
-          if (targetAttributesToIgnoreRecursively.includes(this.attributeName)) {
+        if ("sourceAttributesToIgnoreRecursively" in composite.state) {
+          let sourceAttributesToIgnoreRecursively = await composite.stateValues.sourceAttributesToIgnoreRecursively;
+          if (sourceAttributesToIgnoreRecursively.includes(this.attributeName)) {
             break;
           }
         }
-        if (shadows.firstLevelReplacement && "targetAttributesToIgnore" in composite.state) {
-          let targetAttributesToIgnore = await composite.stateValues.targetAttributesToIgnore;
-          if (targetAttributesToIgnore.includes(this.attributeName)) {
+        if (shadows.firstLevelReplacement && "sourceAttributesToIgnore" in composite.state) {
+          let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
+          if (sourceAttributesToIgnore.includes(this.attributeName)) {
             break;
           }
         }
       }
+
+      this.shadowDepth++;
 
       attribute = comp.attributes[this.attributeName];
 
@@ -3972,6 +3981,22 @@ class AttributeComponentDependency extends Dependency {
       downstreamComponentTypes: [],
     }
 
+  }
+
+  async getValue({ verbose } = {}) {
+
+    let result = await super.getValue({ verbose, skipProxy: true });
+
+
+    if (result.value) {
+      result.value.shadowDepth = this.shadowDepth;
+    }
+
+    // if (!this.doNotProxy) {
+    //   result.value = new Proxy(result.value, readOnlyProxyHandler)
+    // }
+
+    return result;
   }
 
 
@@ -4436,8 +4461,12 @@ class DescendantDependency extends Dependency {
     // of all composites except copies of external content
     this.ignoreReplacementsOfEncounteredComposites = this.definition.ignoreReplacementsOfEncounteredComposites;
 
-    if (Number.isInteger(this.definition.componentIndex)) {
-      this.componentIndex = this.definition.componentIndex;
+    if (this.definition.componentIndex !== null && this.definition.componentIndex !== undefined) {
+      if (Number.isInteger(this.definition.componentIndex)) {
+        this.componentIndex = this.definition.componentIndex;
+      } else {
+        this.componentIndex = NaN;
+      }
     }
 
   }
@@ -4674,7 +4703,9 @@ class DescendantDependency extends Dependency {
     for (let compositeName of unexpandedComposites) {
       let composite = this.dependencyHandler._components[compositeName];
       if (composite.attributes.createComponentOfType) {
-        let placeholderType = composite.attributes.createComponentOfType.primitive;
+        let placeholderType = this.dependencyHandler.componentInfoObjects.
+          componentTypeLowerCaseMapping[composite.attributes.createComponentOfType.primitive.toLowerCase()];
+
         let matches = this.componentTypes.some(ct =>
           this.dependencyHandler.componentInfoObjects.isInheritedComponentType({
             inheritedComponentType: placeholderType,
@@ -5415,8 +5446,24 @@ class ReplacementDependency extends Dependency {
 
     this.recurseNonStandardComposites = this.definition.recurseNonStandardComposites;
 
-    if (Number.isInteger(this.definition.componentIndex)) {
-      this.componentIndex = this.definition.componentIndex;
+    if (this.definition.componentIndex !== null && this.definition.componentIndex !== undefined) {
+      if (Number.isInteger(this.definition.componentIndex)) {
+        this.componentIndex = this.definition.componentIndex;
+      } else {
+        this.componentIndex = NaN;
+      }
+    }
+
+    if (this.definition.targetSubnames) {
+      this.targetSubnames = this.definition.targetSubnames;
+    }
+
+    if (this.definition.targetSubnamesComponentIndex) {
+      if (this.definition.targetSubnamesComponentIndex.every(Number.isInteger)) {
+        this.targetSubnamesComponentIndex = this.definition.targetSubnamesComponentIndex;
+      } else {
+        this.targetSubnamesComponentIndex = [NaN];
+      }
     }
 
     this.includeWithheldReplacements = this.definition.includeWithheldReplacements;
@@ -5599,6 +5646,68 @@ class ReplacementDependency extends Dependency {
       }
     }
 
+    if (this.targetSubnames) {
+      function replaceComponentsUsingSubname({ components, subNames, subNamesComponentIndex, dep }) {
+        if (subNames.length === 0) {
+          return components;
+        }
+        let remainingSubnames = subNames.slice(1);
+
+        let newComponents = [];
+
+        for (let comp of components) {
+          let newCname = comp.componentName + "/" + subNames[0];
+
+          let newComp = dep.dependencyHandler._components[newCname];
+          if (!newComp) {
+            let dependenciesMissingComponent = dep.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[newCname];
+            if (!dependenciesMissingComponent) {
+              dependenciesMissingComponent = dep.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[newCname] = [];
+            }
+            if (!dependenciesMissingComponent.includes(dep)) {
+              dependenciesMissingComponent.push(dep);
+            }
+
+          } else {
+
+            if (dep.dependencyHandler.componentInfoObjects.isInheritedComponentType({
+              inheritedComponentType: newComp.componentType,
+              baseComponentType: "_composite",
+            })) {
+              // TODO: recurse to more composites
+
+              console.warn('Have not yet implemented recursing subnames to multiple levels of composites')
+
+            } else {
+              // don't have a composite
+              // so add only if there are no more subnames and either no more component indices
+              // or just one index of 1 left
+              if (remainingSubnames.length === 0 && (
+                subNamesComponentIndex?.length || 0 === 0
+                || (subNamesComponentIndex.lenght === 1 && subNamesComponentIndex[0] === 1)
+              )) {
+                newComponents.push(newComp)
+              }
+
+
+            }
+          }
+
+        }
+
+        return newComponents;
+
+      }
+
+      replacements = replaceComponentsUsingSubname({
+        components: replacements,
+        subNames: this.targetSubnames,
+        subNamesComponentIndex: this.targetSubnamesComponentIndex,
+        dep: this
+      })
+
+      
+    }
     let downstreamComponentNames = [];
     let downstreamComponentTypes = [];
 
@@ -5692,7 +5801,7 @@ class ReplacementDependency extends Dependency {
 
 dependencyTypeArray.push(ReplacementDependency);
 
-class SourceCompositeDependency extends Dependency {
+class SourceCompositeStateVariableDependency extends Dependency {
   static dependencyType = "sourceCompositeStateVariable";
 
   setUpParameters() {
@@ -5816,7 +5925,7 @@ class SourceCompositeDependency extends Dependency {
 
 }
 
-dependencyTypeArray.push(SourceCompositeDependency);
+dependencyTypeArray.push(SourceCompositeStateVariableDependency);
 
 class SourceCompositeIdentityDependency extends Dependency {
   static dependencyType = "sourceCompositeIdentity";
@@ -5912,6 +6021,109 @@ class SourceCompositeIdentityDependency extends Dependency {
 
 dependencyTypeArray.push(SourceCompositeIdentityDependency);
 
+class ShadowSourceIdentityDependency extends Dependency {
+  static dependencyType = "shadowSourceIdentity";
+
+  setUpParameters() {
+
+    if (this.definition.componentName) {
+      this.componentName = this.definition.componentName
+      this.specifiedComponentName = this.componentName;
+    } else {
+      this.componentName = this.upstreamComponentName;
+    }
+
+    this.returnSingleComponent = true;
+
+  }
+
+
+  async determineDownstreamComponents() {
+
+    let component = this.dependencyHandler._components[this.componentName];
+
+    if (!component) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName];
+      if (!dependenciesMissingComponent) {
+        dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.componentName] = [];
+      }
+      if (!dependenciesMissingComponent.includes(this)) {
+        dependenciesMissingComponent.push(this);
+      }
+
+      for (let varName of this.upstreamVariableNames) {
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.componentName,
+          blockerType: "componentIdentity",
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "recalculateDownstreamComponents",
+          stateVariableBlocked: varName,
+          dependencyBlocked: this.dependencyName
+        });
+
+        await this.dependencyHandler.addBlocker({
+          blockerComponentName: this.upstreamComponentName,
+          blockerType: "recalculateDownstreamComponents",
+          blockerStateVariable: varName,
+          blockerDependency: this.dependencyName,
+          componentNameBlocked: this.upstreamComponentName,
+          typeBlocked: "stateVariable",
+          stateVariableBlocked: varName,
+        });
+      }
+
+      return {
+        success: false,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    if (!component.shadows) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+    let shadowSourceComponentName = component.shadows.componentName;
+    let shadowSource = this.dependencyHandler._components[shadowSourceComponentName];
+
+    if (!shadowSource) {
+      return {
+        success: true,
+        downstreamComponentNames: [],
+        downstreamComponentTypes: []
+      }
+    }
+
+
+    return {
+      success: true,
+      downstreamComponentNames: [shadowSource.componentName],
+      downstreamComponentTypes: [shadowSource.componentType],
+    }
+
+  }
+
+  deleteFromUpdateTriggers() {
+
+    if (this.specifiedComponentName) {
+      let dependenciesMissingComponent = this.dependencyHandler.updateTriggers.dependenciesMissingComponentBySpecifiedName[this.specifiedComponentName];
+      if (dependenciesMissingComponent) {
+        let ind = dependenciesMissingComponent.indexOf(this);
+        if (ind !== -1) {
+          dependenciesMissingComponent.splice(ind, 1);
+        }
+      }
+    }
+
+  }
+
+}
+
+dependencyTypeArray.push(ShadowSourceIdentityDependency);
 
 class AdapterSourceStateVariableDependency extends Dependency {
   static dependencyType = "adapterSourceStateVariable";

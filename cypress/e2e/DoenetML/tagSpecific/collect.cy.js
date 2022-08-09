@@ -25,24 +25,24 @@ describe('Collect Tag Tests', function () {
     </graph>
 
     <graph>
-      <copy target="_point1" assignNames="p1a" />
+      <copy source="_point1" assignNames="p1a" />
       <point>(4,2)</point>
       <point>
-        (<copy prop="y" target="_point2" />,
-        <copy prop="x" target="_point2" />)
+        (<copy prop="y" source="_point2" />,
+        <copy prop="x" source="_point2" />)
       </point>
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" name="points" target="_panel1" assignNames="q1 q2 q3 q4 q5" />
+      <collect componentTypes="point" name="points" source="_panel1" assignNames="q1 q2 q3 q4 q5" />
     </graph>
 
-    <p>Coordinates of points: <collect componentTypes="point" prop="coords" name="coords" target="_panel1" assignNames="c1 c2 c3 c4 c5" /></p>
-    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="x" name="xs" target="_graph3" assignNames="x1 x2 x3 x4 x5" /></aslist></p>
-    <p><m>x</m>-coordinates of points via a copy: <aslist><copy name="xs2" target="xs" assignNames="xc1 xc2 xc3 xc4 xc5" /></aslist></p>
-    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="x" name="xs3" assignNames="xe1 xe2 xe3 xe4 xe5" ><copy name="points2" target="points" assignNames="qa1 qa2 qa3 qa4 qa5" /></extract></aslist></p>
-    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="y" name="ys" target="_graph3" assignNames="y1 y2 y3 y4 y5" /></mean></p>
+    <p>Coordinates of points: <collect componentTypes="point" prop="coords" name="coords" source="_panel1" assignNames="c1 c2 c3 c4 c5" /></p>
+    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="x" name="xs" source="_graph3" assignNames="x1 x2 x3 x4 x5" /></aslist></p>
+    <p><m>x</m>-coordinates of points via a copy: <aslist><copy name="xs2" source="xs" assignNames="xc1 xc2 xc3 xc4 xc5" /></aslist></p>
+    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="x" name="xs3" assignNames="xe1 xe2 xe3 xe4 xe5" ><copy name="points2" source="points" assignNames="qa1 qa2 qa3 qa4 qa5" /></extract></aslist></p>
+    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="y" name="ys" source="_graph3" assignNames="y1 y2 y3 y4 y5" /></mean></p>
     `}, "*");
     });
 
@@ -332,7 +332,7 @@ describe('Collect Tag Tests', function () {
     <panel>
     <graph>
       <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6)">
-        <template><point>($x, <copy prop="value" target="mult" />$x)</point></template>
+        <template><point>($x, <copy prop="value" source="mult" />$x)</point></template>
         <sources alias="x"><sequence to="$length" /></sources>
       </map>
       <line>y=x/3</line>
@@ -341,18 +341,18 @@ describe('Collect Tag Tests', function () {
     <graph>
       <map assignNames="(q1) (q2) (q3) (q4) (q5) (q6)">
         <template><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
-        <sources alias="p"><collect componentTypes="point" target="_map1" assignNames="pa1 pa2 pa3 pa4 pa5 pa6" /></sources>
+        <sources alias="p"><collect componentTypes="point" source="_map1" assignNames="pa1 pa2 pa3 pa4 pa5 pa6" /></sources>
       </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" target="_panel1" assignNames="r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12" />
+      <collect componentTypes="point" source="_panel1" assignNames="r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12" />
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y" target="_graph3" assignNames="y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12" />
+      <collect componentTypes="point" prop="y" source="_graph3" assignNames="y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12" />
     </aslist></p>
     `}, "*");
     });
@@ -557,7 +557,7 @@ describe('Collect Tag Tests', function () {
     <section>
     <group>
       <map assignNames="(p1) (p2) (p3) (p4) (p5) (p6)">
-        <template><point>($x, <copy prop="value" target="mult" />$x)</point></template>
+        <template><point>($x, <copy prop="value" source="mult" />$x)</point></template>
         <sources alias="x"><sequence to="$length" /></sources>
       </map>
       <line>y=x/3</line>
@@ -566,18 +566,18 @@ describe('Collect Tag Tests', function () {
     <group>
       <map assignNames="(q1) (q2) (q3) (q4) (q5) (q6)">
         <template><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
-        <sources alias="p"><collect componentTypes="point" target="_map1" assignNames="pa1 pa2 pa3 pa4 pa5 pa6" /></sources>
+        <sources alias="p"><collect componentTypes="point" source="_map1" assignNames="pa1 pa2 pa3 pa4 pa5 pa6" /></sources>
       </map>
 
     </group>
     </section>
 
     <group>
-      <collect componentTypes="point" target="_section1" assignNames="r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12" />
+      <collect componentTypes="point" source="_section1" assignNames="r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12" />
     </group>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y" target="_group3" assignNames="y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12" />
+      <collect componentTypes="point" prop="y" source="_group3" assignNames="y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12" />
     </aslist></p>
     `}, "*");
     });
@@ -786,23 +786,23 @@ describe('Collect Tag Tests', function () {
 
     <graph>
       <point>
-        (<copy prop="y" target="_point1" />,
-        <copy prop="x" target="_point1" />)
+        (<copy prop="y" source="_point1" />,
+        <copy prop="x" source="_point1" />)
       </point>
       <point>
-        (<copy prop="y" target="_point2" />,
-        <copy prop="x" target="_point2" />)
+        (<copy prop="y" source="_point2" />,
+        <copy prop="x" source="_point2" />)
       </point>
       <vector tail="$_point3" head="$_point4" />
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point vector" target="_panel1" assignNames="v1 v2 v3 v4 v5 v6" />
+      <collect componentTypes="point vector" source="_panel1" assignNames="v1 v2 v3 v4 v5 v6" />
     </graph>
 
-    <copy prop="head" target="_vector1" assignNames="h1" />
-    <copy prop="head" target="_vector2" assignNames="h2" />
+    <copy prop="head" source="_vector1" assignNames="h1" />
+    <copy prop="head" source="_vector2" assignNames="h2" />
     `}, "*");
     });
 
@@ -923,7 +923,7 @@ describe('Collect Tag Tests', function () {
     <panel>
     <graph>
       <map assignNames="(p1) (p2) (p3) (p4) (p5)">
-        <template><point>($x, <copy prop="value" target="../mult" />$x)</point></template>
+        <template><point>($x, <copy prop="value" source="../mult" />$x)</point></template>
         <sources alias="x"><sequence to="$length" /></sources>
       </map>
       <line>y=x/3</line>
@@ -932,18 +932,18 @@ describe('Collect Tag Tests', function () {
     <graph>
       <map assignNames="(q1) (q2) (q3) (q4) (q5)">
       <template><point>(<extract prop="x">$p</extract>+1, 1.5*<extract prop="y">$p</extract>)</point></template>
-      <sources alias="p"><collect componentTypes="point" target="_map1" maximumnumber="$maxnumber" assignNames="pa1 pa2 pa3 pa4 pa5" /></sources>
+      <sources alias="p"><collect componentTypes="point" source="_map1" maximumnumber="$maxnumber" assignNames="pa1 pa2 pa3 pa4 pa5" /></sources>
     </map>
 
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" target="_panel1" maximumnumber="2$maxnumber" assignNames="r1 r2 r3 r4 r5 r6 r7 r8 r9 r10" />
+      <collect componentTypes="point" source="_panel1" maximumnumber="2$maxnumber" assignNames="r1 r2 r3 r4 r5 r6 r7 r8 r9 r10" />
     </graph>
 
     <p>y-coordinates of points: <aslist>
-      <collect componentTypes="point" prop="y" target="_graph3" maximumnumber="$maxnumber" assignNames="y1 y2 y3 y4 y5 y6 y7 y8 y9 y10" />
+      <collect componentTypes="point" prop="y" source="_graph3" maximumnumber="$maxnumber" assignNames="y1 y2 y3 y4 y5 y6 y7 y8 y9 y10" />
     </aslist></p>
     `}, "*");
     });
@@ -1212,30 +1212,30 @@ describe('Collect Tag Tests', function () {
   </p>
   
   <p name="p_1">Inputs collected then, values extracted: 
-  <aslist name="al1"><extract prop="value" name="values1"><collect componentTypes="mathinput" target="p_original"/></extract></aslist></p>
+  <aslist name="al1"><extract prop="value" name="values1"><collect componentTypes="mathinput" source="p_original"/></extract></aslist></p>
 
-  <p name="p_1a">Copied: <aslist name="al1a"><copy name="values1a" target="values1" /></aslist></p>
-  <p name="p_1b">Copy aslist: <copy name="al1b" target="al1" /></p>
-  <p name="p_1c">Copy copied: <aslist><copy target="values1a" /></aslist></p>
-  <p name="p_1d">Copy aslist containing copy: <copy target="al1a" /></p>
-  <p name="p_1e">Copy copied aslist: <copy target="al1b" /></p>
+  <p name="p_1a">Copied: <aslist name="al1a"><copy name="values1a" source="values1" /></aslist></p>
+  <p name="p_1b">Copy aslist: <copy name="al1b" source="al1" /></p>
+  <p name="p_1c">Copy copied: <aslist><copy source="values1a" /></aslist></p>
+  <p name="p_1d">Copy aslist containing copy: <copy source="al1a" /></p>
+  <p name="p_1e">Copy copied aslist: <copy source="al1b" /></p>
 
   <p name="p_2">Values collected: 
-    <aslist name="al2"><collect prop="value" name="values2" componentTypes="mathinput" target="p_original"/></aslist></p>
+    <aslist name="al2"><collect prop="value" name="values2" componentTypes="mathinput" source="p_original"/></aslist></p>
     
-  <p name="p_2a">Copied: <aslist name="al2a"><copy name="values2a" target="values2" /></aslist></p>
-  <p name="p_2b">Copy aslist: <copy name="al2b" target="al2" /></p>
-  <p name="p_2c">Copy copied: <aslist><copy target="values2a" /></aslist></p>
-  <p name="p_2d">Copy aslist containing copy: <copy target="al2a" /></p>
-  <p name="p_2e">Copy copied aslist: <copy target="al2b" /></p>
+  <p name="p_2a">Copied: <aslist name="al2a"><copy name="values2a" source="values2" /></aslist></p>
+  <p name="p_2b">Copy aslist: <copy name="al2b" source="al2" /></p>
+  <p name="p_2c">Copy copied: <aslist><copy source="values2a" /></aslist></p>
+  <p name="p_2d">Copy aslist containing copy: <copy source="al2a" /></p>
+  <p name="p_2e">Copy copied aslist: <copy source="al2b" /></p>
 
-  <p name="p_3">Inputs collected: <aslist name="al3"><collect name="col" componentTypes="mathinput" target="p_original"/></aslist></p>
+  <p name="p_3">Inputs collected: <aslist name="al3"><collect name="col" componentTypes="mathinput" source="p_original"/></aslist></p>
   
-  <p name="p_3a">Copied: <aslist name="al3a"><copy name="cola" target="col" /></aslist></p>
-  <p name="p_3b">Copy aslist: <copy name="al3b" target="al3" /></p>
-  <p name="p_3c">Copy copied: <aslist><copy target="cola" /></aslist></p>
-  <p name="p_3d">Copy aslist containing copy: <copy target="al3a" /></p>
-  <p name="p_3e">Copy copied aslist: <copy target="al3b" /></p>
+  <p name="p_3a">Copied: <aslist name="al3a"><copy name="cola" source="col" /></aslist></p>
+  <p name="p_3b">Copy aslist: <copy name="al3b" source="al3" /></p>
+  <p name="p_3c">Copy copied: <aslist><copy source="cola" /></aslist></p>
+  <p name="p_3d">Copy aslist containing copy: <copy source="al3a" /></p>
+  <p name="p_3e">Copy copied aslist: <copy source="al3b" /></p>
   
     `}, "*");
     });
@@ -1779,8 +1779,8 @@ describe('Collect Tag Tests', function () {
 
   });
 
-  // main point: when use macro on collection (but not group)
-  // inputs turn into their values
+  // main point: no longer turn inputs into their value 
+  // even with copy a collection with a macro
   it('test macros by collecting inputs and others', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1795,9 +1795,11 @@ describe('Collect Tag Tests', function () {
       <boolean>not $c</boolean>
     </group>
 
-    <p><collect target="_group1" componentTypes="_input math text boolean" /></p>
-    <p>$_collect1</p>
-    <p>$_group1</p>
+    <p name="pcollect1"><collect source="_group1" componentTypes="_input math text boolean" /></p>
+    <p name="pcollect2">$_collect1</p>
+    <p name="pgroup2">$_group1</p>
+    <p name="pcollect3"><copy source="_collect1" /></p>
+    <p name="pgroup3"><copy source="_group1" /></p>
     `}, "*");
     });
 
@@ -1806,43 +1808,59 @@ describe('Collect Tag Tests', function () {
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       let group1Replacements = stateVariables["/_document1"].activeChildren.slice(3, 16)
-      let collect1Replacements = stateVariables["/_p1"].activeChildren;
-      let collect2Replacements = stateVariables["/_p2"].activeChildren;
-      let group2Replacements = stateVariables["/_p3"].activeChildren;
+      let collect1Replacements = stateVariables["/pcollect1"].activeChildren;
+      let collect2Replacements = stateVariables["/pcollect2"].activeChildren;
+      let group2Replacements = stateVariables["/pgroup2"].activeChildren;
+      let collect3Replacements = stateVariables["/pcollect3"].activeChildren;
+      let group3Replacements = stateVariables["/pgroup3"].activeChildren;
 
 
       expect(group1Replacements.length).eq(13);
       expect(collect1Replacements.length).eq(6);
       expect(collect2Replacements.length).eq(6);
       expect(group2Replacements.length).eq(13);
+      expect(collect3Replacements.length).eq(6);
+      expect(group3Replacements.length).eq(13);
 
       expect(group1Replacements[1].componentType).eq("mathInput");
       expect(stateVariables[group1Replacements[1].componentName].stateValues.value).eq('x');
       expect(collect1Replacements[0].componentType).eq("mathInput");
       expect(stateVariables[collect1Replacements[0].componentName].stateValues.value).eq('x');
-      expect(collect2Replacements[0].componentType).eq("math");
+      expect(collect2Replacements[0].componentType).eq("mathInput");
       expect(stateVariables[collect2Replacements[0].componentName].stateValues.value).eq('x');
       expect(group2Replacements[1].componentType).eq("mathInput");
       expect(stateVariables[group2Replacements[1].componentName].stateValues.value).eq('x');
+      expect(collect3Replacements[0].componentType).eq("mathInput");
+      expect(stateVariables[collect3Replacements[0].componentName].stateValues.value).eq('x');
+      expect(group3Replacements[1].componentType).eq("mathInput");
+      expect(stateVariables[group3Replacements[1].componentName].stateValues.value).eq('x');
 
       expect(group1Replacements[3].componentType).eq("textInput");
       expect(stateVariables[group1Replacements[3].componentName].stateValues.value).eq('hello');
       expect(collect1Replacements[1].componentType).eq("textInput");
       expect(stateVariables[collect1Replacements[1].componentName].stateValues.value).eq('hello');
-      expect(collect2Replacements[1].componentType).eq("text");
+      expect(collect2Replacements[1].componentType).eq("textInput");
       expect(stateVariables[collect2Replacements[1].componentName].stateValues.value).eq('hello');
       expect(group2Replacements[3].componentType).eq("textInput");
       expect(stateVariables[group2Replacements[3].componentName].stateValues.value).eq('hello');
+      expect(collect3Replacements[1].componentType).eq("textInput");
+      expect(stateVariables[collect3Replacements[1].componentName].stateValues.value).eq('hello');
+      expect(group3Replacements[3].componentType).eq("textInput");
+      expect(stateVariables[group3Replacements[3].componentName].stateValues.value).eq('hello');
 
 
       expect(group1Replacements[5].componentType).eq("booleanInput");
       expect(stateVariables[group1Replacements[5].componentName].stateValues.value).eq(false);
       expect(collect1Replacements[2].componentType).eq("booleanInput");
       expect(stateVariables[collect1Replacements[2].componentName].stateValues.value).eq(false);
-      expect(collect2Replacements[2].componentType).eq("boolean");
+      expect(collect2Replacements[2].componentType).eq("booleanInput");
       expect(stateVariables[collect2Replacements[2].componentName].stateValues.value).eq(false);
       expect(group2Replacements[5].componentType).eq("booleanInput");
       expect(stateVariables[group2Replacements[5].componentName].stateValues.value).eq(false);
+      expect(collect3Replacements[2].componentType).eq("booleanInput");
+      expect(stateVariables[collect3Replacements[2].componentName].stateValues.value).eq(false);
+      expect(group3Replacements[5].componentType).eq("booleanInput");
+      expect(stateVariables[group3Replacements[5].componentName].stateValues.value).eq(false);
 
 
       expect(group1Replacements[7].componentType).eq("math");
@@ -1853,6 +1871,10 @@ describe('Collect Tag Tests', function () {
       expect(stateVariables[collect2Replacements[3].componentName].stateValues.value).eqls(["*", 2, "x"]);
       expect(group2Replacements[7].componentType).eq("math");
       expect(stateVariables[group2Replacements[7].componentName].stateValues.value).eqls(["*", 2, "x"]);
+      expect(collect3Replacements[3].componentType).eq("math");
+      expect(stateVariables[collect3Replacements[3].componentName].stateValues.value).eqls(["*", 2, "x"]);
+      expect(group3Replacements[7].componentType).eq("math");
+      expect(stateVariables[group3Replacements[7].componentName].stateValues.value).eqls(["*", 2, "x"]);
 
       expect(group1Replacements[9].componentType).eq("text");
       expect(stateVariables[group1Replacements[9].componentName].stateValues.value).eq('hello there');
@@ -1862,6 +1884,10 @@ describe('Collect Tag Tests', function () {
       expect(stateVariables[collect2Replacements[4].componentName].stateValues.value).eq('hello there');
       expect(group2Replacements[9].componentType).eq("text");
       expect(stateVariables[group2Replacements[9].componentName].stateValues.value).eq('hello there');
+      expect(collect3Replacements[4].componentType).eq("text");
+      expect(stateVariables[collect3Replacements[4].componentName].stateValues.value).eq('hello there');
+      expect(group3Replacements[9].componentType).eq("text");
+      expect(stateVariables[group3Replacements[9].componentName].stateValues.value).eq('hello there');
 
       expect(group1Replacements[11].componentType).eq("boolean");
       expect(stateVariables[group1Replacements[11].componentName].stateValues.value).eq(true);
@@ -1871,6 +1897,10 @@ describe('Collect Tag Tests', function () {
       expect(stateVariables[collect2Replacements[5].componentName].stateValues.value).eq(true);
       expect(group2Replacements[11].componentType).eq("boolean");
       expect(stateVariables[group2Replacements[11].componentName].stateValues.value).eq(true);
+      expect(collect3Replacements[5].componentType).eq("boolean");
+      expect(stateVariables[collect3Replacements[5].componentName].stateValues.value).eq(true);
+      expect(group3Replacements[11].componentType).eq("boolean");
+      expect(stateVariables[group3Replacements[11].componentName].stateValues.value).eq(true);
 
     })
 
@@ -1885,8 +1915,8 @@ describe('Collect Tag Tests', function () {
       <text hide>secret</text>
       <text>public</text>
     </section>
-    <p>Hidden by default: <collect componentTypes="text" target="_section1" /></p>
-    <p>Force to reveal: <collect componentTypes="text" target="_section1" targetAttributesToIgnore="hide" /></p>
+    <p>Hidden by default: <collect componentTypes="text" source="_section1" /></p>
+    <p>Force to reveal: <collect componentTypes="text" source="_section1" sourceAttributesToIgnore="hide" /></p>
 
     `}, "*");
     });
@@ -1909,12 +1939,12 @@ describe('Collect Tag Tests', function () {
     <text>a</text>
     <section>
       <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-      <copy target="theP1" assignNames="theP2" />
+      <copy source="theP1" assignNames="theP2" />
       <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
-      <copy target="theP3" assignNames="theP4" />
+      <copy source="theP3" assignNames="theP4" />
     </section>
-    <collect componentTypes="p" target="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" target="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
+    <collect componentTypes="p" source="_section1" sourceAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
     `}, "*");
     });
 
@@ -1942,12 +1972,12 @@ describe('Collect Tag Tests', function () {
     <text>a</text>
     <section hide>
       <p name="theP1" newNamespace>Hidden text: <text name="hidden" hide>secret</text></p>
-      <copy target="theP1" assignNames="theP2" />
+      <copy source="theP1" assignNames="theP2" />
       <p hide name="theP3" newNamespace>Hidden paragraph with hidden text: <text name="hidden" hide>top secret</text></p>
-      <copy target="theP3" assignNames="theP4" />
+      <copy source="theP3" assignNames="theP4" />
     </section>
-    <collect componentTypes="p" target="_section1" assignNames="cp1 cp2 cp3 cp4" />
-    <collect componentTypes="p" target="_section1" targetAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
+    <collect componentTypes="p" source="_section1" assignNames="cp1 cp2 cp3 cp4" />
+    <collect componentTypes="p" source="_section1" sourceAttributesToIgnore="hide" assignNames="cp5 cp6 cp7 cp8" />
     `}, "*");
     });
 
@@ -1985,8 +2015,8 @@ describe('Collect Tag Tests', function () {
     <booleaninput name='h2' prefill="true" label="Hide second collect" />
     <p>Number of points <mathinput name="n" prefill="4" /></p>
 
-    <p name="c1">collect 1: <collect hide="$h1" componentTypes="text" target="_p1" /></p>
-    <p name="c2">collect 2: <collect hide="$h2" componentTypes="text" prop="value" target="_p1" /></p>
+    <p name="c1">collect 1: <collect hide="$h1" componentTypes="text" source="_p1" /></p>
+    <p name="c2">collect 2: <collect hide="$h2" componentTypes="text" prop="value" source="_p1" /></p>
     `}, "*");
     });
 
@@ -2055,7 +2085,7 @@ describe('Collect Tag Tests', function () {
       end
     </p>
     
-    <p>Hello <collect componentTypes="point" target="_p1" /> there</p>
+    <p>Hello <collect componentTypes="point" source="_p1" /> there</p>
     `}, "*");
     });
 
@@ -2146,16 +2176,16 @@ describe('Collect Tag Tests', function () {
     </graph>
     
     <graph name="g2">
-      <collect componentTypes="point" target="g1" fixed="$fixed" assignNames="A2 B2" />
+      <collect componentTypes="point" source="g1" fixed="$fixed" assignNames="A2 B2" />
     </graph>
     
-    <copy target="g2" name="g3" newNamespace />
+    <copy source="g2" name="g3" newNamespace />
 
-    <aslist name="al"><collect componentTypes="point" prop="x" target="g1" fixed="$fixed" assignNames="Ax Bx" /></aslist>
+    <aslist name="al"><collect componentTypes="point" prop="x" source="g1" fixed="$fixed" assignNames="Ax Bx" /></aslist>
 
-    <copy target="al" name="al2" newNamespace />
+    <copy source="al" name="al2" newNamespace />
 
-    <copy prop="fixed" target="A2" assignNames="A2fixed" />
+    <copy prop="fixed" source="A2" assignNames="A2fixed" />
     `}, "*");
     });
 
@@ -2231,14 +2261,14 @@ describe('Collect Tag Tests', function () {
     </graph>
     
     <graph name="g2">
-      <collect componentTypes="point" target="g1" assignNames="A2 B2" componentIndex="$n" />
+      <collect componentTypes="point" source="g1" assignNames="A2 B2" componentIndex="$n" />
     </graph>
     
-    <copy target="g2" name="g3" newNamespace />
+    <copy source="g2" name="g3" newNamespace />
 
-    <aslist name="al"><collect componentTypes="point" prop="x" target="g1" componentIndex="$n" assignNames="Ax Bx" /></aslist>
+    <aslist name="al"><collect componentTypes="point" prop="x" source="g1" componentIndex="$n" assignNames="Ax Bx" /></aslist>
 
-    <copy target="al" name="al2" newNamespace />
+    <copy source="al" name="al2" newNamespace />
 
     `}, "*");
     });
@@ -2247,23 +2277,24 @@ describe('Collect Tag Tests', function () {
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/Bx .mjx-mrow').should('contain.text', nInDOM(x2));
-    cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/Bx .mjx-mrow').should('contain.text', nInDOM(x2));
+
+    cy.get('#\\/Ax .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Ax .mjx-mrow').should('not.exist');
+    cy.get('#\\/Bx .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
-      expect(stateVariables['/A2'].stateValues.xs).eqls([x1, y1]);
-      expect(stateVariables["/g3/A2"].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/A2']).eq(undefined);
+      expect(stateVariables["/g3/A2"]).eq(undefined);
       expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/B2'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables["/g3/B2"].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/Ax'].stateValues.value).eq(x1);
-      expect(stateVariables["/al2/Ax"].stateValues.value).eq(x1);
-      expect(stateVariables['/Bx'].stateValues.value).eq(x2);
-      expect(stateVariables["/al2/Bx"].stateValues.value).eq(x2);
+      expect(stateVariables['/B2']).eq(undefined);
+      expect(stateVariables["/g3/B2"]).eq(undefined);
+      expect(stateVariables['/Ax']).eq(undefined);
+      expect(stateVariables["/al2/Ax"]).eq(undefined);
+      expect(stateVariables['/Bx']).eq(undefined);
+      expect(stateVariables["/al2/Bx"]).eq(undefined);
     });
 
     cy.log('restrict collection to first component');
@@ -2302,7 +2333,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
       cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
       cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x1));
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2330,7 +2361,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
       cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
       cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2361,7 +2392,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/Bx .mjx-mrow').should('not.exist');
       cy.get('#\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
       cy.get('#\\/al2\\/Ax .mjx-mrow').should('contain.text', nInDOM(x2));
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2394,9 +2425,9 @@ describe('Collect Tag Tests', function () {
       <point name="B">(3,4)</point>
     </graph>
     
-    <p><aslist name="al"><collect componentTypes="point" prop="xs" target="g1" componentIndex="$m" propIndex="$n" assignNames="n1 n2 n3 n4" /></aslist></p>
+    <p><aslist name="al"><collect componentTypes="point" prop="xs" source="g1" componentIndex="$m" propIndex="$n" assignNames="n1 n2 n3 n4" /></aslist></p>
 
-    <p><copy target="al" name="al2" newNamespace /></p>
+    <p><copy source="al" name="al2" newNamespace /></p>
 
     `}, "*");
     });
@@ -2405,39 +2436,13 @@ describe('Collect Tag Tests', function () {
 
     let x1 = 1, y1 = 2, x2 = 3, y2 = 4;
 
-    cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(y1));
-    cy.get('#\\/n3 .mjx-mrow').should('contain.text', nInDOM(x2));
-    cy.get('#\\/n4 .mjx-mrow').should('contain.text', nInDOM(y2));
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y1));
-    cy.get('#\\/al2\\/n3 .mjx-mrow').should('contain.text', nInDOM(x2));
-    cy.get('#\\/al2\\/n4 .mjx-mrow').should('contain.text', nInDOM(y2));
 
-    cy.window().then(async (win) => {
-      let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
-      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/n2'].stateValues.value).eq(y1);
-      expect(stateVariables['/n3'].stateValues.value).eq(x2);
-      expect(stateVariables['/n4'].stateValues.value).eq(y2);
-      expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/al2/n2'].stateValues.value).eq(y1);
-      expect(stateVariables['/al2/n3'].stateValues.value).eq(x2);
-      expect(stateVariables['/al2/n4'].stateValues.value).eq(y2);
-    });
-
-    cy.log('set propIndex to 1');
-
-    cy.get('#\\/n textarea').type("1{enter}", { force: true })
-
-    cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
     cy.get('#\\/n3 .mjx-mrow').should('not.exist');
     cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-    cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-    cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
     cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
     cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
 
@@ -2445,12 +2450,39 @@ describe('Collect Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
       expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-      expect(stateVariables['/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/n2'].stateValues.value).eq(x2);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
       expect(stateVariables['/n3']).eq(undefined);
       expect(stateVariables['/n4']).eq(undefined);
-      expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
-      expect(stateVariables['/al2/n2'].stateValues.value).eq(x2);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
+      expect(stateVariables['/al2/n3']).eq(undefined);
+      expect(stateVariables['/al2/n4']).eq(undefined);
+    });
+
+    cy.log('set propIndex to 1');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true })
+
+    cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/n4 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
+      expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
+      expect(stateVariables['/n1']).eq(undefined);
+      expect(stateVariables['/n2']).eq(undefined);
+      expect(stateVariables['/n3']).eq(undefined);
+      expect(stateVariables['/n4']).eq(undefined);
+      expect(stateVariables['/al2/n1']).eq(undefined);
+      expect(stateVariables['/al2/n2']).eq(undefined);
       expect(stateVariables['/al2/n3']).eq(undefined);
       expect(stateVariables['/al2/n4']).eq(undefined);
     });
@@ -2464,25 +2496,25 @@ describe('Collect Tag Tests', function () {
         args: { x: x1, y: y1 }
       })
 
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x1));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(x2));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
         expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-        expect(stateVariables['/n1'].stateValues.value).eq(x1);
-        expect(stateVariables['/n2'].stateValues.value).eq(x2);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
         expect(stateVariables['/n3']).eq(undefined);
         expect(stateVariables['/n4']).eq(undefined);
-        expect(stateVariables['/al2/n1'].stateValues.value).eq(x1);
-        expect(stateVariables['/al2/n2'].stateValues.value).eq(x2);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
         expect(stateVariables['/al2/n3']).eq(undefined);
         expect(stateVariables['/al2/n4']).eq(undefined);
       });
@@ -2502,7 +2534,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2537,7 +2569,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2567,7 +2599,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2597,7 +2629,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2628,7 +2660,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2658,7 +2690,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2689,7 +2721,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2719,7 +2751,7 @@ describe('Collect Tag Tests', function () {
       cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
@@ -2739,25 +2771,25 @@ describe('Collect Tag Tests', function () {
     cy.get('#\\/n textarea').type("{end}{backspace}{enter}", { force: true })
 
     cy.window().then(async (win) => {
-      cy.get('#\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/n4 .mjx-mrow').should('not.exist');
-      cy.get('#\\/al2\\/n1 .mjx-mrow').should('contain.text', nInDOM(x2));
-      cy.get('#\\/al2\\/n2 .mjx-mrow').should('contain.text', nInDOM(y2));
+      cy.get('#\\/al2\\/n1 .mjx-mrow').should('not.exist');
+      cy.get('#\\/al2\\/n2 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n3 .mjx-mrow').should('not.exist');
       cy.get('#\\/al2\\/n4 .mjx-mrow').should('not.exist');
-  
+
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
         expect(stateVariables['/A'].stateValues.xs).eqls([x1, y1]);
         expect(stateVariables['/B'].stateValues.xs).eqls([x2, y2]);
-        expect(stateVariables['/n1'].stateValues.value).eq(x2);
-        expect(stateVariables['/n2'].stateValues.value).eq(y2);
+        expect(stateVariables['/n1']).eq(undefined);
+        expect(stateVariables['/n2']).eq(undefined);
         expect(stateVariables['/n3']).eq(undefined);
         expect(stateVariables['/n4']).eq(undefined);
-        expect(stateVariables['/al2/n1'].stateValues.value).eq(x2);
-        expect(stateVariables['/al2/n2'].stateValues.value).eq(y2);
+        expect(stateVariables['/al2/n1']).eq(undefined);
+        expect(stateVariables['/al2/n2']).eq(undefined);
         expect(stateVariables['/al2/n3']).eq(undefined);
         expect(stateVariables['/al2/n4']).eq(undefined);
       });
@@ -2777,24 +2809,24 @@ describe('Collect Tag Tests', function () {
     </graph>
 
     <graph>
-      <copy target="_point1" assignNames="p1a" />
+      <copy source="_point1" assignNames="p1a" />
       <point>(4,2)</point>
       <point>
-        (<copy prop="y" target="_point2" />,
-        <copy prop="x" target="_point2" />)
+        (<copy prop="y" source="_point2" />,
+        <copy prop="x" source="_point2" />)
       </point>
     </graph>
     </panel>
 
     <graph>
-      <collect componentTypes="point" name="points" target="_panel1" assignNames="q1 q2 q3 q4 q5" />
+      <collect componentTypes="point" name="points" source="_panel1" assignNames="q1 q2 q3 q4 q5" />
     </graph>
 
-    <p>Coordinates of points: <collect componentTypes="point" prop="CoOrDS" name="coords" target="_panel1" assignNames="c1 c2 c3 c4 c5" /></p>
-    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="X" name="xs" target="_graph3" assignNames="x1 x2 x3 x4 x5" /></aslist></p>
-    <p><m>x</m>-coordinates of points via a copy: <aslist><copy name="xs2" target="xs" assignNames="xc1 xc2 xc3 xc4 xc5" /></aslist></p>
-    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="X" name="xs3" assignNames="xe1 xe2 xe3 xe4 xe5" ><copy name="points2" target="points" assignNames="qa1 qa2 qa3 qa4 qa5" /></extract></aslist></p>
-    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="Y" name="ys" target="_graph3" assignNames="y1 y2 y3 y4 y5" /></mean></p>
+    <p>Coordinates of points: <collect componentTypes="point" prop="CoOrDS" name="coords" source="_panel1" assignNames="c1 c2 c3 c4 c5" /></p>
+    <p><m>x</m>-coordinates of points: <aslist><collect componentTypes="point" prop="X" name="xs" source="_graph3" assignNames="x1 x2 x3 x4 x5" /></aslist></p>
+    <p><m>x</m>-coordinates of points via a copy: <aslist><copy name="xs2" source="xs" assignNames="xc1 xc2 xc3 xc4 xc5" /></aslist></p>
+    <p><m>x</m>-coordinates of points via extract: <aslist><extract prop="X" name="xs3" assignNames="xe1 xe2 xe3 xe4 xe5" ><copy name="points2" source="points" assignNames="qa1 qa2 qa3 qa4 qa5" /></extract></aslist></p>
+    <p>Average of <m>y</m>-coordinates of points: <mean name="mean"><collect componentTypes="point" prop="Y" name="ys" source="_graph3" assignNames="y1 y2 y3 y4 y5" /></mean></p>
     `}, "*");
     });
 
