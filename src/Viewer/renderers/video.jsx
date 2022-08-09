@@ -52,7 +52,6 @@ export default React.memo(function Video(props) {
           controls: 1,
           modestbranding: 1,
           rel: 0,
-          showinfo: 0
         },
         events: {
           'onReady': onPlayerReady,
@@ -448,7 +447,7 @@ export default React.memo(function Video(props) {
   let videoTag;
 
   if (SVs.youtube) {
-    videoTag = <iframe id={name} style={videoStyle} src={"https://www.youtube.com/embed/" + SVs.youtube + "?enablejsapi=1"} allow="autoplay" />
+    videoTag = <iframe id={name} style={videoStyle} src={"https://www.youtube.com/embed/" + SVs.youtube + "?enablejsapi=1&rel=0&modestbranding=1"} allow="autoplay; fullscreen" />
   } else if (SVs.source) {
     videoTag = <video className="video" id={name} controls style={videoStyle} >
       <source src={SVs.source} type={`video/${SVs.source.split('/').pop().split('.').pop()}`} />
