@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import PageViewer from '../../../Viewer/PageViewer';
+import useEventListener from '../../../_utils/hooks/useEventListener'
 import {
   useRecoilValue,
   atom,
@@ -47,6 +48,23 @@ export const editorViewerErrorStateAtom = atom({
   default: false
 })
 
+export const useUpdateViewer = () => {
+  const updateViewer = useRecoilCallback(({snapshot,set})=> async ()=>{
+    const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom)
+    const isErrorState = await snapshot.getPromise(editorViewerErrorStateAtom)
+  
+    set(viewerDoenetMLAtom,textEditorDoenetML)
+  
+    if (isErrorState){
+      set(refreshNumberAtom,(was)=>was+1);
+    }
+  
+  })
+  return updateViewer;
+};
+
+
+
 export default function EditorViewer() {
   // let refreshCount = useRef(1);
   // console.log(">>>>===EditorViewer",refreshCount.current)
@@ -64,6 +82,7 @@ export default function EditorViewer() {
   const pageObj = useRecoilValue(itemByDoenetId(paramPageId))
   const activityObj = useRecoilValue(itemByDoenetId(doenetId))
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  const updateViewer = useUpdateViewer();
 
 
   useSetCourseIdFromDoenetId(doenetId);
@@ -122,6 +141,13 @@ export default function EditorViewer() {
     }
   }, [paramPageId, pageInitiated]);
 
+  useEventListener("keydown", e => {
+    if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+      e.preventDefault();
+      updateViewer();
+    }
+  });
+
   if(courseId === "__not_found__") {
     return <h1>Content not found or no permission to view content</h1>;
   } else if (paramPageId !== initializedPageId) {
@@ -146,7 +172,7 @@ export default function EditorViewer() {
       index: cleanGeneratedVariant.index,
     });
   }
-
+  
 
 
   // console.log(`>>>>Show PageViewer with value -${viewerDoenetML}- -${refreshNumber}-`)

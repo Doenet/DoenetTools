@@ -15,6 +15,10 @@ const SearchBar = styled.input `
     width: ${props => props.width === 'menu' ? '130px' : '220px'};
     font-size: 14px;
     cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+    &:focus {
+        outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : 'var(--canvastext)'};
+        outline-offset: 2px;
+    }
 `;
 
 
@@ -30,6 +34,10 @@ const CancelButton = styled.button `
     color: var(--canvastext);
     overflow: hidden;
     outline: none;
+    border-radius: 5px;
+    &:focus {
+        outline: 2px solid var(--canvastext);
+    }
 `;
 
 const SubmitButton = styled.button `
@@ -49,6 +57,11 @@ const SubmitButton = styled.button `
     &:hover {
         color: var(--canvastext);
         background-color: ${props => props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)'};
+    }
+
+    &:focus {
+        outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : 'var(--canvastext)'};
+        outline-offset: 2px;
     }
 `;
 
@@ -190,9 +203,10 @@ export default function Searchbar(props) {
                     disabled={disable}
                     alert={alert}
                     value={searchTerm}
-                    onKeyDown={(e)=>{if (e.key === 'Enter'){searchSubmitAction()}}}
+                    onKeyDown={(e)=>{if (e.key === 'Enter' || e.key === "Spacebar" || e.key === " "){searchSubmitAction()}}}
                     autoFocus={autoFocus} 
                     aria-labelledby="search-label"
+                    aria-disabled={props.disabled ? true : false}
                 />
                 <div style={{padding: '3px', display:'inline'}}></div>
                 {searchButton}

@@ -66,6 +66,7 @@ export default function DateTime(props) {
            }}
           ref={inputRef}
           aria-labelledby="checkbox-label"
+          aria-haspopup="true"
           onChange={(e) => {
             setCursorStart(e.target.selectionStart);
             setCursorEnd(e.target.selectionEnd);

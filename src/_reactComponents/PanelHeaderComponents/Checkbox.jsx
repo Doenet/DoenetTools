@@ -18,6 +18,11 @@ const Button = styled.button`
     color: black;
     background-color: ${props => props.alert ? 'var(--lightRed)' : (props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)')};
   }
+
+  &:focus {
+    outline: 2px solid ${props => props.color == 'var(mainGray)' ? 'var(--canvastext)' : props.color};
+    outline-offset: 2px;
+}
 `;
 const Label = styled.p`
   font-size: 14px;
@@ -74,8 +79,9 @@ export default function CheckboxButton(props) {
       disabled={disabled}
       cursor={cursor}
       aria-labelledby={labelValue} 
-      aria-label={"Checkbox"}
       aria-checked={props.checked}
+      aria-disabled={disabled}
+      role="checkbox"
       onClick={(e) => {
         // console.log('contains click', buttonRef.current.contains(e.target));
         if (props.onClick){

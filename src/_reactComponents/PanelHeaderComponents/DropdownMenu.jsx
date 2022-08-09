@@ -8,7 +8,7 @@ const DropdownMenu = (props) => {
       return {
         ...provided,
         color: 'var(--canvastext)',
-        backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+        backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
         ':active': { backgroundColor: 'var(--canvas)' },
       };
     },
@@ -18,7 +18,7 @@ const DropdownMenu = (props) => {
       maxHeigh: state.selectProps.maxMenuHeight,
       overflow: 'scroll',
       color: 'var(--canvastext)',
-      backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+      backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
       ':active': { backgroundColor: 'var(--canvas)' },
     }),
     container: (provided, state) => ({
@@ -29,31 +29,33 @@ const DropdownMenu = (props) => {
       left: props.absolute && props.left ? props.left : null,
       bottom: props.absolute && props.bottom ? props.bottom : null,
       color: 'var(--canvastext)',
-      backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+      // backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
       ':active': { backgroundColor: 'var(--canvas)' },
       //   left: props.absolute && props.left ? props.left : null,
       //   top: props.absolute && props.top ? props.top : null,
+      
     }),
     valueContainer: (provided, state) => ({
       ...provided,
       height: '20px',
       color: 'var(--canvastext)',
-      backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+      backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
       ':active': { backgroundColor: 'var(--canvas)' },
       // padding: '0 6px',
+      
     }),
     indicatorsContainer: (provided, state) => ({
       ...provided,
       height: '20px',
       color: 'var(--canvastext)',
-      backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+      backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
       ':active': { backgroundColor: 'var(--canvas)' },
     }),
     singleValue: (provided, state) => {
       return {
         ...provided,
         color: 'var(--canvastext)',
-        backgroundColor: state.isSelected ? 'var(--lightBlue)' : 'var(--canvas)',
+        backgroundColor: state.isFocused ? 'var(--lightBlue)' : state.isSelected ? 'var(--mainGray)' : 'var(--canvas)',
         ':active': { backgroundColor: 'var(--canvas)' },
       };
     },
@@ -76,9 +78,12 @@ const DropdownMenu = (props) => {
         borderRadius: 'var(--mainBorderRadius)',
         position: 'relative',
         transition: 'all 100ms',
-        ':focus': {
-          outline: 'none',
-        },
+        outline: state.isFocused ? '2px solid black' : 'none',
+        outlineOffset: state.isFocused ? '2px' : 'none',
+        // ':focus': {
+        //   outline: '2px solid black',
+        //   outlineOffset: '2px'
+        // },
       };
     },
   };
@@ -95,6 +100,7 @@ const DropdownMenu = (props) => {
   //   console.log(options, props.def);
   return (
     <Select
+      aria-haspopup="true"
       value={options[props.valueIndex - 1]}
       defaultValue={options[props.defaultIndex - 1]}
       styles={customStyles}
@@ -108,6 +114,8 @@ const DropdownMenu = (props) => {
       closeMenuOnSelect={true}
       isMulti={props.isMulti ? props.isMulti : false}
       isDisabled={props.disabled ? true : false}
+      aria-disabled={props.disabled ? true : false}
+      
     />
   );
 };
