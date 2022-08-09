@@ -1,3 +1,4 @@
+import { returnLabelStateVariableDefinitions } from '../utils/label.js';
 import InlineComponent from './abstract/InlineComponent.js';
 
 export default class triggerSet extends InlineComponent {
@@ -8,11 +9,14 @@ export default class triggerSet extends InlineComponent {
     // attributes.width = {default: 300};
     // attributes.height = {default: 50};
     attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: "update value",
+      createComponentOfType: "label",
+    };
+
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true,
     };
 
     attributes.triggerWhen = {
@@ -38,6 +42,9 @@ export default class triggerSet extends InlineComponent {
     return [{
       group: "updateValuesCallActions",
       componentTypes: ["updateValue", "callAction"]
+    }, {
+      group: "labels",
+      componentTypes: ["label"]
     }]
 
   }
@@ -47,6 +54,10 @@ export default class triggerSet extends InlineComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
 
     stateVariableDefinitions.updateValueAndActionsToTrigger = {
       returnDependencies: () => ({

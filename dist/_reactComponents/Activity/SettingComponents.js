@@ -18,6 +18,8 @@ import RelatedItems from "../PanelHeaderComponents/RelatedItems.js";
 import ActionButtonGroup from "../PanelHeaderComponents/ActionButtonGroup.js";
 import ActionButton from "../PanelHeaderComponents/ActionButton.js";
 import {toastType, useToast} from "../../_framework/Toast.js";
+import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
+import {useSaveDraft} from "../../_framework/ToolPanels/DoenetMLEditor.js";
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
   display: ${(props) => props.flex ? "flex" : "block"};
@@ -36,6 +38,8 @@ const InputControl = styled.div`
   align-items: center;
 `;
 export const AssignUnassignActivity = ({doenetId, courseId}) => {
+  const pageId = useRecoilValue(searchParamAtomFamily("pageId"));
+  const {saveDraft} = useSaveDraft();
   const {
     compileActivity,
     updateAssignItem
@@ -52,8 +56,12 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
     vertical: true
   }, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
+    "data-test": "Assign Activity",
     value: assignActivityText,
-    onClick: () => {
+    onClick: async () => {
+      if (pageId) {
+        await saveDraft({pageId, courseId});
+      }
       compileActivity({
         activityDoenetId: doenetId,
         isAssigned: true,
@@ -69,6 +77,7 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
     }
   }), isAssigned ? /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
+    "data-test": "Unassign Activity",
     value: "Unassign Activity",
     alert: true,
     onClick: () => {

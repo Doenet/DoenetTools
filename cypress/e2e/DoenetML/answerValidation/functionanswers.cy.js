@@ -14,7 +14,7 @@ describe('Function answer validation tests', function () {
   <p>Enter a number close to an integer:
   <answer>
     <mathinput name="x" />
-    <award credit="$$f($(x{prop='immediateValue' isResponse}))">
+    <award credit="$$f($(x.immediateValue{isResponse}))">
       <when>true</when>
     </award>
   </answer>
@@ -154,7 +154,7 @@ describe('Function answer validation tests', function () {
   <p>Enter a number:
   <answer>
     <mathinput name="x" />
-    <award credit="$$f($(x{prop='immediateValue' isResponse}))">
+    <award credit="$$f($(x.immediateValue{isResponse}))">
       <when>true</when>
     </award>
   </answer>

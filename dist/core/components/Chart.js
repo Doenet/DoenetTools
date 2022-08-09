@@ -157,7 +157,7 @@ export default class Chart extends BlockComponent {
       },
       definition({ dependencyValues }) {
 
-        // console.log('definition of dataFrame', dependencyValues)
+        console.log('definition of dataFrame', dependencyValues)
 
         let dataFrame = null;
         if (dependencyValues.targetComponent?.stateValues.dataFrame) {

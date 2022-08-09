@@ -1735,8 +1735,12 @@ export default class Vector extends GraphicalComponent {
       }
     }
 
-    stateVariableDefinitions.displacementCoordsLatex = {
+    stateVariableDefinitions.latex = {
       forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
+      },
       returnDependencies: () => ({
         displacementCoords: {
           dependencyType: "stateVariable",
@@ -1770,12 +1774,12 @@ export default class Vector extends GraphicalComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
-        let displacementCoordsLatex = roundForDisplay({
+        let latex = roundForDisplay({
           value: dependencyValues.displacementCoords,
           dependencyValues, usedDefault
         }).toLatex(params);
 
-        return { setValue: { displacementCoordsLatex } }
+        return { setValue: { latex } }
 
       }
     }

@@ -25,5 +25,7 @@ export default React.memo(function MathList(props) {
     key: name
   }, /* @__PURE__ */ React.createElement("a", {
     name
-  }), withCommas);
+  }), /* @__PURE__ */ React.createElement("span", {
+    id: name
+  }, withCommas));
 });

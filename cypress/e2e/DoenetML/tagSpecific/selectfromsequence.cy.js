@@ -1929,7 +1929,6 @@ describe('SelectFromSequence Tag Tests', function () {
     })
   });
 
-
   it("rounding", () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1972,5 +1971,69 @@ describe('SelectFromSequence Tag Tests', function () {
     });
 
   });
+
+  it("check bugfix for non-constant exclude and unique variants", () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <variantControl uniqueVariants />
+    <text>a</text>
+    <p>Number to exclude: <number name="exclude">2</number></p>
+    <p><aslist><selectFromSequence assignNames="n" from="1" to="3" exclude="$exclude" /></aslist></p>
+
+    <p><number name="na">$n</number></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let n = stateVariables["/n"].stateValues.value;
+
+      cy.get('#\\/n').should('have.text', String(n))
+
+      cy.get('#\\/na').should('have.text', String(n))
+
+      expect(n=== 1 || n=== 3).eq(true)
+
+    });
+
+  });
+
+  it("check bugfix for non-constant exclude and defaulting to unique variants", () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p>Number to exclude: <number name="exclude">2</number></p>
+    <p><aslist><selectFromSequence assignNames="n" from="1" to="3" exclude="$exclude" /></aslist></p>
+
+    <p><number name="na">$n</number></p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+
+      let n = stateVariables["/n"].stateValues.value;
+
+      cy.get('#\\/n').should('have.text', String(n))
+
+      cy.get('#\\/na').should('have.text', String(n))
+
+      expect(n=== 1 || n=== 3).eq(true)
+
+    });
+
+  });
+
 
 })

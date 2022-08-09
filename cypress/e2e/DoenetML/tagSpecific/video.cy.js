@@ -238,7 +238,7 @@ describe('Video Tag Tests', function () {
   <p>State: <copy prop="state" target="v" assignNames="state" /></p>
   <p>Time: <copy prop="time" target="v" assignNames="time" /></p>
 
-  <p>Change time: <mathinput bindValueTo="$(v{prop='time'})" name="mi" /></p>
+  <p>Change time: <mathinput bindValueTo="$(v.time)" name="mi" /></p>
 
 
   <p>Control via setting state variables directly:

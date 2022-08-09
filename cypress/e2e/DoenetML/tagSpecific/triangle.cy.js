@@ -1038,7 +1038,7 @@ describe('Triangle Tag Tests', function () {
   <graph>
   <triangle vertices="(1,2) (3,4) (-5,6)" />
 
-  <triangle vertices="($(_triangle1{prop='vertexX1_2'}), $(_triangle1{prop='vertexX1_1'})) ($(_triangle1{prop='vertexX2_2'}), $(_triangle1{prop='vertexX2_1'})) $flip3" />
+  <triangle vertices="($(_triangle1.vertexX1_2), $(_triangle1.vertexX1_1)) ($(_triangle1.vertexX2_2), $(_triangle1.vertexX2_1)) $flip3" />
   </graph>
 
   <point name="flip3">
@@ -1130,7 +1130,7 @@ describe('Triangle Tag Tests', function () {
   <graph>
   <triangle vertices="(1,2)" />
 
-  <triangle vertices="($(_triangle1{prop='vertexX1_2'}), $(_triangle1{prop='vertexX1_1'})) ($(_triangle1{prop='vertexX2_2'}), $(_triangle1{prop='vertexX2_1'})) $flip3" />
+  <triangle vertices="($(_triangle1.vertexX1_2), $(_triangle1.vertexX1_1)) ($(_triangle1.vertexX2_2), $(_triangle1.vertexX2_1)) $flip3" />
   </graph>
 
   <point name="flip3">
@@ -1293,7 +1293,7 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <triangle vertices="($(_triangle1{prop='vertexX2_2'}), $(_triangle1{prop='vertexX2_1'})) (3,5) (-5,2)" />
+  <triangle vertices="($(_triangle1.vertexX2_2), $(_triangle1.vertexX2_1)) (3,5) (-5,2)" />
   </graph>
   `}, "*");
     });
@@ -1359,7 +1359,7 @@ describe('Triangle Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <triangle vertices="($(_triangle1{prop='vertexX2_2'}), $(_triangle1{prop='vertexX2_1'}))" />
+  <triangle vertices="($(_triangle1.vertexX2_2), $(_triangle1.vertexX2_1))" />
   </graph>
   `}, "*");
     });

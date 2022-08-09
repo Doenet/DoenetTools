@@ -23,11 +23,15 @@ export async function expandDoenetMLsToFullSerializedComponents({
 
     substituteDeprecations(serializedComponents);
 
+    temporarilyRenameSourceBackToTarget(serializedComponents);
+
     correctComponentTypeCapitalization(serializedComponents, componentInfoObjects.componentTypeLowerCaseMapping);
 
     copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, componentInfoObjects.isCompositeComponent);
 
     createAttributesFromProps(serializedComponents, componentInfoObjects);
+
+    breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObjects)
 
     applyMacros(serializedComponents, componentInfoObjects);
 
@@ -249,10 +253,34 @@ function substituteDeprecations(serializedComponents) {
   // Note: use lower case for keys
   let deprecatedPropertySubstitutions = {
     tname: "target",
-    triggerwithtnames: "triggerWithTargets",
-    updatewithtname: "updateWithTarget",
+    triggerwithtnames: "triggerWith",
+    updatewithtname: "updateWith",
     paginatortname: "paginator",
-    randomizeorder: "shuffleOrder"
+    randomizeorder: "shuffleOrder",
+    copytarget: "copySource",
+    triggerwithtargets: "triggerWith",
+    triggerwhentargetsclicked: "triggerWhenObjectsClicked",
+    fortarget: "forObject",
+    targetattributestoignore: "sourceAttributesToIgnore",
+    targetattributestoignorerecursively: "sourceAttributesToIgnoreRecursively",
+    targetsareresponses: "sourcesAreResponses",
+    updatewithtarget: "updateWith",
+    targetsarefunctionsymbols: "sourcesAreFunctionSymbols",
+  }
+
+  // Note: use lower case for keys
+  let deprecatedPropertySubstitutionsComponentSpecific = {
+    copy: {
+      target: "source",
+      tname: "source",
+    },
+    collect: {
+      target: "source",
+      tname: "source",
+    },
+    summarystatistics: {
+      target: "source",
+    }
   }
 
   for (let component of serializedComponents) {
@@ -261,13 +289,29 @@ function substituteDeprecations(serializedComponents) {
     }
 
     if (component.props) {
+      let cType = component.componentType;
+      let typeSpecificDeps = deprecatedPropertySubstitutionsComponentSpecific[cType.toLowerCase()];
+      if (!typeSpecificDeps) {
+        typeSpecificDeps = {};
+      }
       let retry = true;
       while (retry) {
         retry = false;
         for (let prop in component.props) {
           let propLower = prop.toLowerCase();
+          if (propLower in typeSpecificDeps) {
+            let newProp = typeSpecificDeps[propLower];
 
-          if (propLower in deprecatedPropertySubstitutions) {
+            console.warn(`Attribute ${prop} of component type ${cType} is deprecated.  Use ${newProp} instead.`)
+
+            component.props[newProp] = component.props[prop];
+            delete component.props[prop];
+
+            // since modified object over which are looping
+            // break out of loop and start over
+            retry = true;
+            break;
+          } else if (propLower in deprecatedPropertySubstitutions) {
             let newProp = deprecatedPropertySubstitutions[propLower];
 
             console.warn(`Attribute ${prop} is deprecated.  Use ${newProp} instead.`)
@@ -287,6 +331,74 @@ function substituteDeprecations(serializedComponents) {
 
     if (component.children) {
       substituteDeprecations(component.children);
+    }
+  }
+
+
+}
+
+
+function temporarilyRenameSourceBackToTarget(serializedComponents) {
+
+  // Note: use lower case for keys
+  let backwardsDeprecatedPropertySubstitutions = {
+    copysource: "copyTarget"
+  }
+
+  // Note: use lower case for keys
+  let backwardsDeprecatedPropertySubstitutionsComponentSpecific = {
+    copy: {
+      source: "target",
+    },
+    collect: {
+      source: "target",
+    }
+  }
+
+  for (let component of serializedComponents) {
+    if (typeof component !== "object") {
+      continue;
+    }
+
+    if (component.props) {
+      let cType = component.componentType;
+      let typeSpecificDeps = backwardsDeprecatedPropertySubstitutionsComponentSpecific[cType.toLowerCase()];
+      if (!typeSpecificDeps) {
+        typeSpecificDeps = {};
+      }
+      let retry = true;
+      while (retry) {
+        retry = false;
+        for (let prop in component.props) {
+          let propLower = prop.toLowerCase();
+          if (propLower in typeSpecificDeps) {
+            let newProp = typeSpecificDeps[propLower];
+
+            component.props[newProp] = component.props[prop];
+            delete component.props[prop];
+
+            // since modified object over which are looping
+            // break out of loop and start over
+            retry = true;
+            break;
+          } else if (propLower in backwardsDeprecatedPropertySubstitutions) {
+            let newProp = backwardsDeprecatedPropertySubstitutions[propLower];
+
+            component.props[newProp] = component.props[prop];
+            delete component.props[prop];
+
+            // since modified object over which are looping
+            // break out of loop and start over
+            retry = true;
+            break;
+
+          }
+        }
+      }
+    }
+
+    if (component.children) {
+      temporarilyRenameSourceBackToTarget(component.children);
     }
   }
 
@@ -353,7 +465,7 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, 
           } else if (foundCopyFromURI) {
             throw Error(`Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(component)}`)
           } else if (foundAssignNames) {
-            if(haveAnyComposite) {
+            if (haveAnyComposite) {
               throw Error(`A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(component)}.`)
             } else {
               throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
@@ -382,7 +494,7 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, 
           } else if (foundCopyTarget) {
             throw Error(`Cannot combine copyTarget and copyFromURI attribiutes.  For in component of type ${originalType}${indexRangeString(component)}`)
           } else if (foundAssignNames) {
-            if(haveAnyComposite) {
+            if (haveAnyComposite) {
               throw Error(`A component of type ${originalType} cannot have both assignNames and copyFromURI.  Found${indexRangeString(component)}.`)
             } else {
               throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
@@ -406,7 +518,7 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, 
           component.doenetAttributes.createNameFromComponentType = originalType;
         } else if (lowerCaseProp === "assignnames" && !haveComposite) {
           if (foundCopyTarget || foundCopyFromURI) {
-            if(haveAnyComposite) {
+            if (haveAnyComposite) {
               throw Error(`A component of type ${originalType} cannot have both assignNames and copyTarget.  Found${indexRangeString(component)}.`)
             } else {
               throw Error(`Invalid attribute assignNames for component of type ${originalType}${indexRangeString(component)}`)
@@ -415,10 +527,202 @@ function copyTargetOrFromURIAttributeCreatesCopyComponent(serializedComponents, 
           foundAssignNames = true;
         }
       }
+
+      if (foundCopyTarget) {
+        // give error if have prop name "prop"
+        // after that rename copyProp to "prop"
+        for (let prop of Object.keys(component.props)) {
+          let lowerCaseProp = prop.toLowerCase();
+          if (lowerCaseProp === "prop") {
+            throw Error(`Invalid attribute prop for component of type ${originalType}${indexRangeString(component)}`)
+          }
+        }
+        let foundCopyProp = false;
+        for (let prop of Object.keys(component.props)) {
+          let lowerCaseProp = prop.toLowerCase();
+          if (lowerCaseProp === "copyprop") {
+            if (foundCopyProp) {
+              throw Error(`Cannot repeat attribute ${prop}.  Found in component type ${originalType}${indexRangeString(component)}`)
+            }
+            component.props.prop = component.props[prop];
+            delete component.props[prop];
+            foundCopyProp = true;
+          }
+        }
+      }
     }
 
     if (component.children) {
       copyTargetOrFromURIAttributeCreatesCopyComponent(component.children, isCompositeComponent);
+    }
+  }
+}
+
+function breakUpTargetIntoPropsAndIndices(serializedComponents, componentInfoObjects) {
+
+  for (let component of serializedComponents) {
+
+    // for now, just do this substitution for copy component
+    // TODO: other components such as updateValue, animateFromSequence
+    // Note: do not do this for collect, as this dot notation would be confusing for collect
+
+    if (component.props &&
+      ["copy", "updateValue", "animateFromSequence"].includes(component.componentType)
+    ) {
+
+      let targetPropName;
+      let sourceName;
+      let componentIndex;
+      let componentAttributes;
+      let propArray;
+      let subNames;
+
+      let originalSource;
+
+      for (let prop of Object.keys(component.props)) {
+        let lowerCaseProp = prop.toLowerCase();
+        if (lowerCaseProp === "target") {
+
+          if (targetPropName) {
+            throw Error(`Cannot repeat attribute ${prop}.  Found in component type ${component.componentType}${indexRangeString(component)}`)
+          }
+
+          targetPropName = prop;
+          originalSource = component.props[prop];
+
+          let sourcePiecesResult = buildSourcePieces(originalSource, true)
+
+          if (sourcePiecesResult.success
+            && sourcePiecesResult.matchLength === originalSource.length
+          ) {
+
+            sourceName = sourcePiecesResult.sourceName;
+            componentIndex = sourcePiecesResult.componentIndex;
+            componentAttributes = sourcePiecesResult.componentAttributes;
+            propArray = sourcePiecesResult.propArray;
+            subNames = sourcePiecesResult.subNames;
+          }
+
+        }
+      }
+
+      if (targetPropName && sourceName) {
+        if (componentIndex || componentAttributes || propArray.length > 0) {
+
+          // found an extended target
+
+          if (component.attributes.prop) {
+            throw Error(`Cannot combine the prop attribute with an extended source attribute.  Found in component type ${component.componentType}${indexRangeString(component)}`)
+          }
+          if (component.attributes.propIndex) {
+            throw Error(`Cannot combine the propIndex attribute with an extended source attribute.  Found in component type ${component.componentType}${indexRangeString(component)}`)
+          }
+          if (component.attributes.componentIndex) {
+            throw Error(`Cannot combine the componentIndex attribute with an extended source attribute.  Found in component type ${component.componentType}${indexRangeString(component)}`)
+          }
+
+
+          let componentResult = createComponentFromExtendedSource({
+            sourceName,
+            componentIndex,
+            subNames,
+            componentAttributes,
+            propArray,
+            componentInfoObjects
+          });
+
+          if (componentResult.success) {
+            let newComponent = componentResult.newComponent;
+
+            if (component.componentType === "copy") {
+
+              // assign new componentType, attributes, and doenetAttributes
+              // to original component
+              delete component.props[targetPropName];
+              Object.assign(component.attributes, newComponent.attributes)
+              if (!component.doenetAttributes) {
+                component.doenetAttributes = {};
+              }
+              Object.assign(component.doenetAttributes, newComponent.doenetAttributes)
+              if (!component.doenetAttributes.createNameFromComponentType) {
+                component.doenetAttributes.createNameFromComponentType = component.componentType;
+              }
+              component.componentType = newComponent.componentType;
+
+              if (propArray.length === 0 &&
+                !(component.attributes.prop || component.attributes.propIndex || component.attributes.createComponentOfType)
+              ) {
+                component.doenetAttributes.isPlainCopy = true;
+              }
+
+              if (newComponent.children) {
+                component.children = newComponent.children;
+              }
+            } else {
+              // have updateValue or animateFromSequence
+              if (newComponent.componentType === "copy") {
+                // if the new component created was a copy
+                // then we can just add the attributes to the original component
+
+                // assign new componentType, attributes, and doenetAttributes
+                // to original component
+                delete component.props[targetPropName];
+                Object.assign(component.attributes, newComponent.attributes)
+                if (!component.doenetAttributes) {
+                  component.doenetAttributes = {};
+                }
+                Object.assign(component.doenetAttributes, newComponent.doenetAttributes)
+              } else {
+                // if the new component created was an extract
+                // then wrap the extract in a setup and append
+                // and modify the updateValue/animateFromSequence to point to the extract
+
+                let longNameId = "fromExtendedSource|" + serializedComponents.length;
+                let nameForExtract = createUniqueName("extract", longNameId);
+                newComponent.doenetAttributes.prescribedName = nameForExtract;
+                newComponent.doenetAttributes.createdFromMacro = true;
+
+                let setupComponent = {
+                  componentType: "setup",
+                  children: [newComponent],
+                  doenetAttributes: { createdFromMacro: true }
+                }
+                serializedComponents.push(setupComponent);
+
+                delete component.props[targetPropName];
+
+                if (!component.doenetAttributes) {
+                  component.doenetAttributes = {};
+                }
+                component.doenetAttributes.target = nameForExtract;
+                component.doenetAttributes.allowDoubleUnderscoreTarget = true;
+
+              }
+
+            }
+          } else {
+            console.warn(`invalid copy source: ${originalSource}`)
+
+          }
+
+        } else {
+          // have copy with just a simple target prop that is a targetName
+          if (component.componentType === "copy" &&
+            !(component.attributes.prop || component.attributes.propIndex || component.attributes.createComponentOfType)
+          ) {
+            if (!component.doenetAttributes) {
+              component.doenetAttributes = {};
+            }
+            component.doenetAttributes.isPlainCopy = true;
+
+          }
+        }
+      }
+
+    }
+
+    if (component.children) {
+      breakUpTargetIntoPropsAndIndices(component.children, componentInfoObjects);
     }
   }
 }
@@ -676,53 +980,45 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 
         let componentsFromMacro;
 
-        if (result.additionalAttributes) {
-          let newDoenetML = `<copy target="${result.targetName}" ${result.additionalAttributes} />`;
+        let componentResult = createComponentFromExtendedSource({
+          sourceName: result.sourceName,
+          componentIndex: result.componentIndex,
+          subNames: result.subNames,
+          componentAttributes: result.componentAttributes,
+          propArray: result.propArray,
+          componentInfoObjects
+        });
 
-          let newComponents;
-
-          try {
-            newComponents = parseAndCompile(newDoenetML);
-          } catch (e) {
-            let strWithError = str.slice(firstIndMatched, firstIndMatched + matchLength);
-            let startInd = firstIndMatched;
-            if (componentInd > 0 && serializedComponents[componentInd - 1].range) {
-              let previousRange = serializedComponents[componentInd - 1].range;
-              if (previousRange.closeEnd) {
-                startInd += previousRange.closeEnd;
-              } else if (previousRange.selfCloseEnd) {
-                startInd += previousRange.selfCloseBegin;
-              }
-            }
-
-            throw Error(`Error in macro at indices ${startInd}-${startInd + matchLength}.  Found: ${strWithError}`)
-          }
-
-          createAttributesFromProps(newComponents, componentInfoObjects);
-          markCreatedFromMacro(newComponents);
-
-          // recurse in case there were more macros in the additionalAttributes
-          applyMacros(newComponents, componentInfoObjects)
-
-          componentsFromMacro = newComponents;
-
+        let newComponent;
+        if (componentResult.success) {
+          newComponent = componentResult.newComponent;
         } else {
-          // no additional attributes, so no need to reparse
-
-          let doenetAttributes = { target: result.targetName, createdFromMacro: true };
-
-          // check here if additionalAttributes is undefined
-          // (even though know it is falsy)
-          // so that an empty string removes the default isPlainMacro
-          if (result.additionalAttributes === undefined) {
-            doenetAttributes.isPlainMacro = true;
+          let strWithError = str.slice(firstIndMatched, firstIndMatched + matchLength);
+          let macroStartInd = firstIndMatched;
+          // TODO: if previous component is a string,
+          // keep going back and add string lengths to get actual index
+          if (componentInd > 0 && serializedComponents[componentInd - 1].range) {
+            console.log(serializedComponents, serializedComponents[componentInd - 1])
+            let previousRange = serializedComponents[componentInd - 1].range;
+            if (previousRange.closeEnd) {
+              macroStartInd += previousRange.closeEnd;
+            } else if (previousRange.selfCloseEnd) {
+              macroStartInd += previousRange.selfCloseBegin;
+            }
           }
 
-          componentsFromMacro = [{
-            componentType: "copy",
-            doenetAttributes
-          }];
+          throw Error(`${componentResult.message}. At indices ${macroStartInd}-${macroStartInd + matchLength}.  Found: ${strWithError}`)
+
         }
+
+        markCreatedFromMacro([newComponent]);
+
+
+        if (result.propArray.length === 0) {
+          newComponent.doenetAttributes.isPlainMacro = true;
+        }
+
+        componentsFromMacro = [newComponent];
 
         let nComponentsToRemove = 1;
         let stringToAddAtEnd = str.substring(firstIndMatched + matchLength);
@@ -819,137 +1115,399 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
 }
 
 
+function createComponentFromExtendedSource({ sourceName,
+  componentIndex, componentAttributes, propArray,
+  subNames,
+  componentInfoObjects }) {
+
+  let newComponent = {
+    componentType: "copy",
+    doenetAttributes: { target: sourceName, },
+    attributes: {},
+  };
+
+  if (componentIndex) {
+    let childrenForAttribute = [componentIndex];
+    applyMacros(childrenForAttribute, componentInfoObjects);
+
+    newComponent.attributes.componentIndex = {
+      component: {
+        componentType: "integer",
+        children: childrenForAttribute
+      }
+    };
+  }
+
+  if (subNames?.length > 0) {
+    let sourceSubnames = [];
+    let sourceSubnamesComponentIndex = [];
+
+    for (let subNameObj of subNames) {
+      sourceSubnames.push(subNameObj.subName);
+      if (subNameObj.subNameComponentIndex !== undefined) {
+        if (sourceSubnamesComponentIndex.length < sourceSubnames - 1) {
+          // TODO: NaN will presumably make it not return anything
+          // When we enable recursing to composites, we'll need a staregy to skip subname component index
+          sourceSubnamesComponentIndex.push(...Array[sourceSubnames - 1 - sourceSubnamesComponentIndex.length].fill(NaN))
+        }
+        sourceSubnamesComponentIndex.push(subNameObj.subNameComponentIndex);
+      }
+    }
+
+    newComponent.attributes.sourceSubnames = {
+      primitive: sourceSubnames
+    };
+    if (sourceSubnamesComponentIndex.length > 0) {
+      let childrenForAttribute = [sourceSubnamesComponentIndex.join(" ")];
+      applyMacros(childrenForAttribute, componentInfoObjects);
+
+      newComponent.attributes.sourceSubnamesComponentIndex = {
+        component: {
+          componentType: "numberList",
+          children: childrenForAttribute
+        }
+      };
+    }
+  }
+
+  let propsAddExtract = false;
+
+  if (componentAttributes) {
+    propsAddExtract = true;
+
+    let attributesResult = createAttributesFromString(componentAttributes, componentInfoObjects);
+    if (!attributesResult.success) {
+      return attributesResult;
+    }
+
+    Object.assign(newComponent.attributes, attributesResult.newAttributes)
+  }
+
+
+  for (let propObj of propArray) {
+
+    if (propsAddExtract) {
+
+      newComponent.doenetAttributes.createdFromMacro = true;
+
+      newComponent = {
+        componentType: "extract",
+        attributes: {},
+        doenetAttributes: {},
+        children: [newComponent]
+      };
+    }
+
+    newComponent.attributes.prop = { primitive: propObj.prop };
+
+    if (propObj.propIndex) {
+      let childrenForAttribute = [propObj.propIndex.join(" ")];
+      applyMacros(childrenForAttribute, componentInfoObjects);
+
+      newComponent.attributes.propIndex = {
+        component: {
+          componentType: "numberList",
+          children: childrenForAttribute
+        }
+      };
+    }
+
+    if (propObj.attributes) {
+
+      let attributesResult = createAttributesFromString(propObj.attributes, componentInfoObjects);
+      if (!attributesResult.success) {
+        return attributesResult;
+      }
+
+      Object.assign(newComponent.attributes, attributesResult.newAttributes)
+    }
+
+
+    propsAddExtract = true;
+
+  }
+
+  return { success: true, newComponent };
+}
+
+function createAttributesFromString(componentAttributes, componentInfoObjects) {
+  // parse a copy component with those attributes
+  // to get attributes parsed
+
+  let attributesDoenetML = `<copy ${componentAttributes} />`;
+  let componentsForAttributes;
+  try {
+    componentsForAttributes = parseAndCompile(attributesDoenetML);
+  } catch (e) {
+    return { success: false, message: "Error in macro" }
+  }
+
+  createAttributesFromProps(componentsForAttributes, componentInfoObjects);
+  markCreatedFromMacro(componentsForAttributes);
+
+  // recurse in case there were more macros in additionalAttributes
+  applyMacros(componentsForAttributes, componentInfoObjects);
+
+
+  let newAttributes = componentsForAttributes[0].attributes;
+
+  if (newAttributes.prop || newAttributes.propIndex || newAttributes.componentIndex) {
+    return {
+      success: false,
+      message: "Error in macro: macro cannot directly add attributes prop, propIndex, or componentIndex"
+    }
+  }
+  return { success: true, newAttributes }
+}
+
 function findFirstFullMacroInString(str) {
 
-  // One or two $ follwed by either
-  // - a word (starting with a letter), capturing word as third group, or
-  // - an identifier in parentheses, capturing identifier as fourth group,
-  //   where the closing parenthesis could be replaced by an open brace,
-  //   capturing the open brace or closing parens as fifth group
-  let reForBeginning = /(\$\$?)(([a-zA-Z_]\w*\b)|\(([a-zA-Z0-9_:.\/\-]+)\s*(\)|{))/;
-
   let offset = 0;
-  let match;
+  let nDollarSigns;
 
-  // since Safari doesn't allow a negative lookbehind to make sure
-  // that match isn't preceeded by third dollar sign,
-  // we instead just skip any matches that include a third dollar sign
   while (true) {
-    // look for a function macro
-    match = str.substring(offset).match(reForBeginning);
+    // look for a macro
+    let matchDollars = str.substring(offset).match(/(\$+)(.?)/);
 
-    if (!match) {
+    if (!matchDollars) {
       return { success: false };
     }
 
-    if (match.index === 0 || str[offset + match.index - 1] !== "$") {
-      break;
+    nDollarSigns = matchDollars[1].length;
+    offset += matchDollars.index + nDollarSigns;
+
+    if (nDollarSigns <= 2) {
+
+      let extendedWordCharacters = false;
+
+      let strForMacro = str.substring(offset);
+      let requiredLength = 0;
+
+      let findResult = findWordOrDelimitedGroup(strForMacro, extendedWordCharacters);
+
+      if (findResult.startDelim === "(") {
+        // if have parens, then restrict to string inside parens
+        // and allowed extended characters in words
+        extendedWordCharacters = true;
+        strForMacro = findResult.group;
+        requiredLength = findResult.group.length;
+      }
+
+      let result = buildSourcePieces(strForMacro, extendedWordCharacters)
+
+      if (result.success) {
+
+        if (extendedWordCharacters) {
+          // if were in parens, then must match all characters
+          if (result.matchLength !== requiredLength) {
+            return { success: false }
+          }
+          result.matchLength += 2;  // +2 for the parens
+        }
+
+        result.nDollarSigns = nDollarSigns;
+        result.firstIndMatched = offset - nDollarSigns;
+        result.matchLength += nDollarSigns;
+
+        return result;
+      }
     }
 
-    // found a third dollar sign preceeding match
-    // so skip this match and look for another match later in the string
-    offset += match.index + match[0].length;
+    // try for another match, given that offset was shifted after last dollar signs
 
   }
 
-
-  let firstIndMatched = match.index + offset;
-  let matchLength = match[0].length;
-  let nDollarSigns = match[1].length;
-
-  if (match[3]) {
-    // found word outside parans
-    return {
-      success: true,
-      firstIndMatched,
-      matchLength,
-      targetName: match[3],
-      nDollarSigns
-    }
-  }
-
-  // found identifier in parens
-  let targetName = match[4];
-
-  if (match[5] === ")") {
-    // found closing parens
-    return {
-      success: true,
-      firstIndMatched,
-      matchLength,
-      targetName,
-      nDollarSigns,
-    }
-  }
-
-  // have opening brace rather than closing parens
-  // need to find matching closing brace and parens
-
-  let strAfterMatch = str.substring(firstIndMatched + matchLength);
-
-  let resultForClosingBrace = findFirstUnmatchedClosingBraceParen(strAfterMatch);
-
-  if (resultForClosingBrace.success) {
-    // found matching closing brace and parens
-    // return string enclosed by braces as additional attributes
-    return {
-      success: true,
-      firstIndMatched,
-      matchLength: matchLength + resultForClosingBrace.parenInd + 1,
-      targetName,
-      nDollarSigns,
-      additionalAttributes: strAfterMatch.substring(0, resultForClosingBrace.braceInd)
-    }
-
-  } else {
-    // the beginning found didn't end up matching the pattern,
-    // so we ignore that match and see if there is another one in the rest of the string
-    let findAnotherResult = findFirstFullMacroInString(strAfterMatch);
-
-    if (!findAnotherResult.success) {
-      // the rest of the string didn't have a match, so no match in the original string
-      return { success: false }
-    }
-
-    // return match found in rest of string, with indices adjusted to be for original string
-    return {
-      success: true,
-      firstIndMatched: firstIndMatched + matchLength + findAnotherResult.firstIndMatched,
-      matchLength: findAnotherResult.matchLength,
-      targetName: findAnotherResult.targetName,
-      nDollarSigns: findAnotherResult.nDollarSigns,
-      additionalAttributes: findAnotherResult.additionalAttributes
-    }
-
-  }
 
 }
 
-function findFirstUnmatchedClosingBraceParen(strAfterMatch) {
-  let nBraces = 0;
+function buildSourcePieces(str, extendedWordCharacters) {
 
-  for (let ind = 0; ind < strAfterMatch.length; ind++) {
-    let char = strAfterMatch[ind];
-    if (char === "}") {
-      if (nBraces === 0) {
-        // found unmatched closing brace
-        // now need next non whitespace character to be closing parenthesis
 
-        if (strAfterMatch.substring(ind + 1).trim()[0] === ")") {
-          let parenInd = strAfterMatch.substring(ind + 1).indexOf(")") + ind + 1;
-          return { success: true, braceInd: ind, parenInd }
-        }
-        // found closing brace, but not followed by closing parens
-        return { success: false }
+  let findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
 
-      }
-      nBraces--;
-    } else if (char === "{") {
-      nBraces++;
-    }
+  let matchLength = 0;
+
+  if (findResult.withPeriod || !findResult.word) {
+    // must start with a word without a period
+    return { success: false };
   }
 
-  return { success: false };
+  let result = {
+    sourceName: (findResult.withSlash ? "/" : "") + findResult.word
+  }
+
+  matchLength += findResult.matchLength;
+  str = str.substring(findResult.matchLength);
+
+  findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+
+  if (findResult.startDelim === "[") {
+    result.componentIndex = findResult.group;
+    matchLength += findResult.matchLength;
+    str = str.substring(findResult.matchLength);
+    findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+  }
+
+  let subNames = [];
+  while (findResult.withSlash) {
+    // check for additional subname piece of /name[componentIndex]
+
+    let subnameObj = { subName: findResult.word }
+    matchLength += findResult.matchLength;
+    str = str.substring(findResult.matchLength);
+    findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+
+    if (findResult.startDelim === "[") {
+      subnameObj.subNameComponentIndex = findResult.group;
+      matchLength += findResult.matchLength;
+      str = str.substring(findResult.matchLength);
+      findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+    }
+
+    subNames.push(subnameObj);
+  }
+
+  result.subNames = subNames;
+
+
+  if (findResult.startDelim === "{") {
+    result.componentAttributes = findResult.group;
+    matchLength += findResult.matchLength;
+    str = str.substring(findResult.matchLength);
+    findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+  }
+
+
+  let propArray = [];
+
+  while (findResult.withPeriod) {
+    // check to a prop object of prop[propIndex]{attributes}
+    // where [] and {} parts are optional
+
+    let propObj = { prop: findResult.word };
+    matchLength += findResult.matchLength;
+    str = str.substring(findResult.matchLength);
+    findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+
+    let propIndex = [];
+
+    while (findResult.startDelim === "[") {
+      propIndex.push(findResult.group);
+      matchLength += findResult.matchLength;
+      str = str.substring(findResult.matchLength);
+      findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+    }
+
+    if (propIndex.length > 0) {
+      propObj.propIndex = propIndex;
+    }
+
+    if (findResult.startDelim === "{") {
+      propObj.attributes = findResult.group;
+      matchLength += findResult.matchLength;
+      str = str.substring(findResult.matchLength);
+      findResult = findWordOrDelimitedGroup(str, extendedWordCharacters);
+    }
+
+    propArray.push(propObj)
+
+  }
+
+
+  result.propArray = propArray;
+  result.matchLength = matchLength;
+  result.success = true;
+
+  return result;
+
+}
+
+function findWordOrDelimitedGroup(str, extendedWordCharacters = false) {
+  // find the next word (possibly begininng with a period or, extendedWordCharacters, a slash ),
+  // or a group delimited by (), [], or {},
+  // where the word/group must start with the first character of the string
+
+  let withPeriod = false;
+  let withSlash = false;
+  if (str[0] === "." && str[1] !== ".") {
+    withPeriod = true;
+    str = str.substring(1);
+  }
+
+  let wordRe;
+
+  if (extendedWordCharacters) {
+    if (withPeriod) {
+      wordRe = /^[\w-]+/;
+    } else {
+      if (str[0] === "/" && str[1].match(/\w/)) {
+        withSlash = true;
+        str = str.substring(1);
+      }
+      wordRe = /^([\w\/-]|\.\.\/)+/;
+    }
+  } else {
+    wordRe = /^[a-zA-Z_]\w*/;
+  }
+
+  let match = str.match(wordRe);
+
+  if (match) {
+    return {
+      success: true,
+      withPeriod,
+      withSlash,
+      word: match[0],
+      matchLength: match[0].length + (withPeriod ? 1 : 0) + (withSlash ? 1 : 0)
+    }
+  } else if (withPeriod || withSlash) {
+    // if starts with a period or slash, must have word next
+    return { success: false };
+  }
+
+  let neededClosingDelimStack = [];
+  let closingByOpeningDelim = {
+    "(": ")",
+    "{": "}",
+    "[": "]",
+  }
+  let closeDelims = Object.values(closingByOpeningDelim);
+
+  let startDelim = str[0];
+
+  let nextClosing = closingByOpeningDelim[startDelim];
+
+  if (!nextClosing) {
+    return { success: false }
+  }
+
+  neededClosingDelimStack.push(nextClosing);
+
+  for (let ind = 1; ind < str.length; ind++) {
+    let char = str[ind];
+
+    if (char in closingByOpeningDelim) {
+      neededClosingDelimStack.push(closingByOpeningDelim[char])
+    } else if (closeDelims.includes(char)) {
+      if (char !== neededClosingDelimStack.pop()) {
+        // mismatched closing delim
+        return { success: false }
+      }
+      if (neededClosingDelimStack.length === 0) {
+        // matched startDelim
+        return {
+          success: true,
+          group: str.substring(1, ind),  // does not include delimiters
+          startDelim,
+          matchLength: ind + 1
+        }
+      }
+    }
+
+  }
+
+  // got to end of str with closing out startDelim
+  return { success: false }
 
 }
 
@@ -1707,7 +2265,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
         target,
         oldTargetComponentName: doenetAttributes.targetComponentName,
         namespaceStack,
-        acceptDoubleUnderscore: doenetAttributes.createdFromSugar
+        acceptDoubleUnderscore: doenetAttributes.createdFromSugar || doenetAttributes.allowDoubleUnderscoreTarget
       });
 
     }
@@ -1766,7 +2324,7 @@ export function createComponentNames({ serializedComponents, namespaceStack = []
 
             if (addingNewNamespace) {
               namespaceStack.push(newNamespaceInfo);
-            } else if(initWithoutShadowingComposite) {
+            } else if (initWithoutShadowingComposite) {
               // if this is the first time through and we aren't shadowing a composite
               // it is possible that ignoring the namespace will lead to name conflicts,
               // so give the child a unique name

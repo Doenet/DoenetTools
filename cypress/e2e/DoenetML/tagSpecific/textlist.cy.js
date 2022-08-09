@@ -65,15 +65,15 @@ describe('TextList Tag Tests', function () {
         </textlist>
       </textlist></p>
   
-      <textinput bindValueTo="$(_textlist1{prop='text1'})" />
-      <textinput bindValueTo="$(_textlist1{prop='text2'})" />
-      <textinput bindValueTo="$(_textlist1{prop='text3'})" />
-      <textinput bindValueTo="$(_textlist1{prop='text4'})" />
-      <textinput bindValueTo="$(_textlist1{prop='text5'})" />
-      <textinput bindValueTo="$(_textlist1{prop='text6'})" />
-      <textinput bindValueTo="$(_textlist1{prop='text7'})" />
-      <textinput bindValueTo="$(_textlist1{prop='text8'})" />
-      <textinput bindValueTo="$(_textlist1{prop='text9'})" />
+      <textinput bindValueTo="$(_textlist1.text1)" />
+      <textinput bindValueTo="$(_textlist1.text2)" />
+      <textinput bindValueTo="$(_textlist1.text3)" />
+      <textinput bindValueTo="$(_textlist1.text4)" />
+      <textinput bindValueTo="$(_textlist1.text5)" />
+      <textinput bindValueTo="$(_textlist1.text6)" />
+      <textinput bindValueTo="$(_textlist1.text7)" />
+      <textinput bindValueTo="$(_textlist1.text8)" />
+      <textinput bindValueTo="$(_textlist1.text9)" />
   
       ` }, "*");
     });

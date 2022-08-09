@@ -4255,14 +4255,14 @@ describe('Match partial validation tests', function () {
   <p>
   <mathinput name="mi" />
   <answer name="ans1">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         $mi = <mathlist><math>(1,2)</math><math>(3,4)</math></mathlist>
       </when>
     </award>
   </answer>
   <answer name="ans2">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         <mathlist><math>(1,2)</math><math>(3,4)</math></mathlist> = $mi
       </when>
@@ -4320,14 +4320,14 @@ describe('Match partial validation tests', function () {
   <p>
   <mathinput name="mi" />
   <answer name="ans1">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         $mi = <mathlist><math createVectors>(1,2)</math><math createVectors>(3,4)</math></mathlist>
       </when>
     </award>
   </answer>
   <answer name="ans2">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         <mathlist><math createVectors>(1,2)</math><math createVectors>(3,4)</math></mathlist> = $mi
       </when>
@@ -4385,14 +4385,14 @@ describe('Match partial validation tests', function () {
   <p>
   <mathinput name="mi" />
   <answer name="ans1">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         <math createVectors>$mi</math> = <mathlist><math>(1,2)</math><math>(3,4)</math></mathlist>
       </when>
     </award>
   </answer>
   <answer name="ans2">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         <mathlist><math>(1,2)</math><math>(3,4)</math></mathlist> = <math createVectors>$mi</math>
       </when>
@@ -4450,14 +4450,14 @@ describe('Match partial validation tests', function () {
   <p>
   <mathinput name="mi" />
   <answer name="ans1">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         <math createVectors>$mi</math> = <mathlist><math createVectors>(1,2)</math><math createVectors>(3,4)</math></mathlist>
       </when>
     </award>
   </answer>
   <answer name="ans2">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         <mathlist><math createVectors>(1,2)</math><math createVectors>(3,4)</math></mathlist> = <math createVectors>$mi</math>
       </when>
@@ -4515,14 +4515,14 @@ describe('Match partial validation tests', function () {
   <p>
   <mathinput name="mi" />
   <answer name="ans1">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         $mi = <mathlist><math>[1,2)</math><math>(3,4]</math></mathlist>
       </when>
     </award>
   </answer>
   <answer name="ans2">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         <mathlist><math>[1,2)</math><math>(3,4]</math></mathlist> = $mi
       </when>
@@ -4580,14 +4580,14 @@ describe('Match partial validation tests', function () {
   <p>
   <mathinput name="mi" />
   <answer name="ans1">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         $mi = <mathlist><math>[1,2]</math><math>[3,4]</math></mathlist>
       </when>
     </award>
   </answer>
   <answer name="ans2">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         <mathlist><math>[1,2]</math><math>[3,4]</math></mathlist> = $mi
       </when>
@@ -4645,14 +4645,14 @@ describe('Match partial validation tests', function () {
   <p>
   <mathinput name="mi" />
   <answer name="ans1">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial>
         <mathlist>$mi</mathlist> = <mathlist>(1,2)</mathlist>
       </when>
     </award>
   </answer>
   <answer name="ans2">
-    <award targetsAreResponses="mi">
+    <award sourcesAreResponses="mi">
       <when matchpartial unorderedCompare>
         <mathlist>$mi</mathlist> = <mathlist>(1,2)</mathlist>
       </when>

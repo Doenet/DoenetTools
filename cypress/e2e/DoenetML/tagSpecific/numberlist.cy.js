@@ -173,15 +173,15 @@ describe('Numberlist Tag Tests', function () {
       </numberlist>
     </numberlist></p>
 
-    <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number2'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number3'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number4'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number5'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number6'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number7'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number8'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number9'})"/>
+    <mathinput bindValueTo="$(_numberlist1.number1)"/>
+    <mathinput bindValueTo="$(_numberlist1.number2)"/>
+    <mathinput bindValueTo="$(_numberlist1.number3)"/>
+    <mathinput bindValueTo="$(_numberlist1.number4)"/>
+    <mathinput bindValueTo="$(_numberlist1.number5)"/>
+    <mathinput bindValueTo="$(_numberlist1.number6)"/>
+    <mathinput bindValueTo="$(_numberlist1.number7)"/>
+    <mathinput bindValueTo="$(_numberlist1.number8)"/>
+    <mathinput bindValueTo="$(_numberlist1.number9)"/>
 
     ` }, "*");
     });
@@ -284,15 +284,15 @@ describe('Numberlist Tag Tests', function () {
       </numberlist>
     </numberlist></p>
 
-    <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number2'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number3'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number4'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number5'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number6'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number7'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number8'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number9'})"/>
+    <mathinput bindValueTo="$(_numberlist1.number1)"/>
+    <mathinput bindValueTo="$(_numberlist1.number2)"/>
+    <mathinput bindValueTo="$(_numberlist1.number3)"/>
+    <mathinput bindValueTo="$(_numberlist1.number4)"/>
+    <mathinput bindValueTo="$(_numberlist1.number5)"/>
+    <mathinput bindValueTo="$(_numberlist1.number6)"/>
+    <mathinput bindValueTo="$(_numberlist1.number7)"/>
+    <mathinput bindValueTo="$(_numberlist1.number8)"/>
+    <mathinput bindValueTo="$(_numberlist1.number9)"/>
 
     ` }, "*");
     });
@@ -398,18 +398,18 @@ describe('Numberlist Tag Tests', function () {
       <copy target="mid" />
     </numberlist></p>
 
-    <mathinput bindValueTo="$(_numberlist1{prop='number1'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number2'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number3'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number4'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number5'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number6'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number7'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number8'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number9'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number10'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number11'})"/>
-    <mathinput bindValueTo="$(_numberlist1{prop='number12'})"/>
+    <mathinput bindValueTo="$(_numberlist1.number1)"/>
+    <mathinput bindValueTo="$(_numberlist1.number2)"/>
+    <mathinput bindValueTo="$(_numberlist1.number3)"/>
+    <mathinput bindValueTo="$(_numberlist1.number4)"/>
+    <mathinput bindValueTo="$(_numberlist1.number5)"/>
+    <mathinput bindValueTo="$(_numberlist1.number6)"/>
+    <mathinput bindValueTo="$(_numberlist1.number7)"/>
+    <mathinput bindValueTo="$(_numberlist1.number8)"/>
+    <mathinput bindValueTo="$(_numberlist1.number9)"/>
+    <mathinput bindValueTo="$(_numberlist1.number10)"/>
+    <mathinput bindValueTo="$(_numberlist1.number11)"/>
+    <mathinput bindValueTo="$(_numberlist1.number12)"/>
     ` }, "*");
     });
 
@@ -1019,6 +1019,33 @@ describe('Numberlist Tag Tests', function () {
 
 
   })
+
+  it('numberlist and rounding, copy and override', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <p><numberList name="ml1">34.245023482352345 <number displayDigits="2">245.23823402358234234</number></numberList></p>
+    <p><numberList name="ml1Dig4" copySource="ml1" displayDigits="4" /></p>
+    <p><numberList name="ml1Dec6" copySource="ml1" displayDecimals="6" /></p>
+    <p><numberList name="ml1Dig4a" copySource="ml1Dec6" displayDigits="4" /></p>
+    <p><numberList name="ml1Dec6a" copySource="ml1Dig4" displayDecimals="6" /></p>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/ml1").should("have.text", "34.24502348, 250")
+ 
+    cy.get("#\\/ml1Dig4").should("have.text", "34.25, 245.2")
+    cy.get("#\\/ml1Dig4a").should("have.text", "34.25, 245.2")
+
+    cy.get("#\\/ml1Dec6").should("have.text", "34.245023, 245.238234")
+    cy.get("#\\/ml1Dec6a").should("have.text", "34.245023, 245.238234")
+
+  })
+
 
   it('numberlist adapts to math and text', () => {
     cy.window().then(async (win) => {

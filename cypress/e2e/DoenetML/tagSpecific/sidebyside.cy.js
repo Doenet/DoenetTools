@@ -471,16 +471,16 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Width: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valign: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
     </p>
 
     <p>
@@ -660,16 +660,16 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Width: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valign: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
     </p>
 
     <p>
@@ -771,16 +771,16 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Width: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valign: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
     </p>
 
     <p>
@@ -882,16 +882,16 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Width: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valign: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
     </p>
 
     <p>
@@ -991,16 +991,16 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Width: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valign: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
     </p>
 
     <p>
@@ -1099,18 +1099,18 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
     </p>
 
     <p>
@@ -1324,18 +1324,18 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
     </p>
 
     <p>
@@ -1444,18 +1444,18 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
     </p>
 
     <p>
@@ -1587,18 +1587,18 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
     </p>
 
     <p>
@@ -1732,18 +1732,18 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
     </p>
 
     <p>
@@ -1904,22 +1904,22 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
-    <mathinput name="w3" bindValueTo="$(sbs{prop='width3'})" />
-    <mathinput name="w4" bindValueTo="$(sbs{prop='width4'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
+    <mathinput name="w3" bindValueTo="$(sbs.width3)" />
+    <mathinput name="w4" bindValueTo="$(sbs.width4)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
-    <textinput name="v3" bindValueTo="$(sbs{prop='valign3'})" />
-    <textinput name="v4" bindValueTo="$(sbs{prop='valign4'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
+    <textinput name="v3" bindValueTo="$(sbs.valign3)" />
+    <textinput name="v4" bindValueTo="$(sbs.valign4)" />
     </p>
 
     <p>
@@ -2137,22 +2137,22 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
-    <mathinput name="w3" bindValueTo="$(sbs{prop='width3'})" />
-    <mathinput name="w4" bindValueTo="$(sbs{prop='width4'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
+    <mathinput name="w3" bindValueTo="$(sbs.width3)" />
+    <mathinput name="w4" bindValueTo="$(sbs.width4)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
-    <textinput name="v3" bindValueTo="$(sbs{prop='valign3'})" />
-    <textinput name="v4" bindValueTo="$(sbs{prop='valign4'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
+    <textinput name="v3" bindValueTo="$(sbs.valign3)" />
+    <textinput name="v4" bindValueTo="$(sbs.valign4)" />
     </p>
 
     <p>
@@ -2251,22 +2251,22 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
-    <mathinput name="w3" bindValueTo="$(sbs{prop='width3'})" />
-    <mathinput name="w4" bindValueTo="$(sbs{prop='width4'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
+    <mathinput name="w3" bindValueTo="$(sbs.width3)" />
+    <mathinput name="w4" bindValueTo="$(sbs.width4)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
-    <textinput name="v3" bindValueTo="$(sbs{prop='valign3'})" />
-    <textinput name="v4" bindValueTo="$(sbs{prop='valign4'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
+    <textinput name="v3" bindValueTo="$(sbs.valign3)" />
+    <textinput name="v4" bindValueTo="$(sbs.valign4)" />
     </p>
 
     <p>
@@ -2438,42 +2438,42 @@ describe('SideBySide Tag Tests', function () {
     </sbsgroup>
     
     <p>Width for sbsg: 
-    <mathinput name="w1g" bindValueTo="$(sbsg{prop='width1'})" />
+    <mathinput name="w1g" bindValueTo="$(sbsg.width1)" />
     </p>
     
     <p>Margins for sbsg: 
-    <mathinput name="m1g" bindValueTo="$(sbsg{prop='margin1'})" />
-    <mathinput name="m2g" bindValueTo="$(sbsg{prop='margin2'})" />
+    <mathinput name="m1g" bindValueTo="$(sbsg.margin1)" />
+    <mathinput name="m2g" bindValueTo="$(sbsg.margin2)" />
     </p>
     
     <p>Valign for sbsg: 
-    <textinput name="v1g" bindValueTo="$(sbsg{prop='valign1'})" />
+    <textinput name="v1g" bindValueTo="$(sbsg.valign1)" />
     </p>
     
     <p>Width for sbs1: 
-    <mathinput name="w11" bindValueTo="$(sbs1{prop='width1'})" />
+    <mathinput name="w11" bindValueTo="$(sbs1.width1)" />
     </p>
     
     <p>Margins for sbs1: 
-    <mathinput name="m11" bindValueTo="$(sbs1{prop='margin1'})" />
-    <mathinput name="m21" bindValueTo="$(sbs1{prop='margin2'})" />
+    <mathinput name="m11" bindValueTo="$(sbs1.margin1)" />
+    <mathinput name="m21" bindValueTo="$(sbs1.margin2)" />
     </p>
     
     <p>Valign for sbs1: 
-    <textinput name="v11" bindValueTo="$(sbs1{prop='valign1'})" />
+    <textinput name="v11" bindValueTo="$(sbs1.valign1)" />
     </p>
     
     <p>Width for sbs2: 
-    <mathinput name="w12" bindValueTo="$(sbs2{prop='width1'})" />
+    <mathinput name="w12" bindValueTo="$(sbs2.width1)" />
     </p>
     
     <p>Margins for sbs2: 
-    <mathinput name="m12" bindValueTo="$(sbs2{prop='margin1'})" />
-    <mathinput name="m22" bindValueTo="$(sbs2{prop='margin2'})" />
+    <mathinput name="m12" bindValueTo="$(sbs2.margin1)" />
+    <mathinput name="m22" bindValueTo="$(sbs2.margin2)" />
     </p>
     
     <p>Valign for sbs2: 
-    <textinput name="v12" bindValueTo="$(sbs2{prop='valign1'})" />
+    <textinput name="v12" bindValueTo="$(sbs2.valign1)" />
     </p>
 
 
@@ -3083,48 +3083,48 @@ describe('SideBySide Tag Tests', function () {
     </sbsgroup>
     
     <p>Widths for sbsg: 
-    <mathinput name="w1g" bindValueTo="$(sbsg{prop='width1'})" />
-    <mathinput name="w2g" bindValueTo="$(sbsg{prop='width2'})" />
+    <mathinput name="w1g" bindValueTo="$(sbsg.width1)" />
+    <mathinput name="w2g" bindValueTo="$(sbsg.width2)" />
     </p>
     
     <p>Margins for sbsg: 
-    <mathinput name="m1g" bindValueTo="$(sbsg{prop='margin1'})" />
-    <mathinput name="m2g" bindValueTo="$(sbsg{prop='margin2'})" />
+    <mathinput name="m1g" bindValueTo="$(sbsg.margin1)" />
+    <mathinput name="m2g" bindValueTo="$(sbsg.margin2)" />
     </p>
     
     <p>Valigns for sbsg: 
-    <textinput name="v1g" bindValueTo="$(sbsg{prop='valign1'})" />
-    <textinput name="v2g" bindValueTo="$(sbsg{prop='valign2'})" />
+    <textinput name="v1g" bindValueTo="$(sbsg.valign1)" />
+    <textinput name="v2g" bindValueTo="$(sbsg.valign2)" />
     </p>
     
     <p>Widths for sbs1: 
-    <mathinput name="w11" bindValueTo="$(sbs1{prop='width1'})" />
-    <mathinput name="w21" bindValueTo="$(sbs1{prop='width2'})" />
+    <mathinput name="w11" bindValueTo="$(sbs1.width1)" />
+    <mathinput name="w21" bindValueTo="$(sbs1.width2)" />
     </p>
     
     <p>Margins for sbs1: 
-    <mathinput name="m11" bindValueTo="$(sbs1{prop='margin1'})" />
-    <mathinput name="m21" bindValueTo="$(sbs1{prop='margin2'})" />
+    <mathinput name="m11" bindValueTo="$(sbs1.margin1)" />
+    <mathinput name="m21" bindValueTo="$(sbs1.margin2)" />
     </p>
     
     <p>Valigns for sbs1: 
-    <textinput name="v11" bindValueTo="$(sbs1{prop='valign1'})" />
-    <textinput name="v21" bindValueTo="$(sbs1{prop='valign2'})" />
+    <textinput name="v11" bindValueTo="$(sbs1.valign1)" />
+    <textinput name="v21" bindValueTo="$(sbs1.valign2)" />
     </p>
     
     <p>Widths for sbs2: 
-    <mathinput name="w12" bindValueTo="$(sbs2{prop='width1'})" />
-    <mathinput name="w22" bindValueTo="$(sbs2{prop='width2'})" />
+    <mathinput name="w12" bindValueTo="$(sbs2.width1)" />
+    <mathinput name="w22" bindValueTo="$(sbs2.width2)" />
     </p>
     
     <p>Margins for sbs2: 
-    <mathinput name="m12" bindValueTo="$(sbs2{prop='margin1'})" />
-    <mathinput name="m22" bindValueTo="$(sbs2{prop='margin2'})" />
+    <mathinput name="m12" bindValueTo="$(sbs2.margin1)" />
+    <mathinput name="m22" bindValueTo="$(sbs2.margin2)" />
     </p>
     
     <p>Valigns for sbs2: 
-    <textinput name="v12" bindValueTo="$(sbs2{prop='valign1'})" />
-    <textinput name="v22" bindValueTo="$(sbs2{prop='valign2'})" />
+    <textinput name="v12" bindValueTo="$(sbs2.valign1)" />
+    <textinput name="v22" bindValueTo="$(sbs2.valign2)" />
     </p>
 
 
@@ -3866,48 +3866,48 @@ describe('SideBySide Tag Tests', function () {
     </sbsgroup>
     
     <p>Widths for sbsg: 
-    <mathinput name="w1g" bindValueTo="$(sbsg{prop='width1'})" />
-    <mathinput name="w2g" bindValueTo="$(sbsg{prop='width2'})" />
+    <mathinput name="w1g" bindValueTo="$(sbsg.width1)" />
+    <mathinput name="w2g" bindValueTo="$(sbsg.width2)" />
     </p>
     
     <p>Margins for sbsg: 
-    <mathinput name="m1g" bindValueTo="$(sbsg{prop='margin1'})" />
-    <mathinput name="m2g" bindValueTo="$(sbsg{prop='margin2'})" />
+    <mathinput name="m1g" bindValueTo="$(sbsg.margin1)" />
+    <mathinput name="m2g" bindValueTo="$(sbsg.margin2)" />
     </p>
     
     <p>Valigns for sbsg: 
-    <textinput name="v1g" bindValueTo="$(sbsg{prop='valign1'})" />
-    <textinput name="v2g" bindValueTo="$(sbsg{prop='valign2'})" />
+    <textinput name="v1g" bindValueTo="$(sbsg.valign1)" />
+    <textinput name="v2g" bindValueTo="$(sbsg.valign2)" />
     </p>
     
     <p>Widths for sbs1: 
-    <mathinput name="w11" bindValueTo="$(sbs1{prop='width1'})" />
-    <mathinput name="w21" bindValueTo="$(sbs1{prop='width2'})" />
+    <mathinput name="w11" bindValueTo="$(sbs1.width1)" />
+    <mathinput name="w21" bindValueTo="$(sbs1.width2)" />
     </p>
     
     <p>Margins for sbs1: 
-    <mathinput name="m11" bindValueTo="$(sbs1{prop='margin1'})" />
-    <mathinput name="m21" bindValueTo="$(sbs1{prop='margin2'})" />
+    <mathinput name="m11" bindValueTo="$(sbs1.margin1)" />
+    <mathinput name="m21" bindValueTo="$(sbs1.margin2)" />
     </p>
     
     <p>Valigns for sbs1: 
-    <textinput name="v11" bindValueTo="$(sbs1{prop='valign1'})" />
-    <textinput name="v21" bindValueTo="$(sbs1{prop='valign2'})" />
+    <textinput name="v11" bindValueTo="$(sbs1.valign1)" />
+    <textinput name="v21" bindValueTo="$(sbs1.valign2)" />
     </p>
     
     <p>Widths for sbs2: 
-    <mathinput name="w12" bindValueTo="$(sbs2{prop='width1'})" />
-    <mathinput name="w22" bindValueTo="$(sbs2{prop='width2'})" />
+    <mathinput name="w12" bindValueTo="$(sbs2.width1)" />
+    <mathinput name="w22" bindValueTo="$(sbs2.width2)" />
     </p>
     
     <p>Margins for sbs2: 
-    <mathinput name="m12" bindValueTo="$(sbs2{prop='margin1'})" />
-    <mathinput name="m22" bindValueTo="$(sbs2{prop='margin2'})" />
+    <mathinput name="m12" bindValueTo="$(sbs2.margin1)" />
+    <mathinput name="m22" bindValueTo="$(sbs2.margin2)" />
     </p>
     
     <p>Valigns for sbs2: 
-    <textinput name="v12" bindValueTo="$(sbs2{prop='valign1'})" />
-    <textinput name="v22" bindValueTo="$(sbs2{prop='valign2'})" />
+    <textinput name="v12" bindValueTo="$(sbs2.valign1)" />
+    <textinput name="v22" bindValueTo="$(sbs2.valign2)" />
     </p>
 
     <p>
@@ -4696,48 +4696,48 @@ describe('SideBySide Tag Tests', function () {
     </sbsgroup>
     
     <p>Widths for sbsg: 
-    <mathinput name="w1g" bindValueTo="$(sbsg{prop='width1'})" />
-    <mathinput name="w2g" bindValueTo="$(sbsg{prop='width2'})" />
+    <mathinput name="w1g" bindValueTo="$(sbsg.width1)" />
+    <mathinput name="w2g" bindValueTo="$(sbsg.width2)" />
     </p>
     
     <p>Margins for sbsg: 
-    <mathinput name="m1g" bindValueTo="$(sbsg{prop='margin1'})" />
-    <mathinput name="m2g" bindValueTo="$(sbsg{prop='margin2'})" />
+    <mathinput name="m1g" bindValueTo="$(sbsg.margin1)" />
+    <mathinput name="m2g" bindValueTo="$(sbsg.margin2)" />
     </p>
     
     <p>Valigns for sbsg: 
-    <textinput name="v1g" bindValueTo="$(sbsg{prop='valign1'})" />
-    <textinput name="v2g" bindValueTo="$(sbsg{prop='valign2'})" />
+    <textinput name="v1g" bindValueTo="$(sbsg.valign1)" />
+    <textinput name="v2g" bindValueTo="$(sbsg.valign2)" />
     </p>
     
     <p>Widths for sbs1: 
-    <mathinput name="w11" bindValueTo="$(sbs1{prop='width1'})" />
-    <mathinput name="w21" bindValueTo="$(sbs1{prop='width2'})" />
+    <mathinput name="w11" bindValueTo="$(sbs1.width1)" />
+    <mathinput name="w21" bindValueTo="$(sbs1.width2)" />
     </p>
     
     <p>Margins for sbs1: 
-    <mathinput name="m11" bindValueTo="$(sbs1{prop='margin1'})" />
-    <mathinput name="m21" bindValueTo="$(sbs1{prop='margin2'})" />
+    <mathinput name="m11" bindValueTo="$(sbs1.margin1)" />
+    <mathinput name="m21" bindValueTo="$(sbs1.margin2)" />
     </p>
     
     <p>Valigns for sbs1: 
-    <textinput name="v11" bindValueTo="$(sbs1{prop='valign1'})" />
-    <textinput name="v21" bindValueTo="$(sbs1{prop='valign2'})" />
+    <textinput name="v11" bindValueTo="$(sbs1.valign1)" />
+    <textinput name="v21" bindValueTo="$(sbs1.valign2)" />
     </p>
     
     <p>Widths for sbs2: 
-    <mathinput name="w12" bindValueTo="$(sbs2{prop='width1'})" />
-    <mathinput name="w22" bindValueTo="$(sbs2{prop='width2'})" />
+    <mathinput name="w12" bindValueTo="$(sbs2.width1)" />
+    <mathinput name="w22" bindValueTo="$(sbs2.width2)" />
     </p>
     
     <p>Margins for sbs2: 
-    <mathinput name="m12" bindValueTo="$(sbs2{prop='margin1'})" />
-    <mathinput name="m22" bindValueTo="$(sbs2{prop='margin2'})" />
+    <mathinput name="m12" bindValueTo="$(sbs2.margin1)" />
+    <mathinput name="m22" bindValueTo="$(sbs2.margin2)" />
     </p>
     
     <p>Valigns for sbs2: 
-    <textinput name="v12" bindValueTo="$(sbs2{prop='valign1'})" />
-    <textinput name="v22" bindValueTo="$(sbs2{prop='valign2'})" />
+    <textinput name="v12" bindValueTo="$(sbs2.valign1)" />
+    <textinput name="v22" bindValueTo="$(sbs2.valign2)" />
     </p>
 
     <p>
@@ -5818,18 +5818,18 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
     </p>
 
     <p>
@@ -6037,18 +6037,18 @@ describe('SideBySide Tag Tests', function () {
     </sideBySide>
 
     <p>Widths: 
-    <mathinput name="w1" bindValueTo="$(sbs{prop='width1'})" />
-    <mathinput name="w2" bindValueTo="$(sbs{prop='width2'})" />
+    <mathinput name="w1" bindValueTo="$(sbs.width1)" />
+    <mathinput name="w2" bindValueTo="$(sbs.width2)" />
     </p>
 
     <p>Margins: 
-    <mathinput name="m1" bindValueTo="$(sbs{prop='margin1'})" />
-    <mathinput name="m2" bindValueTo="$(sbs{prop='margin2'})" />
+    <mathinput name="m1" bindValueTo="$(sbs.margin1)" />
+    <mathinput name="m2" bindValueTo="$(sbs.margin2)" />
     </p>
 
     <p>Valigns: 
-    <textinput name="v1" bindValueTo="$(sbs{prop='valign1'})" />
-    <textinput name="v2" bindValueTo="$(sbs{prop='valign2'})" />
+    <textinput name="v1" bindValueTo="$(sbs.valign1)" />
+    <textinput name="v2" bindValueTo="$(sbs.valign2)" />
     </p>
 
     <p>

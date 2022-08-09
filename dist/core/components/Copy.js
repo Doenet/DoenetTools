@@ -14,6 +14,8 @@ export default class Copy extends CompositeComponent {
   static acceptTarget = true;
   static acceptAnyAttribute = true;
 
+  static includeBlankStringChildren = true;
+
   static stateVariableToEvaluateAfterReplacements = "needsReplacementsUpdatedWhenStale";
 
   static createAttributesObject() {
@@ -27,6 +29,9 @@ export default class Copy extends CompositeComponent {
     delete attributes.styleNumber;
     delete attributes.isResponse;
 
+    attributes.assignNewNamespaces = {
+      createPrimitiveOfType: "boolean"
+    }
     attributes.assignNamesSkip = {
       createPrimitiveOfType: "number"
     }
@@ -46,13 +51,25 @@ export default class Copy extends CompositeComponent {
       createPrimitiveOfType: "number",
     };
     attributes.componentIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
     };
+    attributes.sourceSubnames = {
+      createPrimitiveOfType: "stringArray",
+      createStateVariable: "targetSubnames",
+      defaultValue: null,
+      public: true,
+    };
+    attributes.sourceSubnamesComponentIndex = {
+      createComponentOfType: "numberList",
+      createStateVariable: "targetSubnamesComponentIndex",
+      defaultValue: null,
+      public: true,
+    };
     attributes.propIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
@@ -327,7 +344,7 @@ export default class Copy extends CompositeComponent {
     };
 
 
-    stateVariableDefinitions.serializedComponentsForCid = {
+    stateVariableDefinitions.serializedComponentForCid = {
       returnDependencies: () => ({
         cid: {
           dependencyType: "stateVariable",
@@ -341,32 +358,42 @@ export default class Copy extends CompositeComponent {
       definition: function ({ dependencyValues }) {
         if (!dependencyValues.cid) {
           return {
-            setValue: { serializedComponentsForCid: null }
+            setValue: { serializedComponentForCid: null }
           }
         }
-        let externalContentChild = dependencyValues.serializedChildren?.[0];
-        if (!externalContentChild) {
+        if (!(dependencyValues.serializedChildren?.length > 0)) {
           return {
-            setValue: { serializedComponentsForCid: null }
+            setValue: { serializedComponentForCid: null }
           }
         }
 
-        let childrenOfContent = externalContentChild.children;
-        let serializedComponentsForCid = {
-          componentType: "externalContent",
-          state: { rendered: true },
-          children: childrenOfContent,
-          originalName: externalContentChild.componentName,
-          variants: externalContentChild.variants,
-        }
-        if (externalContentChild.attributes?.newNamespace?.primitive) {
-          serializedComponentsForCid.attributes = { newNamespace: { primitive: true } }
-        }
-        return {
-          setValue: {
-            serializedComponentsForCid
+        if (dependencyValues.serializedChildren[0].componentType === "externalContent") {
+          let externalContentChild = dependencyValues.serializedChildren[0];
+          let childrenOfContent = externalContentChild.children;
+          let serializedComponentForCid = {
+            componentType: "externalContent",
+            state: { rendered: true },
+            children: childrenOfContent,
+            originalName: externalContentChild.componentName,
+            variants: externalContentChild.variants,
+          }
+          if (externalContentChild.attributes?.newNamespace?.primitive) {
+            serializedComponentForCid.attributes = { newNamespace: { primitive: true } }
+          }
+          return {
+            setValue: {
+              serializedComponentForCid
+            }
+          }
+        } else {
+          // if it isn't an externalContent, then it means we have a copyFromURI
+          return {
+            setValue: {
+              serializedComponentForCid: dependencyValues.serializedChildren[0]
+            }
           }
         }
+
       }
     };
 
@@ -389,9 +416,37 @@ export default class Copy extends CompositeComponent {
           dependencyType: "doenetAttribute",
           attributeName: "isPlainMacro"
         },
+        targetComponent: {
+          dependencyType: "stateVariable",
+          variableName: "targetComponent"
+        }
       }),
-      definition: function ({ dependencyValues }) {
-        return { setValue: { isPlainMacro: dependencyValues.isPlainMacro } }
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let isPlainMacro = dependencyValues.isPlainMacro
+          && !componentInfoObjects.isCompositeComponent({
+            componentType: dependencyValues.targetComponent?.componentType,
+          })
+        return { setValue: { isPlainMacro } }
+      }
+    }
+
+    stateVariableDefinitions.isPlainCopy = {
+      returnDependencies: () => ({
+        isPlainCopy: {
+          dependencyType: "doenetAttribute",
+          attributeName: "isPlainCopy"
+        },
+        targetComponent: {
+          dependencyType: "stateVariable",
+          variableName: "targetComponent"
+        }
+      }),
+      definition: function ({ dependencyValues, componentInfoObjects }) {
+        let isPlainCopy = dependencyValues.isPlainCopy
+          && !componentInfoObjects.isCompositeComponent({
+            componentType: dependencyValues.targetComponent?.componentType,
+          })
+        return { setValue: { isPlainCopy } }
       }
     }
 
@@ -418,6 +473,7 @@ export default class Copy extends CompositeComponent {
     stateVariableDefinitions.replacementSourceIdentities = {
       stateVariablesDeterminingDependencies: [
         "targetComponent", "componentIndex", "propName",
+        "targetSubnames", "targetSubnamesComponentIndex",
         "obtainPropFromComposite", "linkAttrForDetermineDeps"
       ],
       additionalStateVariablesDefined: ["addLevelToAssignNames"],
@@ -441,11 +497,18 @@ export default class Copy extends CompositeComponent {
             if (stateValues.linkAttrForDetermineDeps) {
 
               useReplacements = true;
+
+              let targetSubnamesComponentIndex = stateValues.targetSubnamesComponentIndex;
+              if(targetSubnamesComponentIndex) {
+                targetSubnamesComponentIndex = [...targetSubnamesComponentIndex]
+              }
               dependencies.targets = {
                 dependencyType: "replacement",
                 compositeName: stateValues.targetComponent.componentName,
                 recursive: true,
                 componentIndex: stateValues.componentIndex,
+                targetSubnames: stateValues.targetSubnames,
+                targetSubnamesComponentIndex
               }
             } else {
               addLevelToAssignNames = true;
@@ -493,7 +556,7 @@ export default class Copy extends CompositeComponent {
     // when resolve determineDependencies
     stateVariableDefinitions.replacementSources = {
       stateVariablesDeterminingDependencies: [
-        "replacementSourceIdentities", "propName", "propIndex", "isPlainMacro",
+        "replacementSourceIdentities", "propName", "propIndex", "isPlainMacro", "isPlainCopy",
       ],
       additionalStateVariablesDefined: ["effectivePropNameBySource"],
       returnDependencies: function ({ stateValues, componentInfoObjects }) {
@@ -523,6 +586,9 @@ export default class Copy extends CompositeComponent {
             if (stateValues.isPlainMacro) {
               thisPropName = componentInfoObjects.allComponentClasses[source.componentType]
                 .variableForPlainMacro
+            } else if (stateValues.isPlainCopy) {
+              thisPropName = componentInfoObjects.allComponentClasses[source.componentType]
+                .variableForPlainCopy
             }
 
             let thisTarget;
@@ -534,13 +600,20 @@ export default class Copy extends CompositeComponent {
                 value: thisPropName,
               }
 
+              let propIndex = stateValues.propIndex;
+              if (propIndex) {
+                // make propIndex be a shallow copy
+                // so that can detect if it changed
+                // when update dependencies
+                propIndex = [...propIndex]
+              }
               thisTarget = {
                 dependencyType: "stateVariable",
                 componentName: source.componentName,
                 variableName: thisPropName,
                 returnAsComponentObject: true,
                 variablesOptional: true,
-                propIndex: stateValues.propIndex,
+                propIndex,
                 caseInsensitiveVariableMatch: true,
                 publicStateVariablesOnly: true,
                 useMappedVariableNames: true,
@@ -579,7 +652,7 @@ export default class Copy extends CompositeComponent {
               }
               if (!propName && dependencyValues["propName" + ind]) {
                 // a propName was specified, but it just wasn't found
-                propName = dependencyValues["propName" + ind];
+                propName = "__prop_name_not_found";
               }
               effectivePropNameBySource.push(propName)
             }
@@ -605,7 +678,10 @@ export default class Copy extends CompositeComponent {
         let nComponentsSpecified;
 
         if (dependencyValues.typeAttr) {
-          if (!(dependencyValues.typeAttr in componentInfoObjects.allComponentClasses)) {
+          let componentType = componentInfoObjects.
+            componentTypeLowerCaseMapping[dependencyValues.typeAttr.toLowerCase()];
+
+          if (!(componentType in componentInfoObjects.allComponentClasses)) {
             throw Error(`Invalid componentType ${dependencyValues.typeAttr} of copy.`)
           }
           if (dependencyValues.nComponentsAttr !== null) {
@@ -630,9 +706,9 @@ export default class Copy extends CompositeComponent {
           dependencyType: "attributePrimitive",
           attributeName: "link"
         },
-        serializedComponentsForCid: {
+        serializedComponentForCid: {
           dependencyType: "stateVariable",
-          variableName: "serializedComponentsForCid",
+          variableName: "serializedComponentForCid",
         },
         replacementSourceIdentities: {
           dependencyType: "stateVariable",
@@ -642,7 +718,7 @@ export default class Copy extends CompositeComponent {
       definition({ dependencyValues, componentInfoObjects }) {
         let link;
         if (dependencyValues.linkAttr === null) {
-          if (dependencyValues.serializedComponentsForCid ||
+          if (dependencyValues.serializedComponentForCid ||
             dependencyValues.replacementSourceIdentities &&
             dependencyValues.replacementSourceIdentities.some(x =>
               componentInfoObjects.isInheritedComponentType({
@@ -683,9 +759,9 @@ export default class Copy extends CompositeComponent {
           //   dependencyType: "stateVariable",
           //   variableName: "replacementSources",
           // },
-          serializedComponentsForCid: {
+          serializedComponentForCid: {
             dependencyType: "stateVariable",
-            variableName: "serializedComponentsForCid",
+            variableName: "serializedComponentForCid",
           },
           link: {
             dependencyType: "stateVariable",
@@ -889,17 +965,32 @@ export default class Copy extends CompositeComponent {
 
     let assignNames = await component.stateValues.effectiveAssignNames;
 
-    let serializedComponentsForCid = await component.stateValues.serializedComponentsForCid;
+    let serializedComponentForCid = await component.stateValues.serializedComponentForCid;
 
-    if (serializedComponentsForCid) {
+    if (serializedComponentForCid) {
       // Note: any attributes (other than hide) specified on copy are ignored
       // when have serialized components from uri
-      let replacements = [deepClone(serializedComponentsForCid)];
+      let replacements = [deepClone(serializedComponentForCid)];
 
       if (replacements[0].children) {
+        let namespace;
+        if (replacements[0].componentName) {
+          namespace = replacements[0].componentName + "/";
+        } else {
+          namespace = replacements[0].originalName + "/";
+        }
+
+        if (component.doenetAttributes.keptNewNamespaceOfSingleChild) {
+          namespace = namespace.slice(0, namespace.length - 1)
+          let lastSlash = namespace.lastIndexOf("/");
+          namespace = namespace.slice(0, lastSlash + 1);
+
+        }
+
         serializeFunctions.restrictTNamesToNamespace({
           components: replacements[0].children,
-          namespace: replacements[0].originalName + "/"
+          namespace,
+          invalidateReferencesToBaseNamespace: component.doenetAttributes.keptNewNamespaceOfSingleChild
         })
       }
 
@@ -938,6 +1029,7 @@ export default class Copy extends CompositeComponent {
 
       let processResult = serializeFunctions.processAssignNames({
         assignNames,
+        assignNewNamespaces: component.attributes.assignNewNamespaces?.primitive,
         serializedComponents: replacements,
         parentName: component.componentName,
         parentCreatesNewNamespace: newNamespace,
@@ -1000,9 +1092,65 @@ export default class Copy extends CompositeComponent {
     let replacementSourceIdentities = await component.stateValues.replacementSourceIdentities;
     if (!await component.stateValues.targetComponent || !replacementSourceIdentities) {
 
+      // no valid target, so no replacements
+      let replacements = [];
+
+      if (component.doenetAttributes.fromCopyTarget) {
+        // even though don't have valid target,
+        // if have copyTarget, then include children added directly to component
+
+        let componentType = componentInfoObjects.
+          componentTypeLowerCaseMapping[component.attributes.createComponentOfType.primitive.toLowerCase()];
+
+        let componentClass = componentInfoObjects.allComponentClasses[componentType];
+
+        let attributesFromComposite = convertAttributesForComponentType({
+          attributes: component.attributes,
+          componentType,
+          componentInfoObjects,
+          compositeAttributesObj,
+          compositeCreatesNewNamespace: newNamespace,
+          flags
+        });
+
+        workspace.uniqueIdentifiersUsedBySource[0] = [];
+        let uniqueIdentifierBase = componentType + "|empty";
+        let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, workspace.uniqueIdentifiersUsedBySource[0]);
+
+        let children = deepClone(component.serializedChildren);
+        if (!componentClass.includeBlankStringChildren) {
+          children = children.filter(
+            x => typeof x !== "string" || x.trim() !== ""
+          )
+        }
+
+        let attributes = attributesFromComposite;
+        if (component.attributes.assignNewNamespaces?.primitive) {
+          attributes.newNamespace = { primitive: true }
+        }
+
+        replacements = [{
+          componentType,
+          attributes,
+          children,
+          uniqueIdentifier,
+        }];
+
+        let processResult = serializeFunctions.processAssignNames({
+          assignNames: await component.stateValues.effectiveAssignNames,
+          serializedComponents: replacements,
+          parentName: component.componentName,
+          componentInfoObjects,
+          originalNamesAreConsistent: true,
+        });
+
+        replacements = processResult.serializedComponents;
+
+      }
+
       let verificationResult = await this.verifyReplacementsMatchSpecifiedType({
         component,
-        replacements: [],
+        replacements,
         workspace, componentInfoObjects, compositeAttributesObj
       });
 
@@ -1086,7 +1234,8 @@ export default class Copy extends CompositeComponent {
         componentInfoObjects,
         nComponentsForSource,
         publicCaseInsensitiveAliasSubstitutions,
-        flags
+        flags,
+        fromCopyTarget: Number(sourceNum) === 0 && component.doenetAttributes.fromCopyTarget
       });
 
       workspace.propVariablesCopiedBySource[sourceNum] = results.propVariablesCopiedByReplacement;
@@ -1221,20 +1370,38 @@ export default class Copy extends CompositeComponent {
       requiredLength = 1;
     }
 
+    requiredComponentType = componentInfoObjects.componentTypeLowerCaseMapping[requiredComponentType.toLowerCase()];
 
     if (replacementTypes.length !== requiredLength ||
       !replacementTypes.every(x => x === requiredComponentType)) {
 
       // console.warn(`Replacements from copy ${component.componentName} do not match the specified componentType and number of components`);
 
-      // since clearing out all replacements, reset all workspace variables
-      workspace.numReplacementsBySource = [];
-      workspace.numNonStringReplacementsBySource = [];
-      workspace.propVariablesCopiedBySource = [];
-      workspace.sourceNames = [];
-      workspace.uniqueIdentifiersUsedBySource = {};
 
-      let uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[0] = [];
+      // if require a single component and have a single replacement,
+      // but the only discrepancy is that it ti sthe wrong time,
+      // then wrap that replacement with the blank component we are creating,
+      // i.e., add the current replacement as the child of the new component
+
+      let wrapExistingReplacements = requiredLength === 1 && replacementTypes.length === 1
+        && !(replacementsToWithhold > 0) && workspace.sourceNames.length === 1;
+
+      let uniqueIdentifiersUsed, originalReplacements;
+
+      if (wrapExistingReplacements) {
+        originalReplacements = replacements;
+      } else {
+        // since clearing out all replacements, reset all workspace variables
+        workspace.numReplacementsBySource = [];
+        workspace.numNonStringReplacementsBySource = [];
+        workspace.propVariablesCopiedBySource = [];
+        workspace.sourceNames = [];
+        workspace.uniqueIdentifiersUsedBySource = {};
+
+        uniqueIdentifiersUsed = workspace.uniqueIdentifiersUsedBySource[0] = [];
+
+      }
+
       let newNamespace = component.attributes.newNamespace?.primitive;
 
       replacements = []
@@ -1250,13 +1417,17 @@ export default class Copy extends CompositeComponent {
         });
 
         let uniqueIdentifierBase = requiredComponentType + "|empty" + i;
-        let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, uniqueIdentifiersUsed);
+        let uniqueIdentifier = getUniqueIdentifierFromBase(uniqueIdentifierBase, workspace.uniqueIdentifiersUsedBySource[0]);
         replacements.push({
           componentType: requiredComponentType,
           attributes: attributesFromComposite,
           uniqueIdentifier,
         });
 
+      }
+
+      if (wrapExistingReplacements) {
+        replacements[0].children = originalReplacements;
       }
 
       let processResult = serializeFunctions.processAssignNames({
@@ -1310,7 +1481,8 @@ export default class Copy extends CompositeComponent {
     componentInfoObjects,
     nComponentsForSource,
     publicCaseInsensitiveAliasSubstitutions,
-    flags
+    flags,
+    fromCopyTarget
   }) {
 
     // console.log(`create replacement for sourceNum ${sourceNum}`)
@@ -1395,6 +1567,10 @@ export default class Copy extends CompositeComponent {
       unlinkExternalCopies: !link
     })
 
+    if (serializedReplacements.length > 0) {
+      delete serializedReplacements[0].doenetAttributes.haveNewNamespaceOnlyFromShadow;
+    }
+
     for (let repl of serializedReplacements) {
       if (typeof repl !== "object") {
         continue;
@@ -1415,8 +1591,15 @@ export default class Copy extends CompositeComponent {
       Object.assign(repl.attributes, attributesFromComposite)
     }
 
+    if (serializedReplacements[0].attributes.newNamespace?.primitive
+      && !component.attributes.assignNewNamespaces?.primitive
+    ) {
+      serializedReplacements[0].doenetAttributes.haveNewNamespaceOnlyFromShadow = true;
+    }
+
     let processResult = serializeFunctions.processAssignNames({
       assignNames,
+      assignNewNamespaces: component.attributes.assignNewNamespaces?.primitive,
       serializedComponents: serializedReplacements,
       parentName: component.componentName,
       parentCreatesNewNamespace: newNamespace,
@@ -1425,12 +1608,56 @@ export default class Copy extends CompositeComponent {
       originalNamesAreConsistent: newNamespace && !assignNames
     });
 
+    serializedReplacements = processResult.serializedComponents;
+
+    // if have copy target, then add additional children from the component itself
+    if (fromCopyTarget && serializedReplacements.length === 1 && component.serializedChildren.length > 0) {
+      let repl = serializedReplacements[0];
+      if (!repl.children) {
+        repl.children = [];
+      }
+      let newChildren = deepClone(component.serializedChildren);
+      let componentClass = componentInfoObjects.allComponentClasses[repl.componentType];
+
+      if (!componentClass.includeBlankStringChildren) {
+        newChildren = newChildren.filter(
+          x => typeof x !== "string" || x.trim() !== ""
+        )
+      }
+
+
+      let processResult = serializeFunctions.processAssignNames({
+        serializedComponents: newChildren,
+        parentName: serializedReplacements[0].componentName,
+        parentCreatesNewNamespace: component.attributes.assignNewNamespaces?.primitive,
+        componentInfoObjects,
+        originalNamesAreConsistent: true
+      });
+
+      if (serializedReplacements[0].attributes.newNamespace?.primitive
+        && !component.attributes.assignNewNamespaces?.primitive
+      ) {
+        // the new components were added without a new namespace
+        // even though their parent had a new namespace
+        // The parent has already been marked as having a new namespace only because it is shadowing.
+        // Mark them to ignore their parent's new namespace.
+        // Then if the parent is copied directly,
+        // the children won't be given a new namespace
+
+        for (let comp of processResult.serializedComponents) {
+          comp.doenetAttributes.ignoreParentNewNamespace = true;
+        }
+      }
+
+      repl.children.push(...processResult.serializedComponents)
+    }
+
     // console.log(`ending serializedReplacements for ${component.componentName}`);
-    // console.log(JSON.parse(JSON.stringify(processResult.serializedComponents)));
+    // console.log(JSON.parse(JSON.stringify(serializedReplacements)));
 
 
 
-    return { serializedReplacements: processResult.serializedComponents };
+    return { serializedReplacements };
   }
 
 
@@ -1443,7 +1670,7 @@ export default class Copy extends CompositeComponent {
     // console.log("Calculating replacement changes for " + component.componentName);
 
     // if copying a cid, no changes
-    if (await component.stateValues.serializedComponentsForCid) {
+    if (await component.stateValues.serializedComponentForCid) {
       return [];
     }
 
@@ -1819,13 +2046,41 @@ export default class Copy extends CompositeComponent {
 
       } else {
 
+
         let nonStringInd = 0;
         for (let ind = 0; ind < nNewReplacements; ind++) {
-          if (propVariablesCopiedByReplacement[ind].length !== workspace.propVariablesCopiedBySource[sourceNum][ind].length ||
-            workspace.propVariablesCopiedBySource[sourceNum][ind].some((v, i) => v !== propVariablesCopiedByReplacement[ind][i]) ||
-            component.replacements[numReplacementsSoFar + ind].componentType !== newSerializedReplacements[ind].componentType
-          ) {
+          let foundDifference = propVariablesCopiedByReplacement[ind].length !==
+            workspace.propVariablesCopiedBySource[sourceNum][ind].length;
+          let onlyDifferenceIsType = !foundDifference;
+          if (!foundDifference) {
+            if (workspace.propVariablesCopiedBySource[sourceNum][ind].some((v, i) =>
+              v !== propVariablesCopiedByReplacement[ind][i])) {
+              onlyDifferenceIsType = false;
+              foundDifference = true;
+            } else {
+              if (component.replacements[numReplacementsSoFar + ind].componentType !==
+                newSerializedReplacements[ind].componentType
+              ) {
+                foundDifference = true;
+              }
+            }
+          }
 
+
+          if (ind == 0 && foundDifference && onlyDifferenceIsType) {
+            let requiredLength = await component.stateValues.nComponentsSpecified;
+
+            let wrapExistingReplacements = requiredLength === 1 && nNewReplacements === 1
+              && !(component.replacementsToWithhold > 0) && workspace.sourceNames.length === 1;
+
+            if (wrapExistingReplacements) {
+              foundDifference = false;
+            }
+
+          }
+
+
+          if (foundDifference) {
             let replacementInstruction = {
               changeType: "add",
               changeTopLevelReplacements: true,
@@ -1894,7 +2149,8 @@ export default class Copy extends CompositeComponent {
   }
 
 
-  static async recreateReplacements({ component, sourceNum,
+  static async recreateReplacements({
+    component, sourceNum,
     numReplacementsSoFar, numNonStringReplacementsSoFar,
     numReplacementsToDelete,
     uniqueIdentifiersUsed, components, compositeAttributesObj, componentInfoObjects,
@@ -1969,7 +2225,9 @@ export async function replacementFromProp({ component, components,
   })[0];
 
   if (varName === undefined || varName.slice(0, 12) === "__not_public") {
-    console.warn(`Could not find prop ${propName} on a component of type ${replacementSource.componentType}`)
+    if (propName !== "__prop_name_not_found") {
+      console.warn(`Could not find prop ${propName} on a component of type ${replacementSource.componentType}`)
+    }
     return {
       serializedReplacements: [],
       propVariablesCopiedByReplacement: [],
@@ -2241,12 +2499,13 @@ export async function replacementFromProp({ component, components,
             Object.assign(attributesForReplacement, attributesFromComposite)
 
 
-            let primaryStateVariableForDefinition = "value";
+            let primaryEssentialStateVariable = "value";
             let componentClass = componentInfoObjects.allComponentClasses[createComponentOfType];
-            if (componentClass.primaryStateVariableForDefinition) {
-              primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+            if (componentClass.primaryEssentialStateVariable) {
+              primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
+            } else if (componentClass.primaryStateVariableForDefinition) {
+              primaryEssentialStateVariable = componentClass.primaryStateVariableForDefinition;
             }
-
 
             let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
             if (!Array.isArray(arrayIndex)) {
@@ -2261,7 +2520,7 @@ export async function replacementFromProp({ component, components,
               componentType: createComponentOfType,
               attributes: attributesForReplacement,
               state: {
-                [primaryStateVariableForDefinition]: propStateValue
+                [primaryEssentialStateVariable]: propStateValue
               },
               uniqueIdentifier,
             }
@@ -2437,12 +2696,13 @@ export async function replacementFromProp({ component, components,
               }
 
 
-              let primaryStateVariableForDefinition = "value";
+              let primaryEssentialStateVariable = "value";
               let componentClass = componentInfoObjects.allComponentClasses[createComponentOfType];
-              if (componentClass.primaryStateVariableForDefinition) {
-                primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+              if (componentClass.primaryEssentialStateVariable) {
+                primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
+              } else if (componentClass.primaryStateVariableForDefinition) {
+                primaryEssentialStateVariable = componentClass.primaryStateVariableForDefinition;
               }
-
 
               let arrayIndex = arrayStateVarObj.keyToIndex(arrayKey);
               if (!Array.isArray(arrayIndex)) {
@@ -2459,7 +2719,7 @@ export async function replacementFromProp({ component, components,
                 componentType: createComponentOfType,
                 attributes: attributesForReplacement,
                 state: {
-                  [primaryStateVariableForDefinition]: propStateValue
+                  [primaryEssentialStateVariable]: propStateValue
                 },
                 uniqueIdentifier,
               }
@@ -2742,18 +3002,19 @@ export async function replacementFromProp({ component, components,
         Object.assign(attributesForReplacement, attributesFromComposite)
 
 
-        let primaryStateVariableForDefinition = "value";
+        let primaryEssentialStateVariable = "value";
         let componentClass = componentInfoObjects.allComponentClasses[stateVarObj.shadowingInstructions.createComponentOfType];
-        if (componentClass.primaryStateVariableForDefinition) {
-          primaryStateVariableForDefinition = componentClass.primaryStateVariableForDefinition;
+        if (componentClass.primaryEssentialStateVariable) {
+          primaryEssentialStateVariable = componentClass.primaryEssentialStateVariable;
+        } else if (componentClass.primaryStateVariableForDefinition) {
+          primaryEssentialStateVariable = componentClass.primaryStateVariableForDefinition;
         }
-
 
         let serializedComponent = {
           componentType: stateVarObj.shadowingInstructions.createComponentOfType,
           attributes: attributesForReplacement,
           state: {
-            [primaryStateVariableForDefinition]: stateVarValue
+            [primaryEssentialStateVariable]: stateVarValue
           },
           uniqueIdentifier,
         }

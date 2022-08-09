@@ -258,7 +258,7 @@ export default class Sort extends CompositeComponent {
         componentsCopied.push(replacementSource.componentName);
 
         replacements.push(await replacementSource.serialize({
-          targetAttributesToIgnoreRecursively: ["isResponse"]
+          sourceAttributesToIgnoreRecursively: ["isResponse"]
         }))
       }
     }

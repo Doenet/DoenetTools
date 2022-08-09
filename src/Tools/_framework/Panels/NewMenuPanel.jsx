@@ -1,4 +1,4 @@
-import React, { useState, lazy, useRef, Suspense, useEffect } from 'react';
+import React, { useState, lazy, useRef, Suspense } from 'react';
 import {
   atom,
   useRecoilValue,
@@ -17,6 +17,7 @@ import {
 import Logo from '../Logo';
 import { pageToolViewAtom } from '../NewToolRoot';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
+import { darkModeAtom } from '../DarkmodeController';
 // import Logo from '../Logo';
 
 export const selectedMenuPanelAtom = atom({
@@ -24,10 +25,7 @@ export const selectedMenuPanelAtom = atom({
   default: null,
 });
 
-export const darkModeAtom = atom({
-  key: 'darkModeAtom',
-  default: JSON.parse(localStorage.getItem('darkModeToggle')),
-});
+
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -371,8 +369,8 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
           </HomeButton>  */}
 
           <Checkbox
-            checked={darkModeToggle}
-            onClick={(e) => setDarkModeToggle(!darkModeToggle)}
+            checked={darkModeToggle === 'dark'}
+            onClick={() => setDarkModeToggle(darkModeToggle === 'dark' ? 'light' : 'dark')}
             checkedIcon={<FontAwesomeIcon icon={faSun} />}
             uncheckedIcon={<FontAwesomeIcon icon={faMoon} />}
           />

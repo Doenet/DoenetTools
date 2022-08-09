@@ -159,7 +159,8 @@ function Menu(props) {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(MenuPanelTitle, {
     isOpen,
-    onClick: () => setIsOpen((was) => !was)
+    onClick: () => setIsOpen((was) => !was),
+    "data-test": `${props.type} Menu`
   }, /* @__PURE__ */ React.createElement("h3", null, props.title)), /* @__PURE__ */ React.createElement("div", {
     style: {
       display: hideShowStyle,
@@ -249,7 +250,8 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     menusArray.push(/* @__PURE__ */ React.createElement(Menu, {
       key: mKey,
       title,
-      isInitOpen: isOpen
+      isInitOpen: isOpen,
+      type
     }, /* @__PURE__ */ React.createElement(Suspense, {
       fallback: /* @__PURE__ */ React.createElement(LoadingFallback, null, "loading...")
     }, React.createElement(LazyMenuObj[type], {mKey}))));

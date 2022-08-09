@@ -287,7 +287,7 @@ export default React.memo(function Line(props) {
 
 
 
-  let mathJaxify = "\\(" + me.fromAst(SVs.equation).toLatex() + "\\)";
+  let mathJaxify = "\\(" + SVs.latex + "\\)";
   return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 })
 

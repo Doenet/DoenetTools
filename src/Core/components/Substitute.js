@@ -162,24 +162,60 @@ export default class Substitute extends CompositeComponent {
       definition({ dependencyValues, usedDefault }) {
         if (dependencyValues.type !== "math") {
           return { setValue: { displayDigits: null } }
-        } else if (dependencyValues.displayDigitsAttr !== null && !usedDefault.displayDigitsAttr) {
-          return {
-            setValue: {
-              displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+        } else if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
             }
           }
-        } else if (
-          (dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr)
-          && dependencyValues.child.length === 1
-          && !(usedDefault.child[0] && usedDefault.child[0].displayDigits)
-        ) {
-          // have to check to exclude case where have displayDecimals attribute
-          // because otherwise a non-default displayDigits will win over displayDecimals
-          return {
-            setValue: {
-              displayDigits: dependencyValues.child[0].stateValues.displayDigits
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
             }
-          };
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+
+        } else if (dependencyValues.child.length === 1) {
+
+          // have to check for non-default displayDecimals attribute
+          // because otherwise a non-default displayDigits will win over displayDecimals
+          let displayDigitsChildUsedDefault = usedDefault.child[0]?.displayDigits;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (displayDigitsChildUsedDefault || !displayDecimalsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.child[0].stateValues.displayDigits
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.child[0].stateValues.displayDigits
+              }
+            }
+          }
         } else {
           return { useEssentialOrDefaultValue: { displayDigits: true } }
         }

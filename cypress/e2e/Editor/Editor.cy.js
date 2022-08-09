@@ -88,5 +88,63 @@ it('Assign Activity Test using Breadcrumbs',()=>{
   cy.get('#\\/problem1_title').contains('Problem 1')
 })
 
+
+it('animation stopped when click update button',()=>{
+  const doenetMLString = `
+  <number name="n">1</number>
+
+  <animateFromSequence target="n" animationMode="increase once" from="1" to="100" animationInterval="100" name="a" />
+
+  <p><callAction target="a" actionName="toggleAnimation" name="ca" >
+    <label>Toggle animation</label>
+  </callAction></p>
+  `
+  cy.get('.cm-content').type(doenetMLString)
+  cy.get('[data-test="Viewer Update Button"]').click();
+  cy.get('#\\/n').should('have.text', '1')
+
+  cy.get('#\\/ca_button').click();
+  cy.get('#\\/n').should('have.text', '2')
+  cy.get('#\\/n').should('have.text', '3')
+
+  cy.get('.cm-content').type("{ctrl+end}<p name='np'>More text</p>{enter}")
+
+  cy.get('[data-test="Viewer Update Button"]').click();
+
+  cy.get("#\\/np").should('have.text', 'More text')
+
+  cy.log('ensure animation has stopped')
+  cy.get('#\\/n').should('have.text', '1')
+  cy.wait(200)
+  cy.get('#\\/n').should('have.text', '1')
+
+  cy.get('#\\/ca_button').click();
+  cy.get('#\\/n').should('have.text', '2')
+  cy.get('#\\/n').should('have.text', '3')
+
+  cy.get('#\\/ca_button').click();
+  cy.wait(200)
+  cy.get('#\\/n').contains(/3|4/)
+    
+  cy.get('.cm-content').type("{ctrl+end}<p name='np2'>And more</p>{enter}")
+
+  cy.get('[data-test="Viewer Update Button"]').click();
+
+  cy.get("#\\/np2").should('have.text', 'And more')
+
+  cy.log('ensure animation has stopped')
+  cy.get('#\\/n').should('have.text', '1')
+  cy.wait(200)
+  cy.get('#\\/n').should('have.text', '1')
+
+  cy.get('#\\/ca_button').click();
+  cy.get('#\\/n').should('have.text', '2')
+  cy.get('#\\/n').should('have.text', '3')
+
+  cy.get('#\\/ca_button').click();
+  cy.wait(200)
+  cy.get('#\\/n').contains(/3|4/)
+  
+})
   
 })

@@ -6,6 +6,7 @@ import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
 import {itemByDoenetId, useCourse} from "../../_reactComponents/Course/CourseActions.js";
 import {useToast, toastType} from "../Toast.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
+import axios from "../../_snowpack/pkg/axios.js";
 const movingGradient = keyframes`
   0% { background-position: -250px 0; }
   100% { background-position: 250px 0; }
@@ -72,8 +73,9 @@ export default function DataPanel() {
         };
       });
     } else {
-      console.log("Open Link to data for Pages", doenetId);
-      window.open(`https://doenet.shinyapps.io/analyzer/?data=${doenetId}`, "_blank");
+      const resp = await axios.get(`/api/createSecretCode.php?courseId=${courseId}`);
+      const {secretCode} = resp.data;
+      window.open(`https://doenet.shinyapps.io/analyzer/?data=${doenetId}&code=${secretCode}`, "_blank");
     }
   });
   return /* @__PURE__ */ React.createElement(Suspense, {
