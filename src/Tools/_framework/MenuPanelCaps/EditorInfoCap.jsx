@@ -20,9 +20,6 @@ export default function EditorInfoCap(){
 
   if (!pageInfo || !image){ return null;}
 
-  let accessible_name = "course";
-
-
  if (image != 'none'){
   accessible_name = find_image_label(image);
   image = 'url(/media/drive_pictures/' + image + ')';
