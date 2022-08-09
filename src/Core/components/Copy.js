@@ -499,7 +499,7 @@ export default class Copy extends CompositeComponent {
               useReplacements = true;
 
               let targetSubnamesComponentIndex = stateValues.targetSubnamesComponentIndex;
-              if(targetSubnamesComponentIndex) {
+              if (targetSubnamesComponentIndex) {
                 targetSubnamesComponentIndex = [...targetSubnamesComponentIndex]
               }
               dependencies.targets = {
@@ -1625,6 +1625,20 @@ export default class Copy extends CompositeComponent {
         )
       }
 
+      if (serializedReplacements[0].attributes.newNamespace?.primitive
+        && component.attributes.assignNewNamespaces?.primitive
+      ) {
+        // if the new components were added with a new namespace
+        // and their parent had a new namespace
+        // make the auto numbered component names include the names
+        // from the original children so that don't have a name collision
+        // from the autonumbering
+
+        let componentCounts = serializeFunctions.countRegularComponentTypesInNamespace(repl.children)
+
+        serializeFunctions.renameAutonameBasedOnNewCounts(newChildren, componentCounts);
+
+      }
 
       let processResult = serializeFunctions.processAssignNames({
         serializedComponents: newChildren,
@@ -1645,7 +1659,9 @@ export default class Copy extends CompositeComponent {
         // the children won't be given a new namespace
 
         for (let comp of processResult.serializedComponents) {
-          comp.doenetAttributes.ignoreParentNewNamespace = true;
+          if (typeof comp === "object") {
+            comp.doenetAttributes.ignoreParentNewNamespace = true;
+          }
         }
       }
 

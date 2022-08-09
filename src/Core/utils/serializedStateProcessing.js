@@ -1947,6 +1947,86 @@ function breakStringInPiecesBySpacesOrParens(string) {
 
 }
 
+export function countRegularComponentTypesInNamespace(serializedComponents, componentCounts = {}) {
+
+  for (let serializedComponent of serializedComponents) {
+    if (typeof serializedComponent === "object") {
+
+      let componentType = serializedComponent.componentType;
+
+      let count = componentCounts[componentType];
+      if (count === undefined) {
+        count = 0;
+      }
+
+      let doenetAttributes = serializedComponent.doenetAttributes;
+
+      // if created from a attribute/sugar/macro, don't include in component counts
+      if (!(doenetAttributes?.isAttributeChild || doenetAttributes?.createdFromSugar
+        || doenetAttributes?.createdFromMacro
+      )) {
+        componentCounts[componentType] = ++count;
+      }
+
+      if (serializedComponent.children && !serializedComponent.attributes?.newNamespace?.primitive) {
+        // if don't have new namespace, recurse to children
+        componentCounts = countRegularComponentTypesInNamespace(serializedComponent.children, componentCounts);
+      }
+    }
+  }
+
+  return componentCounts;
+
+}
+
+export function renameAutonameBasedOnNewCounts(serializedComponents, newComponentCounts = {}) {
+
+  let componentCounts = { ...newComponentCounts };
+
+  for (let serializedComponent of serializedComponents) {
+    if (typeof serializedComponent === "object") {
+
+      let componentType = serializedComponent.componentType;
+
+      let count = componentCounts[componentType];
+      if (count === undefined) {
+        count = 0;
+      }
+
+      let doenetAttributes = serializedComponent.doenetAttributes;
+
+      // if created from a attribute/sugar/macro, don't include in component counts
+      if (!(doenetAttributes?.isAttributeChild || doenetAttributes?.createdFromSugar
+        || doenetAttributes?.createdFromMacro
+      )) {
+        componentCounts[componentType] = ++count;
+
+        // check if name was created from counting components
+
+        if (serializedComponent.componentName) {
+          let lastSlash = serializedComponent.componentName.lastIndexOf('/');
+          let originalName = serializedComponent.componentName.substring(lastSlash + 1);
+          let nameStartFromComponentType = '_' + componentType.toLowerCase();
+          if (originalName.substring(0, nameStartFromComponentType.length) === nameStartFromComponentType) {
+            // recreate using new count
+            serializedComponent.componentName = serializedComponent.componentName.substring(0, lastSlash + 1)
+              + nameStartFromComponentType + count;
+          }
+        }
+
+      }
+
+      if (serializedComponent.children && !serializedComponent.attributes?.newNamespace?.primitive) {
+        // if don't have new namespace, recurse to children
+        componentCounts = renameAutonameBasedOnNewCounts(serializedComponent.children, componentCounts);
+      }
+    }
+  }
+
+  return componentCounts;
+
+}
+
 export function createComponentNames({ serializedComponents, namespaceStack = [],
   componentInfoObjects,
   parentDoenetAttributes = {},
