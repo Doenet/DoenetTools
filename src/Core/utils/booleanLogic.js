@@ -455,6 +455,7 @@ export function evaluateLogic({ logicTree,
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
           matchByExactPositions: dependencyValues.matchByExactPositions,
+          caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
         }));
 
         // return average of fraction_equal
@@ -468,6 +469,7 @@ export function evaluateLogic({ logicTree,
             isUnordered: unorderedCompare,
             partialMatches: dependencyValues.matchPartial,
             matchByExactPositions: dependencyValues.matchByExactPositions,
+            caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
           }
         ).fraction_equal === 1) ? 1 : 0;
       }
@@ -484,6 +486,7 @@ export function evaluateLogic({ logicTree,
           isUnordered: unorderedCompare,
           partialMatches: dependencyValues.matchPartial,
           matchByExactPositions: dependencyValues.matchByExactPositions,
+          caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
         }
       ).fraction_equal;
 
@@ -529,13 +532,13 @@ export function evaluateLogic({ logicTree,
       }
     }
 
-    if(operator === "ne") {
+    if (operator === "ne") {
       if (operands.length !== 2) {
         console.warn("Invalid format for boolean condition");
         return 0;
       }
 
-      if(deepCompare(operands[0], operands[1])) {
+      if (deepCompare(operands[0], operands[1])) {
         return 0;
       } else {
         return 1;
@@ -627,6 +630,8 @@ export function evaluateLogic({ logicTree,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }));
 
       // return average of fraction_equal
@@ -648,6 +653,8 @@ export function evaluateLogic({ logicTree,
           allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
           nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
           nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+          caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+          matchBlanks: dependencyValues.matchBlanks,
         }
       ).fraction_equal === 1) ? 1 : 0;
     }
@@ -669,6 +676,8 @@ export function evaluateLogic({ logicTree,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }
     ).fraction_equal;
 
@@ -700,6 +709,8 @@ export function evaluateLogic({ logicTree,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }));
 
       let max_fraction = results.reduce((a, c) => Math.max(a, c.fraction_equal), 0);
@@ -725,6 +736,8 @@ export function evaluateLogic({ logicTree,
         allowedErrorIsAbsolute: dependencyValues.allowedErrorIsAbsolute,
         nSignErrorsMatched: dependencyValues.nSignErrorsMatched,
         nPeriodicSetMatchesRequired: dependencyValues.nPeriodicSetMatchesRequired,
+        caseInsensitiveMatch: dependencyValues.caseInsensitiveMatch,
+        matchBlanks: dependencyValues.matchBlanks,
       }).fraction_equal === 1);
 
       if (operator === "in") {

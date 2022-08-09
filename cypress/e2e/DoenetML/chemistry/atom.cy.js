@@ -146,4 +146,45 @@ describe('Atom Tests', function () {
 
   })
 
+
+  it('sort atoms', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+
+  <p>Originals: <aslist><group name="original">
+    <atom symbol="C" />
+    <atom symbol="He" />
+    <atom symbol="as" />
+    <atom symbol="o" />
+  </group></aslist></p>
+    
+
+  <p>Sort by atomic number: <aslist><sort assignNames="an1 an2 an3 an4" sortByProp="atomicnumber">$original</sort></aslist></p>
+  <p>Sort by atomic radius: <aslist><sort assignNames="ar1 ar2 ar3 ar4" sortByProp="atomicRadius">$original</sort></aslist></p>
+  <p>Sort by ionization energy: <aslist><sort assignNames="ie1 ie2 ie3 ie4" sortByProp="ionizationEnergy">$original</sort></aslist></p>
+
+
+  `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a'); // to wait for page to load
+
+    cy.get('#\\/an1').contains('He')
+    cy.get('#\\/an2').contains('C')
+    cy.get('#\\/an3').contains('O')
+    cy.get('#\\/an4').contains('As')
+
+    cy.get('#\\/ar1').contains('He')
+    cy.get('#\\/ar2').contains('O')
+    cy.get('#\\/ar3').contains('C')
+    cy.get('#\\/ar4').contains('As')
+
+    cy.get('#\\/ie1').contains('As')
+    cy.get('#\\/ie2').contains('C')
+    cy.get('#\\/ie3').contains('O')
+    cy.get('#\\/ie4').contains('He')
+
+  })
+
 })

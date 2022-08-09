@@ -213,7 +213,7 @@ describe('ODEsystem Tag Tests', function () {
     <righthandside>x</righthandside>
   </odesystem>
 
-  <p><m>f($T) = $$(ode{prop='numericalSolution'})($T)
+  <p><m>f($T) = $$(ode.numericalSolution)($T)
   </m></p>
 
 
@@ -667,7 +667,7 @@ describe('ODEsystem Tag Tests', function () {
   <m>x(<copy prop="initialindependentvariablevalue" target="ode"/>) = 1</m>.</p>
 
   <p>We end with
-  <m>x($tf) = $$(ode{prop='numericalSolution'})($tf)</m></p>
+  <m>x($tf) = $$(ode.numericalSolution)($tf)</m></p>
   `}, "*");
     });
 
@@ -1039,7 +1039,7 @@ describe('ODEsystem Tag Tests', function () {
 
   <p>Swap right hand sides and keep initial conditions</p>
 
-  <odesystem name="odeswap" initialconditions="$(ode{prop='initialconditions'})">
+  <odesystem name="odeswap" initialconditions="$(ode.initialconditions)">
     <righthandside><copy prop="rhs2" target="ode" /></righthandside>
     <righthandside><copy prop="rhs1" target="ode" /></righthandside>
   </odesystem>

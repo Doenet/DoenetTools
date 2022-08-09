@@ -3310,57 +3310,57 @@ describe('Math Operator Tag Tests', function () {
         <number name="b">17</number>
         <number name="c">5-4</number>
       </group>
-      <math name="numberString">var(3,17,5-4)</math>
-      <math name="numberStringSimplify" simplify>var(3,17,5-4)</math>
-      <math name="numberStringProduct">var(3 17 5-4)</math>
-      <math name="numberStringProductSimplify" simplify>var(3 17 5-4)</math>
+      <math name="numberString">variance(3,17,5-4)</math>
+      <math name="numberStringSimplify" simplify>variance(3,17,5-4)</math>
+      <math name="numberStringProduct">variance(3 17 5-4)</math>
+      <math name="numberStringProductSimplify" simplify>variance(3 17 5-4)</math>
       <math name="numberComponentsCommas">
-        var(<number>3</number>,<number>17</number>,<number>5-4</number>)
+        variance(<number>3</number>,<number>17</number>,<number>5-4</number>)
       </math>
       <math name="numberComponentsCommasSimplify" simplify>
-      var(<number>3</number>,<number>17</number>,<number>5-4</number>)
+      variance(<number>3</number>,<number>17</number>,<number>5-4</number>)
       </math>
       <math name="numberComponentsProduct">
-        var(<number>3</number><number>17</number><number>5-4</number>)
+        variance(<number>3</number><number>17</number><number>5-4</number>)
       </math>
       <math name="numberComponentsProductSimplify" simplify>
-        var(<number>3</number><number>17</number><number>5-4</number>)
+        variance(<number>3</number><number>17</number><number>5-4</number>)
       </math>
       <math name="macrosCommas">
-        var($a,$b,$c)
+        variance($a,$b,$c)
       </math>
       <math name="macrosCommasSimplify" simplify>
-        var($a,$b,$c)
+        variance($a,$b,$c)
       </math>
       <math name="macrosProduct">
-        var($a$b$c)
+        variance($a$b$c)
       </math>
       <math name="macrosProductSimplify" simplify>
-        var($a$b$c)
+        variance($a$b$c)
       </math>
       <math name="group">
-        var($nums)
+        variance($nums)
       </math>
       <math name="groupSimplify" simplify>
-        var($nums)
+        variance($nums)
       </math>
       <math name="groupPlus">
-        var($nums, $a, $b, 13)
+        variance($nums, $a, $b, 13)
       </math>
       <math name="groupPlusSimplify" simplify>
-        var($nums, $a, $b, 13)
+        variance($nums, $a, $b, 13)
       </math>
       <math name="groupPlus2">
-        var($a, $b, 13, $nums)
+        variance($a, $b, 13, $nums)
       </math>
       <math name="groupPlus2Simplify" simplify>
-        var($a, $b, 13, $nums)
+        variance($a, $b, 13, $nums)
       </math>
       <math name="groupPlus3">
-        var($a, $b, $nums, 13)
+        variance($a, $b, $nums, 13)
       </math>
       <math name="groupPlus3Simplify" simplify>
-        var($a, $b, $nums, 13)
+        variance($a, $b, $nums, 13)
       </math>
       `}, "*");
     });
@@ -3373,61 +3373,61 @@ describe('Math Operator Tag Tests', function () {
     let theVariance2String = theVariance2.toString();
 
     cy.get('#\\/numberString').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3,17,5−4)')
+      expect(text.trim()).equal('variance(3,17,5−4)')
     });
     cy.get('#\\/numberStringSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
     cy.get('#\\/numberStringProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3⋅17⋅5−4)')
+      expect(text.trim()).equal('variance(3⋅17⋅5−4)')
     });
     cy.get('#\\/numberStringProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
     cy.get('#\\/numberComponentsCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3,17,1)')
+      expect(text.trim()).equal('variance(3,17,1)')
     });
     cy.get('#\\/numberComponentsCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
     cy.get('#\\/numberComponentsProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3⋅17⋅1)')
+      expect(text.trim()).equal('variance(3⋅17⋅1)')
     });
     cy.get('#\\/numberComponentsProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
     cy.get('#\\/macrosCommas').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3,17,1)')
+      expect(text.trim()).equal('variance(3,17,1)')
     });
     cy.get('#\\/macrosCommasSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
     cy.get('#\\/macrosProduct').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3⋅17⋅1)')
+      expect(text.trim()).equal('variance(3⋅17⋅1)')
     });
     cy.get('#\\/macrosProductSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('0')
     });
     cy.get('#\\/group').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3,17,1)')
+      expect(text.trim()).equal('variance(3,17,1)')
     });
     cy.get('#\\/groupSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVarianceString)
     });
     cy.get('#\\/groupPlus').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3,17,1,3,17,13)')
+      expect(text.trim()).equal('variance(3,17,1,3,17,13)')
     });
     cy.get('#\\/groupPlusSimplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVariance2String)
     });
     cy.get('#\\/groupPlus2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3,17,13,3,17,1)')
+      expect(text.trim()).equal('variance(3,17,13,3,17,1)')
     });
     cy.get('#\\/groupPlus2Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVariance2String)
     });
     cy.get('#\\/groupPlus3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('var(3,17,3,17,1,13)')
+      expect(text.trim()).equal('variance(3,17,3,17,1,13)')
     });
     cy.get('#\\/groupPlus3Simplify').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal(theVariance2String)
@@ -3437,49 +3437,49 @@ describe('Math Operator Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
 
       cy.window().then(async (win) => {
-        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'var', ["tuple", 3, 17, ["+", 5, -4]]]);
+        expect(stateVariables['/numberString'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, ["+", 5, -4]]]);
         expect(stateVariables['/numberString'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringSimplify'].stateValues.value).eq(theVariance);
         expect(stateVariables['/numberStringSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'var', ["+", ["*", 3, 17, 5], -4]]);
+        expect(stateVariables['/numberStringProduct'].stateValues.value).eqls(['apply', 'variance', ["+", ["*", 3, 17, 5], -4]]);
         expect(stateVariables['/numberStringProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.value).eq(0);
         expect(stateVariables['/numberStringProductSimplify'].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'var', ["tuple", 3, 17, 1]]);
+        expect(stateVariables['/numberComponentsCommas'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 1]]);
         expect(stateVariables['/numberComponentsCommas'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.value).eq(theVariance);
         expect(stateVariables['/numberComponentsCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'var', ["*", 3, 17, 1]]);
+        expect(stateVariables['/numberComponentsProduct'].stateValues.value).eqls(['apply', 'variance', ["*", 3, 17, 1]]);
         expect(stateVariables['/numberComponentsProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/numberComponentsProductSimplify'].stateValues.value).eq(0);
         expect(stateVariables['/numberComponentsProductSimplify'].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'var', ["tuple", 3, 17, 1]]);
+        expect(stateVariables['/macrosCommas'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 1]]);
         expect(stateVariables['/macrosCommas'].stateValues.isNumber).eq(false);
         expect(stateVariables['/macrosCommasSimplify'].stateValues.value).eq(theVariance);
         expect(stateVariables['/macrosCommasSimplify'].stateValues.isNumber).eq(true);
-        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'var', ["*", 3, 17, 1]]);
+        expect(stateVariables['/macrosProduct'].stateValues.value).eqls(['apply', 'variance', ["*", 3, 17, 1]]);
         expect(stateVariables['/macrosProduct'].stateValues.isNumber).eq(false);
         expect(stateVariables['/macrosProductSimplify'].stateValues.value).eq(0);
         expect(stateVariables['/macrosProductSimplify'].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'var', ["tuple", 3, 17, 1]]);
+        expect(stateVariables['/group'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 1]]);
         expect(stateVariables['/group'].stateValues.isNumber).eq(false);
         expect(stateVariables['/groupSimplify'].stateValues.value).eq(theVariance);
         expect(stateVariables['/groupSimplify'].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus'].stateValues.value).eqls(['apply', 'var', ["tuple", 3, 17, 1, 3, 17, 13]]);
+        expect(stateVariables['/groupPlus'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 1, 3, 17, 13]]);
         expect(stateVariables['/groupPlus'].stateValues.isNumber).eq(false);
         expect(stateVariables['/groupPlusSimplify'].stateValues.value).eq(theVariance2);
         expect(stateVariables['/groupPlusSimplify'].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus2'].stateValues.value).eqls(['apply', 'var', ["tuple", 3, 17, 13, 3, 17, 1]]);
+        expect(stateVariables['/groupPlus2'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 13, 3, 17, 1]]);
         expect(stateVariables['/groupPlus2'].stateValues.isNumber).eq(false);
         expect(stateVariables['/groupPlus2Simplify'].stateValues.value).eq(theVariance2);
         expect(stateVariables['/groupPlus2Simplify'].stateValues.isNumber).eq(true);
 
-        expect(stateVariables['/groupPlus3'].stateValues.value).eqls(['apply', 'var', ["tuple", 3, 17, 3, 17, 1, 13]]);
+        expect(stateVariables['/groupPlus3'].stateValues.value).eqls(['apply', 'variance', ["tuple", 3, 17, 3, 17, 1, 13]]);
         expect(stateVariables['/groupPlus3'].stateValues.isNumber).eq(false);
         expect(stateVariables['/groupPlus3Simplify'].stateValues.value).eq(theVariance2);
         expect(stateVariables['/groupPlus3Simplify'].stateValues.isNumber).eq(true);
@@ -6340,8 +6340,8 @@ describe('Math Operator Tag Tests', function () {
         doenetML: `
       <text>a</text>
       <function name="f" domain="[0,2]">(x+1)(x-2)(x-4)</function>
-      <p>Min on [0,2]: <min name="min02">$$f(0) $(f{prop="minimumValues"}) $$f(2)</min>.</p>
-      <p>Abs treats as product of three factors: <abs name="abs">$$f(0) $(f{prop="minimumValues"}) $$f(2)</abs>.</p>
+      <p>Min on [0,2]: <min name="min02">$$f(0) $(f.minimumValues) $$f(2)</min>.</p>
+      <p>Abs treats as product of three factors: <abs name="abs">$$f(0) $(f.minimumValues) $$f(2)</abs>.</p>
       `}, "*");
     });
 

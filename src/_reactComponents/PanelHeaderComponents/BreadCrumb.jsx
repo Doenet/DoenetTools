@@ -119,8 +119,10 @@ function Crumb({setRef,i,label=null,onClick,icon=null}){
     label = '_'
   }
 
-  return <BreadcrumbItem ref={crumbRef} data-test={`Crumb ${i}`}>
-  <BreadcrumbSpan onClick={onClick}>{iconJSX}<CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
+
+  return <BreadcrumbItem ref={crumbRef} data-test={`Crumb ${i}`>
+  <BreadcrumbSpan onClick={onClick} aria-label={label}>{iconJSX}<CrumbTextDiv>{label}</CrumbTextDiv></BreadcrumbSpan>
+
   </BreadcrumbItem>
 }
 //crumb 
@@ -277,7 +279,7 @@ export function BreadCrumb({crumbs=[],offset=0}){
   }
 
   if (numHidden > 0){crumbsJSX[1] = <BreadcrumbItem ref={elipseItemRef} key={`breadcrumbitem1`}>
-  <BreadcrumbSpan data-test="Crumb Menu" onClick={()=>{setMenuVisible((was)=>!was)}}>...</BreadcrumbSpan>
+  <BreadcrumbSpan data-test="Crumb Menu" aria-label="..." onClick={()=>{setMenuVisible((was)=>!was)}}>...</BreadcrumbSpan>
   </BreadcrumbItem>}
 
   let breadcrumbMenu = null;

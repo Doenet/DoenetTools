@@ -87,7 +87,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
     <text>a</text>
     <math hide>x+1</math>
-    <math>3<copy target="_math1" targetAttributesToIgnore="" /> + 5</math>
+    <math>3<copy source="_math1" sourceAttributesToIgnore="" /> + 5</math>
     `}, "*");
     });
 
@@ -188,7 +188,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <math>x/y</math>
-  <copy prop="latex" target="_math1" />
+  <copy prop="latex" source="_math1" />
   `}, "*");
     });
 
@@ -215,9 +215,9 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <text>a</text>
-  <math name="a" simplify><math name="x">x</math> + <copy target="x" /> + <copy target="z" /></math>
+  <math name="a" simplify><math name="x">x</math> + <copy source="x" /> + <copy source="z" /></math>
   <math name="z">z</math>
-  <copy name="a2" target="a" />
+  <copy name="a2" source="a" />
   `}, "*");
     });
 
@@ -244,7 +244,7 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <point>3</point>
-  <math simplify>2 + <copy target="_point1" /></math>
+  <math simplify>2 + <copy source="_point1" /></math>
   `}, "*");
     });
 
@@ -274,7 +274,7 @@ describe('Math Tag Tests', function () {
   <text>a</text>
   <math simplify>2<sequence length="0"/>3</math>
   <graph>
-  <point>(<copy target="_math1" />, 3)</point>
+  <point>(<copy source="_math1" />, 3)</point>
   </graph>
   `}, "*");
     });
@@ -362,13 +362,13 @@ describe('Math Tag Tests', function () {
     </math>
   </math></p>
 
-  <copy prop="format" target="a" name="caf" hide />
-  <copy prop="format" target="b" name="cbf" hide />
+  <copy prop="format" source="a" name="caf" hide />
+  <copy prop="format" source="b" name="cbf" hide />
   
-  <p name="formata"><copy prop="format" target="a" /></p>
-  <p name="formatb"><copy prop="format" target="b" /></p>
-  <p name="formatc"><copy prop="format" target="c" /></p>
-  <p name="formatd"><copy prop="format" target="d" /></p>
+  <p name="formata"><copy prop="format" source="a" /></p>
+  <p name="formatb"><copy prop="format" source="b" /></p>
+  <p name="formatc"><copy prop="format" source="c" /></p>
+  <p name="formatd"><copy prop="format" source="d" /></p>
   
   <textinput prefill="latex"/>
   <textinput prefill="text"/>
@@ -415,7 +415,7 @@ describe('Math Tag Tests', function () {
       expect(text.trim()).equal('＿')
     })
     cy.get('#\\/b .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('insu＿')
+      expect(text.trim()).equal('sinu＿')
     })
 
     cy.get("#\\/formata").should('have.text', 'text');
@@ -427,13 +427,13 @@ describe('Math Tag Tests', function () {
     cy.log('change format of second back to text')
     cy.get('#\\/_textinput2_input').clear().type(`text{enter}`);
 
-    cy.get('#\\/b').should('contain.text', '＿sin(u)')
+    cy.get('#\\/b').should('contain.text', 'sin(u)＿')
 
     cy.get('#\\/a .mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('＿')
     })
     cy.get('#\\/b .mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿sin(u)')
+      expect(text.trim()).equal('sin(u)＿')
     })
 
     cy.get("#\\/formata").should('have.text', 'text');
@@ -727,70 +727,191 @@ describe('Math Tag Tests', function () {
       win.postMessage({
         doenetML: `
   <p><text>a</text></p>
-  <p><math>621802.3520303639164826281</math></p>
-  <p><math>31.3835205397397634 x + 4pi</math></p>
-  <p><copy target="_math1" assignNames="dig5a" displayDigits="5" /></p>
-  <p><copy target="_math2" assignNames="dig5b" displayDigits="5" /></p>
-  <p><copy target="_math1" assignNames="dec5a" displayDecimals="5" /></p>
-  <p><copy target="_math2" assignNames="dec5b" displayDecimals="5" /></p>
-  <p><copy target="_math1" assignNames="dig5dec1a" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy target="_math2" assignNames="dig5dec1b" displayDigits="5" displayDecimals="1" /></p>
+  <p><math name="expr1">621802.3520303639164826281</math></p>
+  <p><math name="expr2">31.3835205397397634 x + 4pi</math></p>
+  <p><math name="expr1Dig5" displayDigits="5">621802.3520303639164826281</math></p>
+  <p><math name="expr2Dig5" displayDigits="5">31.3835205397397634 x + 4pi</math></p>
+  <p><math name="expr1Dec5" displayDecimals="5">621802.3520303639164826281</math></p>
+  <p><math name="expr2Dec5" displayDecimals="5">31.3835205397397634 x + 4pi</math></p>
+  <p><copy source="expr1" assignNames="expr1Dig5a" displayDigits="5" /></p>
+  <p><copy source="expr2" assignNames="expr2Dig5a" displayDigits="5" /></p>
+  <p><copy source="expr1" assignNames="expr1Dec5a" displayDecimals="5" /></p>
+  <p><copy source="expr2" assignNames="expr2Dec5a" displayDecimals="5" /></p>
+  <p><copy source="expr1Dec5" assignNames="expr1Dig5b" displayDigits="5" /></p>
+  <p><copy source="expr2Dec5" assignNames="expr2Dig5b" displayDigits="5" /></p>
+  <p><copy source="expr1Dig5" assignNames="expr1Dec5b" displayDecimals="5" /></p>
+  <p><copy source="expr2Dig5" assignNames="expr2Dec5b" displayDecimals="5" /></p>
+  <p><copy source="expr1Dec5a" assignNames="expr1Dig5c" displayDigits="5" /></p>
+  <p><copy source="expr2Dec5a" assignNames="expr2Dig5c" displayDigits="5" /></p>
+  <p><copy source="expr1Dig5a" assignNames="expr1Dec5c" displayDecimals="5" /></p>
+  <p><copy source="expr2Dig5a" assignNames="expr2Dec5c" displayDecimals="5" /></p>
+  <p><copy source="expr1Dec5b" assignNames="expr1Dig5d" displayDigits="5" /></p>
+  <p><copy source="expr2Dec5b" assignNames="expr2Dig5d" displayDigits="5" /></p>
+  <p><copy source="expr1Dig5b" assignNames="expr1Dec5d" displayDecimals="5" /></p>
+  <p><copy source="expr2Dig5b" assignNames="expr2Dec5d" displayDecimals="5" /></p>
+
+  <p><copy source="expr1" assignNames="expr1Dig5e" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy source="expr2" assignNames="expr2Dig5e" displayDigits="5" displayDecimals="1" /></p>
   `}, "*");
     });
 
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
     cy.log('Test value displayed in browser')
-    cy.get('#\\/_math1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/expr1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('621802.352')
     })
-    cy.get('#\\/_math2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/expr2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('31.38352054x+4π')
     })
-    cy.get('#\\/dig5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/expr1Dig5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('621800')
     })
-    cy.get('#\\/dig5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/expr2Dig5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('31.384x+4π')
     })
-    cy.get('#\\/dec5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/expr1Dec5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('621802.35203')
     })
-    cy.get('#\\/dec5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/expr2Dec5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('31.38352x+4π')
     })
-    cy.get('#\\/dig5dec1a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/expr1Dig5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('621800')
     })
-    cy.get('#\\/dig5dec1b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+    cy.get('#\\/expr2Dig5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('31.384x+4π')
     })
+    cy.get('#\\/expr1Dec5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621802.35203')
+    })
+    cy.get('#\\/expr2Dec5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.38352x+4π')
+    })
+
+    cy.get('#\\/expr1Dig5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621800')
+    })
+    cy.get('#\\/expr2Dig5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.384x+4π')
+    })
+    cy.get('#\\/expr1Dec5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621802.35203')
+    })
+    cy.get('#\\/expr2Dec5b').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.38352x+4π')
+    })
+
+    cy.get('#\\/expr1Dig5c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621800')
+    })
+    cy.get('#\\/expr2Dig5c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.384x+4π')
+    })
+    cy.get('#\\/expr1Dec5c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621802.35203')
+    })
+    cy.get('#\\/expr2Dec5c').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.38352x+4π')
+    })
+
+
+    cy.get('#\\/expr1Dig5d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621800')
+    })
+    cy.get('#\\/expr2Dig5d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.384x+4π')
+    })
+    cy.get('#\\/expr1Dec5d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621802.35203')
+    })
+    cy.get('#\\/expr2Dec5d').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.38352x+4π')
+    })
+
+    cy.get('#\\/expr1Dig5e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('621800')
+    })
+    cy.get('#\\/expr2Dig5e').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('31.384x+4π')
+    })
+
     cy.log('Test internal values')
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables['/_math1'].stateValues.value).eq(621802.3520303639)
-      expect(stateVariables['/_math2'].stateValues.value).eqls(
+      expect(stateVariables['/expr1'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2'].stateValues.value).eqls(
         ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
-      expect(stateVariables['/dig5a'].stateValues.value).eq(621802.3520303639)
-      expect(stateVariables['/dig5b'].stateValues.value).eqls(
+      expect(stateVariables['/expr1Dig5'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dig5'].stateValues.value).eqls(
         ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
-      expect(stateVariables['/dec5a'].stateValues.value).eq(621802.3520303639)
-      expect(stateVariables['/dec5b'].stateValues.value).eqls(
+      expect(stateVariables['/expr1Dec5'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dec5'].stateValues.value).eqls(
         ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
-      expect(stateVariables['/dig5dec1a'].stateValues.value).eq(621802.3520303639)
-      expect(stateVariables['/dig5dec1b'].stateValues.value).eqls(
+      expect(stateVariables['/expr1Dig5a'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dig5a'].stateValues.value).eqls(
         ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
-      expect(stateVariables['/_math1'].stateValues.valueForDisplay).eq(621802.352)
-      expect(stateVariables['/_math2'].stateValues.valueForDisplay).eqls(
+      expect(stateVariables['/expr1Dec5a'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dec5a'].stateValues.value).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dig5b'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dig5b'].stateValues.value).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dec5b'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dec5b'].stateValues.value).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dig5c'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dig5c'].stateValues.value).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dec5c'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dec5c'].stateValues.value).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dig5d'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dig5d'].stateValues.value).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dec5d'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dec5d'].stateValues.value).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dig5e'].stateValues.value).eq(621802.3520303639)
+      expect(stateVariables['/expr2Dig5e'].stateValues.value).eqls(
+        ['+', ['*', 31.383520539739763, 'x'], ['*', 4, 'pi']]);
+
+
+      expect(stateVariables['/expr1'].stateValues.valueForDisplay).eq(621802.352)
+      expect(stateVariables['/expr2'].stateValues.valueForDisplay).eqls(
         ['+', ['*', 31.38352054, 'x'], ['*', 4, 'pi']]);
-      expect(stateVariables['/dig5a'].stateValues.valueForDisplay).eq(621800)
-      expect(stateVariables['/dig5b'].stateValues.valueForDisplay).eqls(
+      expect(stateVariables['/expr1Dig5'].stateValues.valueForDisplay).eq(621800)
+      expect(stateVariables['/expr2Dig5'].stateValues.valueForDisplay).eqls(
         ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
-      expect(stateVariables['/dec5a'].stateValues.valueForDisplay).eq(621802.35203)
-      expect(stateVariables['/dec5b'].stateValues.valueForDisplay).eqls(
+      expect(stateVariables['/expr1Dec5'].stateValues.valueForDisplay).eq(621802.35203)
+      expect(stateVariables['/expr2Dec5'].stateValues.valueForDisplay).eqls(
         ['+', ['*', 31.38352, 'x'], ['*', 4, 'pi']]);
-      expect(stateVariables['/dig5dec1a'].stateValues.valueForDisplay).eq(621800)
-      expect(stateVariables['/dig5dec1b'].stateValues.valueForDisplay).eqls(
+      expect(stateVariables['/expr1Dig5a'].stateValues.valueForDisplay).eq(621800)
+      expect(stateVariables['/expr2Dig5a'].stateValues.valueForDisplay).eqls(
+        ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dec5a'].stateValues.valueForDisplay).eq(621802.35203)
+      expect(stateVariables['/expr2Dec5a'].stateValues.valueForDisplay).eqls(
+        ['+', ['*', 31.38352, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dig5b'].stateValues.valueForDisplay).eq(621800)
+      expect(stateVariables['/expr2Dig5b'].stateValues.valueForDisplay).eqls(
+        ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dec5b'].stateValues.valueForDisplay).eq(621802.35203)
+      expect(stateVariables['/expr2Dec5b'].stateValues.valueForDisplay).eqls(
+        ['+', ['*', 31.38352, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dig5c'].stateValues.valueForDisplay).eq(621800)
+      expect(stateVariables['/expr2Dig5c'].stateValues.valueForDisplay).eqls(
+        ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dec5c'].stateValues.valueForDisplay).eq(621802.35203)
+      expect(stateVariables['/expr2Dec5c'].stateValues.valueForDisplay).eqls(
+        ['+', ['*', 31.38352, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dig5d'].stateValues.valueForDisplay).eq(621800)
+      expect(stateVariables['/expr2Dig5d'].stateValues.valueForDisplay).eqls(
+        ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dec5d'].stateValues.valueForDisplay).eq(621802.35203)
+      expect(stateVariables['/expr2Dec5d'].stateValues.valueForDisplay).eqls(
+        ['+', ['*', 31.38352, 'x'], ['*', 4, 'pi']]);
+      expect(stateVariables['/expr1Dig5e'].stateValues.valueForDisplay).eq(621800)
+      expect(stateVariables['/expr2Dig5e'].stateValues.valueForDisplay).eqls(
         ['+', ['*', 31.384, 'x'], ['*', 4, 'pi']]);
 
     });
@@ -804,83 +925,83 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <p><text>a</text></p>
   <p><math>62.1</math></p>
-  <p><math>162.1*10^-3</math></p>
+  <p><math>162.1*10^(-3)</math></p>
   <p><math>1.3 x + 4pi</math></p>
-  <p><copy target="_math1" assignNames="dig5a" displayDigits="5" /></p>
-  <p><copy target="_math1" assignNames="dig5apad" displayDigits="5" padZeros /></p>
-  <p><copy target="_math2" assignNames="dig5b" displayDigits="5" /></p>
-  <p><copy target="_math2" assignNames="dig5bpad" displayDigits="5" padZeros /></p>
-  <p><copy target="_math3" assignNames="dig5c" displayDigits="5" /></p>
-  <p><copy target="_math3" assignNames="dig5cpad" displayDigits="5" padZeros /></p>
-  <p><copy target="_math1" assignNames="dec5a" displayDecimals="5" /></p>
-  <p><copy target="_math1" assignNames="dec5apad" displayDecimals="5" padZeros /></p>
-  <p><copy target="_math2" assignNames="dec5b" displayDecimals="5" /></p>
-  <p><copy target="_math2" assignNames="dec5bpad" displayDecimals="5" padZeros /></p>
-  <p><copy target="_math3" assignNames="dec5c" displayDecimals="5" /></p>
-  <p><copy target="_math3" assignNames="dec5cpad" displayDecimals="5" padZeros /></p>
-  <p><copy target="_math1" assignNames="dig5dec1a" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy target="_math1" assignNames="dig5dec1apad" displayDigits="5" displayDecimals="1" padZeros /></p>
-  <p><copy target="_math2" assignNames="dig5dec1b" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy target="_math2" assignNames="dig5dec1bpad" displayDigits="5" displayDecimals="1" padZeros /></p>
-  <p><copy target="_math3" assignNames="dig5dec1c" displayDigits="5" displayDecimals="1" /></p>
-  <p><copy target="_math3" assignNames="dig5dec1cpad" displayDigits="5" displayDecimals="1" padZeros /></p>
+  <p><copy source="_math1" assignNames="dig5a" displayDigits="5" /></p>
+  <p><copy source="_math1" assignNames="dig5apad" displayDigits="5" padZeros /></p>
+  <p><copy source="_math2" assignNames="dig5b" displayDigits="5" /></p>
+  <p><copy source="_math2" assignNames="dig5bpad" displayDigits="5" padZeros /></p>
+  <p><copy source="_math3" assignNames="dig5c" displayDigits="5" /></p>
+  <p><copy source="_math3" assignNames="dig5cpad" displayDigits="5" padZeros /></p>
+  <p><copy source="_math1" assignNames="dec5a" displayDecimals="5" /></p>
+  <p><copy source="_math1" assignNames="dec5apad" displayDecimals="5" padZeros /></p>
+  <p><copy source="_math2" assignNames="dec5b" displayDecimals="5" /></p>
+  <p><copy source="_math2" assignNames="dec5bpad" displayDecimals="5" padZeros /></p>
+  <p><copy source="_math3" assignNames="dec5c" displayDecimals="5" /></p>
+  <p><copy source="_math3" assignNames="dec5cpad" displayDecimals="5" padZeros /></p>
+  <p><copy source="_math1" assignNames="dig5dec1a" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy source="_math1" assignNames="dig5dec1apad" displayDigits="5" displayDecimals="1" padZeros /></p>
+  <p><copy source="_math2" assignNames="dig5dec1b" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy source="_math2" assignNames="dig5dec1bpad" displayDigits="5" displayDecimals="1" padZeros /></p>
+  <p><copy source="_math3" assignNames="dig5dec1c" displayDigits="5" displayDecimals="1" /></p>
+  <p><copy source="_math3" assignNames="dig5dec1cpad" displayDigits="5" displayDecimals="1" padZeros /></p>
 
-  <p><copy prop="text" target="dig5a" assignNames="dig5aText" /></p>
-  <p><copy prop="text" target="dig5apad" assignNames="dig5apadText" /></p>
-  <p><copy prop="text" target="dig5b" assignNames="dig5bText" /></p>
-  <p><copy prop="text" target="dig5bpad" assignNames="dig5bpadText" /></p>
-  <p><copy prop="text" target="dig5c" assignNames="dig5cText" /></p>
-  <p><copy prop="text" target="dig5cpad" assignNames="dig5cpadText" /></p>
-  <p><copy prop="text" target="dec5a" assignNames="dec5aText" /></p>
-  <p><copy prop="text" target="dec5apad" assignNames="dec5apadText" /></p>
-  <p><copy prop="text" target="dec5b" assignNames="dec5bText" /></p>
-  <p><copy prop="text" target="dec5bpad" assignNames="dec5bpadText" /></p>
-  <p><copy prop="text" target="dec5c" assignNames="dec5cText" /></p>
-  <p><copy prop="text" target="dec5cpad" assignNames="dec5cpadText" /></p>
-  <p><copy prop="text" target="dig5dec1a" assignNames="dig5dec1aText" /></p>
-  <p><copy prop="text" target="dig5dec1apad" assignNames="dig5dec1apadText" /></p>
-  <p><copy prop="text" target="dig5dec1b" assignNames="dig5dec1bText" /></p>
-  <p><copy prop="text" target="dig5dec1bpad" assignNames="dig5dec1bpadText" /></p>
-  <p><copy prop="text" target="dig5dec1c" assignNames="dig5dec1cText" /></p>
-  <p><copy prop="text" target="dig5dec1cpad" assignNames="dig5dec1cpadText" /></p>
+  <p><copy prop="text" source="dig5a" assignNames="dig5aText" /></p>
+  <p><copy prop="text" source="dig5apad" assignNames="dig5apadText" /></p>
+  <p><copy prop="text" source="dig5b" assignNames="dig5bText" /></p>
+  <p><copy prop="text" source="dig5bpad" assignNames="dig5bpadText" /></p>
+  <p><copy prop="text" source="dig5c" assignNames="dig5cText" /></p>
+  <p><copy prop="text" source="dig5cpad" assignNames="dig5cpadText" /></p>
+  <p><copy prop="text" source="dec5a" assignNames="dec5aText" /></p>
+  <p><copy prop="text" source="dec5apad" assignNames="dec5apadText" /></p>
+  <p><copy prop="text" source="dec5b" assignNames="dec5bText" /></p>
+  <p><copy prop="text" source="dec5bpad" assignNames="dec5bpadText" /></p>
+  <p><copy prop="text" source="dec5c" assignNames="dec5cText" /></p>
+  <p><copy prop="text" source="dec5cpad" assignNames="dec5cpadText" /></p>
+  <p><copy prop="text" source="dig5dec1a" assignNames="dig5dec1aText" /></p>
+  <p><copy prop="text" source="dig5dec1apad" assignNames="dig5dec1apadText" /></p>
+  <p><copy prop="text" source="dig5dec1b" assignNames="dig5dec1bText" /></p>
+  <p><copy prop="text" source="dig5dec1bpad" assignNames="dig5dec1bpadText" /></p>
+  <p><copy prop="text" source="dig5dec1c" assignNames="dig5dec1cText" /></p>
+  <p><copy prop="text" source="dig5dec1cpad" assignNames="dig5dec1cpadText" /></p>
 
-  <p><copy prop="value" target="dig5a" assignNames="dig5aValue" /></p>
-  <p><copy prop="value" target="dig5apad" assignNames="dig5apadValue" /></p>
-  <p><copy prop="value" target="dig5b" assignNames="dig5bValue" /></p>
-  <p><copy prop="value" target="dig5bpad" assignNames="dig5bpadValue" /></p>
-  <p><copy prop="value" target="dig5c" assignNames="dig5cValue" /></p>
-  <p><copy prop="value" target="dig5cpad" assignNames="dig5cpadValue" /></p>
-  <p><copy prop="value" target="dec5a" assignNames="dec5aValue" /></p>
-  <p><copy prop="value" target="dec5apad" assignNames="dec5apadValue" /></p>
-  <p><copy prop="value" target="dec5b" assignNames="dec5bValue" /></p>
-  <p><copy prop="value" target="dec5bpad" assignNames="dec5bpadValue" /></p>
-  <p><copy prop="value" target="dec5c" assignNames="dec5cValue" /></p>
-  <p><copy prop="value" target="dec5cpad" assignNames="dec5cpadValue" /></p>
-  <p><copy prop="value" target="dig5dec1a" assignNames="dig5dec1aValue" /></p>
-  <p><copy prop="value" target="dig5dec1apad" assignNames="dig5dec1apadValue" /></p>
-  <p><copy prop="value" target="dig5dec1b" assignNames="dig5dec1bValue" /></p>
-  <p><copy prop="value" target="dig5dec1bpad" assignNames="dig5dec1bpadValue" /></p>
-  <p><copy prop="value" target="dig5dec1c" assignNames="dig5dec1cValue" /></p>
-  <p><copy prop="value" target="dig5dec1cpad" assignNames="dig5dec1cpadValue" /></p>
+  <p><copy prop="value" source="dig5a" assignNames="dig5aValue" /></p>
+  <p><copy prop="value" source="dig5apad" assignNames="dig5apadValue" /></p>
+  <p><copy prop="value" source="dig5b" assignNames="dig5bValue" /></p>
+  <p><copy prop="value" source="dig5bpad" assignNames="dig5bpadValue" /></p>
+  <p><copy prop="value" source="dig5c" assignNames="dig5cValue" /></p>
+  <p><copy prop="value" source="dig5cpad" assignNames="dig5cpadValue" /></p>
+  <p><copy prop="value" source="dec5a" assignNames="dec5aValue" /></p>
+  <p><copy prop="value" source="dec5apad" assignNames="dec5apadValue" /></p>
+  <p><copy prop="value" source="dec5b" assignNames="dec5bValue" /></p>
+  <p><copy prop="value" source="dec5bpad" assignNames="dec5bpadValue" /></p>
+  <p><copy prop="value" source="dec5c" assignNames="dec5cValue" /></p>
+  <p><copy prop="value" source="dec5cpad" assignNames="dec5cpadValue" /></p>
+  <p><copy prop="value" source="dig5dec1a" assignNames="dig5dec1aValue" /></p>
+  <p><copy prop="value" source="dig5dec1apad" assignNames="dig5dec1apadValue" /></p>
+  <p><copy prop="value" source="dig5dec1b" assignNames="dig5dec1bValue" /></p>
+  <p><copy prop="value" source="dig5dec1bpad" assignNames="dig5dec1bpadValue" /></p>
+  <p><copy prop="value" source="dig5dec1c" assignNames="dig5dec1cValue" /></p>
+  <p><copy prop="value" source="dig5dec1cpad" assignNames="dig5dec1cpadValue" /></p>
 
-  <p><copy prop="number" target="dig5a" assignNames="dig5aNumber" /></p>
-  <p><copy prop="number" target="dig5apad" assignNames="dig5apadNumber" /></p>
-  <p><copy prop="number" target="dig5b" assignNames="dig5bNumber" /></p>
-  <p><copy prop="number" target="dig5bpad" assignNames="dig5bpadNumber" /></p>
-  <p><copy prop="number" target="dig5c" assignNames="dig5cNumber" /></p>
-  <p><copy prop="number" target="dig5cpad" assignNames="dig5cpadNumber" /></p>
-  <p><copy prop="number" target="dec5a" assignNames="dec5aNumber" /></p>
-  <p><copy prop="number" target="dec5apad" assignNames="dec5apadNumber" /></p>
-  <p><copy prop="number" target="dec5b" assignNames="dec5bNumber" /></p>
-  <p><copy prop="number" target="dec5bpad" assignNames="dec5bpadNumber" /></p>
-  <p><copy prop="number" target="dec5c" assignNames="dec5cNumber" /></p>
-  <p><copy prop="number" target="dec5cpad" assignNames="dec5cpadNumber" /></p>
-  <p><copy prop="number" target="dig5dec1a" assignNames="dig5dec1aNumber" /></p>
-  <p><copy prop="number" target="dig5dec1apad" assignNames="dig5dec1apadNumber" /></p>
-  <p><copy prop="number" target="dig5dec1b" assignNames="dig5dec1bNumber" /></p>
-  <p><copy prop="number" target="dig5dec1bpad" assignNames="dig5dec1bpadNumber" /></p>
-  <p><copy prop="number" target="dig5dec1c" assignNames="dig5dec1cNumber" /></p>
-  <p><copy prop="number" target="dig5dec1cpad" assignNames="dig5dec1cpadNumber" /></p>
+  <p><copy prop="number" source="dig5a" assignNames="dig5aNumber" /></p>
+  <p><copy prop="number" source="dig5apad" assignNames="dig5apadNumber" /></p>
+  <p><copy prop="number" source="dig5b" assignNames="dig5bNumber" /></p>
+  <p><copy prop="number" source="dig5bpad" assignNames="dig5bpadNumber" /></p>
+  <p><copy prop="number" source="dig5c" assignNames="dig5cNumber" /></p>
+  <p><copy prop="number" source="dig5cpad" assignNames="dig5cpadNumber" /></p>
+  <p><copy prop="number" source="dec5a" assignNames="dec5aNumber" /></p>
+  <p><copy prop="number" source="dec5apad" assignNames="dec5apadNumber" /></p>
+  <p><copy prop="number" source="dec5b" assignNames="dec5bNumber" /></p>
+  <p><copy prop="number" source="dec5bpad" assignNames="dec5bpadNumber" /></p>
+  <p><copy prop="number" source="dec5c" assignNames="dec5cNumber" /></p>
+  <p><copy prop="number" source="dec5cpad" assignNames="dec5cpadNumber" /></p>
+  <p><copy prop="number" source="dig5dec1a" assignNames="dig5dec1aNumber" /></p>
+  <p><copy prop="number" source="dig5dec1apad" assignNames="dig5dec1apadNumber" /></p>
+  <p><copy prop="number" source="dig5dec1b" assignNames="dig5dec1bNumber" /></p>
+  <p><copy prop="number" source="dig5dec1bpad" assignNames="dig5dec1bpadNumber" /></p>
+  <p><copy prop="number" source="dig5dec1c" assignNames="dig5dec1cNumber" /></p>
+  <p><copy prop="number" source="dig5dec1cpad" assignNames="dig5dec1cpadNumber" /></p>
   
   <p><math name="dig5aMath">$dig5a</math></p>
   <p><math name="dig5apadMath">$dig5apad</math></p>
@@ -920,24 +1041,24 @@ describe('Math Tag Tests', function () {
   <p><number name="dig5dec1cNumber2">$dig5dec1c</number></p>
   <p><number name="dig5dec1cpadNumber2">$dig5dec1cpad</number></p>
   
-  <p><copy prop="x1" target="dig5a" assignNames="dig5aX1" /></p>
-  <p><copy prop="x1" target="dig5apad" assignNames="dig5apadX1" /></p>
-  <p><copy prop="x1" target="dig5b" assignNames="dig5bX1" /></p>
-  <p><copy prop="x1" target="dig5bpad" assignNames="dig5bpadX1" /></p>
-  <p><copy prop="x1" target="dig5c" assignNames="dig5cX1" /></p>
-  <p><copy prop="x1" target="dig5cpad" assignNames="dig5cpadX1" /></p>
-  <p><copy prop="x1" target="dec5a" assignNames="dec5aX1" /></p>
-  <p><copy prop="x1" target="dec5apad" assignNames="dec5apadX1" /></p>
-  <p><copy prop="x1" target="dec5b" assignNames="dec5bX1" /></p>
-  <p><copy prop="x1" target="dec5bpad" assignNames="dec5bpadX1" /></p>
-  <p><copy prop="x1" target="dec5c" assignNames="dec5cX1" /></p>
-  <p><copy prop="x1" target="dec5cpad" assignNames="dec5cpadX1" /></p>
-  <p><copy prop="x1" target="dig5dec1a" assignNames="dig5dec1aX1" /></p>
-  <p><copy prop="x1" target="dig5dec1apad" assignNames="dig5dec1apadX1" /></p>
-  <p><copy prop="x1" target="dig5dec1b" assignNames="dig5dec1bX1" /></p>
-  <p><copy prop="x1" target="dig5dec1bpad" assignNames="dig5dec1bpadX1" /></p>
-  <p><copy prop="x1" target="dig5dec1c" assignNames="dig5dec1cX1" /></p>
-  <p><copy prop="x1" target="dig5dec1cpad" assignNames="dig5dec1cpadX1" /></p>
+  <p><copy prop="x1" source="dig5a" assignNames="dig5aX1" /></p>
+  <p><copy prop="x1" source="dig5apad" assignNames="dig5apadX1" /></p>
+  <p><copy prop="x1" source="dig5b" assignNames="dig5bX1" /></p>
+  <p><copy prop="x1" source="dig5bpad" assignNames="dig5bpadX1" /></p>
+  <p><copy prop="x1" source="dig5c" assignNames="dig5cX1" /></p>
+  <p><copy prop="x1" source="dig5cpad" assignNames="dig5cpadX1" /></p>
+  <p><copy prop="x1" source="dec5a" assignNames="dec5aX1" /></p>
+  <p><copy prop="x1" source="dec5apad" assignNames="dec5apadX1" /></p>
+  <p><copy prop="x1" source="dec5b" assignNames="dec5bX1" /></p>
+  <p><copy prop="x1" source="dec5bpad" assignNames="dec5bpadX1" /></p>
+  <p><copy prop="x1" source="dec5c" assignNames="dec5cX1" /></p>
+  <p><copy prop="x1" source="dec5cpad" assignNames="dec5cpadX1" /></p>
+  <p><copy prop="x1" source="dig5dec1a" assignNames="dig5dec1aX1" /></p>
+  <p><copy prop="x1" source="dig5dec1apad" assignNames="dig5dec1apadX1" /></p>
+  <p><copy prop="x1" source="dig5dec1b" assignNames="dig5dec1bX1" /></p>
+  <p><copy prop="x1" source="dig5dec1bpad" assignNames="dig5dec1bpadX1" /></p>
+  <p><copy prop="x1" source="dig5dec1c" assignNames="dig5dec1cX1" /></p>
+  <p><copy prop="x1" source="dig5dec1cpad" assignNames="dig5dec1cpadX1" /></p>
 
   `}, "*");
     });
@@ -1249,9 +1370,9 @@ describe('Math Tag Tests', function () {
       <p>Number: <math name="n">35203423.02352343201</math></p>
       <p>Number of digits: <mathinput name="ndigits" prefill="3" /></p>
       <p>Number of decimals: <mathinput name="ndecimals" prefill="3" /></p>
-      <p><copy target="n" displayDigits='$ndigits' assignNames="na" /></p>
-      <p><copy target="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
-      <p><copy prop="value" target="ndecimals" assignNames="ndecimals2" /></p>
+      <p><copy source="n" displayDigits='$ndigits' assignNames="na" /></p>
+      <p><copy source="n" displayDecimals='$ndecimals' assignNames="nb" /></p>
+      <p><copy prop="value" source="ndecimals" assignNames="ndecimals2" /></p>
     ` }, "*");
     })
 
@@ -1371,12 +1492,12 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <p><text>a</text></p>
   <math name="m1">f(x)+m(x)</math>
-  <copy target="m1" functionSymbols="m" assignNames="m2" />
-  <copy target="m2" functionSymbols="m f" assignNames="m3" />
+  <copy source="m1" functionSymbols="m" assignNames="m2" />
+  <copy source="m2" functionSymbols="m f" assignNames="m3" />
 
   <math name="m4" functionSymbols="m f">f(x)+m(x)</math>
-  <copy target="m4" functionSymbols="m" assignNames="m5" />
-  <copy target="m5" functionSymbols="f" assignNames="m6" />
+  <copy source="m4" functionSymbols="m" assignNames="m5" />
+  <copy source="m5" functionSymbols="f" assignNames="m6" />
   `}, "*");
     });
 
@@ -1417,7 +1538,7 @@ describe('Math Tag Tests', function () {
 
   });
 
-  it('targetsAreFunctionSymbols', () => {
+  it('sourcesAreFunctionSymbols', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1427,8 +1548,8 @@ describe('Math Tag Tests', function () {
 
   <p><math>$f($x)</math></p>
   <p><math>$x($f)</math></p>
-  <p><math targetsAreFunctionSymbols="f">$f($x)</math></p>
-  <p><math targetsAreFunctionSymbols="f">$x($f)</math></p>
+  <p><math sourcesAreFunctionSymbols="f">$f($x)</math></p>
+  <p><math sourcesAreFunctionSymbols="f">$x($f)</math></p>
   `}, "*");
     });
 
@@ -1466,7 +1587,7 @@ describe('Math Tag Tests', function () {
 
   });
 
-  it('copy and overwrite targetsAreFunctionSymbols', () => {
+  it('copy and overwrite sourcesAreFunctionSymbols', () => {
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
@@ -1474,12 +1595,12 @@ describe('Math Tag Tests', function () {
   <p><select assignNames="f">f g h k m n</select></p>
 
   <p><math name="m1">$f(x)</math></p>
-  <p><copy target="m1" targetsAreFunctionSymbols="f" assignNames="m2" /></p>
-  <p><copy target="m2" targetsAreFunctionSymbols="" assignNames="m3" /></p>
+  <p><copy source="m1" sourcesAreFunctionSymbols="f" assignNames="m2" /></p>
+  <p><copy source="m2" sourcesAreFunctionSymbols="" assignNames="m3" /></p>
 
-  <p><math name="m4" targetsAreFunctionSymbols="f">$f(x)</math></p>
-  <p><copy target="m4" targetsAreFunctionSymbols="" assignNames="m5" /></p>
-  <p><copy target="m5" targetsAreFunctionSymbols="f" assignNames="m6" /></p>
+  <p><math name="m4" sourcesAreFunctionSymbols="f">$f(x)</math></p>
+  <p><copy source="m4" sourcesAreFunctionSymbols="" assignNames="m5" /></p>
+  <p><copy source="m5" sourcesAreFunctionSymbols="f" assignNames="m6" /></p>
   `}, "*");
     });
 
@@ -1525,6 +1646,79 @@ describe('Math Tag Tests', function () {
 
   });
 
+  it('copy and overwrite simplify', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1">x+x</math></p>
+  <p><copy source="m1" simplify assignNames="m2" /></p>
+  <p><copy source="m2" simplify="none" assignNames="m3" /></p>
+  <p><copy source="m1.value" simplify assignNames="m2a" /></p>
+  <p><copy source="m2.value" simplify="none" assignNames="m3a" /></p>
+
+  <p><math name="m4" simplify>x+x</math></p>
+  <p><copy source="m4" simplify="none" assignNames="m5" /></p>
+  <p><copy source="m5" simplify assignNames="m6" /></p>
+  <p><copy source="m4.value" simplify="none" assignNames="m5a" /></p>
+  <p><copy source="m5a.value" simplify assignNames="m6a" /></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+x')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+x')
+    })
+    cy.get('#\\/m2a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m3a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x+x')
+    })
+    cy.get('#\\/m6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m5a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+    cy.get('#\\/m6a').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2x')
+    })
+
+
+    cy.log('Test internal values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m1'].stateValues.value).eqls(["+", "x", "x"]);
+      expect(stateVariables['/m2'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m3'].stateValues.value).eqls(["+", "x", "x"]);
+      expect(stateVariables['/m2a'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m3a'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m4'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m5'].stateValues.value).eqls(["+", "x", "x"]);
+      expect(stateVariables['/m6'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m5a'].stateValues.value).eqls(["*", 2, "x"]);
+      expect(stateVariables['/m6a'].stateValues.value).eqls(["*", 2, "x"]);
+
+
+    });
+
+  });
+
   it('split symbols', () => {
     cy.window().then(async (win) => {
       win.postMessage({
@@ -1544,6 +1738,96 @@ describe('Math Tag Tests', function () {
   <p><math name="m12" splitSymbols="false">x2_2x</math></p>
   <p><math name="m13" splitSymbols="false">2x_x2</math></p>
   <p><math name="m14" splitSymbols="false">xy uv x2y 2x x2</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.log('Test value displayed in browser')
+    cy.get('#\\/m1').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m2').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m3').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyz')
+    })
+    cy.get('#\\/m4').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yx2')
+    })
+    cy.get('#\\/m5').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyx')
+    })
+    cy.get('#\\/m6').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('yx2')
+    })
+    cy.get('#\\/m7').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m10').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+    cy.get('#\\/m11').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuv')
+    })
+    cy.get('#\\/m12').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('x22x')
+    })
+    cy.get('#\\/m13').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('2xx2')
+    })
+    cy.get('#\\/m14').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
+      expect(text.trim()).equal('xyuvx2y⋅2xx2')
+    })
+
+    cy.log('Test internal values')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/m1'].stateValues.value).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m2'].stateValues.value).eqls("xyz");
+      expect(stateVariables['/m3'].stateValues.value).eqls(["*", "x", "y", "z"]);
+      expect(stateVariables['/m4'].stateValues.value).eqls(["*", "y", ["^", "x", 2]]);
+      expect(stateVariables['/m5'].stateValues.value).eqls("xyx");
+      expect(stateVariables['/m6'].stateValues.value).eqls(["*", "y", ["^", "x", 2]]);
+      expect(stateVariables['/m7'].stateValues.value).eqls(["*", "x", ["_", "y", "u"], "v"]);
+      expect(stateVariables['/m8'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m9'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m10'].stateValues.value).eqls(["*", "x", "y", "u", "v", "x2y", 2, "x", "x2"]);
+      expect(stateVariables['/m11'].stateValues.value).eqls(["_", "xy", "uv"]);
+      expect(stateVariables['/m12'].stateValues.value).eqls(["*", ["_", "x2", 2], "x"]);
+      expect(stateVariables['/m13'].stateValues.value).eqls(["*", 2, ["_", "x", "x2"]]);
+      expect(stateVariables['/m14'].stateValues.value).eqls(["*", "xy", "uv", "x2y", 2, "x", "x2"]);
+
+    });
+
+  });
+
+  it('split symbols, nested', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p><math name="m1"><math>xyz</math></math></p>
+  <p><math name="m2" splitSymbols="false"><math>xyz</math></math></p>
+  <p><math name="m3" splitSymbols="true"><math>xyz</math></math></p>
+  <p><math name="m4" simplify><math>xyx</math></math></p>
+  <p><math name="m5" simplify splitSymbols="false"><math>xyx</math></math></p>
+  <p><math name="m6" simplify splitSymbols="true"><math>xyx</math></math></p>
+  <p><math name="m7"><math>xy_uv</math></math></p>
+  <p><math name="m8"><math>x2_2x</math></math></p>
+  <p><math name="m9"><math>2x_x2</math></math></p>
+  <p><math name="m10"><math>xy uv x2y 2x x2</math></math></p>
+  <p><math name="m11" splitSymbols="false"><math>xy_uv</math></math></p>
+  <p><math name="m12" splitSymbols="false"><math>x2_2x</math></math></p>
+  <p><math name="m13" splitSymbols="false"><math>2x_x2</math></math></p>
+  <p><math name="m14" splitSymbols="false"><math>xy uv x2y 2x x2</math></math></p>
   `}, "*");
     });
 
@@ -1786,12 +2070,12 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <p><text>a</text></p>
   <p><math name="m1">xyz</math></p>
-  <p><copy target="m1" splitsymbols="false" assignNames="m2" /></p>
-  <p><copy target="m2" splitsymbols assignNames="m3" /></p>
+  <p><copy source="m1" splitsymbols="false" assignNames="m2" /></p>
+  <p><copy source="m2" splitsymbols assignNames="m3" /></p>
 
   <p><math name="m4" splitSymbols="false">xyz</math></p>
-  <p><copy target="m4" splitsymbols assignNames="m5" /></p>
-  <p><copy target="m5" splitsymbols="false" assignNames="m6" /></p>
+  <p><copy source="m4" splitsymbols assignNames="m5" /></p>
+  <p><copy source="m5" splitsymbols="false" assignNames="m6" /></p>
   `}, "*");
     });
 
@@ -1880,21 +2164,21 @@ describe('Math Tag Tests', function () {
   <p><mathinput name="m" prefill="(a,b,c)" /></p>
   <p><math name="m2">$m</math></p>
   <p><math name="m3" createVectors>$m</math></p>
-  <p>Ndimensions: <extract prop="nDimensions" assignNames="nDim1">$m</extract> <copy prop="nDimensions" target="m2" assignNames="nDim2" /> <copy prop="nDimensions" target="m3" assignNames="nDim3" /></p>
-  <p>x: <extract prop="x" assignNames="x">$m</extract> <copy prop="x" target="m2" assignNames="x_2" /> <copy prop="x" target="m3" assignNames="x_3" /></p>
-  <p>y: <extract prop="y" assignNames="y">$m</extract> <copy prop="y" target="m2" assignNames="y_2" /> <copy prop="y" target="m3" assignNames="y_3" /></p>
-  <p>z: <extract prop="z" assignNames="z">$m</extract> <copy prop="z" target="m2" assignNames="z_2" /> <copy prop="z" target="m3" assignNames="z_3" /></p>
-  <p>x1: <extract prop="x1" assignNames="x1">$m</extract> <copy prop="x1" target="m2" assignNames="x1_2" /> <copy prop="x1" target="m3" assignNames="x1_3" /></p>
-  <p>x2: <extract prop="x2" assignNames="x2">$m</extract> <copy prop="x2" target="m2" assignNames="x2_2" /> <copy prop="x2" target="m3" assignNames="x2_3" /></p>
-  <p>x3: <extract prop="x3" assignNames="x3">$m</extract> <copy prop="x3" target="m2" assignNames="x3_2" /> <copy prop="x3" target="m3" assignNames="x3_3" /></p>
-  <p>x4: <extract prop="x4" assignNames="x4">$m</extract> <copy prop="x4" target="m2" assignNames="x4_2" /> <copy prop="x4" target="m3" assignNames="x4_3" /></p>
-  <p>x: <mathinput bindValueTo="$x" name="mx" /> <mathinput bindValueTo="$(m2{prop='x'})" name="mx_2" /> <mathinput bindValueTo="$(m3{prop='x'})" name="mx_3" /></p>
-  <p>y: <mathinput bindValueTo="$y" name="my" /> <mathinput bindValueTo="$(m2{prop='y'})" name="my_2" /> <mathinput bindValueTo="$(m3{prop='y'})" name="my_3" /></p>
-  <p>z: <mathinput bindValueTo="$z" name="mz" /> <mathinput bindValueTo="$(m2{prop='z'})" name="mz_2" /> <mathinput bindValueTo="$(m3{prop='z'})" name="mz_3" /></p>
-  <p>x1: <mathinput bindValueTo="$x1" name="mx1" /> <mathinput bindValueTo="$(m2{prop='x1'})" name="mx1_2" /> <mathinput bindValueTo="$(m3{prop='x1'})" name="mx1_3" /></p>
-  <p>x2: <mathinput bindValueTo="$x2" name="mx2" /> <mathinput bindValueTo="$(m2{prop='x2'})" name="mx2_2" /> <mathinput bindValueTo="$(m3{prop='x2'})" name="mx2_3" /></p>
-  <p>x3: <mathinput bindValueTo="$x3" name="mx3" /> <mathinput bindValueTo="$(m2{prop='x3'})" name="mx3_2" /> <mathinput bindValueTo="$(m3{prop='x3'})" name="mx3_3" /></p>
-  <p>x4: <mathinput bindValueTo="$x4" name="mx4" /> <mathinput bindValueTo="$(m2{prop='x4'})" name="mx4_2" /> <mathinput bindValueTo="$(m3{prop='x4'})" name="mx4_3" /></p>
+  <p>Ndimensions: <extract prop="nDimensions" assignNames="nDim1">$m</extract> <copy prop="nDimensions" source="m2" assignNames="nDim2" /> <copy prop="nDimensions" source="m3" assignNames="nDim3" /></p>
+  <p>x: <extract prop="x" assignNames="x">$m</extract> <copy prop="x" source="m2" assignNames="x_2" /> <copy prop="x" source="m3" assignNames="x_3" /></p>
+  <p>y: <extract prop="y" assignNames="y">$m</extract> <copy prop="y" source="m2" assignNames="y_2" /> <copy prop="y" source="m3" assignNames="y_3" /></p>
+  <p>z: <extract prop="z" assignNames="z">$m</extract> <copy prop="z" source="m2" assignNames="z_2" /> <copy prop="z" source="m3" assignNames="z_3" /></p>
+  <p>x1: <extract prop="x1" assignNames="x1">$m</extract> <copy prop="x1" source="m2" assignNames="x1_2" /> <copy prop="x1" source="m3" assignNames="x1_3" /></p>
+  <p>x2: <extract prop="x2" assignNames="x2">$m</extract> <copy prop="x2" source="m2" assignNames="x2_2" /> <copy prop="x2" source="m3" assignNames="x2_3" /></p>
+  <p>x3: <extract prop="x3" assignNames="x3">$m</extract> <copy prop="x3" source="m2" assignNames="x3_2" /> <copy prop="x3" source="m3" assignNames="x3_3" /></p>
+  <p>x4: <extract prop="x4" assignNames="x4">$m</extract> <copy prop="x4" source="m2" assignNames="x4_2" /> <copy prop="x4" source="m3" assignNames="x4_3" /></p>
+  <p>x: <mathinput bindValueTo="$x" name="mx" /> <mathinput bindValueTo="$m2.x" name="mx_2" /> <mathinput bindValueTo="$m3.x" name="mx_3" /></p>
+  <p>y: <mathinput bindValueTo="$y" name="my" /> <mathinput bindValueTo="$m2.y" name="my_2" /> <mathinput bindValueTo="$m3.y" name="my_3" /></p>
+  <p>z: <mathinput bindValueTo="$z" name="mz" /> <mathinput bindValueTo="$m2.z" name="mz_2" /> <mathinput bindValueTo="$m3.z" name="mz_3" /></p>
+  <p>x1: <mathinput bindValueTo="$x1" name="mx1" /> <mathinput bindValueTo="$m2.x1" name="mx1_2" /> <mathinput bindValueTo="$m3.x1" name="mx1_3" /></p>
+  <p>x2: <mathinput bindValueTo="$x2" name="mx2" /> <mathinput bindValueTo="$m2.x2" name="mx2_2" /> <mathinput bindValueTo="$m3.x2" name="mx2_3" /></p>
+  <p>x3: <mathinput bindValueTo="$x3" name="mx3" /> <mathinput bindValueTo="$m2.x3" name="mx3_2" /> <mathinput bindValueTo="$m3.x3" name="mx3_3" /></p>
+  <p>x4: <mathinput bindValueTo="$x4" name="mx4" /> <mathinput bindValueTo="$m2.x4" name="mx4_2" /> <mathinput bindValueTo="$m3.x4" name="mx4_3" /></p>
   `}, "*");
     });
 
@@ -2115,20 +2399,20 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <p><text>a</text></p>
   <math name="ordered1">2,3</math>
-  <copy target="ordered1" unordered assignNames="unordered1" />
-  <copy target="unordered1" unordered="false" assignNames="ordered2" />
+  <copy source="ordered1" unordered assignNames="unordered1" />
+  <copy source="unordered1" unordered="false" assignNames="ordered2" />
 
   <math name="unordered2" unordered>2,3</math>
-  <copy target="unordered2" unordered="false" assignNames="ordered3" />
-  <copy target="ordered3" unordered assignNames="unordered3" />
+  <copy source="unordered2" unordered="false" assignNames="ordered3" />
+  <copy source="ordered3" unordered assignNames="unordered3" />
 
   <math name="unordered4"><math unordered>2,3</math></math>
-  <copy target="unordered4" unordered="false" assignNames="ordered4" />
-  <copy target="ordered4" unordered assignNames="unordered5" />
+  <copy source="unordered4" unordered="false" assignNames="ordered4" />
+  <copy source="ordered4" unordered assignNames="unordered5" />
 
   <math name="ordered5" unordered="false"><math unordered>2,3</math></math>
-  <copy target="ordered5" unordered assignNames="unordered6" />
-  <copy target="unordered6" unordered="false" assignNames="ordered6" />
+  <copy source="ordered5" unordered assignNames="unordered6" />
+  <copy source="unordered6" unordered="false" assignNames="ordered6" />
 
   `}, "*");
     });
@@ -2167,15 +2451,15 @@ describe('Math Tag Tests', function () {
 
   <p name="p1" newNamespace>
     <math name="m1" unordered="$(../b1)">2,3</math>
-    <copy target="m1" unordered="$(../b2)" assignNames="m2" />
-    <copy target="m2" unordered="$(../b3)" assignNames="m3" />
+    <copy source="m1" unordered="$(../b2)" assignNames="m2" />
+    <copy source="m2" unordered="$(../b3)" assignNames="m3" />
   </p>
 
-  <copy target="p1" assignNames="p2" />
+  <copy source="p1" assignNames="p2" />
   <p>
-    <copy prop="value" target="b1" assignNames="b1a" />
-    <copy prop="value" target="b2" assignNames="b2a" />
-    <copy prop="value" target="b3" assignNames="b3a" />
+    <copy prop="value" source="b1" assignNames="b1a" />
+    <copy prop="value" source="b2" assignNames="b2a" />
+    <copy prop="value" source="b3" assignNames="b3a" />
   </p>
   `}, "*");
     });
@@ -2267,7 +2551,7 @@ describe('Math Tag Tests', function () {
   <number name="n">1</number>
   <graph>
     <point name="P" coords="(2$n+1,1)" />
-    <copy target="P" assignNames="Q" x="2$n-1" />
+    <copy source="P" assignNames="Q" x="2$n-1" />
   </graph>
   `}, "*");
     });
@@ -2312,7 +2596,7 @@ describe('Math Tag Tests', function () {
   <math name="coords" simplify>(2$n+1,1)</math>
   <graph>
     <point name="P" coords="$coords" />
-    <copy target="P" assignNames="Q" x="2$n-1" />
+    <copy source="P" assignNames="Q" x="2$n-1" />
   </graph>
   `}, "*");
     });
@@ -2365,7 +2649,7 @@ describe('Math Tag Tests', function () {
   <mathinput name="coords2" bindValueTo="$coords1" />
   <graph>
     <point name="P" coords="$coords2" />
-    <copy target="P" assignNames="Q" x="2$n-1" />
+    <copy source="P" assignNames="Q" x="2$n-1" />
   </graph>
   `}, "*");
     });
@@ -2428,24 +2712,24 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <p><text>a</text></p>
   <p><math name="m1" displayDigits="3">8.5203845251</math>
-  <copy target="m1" prop="value" assignNames="m1a" />
-  <copy target="m1" prop="value" displayDigits="5" assignNames="m1b" />
-  <copy target="m1" prop="value" link="false" assignNames="m1c" />
-  <copy target="m1" prop="value" link="false" displayDigits="5" assignNames="m1d" />
+  <copy source="m1" prop="value" assignNames="m1a" />
+  <copy source="m1" prop="value" displayDigits="5" assignNames="m1b" />
+  <copy source="m1" prop="value" link="false" assignNames="m1c" />
+  <copy source="m1" prop="value" link="false" displayDigits="5" assignNames="m1d" />
   </p>
 
   <p><math name="m2" displayDecimals="4">8.5203845251</math>
-  <copy target="m2" prop="value" assignNames="m2a" />
-  <copy target="m2" prop="value" displayDecimals="6" assignNames="m2b" />
-  <copy target="m2" prop="value" link="false" assignNames="m2c" />
-  <copy target="m2" prop="value" link="false" displayDecimals="6" assignNames="m2d" />
+  <copy source="m2" prop="value" assignNames="m2a" />
+  <copy source="m2" prop="value" displayDecimals="6" assignNames="m2b" />
+  <copy source="m2" prop="value" link="false" assignNames="m2c" />
+  <copy source="m2" prop="value" link="false" displayDecimals="6" assignNames="m2d" />
   </p>
 
   <p><math name="m3" displaySmallAsZero>0.000000000000000015382487</math>
-  <copy target="m3" prop="value" assignNames="m3a" />
-  <copy target="m3" prop="value" displaySmallAsZero="false" assignNames="m3b" />
-  <copy target="m3" prop="value" link="false" assignNames="m3c" />
-  <copy target="m3" prop="value" link="false" displaySmallAsZero="false" assignNames="m3d" />
+  <copy source="m3" prop="value" assignNames="m3a" />
+  <copy source="m3" prop="value" displaySmallAsZero="false" assignNames="m3b" />
+  <copy source="m3" prop="value" link="false" assignNames="m3c" />
+  <copy source="m3" prop="value" link="false" displaySmallAsZero="false" assignNames="m3d" />
   </p>
 
   `}, "*");
@@ -2481,8 +2765,8 @@ describe('Math Tag Tests', function () {
         doenetML: `
   <p><text>a</text></p>
   <math name="m">(x,y)</math>
-  <copy target="m" prop="value" assignNames="m2" />
-  <mathinput bindValueTo="$(m{prop='x'})" name="mi" />
+  <copy source="m" prop="value" assignNames="m2" />
+  <mathinput bindValueTo="$m.x" name="mi" />
   `}, "*");
     });
 
@@ -2791,6 +3075,51 @@ describe('Math Tag Tests', function () {
 
     })
   });
+
+  it('display blanks', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <p><text>a</text></p>
+  <p>Display blanks: <booleanInput name="displayBlanks" /></p>
+  <p><math name="m1" displayBlanks="$displayBlanks">x^() + /2</math></p>
+  <p><math name="m2" displayBlanks="$displayBlanks">+++</math></p>
+  <p><math name="m3" displayBlanks="$displayBlanks">2+</math></p>
+  <p><math name="m4" displayBlanks="$displayBlanks">2+2+</math></p>
+  <p><math name="m5" displayBlanks="$displayBlanks">'-_^</math></p>
+  <p><math name="m6" displayBlanks="$displayBlanks">)</math></p>
+  <p><math name="m7" displayBlanks="$displayBlanks">(,]</math></p>
+  <p><math name="m8" displayBlanks="$displayBlanks">2+()</math></p>
+  <p><math name="m9" displayBlanks="$displayBlanks">2+()+5</math></p>
+  `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', 'x+2');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '+++');
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '2+');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '2+2+');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', '′−');
+    cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', '');
+    cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '(,]');
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2+');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2++5');
+
+    cy.get('#\\/displayBlanks_input').click();
+
+    cy.get('#\\/m1 .mjx-mrow').should('contain.text', '\uff3f')
+    cy.get('#\\/m1 .mjx-mrow').eq(0).should('have.text', 'x\uff3f+\uff3f2');
+    cy.get('#\\/m2 .mjx-mrow').eq(0).should('have.text', '+++');
+    cy.get('#\\/m3 .mjx-mrow').eq(0).should('have.text', '2+');
+    cy.get('#\\/m4 .mjx-mrow').eq(0).should('have.text', '2+2+\uff3f');
+    cy.get('#\\/m5 .mjx-mrow').eq(0).should('have.text', '\uff3f′−\uff3f\uff3f\uff3f');
+    cy.get('#\\/m6 .mjx-mrow').eq(0).should('have.text', '\uff3f');
+    cy.get('#\\/m7 .mjx-mrow').eq(0).should('have.text', '(\uff3f,\uff3f]');
+    cy.get('#\\/m8 .mjx-mrow').eq(0).should('have.text', '2+\uff3f');
+    cy.get('#\\/m9 .mjx-mrow').eq(0).should('have.text', '2+\uff3f+5');
+  });
+
 
 
 })

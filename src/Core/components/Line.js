@@ -1,6 +1,6 @@
 import GraphicalComponent from './abstract/GraphicalComponent';
 import me from 'math-expressions';
-import { returnNVariables, convertValueToMathExpression } from '../utils/math';
+import { returnNVariables, convertValueToMathExpression, roundForDisplay } from '../utils/math';
 
 export default class Line extends GraphicalComponent {
   static componentType = "line";
@@ -36,6 +36,32 @@ export default class Line extends GraphicalComponent {
       createComponentOfType: "variables",
     };
 
+    attributes.displayDigits = {
+      createComponentOfType: "integer",
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
+    };
+
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
+    };
     return attributes;
   }
 
@@ -49,15 +75,10 @@ export default class Line extends GraphicalComponent {
         return { success: false };
       }
 
-      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: "label"
-      });
-
-
       // wrap first group of non-label children becomes equation
 
-      let childIsLabel = matchedChildren.map(x => componentTypeIsLabel(x.componentType) || componentTypeIsLabel(x.attributes?.createComponentOfType?.primitive));
+      let componentIsLabel = x => componentInfoObjects.componentIsSpecifiedType(x, "label");
+      let childIsLabel = matchedChildren.map(componentIsLabel);
 
       let childrenToWrap = [], childrenToNotWrap = [];
 
@@ -166,6 +187,61 @@ export default class Line extends GraphicalComponent {
         let styleDescriptionWithNoun = dependencyValues.styleDescription + " line";
 
         return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
+        let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+        if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          // if both display digits and display decimals did not used default
+          // we'll regard display digits as using default if it comes from a deeper shadow
+          let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+          let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+          if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+            displayDigitsAttrUsedDefault = true;
+          }
+        }
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+          // have to check to exclude case where have displayDecimals from mathList parent
+          // because otherwise a non-default displayDigits will win over displayDecimals
+
+          if (displayDigitsAttrUsedDefault) {
+            return { useEssentialOrDefaultValue: { displayDigits: { defaultValue: dependencyValues.displayDigitsAttr.stateValues.value } } }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
       }
     }
 
@@ -452,6 +528,7 @@ export default class Line extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
         returnWrappingComponents(prefix) {
           if (prefix === "pointX") {
             return [];
@@ -512,13 +589,19 @@ export default class Line extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "points") {
-          return "point" + propIndex;
+          if (propIndex.length === 1) {
+            return "point" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `pointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 5) === "point") {
           // could be point or pointX
           let pointNum = Number(varName.slice(5));
           if (Number.isInteger(pointNum) && pointNum > 0) {
-            return `pointX${pointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `pointX${pointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -957,6 +1040,7 @@ export default class Line extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["equationIdentity"],
@@ -966,6 +1050,7 @@ export default class Line extends GraphicalComponent {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "math",
+            attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
           },
         },
         {
@@ -973,6 +1058,7 @@ export default class Line extends GraphicalComponent {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "math",
+            attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
           },
         },
         {
@@ -980,6 +1066,7 @@ export default class Line extends GraphicalComponent {
           public: true,
           shadowingInstructions: {
             createComponentOfType: "math",
+            attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
           },
         }
       ],
@@ -1294,6 +1381,7 @@ export default class Line extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       returnDependencies: () => ({
         coeffvar1: {
@@ -1319,6 +1407,7 @@ export default class Line extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       returnDependencies: () => ({
         coeff0: {
@@ -1346,6 +1435,7 @@ export default class Line extends GraphicalComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       returnDependencies: () => ({
         coeff0: {
@@ -1386,6 +1476,55 @@ export default class Line extends GraphicalComponent {
           value: desiredStateVariableValues.lastPointsFromInverting
         }]
       })
+    }
+
+    stateVariableDefinitions.latex = {
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
+      },
+      returnDependencies: () => ({
+        equation: {
+          dependencyType: "stateVariable",
+          variableName: "equation"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        let latex = roundForDisplay({
+          value: dependencyValues.equation,
+          dependencyValues, usedDefault
+        }).toLatex(params);
+
+        return { setValue: { latex } }
+
+      }
     }
 
     stateVariableDefinitions.nearestPoint = {
@@ -1473,7 +1612,10 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  static adapters = ["equation"];
+  static adapters = [{
+    stateVariable: "equation",
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+  }];
 
   async moveLine({ point1coords, point2coords, transient, actionId }) {
 

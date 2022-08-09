@@ -138,10 +138,10 @@ describe('Graph Tag Tests', function () {
     <p>ymin: <copy prop="ymin" target="_graph1" assignNames="ymin" /></p>
     <p>ymax: <copy prop="ymax" target="_graph1" assignNames="ymax" /></p>
 
-    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$(_graph1{prop='xmin'})" /></p>
-    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$(_graph1{prop='xmax'})" /></p>
-    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$(_graph1{prop='ymin'})" /></p>
-    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$(_graph1{prop='ymax'})" /></p>
+    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$_graph1.xmin" /></p>
+    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$_graph1.xmax" /></p>
+    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$_graph1.ymin" /></p>
+    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$_graph1.ymax" /></p>
     
     `}, "*");
     });
@@ -1031,10 +1031,10 @@ describe('Graph Tag Tests', function () {
     <p>ymin: <copy prop="ymin" target="g" assignNames="ymin" /></p>
     <p>ymax: <copy prop="ymax" target="g" assignNames="ymax" /></p>
 
-    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$(g{prop='xmin'})" /></p>
-    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$(g{prop='xmax'})" /></p>
-    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$(g{prop='ymin'})" /></p>
-    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$(g{prop='ymax'})" /></p>
+    <p>Change xmin: <mathinput name="xminInput" bindValueTo="$g.xmin" /></p>
+    <p>Change xmax: <mathinput name="xmaxInput" bindValueTo="$g.xmax" /></p>
+    <p>Change ymin: <mathinput name="yminInput" bindValueTo="$g.ymin" /></p>
+    <p>Change ymax: <mathinput name="ymaxInput" bindValueTo="$g.ymax" /></p>
 
     `}, "*");
     });
@@ -1257,7 +1257,7 @@ describe('Graph Tag Tests', function () {
       win.postMessage({
         doenetML: `
     <text>a</text>
-    <graph xlabel="$(x{prop='submittedResponse' createComponentOfType='math'})" ylabel="y" />
+    <graph xlabel="$(x.submittedResponse{ createComponentOfType='math'})" ylabel="y" />
 
     <answer name="x">x</answer>
     <copy prop="submittedResponse" target="x" assignNames="sr" />
@@ -1694,13 +1694,15 @@ describe('Graph Tag Tests', function () {
 
     cy.get('#\\/xe').should('contain.text', 'e2e3e4e5e')
     cy.get('#\\/xe').should('contain.text', '−e')
-    cy.get('#\\/xe').should('contain.text', '−2e−3e−4e−5e')
+    cy.get('#\\/xe').should('contain.text', '−2e−3e')
+    cy.get('#\\/xe').should('contain.text', '−4e−5e')
     cy.get('#\\/xe').should('contain.text', '10')
     cy.get('#\\/xe').should('contain.text', '−10')
 
     cy.get('#\\/ye').should('contain.text', 'e2e3e4e5e')
-    cy.get('#\\/ye').should('contain.text', '−e−2e')
-    cy.get('#\\/ye').should('contain.text', '−3e−4e−5e')
+    cy.get('#\\/ye').should('contain.text', '−e')
+    cy.get('#\\/ye').should('contain.text', '−2e−3e')
+    cy.get('#\\/ye').should('contain.text', '−4e−5e')
     cy.get('#\\/ye').should('contain.text', '10')
     cy.get('#\\/ye').should('contain.text', '−10')
 
@@ -1714,6 +1716,168 @@ describe('Graph Tag Tests', function () {
     cy.get('#\\/ignorebad').should('not.contain.text', 'e')
     cy.get('#\\/ignorebad').should('contain.text', '10')
     cy.get('#\\/ignorebad').should('contain.text', '−10')
+
+
+  });
+
+  it('display axes', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph displayXAxis="$b1" displayYAxis="$b2">
+    </graph>
+    <booleaninput name="b1" />
+    <copy prop="displayXAxis" target="_graph1" assignNames="b1a" />
+    <booleaninput name="b2" prefill="true" />
+    <copy prop="displayYAxis" target="_graph1" assignNames="b2a" />
+
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+    cy.get('#\\/b1a').should('have.text', 'false')
+    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(false);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(true);
+    })
+
+
+    cy.get('#\\/b1_input').click();
+
+    cy.get('#\\/b1a').should('have.text', 'true')
+    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(true);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(true);
+    })
+
+    cy.get('#\\/b2_input').click();
+
+    cy.get('#\\/b1a').should('have.text', 'true')
+    cy.get('#\\/b2a').should('have.text', 'false')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(true);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(false);
+    })
+
+    cy.get('#\\/b1_input').click();
+
+    cy.get('#\\/b1a').should('have.text', 'false')
+    cy.get('#\\/b2a').should('have.text', 'false')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(false);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(false);
+    })
+
+    cy.get('#\\/b2_input').click();
+
+    cy.get('#\\/b1a').should('have.text', 'false')
+    cy.get('#\\/b2a').should('have.text', 'true')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.displayXAxis).eq(false);
+      expect(stateVariables["/_graph1"].stateValues.displayYAxis).eq(true);
+    })
+
+
+
+  });
+
+  it('display navigation bar', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph showNavigation="$b">
+    </graph>
+    <booleaninput name="b" />
+    <copy prop="showNavigation" target="_graph1" assignNames="ba" />
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    // not sure what to test as don't know how to check renderer...
+    cy.get('#\\/ba').should('have.text', 'false')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(false);
+    })
+
+
+    cy.get('#\\/b_input').click();
+
+    cy.get('#\\/ba').should('have.text', 'true')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(true);
+    })
+
+    cy.get('#\\/b_input').click();
+
+    cy.get('#\\/ba').should('have.text', 'false')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/_graph1"].stateValues.showNavigation).eq(false);
+    })
+
+
+  });
+
+  it('display digits and decimals, overwrite in copies', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+
+    <graph name="g" size="small" xmin="-45.03232523423" xmax="8.2857234234" ymin="-5.582342383823423" ymax="7.83710375032" />
+    <graph name="gdg3" displayDigits="3" copySource="g" />
+    <graph name="gdc5" displayDecimals="5" copySource="g" />
+    <graph name="gdg3a" displayDigits="3" copySource="gdc5" />
+    <graph name="gdc5a" displayDecimals="5" copySource="gdg3" />
+    <graph name="gdg3b" displayDigits="3" copySource="gdc5a" />
+    <graph name="gdc5b" displayDecimals="5" copySource="gdg3a" />
+
+    <p name="p">$g.xmin, $g.xmax, $g.ymin, $g.ymax</p>
+
+    <p name="pdg3">$gdg3.xmin, $gdg3.xmax, $gdg3.ymin, $gdg3.ymax</p>
+    <p name="pdg3a">$gdg3a.xmin, $gdg3a.xmax, $gdg3a.ymin, $gdg3a.ymax</p>
+    <p name="pdg3b">$gdg3b.xmin, $gdg3b.xmax, $gdg3b.ymin, $gdg3b.ymax</p>
+    <p name="pdg3c">$g{displayDigits="3"}.xmin, $g{displayDigits="3"}.xmax, $g{displayDigits="3"}.ymin, $g{displayDigits="3"}.ymax</p>
+    <p name="pdg3d">$gdc5{displayDigits="3"}.xmin, $gdc5{displayDigits="3"}.xmax, $gdc5{displayDigits="3"}.ymin, $gdc5{displayDigits="3"}.ymax</p>
+
+    <p name="pdc5">$gdc5.xmin, $gdc5.xmax, $gdc5.ymin, $gdc5.ymax</p>
+    <p name="pdc5a">$gdc5a.xmin, $gdc5a.xmax, $gdc5a.ymin, $gdc5a.ymax</p>
+    <p name="pdc5b">$gdc5b.xmin, $gdc5b.xmax, $gdc5b.ymin, $gdc5b.ymax</p>
+    <p name="pdc5c">$g{displayDecimals="5"}.xmin, $g{displayDecimals="5"}.xmax, $g{displayDecimals="5"}.ymin, $g{displayDecimals="5"}.ymax</p>
+    <p name="pdc5d">$gdg3{displayDecimals="5"}.xmin, $gdg3{displayDecimals="5"}.xmax, $gdg3{displayDecimals="5"}.ymin, $gdg3{displayDecimals="5"}.ymax</p>
+
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/p').should('have.text', '-45.03232523, 8.285723423, -5.582342384, 7.83710375')
+    cy.get('#\\/pdg3').should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get('#\\/pdg3b').should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get('#\\/pdg3c').should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get('#\\/pdg3d').should('have.text', '-45, 8.29, -5.58, 7.84')
+    cy.get('#\\/pdc5').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get('#\\/pdc5b').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get('#\\/pdc5c').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
+    cy.get('#\\/pdc5d').should('have.text', '-45.03233, 8.28572, -5.58234, 7.8371')
 
 
   });

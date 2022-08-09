@@ -1319,6 +1319,31 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
+  it('copy and overwrite title', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section name="sec">
+        <title>A title</title>
+        <p>Hello</p>
+      </section>
+    
+      <section name="revised" copySource="sec">
+        <title>A better title</title>
+        <p>Good day!</p>
+      </section>
+    
+    `}, "*");
+    });
+
+    cy.get('#\\/sec_title').should('have.text', 'A title');
+    cy.get('#\\/revised_title').should('have.text', 'A better title');
+
+    cy.get('#\\/_p1').should('have.text', 'Hello');
+    cy.get('#\\/revised p:first-of-type').should('have.text', 'Hello');
+    cy.get('#\\/_p2').should('have.text', 'Good day!');
+
+  });
 
 
 

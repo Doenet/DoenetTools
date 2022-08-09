@@ -3,7 +3,7 @@
   "scripts": {
     "start": "docker compose up",
     "start:ci": "docker compose up -d",
-    "start:dev": "npm install --no-optional && npx snowpack dev",
+    "start:dev": "npm install --omit=optional && npx snowpack dev",
     "start:db": "docker compose exec mysql mysql -u root -phelloworld -e 'CREATE DATABASE IF NOT EXISTS doenet_local CHARACTER SET=utf8 COLLATE=utf8_unicode_ci;'",
     "dev:cmd": "docker compose exec dev",
     "dev:restart": "docker compose restart dev",
@@ -20,7 +20,7 @@
     "buildx:mysql": "docker buildx build --platform linux/amd64 -f doenet_docker/mysql/Dockerfile -t lyanthropos/doenet_test:mysql-dev .",
     "test": "cypress open",
     "test:all": "cypress run -b 'chrome' --config video=false --headless",
-    "publish:db": "docker compose up -d mysql && docker exec --privileged -w /var/lib/mysql mysql mysqldump --databases --add-drop-database --add-drop-table -u root -phelloworld doenet_local > ./volumes/db_init/db_template.sql",
+    "publish:db": "docker compose exec -T -w /var/lib/mysql mysql mysqldump -u root -phelloworld --databases --add-drop-database --add-drop-table doenet_local > ./doenet_docker/volumes/db_init/db_template.sql",
     "reset:db": "docker compose exec -T mysql mysql -u root -phelloworld doenet_local < ./doenet_docker/volumes/db_init/db_template.sql",
     "reset:volumes": "docker volume rm doenet_node_modules doenet_vendor",
     "format": "prettier --write \"src/**/*.{js,jsx,json}\"",
@@ -66,7 +66,7 @@
     "json-stringify-deterministic": "^1.0.1",
     "lodash.debounce": "^4.0.8",
     "lorem-ipsum": "^2.0.4",
-    "math-expressions": "^2.0.0-alpha40",
+    "math-expressions": "^2.0.0-alpha44",
     "nanoid": "^3.1.31",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.3",
@@ -79,7 +79,6 @@
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
     "react-select": "^4.3.1",
-    "react-spring": "^9.2.4",
     "react-table": "^7.7.0",
     "react-use-measure": "^2.1.1",
     "react-visibility-sensor-v2": "^1.0.0",
@@ -119,7 +118,7 @@
     "snowpack-plugin-raw-file-loader": "^1.0.9"
   },
   "optionalDependencies": {
-    "cypress": "^10.3.0",
+    "cypress": "^10.4.0",
     "cypress-plugin-tab": "^1.0.5",
     "cypress-wait-until": "^1.7.2"
   },
@@ -143,7 +142,7 @@
       "react-hooks/exhaustive-deps": [
         "warn",
         {
-          "additionalHooks": "useRecoilCallback"
+          "additionalHooks": "(useRecoilCallback)"
         }
       ]
     },

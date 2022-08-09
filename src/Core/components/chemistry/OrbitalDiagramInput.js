@@ -1,10 +1,11 @@
-import BlockComponent from './abstract/BlockComponent.js';
+import BlockComponent from '../abstract/BlockComponent';
 
 export default class OrbitalDiagramInput extends BlockComponent {
 
   static componentType = "orbitalDiagramInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();

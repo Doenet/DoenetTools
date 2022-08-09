@@ -131,11 +131,45 @@ export default class SectioningComponent extends BlockComponent {
       definition({ dependencyValues }) {
         let titleChildName = null;
         if (dependencyValues.titleChild.length > 0) {
-          titleChildName = dependencyValues.titleChild[0].componentName
+          titleChildName = dependencyValues.titleChild[dependencyValues.titleChild.length - 1].componentName
         }
         return {
           setValue: { titleChildName }
         }
+      }
+    }
+
+    stateVariableDefinitions.childIndicesToRender = {
+      returnDependencies: () => ({
+        titleChildren: {
+          dependencyType: "child",
+          childGroups: ["titles"],
+        },
+        allChildren: {
+          dependencyType: "child",
+          childGroups: ["anything", "variantControls", "titles", "setups"],
+        },
+        titleChildName: {
+          dependencyType: "stateVariable",
+          variableName: "titleChildName"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let childIndicesToRender = [];
+
+        let allTitleChildNames = dependencyValues.titleChildren.map(x => x.componentName);
+
+        for (let [ind, child] of dependencyValues.allChildren.entries()) {
+          if (typeof child !== "object"
+            || !allTitleChildNames.includes(child.componentName)
+            || child.componentName === dependencyValues.titleChildName
+          ) {
+            childIndicesToRender.push(ind)
+          }
+        }
+
+        return { setValue: { childIndicesToRender } }
+
       }
     }
 
@@ -173,7 +207,7 @@ export default class SectioningComponent extends BlockComponent {
 
           return { setValue: { title } };
         } else {
-          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
+          return { setValue: { title: dependencyValues.titleChild[dependencyValues.titleChild.length - 1].stateValues.text } };
         }
       }
     }
@@ -716,7 +750,7 @@ export default class SectioningComponent extends BlockComponent {
     }
 
     // console.log("****Variant for sectioning component****")
-    // console.log("Selected seed: " + variantControlChild.state.selectedSeed);
+    // console.log("Selected seed: " + variantControlChild.stateValues.selectedSeed);
     // console.log("Variant name for " + this.componentType + ": " + sharedParameters.variantName);
 
     // if subvariants were specified, add those the corresponding descendants

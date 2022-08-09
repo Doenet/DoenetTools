@@ -40,7 +40,7 @@ export default function SelectedBank() {
   };
   const addToast = useToast();
   let heading = /* @__PURE__ */ React.createElement("h2", {
-    "data-cy": "infoPanelItemLabel",
+    "data-test": "infoPanelItemLabel",
     style: {margin: "16px 5px"}
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faLayerGroup

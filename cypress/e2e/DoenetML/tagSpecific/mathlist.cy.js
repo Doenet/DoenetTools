@@ -136,7 +136,7 @@ describe('MathList Tag Tests', function () {
       expect(text.trim()).equal('7')
     })
     cy.get('#\\/x8').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
-      expect(text.trim()).equal('＿')
+      expect(text.trim()).equal('−')
     })
     cy.get('#\\/x9').find('.mjx-mrow').eq(0).invoke('text').then((text) => {
       expect(text.trim()).equal('11')
@@ -167,8 +167,8 @@ describe('MathList Tag Tests', function () {
       expect(stateVariables["/x6"].stateValues.value).eqls(-11);
       expect(xs[6]).eqls(7);
       expect(stateVariables["/x7"].stateValues.value).eqls(7);
-      expect(xs[7]).eqls('\uff3f');
-      expect(stateVariables["/x8"].stateValues.value).eqls('\uff3f');
+      expect(xs[7]).eqls('-');
+      expect(stateVariables["/x8"].stateValues.value).eqls('-');
       expect(xs[8]).eqls(11);
       expect(stateVariables["/x9"].stateValues.value).eqls(11);
       expect(xs[9]).eqls(['*', 21, 'x', 'y']);
@@ -348,15 +348,15 @@ describe('MathList Tag Tests', function () {
       </mathlist>
     </mathlist>
 
-    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
+    <mathinput bindValueTo="$(_mathlist1.math1)" />
+    <mathinput bindValueTo="$(_mathlist1.math2)" />
+    <mathinput bindValueTo="$(_mathlist1.math3)" />
+    <mathinput bindValueTo="$(_mathlist1.math4)" />
+    <mathinput bindValueTo="$(_mathlist1.math5)" />
+    <mathinput bindValueTo="$(_mathlist1.math6)" />
+    <mathinput bindValueTo="$(_mathlist1.math7)" />
+    <mathinput bindValueTo="$(_mathlist1.math8)" />
+    <mathinput bindValueTo="$(_mathlist1.math9)" />
 
     ` }, "*");
     });
@@ -528,15 +528,15 @@ describe('MathList Tag Tests', function () {
       </mathlist>
     </mathlist>
 
-    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
+    <mathinput bindValueTo="$(_mathlist1.math1)" />
+    <mathinput bindValueTo="$(_mathlist1.math2)" />
+    <mathinput bindValueTo="$(_mathlist1.math3)" />
+    <mathinput bindValueTo="$(_mathlist1.math4)" />
+    <mathinput bindValueTo="$(_mathlist1.math5)" />
+    <mathinput bindValueTo="$(_mathlist1.math6)" />
+    <mathinput bindValueTo="$(_mathlist1.math7)" />
+    <mathinput bindValueTo="$(_mathlist1.math8)" />
+    <mathinput bindValueTo="$(_mathlist1.math9)" />
 
     ` }, "*");
     });
@@ -716,18 +716,18 @@ describe('MathList Tag Tests', function () {
       <copy target="mid" assignNames="mid2" />
     </mathlist>
 
-    <mathinput bindValueTo="$(_mathlist1{prop='math1'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math2'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math3'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math4'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math5'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math6'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math7'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math8'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math9'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math10'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math11'})" />
-    <mathinput bindValueTo="$(_mathlist1{prop='math12'})" />
+    <mathinput bindValueTo="$(_mathlist1.math1)" />
+    <mathinput bindValueTo="$(_mathlist1.math2)" />
+    <mathinput bindValueTo="$(_mathlist1.math3)" />
+    <mathinput bindValueTo="$(_mathlist1.math4)" />
+    <mathinput bindValueTo="$(_mathlist1.math5)" />
+    <mathinput bindValueTo="$(_mathlist1.math6)" />
+    <mathinput bindValueTo="$(_mathlist1.math7)" />
+    <mathinput bindValueTo="$(_mathlist1.math8)" />
+    <mathinput bindValueTo="$(_mathlist1.math9)" />
+    <mathinput bindValueTo="$(_mathlist1.math10)" />
+    <mathinput bindValueTo="$(_mathlist1.math11)" />
+    <mathinput bindValueTo="$(_mathlist1.math12)" />
 
     ` }, "*");
     });
@@ -1086,23 +1086,23 @@ describe('MathList Tag Tests', function () {
     cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
 
 
-    cy.get('#\\/_p1 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p1 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/_p1 > span:nth-of-type(3) .mjx-mrow').should('not.exist')
-    cy.get('#\\/_p2 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p2 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/_p2 > span:nth-of-type(3) .mjx-mrow').should('contain.text', 'z')
-    cy.get('#\\/_p2 > span:nth-of-type(4) .mjx-mrow').should('contain.text', 'u')
-    cy.get('#\\/_p2 > span:nth-of-type(5) .mjx-mrow').should('contain.text', 'v')
-    cy.get('#\\/_p2 > span:nth-of-type(6) .mjx-mrow').should('not.exist')
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p1 .mjx-mrow').eq(1).should('contain.text', 'y')
+    cy.get('#\\/_p1 .mjx-mrow').eq(2).should('not.exist')
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).should('contain.text', 'y')
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).should('contain.text', 'z')
+    cy.get('#\\/_p2 .mjx-mrow').eq(3).should('contain.text', 'u')
+    cy.get('#\\/_p2 .mjx-mrow').eq(4).should('contain.text', 'v')
+    cy.get('#\\/_p2 .mjx-mrow').eq(5).should('not.exist')
 
-    cy.get('#\\/_p1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('y') })
-    cy.get('#\\/_p2 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p2 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('y') })
-    cy.get('#\\/_p2 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('z') })
-    cy.get('#\\/_p2 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('u') })
-    cy.get('#\\/_p2 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(1).invoke('text').then((text) => { expect(text.trim()).equal('y') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).invoke('text').then((text) => { expect(text.trim()).equal('y') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).invoke('text').then((text) => { expect(text.trim()).equal('z') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(3).invoke('text').then((text) => { expect(text.trim()).equal('u') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(4).invoke('text').then((text) => { expect(text.trim()).equal('v') })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1113,30 +1113,30 @@ describe('MathList Tag Tests', function () {
     cy.log("clear first maxnum")
     cy.get('#\\/mn1 textarea').type("{end}{backspace}", { force: true }).blur();
 
+    cy.get('#\\/_p1').should('contain.text', 'v')
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p1 .mjx-mrow').eq(1).should('contain.text', 'y')
+    cy.get('#\\/_p1 .mjx-mrow').eq(2).should('contain.text', 'z')
+    cy.get('#\\/_p1 .mjx-mrow').eq(3).should('contain.text', 'u')
+    cy.get('#\\/_p1 .mjx-mrow').eq(4).should('contain.text', 'v')
+    cy.get('#\\/_p1 .mjx-mrow').eq(5).should('not.exist')
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).should('contain.text', 'y')
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).should('contain.text', 'z')
+    cy.get('#\\/_p2 .mjx-mrow').eq(3).should('contain.text', 'u')
+    cy.get('#\\/_p2 .mjx-mrow').eq(4).should('contain.text', 'v')
+    cy.get('#\\/_p2 .mjx-mrow').eq(5).should('not.exist')
 
-    cy.get('#\\/_p1 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p1 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/_p1 > span:nth-of-type(3) .mjx-mrow').should('contain.text', 'z')
-    cy.get('#\\/_p1 > span:nth-of-type(4) .mjx-mrow').should('contain.text', 'u')
-    cy.get('#\\/_p1 > span:nth-of-type(5) .mjx-mrow').should('contain.text', 'v')
-    cy.get('#\\/_p1 > span:nth-of-type(6) .mjx-mrow').should('not.exist')
-    cy.get('#\\/_p2 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p2 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/_p2 > span:nth-of-type(3) .mjx-mrow').should('contain.text', 'z')
-    cy.get('#\\/_p2 > span:nth-of-type(4) .mjx-mrow').should('contain.text', 'u')
-    cy.get('#\\/_p2 > span:nth-of-type(5) .mjx-mrow').should('contain.text', 'v')
-    cy.get('#\\/_p2 > span:nth-of-type(6) .mjx-mrow').should('not.exist')
-
-    cy.get('#\\/_p1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('y') })
-    cy.get('#\\/_p1 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('z') })
-    cy.get('#\\/_p1 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('u') })
-    cy.get('#\\/_p1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
-    cy.get('#\\/_p2 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p2 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('y') })
-    cy.get('#\\/_p2 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('z') })
-    cy.get('#\\/_p2 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('u') })
-    cy.get('#\\/_p2 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(1).invoke('text').then((text) => { expect(text.trim()).equal('y') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(2).invoke('text').then((text) => { expect(text.trim()).equal('z') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(3).invoke('text').then((text) => { expect(text.trim()).equal('u') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(4).invoke('text').then((text) => { expect(text.trim()).equal('v') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).invoke('text').then((text) => { expect(text.trim()).equal('y') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).invoke('text').then((text) => { expect(text.trim()).equal('z') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(3).invoke('text').then((text) => { expect(text.trim()).equal('u') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(4).invoke('text').then((text) => { expect(text.trim()).equal('v') })
 
 
     cy.window().then(async (win) => {
@@ -1150,25 +1150,26 @@ describe('MathList Tag Tests', function () {
     cy.get('#\\/mn2 textarea').type("3{enter}", { force: true });
 
 
-    cy.get('#\\/_p2 > span:nth-of-type(4) .mjx-mrow').should('not.exist')
-    cy.get('#\\/_p1 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p1 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/_p1 > span:nth-of-type(3) .mjx-mrow').should('contain.text', 'z')
-    cy.get('#\\/_p1 > span:nth-of-type(4) .mjx-mrow').should('contain.text', 'u')
-    cy.get('#\\/_p1 > span:nth-of-type(5) .mjx-mrow').should('contain.text', 'v')
-    cy.get('#\\/_p1 > span:nth-of-type(6) .mjx-mrow').should('not.exist')
-    cy.get('#\\/_p2 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p2 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/_p2 > span:nth-of-type(3) .mjx-mrow').should('contain.text', 'z')
+    cy.get('#\\/_p2').should('not.contain.text', 'v')
+    cy.get('#\\/_p2 .mjx-mrow').eq(3).should('not.exist')
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p1 .mjx-mrow').eq(1).should('contain.text', 'y')
+    cy.get('#\\/_p1 .mjx-mrow').eq(2).should('contain.text', 'z')
+    cy.get('#\\/_p1 .mjx-mrow').eq(3).should('contain.text', 'u')
+    cy.get('#\\/_p1 .mjx-mrow').eq(4).should('contain.text', 'v')
+    cy.get('#\\/_p1 .mjx-mrow').eq(5).should('not.exist')
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).should('contain.text', 'y')
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).should('contain.text', 'z')
 
-    cy.get('#\\/_p1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('y') })
-    cy.get('#\\/_p1 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('z') })
-    cy.get('#\\/_p1 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('u') })
-    cy.get('#\\/_p1 > span:nth-of-type(5)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('v') })
-    cy.get('#\\/_p2 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p2 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('y') })
-    cy.get('#\\/_p2 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('z') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(1).invoke('text').then((text) => { expect(text.trim()).equal('y') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(2).invoke('text').then((text) => { expect(text.trim()).equal('z') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(3).invoke('text').then((text) => { expect(text.trim()).equal('u') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(4).invoke('text').then((text) => { expect(text.trim()).equal('v') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).invoke('text').then((text) => { expect(text.trim()).equal('y') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).invoke('text').then((text) => { expect(text.trim()).equal('z') })
 
 
     cy.window().then(async (win) => {
@@ -1181,23 +1182,24 @@ describe('MathList Tag Tests', function () {
     cy.log("number in first maxnum")
     cy.get('#\\/mn1 textarea').type("4{enter}", { force: true });
 
-    cy.get('#\\/_p1 > span:nth-of-type(5) .mjx-mrow').should('not.exist')
-    cy.get('#\\/_p1 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p1 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/_p1 > span:nth-of-type(3) .mjx-mrow').should('contain.text', 'z')
-    cy.get('#\\/_p1 > span:nth-of-type(4) .mjx-mrow').should('contain.text', 'u')
-    cy.get('#\\/_p2 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p2 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/_p2 > span:nth-of-type(3) .mjx-mrow').should('contain.text', 'z')
-    cy.get('#\\/_p2 > span:nth-of-type(4) .mjx-mrow').should('not.exist')
+    cy.get('#\\/_p1').should('not.contain.text', 'v')
+    cy.get('#\\/_p1 .mjx-mrow').eq(4).should('not.exist')
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p1 .mjx-mrow').eq(1).should('contain.text', 'y')
+    cy.get('#\\/_p1 .mjx-mrow').eq(2).should('contain.text', 'z')
+    cy.get('#\\/_p1 .mjx-mrow').eq(3).should('contain.text', 'u')
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).should('contain.text', 'y')
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).should('contain.text', 'z')
+    cy.get('#\\/_p2 .mjx-mrow').eq(3).should('not.exist')
 
-    cy.get('#\\/_p1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p1 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('y') })
-    cy.get('#\\/_p1 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('z') })
-    cy.get('#\\/_p1 > span:nth-of-type(4)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('u') })
-    cy.get('#\\/_p2 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p2 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('y') })
-    cy.get('#\\/_p2 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('z') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(1).invoke('text').then((text) => { expect(text.trim()).equal('y') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(2).invoke('text').then((text) => { expect(text.trim()).equal('z') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(3).invoke('text').then((text) => { expect(text.trim()).equal('u') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).invoke('text').then((text) => { expect(text.trim()).equal('y') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).invoke('text').then((text) => { expect(text.trim()).equal('z') })
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
@@ -1209,17 +1211,18 @@ describe('MathList Tag Tests', function () {
     cy.log("change number in first maxnum")
     cy.get('#\\/mn1 textarea').type("{end}{backspace}1{enter}", { force: true });
 
-    cy.get('#\\/_p1 > span:nth-of-type(2) .mjx-mrow').should('not.exist')
-    cy.get('#\\/_p1 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p2 > span:nth-of-type(1) .mjx-mrow').should('contain.text', 'x')
-    cy.get('#\\/_p2 > span:nth-of-type(2) .mjx-mrow').should('contain.text', 'y')
-    cy.get('#\\/_p2 > span:nth-of-type(3) .mjx-mrow').should('contain.text', 'z')
-    cy.get('#\\/_p2 > span:nth-of-type(4) .mjx-mrow').should('not.exist')
+    cy.get('#\\/_p1').should('not.contain.text', 'y')
+    cy.get('#\\/_p1 .mjx-mrow').eq(1).should('not.exist')
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).should('contain.text', 'x')
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).should('contain.text', 'y')
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).should('contain.text', 'z')
+    cy.get('#\\/_p2 .mjx-mrow').eq(3).should('not.exist')
 
-    cy.get('#\\/_p1 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p2 > span:nth-of-type(1)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
-    cy.get('#\\/_p2 > span:nth-of-type(2)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('y') })
-    cy.get('#\\/_p2 > span:nth-of-type(3)').find('.mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('z') })
+    cy.get('#\\/_p1 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(0).invoke('text').then((text) => { expect(text.trim()).equal('x') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(1).invoke('text').then((text) => { expect(text.trim()).equal('y') })
+    cy.get('#\\/_p2 .mjx-mrow').eq(2).invoke('text').then((text) => { expect(text.trim()).equal('z') })
 
 
     cy.window().then(async (win) => {
@@ -2127,6 +2130,38 @@ describe('MathList Tag Tests', function () {
 
 
   })
+
+  it('mathlist and rounding, copy and override', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p><mathList name="ml1">34.245023482352345 <math displayDigits="2">245.23823402358234234</math></mathList></p>
+    <p><mathList name="ml1Dig4" copySource="ml1" displayDigits="4" /></p>
+    <p><mathList name="ml1Dec6" copySource="ml1" displayDecimals="6" /></p>
+    <p><mathList name="ml1Dig4a" copySource="ml1Dec6" displayDigits="4" /></p>
+    <p><mathList name="ml1Dec6a" copySource="ml1Dig4" displayDecimals="6" /></p>
+    ` }, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a');  // to wait until loaded
+
+    cy.get("#\\/ml1 .mjx-mrow").eq(0).should("have.text", "34.24502348")
+    cy.get("#\\/ml1 .mjx-mrow").eq(1).should("have.text", "250")
+ 
+    cy.get("#\\/ml1Dig4 .mjx-mrow").eq(0).should("have.text", "34.25")
+    cy.get("#\\/ml1Dig4 .mjx-mrow").eq(1).should("have.text", "245.2")
+    cy.get("#\\/ml1Dig4a .mjx-mrow").eq(0).should("have.text", "34.25")
+    cy.get("#\\/ml1Dig4a .mjx-mrow").eq(1).should("have.text", "245.2")
+
+    cy.get("#\\/ml1Dec6 .mjx-mrow").eq(0).should("have.text", "34.245023")
+    cy.get("#\\/ml1Dec6 .mjx-mrow").eq(1).should("have.text", "245.238234")
+    cy.get("#\\/ml1Dec6a .mjx-mrow").eq(0).should("have.text", "34.245023")
+    cy.get("#\\/ml1Dec6a .mjx-mrow").eq(1).should("have.text", "245.238234")
+
+
+  })
+
 
   it('mathlist adapts to math and text', () => {
     cy.window().then(async (win) => {

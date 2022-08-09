@@ -69,6 +69,8 @@ export default function Card(props) {
         <div style={container}>
             <p style={label}>{label.value}</p>
             <button 
+                aria-labelledby={label} 
+                aria-label={title.value}
                 style={card}
                 onClick={(e) => { handleClick(e) }}
                 >

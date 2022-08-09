@@ -349,7 +349,7 @@ describe('CallAction Tag Tests', function () {
     
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="rs">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="rs">
     <point>(3,4)</point>
     </callAction>
 
@@ -449,7 +449,7 @@ describe('CallAction Tag Tests', function () {
         
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="rs in">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="rs in">
     <point>(3,4)</point>
     </callAction>
 
@@ -580,7 +580,7 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhen="$(P.x)>0 and $(P.y)>0" /></p>
     `}, "*");
     });
 
@@ -767,7 +767,7 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhenTargetsClicked="P" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice" name="rs" triggerWhenObjectsClicked="P" /></p>
     `}, "*");
     });
 
@@ -905,9 +905,9 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWith="addPoint" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P.x)>0 and $(P.y)>0" >
     <point>(3,4)</point>
     </callAction>
 
@@ -1135,9 +1135,9 @@ describe('CallAction Tag Tests', function () {
     <copy prop="coords" target="P" assignNames="P2" />
 
     <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
-    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWithTargets="addPoint" triggerWhen="$(P{prop='x'})<0 and $(P{prop='y'})<0" /></p>
+    <p><callAction target="s" actionName="resample" label="roll dice and add point" name="rs"  triggerWith="addPoint" triggerWhen="$(P.x)<0 and $(P.y)<0" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P{prop='x'})>0 and $(P{prop='y'})>0" >
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWhen="$(P.x)>0 and $(P.y)>0" >
     <point>(3,4)</point>
     </callAction>
     `}, "*");
@@ -1471,7 +1471,7 @@ describe('CallAction Tag Tests', function () {
       </callAction>
     </triggerSet>
 
-    <callAction name="sub" target="ans" actionName="submitAnswer" triggerWithTargets="tset" />
+    <callAction name="sub" target="ans" actionName="submitAnswer" triggerWith="tset" />
 
     `}, "*");
     });
@@ -1592,12 +1592,12 @@ describe('CallAction Tag Tests', function () {
     
     <p>points from graph: <collect componentTypes="point" target="g" prop="coords" assignNames="p1 p2 p3" /></p>
 
-    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWithTargets="addOne">
+    <callAction name="addPoint" target="g" actionName="addChildren" label="add point" triggerWith="addOne">
     <point>(3,4)</point>
     </callAction>
 
     <p>Count: <number name="n">1</number></p>
-    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWithTargets="rs" />
+    <updateValue name="addOne" target="n" newValue="$n+1" type="number" triggerWith="rs" />
 
 
     `}, "*");
@@ -1698,6 +1698,81 @@ describe('CallAction Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/rs'].stateValues.label).eq("Hi \\(\\sum_{i=1}^5x_i\\)");
     });
+
+  })
+
+  it('label is name', () => {
+
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p><callAction target="s" actionName="resample" name="resample_numbers" labelIsName /></p>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    cy.get('#\\/resample_numbers').should('contain.text', 'resample numbers')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/resample_numbers'].stateValues.label).eq("resample numbers");
+    });
+
+  })
+
+  it('case insensitive action name', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <p name="nums"><aslist><sampleRandomNumbers name="s" numberOfSamples="5" type="discreteUniform" from="1" to="6" /></aslist></p>
+    <p><callAction target="s" actionName="reSamplE" name="rs"><label>roll dice</label></callAction></p>
+    <p>Sum: <number name="sum"><sum>
+      <map>
+        <template><number>$v*10^($i-1)</number></template>
+        <sources alias="v" indexAlias="i">$s</sources>
+      </map>
+    </sum></number></p>
+    `}, "*");
+    });
+    cy.get('#\\/_text1').should('have.text', 'a') //wait for page to load
+
+    let numbers, sum = 0;
+
+    cy.get('#\\/nums').invoke('text').then(text => {
+      numbers = text.split(',').map(Number);
+      expect(numbers.length).eq(5);
+      for (let [ind, num] of numbers.entries()) {
+        expect(Number.isInteger(num)).be.true;
+        expect(num).gte(1)
+        expect(num).lte(6)
+        sum += num * 10 ** ind;
+      }
+    })
+    cy.get('#\\/sum').invoke('text').then(text => {
+      let sum2 = Number(text);
+      expect(sum2).eq(sum);
+    })
+
+    // main purpose of sum is to make sure wait until recalculation has occured
+    cy.get('#\\/rs_button').click().then(() => {
+      cy.get('#\\/sum').should('not.contain', sum.toString());
+    });
+
+
+    cy.get('#\\/nums').invoke('text').then(text => {
+      let numbers2 = text.split(',').map(Number);
+      expect(numbers2.length).eq(5);
+      for (let num of numbers2) {
+        expect(Number.isInteger(num)).be.true;
+        expect(num).gte(1)
+        expect(num).lte(6)
+      }
+      expect(numbers2).not.eqls(numbers)
+    })
+
 
   })
 

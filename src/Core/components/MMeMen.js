@@ -64,6 +64,68 @@ export class M extends InlineComponent {
 
         return { setValue: { latex } }
 
+      },
+      inverseDefinition({ desiredStateVariableValues, dependencyValues }) {
+        console.log({desiredStateVariableValues, dependencyValues})
+        if (typeof desiredStateVariableValues.latex !== "string") {
+          return { success: false }
+        }
+
+        if (dependencyValues.inlineChildren.length === 0) {
+          return {
+            success: true,
+            instructions: [{
+              setStateVAriable: "latex",
+              value: desiredStateVariableValues.latex
+            }]
+          }
+        } else if (dependencyValues.inlineChildren.length === 1) {
+          let child = dependencyValues.inlineChildren[0];
+          if (typeof child !== "object") {
+            console.log({
+              success: true,
+              instructions: [{
+                setDependency: "inlineChildren",
+                desiredValue: desiredStateVariableValues.latex,
+                childIndex: 0,
+              }]
+            })
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "inlineChildren",
+                desiredValue: desiredStateVariableValues.latex,
+                childIndex: 0,
+              }]
+            }
+          } else if (typeof child.stateValues.latex === "string") {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "inlineChildren",
+                desiredValue: desiredStateVariableValues.latex,
+                childIndex: 0,
+                variableIndex: 0  // "latex" state variable
+              }]
+            }
+
+          } else if (typeof child.stateValues.text === "string") {
+            return {
+              success: true,
+              instructions: [{
+                setDependency: "inlineChildren",
+                desiredValue: desiredStateVariableValues.latex,
+                childIndex: 0,
+                variableIndex: 1  // "text" state variable
+              }]
+            }
+          } else {
+            return { success: false }
+          }
+        } else {
+          // more than one inline child
+          return { success: false }
+        }
       }
 
     }

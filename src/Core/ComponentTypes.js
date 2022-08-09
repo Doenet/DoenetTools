@@ -154,13 +154,12 @@ import CodeEditor from './components/CodeEditor';
 import CodeViewer from './components/CodeViewer';
 import RenderDoenetML from './components/RenderDoenetML';
 import HasSameFactoring from './components/HasSameFactoring';
-import OrbitalDiagramInput from './components/OrbitalDiagramInput';
-import OrbitalDiagram from './components/OrbitalDiagram';
 import DataFrame from './components/DataFrame';
 import SummaryStatistics from './components/SummaryStatistics';
 import Chart from './components/Chart';
 import Legend from './components/Legend';
 import Label from './components/Label';
+import MatchesPattern from './components/MatchesPattern';
 
 
 //Extended
@@ -312,13 +311,12 @@ const componentTypeArray = [
   CodeViewer,
   RenderDoenetML,
   HasSameFactoring,
-  OrbitalDiagramInput,
-  OrbitalDiagram,
   DataFrame,
   SummaryStatistics,
   Chart,
   Legend,
   Label,
+  MatchesPattern,
 
   BaseComponent,
   InlineComponent,

@@ -377,7 +377,7 @@ export default function Increment(props) {
 
   return (
     <Container label={props.label} vertical={props.vertical}>
-      {props.label && <Label>{props.label}</Label> }
+      {props.label && <Label id="increment-label">{props.label}</Label> }
       {props.label && props.vertical && <br /> }
       <IncrementContainer>
         <IncrementBox
@@ -386,6 +386,7 @@ export default function Increment(props) {
           alert={props.alert}
         >
           <DecreaseButton
+            aria-label="Decrease"
             ref={decrementRef}
             disabled={props.disabled}
             onClick={decrementOnClick}
@@ -393,6 +394,7 @@ export default function Increment(props) {
             {decreaseIcon}
           </DecreaseButton>
           <TextField
+            aria-labelledby='increment-label'
             placeholder={props.placeholder}
             value={value}
             ref={textFieldRef}
@@ -414,6 +416,7 @@ export default function Increment(props) {
             ref={incrementRef}
             disabled={props.disabled}
             onClick={incrementOnClick}
+            aria-label="Increase"
           >
             {increaseIcon}
           </IncreaseButton>

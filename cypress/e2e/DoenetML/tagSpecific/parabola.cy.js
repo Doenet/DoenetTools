@@ -42,13 +42,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -575,13 +575,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -1111,13 +1111,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -1642,13 +1642,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -2439,13 +2439,13 @@ describe('Parabola Tag Tests', function () {
 
     <copy prop="equation" name="e2" target="p2" />
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -3547,13 +3547,13 @@ describe('Parabola Tag Tests', function () {
     </graph>
     <copy name="g3" target="g2"/>
 
-    <p>a = <mathinput name="a" bindValueTo="$(_parabola1{prop='a'})"/></p>
-    <p>b = <mathinput name="b" bindValueTo="$(_parabola1{prop='b'})"/></p>
-    <p>c = <mathinput name="c" bindValueTo="$(_parabola1{prop='c'})"/></p>
+    <p>a = <mathinput name="a" bindValueTo="$(_parabola1.a)"/></p>
+    <p>b = <mathinput name="b" bindValueTo="$(_parabola1.b)"/></p>
+    <p>c = <mathinput name="c" bindValueTo="$(_parabola1.c)"/></p>
 
-    <p>a2 = <mathinput name="a2" bindValueTo="$(p2{prop='a'})"/></p>
-    <p>b2 = <mathinput name="b2" bindValueTo="$(p2{prop='b'})"/></p>
-    <p>c2 = <mathinput name="c2" bindValueTo="$(p2{prop='c'})"/></p>
+    <p>a2 = <mathinput name="a2" bindValueTo="$(p2.a)"/></p>
+    <p>b2 = <mathinput name="b2" bindValueTo="$(p2.b)"/></p>
+    <p>c2 = <mathinput name="c2" bindValueTo="$(p2.c)"/></p>
 
     `}, "*");
     });
@@ -5311,10 +5311,10 @@ describe('Parabola Tag Tests', function () {
     let t2x = 3, t2y = 4;
     let t3x = -3, t3y = 4;
 
-    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
-    cy.get('#\\/P2 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
-    cy.get('#\\/P3 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
-    cy.get('#\\/x .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
 
     cy.get('#\\/n textarea').type("1{enter}", { force: true });
     cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
@@ -5339,6 +5339,69 @@ describe('Parabola Tag Tests', function () {
     cy.get('#\\/P2 .mjx-mrow').should('not.exist');
     cy.get('#\\/P3 .mjx-mrow').should('not.exist');
     cy.get('#\\/x .mjx-mrow').should('not.exist');
+
+
+  });
+
+  it('copy propIndex of points, dot and array notation', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <text>a</text>
+    <graph>
+      <parabola through="(2,-3) (3,4) (-3,4)" />
+    </graph>
+ 
+    <p><mathinput name="n" /></p>
+
+    <p><copy source="_parabola1.throughpoints[$n]" assignNames="P1 P2 P3" /></p>
+
+    <p><copy source="_parabola1.throughpoint2[$n]" assignNames="x" /></p>
+
+    <p><copy source="_parabola1.throughpoints[2][$n]" assignNames="xa" /></p>
+    `}, "*");
+    });
+
+    cy.get('#\\/_text1').should('have.text', 'a')// to wait for page to load
+
+
+    let t1x = 2, t1y = -3;
+    let t2x = 3, t2y = 4;
+    let t3x = -3, t3y = 4;
+
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+
+    cy.get('#\\/n textarea').type("1{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t1x)},${nInDOM(t1y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2x)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}2{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t2x)},${nInDOM(t2y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+    cy.get('#\\/xa .mjx-mrow').should('contain.text', `${nInDOM(t2y)}`);
+
+    cy.get('#\\/n textarea').type("{end}{backspace}3{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('contain.text', `(${nInDOM(t3x)},${nInDOM(t3y)})`);
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get('#\\/xa .mjx-mrow').should('not.exist');
+
+    cy.get('#\\/n textarea').type("{end}{backspace}4{enter}", { force: true });
+    cy.get('#\\/P1 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P2 .mjx-mrow').should('not.exist');
+    cy.get('#\\/P3 .mjx-mrow').should('not.exist');
+    cy.get('#\\/x .mjx-mrow').should('not.exist');
+    cy.get('#\\/xa .mjx-mrow').should('not.exist');
 
 
   });

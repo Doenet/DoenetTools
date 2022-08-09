@@ -1,4 +1,4 @@
-import BlockComponent from './abstract/BlockComponent.js';
+import BlockComponent from '../abstract/BlockComponent';
 
 
 export default class OrbitalDiagram extends BlockComponent {

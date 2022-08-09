@@ -725,10 +725,6 @@ describe('Slider Tag Tests', function () {
   <text>a</text>
   <slider name="s"><label>Hello <m>x^2</m></label></slider>
   <p>Value: <number name="sv">$s</number></p>
-  <p>
-    <booleaninput name="bi"/>
-    <copy prop="value" target="bi" assignNames="b" />
-  </p>
     `}, "*");
     });
 
@@ -768,6 +764,56 @@ describe('Slider Tag Tests', function () {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/s'].stateValues.value).eq(1)
       expect(stateVariables['/s'].stateValues.label).eq('Hello \\(x^2\\)')
+      expect(stateVariables['/sv'].stateValues.value).eq(1)
+    })
+
+
+
+  })
+
+  it('label is name', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+  <text>a</text>
+  <slider name="mySlider" labelIsName />
+  <p>Value: <number name="sv">$mySlider</number></p>
+    `}, "*");
+    });
+
+    let numberToPx = x => 27 + 30 * x;
+    let numberToPx2 = x => 30 * x;
+
+    cy.get('#\\/_text1').should('have.text', 'a')  // to wait for page to load
+
+    cy.get('#\\/sv').should('have.text', '0')
+
+    cy.get('#\\/mySlider-label').should('have.text', 'my slider = 0')
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mySlider'].stateValues.value).eq(0)
+      expect(stateVariables['/mySlider'].stateValues.label).eq('my slider')
+      expect(stateVariables['/sv'].stateValues.value).eq(0)
+    })
+
+
+
+    cy.log('drag handle to 1');
+    cy.get('#\\/mySlider-handle')
+      .trigger('mousedown')
+      .trigger('mousemove', { clientX: numberToPx(1), clientY: 0 })
+      .trigger('mouseup')
+
+    cy.get('#\\/sv').should('have.text', '1')
+
+    cy.get('#\\/mySlider-label').should('contain.text', 'my slider = 1')
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/mySlider'].stateValues.value).eq(1)
+      expect(stateVariables['/mySlider'].stateValues.label).eq('my slider')
       expect(stateVariables['/sv'].stateValues.value).eq(1)
     })
 

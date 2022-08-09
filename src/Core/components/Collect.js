@@ -39,29 +39,29 @@ export default class Collect extends CompositeComponent {
       public: true,
     };
     attributes.componentIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "integer",
       createStateVariable: "componentIndex",
       defaultValue: null,
       public: true,
     };
 
     attributes.propIndex = {
-      createComponentOfType: "number",
+      createComponentOfType: "numberList",
       createStateVariable: "propIndex",
       defaultValue: null,
       public: true,
     };
 
-    attributes.targetAttributesToIgnore = {
+    attributes.sourceAttributesToIgnore = {
       createPrimitiveOfType: "stringArray",
-      createStateVariable: "targetAttributesToIgnore",
+      createStateVariable: "sourceAttributesToIgnore",
       defaultValue: [],
       public: true,
     };
 
-    attributes.targetAttributesToIgnoreRecursively = {
+    attributes.sourceAttributesToIgnoreRecursively = {
       createPrimitiveOfType: "stringArray",
-      createStateVariable: "targetAttributesToIgnoreRecursively",
+      createStateVariable: "sourceAttributesToIgnoreRecursively",
       defaultValue: ["isResponse"],
       public: true,
     };
@@ -220,10 +220,18 @@ export default class Collect extends CompositeComponent {
         }
 
         if (stateValues.propName) {
+          let propIndex = stateValues.propIndex;
+          if (propIndex) {
+            // make propIndex be a shallow copy
+            // so that can detect if it changed
+            // when update dependencies
+            propIndex = [...propIndex]
+          }
           descendants.variableNames = [stateValues.propName];
           descendants.variablesOptional = true;
-          descendants.propIndex = stateValues.propIndex;
-          descendants.publicCaseInsensitiveVariableMatch = true;
+          descendants.propIndex = propIndex;
+          descendants.caseInsensitiveVariableMatch = true;
+          descendants.publicStateVariablesOnly = true;
           descendants.useMappedVariableNames = true;
         }
 
@@ -263,7 +271,7 @@ export default class Collect extends CompositeComponent {
           }
           if (!propName && dependencyValues.propName) {
             // a propName was specified, but it just wasn't found
-            propName = dependencyValues.propName;
+            propName = "__prop_name_not_found";
           }
           effectivePropNameByComponent.push(propName)
         }
@@ -433,13 +441,13 @@ export default class Collect extends CompositeComponent {
 
     } else {
 
-      let targetAttributesToIgnore = await component.stateValues.targetAttributesToIgnore;
-      let targetAttributesToIgnoreRecursively = await component.stateValues.targetAttributesToIgnoreRecursively;
+      let sourceAttributesToIgnore = await component.stateValues.sourceAttributesToIgnore;
+      let sourceAttributesToIgnoreRecursively = await component.stateValues.sourceAttributesToIgnoreRecursively;
 
       let serializedCopy = [await collectedComponent.serialize(
         {
-          targetAttributesToIgnore,
-          targetAttributesToIgnoreRecursively
+          sourceAttributesToIgnore,
+          sourceAttributesToIgnoreRecursively
         }
       )];
 

@@ -44,9 +44,6 @@ export default class Point extends GraphicalComponent {
 
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     };
 
     attributes.displayDecimals = {
@@ -113,21 +110,21 @@ export default class Point extends GraphicalComponent {
 
 
       if (beginInd === -1) {
-        // if have no strings but have exactly one math child,
+        // if have no strings but have exactly one child that isn't in child group,
+        // (point, vector, constraints, label)
         // use that for coords
 
-        let componentTypeIsMath = cType => componentInfoObjects.isInheritedComponentType({
-          inheritedComponentType: cType,
-          baseComponentType: "math"
-        });
+        let componentIsSpecifiedType = componentInfoObjects.componentIsSpecifiedType;
 
+        let otherChildren = matchedChildren.filter(child => !(
+          componentIsSpecifiedType(child, "point")
+          || componentIsSpecifiedType(child, "vector")
+          || componentIsSpecifiedType(child, "constraints")
+          || componentIsSpecifiedType(child, "label")
+        ));
 
-        let mathChildren = matchedChildren.filter(child =>
-          componentTypeIsMath(child.componentType) || componentTypeIsMath(child.attributes?.createComponentOfType?.primitive)
-        );
-
-        if (mathChildren.length === 1) {
-          let mathChild = mathChildren[0];
+        if (otherChildren.length === 1) {
+          let mathChild = otherChildren[0];
           let mathInd = matchedChildren.indexOf(mathChild);
 
           let newChildren = [
@@ -141,7 +138,7 @@ export default class Point extends GraphicalComponent {
               coords: {
                 component: {
                   componentType: "math",
-                  children: mathChildren
+                  children: otherChildren
                 }
               }
             },
@@ -149,7 +146,7 @@ export default class Point extends GraphicalComponent {
           }
 
         } else {
-          // no strings and don't have exactly one math child
+          // no strings and don't have exactly one non child-group child
           return { success: false }
         }
 
@@ -273,6 +270,59 @@ export default class Point extends GraphicalComponent {
         let pointDescription = dependencyValues.selectedStyle.markerColorWord
           + " " + dependencyValues.selectedStyle.markerStyleWord;
         return { setValue: { styleDescriptionWithNoun: pointDescription } };
+      }
+    }
+
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+  
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not used default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+  
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsAttrUsedDefault) {
+            return { useEssentialOrDefaultValue: { displayDigits: { defaultValue: dependencyValues.displayDigitsAttr.stateValues.value } } }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
       }
     }
 
@@ -913,8 +963,12 @@ export default class Point extends GraphicalComponent {
 
     }
 
-    stateVariableDefinitions.coordsLatex = {
+    stateVariableDefinitions.latex = {
       forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
+      },
       returnDependencies: () => ({
         coords: {
           dependencyType: "stateVariable",
@@ -948,12 +1002,12 @@ export default class Point extends GraphicalComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
-        let coordsLatex = roundForDisplay({
+        let latex = roundForDisplay({
           value: dependencyValues.coords,
           dependencyValues, usedDefault
         }).toLatex(params);
 
-        return { setValue: { coordsLatex } }
+        return { setValue: { latex } }
 
       }
     }

@@ -109,6 +109,7 @@ export default function ActionButton(props) {
     align
   }, label), /* @__PURE__ */ React.createElement(Button, {
     id: props.id,
+    "data-test": props["data-test"],
     style: actionButton,
     alert,
     onClick: (e) => {

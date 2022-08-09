@@ -121,12 +121,7 @@ export default class Curve extends GraphicalComponent {
 
     let breakNonLabelIntoFunctionsByCommas = function ({ matchedChildren, componentInfoObjects }) {
 
-      let componentTypeIsLabel = cType => componentInfoObjects.isInheritedComponentType({
-        inheritedComponentType: cType,
-        baseComponentType: "label"
-      });
-
-      let componentIsLabel = comp => componentTypeIsLabel(comp.componentType) || componentTypeIsLabel(comp.attributes?.createComponentOfType?.primitive)
+      let componentIsLabel = x => componentInfoObjects.componentIsSpecifiedType(x, "label");
 
       // only apply if all children are strings, macros, or labels
       if (matchedChildren.length === 0 || !matchedChildren.every(child =>
@@ -696,13 +691,19 @@ export default class Curve extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "throughPoints") {
-          return "throughPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "throughPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 12) === "throughPoint") {
           // could be throughPoint or throughPointX
           let throughPointNum = Number(varName.slice(12));
           if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
-            return `throughPointX${throughPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${throughPointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -2565,13 +2566,19 @@ export default class Curve extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "xCriticalPoints") {
-          return "xCriticalPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "xCriticalPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `xCriticalPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 14) === "xCriticalPoint") {
           // could be xCriticalPoint or xCriticalPointX
           let xCriticalPointNum = Number(varName.slice(14));
           if (Number.isInteger(xCriticalPointNum) && xCriticalPointNum > 0) {
-            return `xCriticalPointX${xCriticalPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `xCriticalPointX${xCriticalPointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -2783,13 +2790,19 @@ export default class Curve extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "yCriticalPoints") {
-          return "yCriticalPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "yCriticalPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `yCriticalPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 14) === "yCriticalPoint") {
           // could be yCriticalPoint or yCriticalPointX
           let yCriticalPointNum = Number(varName.slice(14));
           if (Number.isInteger(yCriticalPointNum) && yCriticalPointNum > 0) {
-            return `yCriticalPointX${yCriticalPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `yCriticalPointX${yCriticalPointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -3004,13 +3017,19 @@ export default class Curve extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "curvatureChangePoints") {
-          return "curvatureChangePoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "curvatureChangePoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `curvatureChangePointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 20) === "curvatureChangePoint") {
           // could be curvatureChangePoint or curvatureChangePointX
           let curvatureChangePointNum = Number(varName.slice(20));
           if (Number.isInteger(curvatureChangePointNum) && curvatureChangePointNum > 0) {
-            return `curvatureChangePointX${curvatureChangePointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `curvatureChangePointX${curvatureChangePointNum}_${propIndex[0]}`
           }
         }
         return null;

@@ -6190,7 +6190,7 @@ describe('Vector Tag Tests', function () {
     <vector name="original" tail="$zeroFixed" head="(1,3)" />
   </graph>
   <graph>
-    <vector name="multiplied" tail="$zeroFixed" head="($a$(original{prop='headX1'}), $a$(original{prop='headX2'}))" />
+    <vector name="multiplied" tail="$zeroFixed" head="($a$(original.headX1), $a$(original.headX2))" />
   </graph>
   <copy target='original' assignNames="o2" />
   <copy target='multiplied' assignNames="m2" />
@@ -6298,8 +6298,8 @@ describe('Vector Tag Tests', function () {
   <text>a</text>
   <graph>
   <vector name="u" head="(1,1)" />
-  <vector name="v" tail="$(u{prop='head'})" displacement="(1,3)" />
-  <vector name="w" head="$(v{prop='head'})" tail="$(u{prop='tail'})" />
+  <vector name="v" tail="$(u.head)" displacement="(1,3)" />
+  <vector name="w" head="$(v.head)" tail="$(u.tail)" />
   </graph>
   <copy target="u" assignNames="u2" />
   <copy target="v" assignNames="v2" />
@@ -6620,7 +6620,7 @@ describe('Vector Tag Tests', function () {
     <vector name="v1" tail="(1,2)" head="(3,5)" />
     <copy assignNames="v2" target="v1" />
     <copy assignNames="v3" prop="displacement" target="v1" />
-    <vector name="v4" displacement="($(v2{prop='y'}), $(v3{prop='x'}))" />
+    <vector name="v4" displacement="($(v2.y), $(v3.x))" />
   </graph>
   <copy target="v1" assignNames="v1a" />
   `}, "*");
@@ -7388,7 +7388,7 @@ describe('Vector Tag Tests', function () {
   <vector name="v" tail="(1,2)" head="(-2,3)" />
   <copy prop="head" assignNames="vh" target="v" />
   <copy prop="tail" assignNames="vt" target="v" />
-  <point name="c" x="$(vh{prop='x'})" y="$(vt{prop='y'})"/>
+  <point name="c" x="$(vh.x)" y="$(vt.y)"/>
   </graph>
   <copy target="v" assignNames="va" />
   `}, "*");
@@ -9781,9 +9781,9 @@ describe('Vector Tag Tests', function () {
         doenetML: `
   <text>a</text>
   <graph>
-  <vector head="$(_vector2{prop='head'})" tail="(1,0)" />
-  <vector tail="$(_vector3{prop='tail'})" head="(3,2)" />
-  <vector head="$(_vector1{prop='tail'})" tail="(-1,4)" />
+  <vector head="$(_vector2.head)" tail="(1,0)" />
+  <vector tail="$(_vector3.tail)" head="(3,2)" />
+  <vector head="$(_vector1.tail)" tail="(-1,4)" />
   </graph>
   <copy prop="head" target="_vector1" assignNames="v1h" />
   <copy prop="tail" target="_vector1" assignNames="v1t" />
@@ -11519,34 +11519,34 @@ describe('Vector Tag Tests', function () {
     })
   })
 
-  it.only('mutual dependence among entire head, tail, displacement', () => {
+  it('mutual dependence among entire head, tail, displacement', () => {
     // this could be made more interesting once have operations on vectors
     cy.window().then(async (win) => {
       win.postMessage({
         doenetML: `
   <text>a</text>
   <graph>
-    <vector name="v1" head="$(v1{prop='tail'})" tail="(3,4)" />
+    <vector name="v1" head="$(v1.tail)" tail="(3,4)" />
   </graph>
 
   <graph>
-    <vector name="v2" head="$(v2{prop='displacement'})" displacement="(3,4)" />
+    <vector name="v2" head="$(v2.displacement)" displacement="(3,4)" />
   </graph>
 
   <graph>
-    <vector name="v3" tail="$(v3{prop='head'})" head="(3,4)" />
+    <vector name="v3" tail="$(v3.head)" head="(3,4)" />
   </graph>
 
   <graph>
-    <vector name="v4" tail="$(v4{prop='displacement'})" displacement="(3,4)" />
+    <vector name="v4" tail="$(v4.displacement)" displacement="(3,4)" />
   </graph>
 
   <graph>
-    <vector name="v5" displacement="$(v5{prop='head'})" head="(3,4)" />
+    <vector name="v5" displacement="$(v5.head)" head="(3,4)" />
   </graph>
 
   <graph>
-    <vector name="v6" displacement="$(v6{prop='tail'})" tail="(3,4)" />
+    <vector name="v6" displacement="$(v6.tail)" tail="(3,4)" />
   </graph>
   <copy target="v1" prop="head" assignNames="v1h" />
   <copy target="v2" prop="head" assignNames="v2h" />
