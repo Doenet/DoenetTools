@@ -7,6 +7,7 @@ import {
 } from 'recoil';
 import { useTransition, a } from '@react-spring/web';
 import useMeasure from 'react-use-measure';
+import styled from 'styled-components';
 
 import { selectedMenuPanelAtom } from '../Panels/NewMenuPanel';
 import { drivecardSelectedNodesAtom } from '../ToolHandlers/CourseToolHandler';
@@ -16,6 +17,16 @@ import { coursePermissionsAndSettings } from '../../../_reactComponents/Course/C
 import { mainPanelClickAtom } from '../Panels/NewMainPanel';
 import useMedia from './useMedia';
 import './driveCardsStyle.css';
+
+const DriveCardFocus = styled.div`
+  border-radius: 5px;
+  padding-right: 4px;
+  padding-bottom: 4px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 3px;
+  }
+`;
 
 export default function CourseCards(props) {
   console.log('>>>===CourseCards');
@@ -128,15 +139,15 @@ const CourseCardWrapper = (props) => {
   };
 
   
-    const handleOnBlur = () => {
+    // const handleOnBlur = () => {
 
-    };
+    // };
 
-  const handleKeyUp = (e, item) => {
-    if (e.key === 'Tab') {
-      setDrivecardSelection([item]);
-    }
-  };
+  // const handleKeyUp = (e, item) => {
+  //   if (e.key === 'Tab') {
+  //     setDrivecardSelection([item]);
+  //   }
+  // };
 
   // Drive selection
   const drivecardselection = (e, item) => {
@@ -156,7 +167,6 @@ const CourseCardWrapper = (props) => {
         setSelectedCourseMenu();
       } else if (e.shiftKey && !e.metaKey) {
         // range to item
-
         setDrivecardSelection((old) => {
           if (old.length > 0) {
             let finalArray = [];
@@ -244,22 +254,27 @@ const CourseCardWrapper = (props) => {
           let isSelected = getSelectedCard(item);
           return (
             <a.div style={style} >
-              <div
+              <DriveCardFocus
                 role="button"
-                style={{ height: '100%', outline: 'none' }}
-                tabIndex={index + 1}
+                style={{ height: '100%' }}
+                // tabIndex={index + 1}
+                tabIndex="0"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   drivecardselection(e, item, props);
                 }}
-                onBlur={() => handleOnBlur()}
+                // onBlur={() => handleOnBlur()}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    handleSelect(e, item)
+                    if (isSelected) {
+                      handleSelect(e, item);
+                    } else {
+                      drivecardselection(e, item, props);
+                    }
                   }
                 }}
-                onKeyUp={(e) => handleKeyUp(e, item)}
+                // onKeyUp={(e) => handleKeyUp(e, item)}
                 onDoubleClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -273,7 +288,7 @@ const CourseCardWrapper = (props) => {
                   isSelected={isSelected}
                   role={item.roleLabels}
                 />
-              </div>
+              </DriveCardFocus>
             </a.div>
           );
         })}
