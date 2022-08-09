@@ -1273,7 +1273,7 @@ describe('Graph Tag Tests', function () {
 
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
-      expect(stateVariables["/_graph1"].stateValues.xlabel).eq('\uff3f');
+      expect(stateVariables["/_graph1"].stateValues.xlabel).eq('\\(\uff3f\\)');
 
       let mathinputName = stateVariables['/x'].stateValues.inputChildren[0].componentName
       let mathinputAnchor = cesc('#' + mathinputName) + " textarea";
@@ -1284,7 +1284,7 @@ describe('Graph Tag Tests', function () {
       cy.get('#\\/sr .mjx-mrow').should('contain.text', 'x')
       cy.window().then(async (win) => {
         let stateVariables = await win.returnAllStateVariables1();
-        expect(stateVariables["/_graph1"].stateValues.xlabel).eq('x');
+        expect(stateVariables["/_graph1"].stateValues.xlabel).eq('\\(x\\)');
       });
 
 
