@@ -30,14 +30,27 @@ export default React.memo(function Hint(props) {
     return null;
   }
 
-  let childrenToRender = children;
 
-  let title = SVs.title;
-  if (SVs.titleDefinedByChildren) {
-    title = children[0];
-    //BADBADBAD
-    childrenToRender = children.slice(1); // remove title
+  let title;
+  // BADBADBAD: need to redo how getting the title child
+  // getting it using the internal guts of componentInstructions
+  // is just asking for trouble
+  if (SVs.titleChildName) {
+    for (let [ind, child] of children.entries()) {
+      //child might be a string
+      if (child.props?.componentInstructions.componentName === SVs.titleChildName) {
+        title = children[ind];
+        children.splice(ind, 1); // remove title
+        break;
+      }
+    }
+
   }
+
+  if (!title) {
+    title = SVs.title;
+  }
+
 
   let twirlIcon = <FontAwesomeIcon icon={twirlIsClosed} />;
   let icon = <FontAwesomeIcon icon={lightOff} />;
@@ -55,7 +68,7 @@ export default React.memo(function Hint(props) {
     twirlIcon = <FontAwesomeIcon icon={twirlIsOpen} />;
     openCloseText = 'close';
     icon = <FontAwesomeIcon icon={lightOn} />;
-    info = childrenToRender;
+    info = children;
     infoBlockStyle = {
       display: 'block',
       margin: '0px 4px 12px 4px',
@@ -90,6 +103,7 @@ export default React.memo(function Hint(props) {
           backgroundColor: 'var(--mainGray)',
           cursor: 'pointer',
         }}
+        data-test="hint-heading"
         onClick={onClickFunction}
       >
         {twirlIcon} {icon} {title} (click to {openCloseText})
