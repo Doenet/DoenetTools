@@ -575,6 +575,19 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     onClick={(e)=>{
       handleSingleSelectionClick(e);
     }}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter') {
+        if (bgcolor === 'var(--canvas)') {
+          handleSingleSelectionClick(e);
+        } else {
+          if (e.key === 'Enter' && e.metaKey) {
+            handleSingleSelectionClick(e);
+          } else {
+            handleDoubleClick(e);
+          }
+        }
+      }
+    }}
     onDoubleClick={(e)=>{
       handleDoubleClick(e);
     }}
