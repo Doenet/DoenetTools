@@ -26,7 +26,7 @@ function getpermissionsAndSettings($conn, $userId)
       cr.canViewUsers,
       cr.canManageUsers,
       cr.isAdmin,
-      cr.dataAccessPermisson,
+      cr.dataAccessPermission,
       cr.isOwner
       FROM course_role AS cr
       LEFT JOIN course_user as cu
@@ -65,7 +65,7 @@ function getpermissionsAndSettings($conn, $userId)
                 'canViewUsers' => $row['canViewUsers'],
                 'canManageUsers' => $row['canManageUsers'],
                 'isAdmin' => $row['isAdmin'],
-                'dataAccessPermisson' => $row['dataAccessPermisson'],
+                'dataAccessPermission' => $row['dataAccessPermission'],
                 'isOwner' => $row['isOwner'],
             ];
             array_push($permissionsAndSettings, $oneCourse);

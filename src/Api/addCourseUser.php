@@ -22,6 +22,7 @@ $roleId = mysqli_real_escape_string($conn, $_POST['roleId']);
 $firstName = mysqli_real_escape_string($conn, $_POST['firstName']);
 $lastName = mysqli_real_escape_string($conn, $_POST['lastName']);
 $externalId = mysqli_real_escape_string($conn, $_POST['externalId']);
+$section = mysqli_real_escape_string($conn, $_POST['section']);
 
 if ($courseId == '') {
     $success = false;
@@ -52,35 +53,49 @@ if ($roleId == '') {
 
 //Attempt check for user existance and create if need
 if ($success) {
-    $result = $conn->query("SELECT 
-        userId,
-        screenName,
-        firstName,
-        lastName
+    //TODO: Verify that this is the correct match strategy
+    $email = trim($email);
+    $result = $conn->query(
+        "SELECT 
+            userId,
+            screenName,
+            firstName,
+            lastName
         FROM user
         WHERE email = '$email'
-    ");
+    "
+    );
 
     //none match, so create new user
     if ($result->num_rows < 1) {
         $toEnrollUserId = include 'randomId.php';
+        $toEnrollFirstName = $firstName;
+        $toEnrollLastName = $lastName;
+
+        // Random screen name
+        $screen_names = include 'screenNames.php';
+        $randomNumber = rand(0, count($screen_names) - 1);
+        $toEnrollscreenName = $screen_names[$randomNumber];
+
+        // Random profile picture
+        $profile_pics = include 'profilePics.php';
+        $randomNumber = rand(0, count($profile_pics) - 1);
+        $profilePicture = $profile_pics[$randomNumber];
 
         $result = $conn->query(
             "INSERT INTO user
             SET 
-            userId = '$toEnrollUserId',
-            email = '$email',
-            firstName = '$firstName',
-            lastName = '$lastName'
-            "
+                userId = '$toEnrollUserId',
+                email = '$email',
+                firstName = '$toEnrollFirstName',
+                lastName = '$toEnrollLastName',
+                screenName = '$toEnrollscreenName',
+                profilePicture = '$profilePicture'"
         );
 
-        if (!$result) {
+        if ($result == false) {
             $success = false;
             $message = 'Internal Server Error; Could not create user';
-        } else {
-            $toEnrollFirstName = $firstName;
-            $toEnrollLastName = $lastName;
         }
     } else {
         $row = $result->fetch_assoc();
@@ -114,13 +129,18 @@ if ($success) {
             'firstName' => $toEnrollFirstName,
             'lastName' => $toEnrollLastName,
             'roleId' => $roleId,
+            'section' => $section,
+            'externalId' => $externalId,
         ];
 
         $result = $conn->query(
             "INSERT INTO course_user
-            (courseId, userId, roleId)
-            VALUES
-            ('$courseId','$toEnrollUserId', '$roleId')"
+            SET
+            courseId = '$courseId',
+            userId = '$toEnrollUserId',
+            roleId = '$roleId',
+            externalId = '$externalId',
+            section = '$section'"
         );
 
         if (!$result) {

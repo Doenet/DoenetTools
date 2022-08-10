@@ -45,13 +45,14 @@ if ($success) {
         cr.canViewActivitySettings,
         cr.canModifyActivitySettings,
         cr.canModifyCourseSettings,
-        cr.dataAccessPermisson,
+        cr.dataAccessPermission,
         cr.canViewUsers,
         cr.canManageUsers,
         cr.isAdmin,
         cr.isOwner
         FROM course_role AS cr
-        WHERE cr.courseId = '$courseId' 
+        WHERE cr.courseId = '$courseId'
+        ORDER BY cr.label
     ";
     $result = $conn->query($sql);
 

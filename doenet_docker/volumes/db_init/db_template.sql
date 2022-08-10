@@ -821,7 +821,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,1,1,0,0,0,0,1),(2,'s1userid','S1','s1@example.com','User','Student1','quokka',1,1,0,0,0,0,0,0),(26,'s2userid','S2','s2@example.com','User','Student2','ALSDKFJLKASDJFKASJDFLKAJSDFK.png',1,1,0,0,0,0,0,0);
+INSERT INTO `user` VALUES (1,'devuserid','DEV','devuser@example.com','User','Dev','quokka',0,0,0,0,1),(2,'s1userid','S1','s1@example.com','User','Student1','quokka',1,0,0,0,0),(26,'s2userid','S2','s2@example.com','User','Student2','quokka',1,0,0,0,0),(27,'e112','Emilio','alvar506@umn.edu','Alvarez','Emilio','quokka',0,0,0,0,0),(28,'e113','Kevin','char0042@umn.edu','Charles','Kevin','quokka',0,0,0,0,0),(29,'e114','Matt','mthomas7@ithaca.edu','Thomas','Matt','quokka',0,0,0,0,0),(30,'e115','Duane','nykamp@umn.edu','Nykamp','Duane','quokka',0,0,0,0,0),(31,'','New User','wolf@apple.com','','',NULL,0,0,0,0,0),(32,'oeYgDLDbZ2qryxVFwXtyb','New User','wolf@amazon.com','','',NULL,0,0,0,0,0),(33,'Gpojm4NxYLuLQjp5J7bF1','New User','bille@apple.com','guy','bad',NULL,0,0,0,0,0),(34,'sXi3MN5SA7ktp7I1gx8Ai','New User','juno@amazon.com','girl','bad',NULL,0,0,0,0,0),(35,'5mkkG1bgAQ9ID9JzRrlWx','New User','stonlen@theif.com','','',NULL,0,0,0,0,0),(36,'wc4PyVrS7V0UDIsBVnTOf','New User','e.l.alvarez@icloud.com','','',NULL,0,0,0,0,0),(37,'aff1sgamJxonnCj45G0WB','New User','test@wolf.com','tester','test',NULL,0,0,0,0,0),(38,'RHO1NPpG1F6wDjugUgdxr','New User','tester@example.com','','',NULL,0,0,0,0,0);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -958,4 +958,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-03 20:19:13
+-- Dump completed on 2022-08-08 20:31:12
