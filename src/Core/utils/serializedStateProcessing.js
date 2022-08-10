@@ -998,7 +998,6 @@ function substituteMacros(serializedComponents, componentInfoObjects) {
           // TODO: if previous component is a string,
           // keep going back and add string lengths to get actual index
           if (componentInd > 0 && serializedComponents[componentInd - 1].range) {
-            console.log(serializedComponents, serializedComponents[componentInd - 1])
             let previousRange = serializedComponents[componentInd - 1].range;
             if (previousRange.closeEnd) {
               macroStartInd += previousRange.closeEnd;
@@ -3422,11 +3421,118 @@ function indexRangeString(serializedComponent) {
       indEnd = serializedComponent.range.selfCloseEnd;
     } else if (serializedComponent.range.openBegin !== undefined) {
       indBegin = serializedComponent.range.openBegin;
-      indEnd = serializedComponent.range.openEnd;
+      indEnd = serializedComponent.range.closeEnd;
     }
     if (indBegin !== undefined) {
       message += ` at indices ${indBegin}-${indEnd}`;
     }
   }
   return message;
+}
+
+export function extractComponentNamesAndIndices(serializedComponents, nameSubstitutions = {}) {
+  let componentArray = [];
+
+  for (let serializedComponent of serializedComponents) {
+    if (typeof serializedComponent === "object") {
+      let componentName = serializedComponent.componentName;
+      for(let originalName in nameSubstitutions) {
+        componentName = componentName.replace(originalName, nameSubstitutions[originalName])
+      }
+      if(serializedComponent.doenetAttributes?.fromCopyTarget) {
+        let lastSlash = componentName.lastIndexOf("/");
+        let originalName = componentName.slice(lastSlash+1);
+        let newName = serializedComponent.doenetAttributes.assignNames[0];
+        componentName = componentName.replace(originalName, newName);
+        nameSubstitutions[originalName] = newName;
+      }
+      let componentObj = {
+        componentName
+      }
+      if (serializedComponent.range) {
+        if (serializedComponent.range.selfCloseBegin !== undefined) {
+          componentObj.indBegin = serializedComponent.range.selfCloseBegin;
+          componentObj.indEnd = serializedComponent.range.selfCloseEnd;
+        } else if (serializedComponent.range.openBegin !== undefined) {
+          componentObj.indBegin = serializedComponent.range.openBegin;
+          componentObj.indEnd = serializedComponent.range.closeEnd;
+        }
+      }
+
+      componentArray.push(componentObj);
+
+      if (serializedComponent.children) {
+        componentArray.push(...extractComponentNamesAndIndices(serializedComponent.children, {...nameSubstitutions}))
+      }
+
+    }
+  }
+
+  return componentArray;
+
+}
+
+
+export function extractRangeIndexPieces({
+  componentArray, lastInd = 0, stopInd = Infinity, enclosingComponentName
+}) {
+
+  let rangePieces = [];
+
+  let componentInd = 0;
+  let foundComponentAfterStopInd = false;
+  while (componentInd < componentArray.length) {
+    let componentObj = componentArray[componentInd];
+
+    if (componentObj.indBegin === undefined) {
+      componentInd++;
+      continue;
+    }
+
+    if (componentObj.indBegin > stopInd) {
+      if (enclosingComponentName && lastInd <= stopInd) {
+        rangePieces.push({
+          begin: lastInd,
+          end: stopInd,
+          componentName: enclosingComponentName
+        })
+      }
+      foundComponentAfterStopInd = true;
+      break;
+    }
+
+    if (enclosingComponentName && componentObj.indBegin > lastInd) {
+      rangePieces.push({
+        begin: lastInd,
+        end: componentObj.indBegin - 1,
+        componentName: enclosingComponentName
+      })
+    }
+
+
+    let extractResult = extractRangeIndexPieces({
+      componentArray: componentArray.slice(componentInd + 1),
+      lastInd: componentObj.indBegin,
+      stopInd: componentObj.indEnd,
+      enclosingComponentName: componentObj.componentName
+    });
+
+    componentInd += extractResult.componentsConsumed + 1;
+    rangePieces.push(...extractResult.rangePieces);
+
+    lastInd = componentObj.indEnd+1;
+
+  }
+
+  if(!foundComponentAfterStopInd && Number.isFinite(stopInd) && stopInd >= lastInd) {
+    rangePieces.push({
+      begin: lastInd,
+      end: stopInd,
+      componentName: enclosingComponentName
+    })
+  }
+  
+
+  return { componentsConsumed: componentInd, rangePieces };
+
 }

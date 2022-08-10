@@ -165,6 +165,19 @@ export default class Core {
     // console.log(`serialized components at the beginning`)
     // console.log(deepClone(serializedComponents));
 
+    this.componentIndexArray = serializeFunctions.extractComponentNamesAndIndices(serializedComponents);
+
+    let { rangePieces } = serializeFunctions.extractRangeIndexPieces({ componentArray: this.componentIndexArray });
+
+    this.componentRangePieces = rangePieces;
+
+    postMessage({
+      messageType: "componentRangePieces",
+      coreId: this.coreId,
+      args: {
+        componentRangePieces: this.componentRangePieces,
+      }
+    });
 
     this.documentName = serializedComponents[0].componentName;
     serializedComponents[0].doenetAttributes.cid = this.cid;
