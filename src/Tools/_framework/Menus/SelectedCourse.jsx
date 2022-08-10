@@ -15,6 +15,8 @@ import {
 } from '../../../_reactComponents/Course/SettingComponents';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { pageToolViewAtom } from '../NewToolRoot';
+import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 
 export default function SelectedCourse() {
   const [courseCardsSelection, setCourseCardsSelection] = useRecoilState(
@@ -68,9 +70,13 @@ export default function SelectedCourse() {
 
 const CourseInfoPanel = function ({ courseId }) {
   const { label } = useCourse(courseId);
-  const { isAdmin, canModifyCourseSettings, isOwner } = useRecoilValue(
-    effectivePermissionsByCourseId(courseId),
-  );
+  const {
+    isOwner,
+    isAdmin,
+    canViewUsers,
+    dataAccessPermission,
+    canModifyCourseSettings,
+  } = useRecoilValue(effectivePermissionsByCourseId(courseId));
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   return (
@@ -78,10 +84,11 @@ const CourseInfoPanel = function ({ courseId }) {
       <h2 data-test="infoPanelItemLabel">
         <FontAwesomeIcon icon={faChalkboard} /> {label}
       </h2>
-      <ButtonGroup vertical>
-        <Button
+      <ActionButtonGroup vertical>
+        <ActionButton
           width="menu"
-          value="Enter Course"
+          value="Dashboard"
+          data-test="dashboard nav button"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -95,7 +102,63 @@ const CourseInfoPanel = function ({ courseId }) {
             });
           }}
         />
-      </ButtonGroup>
+        <ActionButton
+          width="menu"
+          value="Content"
+          data-test="content nav button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setPageToolView({
+              page: 'course',
+              tool: 'navigation',
+              view: '',
+              params: {
+                courseId,
+              },
+            });
+          }}
+        />
+        {canViewUsers === '1' && (
+          <ActionButton
+            width="menu"
+            value="People"
+            data-test="people nav button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setPageToolView({
+                page: 'course',
+                tool: 'people',
+                view: '',
+                params: {
+                  courseId,
+                },
+              });
+            }}
+          />
+        )}
+        {/* TODO: EMILIO create a level above fuction */}
+        {dataAccessPermission === 'Identified' && (
+          <ActionButton
+            width="menu"
+            value="Data"
+            data-test="data nav button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setPageToolView({
+                page: 'course',
+                tool: 'data',
+                view: '',
+                params: {
+                  courseId,
+                },
+              });
+            }}
+          />
+        )}
+      </ActionButtonGroup>
       {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}
       {canModifyCourseSettings === '1' && (
         <EditImageAndColor courseId={courseId} />
