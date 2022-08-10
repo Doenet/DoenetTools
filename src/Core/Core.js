@@ -28,6 +28,7 @@ export default class Core {
     serverSaveId,
     activityVariantIndex,
     requestedVariant, requestedVariantIndex,
+    previousComponentTypeCounts = {},
     flags = {},
     stateVariableChanges = {},
     coreId, updateDataOnContentChange }) {
@@ -55,7 +56,7 @@ export default class Core {
 
     this.componentInfoObjects = createComponentInfoObjects(flags);
 
-
+    this.previousComponentTypeCounts = previousComponentTypeCounts;
 
     this.coreFunctions = {
       requestUpdate: this.requestUpdate.bind(this),
