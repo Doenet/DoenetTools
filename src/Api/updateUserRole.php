@@ -48,7 +48,7 @@ if ($success) {
 
 //find targetUserId
 if ($success) {
-    //TODO: EMILO & KEVIN what is consider a unique email?
+    //emails are exact match only
     //TODO: EMILIO is a userId unique per course?
     $sql = "SELECT
         u.userId
@@ -66,7 +66,18 @@ if ($success) {
     }
 }
 
-//Bail on isOwner demote attempt or non-isOwner attemmpting to promote up
+/*TEMPORARY until confirmation dialogs are designed*/
+//Bail on self role change
+if ($success) {
+    if ($targetUserId == $userId) {
+        $success = false;
+        $message =
+            'Changing your own role is currently disabled for accident prevention. Ask another authrized user to change your role';
+    }
+}
+/*TEMPORARY*/
+
+//Bail on last isOwner demote attempt or non-isOwner attemmpting to promote up
 if ($success) {
     $targetUserPermissions = permissionsAndSettingsForOneCourseFunction(
         $conn,
@@ -90,8 +101,26 @@ if ($success) {
     }
 
     if ($targetUserPermissions['isOwner'] == '1' && $newRoleisOwner != '1') {
-        $success = false;
-        $message = 'Operation Denied: cannot demote owners';
+        $oldRoleId = $targetUserPermissions['roleId'];
+        $result = $conn->query(
+            "SELECT
+            COUNT(cu.roleId) as ownerCount
+            FROM course_user AS cu
+            WHERE roleId = '$oldRoleId'"
+        );
+
+        if ($result == false) {
+            $success = false;
+            $message = 'Internal Server Error';
+        } else {
+            $row = $result->fetch_assoc();
+            $ownerCount = (int) $row['ownerCount'];
+            if ($ownerCount < 2) {
+                $success = false;
+                $message =
+                    'Cannot remove the last owner, please promote another owner first';
+            }
+        }
     }
 
     if ($requestorPermissions['isOwner'] != '1' && $newRoleisOwner == '1') {
@@ -136,10 +165,7 @@ if ($success) {
             'Operation Denied: missing permisson to demote users with role modification privileges';
     }
 
-    if (
-        $requestorPermissions['isAdmin'] != '1' &&
-        $newPermisson == '1'
-    ) {
+    if ($requestorPermissions['isAdmin'] != '1' && $newPermisson == '1') {
         $success = false;
         $message =
             'Operation Denied: missing permisson to promote users to role modification privileges';
