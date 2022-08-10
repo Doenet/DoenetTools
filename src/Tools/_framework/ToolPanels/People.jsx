@@ -16,6 +16,7 @@ import {
   processAtom,
   validHeaders,
 } from '../Menus/LoadPeople';
+import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -45,8 +46,6 @@ export default function People() {
   const headers = useRecoilValue(headersAtom);
   const entries = useRecoilValue(entriesAtom);
 
-  console.log(headers, entries);
-
   const [selectedRoleId, setSelectedRoleId] = useState(defaultRoleId);
 
   if (!courseId) {
@@ -67,6 +66,38 @@ export default function People() {
     return (
       <div style={{ padding: '8px' }}>
         <h2>Preview CSV People:</h2>
+        <ButtonGroup>
+          <Button
+            onClick={() => {
+              setProcess(csvPeopleProcess.IDLE);
+            }}
+            value="Cancel"
+          />
+          <Button
+            onClick={() => {
+              const mergePayload = {
+                roleId: selectedRoleId ?? defaultRoleId,
+                mergeHeads: headers,
+                mergeExternalId: [],
+                mergeFirstName: [],
+                mergeLastName: [],
+                mergeSection: [],
+                mergeEmail: [],
+              };
+              for (const entry of entries) {
+                entry.map((candidateData, colIdx) => {
+                  if (validHeaders[headers[colIdx]])
+                    mergePayload[`merge${headers[colIdx]}`].push(candidateData);
+                });
+              }
+              recoilMergeData(mergePayload, () => {
+                setProcess(csvPeopleProcess.IDLE);
+              });
+            }}
+            value="Merge"
+            alert
+          />
+        </ButtonGroup>
         <RoleDropdown
           label="Assigned Role"
           valueRoleId={selectedRoleId ?? defaultRoleId}
@@ -89,31 +120,6 @@ export default function People() {
             headers={headers}
           />
         ))}
-        <Button
-          onClick={() => {
-            const mergePayload = {
-              roleId: selectedRoleId ?? defaultRoleId,
-              mergeHeads: headers,
-              mergeExternalId: [],
-              mergeFirstName: [],
-              mergeLastName: [],
-              mergeSection: [],
-              mergeEmail: [],
-            };
-            for (const entry of entries) {
-              entry.map((candidateData, colIdx) => {
-                if (validHeaders[headers[colIdx]])
-                  mergePayload[`merge${headers[colIdx]}`].push(candidateData);
-              });
-            }
-            recoilMergeData(mergePayload, () => {
-              setProcess(csvPeopleProcess.IDLE);
-            });
-          }}
-          value="Merge"
-          width="menu"
-          alert
-        />
       </div>
     );
   }
