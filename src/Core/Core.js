@@ -10110,6 +10110,13 @@ export default class Core {
     }
   }
 
+  handleNavigatingToHash(hash) {
+    let component = this._components[hash];
+    if (component?.actions?.revealSection) {
+      this.requestAction({ componentName: component.componentName, actionName: "revealSection" })
+    }
+  }
+
   async terminate() {
     // suspend visibility measuring so that remaining times collected are saved
     await this.suspendVisibilityMeasuring();
