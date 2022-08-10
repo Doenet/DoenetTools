@@ -28,58 +28,171 @@ if ($success) {
     //Random courseId
     $courseId = include 'randomId.php';
     $courseId = '_' . $courseId;
-    $defaultRoleId = include 'randomId.php';
+    $defaultRoleId = include 'randomId.php'; //student
     $ownerRoleId = include 'randomId.php';
+    $designerRoleId = include 'randomId.php';
+    $instructorRoleId = include 'randomId.php';
+    $authorRoleId = include 'randomId.php';
+    $taRoleId = include 'randomId.php';
+    $proctorRoleId = include 'randomId.php';
+    $guestInstructorRoleId = include 'randomId.php';
+    $auditorRoleId = include 'randomId.php';
 
-    $sql = "INSERT INTO course
-      SET 
-      courseId = '$courseId',
-      image = '$course_pic',
-      defaultRoleId = '$defaultRoleId'
-      ";
+    //create course
+    $result = $conn->query(
+        "INSERT INTO course
+        SET 
+        courseId = '$courseId',
+        image = '$course_pic',
+        defaultRoleId = '$defaultRoleId'"
+    );
 
-    $result = $conn->query($sql);
+    /** Default Roles */
+    $result = $conn->query(
+        //Owner
+        "INSERT INTO course_role
+        SET
+        courseId = '$courseId',
+        roleId = '$ownerRoleId',
+        label = 'Owner',
+        canViewContentSource = '1',
+        canEditContent = '1',
+        canPublishContent = '1',
+        canViewUnassignedContent = '1',
+        canProctor = '1',
+        canViewAndModifyGrades = '1',
+        canViewActivitySettings = '1',
+        canModifyActivitySettings = '1',
+        canModifyCourseSettings = '1',
+        dataAccessPermission = 'Identified',
+        canViewUsers = '1',
+        canManageUsers = '1',
+        isAdmin = '1',
+        isOwner = '1'"
+    );
 
-    $sql = "INSERT INTO course_role
-      SET
-      courseId = '$courseId',
-      roleId = '$ownerRoleId',
-      label = 'Owner',
-      isIncludedInGradebook = '0',
-      canViewContentSource = '1',
-      canEditContent = '1',
-      canPublishContent = '1',
-      canViewUnassignedContent = '1',
-      canProctor = '1',
-      canViewAndModifyGrades = '1',
-      canViewActivitySettings = '1',
-      canModifyActivitySettings = '1',
-      canModifyCourseSettings = '1',
-      dataAccessPermisson = 'Identified',
-      canViewUsers = '1',
-      canManageUsers = '1',
-      isAdmin = '1',
-      isOwner = '1'
-      ";
-    $result = $conn->query($sql);
+    $result = $conn->query(
+        //Designer
+        "INSERT INTO course_role
+        SET
+        courseId = '$courseId',
+        roleId = '$designerRoleId',
+        label = 'Designer',
+        canViewContentSource = '1',
+        canEditContent = '1',
+        canPublishContent = '1',
+        canViewUnassignedContent = '1',
+        canProctor = '1',
+        canViewAndModifyGrades = '1',
+        canViewActivitySettings = '1',
+        canModifyActivitySettings = '1',
+        canModifyCourseSettings = '1',
+        dataAccessPermission = 'Identified',
+        canViewUsers = '1',
+        canManageUsers = '1',
+        isAdmin = '1'"
+    );
 
-    $sql = "INSERT INTO course_role
-      SET
-      courseId= '$courseId', 
-      roleId= '$defaultRoleId', 
-      label= 'Student', 
-      isIncludedInGradebook = '1'
-      ";
+    $result = $conn->query(
+        //Instructor (non-editing)
+        "INSERT INTO course_role
+        SET
+        courseId = '$courseId',
+        roleId = '$instructorRoleId',
+        label = 'Instructor (non-editing)',
+        canViewContentSource = '1',
+        canViewUnassignedContent = '1',
+        canProctor = '1',
+        canViewAndModifyGrades = '1',
+        canViewActivitySettings = '1',
+        canModifyActivitySettings = '1',
+        dataAccessPermission = 'Aggregate',
+        canViewUsers = '1',
+        canManageUsers = '1'"
+    );
 
-    $result = $conn->query($sql);
+    $result = $conn->query(
+        //TA
+        "INSERT INTO course_role
+        SET
+        courseId = '$courseId',
+        roleId = '$taRoleId',
+        label = 'TA',
+        canViewContentSource = '1',
+        canViewUnassignedContent = '1',
+        canProctor = '1',
+        canViewAndModifyGrades = '1',
+        canViewActivitySettings = '1',
+        dataAccessPermission = 'Aggregate',
+        canViewUsers = '1'"
+    );
 
-    $sql = "INSERT INTO course_user
+    $result = $conn->query(
+        //Guest Instructor
+        "INSERT INTO course_role
+        SET
+        courseId = '$courseId',
+        roleId = '$guestInstructorRoleId',
+        label = 'Guest Instructor',
+        canViewContentSource = '1',
+        canViewUnassignedContent = '1',
+        canViewActivitySettings = '1'"
+    );
+
+    $result = $conn->query(
+        //Author
+        "INSERT INTO course_role
+        SET
+        courseId = '$courseId',
+        roleId = '$authorRoleId',
+        label = 'Author',
+        canViewContentSource = '1',
+        canViewUnassignedContent = '1',
+        canEditContent = '1',
+        canPublishContent = '1',
+        dataAccessPermission = 'Aggregate'"
+    );
+
+    $result = $conn->query(
+        //Proctor
+        "INSERT INTO course_role
+        SET
+        courseId= '$courseId', 
+        roleId= '$proctorRoleId', 
+        label= 'Proctor', 
+        canProctor = '1',
+        canViewUsers = '1'"
+    );
+
+    $result = $conn->query(
+        //Student
+        "INSERT INTO course_role
+        SET
+        courseId= '$courseId', 
+        roleId= '$defaultRoleId', 
+        label= 'Student', 
+        isIncludedInGradebook = '1'"
+    );
+
+    $result = $conn->query(
+        //Auditor
+        "INSERT INTO course_role
+        SET
+        courseId= '$courseId', 
+        roleId= '$auditorRoleId', 
+        label= 'Auditor'"
+    );
+
+    /** End Default Roles */
+
+    //add requesting user as owner
+    $result = $conn->query(
+        "INSERT INTO course_user
       SET
       courseId ='$courseId',
       userId ='$userId',
-      roleId ='$ownerRoleId'
-      ";
-    $result = $conn->query($sql);
+      roleId ='$ownerRoleId'"
+    );
 }
 
 $permissionsAndSettings = [];
