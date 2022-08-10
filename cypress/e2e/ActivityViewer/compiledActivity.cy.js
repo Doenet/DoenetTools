@@ -33,7 +33,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    cy.get('#\\/_document1').should('have.text', 'hi')
+    cy.get('#\\/_document1').should('contain.text', 'hi')
 
 
   })
@@ -53,7 +53,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    cy.get('#\\/_document1').should('have.text', 'hi')
+    cy.get('#\\/_document1').should('contain.text', 'hi')
 
 
   })
@@ -71,7 +71,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    cy.get('#\\/_document1').should('have.text', 'hi')
+    cy.get('#\\/_document1').should('contain.text', 'hi')
 
   })
 
@@ -86,7 +86,7 @@ describe('Compiled activity tests', function () {
         `}, "*");
     })
 
-    cy.get('#\\/_document1').should('have.text', 'hi')
+    cy.get('#\\/_document1').should('contain.text', 'hi')
 
   })
 

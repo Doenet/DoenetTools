@@ -1,4 +1,3 @@
-import { faTh } from '@fortawesome/free-solid-svg-icons';
 import {
   selectorFamily,
   useRecoilState,
@@ -21,7 +20,7 @@ export function useCourseChooserCrumb() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   return {
-    icon: faTh,
+    label: "Courses",
     onClick: () => {
       setPageToolView({
         page: 'course',

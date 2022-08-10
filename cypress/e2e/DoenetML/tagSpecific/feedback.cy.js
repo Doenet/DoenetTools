@@ -22,7 +22,7 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer>x+y</answer></p>
   <section>
-  <feedback condition="$(_answer1{prop='creditAchieved'}) = 1">
+  <feedback condition="$(_answer1.creditAchieved) = 1">
   <p>You got full credit!</p></feedback>
   <feedback condition="$_answer1 = x+y">
   <p>You typed the right answer!</p></feedback>
@@ -423,7 +423,7 @@ describe('Feedback Tag Tests', function () {
   <text>a</text>
   <p><answer type="text">hello there</answer></p>
   <section>
-  <feedback condition="$(_answer1{prop='creditAchieved'}) != 1 and $(_answer1{prop='responseHasBeenSubmitted'}) ">
+  <feedback condition="$(_answer1.creditAchieved) != 1 and $(_answer1.responseHasBeenSubmitted) ">
     <p>Your response <em><copy prop="submittedresponse" target="_answer1" /></em> is incorrect.</p>
   </feedback>
   </section>
@@ -1458,7 +1458,7 @@ describe('Feedback Tag Tests', function () {
     </award>
   </answer>
   
-  <feedback condition="$mi=y" updateWithTarget="ans" name="fback"><p>You typed y!</p></feedback>
+  <feedback condition="$mi=y" updateWith="ans" name="fback"><p>You typed y!</p></feedback>
   `}, "*");
     });
 
@@ -1502,8 +1502,8 @@ describe('Feedback Tag Tests', function () {
   
   <subsection>
     <title>Desired feedback behavior</title>
-    <feedback condition="$got1 and not $got2" updateWithTarget="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
-    <feedback condition="$got2 and not $got1" updateWithTarget="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
+    <feedback condition="$got1 and not $got2" updateWith="ans" name="fback1"><p>You got the first; what about the second?</p></feedback>
+    <feedback condition="$got2 and not $got1" updateWith="ans" name="fback2"><p>You got the second; what about the first?</p></feedback>
   </subsection>
   <subsection>
     <title>Default feedback behavior</title>
@@ -1598,22 +1598,22 @@ describe('Feedback Tag Tests', function () {
     <award name="large" credit="0"><when>$mi1 < 3 and $mi2 < 3</when></award>
   </answer></p>
   <section>
-  <feedback name="close" condition="$(medium{prop='creditAchieved'}) > $(small{prop='creditAchieved'})">
+  <feedback name="close" condition="$(medium.creditAchieved) > $(small.creditAchieved)">
   <p>A number or two is close but not quite.</p>
   </feedback>
-  <feedback name="goodAndClose" condition="$(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0">
+  <feedback name="goodAndClose" condition="$(medium.fractionSatisfied) > $(small.fractionSatisfied) > 0">
   <p>One number is good, the other number is close but not quite.</p>
   </feedback>
-  <feedback name="startingClose" condition="$(large{prop='fractionSatisfied'}) > 0 and $(medium{prop='fractionSatisfied'}) = 0">
+  <feedback name="startingClose" condition="$(large.fractionSatisfied) > 0 and $(medium.fractionSatisfied) = 0">
   <p>A number or two is starting to get close.</p>
   </feedback>
-  <feedback name="closeStartingClose" condition="$(large{prop='fractionSatisfied'}) >  $(medium{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'})">
+  <feedback name="closeStartingClose" condition="$(large.fractionSatisfied) >  $(medium.fractionSatisfied) > $(small.fractionSatisfied)">
   <p>A number is close but not quite; the other number is starting to get close.</p>
   </feedback>
-  <feedback name="goodStartingClose" condition="$(large{prop='fractionSatisfied'}) > $(small{prop='fractionSatisfied'}) > 0 and  $(small{prop='fractionSatisfied'}) =  $(medium{prop='fractionSatisfied'})">
+  <feedback name="goodStartingClose" condition="$(large.fractionSatisfied) > $(small.fractionSatisfied) > 0 and  $(small.fractionSatisfied) =  $(medium.fractionSatisfied)">
   <p>One number is good, the other number is starting to get close.</p>
   </feedback>
-  <feedback name="good" condition="1 > $(small{prop='fractionSatisfied'}) > 0 and $(small{prop='fractionSatisfied'}) = $(medium{prop='fractionSatisfied'}) = $(large{prop='fractionSatisfied'})">
+  <feedback name="good" condition="1 > $(small.fractionSatisfied) > 0 and $(small.fractionSatisfied) = $(medium.fractionSatisfied) = $(large.fractionSatisfied)">
   <p>One number is good.</p>
   </feedback>
   </section>

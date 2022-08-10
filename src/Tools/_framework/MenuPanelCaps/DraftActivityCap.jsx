@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil';
 // import axios from 'axios';
 // import { currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 import { itemByDoenetId, courseIdAtom, coursePermissionsAndSettingsByCourseId, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { find_image_label, find_color_label } from './util'
 
 
 export default function DraftActivityCap(){
@@ -18,11 +19,15 @@ if (!course || Object.keys(course).length == 0){
 let color = course.color;
 let image = course.image;
 // let label = course.label;
+
+let accessible_name = "course";
  
  if (image != 'none'){
+  accessible_name = find_image_label(image);
   image = '/media/drive_pictures/' + image;
  }
  if (color != 'none'){
+  accessible_name = find_color_label(color);
   color = '#' + color;
  }
   // let doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
@@ -66,8 +71,8 @@ let image = course.image;
   //TODO: image and color defaults
   return (
   <div>
-    <div style={{ position: "relative", width: "100%", height: "135px", overflow: "hidden"}}>
-      <img src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
+    <div style={{ position: "relative", width: "100%", height: "165px", overflow: "hidden"}}>
+      <img aria-label={accessible_name} src={image} style={{ position: "absolute", width: "100%", top: "50%", transform: "translateY(-50%)" }}  />
     </div>
     <b>Draft Activity</b>
     {/* <div style={{ padding:'16px 12px' }}>

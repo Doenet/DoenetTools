@@ -31,7 +31,7 @@
     </point>
 
     <boolean name="initialCorrect">$initialPoint = ($x0,0)</boolean>
-    <copy prop="fractionCorrectVerticesAdjusted" target="cobwebPolyline" assignNames="fractionCorrectCobweb" />
+    <copy prop="fractionCorrectVerticesAdjusted" source="cobwebPolyline" assignNames="fractionCorrectCobweb" />
   </setup>
 
   <updateValue label="Add line" name="addLine" target="nPoints" newValue="$nPoints+1" type="number" />
@@ -52,7 +52,7 @@
         </mrow>
       </template>
       <sources alias="x" indexAlias="i">
-        <copy prop="iterateValues" target="cobwebPolyline" />
+        <copy prop="iterateValues" source="cobwebPolyline" />
       </sources>
     </map>
     </md>

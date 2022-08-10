@@ -242,5 +242,58 @@ describe('ref Tag Tests', function () {
     cy.get('#\\/toDoenet button').should('contain', 'Go to Doenet');
   })
 
+  it('ref opens aside', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+    <p>Goto:
+    <ref name="toAside" target="/aside">Aside</ref>
+    </p>
+    <p>Paragraph one</p>
+    <p>Paragraph two</p>
+    <p>Paragraph three</p>
+    <p>Paragraph four</p>
+    <p>Paragraph five</p>
+    <p>Paragraph six</p>
+    <p>Paragraph seven</p>
+    <p>Paragraph eight</p>
+
+    <aside name="aside">
+      <title name="asideTitle">The aside</title>
+      <p name="inside">Inside the aside</p>
+    </aside>
+
+    <p>Paragraph a</p>
+    <p>Paragraph b</p>
+    <p>Paragraph c</p>
+    <p>Paragraph d</p>
+    <p>Paragraph e</p>
+    <p>Paragraph f</p>
+    <p>Paragraph g</p>
+    <p>Paragraph h</p>
+    `}, "*");
+    });
+
+    // to wait for page to load
+    cy.get('#\\/asideTitle').should('have.text', 'The aside')
+
+    cy.log('Aside closed at the beginning')
+    cy.get('#\\/inside').should('not.exist')
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/aside"].stateValues.open).eq(false);
+    })
+
+    cy.log('clicking link opens aside')
+    cy.get('#\\/toAside').click();
+
+    cy.get('#\\/inside').should('have.text', "Inside the aside");
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables["/aside"].stateValues.open).eq(true);
+    })
+
+  });
+
 
 });

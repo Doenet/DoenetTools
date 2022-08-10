@@ -19,7 +19,7 @@ describe('Graph Reference Test', function () {
       <line name="lineA">y=x+1</line>
       <line name="lineB" through="$pointA $pointB" />
       <copy name="pointC" target="pointA" />
-      <point name="pointD" x="$(pointA{prop='x'})" y="$(pointB{prop='y'})" />
+      <point name="pointD" x="$pointA.x" y="$pointB.y" />
       <copy name="lineC" target="lineA" />
       <copy name="lineD" target="lineB" />
       <intersection name="pointE"><copy target="lineA" /><copy target="lineB" /></intersection>

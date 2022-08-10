@@ -192,6 +192,21 @@ describe('Number Tag Tests', function () {
       <copy target="n3" displayDigits='3' assignNames="n3a" />
       <copy target="n3" displayDecimals='3' assignNames="n3b" />
       <copy target="n3" displayDigits='3' displaySmallAsZero assignNames="n3c" />
+
+      <copy target="n1a" displayDigits='3' assignNames="n1aa" />
+      <copy target="n1a" displayDecimals='3' assignNames="n1ab" />
+      <copy target="n2a" displayDigits='3' assignNames="n2aa" />
+      <copy target="n2a" displayDecimals='3' assignNames="n2ab" />
+      <copy target="n3a" displayDigits='3' assignNames="n3aa" />
+      <copy target="n3a" displayDecimals='3' assignNames="n3ab" />
+
+      <copy target="n1b" displayDigits='3' assignNames="n1ba" />
+      <copy target="n1b" displayDecimals='3' assignNames="n1bb" />
+      <copy target="n2b" displayDigits='3' assignNames="n2ba" />
+      <copy target="n2b" displayDecimals='3' assignNames="n2bb" />
+      <copy target="n3b" displayDigits='3' assignNames="n3ba" />
+      <copy target="n3b" displayDecimals='3' assignNames="n3bb" />
+
       <m name="n1am">$n1a</m>
       <m name="n1bm">$n1b</m>
       <m name="n1cm">$n1c</m>
@@ -201,6 +216,21 @@ describe('Number Tag Tests', function () {
       <m name="n3am">$n3a</m>
       <m name="n3bm">$n3b</m>
       <m name="n3cm">$n3c</m>
+
+      <m name="n1aam">$n1aa</m>
+      <m name="n1abm">$n1ab</m>
+      <m name="n2aam">$n2aa</m>
+      <m name="n2abm">$n2ab</m>
+      <m name="n3aam">$n3aa</m>
+      <m name="n3abm">$n3ab</m>
+
+      <m name="n1bam">$n1ba</m>
+      <m name="n1bbm">$n1bb</m>
+      <m name="n2bam">$n2ba</m>
+      <m name="n2bbm">$n2bb</m>
+      <m name="n3bam">$n3ba</m>
+      <m name="n3bbm">$n3bb</m>
+      
     ` }, "*");
     })
 
@@ -230,6 +260,38 @@ describe('Number Tag Tests', function () {
     cy.get('#\\/n3bm .mjx-mrow').eq(0).should('have.text', '0')
     cy.get('#\\/n3cm .mjx-mrow').eq(0).should('have.text', '0')
 
+
+    cy.get('#\\/n1aa').should('have.text', '234000000')
+    cy.get('#\\/n1ab').should('have.text', '234234823.342')
+    cy.get('#\\/n1aam .mjx-mrow').eq(0).should('have.text', '234000000')
+    cy.get('#\\/n1abm .mjx-mrow').eq(0).should('have.text', '234234823.342')
+
+    cy.get('#\\/n2aa').should('have.text', '5.43')
+    cy.get('#\\/n2ab').should('have.text', '5.429')
+    cy.get('#\\/n2aam .mjx-mrow').eq(0).should('have.text', '5.43')
+    cy.get('#\\/n2abm .mjx-mrow').eq(0).should('have.text', '5.429')
+
+    cy.get('#\\/n3aa').should('have.text', '5.02 * 10^(-15)')
+    cy.get('#\\/n3ab').should('have.text', '0')
+    cy.get('#\\/n3aam .mjx-mrow').eq(0).should('have.text', '5.02⋅10−15')
+    cy.get('#\\/n3abm .mjx-mrow').eq(0).should('have.text', '0')
+
+    cy.get('#\\/n1ba').should('have.text', '234000000')
+    cy.get('#\\/n1bb').should('have.text', '234234823.342')
+    cy.get('#\\/n1bam .mjx-mrow').eq(0).should('have.text', '234000000')
+    cy.get('#\\/n1bbm .mjx-mrow').eq(0).should('have.text', '234234823.342')
+
+    cy.get('#\\/n2ba').should('have.text', '5.43')
+    cy.get('#\\/n2bb').should('have.text', '5.429')
+    cy.get('#\\/n2bam .mjx-mrow').eq(0).should('have.text', '5.43')
+    cy.get('#\\/n2bbm .mjx-mrow').eq(0).should('have.text', '5.429')
+
+    cy.get('#\\/n3ba').should('have.text', '5.02 * 10^(-15)')
+    cy.get('#\\/n3bb').should('have.text', '0')
+    cy.get('#\\/n3bam .mjx-mrow').eq(0).should('have.text', '5.02⋅10−15')
+    cy.get('#\\/n3bbm .mjx-mrow').eq(0).should('have.text', '0')
+
+
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n1'].stateValues.value).eq(234234823.34235235324);
@@ -253,6 +315,34 @@ describe('Number Tag Tests', function () {
       expect(stateVariables[stateVariables['/n3am'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
       expect(stateVariables[stateVariables['/n3bm'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
       expect(stateVariables[stateVariables['/n3cm'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
+
+      expect(stateVariables['/n1aa'].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables['/n1ab'].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables[stateVariables['/n1aam'].activeChildren[0].componentName].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables[stateVariables['/n1abm'].activeChildren[0].componentName].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables['/n2aa'].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables['/n2ab'].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables[stateVariables['/n2aam'].activeChildren[0].componentName].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables[stateVariables['/n2abm'].activeChildren[0].componentName].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables['/n3aa'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables['/n3ab'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables[stateVariables['/n3aam'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables[stateVariables['/n3abm'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
+
+      expect(stateVariables['/n1ba'].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables['/n1bb'].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables[stateVariables['/n1bam'].activeChildren[0].componentName].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables[stateVariables['/n1bbm'].activeChildren[0].componentName].stateValues.value).eq(234234823.34235235324);
+      expect(stateVariables['/n2ba'].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables['/n2bb'].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables[stateVariables['/n2bam'].activeChildren[0].componentName].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables[stateVariables['/n2bbm'].activeChildren[0].componentName].stateValues.value).eq(5.4285023408250342);
+      expect(stateVariables['/n3ba'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables['/n3bb'].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables[stateVariables['/n3bam'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
+      expect(stateVariables[stateVariables['/n3bbm'].activeChildren[0].componentName].stateValues.value).eq(0.000000000000005023481340324);
+
+
     })
   })
 

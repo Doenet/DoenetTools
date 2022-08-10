@@ -46,7 +46,8 @@ export default function SupportPanel({hide, children, panelTitles = [], panelInd
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ControlsWrapper, {
     $hide: hide,
-    "aria-label": "complementary controls"
+    "aria-label": "complementary controls",
+    "data-test": "Support Panel Controls"
   }, /* @__PURE__ */ React.createElement("a", {
     href: "/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q",
     target: "_blank"
@@ -63,6 +64,7 @@ export default function SupportPanel({hide, children, panelTitles = [], panelInd
     }
   }))), /* @__PURE__ */ React.createElement(SupportWrapper, {
     $hide: hide,
-    role: "complementary"
+    role: "complementary",
+    "data-test": "Support Panel"
   }, children));
 }

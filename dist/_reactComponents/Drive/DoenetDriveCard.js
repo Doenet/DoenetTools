@@ -53,7 +53,7 @@ const LabelContainer = styled.p`
 const DriveCard = (props) => {
   let imageURL = `url(/media/drive_pictures/${props.image})`;
   return /* @__PURE__ */ React.createElement(DriveCardContainer, {
-    "data-cy": "driveCard",
+    "data-test": "driveCard",
     url: imageURL,
     color: props.color,
     width: props.width,
@@ -73,7 +73,7 @@ const DriveCard = (props) => {
       color: props.isSelected ? "black" : "var(--canvastext)"
     }
   }, /* @__PURE__ */ React.createElement("b", {
-    "data-cy": "driveCardLabel"
+    "data-test": "driveCardLabel"
   }, props.label)), props?.role?.map((item) => {
     return /* @__PURE__ */ React.createElement(LabelContainer, {
       key: item,

@@ -20,6 +20,11 @@ const ButtonStyling = styled.button`
     background-color: ${props => props.alert ? 'var(--lightRed)' : 'var(--lightBlue)'};
     color: black;
   };
+
+  &:focus {
+    outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : props.disabled ? 'var(--canvastext)' : 'var(--mainBlue)'};
+    outline-offset: 2px;
+  }
 `;
 
 ButtonStyling.defaultProps = {
@@ -122,7 +127,7 @@ export default function Button(props) {
         <>
             <Container style={container} align={align}>
               <Label labelVisible={labelVisible} align={align}>{label}</Label>
-              <ButtonStyling style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
+              <ButtonStyling disabled={props.disabled} aria-disabled={props.disabled} aria-labelledby={label} aria-label={button.value} style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
             </Container>
         </>
     )

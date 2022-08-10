@@ -71,21 +71,25 @@ const Life = styled(animated.div)`
 const Button = styled('button')`
   cursor: pointer;
   pointer-events: all;
-  outline: 0;
   border: none;
+  border-radius: 20px;
   background: transparent;
   display: flex;
-  align-self: flex-end;
+  align-items: center;
   overflow: hidden;
-  margin: 0;
+  margin-top: 14px;
   padding: 0;
-  padding-bottom: 14px;
+  height: 20px;
   // color: var(--canvas);
   // :hover {
   //   color: var(--canvas);
   // }
   color: var(--canvastext);
   font-size: 1em;
+  &: focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 
 const toastStack = atom({
@@ -142,17 +146,17 @@ export const toastType = Object.freeze({
   },
   INFO: {
     // non-interactive information
-    timeout: 3000,
+    timeout: -1,
     background: 'var(--mainBlue)',
   },
   SUCCESS: {
     // confirm action
-    timeout: 3000,
+    timeout: -1,
     background: 'var(--mainGreen)',
   },
   CONFIRMATION: {
     //confirm action and offer undo
-    timeout: 5000,
+    timeout: -1,
     background: 'var(--mainBlue)',
   },
 });
@@ -193,10 +197,10 @@ function ToastMessage({
     },
   });
   return (
-    <Message style={props}>
+    <Message style={props} role="alert">
       <Content ref={ref} key={tId} type={type} data-test="toast">
         <Life style={{ right: props.life }} />
-        <p>{children}</p>
+        <p id="alert-message">{children}</p>
         <Button
           data-test="toast cancel button"
           onClick={(e) => {
@@ -204,6 +208,8 @@ function ToastMessage({
             ref.current.cancel();
             setToasts((old) => old.filter((i) => i.props.tId !== tId));
           }}
+          aria-label="Close alert:"
+          aria-labelledby='alert-message'
         >
           <FontAwesomeIcon icon={faTimes} />
         </Button>

@@ -28,6 +28,7 @@ export default class Core {
     serverSaveId,
     activityVariantIndex,
     requestedVariant, requestedVariantIndex,
+    previousComponentTypeCounts = {},
     flags = {},
     stateVariableChanges = {},
     coreId, updateDataOnContentChange }) {
@@ -55,7 +56,7 @@ export default class Core {
 
     this.componentInfoObjects = createComponentInfoObjects(flags);
 
-
+    this.previousComponentTypeCounts = previousComponentTypeCounts;
 
     this.coreFunctions = {
       requestUpdate: this.requestUpdate.bind(this),
@@ -165,6 +166,19 @@ export default class Core {
     // console.log(`serialized components at the beginning`)
     // console.log(deepClone(serializedComponents));
 
+    this.componentIndexArray = serializeFunctions.extractComponentNamesAndIndices(serializedComponents);
+
+    let { rangePieces } = serializeFunctions.extractRangeIndexPieces({ componentArray: this.componentIndexArray });
+
+    this.componentRangePieces = rangePieces;
+
+    postMessage({
+      messageType: "componentRangePieces",
+      coreId: this.coreId,
+      args: {
+        componentRangePieces: this.componentRangePieces,
+      }
+    });
 
     this.documentName = serializedComponents[0].componentName;
     serializedComponents[0].doenetAttributes.cid = this.cid;
@@ -2037,15 +2051,15 @@ export default class Core {
     // we'll copy the replacements of the shadowed composite
     // and make those be the replacements of the shadowing composite
     let serializedReplacements = [];
-    let targetAttributesToIgnore = await component.stateValues.targetAttributesToIgnore;
-    let targetAttributesToIgnoreRecursively = await component.stateValues.targetAttributesToIgnoreRecursively;
+    let sourceAttributesToIgnore = await component.stateValues.sourceAttributesToIgnore;
+    let sourceAttributesToIgnoreRecursively = await component.stateValues.sourceAttributesToIgnoreRecursively;
 
     for (let repl of shadowedComposite.replacements) {
       if (typeof repl === "object") {
         serializedReplacements.push(await repl.serialize(
           {
-            targetAttributesToIgnore,
-            targetAttributesToIgnoreRecursively
+            sourceAttributesToIgnore,
+            sourceAttributesToIgnoreRecursively
           }
         ))
       } else {
@@ -3163,12 +3177,10 @@ export default class Core {
         if (stateDef.set) {
           stateDef.definition = function ({ dependencyValues, usedDefault }) {
             let valueFromTarget = stateDef.set(dependencyValues.targetVariable);
-            if (setDefault && usedDefault.targetVariable
-              && deepCompare(valueFromTarget, stateDef.defaultValue)
-            ) {
+            if (setDefault && usedDefault.targetVariable) {
               return {
                 useEssentialOrDefaultValue: {
-                  [primaryStateVariableForDefinition]: true
+                  [primaryStateVariableForDefinition]: { defaultValue: valueFromTarget }
                 },
                 alwaysShadow: [primaryStateVariableForDefinition],
               }
@@ -3182,12 +3194,10 @@ export default class Core {
           };
         } else {
           stateDef.definition = function ({ dependencyValues, usedDefault }) {
-            if (setDefault && usedDefault.targetVariable
-              && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
-            ) {
+            if (setDefault && usedDefault.targetVariable) {
               return {
                 useEssentialOrDefaultValue: {
-                  [primaryStateVariableForDefinition]: true
+                  [primaryStateVariableForDefinition]: { defaultValue: dependencyValues.targetVariable }
                 },
                 alwaysShadow: [primaryStateVariableForDefinition],
               }
@@ -3484,10 +3494,10 @@ export default class Core {
             }
           }
 
-          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential
-            && deepCompare(dependencyValues.targetVariable, stateDef.defaultValue)
-          ) {
-            result.useEssentialOrDefaultValue = { [varName]: true }
+          if (usedDefault.targetVariable && "defaultValue" in stateDef && stateDef.hasEssential) {
+            result.useEssentialOrDefaultValue = {
+              [varName]: { defaultValue: dependencyValues.targetVariable }
+            }
           } else {
             result.setValue = { [varName]: dependencyValues.targetVariable }
           }
@@ -4103,8 +4113,8 @@ export default class Core {
         stateVarObj.getAllArrayKeys = function (arraySize, flatten = true, desiredSize) {
 
           function prependToAllKeys(keys, newStuff) {
-            for(let [ind,key] of keys.entries()) {
-              if(Array.isArray(key)) {
+            for (let [ind, key] of keys.entries()) {
+              if (Array.isArray(key)) {
                 prependToAllKeys(key, newStuff)
               } else {
                 keys[ind] = newStuff + "," + key
@@ -4157,7 +4167,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + [Number(propIndex), ...Array(stateVarObj.nDimensions - 1).fill(1)].join('_')
+          return entryPrefixes[0] + [...propIndex.map(x => Math.round(Number(x))), ...Array(stateVarObj.nDimensions - propIndex.length).fill(1)].join('_')
         };
       }
 
@@ -4228,7 +4238,7 @@ export default class Core {
 
       if (!stateVarObj.arrayVarNameFromPropIndex) {
         stateVarObj.arrayVarNameFromPropIndex = function (propIndex, varName) {
-          return entryPrefixes[0] + propIndex;
+          return entryPrefixes[0] + propIndex[0];
         };
       }
 
@@ -6738,16 +6748,16 @@ export default class Core {
         }
 
         let composite = this._components[shadowingParent.shadows.compositeName];
-        let targetAttributesToIgnore = await composite.stateValues.targetAttributesToIgnore;
-        let targetAttributesToIgnoreRecursively = await composite.stateValues.targetAttributesToIgnoreRecursively;
+        let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
+        let sourceAttributesToIgnoreRecursively = await composite.stateValues.sourceAttributesToIgnoreRecursively;
 
         let shadowingSerializeChildren = [];
         for (let child of newChildren) {
           if (typeof child === "object") {
             shadowingSerializeChildren.push(await child.serialize(
               {
-                targetAttributesToIgnore,
-                targetAttributesToIgnoreRecursively
+                sourceAttributesToIgnore,
+                sourceAttributesToIgnoreRecursively
               }
             ))
           } else {
@@ -7646,15 +7656,15 @@ export default class Core {
         let newSerializedReplacements = [];
 
         let compositeCreatingShadow = this._components[shadowingComponent.shadows.compositeName];
-        let targetAttributesToIgnore = await compositeCreatingShadow.stateValues.targetAttributesToIgnore;
-        let targetAttributesToIgnoreRecursively = await compositeCreatingShadow.stateValues.targetAttributesToIgnoreRecursively;
+        let sourceAttributesToIgnore = await compositeCreatingShadow.stateValues.sourceAttributesToIgnore;
+        let sourceAttributesToIgnoreRecursively = await compositeCreatingShadow.stateValues.sourceAttributesToIgnoreRecursively;
 
         for (let repl of replacementsToShadow) {
           if (typeof repl === "object") {
             newSerializedReplacements.push(await repl.serialize(
               {
-                targetAttributesToIgnore,
-                targetAttributesToIgnoreRecursively
+                sourceAttributesToIgnore,
+                sourceAttributesToIgnoreRecursively
               }
             ));
           } else {
@@ -8049,6 +8059,21 @@ export default class Core {
         }
         return await action(args);
       }
+    }
+
+    if (!component && actionName === "recordVisibilityChange" && args?.isVisible === false) {
+      // We have an action to record that a component is no longer visible
+      // and the component has been deleted.
+      // Record a visibility changed event
+      // Note: don't know componentType, but componentType isn't preserved when summarize visibility events
+      this.requestRecordEvent({
+        verb: "visibilityChanged",
+        object: {
+          componentName,
+        },
+        result: { isVisible: false }
+      })
+      return this.resolveAction({ actionId: args.actionId });
     }
 
     console.warn(`Cannot run action ${actionName} on component ${componentName}`);
@@ -9012,7 +9037,15 @@ export default class Core {
         }
       } else {
         for (let [ind, arrayKey] of inverseDefinitionArgs.arrayKeys.entries()) {
-          desiredValuesForArray[arrayKey] = instruction.value[ind];
+          if (Array.isArray(instruction.value)) {
+            desiredValuesForArray[arrayKey] = instruction.value[ind];
+          } else if (instruction.value instanceof me.class) {
+            try {
+              desiredValuesForArray[arrayKey] = instruction.value.get_component(ind);
+            } catch (e) {
+
+            }
+          }
         }
       }
       inverseDefinitionArgs.desiredStateVariableValues = { [arrayStateVariable]: desiredValuesForArray };
@@ -10075,6 +10108,13 @@ export default class Core {
       this.resumeVisibilityMeasuring();
     } else {
       this.suspendVisibilityMeasuring();
+    }
+  }
+
+  handleNavigatingToHash(hash) {
+    let component = this._components[hash];
+    if (component?.actions?.revealSection) {
+      this.requestAction({ componentName: component.componentName, actionName: "revealSection" })
     }
   }
 

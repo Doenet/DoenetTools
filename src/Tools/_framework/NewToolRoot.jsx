@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense, useRef, useEffect } from 'react';
+import React, { useState, lazy, Suspense, useRef } from 'react';
 import {
   atom,
   selector,
@@ -18,7 +18,6 @@ import SupportPanel from './Panels/NewSupportPanel';
 import MenuPanel from './Panels/NewMenuPanel';
 import FooterPanel from './Panels/FooterPanel';
 import { animated } from '@react-spring/web';
-import { darkModeAtom } from './Panels/NewMenuPanel';
 
 import { useNavigate, useLocation } from 'react-router';
 
@@ -82,9 +81,6 @@ export const paramObjAtom = atom({
 
 export default function ToolRoot() {
   // console.log('>>>===ToolRoot ');
-
-  const darkModeToggle = useRecoilValue(darkModeAtom);
-
   const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
     pageName: 'init',
     menuPanelCap: '',
@@ -395,7 +391,7 @@ export default function ToolRoot() {
   // <p>insert keyboard here</p></FooterPanel>
 
   return (
-    <html dark={darkModeToggle === true ? 'true' : null}>
+    <>
       <ToolContainer>
         {menus}
         <ContentPanel
@@ -422,7 +418,7 @@ export default function ToolRoot() {
         setToolRootMenusAndPanels={setToolRootMenusAndPanels}
       />
       <MemoizedOnLeave key="MemoizedOnLeave" />
-    </html>
+    </>
   );
 }
 
@@ -1059,7 +1055,6 @@ function RootController(props) {
 
     //Don't add to the url history if it's the same location the browser is at
     if (location.pathname !== pathname || location.search !== search) {
-      console.log('urlpush:', urlPush);
       navigate(urlPush);
     }
   }

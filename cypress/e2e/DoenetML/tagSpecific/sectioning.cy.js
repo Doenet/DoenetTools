@@ -1328,16 +1328,21 @@ describe('Sectioning Tag Tests', function () {
         <p>Hello</p>
       </section>
     
-      <section name="revised" copyTarget="sec">
+      <section name="revised" copySource="sec">
         <title>A better title</title>
         <p>Good day!</p>
       </section>
+
+      <p>Copy of original title: <text copySource="sec.title" name="title1" /></p>
+      <p>Copy of revised title: <text copySource="revised.title" name="title2" /></p>
     
     `}, "*");
     });
 
     cy.get('#\\/sec_title').should('have.text', 'A title');
     cy.get('#\\/revised_title').should('have.text', 'A better title');
+    cy.get('#\\/title1').should('have.text', 'A title');
+    cy.get('#\\/title2').should('have.text', 'A better title');
 
     cy.get('#\\/_p1').should('have.text', 'Hello');
     cy.get('#\\/revised p:first-of-type').should('have.text', 'Hello');
@@ -1345,6 +1350,39 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
+  it('copy and overwrite title, newNamespaces', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section name="sec" newNamespace>
+        <title>A title</title>
+        <p>Hello</p>
+      </section>
+    
+      <section name="revised" copySource="sec" newNamespace>
+        <title>A better title</title>
+        <p>Good day!</p>
+      </section>
+
+      <p>Copy of original title: <text copySource="sec.title" name="title1" /></p>
+      <p>Copy of revised title: <text copySource="revised.title" name="title2" /></p>
+    
+    `}, "*");
+    });
+
+    cy.get('#\\/sec_title').should('have.text', 'A title');
+    cy.get('#\\/revised_title').should('have.text', 'A better title');
+    cy.get('#\\/sec\\/_title1').should('have.text', 'A title');
+    cy.get('#\\/revised\\/_title').should('not.exist');
+    cy.get('#\\/revised\\/_title2').should('have.text', 'A better title');
+    cy.get('#\\/title1').should('have.text', 'A title');
+    cy.get('#\\/title2').should('have.text', 'A better title');
+
+    cy.get('#\\/sec\\/_p1').should('have.text', 'Hello');
+    cy.get('#\\/revised\\/_p1').should('have.text', 'Hello');
+    cy.get('#\\/revised\\/_p2').should('have.text', 'Good day!');
+
+  });
 
 
 });

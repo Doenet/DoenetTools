@@ -31,6 +31,9 @@ export default React.memo(function Graph(props) {
   const boardJustInitialized = useRef(false);
 
   const previousShowNavigation = useRef(false);
+  let previousXaxisWithLabel = useRef(null);
+  let previousYaxisWithLabel = useRef(null);
+
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -220,8 +223,29 @@ export default React.memo(function Graph(props) {
       }
     }
 
+    // Note: since we display a zero tick only if the other axis does not exist,
+    // if the display of one axis changed, we delete and rebuild the other axis
+    let displayXAxisChanged = SVs.displayXAxis ? !Boolean(xaxis.current) : Boolean(xaxis.current);
+    let displayYAxisChanged = SVs.displayYAxis ? !Boolean(yaxis.current) : Boolean(yaxis.current);
+
+    if(displayYAxisChanged && !displayXAxisChanged && SVs.displayXAxis) {
+      board.removeObject(xaxis.current);
+      xaxis.current = null;
+    }
+
+    if(displayXAxisChanged && !displayYAxisChanged && SVs.displayYAxis) {
+      board.removeObject(yaxis.current);
+      yaxis.current = null;
+    }
+
     if (SVs.displayXAxis) {
       if (xaxis.current) {
+        let xaxisWithLabel = Boolean(SVs.xlabel);
+
+        if (xaxisWithLabel !== previousXaxisWithLabel.current) {
+          xaxis.current.setAttribute({ withlabel: xaxisWithLabel });
+          previousXaxisWithLabel.current = xaxisWithLabel;
+        }
         xaxis.current.name = SVs.xlabel;
         xaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayXAxisTickLabels });
         if (xaxis.current.hasLabel) {
@@ -249,6 +273,12 @@ export default React.memo(function Graph(props) {
 
     if (SVs.displayYAxis) {
       if (yaxis.current) {
+        let yaxisWithLabel = Boolean(SVs.ylabel);
+
+        if (yaxisWithLabel !== previousYaxisWithLabel.current) {
+          yaxis.current.setAttribute({ withlabel: yaxisWithLabel });
+          previousYaxisWithLabel.current = yaxisWithLabel;
+        }
         yaxis.current.name = SVs.ylabel;
         yaxis.current.defaultTicks.setAttribute({ drawLabels: SVs.displayYAxisTickLabels });
         if (yaxis.current.hasLabel) {
@@ -361,7 +391,12 @@ export default React.memo(function Graph(props) {
         anchorx,
         strokeColor: "var(--canvastext)"
       };
+      if (SVs.ylabelHasLatex) {
+        yaxisOptions.label.useMathJax = true;
+      }
     }
+    previousYaxisWithLabel.current = Boolean(SVs.ylabel);
+
     yaxisOptions.strokeColor = "var(--canvastext)";
     yaxisOptions.highlight = false;
 
@@ -399,6 +434,8 @@ export default React.memo(function Graph(props) {
     if (!SVs.displayXAxis) {
       yaxisOptions.ticks.drawZero = true;
     }
+
+    theBoard.suspendUpdate();
 
     yaxis.current = theBoard.create('axis', [[0, 0], [0, 1]], yaxisOptions);
 
@@ -457,9 +494,9 @@ export default React.memo(function Graph(props) {
 
       // Position ticks from zero to the positive side while not reaching the upper boundary
       tickPosition = 0;
-      // if (!Type.evaluate(this.visProp.drawzero)) {
-      tickPosition = ticksDelta;
-      // }
+      if (!this.visProp.drawzero) {
+        tickPosition = ticksDelta;
+      }
       while (tickPosition <= bounds.upper + eps2) {
         // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
         if (tickPosition >= bounds.lower - eps2) {
@@ -488,6 +525,9 @@ export default React.memo(function Graph(props) {
         }
       }
     };
+
+    theBoard.unsuspendUpdate();
+
   }
 
   function createXAxis(theBoard) {
@@ -509,7 +549,12 @@ export default React.memo(function Graph(props) {
         anchorx,
         strokeColor: "var(--canvastext)"
       };
+      if (SVs.xlabelHasLatex) {
+        xaxisOptions.label.useMathJax = true;
+      }
     }
+    previousXaxisWithLabel.current = Boolean(SVs.xlabel);
+
     xaxisOptions.ticks = {
       ticksDistance: 2,
       label: {
@@ -548,6 +593,8 @@ export default React.memo(function Graph(props) {
       xaxisOptions.ticks.drawZero = true;
     }
 
+    theBoard.suspendUpdate();
+
     xaxis.current = theBoard.create('axis', [[0, 0], [1, 0]], xaxisOptions);
 
     // change default ticks function to decreasing starting tick size
@@ -572,6 +619,10 @@ export default React.memo(function Graph(props) {
     // (Other changes are simply to account for fact that
     // don't have access to Mat and Type)
     xaxis.current.defaultTicks.generateEquidistantTicks = function (coordsZero, bounds) {
+
+      // First change from JSXgraph: increase minTickDistance for larger numbers
+      this.minTicksDistance = 2 * Math.max(2.5, Math.log10(Math.abs(bounds.lower)), Math.log10(Math.abs(bounds.upper)));
+
       var tickPosition, eps2 = 1E-6, deltas,
         // Distance between two major ticks in user coordinates
         ticksDelta = (this.equidistant ? this.ticksFunction(1) : this.ticksDelta), ev_it = true, ev_mt = 4;
@@ -585,7 +636,7 @@ export default React.memo(function Graph(props) {
       if (ev_it && this.minTicksDistance > 1E-6) {
         ticksDelta = this.adjustTickDistance(ticksDelta, coordsZero, deltas);
 
-        // Only change from JSXgraph function:
+        // Second change from JSXgraph function:
         // check if ticksDelta is 2*10^n for some integer n
         let mag = 10 ** Math.floor(Math.log10(ticksDelta)) * this.visProp.scale;
         if (Math.abs(ticksDelta / mag - 2) < 1E-14) {
@@ -604,9 +655,9 @@ export default React.memo(function Graph(props) {
 
       // Position ticks from zero to the positive side while not reaching the upper boundary
       tickPosition = 0;
-      // if (!Type.evaluate(this.visProp.drawzero)) {
-      tickPosition = ticksDelta;
-      // }
+      if (!this.visProp.drawzero) {
+        tickPosition = ticksDelta;
+      }
       while (tickPosition <= bounds.upper + eps2) {
         // Only draw ticks when we are within bounds, ignore case where tickPosition < lower < upper
         if (tickPosition >= bounds.lower - eps2) {
@@ -635,6 +686,8 @@ export default React.memo(function Graph(props) {
         }
       }
     };
+
+    theBoard.unsuspendUpdate();
   }
 
   function addNavigationButtons() {

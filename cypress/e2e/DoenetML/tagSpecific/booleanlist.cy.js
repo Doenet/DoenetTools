@@ -52,15 +52,15 @@ describe('BooleanList Tag Tests', function () {
           </booleanlist>
         </booleanlist></p>
     
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean1'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean2'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean3'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean4'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean5'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean6'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean7'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean8'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean9'})" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean1" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean2" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean3" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean4" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean5" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean6" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean7" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean8" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean9" />
     
         ` }, "*");
     });
@@ -161,15 +161,15 @@ describe('BooleanList Tag Tests', function () {
           </booleanlist>
         </booleanlist></p>
     
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean1'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean2'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean3'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean4'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean5'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean6'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean7'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean8'})" />
-        <booleaninput bindValueTo="$(_booleanlist1{prop='boolean9'})" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean1" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean2" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean3" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean4" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean5" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean6" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean7" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean8" />
+        <booleaninput bindValueTo="$_booleanlist1.boolean9" />
     
         ` }, "*");
     });

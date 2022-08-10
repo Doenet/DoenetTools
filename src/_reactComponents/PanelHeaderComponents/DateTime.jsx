@@ -58,13 +58,15 @@ export default function DateTime(props) {
     return (
       <div>
         {props.label ? (
-          <Label vertical={props.vertical}>{props.label}</Label>
+          <Label id="checkbox-label" vertical={props.vertical}>{props.label}</Label>
         ) : null}
         <input
           {...propsRI}
           style={{ border: borderColor, cursor: cursorStyle, width: width, color:'var(--canvastext)', backgroundColor: 'var(--canvas)',...props.style
            }}
           ref={inputRef}
+          aria-labelledby="checkbox-label"
+          aria-haspopup="true"
           onChange={(e) => {
             setCursorStart(e.target.selectionStart);
             setCursorEnd(e.target.selectionEnd);

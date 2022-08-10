@@ -1,6 +1,7 @@
 import { roundForDisplay } from '../utils/math';
 import BaseComponent from './abstract/BaseComponent';
 import me from 'math-expressions';
+import { returnLabelStateVariableDefinitions } from '../utils/label';
 
 export default class Slider extends BaseComponent {
   constructor(args) {
@@ -14,6 +15,7 @@ export default class Slider extends BaseComponent {
   static componentType = "slider";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -98,9 +100,6 @@ export default class Slider extends BaseComponent {
 
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     };
 
     attributes.displayDecimals = {
@@ -146,65 +145,66 @@ export default class Slider extends BaseComponent {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
-    stateVariableDefinitions.label = {
-      forRenderer: true,
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
+
+    stateVariableDefinitions.displayDigits = {
       public: true,
       shadowingInstructions: {
-        createComponentOfType: "label",
+        createComponentOfType: "integer",
       },
       hasEssential: true,
-      defaultValue: "",
-      additionalStateVariablesDefined: [{
-        variableName: "labelHasLatex",
-        forRenderer: true,
-      }],
+      defaultValue: 10,
       returnDependencies: () => ({
-        labelAttr: {
+        displayDigitsAttr: {
           dependencyType: "attributeComponent",
-          attributeName: "label",
-          variableNames: ["value", "hasLatex"]
+          attributeName: "displayDigits",
+          variableNames: ["value"]
         },
-        labelChild: {
-          dependencyType: "child",
-          childGroups: ["labels"],
-          variableNames: ["value", "hasLatex"]
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
         },
-        labelIsName: {
-          dependencyType: "stateVariable",
-          variableName: "labelIsName"
-        }
       }),
-      definition({ dependencyValues, componentName }) {
-        if (dependencyValues.labelChild.length > 0) {
-          return {
-            setValue: {
-              label: dependencyValues.labelChild[0].stateValues.value,
-              labelHasLatex: dependencyValues.labelChild[0].stateValues.hasLatex
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
             }
           }
-        } else if (dependencyValues.labelAttr) {
-          return {
-            setValue: {
-              label: dependencyValues.labelAttr.stateValues.value,
-              labelHasLatex: dependencyValues.labelAttr.stateValues.hasLatex
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
             }
-          }
-        } else if (dependencyValues.labelIsName) {
-          let lastSlash = componentName.lastIndexOf('/');
-          // &#95; is HTML entity for underscore, so JSXgraph won't replace it with subscript
-          let label = componentName.substring(lastSlash + 1).replaceAll("_", "&#95;");
-          return {
-            setValue: {
-              label,
-              labelHasLatex: false
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
             }
-          }
-        } else {
-          return {
-            useEssentialOrDefaultValue: { label: true },
-            setValue: { labelHasLatex: false }
           }
         }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
       }
     }
 

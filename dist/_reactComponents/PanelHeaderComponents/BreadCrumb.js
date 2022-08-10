@@ -113,7 +113,8 @@ function Crumb({setRef, i, label = null, onClick, icon = null}) {
     label = "_";
   }
   return /* @__PURE__ */ React.createElement(BreadcrumbItem, {
-    ref: crumbRef
+    ref: crumbRef,
+    "data-test": `Crumb ${i}`
   }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
     onClick
   }, iconJSX, /* @__PURE__ */ React.createElement(CrumbTextDiv, null, label)));
@@ -223,6 +224,7 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
       ref: elipseItemRef,
       key: `breadcrumbitem1`
     }, /* @__PURE__ */ React.createElement(BreadcrumbSpan, {
+      "data-test": "Crumb Menu",
       onClick: () => {
         setMenuVisible((was) => !was);
       }
@@ -240,6 +242,7 @@ export function BreadCrumb({crumbs = [], offset = 0}) {
       }
       crumMenuItemsJSX.push(/* @__PURE__ */ React.createElement(CrumbMenuItem, {
         key: `breadcrumbitem${i}`,
+        "data-test": `Crumb Menu Item ${i}`,
         radius: "0px",
         onClick
       }, icon, label));

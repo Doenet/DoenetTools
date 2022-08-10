@@ -1016,7 +1016,7 @@ export const useCourse = (courseId) => {
                     selectedItemObj.type == 'page'){
             containingDoenetId = selectedItemObj.containingDoenetId;
           } 
-         
+
           //Create a page.  Get the new page object.
           let { data } = await axios.get('/api/createPageOrOrder.php', {
               params: {
@@ -1197,59 +1197,49 @@ export const useCourse = (courseId) => {
 
             }else if (containingItemObj.type == 'activity'){
               //Add page or order to activity with selected page
-              // let insertedAfterDoenetId = selectedItemObj.doenetId;
 
-              // let insertedAfterDoenetId = parentItemObj.order[parentItemObj.order.length -1];
-              // console.log("insertedAfterDoenetId",insertedAfterDoenetId);
-              // console.log("itemType",itemType);
-              // console.log("selectedItemObj",selectedItemObj.parentDoenetId);
               let insertedAfterDoenetId;
               let newJSON;
               if (itemType == 'page'){
-                ({order:newJSON,previousDoenetId:insertedAfterDoenetId} = 
-                  addPageToActivity({
-                    orderObj:containingItemObj.order,
-                    needleOrderDoenetId:selectedItemObj.parentDoenetId,
-                    itemToAdd:pageThatWasCreated?.doenetId}))
+                ({content:newJSON,previousDoenetId:insertedAfterDoenetId} = addPageToActivity({
+                  activityOrOrderObj:containingItemObj,
+                  needleOrderOrActivityId:selectedItemObj.parentDoenetId,
+                  itemToAdd:pageThatWasCreated?.doenetId})
+                )
 
               }else if (itemType == 'order'){
-                ({order:newJSON,previousDoenetId:insertedAfterDoenetId} = 
-                  addPageToActivity({
-                    orderObj:containingItemObj.order,
-                    needleOrderDoenetId:selectedItemObj.parentDoenetId,
-                    itemToAdd:orderObj}));
+
+                ({content:newJSON,previousDoenetId:insertedAfterDoenetId} = addPageToActivity({
+                  activityOrOrderObj:containingItemObj,
+                  needleOrderOrActivityId:selectedItemObj.parentDoenetId,
+                  itemToAdd:orderObj})
+                )
+
               }
 
-              // let newJSON = {...containingItemObj.order};
-              // newJSON = insertPageOrOrderIntoOrderUsingPage({
-              //   parentOrderObj:newJSON,
-              //   needlePageDoenetId:insertedAfterDoenetId,
-              //   itemType,
-              //   newPageDonenetId:pageThatWasCreated?.doenetId,
-              //   orderObj
-              // })
+
 
               let { data } = await axios.post('/api/updateActivityStructure.php', {
                     courseId,
                     doenetId:containingItemObj.doenetId,
                     newJSON,
                   });
-              // console.log("data",data)
               let newActivityObj = {...containingItemObj}
-              newActivityObj.order = newJSON;
+              newActivityObj.content = newJSON;
               orderObj['isOpen'] = false;
               orderObj['isSelected'] = false;
               orderObj['containingDoenetId'] = selectedItemObj?.containingDoenetId;
               orderObj['parentDoenetId'] = selectedItemObj?.parentDoenetId;
    
-              set(itemByDoenetId(newActivityObj.doenetId),newActivityObj)
-              let newItemDoenetId = orderDoenetIdThatWasCreated;
+              let newItemDoenetId;
               if (itemType == 'page'){
                 set(itemByDoenetId(pageThatWasCreated.doenetId),pageThatWasCreated)
                 newItemDoenetId = pageThatWasCreated.doenetId;
               }else if (itemType == 'order'){
                 set(itemByDoenetId(orderObj.doenetId),orderObj)
+                newItemDoenetId = orderDoenetIdThatWasCreated;
               }
+              set(itemByDoenetId(newActivityObj.doenetId),newActivityObj)
               set(authorCourseItemOrderByCourseId(courseId), (prev)=>{
                 let next = [...prev];
                 next.splice(next.indexOf(insertedAfterDoenetId)+1,0,newItemDoenetId);
@@ -1263,7 +1253,7 @@ export const useCourse = (courseId) => {
           
           
         }
-        successCallback(); //TODO: only call when is a success
+        // successCallback(); //TODO: only call when is a success
         return newDoenetId;
       
       },
@@ -2322,6 +2312,7 @@ export const useCourse = (courseId) => {
                 //if source is destination delete page from destination
                 if (destinationContainingObj.doenetId == containingObj.doenetId){
                   destinationJSON = deletePageFromActivity({content:destinationJSON,needleDoenetId:cutObj.doenetId})
+                  destinationContainingObj.content = destinationJSON;
                 }
               }else if (containingObj.type == 'bank'){
                 //Remove from Collection

@@ -1,4 +1,5 @@
 
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import {  useRecoilCallback, useRecoilValue } from 'recoil';
 import {  itemByDoenetId, selectedCourseItems, studentCourseItemOrderByCourseIdBySection, 
@@ -60,13 +61,14 @@ export default function SelectedDataSources() {
           width="menu"
           value="View on Shiny"
           disabled={assignedSelectedDoenetIds.length == 0}
-          onClick={() => {
+          onClick={async () => {
             if (assignedSelectedDoenetIds.length == 0){
               addToast(`No activities found`, toastType.INFO);
             }else{
             let searchParamsText = assignedSelectedDoenetIds.join("&data=");
-            window.open(`https://doenet.shinyapps.io/analyzer/?data=${searchParamsText}`, '_blank');
-
+            const resp = await axios.get(`/api/createSecretCode.php?courseId=${courseId}`)
+            const { secretCode } = resp.data
+            window.open(`https://doenet.shinyapps.io/analyzer/?data=${searchParamsText}&code=${secretCode}`, '_blank');
             }
           }}
         />

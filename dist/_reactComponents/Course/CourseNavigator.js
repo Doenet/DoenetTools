@@ -562,7 +562,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
   }, [doenetId]);
   if (hasToggle) {
     openCloseIndicator = isOpen ? /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderToggleCloseIcon",
+      "data-test": "folderToggleCloseIcon",
       onClick: () => {
         if (hasToggle) {
           toggleOpenClosed();
@@ -571,7 +571,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faChevronDown
     })) : /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderToggleOpenIcon",
+      "data-test": "folderToggleOpenIcon",
       onClick: () => {
         if (hasToggle) {
           toggleOpenClosed();
@@ -713,9 +713,8 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
   let activityJSX = /* @__PURE__ */ React.createElement("div", {
     key: `Row${doenetId}`,
     role: "button",
-    "data-cy": "courseItem",
     tabIndex: 0,
-    className: "noselect nooutline",
+    className: "navigationRow noselect nooutline",
     style: {
       cursor: "pointer",
       padding: "8px",
@@ -739,6 +738,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
       alignContent: "center"
     }
   }, /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn1",
     style: {
       marginLeft: `${indentLevel * indentPx}px`
     }
@@ -769,19 +769,23 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     y: "16"
   }, numbered)) : null, openCloseIndicator, /* @__PURE__ */ React.createElement("span", {
     style: {marginLeft: "8px"},
-    "data-cy": "rowIcon"
+    "data-test": "rowIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon
   })), /* @__PURE__ */ React.createElement("span", {
     style: {marginLeft: "4px"},
-    "data-cy": "rowLabel"
+    "data-test": "rowLabel"
   }, label, " "))), numberOfVisibleColumns > 1 ? /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn2",
     style: {textAlign: "center"}
   }, columnsJSX[0]) : null, numberOfVisibleColumns > 2 ? /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn3",
     style: {textAlign: "center"}
   }, columnsJSX[1]) : null, numberOfVisibleColumns > 3 ? /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn4",
     style: {textAlign: "center"}
   }, columnsJSX[2]) : null, numberOfVisibleColumns > 4 ? /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn5",
     style: {textAlign: "center"}
   }, columnsJSX[3]) : null));
   return /* @__PURE__ */ React.createElement(React.Fragment, null, activityJSX);

@@ -419,12 +419,6 @@ export default function attempt() {
           propPreview: '<CollapseSection disabled />',
           propCode: { disabled },
           description: 'Makes collapse section not able to be used',
-        },
-        {
-          name: 'Aria Label',
-            propPreview: '<CollapseSection ariaLabel="Collapse Section"/>',
-            propCode: { ariaLabel: 'Collapse Section' },
-            description: 'Adds aria label to component'
         }
       ],
     },
@@ -834,12 +828,6 @@ export default function attempt() {
           propPreview: '<ProgressBar label="What: " vertical/>',
           propCode: { label: 'What: ', vertical, progress: 0.4 },
           description: 'Adds label to component on top',
-        },
-        {
-          name: 'Aria Label',
-            propPreview: '<ProgressBar ariaLabel="Progress Bar"/>',
-            propCode: { ariaLabel: 'Progress Bar', progress: 0.4 },
-            description: 'Adds aria label to component'
         }
       ],
     },
@@ -887,12 +875,6 @@ export default function attempt() {
           propPreview: '<RelatedItems label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to component on top',
-        },
-        {
-          name: 'Aria Label',
-            propPreview: '<RelatedItems ariaLabel="Related Items"/>',
-            propCode: { ariaLabel: 'Related Items' },
-            description: 'Adds aria label to component'
         },
         {
           name: 'onChange',
@@ -972,12 +954,6 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
-          name: 'Aria Label',
-            propPreview: '<SearchBar ariaLabel="Text"/>',
-            propCode: {ariaLabel: 'Text'},
-            description: 'Adds aria label to component'
-        },
-        {
           name: 'onChange',
           propPreview: '<SearchBar onChange={(data) => console.log(data)} />',
           propCode: {onChange: (data) => console.log(data)},
@@ -1047,12 +1023,6 @@ export default function attempt() {
           propPreview: '<TextArea label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to component on top',
-        },
-        {
-          name: 'Aria Label',
-          propPreview: '<TextArea ariaLabel="Text"/>',
-          propCode: { ariaLabel: 'Text' },
-          description: 'Adds aria label to component',
         },
         {
           name: 'Alert',
@@ -1126,12 +1096,6 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
-          name: 'Aria Label',
-          propPreview: '<Textfield ariaLabel="Text"/>',
-          propCode: { ariaLabel: 'Text' },
-          description: 'Adds aria label to component',
-        },
-        {
           name: 'Alert',
           propPreview: '<Textfield alert/>',
           propCode: { alert },
@@ -1198,10 +1162,6 @@ export default function attempt() {
             propPreview: '<Form label="What: " vertical/>',
             propCode: {label: 'What: ', vertical},
             description: 'Adds label to component on top'},
-            {name: 'Aria Label',
-            propPreview: '<Form ariaLabel="Text"/>',
-            propCode: {ariaLabel: 'Text'},
-            description: 'Adds aria label to component'},
         {name: 'Alert',
         propPreview: '<Form alert/>',
         propCode: {alert},
@@ -1257,13 +1217,6 @@ export default function attempt() {
         propPreview: '<ToggleButton isSelected=true/>',
         propCode: {isSelected: true},
         description: 'Sets state of toggle button'},
-        {
-          name: 'Switch Value',
-          propPreview: '<ToggleButton switch_value="frog"/>',
-          propCode: { switch_value: 'frog' },
-          description:
-            'Sets different text value for when the button is selected',
-        },
         {
           name: 'Label',
           propPreview: '<ToggleButton label="What: "/>',
@@ -1489,6 +1442,39 @@ export default function attempt() {
           .{' '}
         </p>
         <hr />
+
+        <h2>Comments on Accessibility</h2>
+        <p>
+          All clickable elements need to have a focus indicator. Our standard is a 2px border that matches the element's current border with a 2px offset. See styling
+          <a
+            href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.u2sku2msba84"
+            target="_blank"
+          >
+            {' '}
+            here{' '}
+          </a>{' '}
+        </p>
+        <p>
+          All clickable elements also need an aria-label. Some elements, like buttons, do this for you, so adding an additional aria-label is considered bad practice. The naming techniques and accessible name guidance sections will be the most helpful. Read more
+          <a
+            href="https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/"
+            target="_blank"
+          >
+            {' '}
+            here{' '}
+          </a>
+        </p>
+        <p>
+          All components must follow standard keyboard and aria practices for that specific element. Find the element you are working on here and add the required keyboard interactions and aria information that it lists. Here is the 
+          <a
+            href="https://www.w3.org/WAI/ARIA/apg/patterns/"
+            target="_blank"
+          >
+            {' '}
+            link{' '}
+          </a>
+        </p>
+      <hr/>
 
         <h2>States to Consider (* denotes required)</h2>
         <p>

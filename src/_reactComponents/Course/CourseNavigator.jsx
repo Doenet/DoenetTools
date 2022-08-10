@@ -25,6 +25,7 @@ import {
   authorCourseItemOrderByCourseIdBySection,
   studentCourseItemOrderByCourseIdBySection,
 } from '../../_reactComponents/Course/CourseActions';
+import styled from 'styled-components';
 
 /**
  * Internal dependencies
@@ -34,6 +35,15 @@ import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { effectivePermissionsByCourseId } from '../PanelHeaderComponents/RoleDropdown';
+
+const ToggleCloseIconStyling = styled.button`
+  border: none;
+  border-radius: 35px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
+`;
 
 export default function CourseNavigator(props) {
   console.log('=== CourseNavigator');
@@ -990,6 +1000,48 @@ function Row({
     bgcolor = 'var(--mainGray)'; //grey
   }
 
+  if (hasToggle){
+    openCloseIndicator = isOpen ? (
+        <ToggleCloseIconStyling 
+          data-cy="folderToggleCloseIcon" 
+          aria-expanded="true"
+          style={{backgroundColor: bgcolor}}
+          onClick={ ()=>{
+            if (hasToggle){
+            toggleOpenClosed();
+          }}} 
+          onKeyDown={(e)=>{
+            if (e.key === "enter") {
+              if (hasToggle){
+                toggleOpenClosed();
+              }
+            }
+          }} 
+        >
+          <FontAwesomeIcon icon={faChevronDown} />
+        </ToggleCloseIconStyling>
+      ) : (
+        <ToggleCloseIconStyling 
+          data-cy="folderToggleOpenIcon" 
+          aria-expanded="false"
+          style={{backgroundColor: bgcolor}}
+          onClick={ ()=>{
+            if (hasToggle){
+            toggleOpenClosed();
+          }}}
+          onKeyDown={(e)=>{
+            if (e.key === "enter") {
+              if (hasToggle){
+                toggleOpenClosed();
+              }
+            }
+          }}  
+        >
+          <FontAwesomeIcon icon={faChevronRight} />
+        </ToggleCloseIconStyling>
+      );
+  }
+
   //Used to open editor or assignment
   let handleDoubleClick = useRecoilCallback(
     () => async (e) => {
@@ -1021,6 +1073,19 @@ function Row({
     }}
     onClick={(e)=>{
       handleSingleSelectionClick(e);
+    }}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter') {
+        if (bgcolor === 'var(--canvas)') {
+          handleSingleSelectionClick(e);
+        } else {
+          if (e.key === 'Enter' && e.metaKey) {
+            handleSingleSelectionClick(e);
+          } else {
+            handleDoubleClick(e);
+          }
+        }
+      }
     }}
     onDoubleClick={(e)=>{
       handleDoubleClick(e);

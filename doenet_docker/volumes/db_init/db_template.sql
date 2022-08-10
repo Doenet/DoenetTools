@@ -47,7 +47,7 @@ CREATE TABLE `activity_state` (
   UNIQUE KEY `userId-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`),
   KEY `saveId` (`saveId`),
   KEY `cid` (`cid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -56,6 +56,7 @@ CREATE TABLE `activity_state` (
 
 LOCK TABLES `activity_state` WRITE;
 /*!40000 ALTER TABLE `activity_state` DISABLE KEYS */;
+INSERT INTO `activity_state` VALUES (1,'cyuserId','_Ga07DeeWjhH6Y4UpWlakE',1,'StbBhgrC0UT1kf31HTUzI','bafkreieszxhhjdhin3wbdvaudhiumb2ygqbnd6cfwyz4hqjdcbgrw6cebq','Salix caprea',379,'{\"orderWithCids\":[{\"type\":\"page\",\"cid\":\"bafkreiemblagflvpgbvw2zgurtswwcltj6mkolerhebcymztdmrsoabz6a\"}],\"variantsByPage\":[1],\"itemWeights\":[1],\"numberOfVariants\":1000}','{\"currentPage\":1}');
 /*!40000 ALTER TABLE `activity_state` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -89,7 +90,7 @@ CREATE TABLE `assignment` (
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,6 +99,7 @@ CREATE TABLE `assignment` (
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
+INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,0);
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -276,6 +278,7 @@ CREATE TABLE `course` (
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course` DISABLE KEYS */;
+INSERT INTO `course` VALUES (1,'_KwRMyq2rLo3B0dhVXgh6R','Untitled Course',0,0,'picture1.jpg','none');
 /*!40000 ALTER TABLE `course` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -313,6 +316,7 @@ CREATE TABLE `course_content` (
 
 LOCK TABLES `course_content` WRITE;
 /*!40000 ALTER TABLE `course_content` DISABLE KEYS */;
+INSERT INTO `course_content` VALUES (1,'activity','_KwRMyq2rLo3B0dhVXgh6R','_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R','Untitled Activity','2022-08-04 03:32:22',0,1,1,0,0,'n','{\"type\": \"activity\", \"files\": [], \"content\": [\"_CAIJ5GQDmIuniRQmWNwd5\"], \"version\": \"0.1.0\", \"draftCid\": null, \"assignedCid\": \"bafkreieszxhhjdhin3wbdvaudhiumb2ygqbnd6cfwyz4hqjdcbgrw6cebq\", \"itemWeights\": [1], \"isSinglePage\": true}');
 /*!40000 ALTER TABLE `course_content` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -419,6 +423,7 @@ CREATE TABLE `course_user` (
 
 LOCK TABLES `course_user` WRITE;
 /*!40000 ALTER TABLE `course_user` DISABLE KEYS */;
+INSERT INTO `course_user` VALUES (1,'cyuserId','_KwRMyq2rLo3B0dhVXgh6R',1,1,1,1,1,1,1,1,1,1,1,1,1,NULL,'[\"Owner\"]');
 /*!40000 ALTER TABLE `course_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -606,7 +611,34 @@ CREATE TABLE `event` (
 
 LOCK TABLES `event` WRITE;
 /*!40000 ALTER TABLE `event` DISABLE KEYS */;
+INSERT INTO `event` VALUES (530,'cyuserId','experienced','_Ga07DeeWjhH6Y4UpWlakE','bafkreieszxhhjdhin3wbdvaudhiumb2ygqbnd6cfwyz4hqjdcbgrw6cebq','bafkreiemblagflvpgbvw2zgurtswwcltj6mkolerhebcymztdmrsoabz6a',1,1,379,1,'{\"componentName\":\"/_document1\",\"componentType\":\"document\"}','{}','{}','2022-08-04 03:32:49','0.1.1'),(531,'cyuserId','submitted','_Ga07DeeWjhH6Y4UpWlakE','bafkreieszxhhjdhin3wbdvaudhiumb2ygqbnd6cfwyz4hqjdcbgrw6cebq','bafkreiemblagflvpgbvw2zgurtswwcltj6mkolerhebcymztdmrsoabz6a',1,1,379,1,'{\"componentName\":\"/_answer1\",\"componentType\":\"answer\"}','{\"item\":1,\"itemCreditAchieved\":1,\"pageCreditAchieved\":1}','{\"response\":[42],\"responseText\":[\"42\"],\"creditAchieved\":1}','2022-08-04 03:32:52','0.1.1'),(532,'cyuserId','answered','_Ga07DeeWjhH6Y4UpWlakE','bafkreieszxhhjdhin3wbdvaudhiumb2ygqbnd6cfwyz4hqjdcbgrw6cebq','bafkreiemblagflvpgbvw2zgurtswwcltj6mkolerhebcymztdmrsoabz6a',1,1,379,1,'{\"componentName\":\"/__mathinput_KXh6glTyP5\",\"componentType\":\"mathInput\"}','{\"answerAncestor\":\"/_answer1\"}','{\"response\":42,\"responseText\":\"42\"}','2022-08-04 03:32:52','0.1.1');
 /*!40000 ALTER TABLE `event` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `eventSecretCodes`
+--
+
+DROP TABLE IF EXISTS `eventSecretCodes`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `eventSecretCodes` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `userId` char(21) DEFAULT NULL,
+  `secretCode` char(21) DEFAULT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `eventSecretCodes`
+--
+
+LOCK TABLES `eventSecretCodes` WRITE;
+/*!40000 ALTER TABLE `eventSecretCodes` DISABLE KEYS */;
+INSERT INTO `eventSecretCodes` VALUES (2,'cyuserId','ScZNrWZsgDUHwEnc5Qpnk','2022-08-04 14:37:14'),(3,'cyuserId','2vct8YgUcCNeCAw89FEn9','2022-08-04 14:39:14'),(4,'cyuserId','jbTo0AMEZEx0F819nXDxj','2022-08-04 14:39:19'),(5,'cyuserId','wAo9CJ0RWBusDDQCJKEw7','2022-08-04 14:50:12');
+/*!40000 ALTER TABLE `eventSecretCodes` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -714,7 +746,7 @@ CREATE TABLE `page_state` (
   UNIQUE KEY `userId-doenetId-pageNumber-attemptNumber` (`userId`,`doenetId`,`pageNumber`,`attemptNumber`),
   KEY `saveId` (`saveId`),
   KEY `cid` (`cid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -723,6 +755,7 @@ CREATE TABLE `page_state` (
 
 LOCK TABLES `page_state` WRITE;
 /*!40000 ALTER TABLE `page_state` DISABLE KEYS */;
+INSERT INTO `page_state` VALUES (1,'cyuserId','Salix caprea','_Ga07DeeWjhH6Y4UpWlakE','bafkreiemblagflvpgbvw2zgurtswwcltj6mkolerhebcymztdmrsoabz6a','1',1,'anojAO9sUJ7oWVu9tcBiY','{\"generatedVariantString\":\"{\\\"index\\\":1,\\\"name\\\":\\\"a\\\",\\\"meta\\\":{\\\"createdBy\\\":\\\"/_document1\\\"},\\\"subvariants\\\":[{\\\"seed\\\":\\\"526047095656395\\\",\\\"meta\\\":{\\\"createdBy\\\":\\\"/_problem1\\\"},\\\"subvariants\\\":[]}]}\",\"allPossibleVariants\":[\"a\"],\"variantIndicesToIgnore\":[],\"rendererTypesInDocument\":[\"section\",\"answer\",\"mathInput\"],\"documentToRender\":{\"componentName\":\"/_document1\",\"effectiveName\":\"/_document1\",\"componentType\":\"document\",\"rendererType\":\"section\",\"actions\":{\"submitAllAnswers\":{\"actionName\":\"submitAllAnswers\",\"componentName\":\"/_document1\"},\"recordVisibilityChange\":{\"actionName\":\"recordVisibilityChange\",\"componentName\":\"/_document1\"}}}}','{\"/__mathinput_KXh6glTyP5\":{\"immediateValue\":42,\"rawRendererValue\":\"42\",\"lastValueForDisplay\":42,\"dontUpdateRawValueInDefinition\":false,\"value\":42},\"/__math_d9bmzOvKly\":{\"expressionWithCodes\":42},\"/_answer1\":{\"justSubmitted\":true,\"hasBeenCorrect\":true,\"creditAchieved\":1,\"responseHasBeenSubmitted\":true,\"nSubmittedResponses\":1,\"submittedResponses\":{\"0\":42,\"mergeObject\":true},\"submittedResponsesComponentType\":[\"math\"],\"creditAchievedDependenciesAtSubmit\":\"qmmMhdXJTsIHF6t66L3Xf4WYknc=\",\"nSubmissions\":1},\"/__award_XTZPmlFGuS\":{\"awarded\":true,\"creditAchieved\":1,\"fractionSatisfied\":1}}','{\"/__mathinput_KXh6glTyP5\":{\"stateValues\":{\"hidden\":false,\"disabled\":false,\"fixed\":false,\"includeCheckWork\":true,\"creditAchieved\":1,\"valueHasBeenValidated\":true,\"showCorrectness\":true,\"numberOfAttemptsLeft\":{\"objectType\":\"special-numeric\",\"stringValue\":\"Infinity\"},\"valueForDisplay\":42,\"rawRendererValue\":\"42\"},\"childrenInstructions\":[]},\"/_answer1\":{\"stateValues\":{\"submitLabel\":\"Check Work\",\"submitLabelNoCorrectness\":\"Submit Response\",\"hidden\":false,\"fixed\":false,\"disabledOriginal\":false,\"showCorrectness\":true,\"inputChildren\":[{\"componentType\":\"mathInput\",\"componentName\":\"/__mathinput_KXh6glTyP5\"}],\"inputChildrenWithValues\":[{\"componentType\":\"mathInput\",\"componentName\":\"/__mathinput_KXh6glTyP5\",\"stateValues\":{\"value\":42,\"immediateValue\":42}}],\"delegateCheckWork\":true,\"creditAchieved\":1,\"justSubmitted\":true,\"numberOfAttemptsLeft\":{\"objectType\":\"special-numeric\",\"stringValue\":\"Infinity\"},\"disabled\":false},\"childrenInstructions\":[{\"componentName\":\"/__mathinput_KXh6glTyP5\",\"effectiveName\":\"/__mathinput_KXh6glTyP5\",\"componentType\":\"mathInput\",\"rendererType\":\"mathInput\",\"actions\":{\"updateRawValue\":{\"actionName\":\"updateRawValue\",\"componentName\":\"/__mathinput_KXh6glTyP5\"},\"updateValue\":{\"actionName\":\"updateValue\",\"componentName\":\"/__mathinput_KXh6glTyP5\"},\"submitAnswer\":{\"actionName\":\"submitAnswer\",\"componentName\":\"/_answer1\"}}}]},\"/_problem1\":{\"stateValues\":{\"submitLabel\":\"Check Work\",\"submitLabelNoCorrectness\":\"Submit Response\",\"boxed\":false,\"hidden\":false,\"disabled\":false,\"fixed\":false,\"enumeration\":[1],\"titleChildName\":null,\"title\":\"Problem 1\",\"containerTag\":\"section\",\"level\":3,\"justSubmitted\":true,\"showCorrectness\":true,\"creditAchieved\":1,\"collapsible\":false,\"open\":true,\"createSubmitAllButton\":false,\"suppressAnswerSubmitButtons\":false},\"childrenInstructions\":[{\"componentName\":\"/_answer1\",\"effectiveName\":\"/_answer1\",\"componentType\":\"answer\",\"rendererType\":\"answer\",\"actions\":{\"submitAnswer\":{\"actionName\":\"submitAnswer\",\"componentName\":\"/_answer1\"}}}]},\"/_document1\":{\"stateValues\":{\"submitLabel\":\"Check Work\",\"submitLabelNoCorrectness\":\"Submit Response\",\"hidden\":false,\"disabled\":false,\"fixed\":false,\"titleChildName\":null,\"title\":\"\",\"level\":0,\"justSubmitted\":true,\"showCorrectness\":true,\"creditAchieved\":1,\"createSubmitAllButton\":false,\"suppressAnswerSubmitButtons\":false},\"childrenInstructions\":[{\"componentName\":\"/_problem1\",\"effectiveName\":\"/_problem1\",\"componentType\":\"problem\",\"rendererType\":\"section\",\"actions\":{\"submitAllAnswers\":{\"actionName\":\"submitAllAnswers\",\"componentName\":\"/_problem1\"},\"revealSection\":{\"actionName\":\"revealSection\",\"componentName\":\"/_problem1\"},\"closeSection\":{\"actionName\":\"closeSection\",\"componentName\":\"/_problem1\"},\"recordVisibilityChange\":{\"actionName\":\"recordVisibilityChange\",\"componentName\":\"/_problem1\"}}}]}}',NULL);
 /*!40000 ALTER TABLE `page_state` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -751,6 +784,7 @@ CREATE TABLE `pages` (
 
 LOCK TABLES `pages` WRITE;
 /*!40000 ALTER TABLE `pages` DISABLE KEYS */;
+INSERT INTO `pages` VALUES ('_KwRMyq2rLo3B0dhVXgh6R','_Ga07DeeWjhH6Y4UpWlakE','_CAIJ5GQDmIuniRQmWNwd5','Untitled',0);
 /*!40000 ALTER TABLE `pages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -787,6 +821,33 @@ CREATE TABLE `support_files` (
 LOCK TABLES `support_files` WRITE;
 /*!40000 ALTER TABLE `support_files` DISABLE KEYS */;
 /*!40000 ALTER TABLE `support_files` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `temp_log`
+--
+
+DROP TABLE IF EXISTS `temp_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `temp_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `doenetIds` varchar(255) DEFAULT NULL,
+  `secretCodeRecieved` char(21) DEFAULT NULL,
+  `secretCodeMatches` int(1) DEFAULT '0',
+  `timestamp` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `temp_log`
+--
+
+LOCK TABLES `temp_log` WRITE;
+/*!40000 ALTER TABLE `temp_log` DISABLE KEYS */;
+INSERT INTO `temp_log` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','JaEPCQym36Uzx6vDNHVP7',1,'2022-08-04 03:34:12'),(2,'_Ga07DeeWjhH6Y4UpWlakE','ScZNrWZsgDUHwEnc5Qpnk',1,'2022-08-04 14:40:32'),(3,'_Ga07DeeWjhH6Y4UpWlakE','ScZNrWZsgDUHwEnc5Qp',0,'2022-08-04 14:41:05'),(4,'_Ga07DeeWjhH6Y4UpWlakE','ScZNrWZsgDUHwEnc5Qp',0,'2022-08-04 14:50:22'),(5,'_Ga07DeeWjhH6Y4UpWlakE','wAo9CJ0RWBusDDQCJKEw7',1,'2022-08-04 14:50:34');
+/*!40000 ALTER TABLE `temp_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -847,7 +908,7 @@ CREATE TABLE `user_assignment` (
   `isUnassigned` bit(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId-userId` (`doenetId`,`userId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -856,6 +917,7 @@ CREATE TABLE `user_assignment` (
 
 LOCK TABLES `user_assignment` WRITE;
 /*!40000 ALTER TABLE `user_assignment` DISABLE KEYS */;
+INSERT INTO `user_assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','cyuserId',NULL,NULL,NULL,NULL,NULL,NULL,1,NULL,_binary '\0');
 /*!40000 ALTER TABLE `user_assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -877,7 +939,7 @@ CREATE TABLE `user_assignment_attempt` (
   `finished` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `userid-doenetId-attemptNumber` (`userId`,`doenetId`,`attemptNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -886,6 +948,7 @@ CREATE TABLE `user_assignment_attempt` (
 
 LOCK TABLES `user_assignment_attempt` WRITE;
 /*!40000 ALTER TABLE `user_assignment_attempt` DISABLE KEYS */;
+INSERT INTO `user_assignment_attempt` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','cyuserId',1,1,NULL,'2022-08-04 03:32:48',NULL);
 /*!40000 ALTER TABLE `user_assignment_attempt` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -909,7 +972,7 @@ CREATE TABLE `user_assignment_attempt_item` (
   `viewedSolutionDate` datetime DEFAULT NULL COMMENT 'Datetime when they first viewed the solution',
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique_rows` (`userId`,`doenetId`,`attemptNumber`,`itemNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -918,6 +981,7 @@ CREATE TABLE `user_assignment_attempt_item` (
 
 LOCK TABLES `user_assignment_attempt_item` WRITE;
 /*!40000 ALTER TABLE `user_assignment_attempt_item` DISABLE KEYS */;
+INSERT INTO `user_assignment_attempt_item` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','cyuserId',1,1,1,NULL,1,0,NULL);
 /*!40000 ALTER TABLE `user_assignment_attempt_item` ENABLE KEYS */;
 UNLOCK TABLES;
 

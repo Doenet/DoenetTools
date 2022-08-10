@@ -11,6 +11,8 @@ import { cidFromText } from '../Core/utils/cid';
 import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
 import axios from 'axios';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
+import { useLocation } from "react-router";
+import cssesc from 'cssesc';
 
 const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
@@ -26,6 +28,7 @@ const rendererUpdatesToIgnore = atomFamily({
 
 
 export default function PageViewer(props) {
+
   const toast = useToast();
   const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({
     coreId, componentName, stateValues, childrenInstructions, sourceOfUpdate, baseStateVariable, actionId
@@ -106,7 +109,6 @@ export default function PageViewer(props) {
   const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
 
   const [stage, setStage] = useState('initial');
-
   const [pageContentChanged, setPageContentChanged] = useState(false);
 
   const [documentRenderer, setDocumentRenderer] = useState(null);
@@ -131,6 +133,8 @@ export default function PageViewer(props) {
 
   const resolveActionPromises = useRef({});
 
+  let { hash } = useLocation();
+
   useEffect(() => {
 
     if (coreWorker.current) {
@@ -149,6 +153,7 @@ export default function PageViewer(props) {
           cancelAnimationFrame(e.data.args);
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
+          preventMoreAnimations.current = false;
           setStage('coreCreated');
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
@@ -169,6 +174,8 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "returnAllStateVariables") {
           console.log(e.data.args)
           resolveAllStateVariables.current(e.data.args);
+        } else if (e.data.messageType === "componentRangePieces") {
+          window["componentRangePieces" + pageNumber] = e.data.args.componentRangePieces;
         } else if (e.data.messageType === "inErrorState") {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true)
@@ -177,7 +184,7 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
         } else if (e.data.messageType === "terminated") {
-          coreWorker.current.terminate();
+          terminateCoreAndAnimations();
         }
       }
     }
@@ -244,6 +251,35 @@ export default function PageViewer(props) {
     })
   })
 
+  useEffect(() => {
+    if (hash && coreCreated.current && coreWorker.current) {
+      coreWorker.current.postMessage({
+        messageType: "navigatingToHash",
+        args: {
+          hash: hash.slice(1)
+        }
+      })
+    }
+  }, [hash, coreCreated.current, coreWorker.current])
+
+
+  useEffect(() => {
+    if (documentRenderer) {
+      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+    }
+  }, [hash, documentRenderer])
+
+
+  function terminateCoreAndAnimations() {
+    preventMoreAnimations.current = true;
+    coreWorker.current.terminate();
+    coreWorker.current = null;
+    for (let id in animationInfo.current) {
+      cancelAnimationFrame(id);
+    }
+    animationInfo.current = {};
+  }
+
   async function callAction({ action, args, baseVariableValue, componentName, rendererType }) {
 
     if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
@@ -266,7 +302,9 @@ export default function PageViewer(props) {
         args,
       }
 
-      coreWorker.current.postMessage({
+
+      // Note: it is possible that core has been terminated
+      coreWorker.current?.postMessage({
         messageType: "requestAction",
         args: actionArgs
       });
@@ -411,8 +449,8 @@ export default function PageViewer(props) {
         cidFromText(doenetMLFromProps)
           .then(calcCid => {
             //Guard against the possiblity that parameters changed while waiting
-      
-            if (coreIdWhenCalled === coreId.current){
+
+            if (coreIdWhenCalled === coreId.current) {
               if (calcCid === cidFromProps) {
                 setDoenetML(doenetMLFromProps);
                 setCid(cidFromProps);
@@ -429,9 +467,9 @@ export default function PageViewer(props) {
         // if have doenetML and no cid, then calculate cid
         cidFromText(doenetMLFromProps)
           .then(cid => {
-      
+
             //Guard against the possiblity that parameters changed while waiting
-            if (coreIdWhenCalled === coreId.current){
+            if (coreIdWhenCalled === coreId.current) {
               setDoenetML(doenetMLFromProps);
               setCid(cid);
               setStage('continue');
@@ -444,8 +482,8 @@ export default function PageViewer(props) {
       retrieveTextFileForCid(cidFromProps, "doenet")
         .then(retrievedDoenetML => {
           //Guard against the possiblity that parameters changed while waiting
-    
-          if (coreIdWhenCalled === coreId.current){
+
+          if (coreIdWhenCalled === coreId.current) {
             setDoenetML(retrievedDoenetML);
             setCid(cidFromProps);
             setStage('continue');
@@ -453,8 +491,8 @@ export default function PageViewer(props) {
         })
         .catch(e => {
           //Guard against the possiblity that parameters changed while waiting
-    
-          if (coreIdWhenCalled === coreId.current){
+
+          if (coreIdWhenCalled === coreId.current) {
             if (props.setIsInErrorState) {
               props.setIsInErrorState(true)
             }
@@ -601,8 +639,8 @@ export default function PageViewer(props) {
     }
 
     //Guard against the possiblity that parameters changed while waiting
-    if (coreIdWhenCalled === coreId.current){
-        startCore();
+    if (coreIdWhenCalled === coreId.current) {
+      startCore();
     }
 
   }
@@ -676,11 +714,11 @@ export default function PageViewer(props) {
   function startCore() {
 
     //Kill the current core if it exists
-    if (coreWorker.current){
-      coreWorker.current.terminate();
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
     }
     // console.log(`send message to create core ${pageNumber}`)
-    
+
     coreWorker.current = new Worker(props.unbundledCore ? 'core/CoreWorker.js' : '/viewer/core.js', { type: 'module' });
 
     coreWorker.current.postMessage({
@@ -690,6 +728,7 @@ export default function PageViewer(props) {
         userId: props.userId,
         doenetML,
         doenetId: props.doenetId,
+        previousComponentTypeCounts: props.previousComponentTypeCounts,
         activityCid: props.activityCid,
         flags: props.flags,
         requestedVariantIndex,
@@ -793,11 +832,11 @@ export default function PageViewer(props) {
   async function cancelAnimationFrame(animationId) {
 
     let animationInfoObj = animationInfo.current[animationId];
-    let timeoutId = animationInfoObj.timeoutId;
+    let timeoutId = animationInfoObj?.timeoutId;
     if (timeoutId !== undefined) {
       window.clearTimeout(timeoutId);
     }
-    let animationFrameID = animationInfoObj.animationFrameID;
+    let animationFrameID = animationInfoObj?.animationFrameID;
     if (animationFrameID !== undefined) {
       window.cancelAnimationFrame(animationFrameID);
     }
@@ -864,6 +903,9 @@ export default function PageViewer(props) {
 
   // Next time through will recalculate, after state variables are set
   if (changedState) {
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
+    }
     setStage('recalcParams')
     coreId.current = nanoid();
     setPageContentChanged(true);
@@ -903,7 +945,7 @@ export default function PageViewer(props) {
     // we've moved off this page, but core is still being initialized
     // kill the core worker
 
-    coreWorker.current.terminate();
+    terminateCoreAndAnimations()
     coreWorker.current = null;
 
     setStage('readyToCreateCore');

@@ -186,13 +186,19 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "vertices") {
-          return "vertex" + propIndex;
+          if (propIndex.length === 1) {
+            return "vertex" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `vertexX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 6) === "vertex") {
           // could be vertex or vertexX
           let vertexNum = Number(varName.slice(6));
           if (Number.isInteger(vertexNum) && vertexNum > 0) {
-            return `vertexX${vertexNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `vertexX${vertexNum}_${propIndex[0]}`
           }
         }
         return null;

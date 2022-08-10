@@ -135,11 +135,11 @@ function Collection(props) {
     parentFolderSortOrderRef.current = parentFolderSortOrder;
   }, [parentFolderSortOrder]);
   let openCloseText = isOpen ? /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "folderToggleCloseIcon"
+    "data-test": "folderToggleCloseIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronDown
   })) : /* @__PURE__ */ React.createElement("span", {
-    "data-cy": "folderToggleOpenIcon"
+    "data-test": "folderToggleOpenIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faChevronRight
   }));
@@ -246,7 +246,7 @@ function Collection(props) {
     collection = /* @__PURE__ */ React.createElement("div", {
       role: "button",
       "data-doenet-driveinstanceid": props.driveInstanceId,
-      "data-cy": "driveItem",
+      "data-test": "driveItem",
       tabIndex: 0,
       className: "noselect nooutline",
       style: {
@@ -326,11 +326,11 @@ function Collection(props) {
     }, /* @__PURE__ */ React.createElement("p", {
       style: {display: "inline", margin: "0px"}
     }, openCloseButton, /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderIcon"
+      "data-test": "folderIcon"
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: props.isViewOnly ? faCode : faLayerGroup
     })), /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderLabel"
+      "data-test": "folderLabel"
     }, label)), props.numColumns >= 2 ? column2 : null, props.numColumns >= 3 ? column3 : null, props.numColumns >= 4 ? column4 : null, props.numColumns >= 5 ? column5 : null));
   }
   let draggableClassName = "";
@@ -427,7 +427,7 @@ function Collection(props) {
     }
   }
   return /* @__PURE__ */ React.createElement("div", {
-    "data-cy": "drive"
+    "data-test": "drive"
   }, collection, items);
 }
 export default Collection;

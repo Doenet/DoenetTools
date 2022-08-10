@@ -52,6 +52,10 @@ const BreadcrumbSpan = styled.span`
   background: var(--mainBlue);
   border-radius: 15px 0px 0px 15px;
   cursor: pointer;
+  &:focus {
+    outline: 2px solid var(--mainBlue);
+    outline-offset: 2px;
+  }
   &::after {
     content: ' ';
     width: 0;
@@ -79,6 +83,7 @@ const BreadcrumbSpan = styled.span`
     left: 100%;
     z-index: 1;
   }
+  
 `;
 
 const breadcrumbItemAtomFamily = atomFamily({

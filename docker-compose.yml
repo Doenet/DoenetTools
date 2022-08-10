@@ -21,8 +21,8 @@ services:
     volumes:
       - ./dist:/usr/local/apache2/htdocs/
       - ./src/Api:/usr/local/apache2/htdocs/api
-      - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
       - ./src/Media:/usr/local/apache2/htdocs/media
+      - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
       - ./doenet_docker/apache/apache.conf:/usr/local/apache2/conf/httpd.conf
     networks:
       - dev_net
@@ -35,8 +35,8 @@ services:
     image: lyanthropos/doenet_test:php-dev
     volumes:
       - ./src/Api:/usr/local/apache2/htdocs/api
-      - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
       - ./src/Media:/usr/local/apache2/htdocs/media
+      - ./cypress_php/api:/usr/local/apache2/htdocs/cyapi
       - vendor:/usr/local/apache2/htdocs/api/vendor
     networks:
       - dev_net
