@@ -21,8 +21,8 @@ const CheckboxLabelText = styled.span`
   line-height: 1.1;
 `;
 
-export const enrollmentTableDataAtom = atom({
-  key: 'enrollmentTableDataAtom',
+export const peopleTableDataAtom = atom({
+  key: 'peopleTableDataAtom',
   default: [],
 });
 export const processAtom = atom({
@@ -44,71 +44,22 @@ export const enrolllearnerAtom = atom({
 });
 
 export default function People() {
-  // console.log('>>>===Enrollment');
+  // console.log('>>>===People');
 
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const {
     recoilUnWithdraw,
     recoilWithdraw,
     recoilMergeData,
-    value: enrollmentTableData,
+    value: peopleTableData,
   } = useRecoilValue(peopleByCourseId(courseId));
   const { modifyUserRole } = useCourse(courseId);
   let [showWithdrawn, setShowWithdrawn] = useState(false);
-  // const enrollmentTableData = useRecoilValue(enrollmentTableDataAtom);
-  // const setEnrollmentTableDataAtom = useSetRecoilState(enrollmentTableDataAtom);
   const [numberOfVisibleColumns, setNumberOfVisibleColumns] = useState(1);
-
-  // const enrollmentTableData = useRecoilValue(enrollmentAtomFamily(courseId))
 
   if (!courseId) {
     return null;
   }
-
-  // let enrollmentRows = [];
-  // for (let [i, rowData] of enrollmentTableData.entries()) {
-  //   if (rowData.withdrew === '0' || showWithdrawn) {
-  //     let bgcolor = 'var(--canvas)';
-  //     let button = (
-  //       <Button
-  //         value="Withdraw"
-  //         onClick={(e) => withDrawLearners(e, rowData.email)}
-  //       />
-  //     );
-  //     if (rowData.withdrew === '1') {
-  //       bgcolor = 'var(--mainGray)';
-  //       button = (
-  //         <Button
-  //           value="Enroll"
-  //           onClick={(e) => enrollLearners(e, rowData.email)}
-  //         />
-  //       );
-  //     }
-
-  //     let enrolledDateString = '';
-  //     if (rowData.withdrew === '0') {
-  //       // Split timestamp into [ Y, M, D, h, m, s ]
-  //       let t = rowData.dateEnrolled.split(/[- :]/);
-  //       // Apply each element to the Date function
-  //       enrolledDateString = new Date(
-  //         Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5]),
-  //       ).toLocaleString();
-  //     }
-
-  //     enrollmentRows.push(
-  //       <tr style={{ backgroundColor: bgcolor }} key={`erow${i}`}>
-  //         <td>
-  //           {rowData.firstName} {rowData.lastName}
-  //         </td>
-  //         <td>{rowData.section}</td>
-  //         <td>{rowData.empId}</td>
-  //         <td>{rowData.email}</td>
-  //         <td>{enrolledDateString}</td>
-  //         <td> {button} </td>
-  //       </tr>,
-  //     );
-  //   }
-  // }
 
   const enrollLearners = (e, enrollLearner) => {
     e.preventDefault();
@@ -122,10 +73,10 @@ export default function People() {
 
   return (
     <div style={{ padding: '8px' }}>
-      <h2>Enroll New:</h2>
+      <h2>Add Person:</h2>
       <AddUserWithOptions courseId={courseId} />
-      <h2>Currently Enrolled:</h2>
-      {enrollmentTableData.length > 0 ? (
+      <h2>Current People:</h2>
+      {peopleTableData.length > 0 ? (
         <InputWrapper flex>
           <Checkbox
             onClick={() => {
@@ -137,11 +88,11 @@ export default function People() {
         </InputWrapper>
       ) : null}
       <PeopleTabelHeader
-        columnLabels={['Name', 'Email', 'Role', 'Date Enrolled']}
+        columnLabels={['Name', 'Email', 'Role', 'Date Added']}
         numberOfVisibleColumns={numberOfVisibleColumns}
         setNumberOfVisibleColumns={setNumberOfVisibleColumns}
       />
-      {enrollmentTableData.map(
+      {peopleTableData.map(
         ({
           email,
           firstName,
@@ -185,7 +136,7 @@ export default function People() {
           );
         },
       )}
-      {enrollmentTableData.length === 0 ? (
+      {peopleTableData.length === 0 ? (
         <p>No Students are currently enrolled in the course</p>
       ) : null}
     </div>

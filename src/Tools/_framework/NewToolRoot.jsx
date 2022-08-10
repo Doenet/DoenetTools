@@ -150,7 +150,7 @@ export default function ToolRoot() {
     DashboardBreadCrumb: lazy(() =>
       import('./HeaderControls/DashboardBreadCrumb'),
     ),
-    EnrollmentBreadCrumb: lazy(() =>
+    PeopleBreadCrumb: lazy(() =>
       import('./HeaderControls/PeopleBreadCrumb'),
     ),
     DataBreadCrumb: lazy(() => import('./HeaderControls/DataBreadCrumb')),
@@ -611,9 +611,6 @@ let navigationObj = {
       //allStudentsInCourse
       pageName: 'People',
       menuPanelCap: 'DriveInfoCap',
-      // currentMenus:["LoadEnrollment","ManualEnrollment"],
-      // menusTitles:["Load","Manual"],
-      // menusInitOpen:[false,false],
       currentMenus: ['LoadPeople'],
       menusTitles: ['Import Learners'],
       menusInitOpen: [false],
