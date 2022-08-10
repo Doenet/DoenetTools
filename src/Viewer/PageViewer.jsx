@@ -169,6 +169,8 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "returnAllStateVariables") {
           console.log(e.data.args)
           resolveAllStateVariables.current(e.data.args);
+        } else if (e.data.messageType === "componentRangePieces") {
+          window["componentRangePieces" + pageNumber] = e.data.args.componentRangePieces;
         } else if (e.data.messageType === "inErrorState") {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true)
