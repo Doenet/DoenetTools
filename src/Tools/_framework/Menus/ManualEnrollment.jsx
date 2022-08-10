@@ -3,12 +3,8 @@ import { nanoid } from 'nanoid';
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil';
-import {
-  processAtom,
-  enrolllearnerAtom,
-  peopleTableDataAtom,
-} from '../ToolPanels/People';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { enrolllearnerAtom, peopleTableDataAtom, processAtom } from './LoadPeople';
 
 export default function ManualEnrollment(props) {
   //array containing column names

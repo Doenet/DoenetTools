@@ -90,7 +90,7 @@ export const peopleByCourseId = selectorFamily({
 
     const recoilMergeData = getCallback(({set})=> async (payload)=>{
       try {
-        let {data: {success, peopleArray, message}} = await axios.post('/api/mergePeopleData.php', payload);
+        let {data: {success, peopleArray, message}} = await axios.post('/api/mergePeopleData.php', {...payload, courseId});
         // console.log("resp",resp.data)
         if (success) {
           set(peopleAtomByCourseId(courseId),peopleArray);

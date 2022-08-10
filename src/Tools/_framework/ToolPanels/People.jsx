@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { atom, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import { peopleByCourseId } from '../../../_reactComponents/Course/CourseActions';
 import { AddUserWithOptions } from '../../../_reactComponents/Course/SettingComponents';
@@ -21,28 +21,6 @@ const CheckboxLabelText = styled.span`
   line-height: 1.1;
 `;
 
-export const peopleTableDataAtom = atom({
-  key: 'peopleTableDataAtom',
-  default: [],
-});
-export const processAtom = atom({
-  key: 'processAtom',
-  default: 'Loading',
-});
-export const headersAtom = atom({
-  key: 'headersAtom',
-  default: [],
-});
-
-export const entriesAtom = atom({
-  key: 'entriesAtom',
-  default: [],
-});
-export const enrolllearnerAtom = atom({
-  key: 'enrolllearnerAtom',
-  default: '',
-});
-
 export default function People() {
   // console.log('>>>===People');
 
@@ -50,7 +28,6 @@ export default function People() {
   const {
     recoilUnWithdraw,
     recoilWithdraw,
-    recoilMergeData,
     value: peopleTableData,
   } = useRecoilValue(peopleByCourseId(courseId));
   const { modifyUserRole } = useCourse(courseId);

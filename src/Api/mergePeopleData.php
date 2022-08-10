@@ -71,25 +71,23 @@ if ($success) {
         $section = '';
         $new_userId = include 'randomId.php';
 
-        if (in_array('email', $mergeHeads, false)) {
+        if (in_array('Email', $mergeHeads, false)) {
             $email = $mergeEmail[$i];
         }
-        if (in_array('externalId', $mergeHeads, false)) {
+        if (in_array('ExternalId', $mergeHeads, false)) {
             $externalId = $mergeId[$i];
         }
-        if (in_array('firstName', $mergeHeads, false)) {
+        if (in_array('FirstName', $mergeHeads, false)) {
             $firstName = $mergeFirstName[$i];
         }
-        if (in_array('lastName', $mergeHeads, false)) {
+        if (in_array('LastName', $mergeHeads, false)) {
             $lastName = $mergeLastName[$i];
         }
-        if (in_array('section', $mergeHeads, false)) {
+        if (in_array('Section', $mergeHeads, false)) {
             $section = $mergeSection[$i];
         }
         //TODO: Verify that this is the correct match strategy
         $email = trim($email);
-
-        $isEmailInUserTable = false;
 
         //If they don't have an account in user table then make one
         $result = $conn->query(
@@ -102,7 +100,6 @@ if ($success) {
             //Acount found
             $row = $result->fetch_assoc();
             $new_userId = $row['userId'];
-            $isEmailInUserTable = true;
         } elseif ($result->num_rows == 0) {
             //Create user account
 
@@ -119,7 +116,7 @@ if ($success) {
             $result = $conn->query(
                 "INSERT INTO user
 				SET
-				userId = '$userId',
+				userId = '$new_userId',
 				screenName = '$screenName',
 				email = '$email',
 				lastName = '$lastName',
@@ -130,7 +127,7 @@ if ($success) {
         }
 
         //gather columns
-        $update_columns = "roleId = '$roleId'";
+        $update_columns = "roleId = '$roleId',";
         if ($externalId != '') {
             $update_columns = $update_columns . "externalId = '$externalId',";
         }
@@ -157,10 +154,11 @@ if ($success) {
 			u.email,
 			u.firstName, 
 			u.lastName,
+            u.screenName,
 			cu.section, 
 			cu.dateEnrolled, 
 			cu.externalId, 
-			cu.withdrew,
+			cu.withdrew
 		FROM 
 			course_user as cu, 
 			user as u
@@ -175,9 +173,11 @@ if ($success) {
     if ($result->num_rows >= 1) {
         while ($row = $result->fetch_assoc()) {
             $person = [
+                'roleId' => $roleId,
                 'firstName' => $row['firstName'],
                 'lastName' => $row['lastName'],
                 'email' => $row['email'],
+                'screenName' => $row['screenName'],
                 'dateEnrolled' => $row['dateEnrolled'],
                 'externalId' => $row['externalId'],
                 'section' => $row['section'],
@@ -201,5 +201,3 @@ echo json_encode($response_arr);
 
 $conn->close();
 ?>
-
- ?> ?> ?> ?> ?> ?> ?> ?> ?>
