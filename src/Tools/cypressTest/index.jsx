@@ -5,7 +5,7 @@ import axios from 'axios';
 import { RecoilRoot } from 'recoil';
 import { MathJaxContext } from 'better-react-mathjax';
 import { mathjaxConfig } from '../../Core/utils/math.js';
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // function CypressTest(props){
 
@@ -16,13 +16,21 @@ import { mathjaxConfig } from '../../Core/utils/math.js';
 
 ReactDOM.render(
   <RecoilRoot>
-    <MathJaxContext
-      version={2}
-      config={mathjaxConfig}
-      onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
-    >
-      <CypressTest />
-    </MathJaxContext>
+    <Router>
+      <Routes>
+        <Route
+          path="*"
+          element={
+            <MathJaxContext
+              version={2}
+              config={mathjaxConfig}
+              onStartup={(mathJax) => (mathJax.Hub.processSectionDelay = 0)}
+            >
+              <CypressTest />
+            </MathJaxContext>
+          } />
+      </Routes>
+    </Router>
   </RecoilRoot>,
   document.getElementById('root'),
 );

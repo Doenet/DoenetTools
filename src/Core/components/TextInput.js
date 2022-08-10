@@ -32,6 +32,7 @@ export default class Textinput extends Input {
   static componentType = "textInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -258,7 +259,7 @@ export default class Textinput extends Input {
         // we set immediate value to whatever was the result
         // (hence the need to execute update first)
         // Also, this makes sure immediateValue is saved to the database,
-        // since in updateImmediateValue, immediateValue is note saved to database
+        // since in updateImmediateValue, immediateValue is not saved to database
         {
           updateType: "executeUpdate"
         },

@@ -71,7 +71,7 @@ export default function SelectedActivity() {
   let firstPageDoenetId = findFirstPageOfActivity(content);
   
   let heading = (
-    <h2 data-cy="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
+    <h2 data-test="infoPanelItemLabel" style={{ margin: '16px 5px' }}>
       <FontAwesomeIcon icon={faFileCode} /> {recoilLabel}
     </h2>
   );
@@ -110,6 +110,7 @@ export default function SelectedActivity() {
         <ActionButton
           width="menu"
           value="Edit Activity"
+          data-test="Edit Activity"
           onClick={() => {
             if (firstPageDoenetId == null) {
               addToast(`ERROR: No page found in activity`, toastType.INFO);
@@ -131,6 +132,7 @@ export default function SelectedActivity() {
         <ActionButton
           width="menu"
           value="View Draft Activity"
+          data-test="View Draft Activity"
           onClick={() => {
             compileActivity({
               activityDoenetId: doenetId,
@@ -152,6 +154,7 @@ export default function SelectedActivity() {
         <ActionButton
           width="menu"
           value="View Assigned Activity"
+          data-test="View Assigned Activity"
           onClick={() => {
             setPageToolView({
               page: 'course',

@@ -48,7 +48,7 @@ export default function SelectedPage() {
     }
   };
 
-  let heading = (<h2 data-cy="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
+  let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
     <FontAwesomeIcon icon={faCode} /> {pageObj.label} 
   </h2>)
 

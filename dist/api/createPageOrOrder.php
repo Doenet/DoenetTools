@@ -39,8 +39,8 @@ if ($success){
   
   if ($itemType == 'page'){
     $sql = "
-    INSERT INTO pages (courseId,containingDoenetId,doenetId) 
-      VALUES('$courseId','$containingDoenetId','$doenetId');
+    INSERT INTO pages (courseId,containingDoenetId,doenetId,label) 
+      VALUES('$courseId','$containingDoenetId','$doenetId','Untitled Page');
     ";
     $conn->query($sql);
     $pageThatWasCreated = getCourseItemFunction($conn,$itemType,$doenetId);

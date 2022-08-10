@@ -1,6 +1,7 @@
 import { roundForDisplay } from '../utils/math';
 import BaseComponent from './abstract/BaseComponent';
 import me from 'math-expressions';
+import { returnLabelStateVariableDefinitions } from '../utils/label';
 
 export default class Slider extends BaseComponent {
   constructor(args) {
@@ -14,6 +15,7 @@ export default class Slider extends BaseComponent {
   static componentType = "slider";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
@@ -45,11 +47,13 @@ export default class Slider extends BaseComponent {
       defaultValue: null,
     }
     attributes.label = {
-      createComponentOfType: "text",
-      createStateVariable: "label",
-      defaultValue: null,
+      createComponentOfType: "label",
+    };
+    attributes.labelIsName = {
+      createComponentOfType: "boolean",
+      createStateVariable: "labelIsName",
+      defaultValue: false,
       public: true,
-      forRenderer: true
     };
     attributes.showControls = {
       createComponentOfType: "boolean",
@@ -96,9 +100,6 @@ export default class Slider extends BaseComponent {
 
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     };
 
     attributes.displayDecimals = {
@@ -132,6 +133,9 @@ export default class Slider extends BaseComponent {
     }, {
       group: "markers",
       componentTypes: ["markers"]
+    }, {
+      group: "labels",
+      componentTypes: ["label"]
     }]
 
   }
@@ -140,6 +144,69 @@ export default class Slider extends BaseComponent {
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    let labelDefinitions = returnLabelStateVariableDefinitions();
+
+    Object.assign(stateVariableDefinitions, labelDefinitions);
+
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
+      }
+    }
 
     stateVariableDefinitions.items = {
       forRenderer: true,

@@ -26,9 +26,7 @@ export default class Parabola extends Curve {
 
 
   static returnChildGroups() {
-
-    return []
-
+    return GraphicalComponent.returnChildGroups();
   }
 
   static returnStateVariableDefinitions(args) {
@@ -37,8 +35,29 @@ export default class Parabola extends Curve {
 
     let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
 
-    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+    // also defines graphXmax, graphYmin, and graphYmax
     stateVariableDefinitions.graphXmin = curveStateVariableDefinitions.graphXmin;
+
+    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " parabola";
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
 
     stateVariableDefinitions.curveType = {
       forRenderer: true,
@@ -178,13 +197,19 @@ export default class Parabola extends Curve {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "throughPoints") {
-          return "throughPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "throughPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 12) === "throughPoint") {
           // could be throughPoint or throughPointX
           let throughPointNum = Number(varName.slice(12));
           if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
-            return `throughPointX${throughPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${throughPointNum}_${propIndex[0]}`
           }
         }
         return null;

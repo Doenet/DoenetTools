@@ -178,11 +178,11 @@ function Collection(props) {
   // }, [folderCacheDirty])
 
   let openCloseText = isOpen ? (
-    <span data-cy="folderToggleCloseIcon">
+    <span data-test="folderToggleCloseIcon">
       <FontAwesomeIcon icon={faChevronDown} />
     </span>
   ) : (
-    <span data-cy="folderToggleOpenIcon">
+    <span data-test="folderToggleOpenIcon">
       <FontAwesomeIcon icon={faChevronRight} />
     </span>
   );
@@ -324,7 +324,7 @@ function Collection(props) {
       <div
         role="button"
         data-doenet-driveinstanceid={props.driveInstanceId}
-        data-cy="driveItem"
+        data-test="driveItem"
         tabIndex={0}
         className="noselect nooutline"
         style={{
@@ -419,12 +419,12 @@ function Collection(props) {
         >
           <p style={{ display: 'inline', margin: '0px' }}>
             {openCloseButton}
-            <span data-cy="folderIcon">
+            <span data-test="folderIcon">
               <FontAwesomeIcon
                 icon={props.isViewOnly ? faCode : faLayerGroup}
               />
             </span>
-            <span data-cy="folderLabel">{label}</span>
+            <span data-test="folderLabel">{label}</span>
           </p>
           {props.numColumns >= 2 ? column2 : null}
           {props.numColumns >= 3 ? column3 : null}
@@ -563,7 +563,7 @@ function Collection(props) {
   }
 
   return (
-    <div data-cy="drive">
+    <div data-test="drive">
       {collection}
       {items}
     </div>

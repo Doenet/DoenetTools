@@ -46,7 +46,9 @@ export default class Hint extends BlockComponent {
 
     stateVariableDefinitions.open = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
       hasEssential: true,
@@ -89,7 +91,9 @@ export default class Hint extends BlockComponent {
 
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         titleChild: {
@@ -151,9 +155,22 @@ export default class Hint extends BlockComponent {
     });
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     revealHint: this.revealHint.bind(this),
     closeHint: this.closeHint.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   }
 
 

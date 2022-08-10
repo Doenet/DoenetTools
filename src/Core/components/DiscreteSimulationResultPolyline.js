@@ -54,22 +54,40 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       }),
       definition: function ({ dependencyValues }) {
 
-
-        let styleDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          styleDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          styleDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          styleDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          styleDescription += "dotted ";
+        let curveDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (curveDescription) {
+            curveDescription += " ";
+          }
+          curveDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord;
+        if (curveDescription) {
+          curveDescription += " ";
+        }
 
-        return { setValue: { styleDescription } };
+        curveDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { styleDescription: curveDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " polyline";
+
+        return { setValue: { styleDescriptionWithNoun } };
       }
     }
 
@@ -168,13 +186,19 @@ export default class DiscreteSimulationResultPolyline extends GraphicalComponent
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "vertices") {
-          return "vertex" + propIndex;
+          if (propIndex.length === 1) {
+            return "vertex" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `vertexX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 6) === "vertex") {
           // could be vertex or vertexX
           let vertexNum = Number(varName.slice(6));
           if (Number.isInteger(vertexNum) && vertexNum > 0) {
-            return `vertexX${vertexNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `vertexX${vertexNum}_${propIndex[0]}`
           }
         }
         return null;

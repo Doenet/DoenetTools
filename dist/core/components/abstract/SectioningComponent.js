@@ -24,12 +24,28 @@ export default class SectioningComponent extends BlockComponent {
       defaultValue: 1,
       public: true,
     };
+
     attributes.sectionWideCheckWork = {
       createComponentOfType: "boolean",
       createStateVariable: "sectionWideCheckWork",
       defaultValue: false,
       public: true,
     };
+    attributes.submitLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabel",
+      defaultValue: "Check Work",
+      public: true,
+      forRenderer: true,
+    }
+    attributes.submitLabelNoCorrectness = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabelNoCorrectness",
+      defaultValue: "Submit Response",
+      public: true,
+      forRenderer: true,
+    }
+
     // attributes.possiblepoints = {default: undefined};
     // attributes.aggregatebypoints = {default: false};
     attributes.boxed = {
@@ -115,7 +131,7 @@ export default class SectioningComponent extends BlockComponent {
       definition({ dependencyValues }) {
         let titleChildName = null;
         if (dependencyValues.titleChild.length > 0) {
-          titleChildName = dependencyValues.titleChild[0].componentName
+          titleChildName = dependencyValues.titleChild[dependencyValues.titleChild.length - 1].componentName
         }
         return {
           setValue: { titleChildName }
@@ -123,9 +139,45 @@ export default class SectioningComponent extends BlockComponent {
       }
     }
 
+    stateVariableDefinitions.childIndicesToRender = {
+      returnDependencies: () => ({
+        titleChildren: {
+          dependencyType: "child",
+          childGroups: ["titles"],
+        },
+        allChildren: {
+          dependencyType: "child",
+          childGroups: ["anything", "variantControls", "titles", "setups"],
+        },
+        titleChildName: {
+          dependencyType: "stateVariable",
+          variableName: "titleChildName"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let childIndicesToRender = [];
+
+        let allTitleChildNames = dependencyValues.titleChildren.map(x => x.componentName);
+
+        for (let [ind, child] of dependencyValues.allChildren.entries()) {
+          if (typeof child !== "object"
+            || !allTitleChildNames.includes(child.componentName)
+            || child.componentName === dependencyValues.titleChildName
+          ) {
+            childIndicesToRender.push(ind)
+          }
+        }
+
+        return { setValue: { childIndicesToRender } }
+
+      }
+    }
+
     stateVariableDefinitions.title = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       shadowVariable: true,
       returnDependencies: () => ({
@@ -155,7 +207,7 @@ export default class SectioningComponent extends BlockComponent {
 
           return { setValue: { title } };
         } else {
-          return { setValue: { title: dependencyValues.titleChild[0].stateValues.text } };
+          return { setValue: { title: dependencyValues.titleChild[dependencyValues.titleChild.length - 1].stateValues.text } };
         }
       }
     }
@@ -280,22 +332,30 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.creditAchieved = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+        addAttributeComponentsShadowingStateVariables: {
+          displayDigits: {
+            stateVariableToShadow: "displayDigitsForCreditAchieved",
+          }
+        },
+      },
       forRenderer: true,
       defaultValue: 0,
       hasEssential: true,
-      stateVariablesPrescribingAdditionalAttributes: {
-        displayDigits: "displayDigitsForCreditAchieved",
-      },
       additionalStateVariablesDefined: [{
         variableName: "percentCreditAchieved",
         public: true,
-        componentType: "number",
+        shadowingInstructions: {
+          createComponentOfType: "number",
+          addAttributeComponentsShadowingStateVariables: {
+            displayDigits: {
+              stateVariableToShadow: "displayDigitsForCreditAchieved",
+            }
+          },
+        },
         defaultValue: 0,
         hasEssential: true,
-        stateVariablesPrescribingAdditionalAttributes: {
-          displayDigits: "displayDigitsForCreditAchieved",
-        }
       }],
       stateVariablesDeterminingDependencies: ["aggregateScores", "scoredDescendants"],
       returnDependencies({ stateValues }) {
@@ -480,7 +540,6 @@ export default class SectioningComponent extends BlockComponent {
     }
 
     stateVariableDefinitions.collapsible = {
-      componentType: "boolean",
       forRenderer: true,
       returnDependencies: () => ({}),
       definition() {
@@ -490,7 +549,9 @@ export default class SectioningComponent extends BlockComponent {
 
     stateVariableDefinitions.open = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: true,
       hasEssential: true,
@@ -574,6 +635,7 @@ export default class SectioningComponent extends BlockComponent {
     submitAllAnswers: this.submitAllAnswers.bind(this),
     revealSection: this.revealSection.bind(this),
     closeSection: this.closeSection.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this)
   }
 
   async submitAllAnswers({ actionId }) {
@@ -642,6 +704,18 @@ export default class SectioningComponent extends BlockComponent {
     })
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   static async setUpVariant({
     serializedComponent, sharedParameters, definingChildrenSoFar,
     descendantVariantComponents,
@@ -676,7 +750,7 @@ export default class SectioningComponent extends BlockComponent {
     }
 
     // console.log("****Variant for sectioning component****")
-    // console.log("Selected seed: " + variantControlChild.state.selectedSeed);
+    // console.log("Selected seed: " + variantControlChild.stateValues.selectedSeed);
     // console.log("Variant name for " + this.componentType + ": " + sharedParameters.variantName);
 
     // if subvariants were specified, add those the corresponding descendants

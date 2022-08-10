@@ -10,7 +10,7 @@ export var appliedFunctionSymbolsDefault = [
   'arg',
   'min', 'max', 'mean', 'median',
   'floor', 'ceil', 'round',
-  'sum', 'prod', 'var', 'std',
+  'sum', 'prod', 'variance', 'std',
   'count', 'mod'
 ];
 
@@ -439,7 +439,7 @@ export function mathStateVariableFromNumberStateVariable({
 
   if (isPublic) {
     mathDef.public = true;
-    mathDef.componentType = "math"
+    mathDef.shadowingInstructions = { createComponentOfType: "math" };
   }
 
   return mathDef;
@@ -449,17 +449,22 @@ export function mathStateVariableFromNumberStateVariable({
 export function roundForDisplay({ value, dependencyValues, usedDefault }) {
   let rounded;
 
-  if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
-    if (Number.isFinite(dependencyValues.displayDecimals)) {
-      rounded = me.round_numbers_to_decimals(value, dependencyValues.displayDecimals);
-    } else {
-      rounded = value;
-    }
+  // displayDigits takes precedence
+  // use displayDecimals only if 
+  // - didn't specify displayDigits or specified invalid displayDigits, and
+  // - specified a valid displayDecimals
+  if (
+    (usedDefault.displayDigits || !(dependencyValues.displayDigits >= 1))
+    && !usedDefault.displayDecimals
+    && Number.isFinite(dependencyValues.displayDecimals)
+  ) {
+    rounded = me.round_numbers_to_decimals(value, dependencyValues.displayDecimals);
   } else {
     if (dependencyValues.displayDigits >= 1) {
       rounded = me.round_numbers_to_precision(value, dependencyValues.displayDigits);
     } else {
-      rounded = value;
+      // default behavior is round to 10 digits
+      rounded = me.round_numbers_to_precision(value, 10);
     }
     if (dependencyValues.displaySmallAsZero > 0) {
       rounded = me.evaluate_numbers(rounded, { skip_ordering: true, set_small_zero: dependencyValues.displaySmallAsZero });

@@ -38,6 +38,15 @@ export default class Rectangle extends Polygon {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    let styleDescriptionWithNounDef = stateVariableDefinitions.styleDescriptionWithNoun.definition;
+
+    stateVariableDefinitions.styleDescriptionWithNoun.definition = function ({ dependencyValues }) {
+      let styleDescriptionWithNoun = styleDescriptionWithNounDef({ dependencyValues }).setValue.styleDescriptionWithNoun;
+      styleDescriptionWithNoun = styleDescriptionWithNoun.replaceAll("polygon", "rectangle");
+
+      return { setValue: { styleDescriptionWithNoun } }
+    }
+
     stateVariableDefinitions.nVerticesSpecified = {
 
       returnDependencies: () => ({
@@ -563,13 +572,19 @@ export default class Rectangle extends Polygon {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "vertices") {
-          return "vertex" + propIndex;
+          if (propIndex.length === 1) {
+            return "vertex" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `vertexX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 6) === "vertex") {
           // could be vertex or vertexX
           let vertexNum = Number(varName.slice(6));
           if (Number.isInteger(vertexNum) && vertexNum > 0) {
-            return `vertexX${vertexNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `vertexX${vertexNum}_${propIndex[0]}`
           }
         }
         return null;

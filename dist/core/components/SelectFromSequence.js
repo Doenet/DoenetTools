@@ -196,13 +196,21 @@ export default class SelectFromSequence extends Sequence {
 
     let newNamespace = component.attributes.newNamespace?.primitive;
 
+    let attributesToConvert = {};
+    for (let attr of ["fixed", "displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
+      if (attr in component.attributes) {
+        attributesToConvert[attr] = component.attributes[attr]
+      }
+    }
+
     // allow one to override the fixed (default true) attribute
+    // as well as rounding settings
     // by specifying it on the sequence
     let attributesFromComposite = {};
 
-    if ("fixed" in component.attributes) {
+    if (Object.keys(attributesToConvert).length > 0) {
       attributesFromComposite = convertAttributesForComponentType({
-        attributes: { fixed: component.attributes.fixed },
+        attributes: attributesToConvert,
         componentType,
         componentInfoObjects,
         compositeCreatesNewNamespace: newNamespace,

@@ -1,4 +1,4 @@
-import React, { useState, lazy, useRef, Suspense, useEffect } from 'react';
+import React, { useState, lazy, useRef, Suspense } from 'react';
 import {
   atom,
   useRecoilValue,
@@ -17,6 +17,7 @@ import {
 import Logo from '../Logo';
 import { pageToolViewAtom } from '../NewToolRoot';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
+import { darkModeAtom } from '../DarkmodeController';
 // import Logo from '../Logo';
 
 export const selectedMenuPanelAtom = atom({
@@ -24,10 +25,7 @@ export const selectedMenuPanelAtom = atom({
   default: null,
 });
 
-export const darkModeAtom = atom({
-  key: 'darkModeAtom',
-  default: JSON.parse(localStorage.getItem('darkModeToggle')),
-});
+
 
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -123,6 +121,10 @@ position:  static;
 left: 220px;
 cursor: pointer;
 z-index: 2;
+&:focus {
+  outline: 2px solid var(--mainBlue);
+  outline-offset: 2px;
+}
 `;
 
 const EditMenuPanels = styled.button`
@@ -148,14 +150,22 @@ const MenuPanelTitle = styled.button`
   border-bottom: ${(props) =>
     props.isOpen ? '2px solid var(--canvastext)' : '0px solid var(--canvastext)'};
   margin-top: 2px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: -6px;
+  }
 `;
 
 const SettingsButton = styled.button`
   background-color: var(--canvas);
   color: var(--canvastext);
   border: none;
+  border-radius: 80px;
   cursor: pointer;
   font-size: 20px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+  }
 `;
 
 const HomeButton = styled.button`
@@ -169,7 +179,8 @@ const HomeButton = styled.button`
 function SelectionMenu(props){
   // console.log("child", props.children);
   return <>
-    <div style={{
+    <div 
+    style={{
       // paddingTop: "4px", 
       // marginTop: "2px",
       paddingBottom: "8px", 
@@ -202,10 +213,19 @@ function Menu(props) {
 
   return (
     <>
-      <MenuPanelTitle isOpen={isOpen} onClick={() => setIsOpen((was) => !was)}>
+      <MenuPanelTitle 
+        isOpen={isOpen} 
+        aria-expanded={isOpen} 
+        aria-controls="menu" 
+        onClick={() => setIsOpen((was) => !was)}
+        id="menu-title"
+        data-test={`${props.type} Menu`}
+      >
         <h3>{props.title}</h3>
       </MenuPanelTitle>
       <div
+        id="menu"
+        aria-labelledby='menu-title'
         style={{
           display: hideShowStyle,
           paddingTop: '4px',
@@ -292,7 +312,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     if (panelToUse) {
       const key = `SelectionMenu${currentSelectionMenu}`;
       selectionPanel = (
-        <SelectionMenu key={key}>
+        <SelectionMenu key={key} >
           <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
             {React.createElement(panelToUse, { key })}
           </Suspense>
@@ -325,7 +345,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     let isOpen = initOpen[i];
 
     menusArray.push(
-      <Menu key={mKey} title={title} isInitOpen={isOpen}>
+      <Menu key={mKey} title={title} isInitOpen={isOpen} type={type}>
         <Suspense fallback={<LoadingFallback>loading...</LoadingFallback>}>
           {React.createElement(LazyMenuObj[type], { mKey })}
         </Suspense>
@@ -334,8 +354,8 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
   }
 
   return (
-    <MenuPanelsWrapper hide={hide}>
-      <MenuPanelsCap fix={hide}>
+    <MenuPanelsWrapper hide={hide} aria-label="menus">
+      <MenuPanelsCap fix={hide} role="banner">
         <Branding style={{ marginLeft: '5px' }}>
           {/* <Logo src="data:image/gif;base64,R0lGODlhAQABAPcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAP8ALAAAAAABAAEAAAgEAP8FBAA7 */}
           {/* "/> */}
@@ -349,8 +369,8 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
           </HomeButton>  */}
 
           <Checkbox
-            checked={darkModeToggle}
-            onClick={(e) => setDarkModeToggle(!darkModeToggle)}
+            checked={darkModeToggle === 'dark'}
+            onClick={() => setDarkModeToggle(darkModeToggle === 'dark' ? 'light' : 'dark')}
             checkedIcon={<FontAwesomeIcon icon={faSun} />}
             uncheckedIcon={<FontAwesomeIcon icon={faMoon} />}
           />

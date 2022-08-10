@@ -7,6 +7,7 @@ export default class LineSegment extends GraphicalComponent {
 
   actions = {
     moveLineSegment: this.moveLineSegment.bind(this),
+    lineSegmentClicked: this.lineSegmentClicked.bind(this),
   };
 
   static createAttributesObject() {
@@ -53,24 +54,42 @@ export default class LineSegment extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let lineDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          lineDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          lineDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          lineDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          lineDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColorWord;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
 
-        return { setValue: { styleDescription: lineDescription } };
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { styleDescription } };
       }
     }
 
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " line segment";
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
 
     stateVariableDefinitions.nDimensions = {
       public: true,
@@ -170,13 +189,19 @@ export default class LineSegment extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "endpoints") {
-          return "endpoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "endpoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `endpointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 8) === "endpoint") {
           // could be endpoint or endpointX
           let endpointNum = Number(varName.slice(8));
           if (Number.isInteger(endpointNum) && endpointNum > 0) {
-            return `endpointX${endpointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `endpointX${endpointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -454,6 +479,32 @@ export default class LineSegment extends GraphicalComponent {
       }
     }
 
+    stateVariableDefinitions.length = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
+      returnDependencies: () => ({
+        numericalEndpoints: {
+          dependencyType: "stateVariable",
+          variableName: "numericalEndpoints"
+        },
+        nDimensions: {
+          dependencyType: "stateVariable",
+          variableName: "nDimensions",
+        }
+      }),
+      definition({ dependencyValues }) {
+        let ps = dependencyValues.numericalEndpoints;
+        let length2 = 0;
+        for (let dim = 0; dim < dependencyValues.nDimensions; dim++) {
+          length2 += (ps[1][dim] - ps[0][dim]) ** 2;
+        }
+
+        return { setValue: { length: Math.sqrt(length2) } }
+      }
+    }
+
     return stateVariableDefinitions;
   }
 
@@ -505,6 +556,18 @@ export default class LineSegment extends GraphicalComponent {
         }
       });
     }
+
+  }
+
+
+  async lineSegmentClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

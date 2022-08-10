@@ -2,7 +2,7 @@ import InlineComponent from './abstract/InlineComponent';
 
 export default class Choice extends InlineComponent {
   static componentType = "choice";
-  static rendererType = "container";
+  static rendererType = "containerInline";
   static renderChildren = true;
 
   static createAttributesObject() {

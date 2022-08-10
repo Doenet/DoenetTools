@@ -26,10 +26,10 @@ const DragHandle = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  color: hsl(0, 0%, 99%);
+  color: white;
   padding: 0;
   cursor: ew-resize;
-  background-color: #1a5a99;
+  background-color: var(--mainBlue);
   width: 8px;
   box-sizing: border-box;
 `;
@@ -125,7 +125,7 @@ export default function ContentPanel({main, support, hasNoHeaderPanel}) {
   }, main, !support?.props?.hide ? /* @__PURE__ */ React.createElement(DragHandle, {
     ref: dragHandleRef,
     onMouseDown,
-    "data-cy": "contentPanelDragHandle",
+    "data-test": "contentPanelDragHandle",
     key: `SupportHandle`
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faGripLinesVertical

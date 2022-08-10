@@ -1,6 +1,7 @@
-import React, { createRef, useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import useDoenetRenderer from './useDoenetRenderer';
 import styled from 'styled-components';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 // border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
 
@@ -11,14 +12,30 @@ outline: none;
 `;
 
 export default React.memo(function orbitalDiagram(props) {
-  let { name, SVs } = useDoenetRenderer(props);
+  let { name, SVs, actions, callAction } = useDoenetRenderer(props);
   // console.log("orbitalDiagramInput SVs ", SVs);
 
   // use ref for fixed so changed value appears in callbacks
   let fixed = createRef(SVs.fixed);
   fixed.current = SVs.fixed;
 
-  if (SVs.hidden) {
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
+
+  if (SVs.hidden || !SVs.value) {
     return null;
   }
 
@@ -37,9 +54,9 @@ export default React.memo(function orbitalDiagram(props) {
   }
 
 
-  return <>
+  return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><>
     {rowsJSX}
-  </>
+    </></VisibilitySensor>
 })
 
 const OrbitalRow = React.memo(function OrbitalRow({ rowNumber,orbitalText, boxes, name }) {

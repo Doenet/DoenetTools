@@ -2,18 +2,162 @@ import Polyline from './Polyline.js';
 
 export default class Polygon extends Polyline {
   static componentType = "polygon";
+  static representsClosedPath = true;
 
   actions = {
     movePolygon: this.movePolygon.bind(this),
+    polygonClicked: this.polygonClicked.bind(this)
   };
 
   get movePolygon() {
     return this.movePolyline;
   }
 
+  get polygonClicked() {
+    return this.polylineClicked;
+  }
+
+
   static returnStateVariableDefinitions() {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.styleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescription = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord;
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " border";
+          } else {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescriptionWithNoun;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescriptionWithNoun = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+            + " polygon";
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " polygon with a " + borderDescription + " border";
+          } else {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " polygon with a " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+
+    stateVariableDefinitions.borderStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let borderStyleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderStyleDescription) {
+            borderStyleDescription += " ";
+          }
+          borderStyleDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        if (borderStyleDescription) {
+          borderStyleDescription += " ";
+        }
+
+        borderStyleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { borderStyleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.fillStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let fillStyleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          fillStyleDescription = "unfilled";
+        } else {
+          fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;
+        }
+
+        return { setValue: { fillStyleDescription } };
+      }
+    }
 
     // overwrite nearestPoint so that it includes 
     // segement between first and last vertex
@@ -82,8 +226,8 @@ export default class Polygon extends Polyline {
               let closestDistance2 = Infinity;
               let closestResult = {};
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
               let prevPtx, prevPty;
               let nextPtx = numericalVertices[nVertices - 1][0];

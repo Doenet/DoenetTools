@@ -1,9 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { sizeToCSS } from './utils/css';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Tabular(props) {
-  let { name, SVs, children } = useDoenetRender(props);
+  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (SVs.hidden) {
     return null;
@@ -25,6 +42,7 @@ let heading = <tr>{columns.map((x,i)=><th key={i}>{x}</th>)}</tr>
 let data = <tr>{columns.map((x,i)=><td key={i}>{SVs.summaryStatistics[x]}</td>)}</tr>
 
 return (
+  <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
   <div style={{ margin: "12px 0" }} >
     <a name={name} />
     <p>Summary statistics of {SVs.columnName}</p>
@@ -35,6 +53,7 @@ return (
         </tbody>
     </table>
   </div>
+  </VisibilitySensor>
   )
 })
 

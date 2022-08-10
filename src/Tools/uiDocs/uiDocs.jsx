@@ -15,7 +15,7 @@ import Textfield from '../../_reactComponents/PanelHeaderComponents/Textfield.js
 import TextArea from '../../_reactComponents/PanelHeaderComponents/TextArea.jsx';
 import UnitMenu from '../../_reactComponents/PanelHeaderComponents/UnitMenu.jsx';
 import VerticalDivider from '../../_reactComponents/PanelHeaderComponents/VerticalDivider.jsx';
-import { faCode } from '@fortawesome/free-solid-svg-icons';
+import { faCode, faFish } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Increment from '../../_reactComponents/PanelHeaderComponents/IncrementMenu.jsx';
 import DropdownMenu from '../../_reactComponents/PanelHeaderComponents/DropdownMenu.jsx';
@@ -25,6 +25,8 @@ import Card from '../../_reactComponents/PanelHeaderComponents/Card.jsx';
 import CollapseSection from '../../_reactComponents/PanelHeaderComponents/CollapseSection.jsx';
 import ProgressBar from '../../_reactComponents/PanelHeaderComponents/ProgressBar.jsx';
 import RelatedItems from '../../_reactComponents/PanelHeaderComponents/RelatedItems.jsx';
+import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox.jsx';
+
 
 
 // === HOW TO ADD TO UI DOCS ===
@@ -347,6 +349,45 @@ export default function attempt() {
       ],
     },
     {
+        name: 'Checkbox',
+        id: 'checkbox', 
+        code: Checkbox, 
+        codePreview: '<Checkbox/>',
+        req_props: null,
+        req_children: null,
+        use: 'Shows state of item',
+        props: [
+            {name: 'Checked',
+            propPreview: '<Checkbox checked></Checkbox>',
+            propCode: {checked: 'true'},
+            description: 'Sets state of checkbox'},
+            {name: 'Checked Icon',
+            propPreview: '<Checkbox checked checkedIcon={icon: <FontAwesomeIcon icon={faCode} />}></Checkbox>',
+            propCode: {checkedIcon: <FontAwesomeIcon icon={faCode} />, checked: 'true'},
+            description: 'Sets icon when checked'},
+            {name: 'Unchecked Icon',
+            propPreview: '<Checkbox uncheckedIcon={icon: <FontAwesomeIcon icon={faFish} />}></Checkbox>',
+            propCode: {uncheckedIcon: <FontAwesomeIcon icon={faFish} />},
+            description: 'Sets icon when unchecked'},
+            {
+              name: 'Label',
+              propPreview: '<Checkbox label="What: "/>',
+              propCode: { label: 'What: ' },
+              description: 'Adds label to button',
+            },
+            {
+              name: 'Vertical Label',
+              propPreview: '<Checkbox label="What: " vertical/>',
+              propCode: { label: 'What: ', vertical },
+              description: 'Adds label to component on top',
+            },
+            {name: 'Disabled',
+            propPreview: '<Checkbox disabled></Checkbox>',
+            propCode: {disabled: 'true'},
+            description: 'Sets to disabled'},
+        ]
+      },
+    {
       name: 'CollapseSection',
       id: 'collapsesection',
       code: CollapseSection,
@@ -378,12 +419,6 @@ export default function attempt() {
           propPreview: '<CollapseSection disabled />',
           propCode: { disabled },
           description: 'Makes collapse section not able to be used',
-        },
-        {
-          name: 'Aria Label',
-            propPreview: '<CollapseSection ariaLabel="Collapse Section"/>',
-            propCode: { ariaLabel: 'Collapse Section' },
-            description: 'Adds aria label to component'
         }
       ],
     },
@@ -793,12 +828,6 @@ export default function attempt() {
           propPreview: '<ProgressBar label="What: " vertical/>',
           propCode: { label: 'What: ', vertical, progress: 0.4 },
           description: 'Adds label to component on top',
-        },
-        {
-          name: 'Aria Label',
-            propPreview: '<ProgressBar ariaLabel="Progress Bar"/>',
-            propCode: { ariaLabel: 'Progress Bar', progress: 0.4 },
-            description: 'Adds aria label to component'
         }
       ],
     },
@@ -846,12 +875,6 @@ export default function attempt() {
           propPreview: '<RelatedItems label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to component on top',
-        },
-        {
-          name: 'Aria Label',
-            propPreview: '<RelatedItems ariaLabel="Related Items"/>',
-            propCode: { ariaLabel: 'Related Items' },
-            description: 'Adds aria label to component'
         },
         {
           name: 'onChange',
@@ -931,12 +954,6 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
-          name: 'Aria Label',
-            propPreview: '<SearchBar ariaLabel="Text"/>',
-            propCode: {ariaLabel: 'Text'},
-            description: 'Adds aria label to component'
-        },
-        {
           name: 'onChange',
           propPreview: '<SearchBar onChange={(data) => console.log(data)} />',
           propCode: {onChange: (data) => console.log(data)},
@@ -1006,12 +1023,6 @@ export default function attempt() {
           propPreview: '<TextArea label="What: " vertical/>',
           propCode: { label: 'What: ', vertical },
           description: 'Adds label to component on top',
-        },
-        {
-          name: 'Aria Label',
-          propPreview: '<TextArea ariaLabel="Text"/>',
-          propCode: { ariaLabel: 'Text' },
-          description: 'Adds aria label to component',
         },
         {
           name: 'Alert',
@@ -1085,12 +1096,6 @@ export default function attempt() {
           description: 'Adds label to component on top',
         },
         {
-          name: 'Aria Label',
-          propPreview: '<Textfield ariaLabel="Text"/>',
-          propCode: { ariaLabel: 'Text' },
-          description: 'Adds aria label to component',
-        },
-        {
           name: 'Alert',
           propPreview: '<Textfield alert/>',
           propCode: { alert },
@@ -1157,10 +1162,6 @@ export default function attempt() {
             propPreview: '<Form label="What: " vertical/>',
             propCode: {label: 'What: ', vertical},
             description: 'Adds label to component on top'},
-            {name: 'Aria Label',
-            propPreview: '<Form ariaLabel="Text"/>',
-            propCode: {ariaLabel: 'Text'},
-            description: 'Adds aria label to component'},
         {name: 'Alert',
         propPreview: '<Form alert/>',
         propCode: {alert},
@@ -1217,13 +1218,6 @@ export default function attempt() {
         propCode: {isSelected: true},
         description: 'Sets state of toggle button'},
         {
-          name: 'Switch Value',
-          propPreview: '<ToggleButton switch_value="frog"/>',
-          propCode: { switch_value: 'frog' },
-          description:
-            'Sets different text value for when the button is selected',
-        },
-        {
           name: 'Label',
           propPreview: '<ToggleButton label="What: "/>',
           propCode: { label: 'What: ' },
@@ -1261,7 +1255,7 @@ export default function attempt() {
           propPreview: '<ToggleButton onClick={(data) => console.log(data)} />',
           propCode: { onClick: (data) => console.log(data) },
           description:
-            'Function called when toggle button is clicked. Returns true when untoggled/unclicked? and clicked(white) and true when already toggled and clicked(blue)',
+            'Function called when toggle button is clicked. Use with isSelected to change state on click',
         },
         {
           name: 'Disabled',
@@ -1448,6 +1442,39 @@ export default function attempt() {
           .{' '}
         </p>
         <hr />
+
+        <h2>Comments on Accessibility</h2>
+        <p>
+          All clickable elements need to have a focus indicator. Our standard is a 2px border that matches the element's current border with a 2px offset. See styling
+          <a
+            href="https://docs.google.com/document/d/16YDi2lUs6CjUYHfZBwjbBBtaWgJyY1uNbSRf3cj44D8/edit#bookmark=id.u2sku2msba84"
+            target="_blank"
+          >
+            {' '}
+            here{' '}
+          </a>{' '}
+        </p>
+        <p>
+          All clickable elements also need an aria-label. Some elements, like buttons, do this for you, so adding an additional aria-label is considered bad practice. The naming techniques and accessible name guidance sections will be the most helpful. Read more
+          <a
+            href="https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/"
+            target="_blank"
+          >
+            {' '}
+            here{' '}
+          </a>
+        </p>
+        <p>
+          All components must follow standard keyboard and aria practices for that specific element. Find the element you are working on here and add the required keyboard interactions and aria information that it lists. Here is the 
+          <a
+            href="https://www.w3.org/WAI/ARIA/apg/patterns/"
+            target="_blank"
+          >
+            {' '}
+            link{' '}
+          </a>
+        </p>
+      <hr/>
 
         <h2>States to Consider (* denotes required)</h2>
         <p>

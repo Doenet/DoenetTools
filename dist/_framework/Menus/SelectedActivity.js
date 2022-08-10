@@ -26,7 +26,7 @@ export default function SelectedActivity() {
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const {
     label: recoilLabel,
-    order
+    content
   } = useRecoilValue(itemByDoenetId(doenetId));
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const {
@@ -40,7 +40,6 @@ export default function SelectedActivity() {
   useEffect(() => {
     setItemTextFieldLabel(recoilLabel);
   }, [recoilLabel]);
-  let firstPageDoenetId = findFirstPageOfActivity(order);
   const handelLabelModfication = () => {
     let effectiveItemLabel = itemTextFieldLabel;
     if (itemTextFieldLabel === "") {
@@ -58,8 +57,9 @@ export default function SelectedActivity() {
   if (doenetId == void 0) {
     return null;
   }
+  let firstPageDoenetId = findFirstPageOfActivity(content);
   let heading = /* @__PURE__ */ React.createElement("h2", {
-    "data-cy": "infoPanelItemLabel",
+    "data-test": "infoPanelItemLabel",
     style: {margin: "16px 5px"}
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faFileCode
@@ -89,6 +89,7 @@ export default function SelectedActivity() {
   }, /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "Edit Activity",
+    "data-test": "Edit Activity",
     onClick: () => {
       if (firstPageDoenetId == null) {
         addToast(`ERROR: No page found in activity`, toastType.INFO);
@@ -109,6 +110,7 @@ export default function SelectedActivity() {
   }), /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "View Draft Activity",
+    "data-test": "View Draft Activity",
     onClick: () => {
       compileActivity({
         activityDoenetId: doenetId,
@@ -129,6 +131,7 @@ export default function SelectedActivity() {
   }), /* @__PURE__ */ React.createElement(ActionButton, {
     width: "menu",
     value: "View Assigned Activity",
+    "data-test": "View Assigned Activity",
     onClick: () => {
       setPageToolView({
         page: "course",

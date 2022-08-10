@@ -8,13 +8,14 @@ export default React.memo(function TriggerSet(props) {
   }
   return /* @__PURE__ */ React.createElement("div", {
     id: name,
-    style: {margin: "12px 0"}
+    style: {margin: "12px 0", display: "inline-block"}
   }, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement(Button, {
     id: name + "_button",
     onClick: () => callAction({action: actions.triggerActions}),
     disabled: SVs.disabled,
-    value: SVs.label
+    value: SVs.label,
+    valueHasLatex: SVs.labelHasLatex
   }));
 });

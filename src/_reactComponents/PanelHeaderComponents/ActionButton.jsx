@@ -20,6 +20,11 @@ const Button = styled.button`
     background-color: ${(props) =>
       props.alert ? 'var(--lightRed)' : 'var(--lightBlue)'};
   }
+
+  &:focus {
+    outline: 2px solid white;
+    outline-offset: ${(props) => props.theme.outlineOffset};
+  }
 `;
 
 Button.defaultProps = {
@@ -28,6 +33,7 @@ Button.defaultProps = {
     borderRadius: 'var(--mainBorderRadius)',
     padding: '0px 10px 0px 10px',
     border: 'none',
+    outlineOffset: '-4px'
   },
 };
 
@@ -108,7 +114,7 @@ export default function ActionButton(props) {
 
   if (props.disabled) {
     actionButton.backgroundColor = 'var(--mainGray)';
-    actionButton.color = 'var(--canvastext)';
+    actionButton.color = 'black';
     actionButton.cursor = 'not-allowed';
   }
 
@@ -129,9 +135,14 @@ export default function ActionButton(props) {
           {label}
         </Label>
         <Button
+          aria-labelledby={label} 
+          aria-label={actionButton.value}
+          aria-disabled={props.disabled}
           id={props.id}
+          data-test={props['data-test']}
           style={actionButton}
           alert={alert}
+          disabled={props.disabled}
           onClick={(e) => {
             if (props.disabled !== true) {
               handleClick(e);

@@ -8,7 +8,11 @@ export default class MathComponent extends InlineComponent {
   static componentType = "math";
 
   // used when creating new component via adapter or copy prop
-  static primaryStateVariableForDefinition = "value";
+  static primaryStateVariableForDefinition = "unnormalizedValue";
+
+  // for copying a property with link="false"
+  // make sure it doesn't use the essential state variable unnormalizedValue
+  static primaryEssentialStateVariable = "value";
 
   static variableForPlainMacro = "value";
 
@@ -32,7 +36,7 @@ export default class MathComponent extends InlineComponent {
       defaultValue: "none",
       public: true,
       toLowerCase: true,
-      valueTransformations: { "true": "full" },
+      valueTransformations: { "true": "full", "false": "none" },
       validValues: ["none", "full", "numbers", "numberspreserveorder"]
     };
     attributes.expand = {
@@ -87,9 +91,9 @@ export default class MathComponent extends InlineComponent {
       public: true,
     }
 
-    attributes.targetsAreFunctionSymbols = {
+    attributes.sourcesAreFunctionSymbols = {
       createComponentOfType: "textList",
-      createStateVariable: "targetsAreFunctionSymbols",
+      createStateVariable: "sourcesAreFunctionSymbols",
       defaultValue: [],
     }
 
@@ -98,12 +102,20 @@ export default class MathComponent extends InlineComponent {
       createStateVariable: "splitSymbols",
       defaultValue: true,
       public: true,
+      fallBackToParentStateVariable: "splitSymbols",
     }
 
     attributes.groupCompositeReplacements = {
       createPrimitiveOfType: "boolean",
       createStateVariable: "groupCompositeReplacements",
       defaultValue: true,
+    }
+
+    attributes.displayBlanks = {
+      createComponentOfType: "boolean",
+      createStateVariable: "displayBlanks",
+      defaultValue: true,
+      public: true,
     }
 
     return attributes;
@@ -213,12 +225,25 @@ export default class MathComponent extends InlineComponent {
           ||
           dependencyValues.mathListParentDisplayDecimals !== null && !usedDefault.mathListParentDisplayDecimals;
 
+        let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
+        let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+        if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          // if both display digits and display decimals did not use default
+          // we'll regard display digits as using default if it comes from a deeper shadow
+          let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+          let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+          if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+            displayDigitsAttrUsedDefault = true;
+          }
+        }
 
         if (!haveListParentWithDisplayDecimals && dependencyValues.displayDigitsAttr !== null) {
           // have to check to exclude case where have displayDecimals from mathList parent
           // because otherwise a non-default displayDigits will win over displayDecimals
 
-          if (usedDefault.displayDigitsAttr) {
+          if (displayDigitsAttrUsedDefault) {
             foundDefaultValue = true;
             theDefaultValueFound = dependencyValues.displayDigitsAttr.stateValues.value;
           } else {
@@ -232,7 +257,7 @@ export default class MathComponent extends InlineComponent {
 
         if (
           !haveListParentWithDisplayDecimals
-          && (dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr)
+          && displayDecimalsAttrUsedDefault
           && dependencyValues.mathChildren.length === 1
           && dependencyValues.stringChildren.length === 0
         ) {
@@ -582,7 +607,7 @@ export default class MathComponent extends InlineComponent {
     }
 
     // valueShadow will be long underscore unless math was created
-    // from serialized state with value
+    // from serialized state with unnormalizedValue
     stateVariableDefinitions.valueShadow = {
       defaultValue: me.fromAst('\uff3f'),  // long underscore
       hasEssential: true,
@@ -678,9 +703,9 @@ export default class MathComponent extends InlineComponent {
 
     stateVariableDefinitions.mathChildrenFunctionSymbols = {
       returnDependencies: () => ({
-        targetsAreFunctionSymbols: {
+        sourcesAreFunctionSymbols: {
           dependencyType: "stateVariable",
-          variableName: "targetsAreFunctionSymbols"
+          variableName: "sourcesAreFunctionSymbols"
         },
         mathChildren: {
           dependencyType: "child",
@@ -691,7 +716,7 @@ export default class MathComponent extends InlineComponent {
         let mathChildrenFunctionSymbols = [];
         if (dependencyValues.mathChildren.compositeReplacementRange) {
           for (let compositeInfo of dependencyValues.mathChildren.compositeReplacementRange) {
-            if (dependencyValues.targetsAreFunctionSymbols.includes(compositeInfo.target)) {
+            if (dependencyValues.sourcesAreFunctionSymbols.includes(compositeInfo.target)) {
               for (let ind = compositeInfo.firstInd; ind <= compositeInfo.lastInd; ind++) {
                 mathChildrenFunctionSymbols.push(ind)
               }
@@ -894,7 +919,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: this.componentType,
-        attributeComponentsToShadow: [
+        attributesToShadow: [
           "unordered", "displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros",
           "simplify", "expand"
         ],
@@ -961,7 +986,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       returnDependencies: () => ({
         value: {
@@ -1073,6 +1098,15 @@ export default class MathComponent extends InlineComponent {
             })
           }
         }
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "value",
+            desiredValue: desiredStateVariableValues.valueForDisplay
+          }]
+        };
       }
     }
 
@@ -1099,6 +1133,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "displayDecimals"
         },
+        displayBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "displayBlanks"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         let latex;
@@ -1112,12 +1150,34 @@ export default class MathComponent extends InlineComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
+        if (!dependencyValues.displayBlanks) {
+          params.showBlanks = false;
+        }
         try {
           latex = dependencyValues.valueForDisplay.toLatex(params);
         } catch (e) {
-          latex = '\uff3f';
+          if (dependencyValues.displayBlanks) {
+            latex = '\uff3f';
+          } else {
+            latex = '';
+          }
         }
         return { setValue: { latex } };
+      },
+      inverseDefinition({ desiredStateVariableValues }) {
+        let value;
+        try {
+          value = me.fromLatex(desiredStateVariableValues.latex);
+        } catch (e) {
+          return { success: false }
+        }
+        return {
+          success: true,
+          instructions: [{
+            setDependency: "valueForDisplay",
+            desiredValue: value
+          }]
+        };
       }
     }
 
@@ -1162,6 +1222,10 @@ export default class MathComponent extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "value"
         },
+        displayBlanks: {
+          dependencyType: "stateVariable",
+          variableName: "displayBlanks"
+        },
       }),
       definition: function ({ dependencyValues, usedDefault }) {
         let text;
@@ -1175,10 +1239,17 @@ export default class MathComponent extends InlineComponent {
             params.padToDigits = dependencyValues.displayDigits;
           }
         }
+        if (!dependencyValues.displayBlanks) {
+          params.showBlanks = false;
+        }
         try {
           text = dependencyValues.valueForDisplay.toString(params);
         } catch (e) {
-          text = '\uff3f';
+          if (dependencyValues.displayBlanks) {
+            text = '\uff3f';
+          } else {
+            text = '';
+          }
         }
         return { setValue: { text } };
       },
@@ -1349,7 +1420,7 @@ export default class MathComponent extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       isArray: true,
       entryPrefixes: ["x"],

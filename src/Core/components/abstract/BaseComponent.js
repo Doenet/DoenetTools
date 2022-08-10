@@ -261,14 +261,9 @@ export default class BaseComponent {
       },
       disabled: {
         createComponentOfType: "boolean",
-        createStateVariable: "disabledPreliminary",
-        defaultValue: null,
-        // public: true,
       },
-      disabledIgnoresParentReadOnly: {
+      fixed: {
         createComponentOfType: "boolean",
-        createStateVariable: "disabledIgnoresParentReadOnly",
-        defaultValue: false,
       },
       modifyIndirectly: {
         createComponentOfType: "boolean",
@@ -276,13 +271,6 @@ export default class BaseComponent {
         defaultValue: true,
         public: true,
         propagateToProps: true,
-      },
-      fixed: {
-        createComponentOfType: "boolean",
-        createStateVariable: "fixedPreliminary",
-        defaultValue: null, //false,
-        // public: true,
-        // forRenderer: true,
       },
       styleNumber: {
         createComponentOfType: "number",
@@ -297,9 +285,11 @@ export default class BaseComponent {
         defaultValue: false,
         public: true,
       },
-
       newNamespace: {
-        createPrimitiveOfType: "boolean"
+        createPrimitiveOfType: "boolean",
+        createStateVariable: "newNamespace",
+        defaultValue: false,
+        public: true,
       }
     };
   }
@@ -394,11 +384,12 @@ export default class BaseComponent {
       }),
       definition: ({ dependencyValues }) => ({
         setValue: {
-          hidden:  // check === true so null gives false
-            dependencyValues.parentHidden === true
-            || dependencyValues.sourceCompositeHidden === true
-            || dependencyValues.adapterSourceHidden === true
-            || dependencyValues.hide === true
+          hidden: Boolean(
+            dependencyValues.parentHidden
+            || dependencyValues.sourceCompositeHidden
+            || dependencyValues.adapterSourceHidden
+            || dependencyValues.hide
+          )
         }
       }),
       markStale: () => ({ updateParentRenderedChildren: true }),
@@ -415,23 +406,14 @@ export default class BaseComponent {
       doNotShadowEssential: true,
       defaultValue: false,
       returnDependencies: () => ({
-        disabledPreliminary: {
-          dependencyType: "stateVariable",
-          variableName: "disabledPreliminary",
-          variablesOptional: true,
-        },
         disabledAttr: {
           dependencyType: "attributeComponent",
           attributeName: "disabled",
+          variableNames: ["value"],
         },
         readOnly: {
           dependencyType: "flag",
           flagName: "readOnly"
-        },
-        disabledIgnoresParentReadOnly: {
-          dependencyType: "stateVariable",
-          variableName: "disabledIgnoresParentReadOnly",
-          variablesOptional: true,
         },
         parentDisabled: {
           dependencyType: "parentStateVariable",
@@ -448,16 +430,14 @@ export default class BaseComponent {
       }),
       definition({ dependencyValues, usedDefault }) {
 
-        if (dependencyValues.readOnly && !dependencyValues.disabledIgnoresParentReadOnly) {
+        if (dependencyValues.readOnly) {
           return { setValue: { disabled: true } }
         }
 
-        if (dependencyValues.disabledPreliminary !== null &&
-          dependencyValues.disabledAttr !== null
-        ) {
+        if (dependencyValues.disabledAttr !== null) {
           return {
             setValue: {
-              disabled: dependencyValues.disabledPreliminary
+              disabled: dependencyValues.disabledAttr.stateValues.value
             }
           }
         }
@@ -465,7 +445,7 @@ export default class BaseComponent {
         let disabled = false;
         let useEssential = true;
 
-        if (!dependencyValues.disabledIgnoresParentReadOnly && dependencyValues.parentDisabled !== null && !usedDefault.parentDisabled) {
+        if (dependencyValues.parentDisabled !== null && !usedDefault.parentDisabled) {
           disabled = disabled || dependencyValues.parentDisabled;
           useEssential = false;
         }
@@ -476,16 +456,6 @@ export default class BaseComponent {
         if (dependencyValues.adapterSourceDisabled !== null && !usedDefault.adapterSourceDisabled) {
           disabled = disabled || dependencyValues.adapterSourceDisabled;
           useEssential = false;
-        }
-
-        // disabled wasn't supplied by parent/sourceComposite/adapterSource,
-        // was specified as a non-default from disabledPreliminary,
-        // but wasn't specified via an attribute component
-        // It must have been specified from a target shadowing
-        // or from an essential state variable
-        if (useEssential && dependencyValues.disabledPreliminary !== null && !usedDefault.disabledPreliminary) {
-          useEssential = false;
-          disabled = dependencyValues.disabledPreliminary
         }
 
         if (useEssential) {
@@ -510,14 +480,10 @@ export default class BaseComponent {
       hasEssential: true,
       doNotShadowEssential: true,
       returnDependencies: () => ({
-        fixedPreliminary: {
-          dependencyType: "stateVariable",
-          variableName: "fixedPreliminary",
-          variablesOptional: true,
-        },
         fixedAttr: {
           dependencyType: "attributeComponent",
           attributeName: "fixed",
+          variableNames: ["value"],
         },
         parentFixed: {
           dependencyType: "parentStateVariable",
@@ -533,12 +499,10 @@ export default class BaseComponent {
         },
       }),
       definition({ dependencyValues, usedDefault }) {
-        if (dependencyValues.fixedPreliminary !== null &&
-          dependencyValues.fixedAttr !== null
-        ) {
+        if (dependencyValues.fixedAttr !== null) {
           return {
             setValue: {
-              fixed: dependencyValues.fixedPreliminary
+              fixed: dependencyValues.fixedAttr.stateValues.value
             }
           }
         }
@@ -557,16 +521,6 @@ export default class BaseComponent {
         if (dependencyValues.adapterSourceFixed !== null && !usedDefault.adapterSourceFixed) {
           fixed = fixed || dependencyValues.adapterSourceFixed;
           useEssential = false;
-        }
-
-        // fixed wasn't supplied by parent/sourceComposite/adapterSource,
-        // was specified as a non-default from fixedPreliminary,
-        // but wasn't specified via an attribute component
-        // It must have been specified from a target shadowing
-        // or from an essential state variable
-        if (useEssential && dependencyValues.fixedPreliminary !== null && !usedDefault.fixedPreliminary) {
-          useEssential = false;
-          fixed = dependencyValues.fixedPreliminary
         }
 
         if (useEssential) {
@@ -837,13 +791,27 @@ export default class BaseComponent {
 
     let serializedChildren = [];
 
+    let parametersForChildren = { ...parameters };
+
+    let sourceAttributesToIgnore
+    if (parameters.sourceAttributesToIgnoreRecursively) {
+      sourceAttributesToIgnore = [...parameters.sourceAttributesToIgnoreRecursively];
+    } else {
+      sourceAttributesToIgnore = [];
+    }
+    if (parameters.sourceAttributesToIgnore) {
+      sourceAttributesToIgnore.push(...parameters.sourceAttributesToIgnore);
+      delete parametersForChildren.sourceAttributesToIgnore;
+    }
+
+
     if (includeDefiningChildren) {
 
       for (let child of this.definingChildren) {
         if (typeof child !== "object") {
           serializedChildren.push(child)
         } else {
-          serializedChildren.push(await child.serialize(parameters));
+          serializedChildren.push(await child.serialize(parametersForChildren));
         }
       }
 
@@ -859,24 +827,19 @@ export default class BaseComponent {
 
     }
 
-    let attributesObject = this.constructor.createAttributesObject();
 
     serializedComponent.attributes = {};
 
     for (let attrName in this.attributes) {
       let attribute = this.attributes[attrName];
       if (attribute.component) {
-        // only copy attribute components if attributes object specifies
-        // or if copy all
-        let attrInfo = attributesObject[attrName];
+        // only copy attribute components if copy all
         if (parameters.copyAll) {
-          serializedComponent.attributes[attrName] = { component: await attribute.component.serialize(parameters) };
+          serializedComponent.attributes[attrName] = { component: await attribute.component.serialize(parametersForChildren) };
         }
       } else {
-        // always copy others
-        // TODO: for now not copying isResponse if not copy all
-        // but not sure if that is the right thing to do
-        if (attrName !== "isResponse" || parameters.copyAll) {
+        // copy others if copy all or not set to be ignored
+        if (!sourceAttributesToIgnore.includes(attrName) || parameters.copyAll) {
           serializedComponent.attributes[attrName] = JSON.parse(JSON.stringify(attribute));
         }
       }
@@ -1066,12 +1029,14 @@ export default class BaseComponent {
       return { success: true, numberOfVariants };
     }
 
-    let descendantVariantComponents = gatherVariantComponents({
-      serializedComponents: serializedComponent.children,
-      componentInfoObjects
-    });
+    let descendantVariantComponents = [];
 
-
+    if (serializedComponent.children) {
+      descendantVariantComponents = gatherVariantComponents({
+        serializedComponents: serializedComponent.children,
+        componentInfoObjects
+      });
+    }
 
     if (serializedComponent.variants === undefined) {
       serializedComponent.variants = {};

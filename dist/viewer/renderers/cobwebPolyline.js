@@ -68,6 +68,12 @@ export default React.memo(function CobwebPolyline(props) {
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
       dash: styleToDash(SVs.selectedStyle.lineStyle)
     };
+    jsxPolylineAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxPolylineAttributes.label.useMathJax = true;
+    }
     jsxPointAttributes.current = {
       fixed: !SVs.draggable || SVs.fixed,
       visible: !SVs.hidden && validCoords && SVs.draggable,

@@ -173,7 +173,9 @@ export default class Chart extends BlockComponent {
 
     stateVariableDefinitions.columnName = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       additionalStateVariablesDefined: [{
         variableName: "colInd",
         forRenderer: true,
@@ -216,7 +218,9 @@ export default class Chart extends BlockComponent {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
       defaultValue: -10,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -309,7 +313,9 @@ export default class Chart extends BlockComponent {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
       defaultValue: -10,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -414,7 +420,9 @@ export default class Chart extends BlockComponent {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
       defaultValue: -10,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -507,7 +515,9 @@ export default class Chart extends BlockComponent {
       stateVariablesDeterminingDependencies: ["identicalAxisScales"],
       defaultValue: -10,
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       forRenderer: true,
       returnDependencies({ stateValues }) {
         let dependencies = {
@@ -612,7 +622,9 @@ export default class Chart extends BlockComponent {
 
     stateVariableDefinitions.xscale = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         xmin: {
           dependencyType: "stateVariable",
@@ -634,7 +646,9 @@ export default class Chart extends BlockComponent {
 
     stateVariableDefinitions.yscale = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         ymin: {
           dependencyType: "stateVariable",
@@ -711,10 +725,34 @@ export default class Chart extends BlockComponent {
 
   }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
 
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
 
   actions = {
     changeAxisLimits: this.changeAxisLimits.bind(this),
-  };
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
+  }
 
 }

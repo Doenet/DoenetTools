@@ -5,7 +5,7 @@ import ActionButton from '../../_reactComponents/PanelHeaderComponents/ActionBut
 import ActionButtonGroup from '../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 import ToggleButton from '../../_reactComponents/PanelHeaderComponents/ToggleButton';
 import ToggleButtonGroup from '../../_reactComponents/PanelHeaderComponents/ToggleButtonGroup';
-// import MathJax from 'react-mathjax';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 const TextNoSelect = styled.text`
   -webkit-user-select: none;
@@ -35,6 +35,22 @@ export default React.memo(function subsetOfReals(props) {
   let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
   let pointGrabbed = useRef(null);
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (SVs.hidden) {
     return null;
@@ -334,7 +350,7 @@ export default React.memo(function subsetOfReals(props) {
   }
 
  return  (
-  <>
+  <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><>
     <a name={name} />
     <div ref={bounds} style={{display: "flex", gap: "12px"}}>
       {controlButtons}
@@ -376,7 +392,7 @@ export default React.memo(function subsetOfReals(props) {
       {storedPoints}
       {labels}
     </svg>
-  </>
+    </></VisibilitySensor>
   );
-}
+})
 

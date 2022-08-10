@@ -58,7 +58,7 @@ const ToggleButtonGroup = (props) => {
   });
 
   return (
-    <Container style={{ height: 'fit-content' }} vertical={props.vertical}>
+    <Container style={{ height: 'fit-content' }} vertical={props.vertical} role="group">
       <ThemeProvider theme={props.vertical ? verticalToggleGroup : toggleGroup}>
         {modElem}
       </ThemeProvider>

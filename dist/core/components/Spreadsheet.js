@@ -145,7 +145,9 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.numRows = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumRows: {
           dependencyType: "stateVariable",
@@ -181,7 +183,9 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.numColumns = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         minNumColumns: {
           dependencyType: "stateVariable",
@@ -222,7 +226,9 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.height = {
       public: true,
-      componentType: "_componentSize",
+      shadowingInstructions: {
+        createComponentOfType: "_componentSize",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         heightAttr: {
@@ -257,10 +263,24 @@ export default class Spreadsheet extends BlockComponent {
 
     stateVariableDefinitions.cells = {
       public: true,
-      componentType: "cell",
+      shadowingInstructions: {
+        createComponentOfType: "cell",
+        returnWrappingComponents(prefix) {
+          if (prefix === "cell") {
+            return [];
+          } else if (prefix === "row") {
+            return [["row"]];
+          } else if (prefix === "column") {
+            return [["column"]];
+          } else {
+            // range or entire array
+            return [["row"], ["cellBlock"]]
+          }
+        },
+      },
       forRenderer: true,
       isArray: true,
-      entryPrefixes: ["cell", "row", "column", "range"],
+      entryPrefixes: ["cell", "row", "column", "range", "rows", "columns"],
       nDimensions: 2,
       defaultValueByArrayKey: () => "",
       hasEssential: true,
@@ -280,19 +300,7 @@ export default class Spreadsheet extends BlockComponent {
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.numRows, dependencyValues.numColumns];
       },
-      returnEntryDimensions: prefix => prefix === "range" ? 2 : 1,
-      returnWrappingComponents(prefix) {
-        if (prefix === "cell") {
-          return [];
-        } else if (prefix === "row") {
-          return [["row"]];
-        } else if (prefix === "column") {
-          return [["column"]];
-        } else {
-          // range or entire array
-          return [["row"], ["cellBlock"]]
-        }
-      },
+      returnEntryDimensions: prefix => ["range", "rows", "columns"].includes(prefix) ? 2 : 1,
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "cell") {
           // accept two formats: cellB1 or cell(1,2)
@@ -389,7 +397,7 @@ export default class Spreadsheet extends BlockComponent {
 
           return arrayKeys;
 
-        } else {
+        } else if (arrayEntryPrefix === "range") {
           // range
           // accept two formats: rangeB1D5 or range((1,2),(5,4))
 
@@ -445,6 +453,28 @@ export default class Spreadsheet extends BlockComponent {
 
           return arrayKeys;
 
+        } else {
+          // rows or columns without a propIndex
+          // just return all cells
+
+          if (!arraySize) {
+            // if don't have array size, just return an entry
+            // assuming array size is large enough
+            return [String(0) + "," + String(0)]
+          }
+
+          let arrayKeys = [];
+
+          for (let rowIndex = 0; rowIndex < arraySize[0]; rowIndex++) {
+            let rowKeys = [];
+            let arrayKeyBegin = String(rowIndex) + ",";
+            for (let colIndex = 0; colIndex < arraySize[1]; colIndex++) {
+              rowKeys.push(arrayKeyBegin + colIndex);
+            }
+            arrayKeys.push(rowKeys);
+          }
+
+          return arrayKeys;
         }
 
       },
@@ -452,13 +482,31 @@ export default class Spreadsheet extends BlockComponent {
         return "cell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "cells" || varName === "rows") {
+          if (propIndex.length === 1) {
+            return "row" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `cell(${propIndex[0]},${propIndex[1]})`
+          }
+        }
+        if (varName === "columns") {
+          if (propIndex.length === 1) {
+            return "column" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `cell(${propIndex[1]},${propIndex[0]})`
+          }
+        }
         if (varName.slice(0, 3) === "row") {
           let rowNum = varName.slice(3);
-          return `cell(${rowNum},${propIndex})`
+          // if propIndex has additional entries, ignore them
+          return `cell(${rowNum},${propIndex[0]})`
         }
         if (varName.slice(0, 6) === "column") {
           let columnNum = varName.slice(6);
-          return `cell(${propIndex},${columnNum})`
+          // if propIndex has additional entries, ignore them
+          return `cell(${propIndex[0]},${columnNum})`
         }
         return null;
       },
@@ -562,8 +610,22 @@ export default class Spreadsheet extends BlockComponent {
     stateVariableDefinitions.evaluatedCells = {
       isArray: true,
       public: true,
-      componentType: "cell",
-      entryPrefixes: ["evaluatedCell", "evaluatedRow", "evaluatedColumn", "evaluatedRange"],
+      shadowingInstructions: {
+        createComponentOfType: "cell",
+        returnWrappingComponents(prefix) {
+          if (prefix === "evaluatedCell") {
+            return [];
+          } else if (prefix === "evaluatedRow") {
+            return [["row"]];
+          } else if (prefix === "evaluatedColumn") {
+            return [["column"]];
+          } else {
+            // range or entire array
+            return [["row"], ["cellBlock"]]
+          }
+        },
+      },
+      entryPrefixes: ["evaluatedCell", "evaluatedRow", "evaluatedColumn", "evaluatedRange", "evaluatedRows", "evaluatedColumns"],
       nDimensions: 2,
       stateVariablesDeterminingDependencies: ["cellNamesByRowCol"],
       returnArraySizeDependencies: () => ({
@@ -579,19 +641,7 @@ export default class Spreadsheet extends BlockComponent {
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.numRows, dependencyValues.numColumns];
       },
-      returnEntryDimensions: prefix => prefix === "range" ? 2 : 1,
-      returnWrappingComponents(prefix) {
-        if (prefix === "evaluatedCell") {
-          return [];
-        } else if (prefix === "evaluatedRow") {
-          return [["row"]];
-        } else if (prefix === "evaluatedColumn") {
-          return [["column"]];
-        } else {
-          // range or entire array
-          return [["row"], ["cellBlock"]]
-        }
-      },
+      returnEntryDimensions: prefix => ["evaluatedRange", "evaluatedRows", "evaluatedColumns"].includes(prefix) ? 2 : 1,
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "evaluatedCell") {
           // accept two formats: evaluatedCellB1 or evaluatedCell(1,2)
@@ -684,7 +734,7 @@ export default class Spreadsheet extends BlockComponent {
 
           return arrayKeys;
 
-        } else {
+        } else if (arrayEntryPrefix === "evaluatedRange") {
           // range
           // accept two formats: evaluatedRangeB1D5 or evaluatedRange((1,2),(5,4))
 
@@ -739,6 +789,28 @@ export default class Spreadsheet extends BlockComponent {
 
           return arrayKeys;
 
+        } else {
+          // evaluatedRows or evaluatedColumns without a propIndex
+          // just return all cells
+
+          if (!arraySize) {
+            // if don't have array size, just return an entry
+            // assuming array size is large enough
+            return [String(0) + "," + String(0)]
+          }
+
+          let arrayKeys = [];
+
+          for (let rowIndex = 0; rowIndex < arraySize[0]; rowIndex++) {
+            let rowKeys = [];
+            let arrayKeyBegin = String(rowIndex) + ",";
+            for (let colIndex = 0; colIndex < arraySize[1]; colIndex++) {
+              rowKeys.push(arrayKeyBegin + colIndex);
+            }
+            arrayKeys.push(rowKeys);
+          }
+
+          return arrayKeys;
         }
 
       },
@@ -746,13 +818,31 @@ export default class Spreadsheet extends BlockComponent {
         return "evaluatedCell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "evaluatedCells" || varName === "evaluatedRows") {
+          if (propIndex.length === 1) {
+            return "evaluatedRow" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `evaluatedCell(${propIndex[0]},${propIndex[1]})`
+          }
+        }
+        if (varName === "evaluatedColumns") {
+          if (propIndex.length === 1) {
+            return "evaluatedColumn" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `evaluatedCell(${propIndex[1]},${propIndex[0]})`
+          }
+        }
         if (varName.slice(0, 12) === "evaluatedRow") {
           let rowNum = varName.slice(12);
-          return `evaluatedCell(${rowNum},${propIndex})`
+          // if propIndex has additional entries, ignore them
+          return `evaluatedCell(${rowNum},${propIndex[0]})`
         }
         if (varName.slice(0, 15) === "evaluatedColumn") {
           let columnNum = varName.slice(15);
-          return `evaluatedCell(${propIndex},${columnNum})`
+          // if propIndex has additional entries, ignore them
+          return `evaluatedCell(${propIndex[0]},${columnNum})`
         }
         return null;
       },
@@ -811,8 +901,10 @@ export default class Spreadsheet extends BlockComponent {
       isArray: true,
       nDimensions: 2,
       public: true,
-      componentType: "point",
-      entryPrefixes: ["pointsInCell", "pointsInRow", "pointsInColumn", "pointsInRange"],
+      shadowingInstructions: {
+        createComponentOfType: "point",
+      },
+      entryPrefixes: ["pointsInCell", "pointsInRow", "pointsInColumn", "pointsInRange", "pointsInRows", "pointsInColumns"],
       returnArraySizeDependencies: () => ({
         numRows: {
           dependencyType: "stateVariable",
@@ -826,7 +918,7 @@ export default class Spreadsheet extends BlockComponent {
       returnArraySize({ dependencyValues }) {
         return [dependencyValues.numRows, dependencyValues.numColumns];
       },
-      returnEntryDimensions: prefix => prefix === "pointsInRange" ? 2 : 1,
+      returnEntryDimensions: prefix => ["pointsInRange", "pointsInRows", "pointsInColumns"].includes(prefix) ? 2 : 1,
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "pointsInCell") {
           // accept two formats: pointsInCellB1 or pointsInCell(1,2)
@@ -918,7 +1010,7 @@ export default class Spreadsheet extends BlockComponent {
 
           return arrayKeys;
 
-        } else {
+        } else if (arrayEntryPrefix === "pointsInRange") {
           // pointsInRange
           // accept two formats: pointsInRangeB1D5 or pointsInRange((1,2),(5,4))
 
@@ -973,6 +1065,28 @@ export default class Spreadsheet extends BlockComponent {
 
           return arrayKeys;
 
+        } else {
+          // pointsInRows or pointsInColumns without a propIndex
+          // just return all cells
+
+          if (!arraySize) {
+            // if don't have array size, just return an entry
+            // assuming array size is large enough
+            return [String(0) + "," + String(0)]
+          }
+
+          let arrayKeys = [];
+
+          for (let rowIndex = 0; rowIndex < arraySize[0]; rowIndex++) {
+            let rowKeys = [];
+            let arrayKeyBegin = String(rowIndex) + ",";
+            for (let colIndex = 0; colIndex < arraySize[1]; colIndex++) {
+              rowKeys.push(arrayKeyBegin + colIndex);
+            }
+            arrayKeys.push(rowKeys);
+          }
+
+          return arrayKeys;
         }
 
       },
@@ -980,13 +1094,31 @@ export default class Spreadsheet extends BlockComponent {
         return "pointsInCell(" + arrayKey.split(',').map(x => Number(x) + 1).join(',') + ")"
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
+        if (varName === "pointsInCells" || varName === "pointsInRows") {
+          if (propIndex.length === 1) {
+            return "pointsInRow" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `pointsInCell(${propIndex[0]},${propIndex[1]})`
+          }
+        }
+        if (varName === "pointsInColumns") {
+          if (propIndex.length === 1) {
+            return "pointsInColumn" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `pointsInCell(${propIndex[1]},${propIndex[0]})`
+          }
+        }
         if (varName.slice(0, 11) === "pointsInRow") {
           let rowNum = varName.slice(11);
-          return `pointsInCell(${rowNum},${propIndex})`
+          // if propIndex has additional entries, ignore them
+          return `pointsInCell(${rowNum},${propIndex[0]})`
         }
         if (varName.slice(0, 14) === "pointsInColumn") {
           let columnNum = varName.slice(14);
-          return `pointsInCell(${propIndex},${columnNum})`
+          // if propIndex has additional entries, ignore them
+          return `pointsInCell(${propIndex[0]},${columnNum})`
         }
         return null;
       },
@@ -1101,8 +1233,22 @@ export default class Spreadsheet extends BlockComponent {
 
   }
 
+
+  recordVisibilityChange({ isVisible, actionId }) {
+    this.coreFunctions.requestRecordEvent({
+      verb: "visibilityChanged",
+      object: {
+        componentName: this.componentName,
+        componentType: this.componentType,
+      },
+      result: { isVisible }
+    })
+    this.coreFunctions.resolveAction({ actionId });
+  }
+
   actions = {
     onChange: this.onChange.bind(this),
+    recordVisibilityChange: this.recordVisibilityChange.bind(this),
   };
 
 

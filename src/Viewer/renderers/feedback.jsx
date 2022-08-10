@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment as thoughtBubble } from '@fortawesome/free-regular-svg-icons';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Feedback(props) {
-  let { name, SVs, children } = useDoenetRender(props);
+  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (SVs.hidden) {
     return null;
@@ -13,7 +30,7 @@ export default React.memo(function Feedback(props) {
   let icon = <FontAwesomeIcon icon={thoughtBubble} />;
 
   return (
-    <>
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><>
       <span
         style={{
           display: 'block',
@@ -44,6 +61,6 @@ export default React.memo(function Feedback(props) {
         {SVs.feedbackText}
         {children}
       </aside>
-    </>
+    </></VisibilitySensor>
   );
 })

@@ -37,6 +37,7 @@ export class MatrixInput extends Input {
   static componentType = "matrixInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
   static renderChildren = true;
 
@@ -1535,7 +1536,7 @@ export class MatrixInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         componentValues: {
@@ -1650,7 +1651,7 @@ export class MatrixInput extends Input {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       returnDependencies: () => ({
         componentImmediateValues: {
@@ -2222,6 +2223,7 @@ export default class MatrixComponentInput extends BaseComponent {
   static rendererType = "mathInput";
 
   static variableForPlainMacro = "value";
+  static variableForPlainCopy = "value";
 
 
   static returnStateVariableDefinitions() {
@@ -2402,7 +2404,7 @@ export default class MatrixComponentInput extends BaseComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero"]
       },
       stateVariablesDeterminingDependencies: ["rowInd", "colInd"],
       returnDependencies: ({ stateValues }) => {

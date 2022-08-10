@@ -97,6 +97,7 @@ export default function PageViewer(props) {
           cancelAnimationFrame(e.data.args);
         } else if (e.data.messageType === "coreCreated") {
           coreCreated.current = true;
+          preventMoreAnimations.current = false;
           setStage("coreCreated");
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
@@ -122,6 +123,8 @@ export default function PageViewer(props) {
           setErrMsg(e.data.args.errMsg);
         } else if (e.data.messageType === "resetPage") {
           resetPage(e.data.args);
+        } else if (e.data.messageType === "terminated") {
+          terminateCoreAndAnimations();
         }
       };
     }
@@ -129,7 +132,9 @@ export default function PageViewer(props) {
   useEffect(() => {
     return () => {
       if (coreWorker.current) {
-        coreWorker.current.terminate();
+        coreWorker.current.postMessage({
+          messageType: "terminate"
+        });
       }
     };
   }, []);
@@ -160,6 +165,27 @@ export default function PageViewer(props) {
       animationInfo.current = {};
     };
   }, []);
+  useEffect(() => {
+    document.addEventListener("visibilitychange", () => {
+      if (coreWorker.current) {
+        coreWorker.current.postMessage({
+          messageType: "visibilityChange",
+          args: {
+            visible: document.visibilityState === "visible"
+          }
+        });
+      }
+    });
+  });
+  function terminateCoreAndAnimations() {
+    preventMoreAnimations.current = true;
+    coreWorker.current.terminate();
+    coreWorker.current = null;
+    for (let id in animationInfo.current) {
+      cancelAnimationFrame(id);
+    }
+    animationInfo.current = {};
+  }
   async function callAction({action, args, baseVariableValue, componentName, rendererType}) {
     if (coreCreated.current || !rendererClasses.current[rendererType]?.ignoreActionsWithoutCore) {
       let actionId = nanoid();
@@ -250,7 +276,6 @@ export default function PageViewer(props) {
     }
   }
   function resetPage({changedOnDevice, newCid, newAttemptNumber}) {
-    console.log("resetPage", changedOnDevice, newCid, newAttemptNumber);
     if (newAttemptNumber !== attemptNumber) {
       toast(`Reverted activity as attempt number changed on other device`, toastType.ERROR);
       if (props.updateAttemptNumber) {
@@ -268,41 +293,51 @@ export default function PageViewer(props) {
     }
   }
   function calculateCidDoenetML() {
+    const coreIdWhenCalled = coreId.current;
     if (doenetMLFromProps !== void 0) {
       if (cidFromProps) {
         cidFromText(doenetMLFromProps).then((calcCid) => {
-          if (calcCid === cidFromProps) {
-            setDoenetML(doenetMLFromProps);
-            setCid(cidFromProps);
-            setStage("continue");
-          } else {
-            if (props.setIsInErrorState) {
-              props.setIsInErrorState(true);
+          if (coreIdWhenCalled === coreId.current) {
+            if (calcCid === cidFromProps) {
+              setDoenetML(doenetMLFromProps);
+              setCid(cidFromProps);
+              setStage("continue");
+            } else {
+              if (props.setIsInErrorState) {
+                props.setIsInErrorState(true);
+              }
+              setErrMsg(`doenetML did not match specified cid: ${cidFromProps}`);
             }
-            setErrMsg(`doenetML did not match specified cid: ${cidFromProps}`);
           }
         });
       } else {
         cidFromText(doenetMLFromProps).then((cid2) => {
-          setDoenetML(doenetMLFromProps);
-          setCid(cid2);
-          setStage("continue");
+          if (coreIdWhenCalled === coreId.current) {
+            setDoenetML(doenetMLFromProps);
+            setCid(cid2);
+            setStage("continue");
+          }
         });
       }
     } else {
       retrieveTextFileForCid(cidFromProps, "doenet").then((retrievedDoenetML) => {
-        setDoenetML(retrievedDoenetML);
-        setCid(cidFromProps);
-        setStage("continue");
-      }).catch((e) => {
-        if (props.setIsInErrorState) {
-          props.setIsInErrorState(true);
+        if (coreIdWhenCalled === coreId.current) {
+          setDoenetML(retrievedDoenetML);
+          setCid(cidFromProps);
+          setStage("continue");
         }
-        setErrMsg(`doenetML not found for cid: ${cidFromProps}`);
+      }).catch((e) => {
+        if (coreIdWhenCalled === coreId.current) {
+          if (props.setIsInErrorState) {
+            props.setIsInErrorState(true);
+          }
+          setErrMsg(`doenetML not found for cid: ${cidFromProps}`);
+        }
       });
     }
   }
   async function loadStateAndInitialize() {
+    const coreIdWhenCalled = coreId.current;
     let loadedState = false;
     if (props.flags.allowLocalState) {
       let localInfo;
@@ -391,7 +426,9 @@ export default function PageViewer(props) {
         }
       }
     }
-    startCore();
+    if (coreIdWhenCalled === coreId.current) {
+      startCore();
+    }
   }
   async function saveLoadedLocalStateToDatabase(localInfo) {
     let serverSaveId = await idb_get(`${props.doenetId}|${pageNumber}|${attemptNumber}|${cid}|ServerSaveId`);
@@ -413,7 +450,6 @@ export default function PageViewer(props) {
     } catch (e) {
       return {localInfo, cid, attemptNumber};
     }
-    console.log("result from saving to db", resp.data);
     let data = resp.data;
     if (!data.success) {
       return {localInfo, cid, attemptNumber};
@@ -437,6 +473,9 @@ export default function PageViewer(props) {
     return {localInfo, cid, attemptNumber};
   }
   function startCore() {
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
+    }
     coreWorker.current = new Worker(props.unbundledCore ? "core/CoreWorker.js" : "/viewer/core.js", {type: "module"});
     coreWorker.current.postMessage({
       messageType: "createCore",
@@ -453,6 +492,7 @@ export default function PageViewer(props) {
         itemNumber: props.itemNumber,
         updateDataOnContentChange: props.updateDataOnContentChange,
         serverSaveId: initialCoreData.current.serverSaveId,
+        activityVariantIndex: props.activityVariantIndex,
         requestedVariant: initialCoreData.current.requestedVariant,
         stateVariableChanges: initialCoreData.current.coreState ? initialCoreData.current.coreState : void 0
       }
@@ -477,7 +517,6 @@ export default function PageViewer(props) {
       return;
     }
     let sWorker = new Worker("core/utils/initialState.js", {type: "module"});
-    console.log(`Generating initial renderer states for ${nVariants} variants`);
     sWorker.postMessage({
       messageType: "saveInitialRendererStates",
       args: {
@@ -522,11 +561,11 @@ export default function PageViewer(props) {
   }
   async function cancelAnimationFrame(animationId) {
     let animationInfoObj = animationInfo.current[animationId];
-    let timeoutId = animationInfoObj.timeoutId;
+    let timeoutId = animationInfoObj?.timeoutId;
     if (timeoutId !== void 0) {
       window.clearTimeout(timeoutId);
     }
-    let animationFrameID = animationInfoObj.animationFrameID;
+    let animationFrameID = animationInfoObj?.animationFrameID;
     if (animationFrameID !== void 0) {
       window.cancelAnimationFrame(animationFrameID);
     }
@@ -576,6 +615,9 @@ export default function PageViewer(props) {
     changedState = true;
   }
   if (changedState) {
+    if (coreWorker.current) {
+      terminateCoreAndAnimations();
+    }
     setStage("recalcParams");
     coreId.current = nanoid();
     setPageContentChanged(true);
@@ -601,7 +643,7 @@ export default function PageViewer(props) {
   if (stage === "readyToCreateCore" && props.pageIsActive) {
     startCore();
   } else if (stage === "waitingOnCore" && !props.pageIsActive) {
-    coreWorker.current.terminate();
+    terminateCoreAndAnimations();
     coreWorker.current = null;
     setStage("readyToCreateCore");
   }

@@ -1,9 +1,11 @@
 import { r as react } from '../common/index-61623f21.js';
 import { r as reactDom } from '../common/index-eaf9e997.js';
-import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-ccf2a8c4.js';
+import { _ as _register, T as TextCellType, B as BaseEditor, C as Core, r as rootInstanceSymbol, m as metaSchemaFactory, H as Hooks, d as dictionaryKeys, g as getLanguageDictionary, a as getLanguagesDictionaries, b as registerLanguageDictionary, c as getTranslatedPhrase } from '../common/textType-eccd4edc.js';
 import '../common/_commonjsHelpers-f5d70792.js';
-import '../common/es.string.starts-with-a75d39b5.js';
-import '../common/moment-640234e6.js';
+import '../common/es.string.starts-with-96c3abce.js';
+import '../common/es.function.name-3b0da0e4.js';
+import '../common/registry-09f449b9.js';
+import '../common/moment-82250e2c.js';
 
 _register(TextCellType);
 Handsontable.editors = {
@@ -21,8 +23,8 @@ Handsontable.Core = function(rootElement) {
 Handsontable.DefaultSettings = metaSchemaFactory();
 Handsontable.hooks = Hooks.getSingleton();
 Handsontable.packageName = "handsontable";
-Handsontable.buildDate = "13/05/2022 13:50:15";
-Handsontable.version = "12.0.1";
+Handsontable.buildDate = "08/07/2022 15:24:08";
+Handsontable.version = "12.1.2";
 Handsontable.languages = {
   dictionaryKeys,
   getLanguageDictionary,
@@ -126,18 +128,17 @@ function _inherits(subClass, superClass) {
 }
 
 function _getPrototypeOf(o) {
-  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) {
+  _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) {
     return o.__proto__ || Object.getPrototypeOf(o);
   };
   return _getPrototypeOf(o);
 }
 
 function _setPrototypeOf(o, p) {
-  _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) {
+  _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) {
     o.__proto__ = p;
     return o;
   };
-
   return _setPrototypeOf(o, p);
 }
 
@@ -407,7 +408,7 @@ function addUnsafePrefixes(instance) {
   var reactSemverArray = react.version.split('.').map(function (v) {
     return parseInt(v);
   });
-  var shouldPrefix = reactSemverArray[0] >= 16 && reactSemverArray[1] >= 3;
+  var shouldPrefix = reactSemverArray[0] >= 16 && reactSemverArray[1] >= 3 || reactSemverArray[0] >= 17;
 
   if (shouldPrefix) {
     instance.UNSAFE_componentWillUpdate = instance.componentWillUpdate;
@@ -699,7 +700,7 @@ var PortalManager = /*#__PURE__*/function (_React$Component) {
   return PortalManager;
 }(react.Component);
 
-var version="12.0.1";
+var version="12.1.2";
 
 function createCommonjsModule(fn, module) {
 	return module = { exports: {} }, fn(module, module.exports), module.exports;

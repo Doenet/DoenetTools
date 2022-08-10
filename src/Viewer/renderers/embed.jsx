@@ -2,10 +2,26 @@ import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 import cssesc from 'cssesc';
 import { sizeToCSS } from './utils/css';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Figure(props) {
-  let { name, SVs } = useDoenetRender(props);
+  let { name, SVs, actions, callAction } = useDoenetRender(props);
 
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   useEffect(() => {
 
@@ -63,16 +79,19 @@ export default React.memo(function Figure(props) {
   let height = sizeToCSS(SVs.height);
 
   if (SVs.geogebra) {
-    return <div className="geogebra" id={name}>
+    return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+      <div className="geogebra" id={name}>
       <a name={name} />
       <iframe scrolling="no" title="" src={`https://www.geogebra.org/material/iframe/id/${SVs.geogebra}/width/${width}/height/${height}/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/false/asb/false/sri/false/rc/false/ld/false/sdz/false/ctl/false`} width={width} height={height} style={{ border: "0px" }}> </iframe>
     </div>
+    </VisibilitySensor>
   } else if (SVs.encodedGeogebraContent) {
-    return <div className="javascriptapplet" id={cssesc(name)}>
+    return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
+    <div className="javascriptapplet" id={cssesc(name)}>
       <div className="geogebrawebapplet" id={"container_" + cssesc(name)}
         style={{ minWidth: width, minHeight: height }} />
     </div>
-
+    </VisibilitySensor>
   }
 
   console.warn("Nothing specified to embed");

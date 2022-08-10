@@ -7,6 +7,7 @@ export default class Ray extends GraphicalComponent {
 
   actions = {
     moveRay: this.moveRay.bind(this),
+    rayClicked: this.rayClicked.bind(this),
   };
 
   static createAttributesObject() {
@@ -51,21 +52,40 @@ export default class Ray extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-        let lineDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          lineDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          lineDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          lineDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          lineDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColorWord;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
 
-        return { setValue: { styleDescription: lineDescription } };
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " ray";
+
+        return { setValue: { styleDescriptionWithNoun } };
       }
     }
 
@@ -1460,6 +1480,17 @@ export default class Ray extends GraphicalComponent {
         }
       });
     }
+
+  }
+
+  async rayClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
 
   }
 

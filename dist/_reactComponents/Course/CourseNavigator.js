@@ -204,7 +204,7 @@ function StudentActivity({courseId, doenetId, itemInfo, numberOfVisibleColumns, 
 }
 function AuthorCourseNavigation({courseId, sectionId, numberOfVisibleColumns, setNumberOfVisibleColumns, courseNavigatorProps}) {
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId, sectionId}));
-  console.log("authorItemOrder", authorItemOrder);
+  console.log("authorItemOrder", courseId, sectionId, authorItemOrder);
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
   if (definedForSectionId.current != sectionId) {
@@ -389,6 +389,29 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
     }));
   }
   if (itemInfo.isOpen) {
+    let childRowsJSX = itemInfo.content.map((pageOrOrder, i) => {
+      if (pageOrOrder?.type == "order") {
+        return /* @__PURE__ */ React.createElement(Order, {
+          key: `Order${i}${doenetId}`,
+          courseNavigatorProps,
+          orderInfo: pageOrOrder,
+          courseId,
+          activityDoenetId: doenetId,
+          numberOfVisibleColumns: 1,
+          indentLevel: indentLevel + 1
+        });
+      } else {
+        return /* @__PURE__ */ React.createElement(Page, {
+          key: `NavPage${i}`,
+          courseNavigatorProps,
+          courseId,
+          doenetId: pageOrOrder,
+          activityDoenetId: itemInfo.doenetId,
+          numberOfVisibleColumns,
+          indentLevel: indentLevel + 1
+        });
+      }
+    });
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
       courseNavigatorProps,
@@ -402,15 +425,7 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
       isSelected: itemInfo.isSelected,
       indentLevel,
       isBeingCut: itemInfo.isBeingCut
-    }), /* @__PURE__ */ React.createElement(Order, {
-      key: `Order${doenetId}`,
-      courseNavigatorProps,
-      orderInfo: itemInfo.order,
-      courseId,
-      activityDoenetId: doenetId,
-      numberOfVisibleColumns: 1,
-      indentLevel: indentLevel + 1
-    }));
+    }), childRowsJSX);
   } else {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
@@ -493,6 +508,7 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
   if (recoilOrderInfo.isOpen) {
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      isBeingCut: recoilOrderInfo.isBeingCut,
       courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faFileExport,
@@ -506,6 +522,7 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
   } else {
     return /* @__PURE__ */ React.createElement(Row, {
       courseId,
+      isBeingCut: recoilOrderInfo.isBeingCut,
       courseNavigatorProps,
       numberOfVisibleColumns,
       icon: faFileExport,
@@ -545,7 +562,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
   }, [doenetId]);
   if (hasToggle) {
     openCloseIndicator = isOpen ? /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderToggleCloseIcon",
+      "data-test": "folderToggleCloseIcon",
       onClick: () => {
         if (hasToggle) {
           toggleOpenClosed();
@@ -554,7 +571,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faChevronDown
     })) : /* @__PURE__ */ React.createElement("span", {
-      "data-cy": "folderToggleOpenIcon",
+      "data-test": "folderToggleOpenIcon",
       onClick: () => {
         if (hasToggle) {
           toggleOpenClosed();
@@ -591,7 +608,11 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
       }
     } else {
       if (e.shiftKey) {
-        const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseId(courseId));
+        let sectionId = await snapshot.getPromise(searchParamAtomFamily("sectionId"));
+        if (!sectionId) {
+          sectionId = courseId;
+        }
+        const authorItemDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId, sectionId}));
         let allRenderedRows = [];
         let skip = false;
         let parentDoenetIdsToSkip = [];
@@ -674,31 +695,33 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     set(selectedCourseItems, newSelectedItems);
     courseNavigatorProps?.updateSelectMenu({selectedItems: newSelectedItems});
   }, [doenetId, courseId, setSelectionMenu]);
+  let bgcolor = "var(--canvas)";
+  let color = "var(--canvastext)";
+  if (isSelected) {
+    color = "black";
+    bgcolor = "var(--lightBlue)";
+  } else if (isBeingCut) {
+    bgcolor = "var(--mainGray)";
+  }
   let handleDoubleClick = useRecoilCallback(() => async (e) => {
     e.preventDefault();
     e.stopPropagation();
     courseNavigatorProps?.doubleClickItem({doenetId, courseId});
   }, [doenetId, courseId, courseNavigatorProps]);
-  let bgcolor = "#ffffff";
-  if (isSelected) {
-    bgcolor = "hsl(209,54%,82%)";
-  } else if (isBeingCut) {
-    bgcolor = "#e2e2e2";
-  }
   let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
   const indentPx = 25;
   let activityJSX = /* @__PURE__ */ React.createElement("div", {
     key: `Row${doenetId}`,
     role: "button",
-    "data-cy": "courseItem",
     tabIndex: 0,
-    className: "noselect nooutline",
+    className: "navigationRow noselect nooutline",
     style: {
       cursor: "pointer",
       padding: "8px",
       border: "0px",
-      borderBottom: "2px solid black",
+      borderBottom: "2px solid var(--canvastext)",
       backgroundColor: bgcolor,
+      color,
       width: "auto"
     },
     onClick: (e) => {
@@ -715,6 +738,7 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
       alignContent: "center"
     }
   }, /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn1",
     style: {
       marginLeft: `${indentLevel * indentPx}px`
     }
@@ -732,12 +756,12 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     cx: "11",
     cy: "11",
     r: "12",
-    stroke: "white",
+    stroke: "var(--canvas)",
     strokeWidth: "2",
-    fill: "#1A5A99"
+    fill: "var(--mainBlue)"
   }), /* @__PURE__ */ React.createElement("text", {
     fontSize: "14",
-    fill: "white",
+    fill: "var(--canvas)",
     fontFamily: "Verdana",
     textAnchor: "middle",
     alignmentBaseline: "baseline",
@@ -745,19 +769,23 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     y: "16"
   }, numbered)) : null, openCloseIndicator, /* @__PURE__ */ React.createElement("span", {
     style: {marginLeft: "8px"},
-    "data-cy": "rowIcon"
+    "data-test": "rowIcon"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon
   })), /* @__PURE__ */ React.createElement("span", {
     style: {marginLeft: "4px"},
-    "data-cy": "rowLabel"
+    "data-test": "rowLabel"
   }, label, " "))), numberOfVisibleColumns > 1 ? /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn2",
     style: {textAlign: "center"}
   }, columnsJSX[0]) : null, numberOfVisibleColumns > 2 ? /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn3",
     style: {textAlign: "center"}
   }, columnsJSX[1]) : null, numberOfVisibleColumns > 3 ? /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn4",
     style: {textAlign: "center"}
   }, columnsJSX[2]) : null, numberOfVisibleColumns > 4 ? /* @__PURE__ */ React.createElement("span", {
+    className: "navigationColumn5",
     style: {textAlign: "center"}
   }, columnsJSX[3]) : null));
   return /* @__PURE__ */ React.createElement(React.Fragment, null, activityJSX);
@@ -810,7 +838,7 @@ function CourseNavigationHeader({columnLabels, numberOfVisibleColumns, setNumber
     style: {
       padding: "8px",
       border: "0px",
-      borderBottom: "1px solid grey",
+      borderBottom: "1px solid var(--canvastext)",
       maxWidth: "850px",
       margin: "0px"
     }

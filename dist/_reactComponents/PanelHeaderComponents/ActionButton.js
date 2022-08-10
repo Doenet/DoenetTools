@@ -89,7 +89,7 @@ export default function ActionButton(props) {
   }
   if (props.disabled) {
     actionButton.backgroundColor = "var(--mainGray)";
-    actionButton.color = "black";
+    actionButton.color = "var(--canvastext)";
     actionButton.cursor = "not-allowed";
   }
   if (props.overflow === "no_overflow") {
@@ -109,6 +109,7 @@ export default function ActionButton(props) {
     align
   }, label), /* @__PURE__ */ React.createElement(Button, {
     id: props.id,
+    "data-test": props["data-test"],
     style: actionButton,
     alert,
     onClick: (e) => {

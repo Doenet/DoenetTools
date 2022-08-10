@@ -42,9 +42,14 @@ export default React.memo(function Angle(props) {
       radius: SVs.numericalRadius,
       fillColor: angleColor,
       strokeColor: angleColor,
-      highlightFillColor: angleColor,
-      highlightStrokeColor: angleColor
+      highlight: false
     };
+    jsxAngleAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxAngleAttributes.label.useMathJax = true;
+    }
     previousWithLabel.current = SVs.showLabel && SVs.label !== "";
     let through;
     if (SVs.swapPointOrder) {
@@ -113,12 +118,7 @@ export default React.memo(function Angle(props) {
       name
     }));
   }
-  let mathJaxify;
-  if (SVs.inDegrees) {
-    mathJaxify = "\\(" + me.fromAst(SVs.degrees).toLatex() + "^\\circ \\)";
-  } else {
-    mathJaxify = "\\(" + me.fromAst(SVs.radians).toLatex() + "\\)";
-  }
+  let mathJaxify = "\\(" + SVs.latexForRenderer + "\\)";
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
   }), /* @__PURE__ */ React.createElement("span", {

@@ -1,10 +1,10 @@
 import { roundForDisplay } from '../utils/math';
 import InlineComponent from './abstract/InlineComponent';
 import { returnBreakStringsIntoComponentTypeBySpaces, returnGroupIntoComponentTypeSeparatedBySpaces } from './commonsugar/lists';
+import me from 'math-expressions';
 
 export default class NumberList extends InlineComponent {
   static componentType = "numberList";
-  static rendererType = "asList";
   static renderChildren = true;
 
   static includeBlankStringChildren = true;
@@ -33,9 +33,6 @@ export default class NumberList extends InlineComponent {
     };
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     };
     attributes.displayDecimals = {
       createComponentOfType: "integer",
@@ -111,6 +108,65 @@ export default class NumberList extends InlineComponent {
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { overrideChildHide: true } })
+    }
+
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
+      }
     }
 
     stateVariableDefinitions.numbersShadow = {
@@ -196,7 +252,7 @@ export default class NumberList extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       isArray: true,
       entryPrefixes: ["number"],
@@ -325,8 +381,37 @@ export default class NumberList extends InlineComponent {
       targetVariableName: "numbers"
     };
 
+
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      returnDependencies: () => ({
+        numbers: {
+          dependencyType: "stateVariable",
+          variableName: "numbers"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let math;
+        if (dependencyValues.numbers.length === 0) {
+          math = me.fromAst("\uff3f");
+        } else if (dependencyValues.numbers.length === 1) {
+          math = me.fromAst(dependencyValues.numbers[0])
+        } else {
+          math = me.fromAst(["list", ...dependencyValues.numbers]);
+        }
+
+        return { setValue: { math } }
+
+      }
+    }
+
     stateVariableDefinitions.text = {
       public: true,
+      forRenderer: true,
       shadowingInstructions: {
         createComponentOfType: "text",
       },
@@ -520,5 +605,13 @@ export default class NumberList extends InlineComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "math",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+    },
+    "text"
+  ];
 
 }

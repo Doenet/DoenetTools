@@ -13,6 +13,10 @@ const Textfield = styled.input`
   text-align: center;
   resize: none;
   cursor: ${props => props.disabled ? 'not-allowed' : 'auto'};
+  &:focus {
+    outline: ${props => props.alert};
+    outline-offset: 2px;
+  }
 `;
 
 const Label = styled.p`
@@ -52,6 +56,11 @@ const Units = styled.button`
     background-color: ${props => props.disabled ? 'none' : 'var(--lightBlue)'};
     cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   };
+
+  &:focus {
+    outline: ${props => props.alert};
+    outline-offset: 4px;
+  }
 `;
 
 const Unit = styled.div`
@@ -226,6 +235,7 @@ export default function UnitMenu(props) {
       <>
         <LabelContainer align={align}>
           <Label
+            id="unitmenu-label"
             visible={labelVisible}
             onMouseDown={(e) => {
               initialClickLabelPosition.current = [e.clientX, e.clientY]
@@ -237,6 +247,8 @@ export default function UnitMenu(props) {
           </Label>
           <Container>
             <Textfield
+              aria-labelledby="unitmenu-label"
+              aria-disabled={props.disabled ? true : false}
               disabled={disabled}
               id="text"
               type="text"
@@ -250,7 +262,7 @@ export default function UnitMenu(props) {
               }}
               onChange={() => {changeValue(event)}}
             ></Textfield>
-              <Units disabled={disabled}>
+              <Units aria-disabled={props.disabled ? true : false} disabled={disabled} alert={alert} aria-haspopup="true">
                 {currentUnit}
                 <Unit id="unit" disabled={disabled}>{unitComponents}</Unit>
               </Units>

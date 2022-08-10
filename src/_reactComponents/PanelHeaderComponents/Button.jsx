@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from "styled-components";
+import { MathJax } from "better-react-mathjax";
 
 const ButtonStyling = styled.button`
   margin: ${props => props.theme.margin};
@@ -19,6 +20,11 @@ const ButtonStyling = styled.button`
     background-color: ${props => props.alert ? 'var(--lightRed)' : 'var(--lightBlue)'};
     color: black;
   };
+
+  &:focus {
+    outline: 2px solid ${props => props.alert ? 'var(--mainRed)' : props.disabled ? 'var(--canvastext)' : 'var(--mainBlue)'};
+    outline-offset: 2px;
+  }
 `;
 
 ButtonStyling.defaultProps = {
@@ -94,6 +100,9 @@ export default function Button(props) {
         icon = props.icon;
         button.value = ''
     }
+    if(props.value && props.valueHasLatex) {
+      button.value = <MathJax hideUntilTypeset={"first"} inline dynamic >{button.value}</MathJax>
+    }
   };
 
   // if (props.alert) {
@@ -118,7 +127,7 @@ export default function Button(props) {
         <>
             <Container style={container} align={align}>
               <Label labelVisible={labelVisible} align={align}>{label}</Label>
-              <ButtonStyling style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
+              <ButtonStyling disabled={props.disabled} aria-disabled={props.disabled} aria-labelledby={label} aria-label={button.value} style={button} {...props} onClick={(e) => { handleClick(e) }}>{icon}{' '}{button.value}</ButtonStyling>
             </Container>
         </>
     )

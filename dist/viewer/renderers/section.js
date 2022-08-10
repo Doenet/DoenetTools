@@ -1,11 +1,26 @@
-import React, {useRef} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
 import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretRight as twirlIsClosed} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {faCaretDown as twirlIsOpen} from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import useDoenetRender from "./useDoenetRenderer.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export default React.memo(function Section(props) {
   let {name, SVs, children, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
@@ -95,15 +110,15 @@ export default React.memo(function Section(props) {
     let checkWorkStyle = {
       height: "23px",
       display: "inline-block",
-      backgroundColor: "rgb(2, 117, 216)",
+      backgroundColor: "var(--mainBlue)",
       padding: "1px 6px 1px 6px",
       color: "white",
       fontWeight: "bold",
       marginBottom: "30px"
     };
-    let checkWorkText = "Check Work";
+    let checkWorkText = SVs.submitLabel;
     if (!SVs.showCorrectness) {
-      checkWorkText = "Submit Response";
+      checkWorkText = SVs.submitLabelNoCorrectness;
     }
     checkworkComponent = /* @__PURE__ */ React.createElement("button", {
       id: name + "_submit",
@@ -121,7 +136,7 @@ export default React.memo(function Section(props) {
     }), " ", checkWorkText);
     if (SVs.showCorrectness) {
       if (validationState.current === "correct") {
-        checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
+        checkWorkStyle.backgroundColor = "var(--mainGreen)";
         checkworkComponent = /* @__PURE__ */ React.createElement("span", {
           id: name + "_correct",
           style: checkWorkStyle
@@ -129,7 +144,7 @@ export default React.memo(function Section(props) {
           icon: faCheck
         }), "  Correct");
       } else if (validationState.current === "incorrect") {
-        checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+        checkWorkStyle.backgroundColor = "var(--mainRed)";
         checkworkComponent = /* @__PURE__ */ React.createElement("span", {
           id: name + "_incorrect",
           style: checkWorkStyle
@@ -137,7 +152,7 @@ export default React.memo(function Section(props) {
           icon: faTimes
         }), "  Incorrect");
       } else if (validationState.current === "partialcorrect") {
-        checkWorkStyle.backgroundColor = "#efab34";
+        checkWorkStyle.backgroundColor = "var(--mainYellow)";
         let percent = Math.round(SVs.creditAchieved * 100);
         let partialCreditContents = `${percent}% Correct`;
         checkworkComponent = /* @__PURE__ */ React.createElement("span", {
@@ -147,7 +162,7 @@ export default React.memo(function Section(props) {
       }
     } else {
       if (validationState.current !== "unvalidated") {
-        checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
+        checkWorkStyle.backgroundColor = "var(--mainPurple)";
         checkworkComponent = /* @__PURE__ */ React.createElement("span", {
           id: name + "_saved",
           style: checkWorkStyle
@@ -171,7 +186,7 @@ export default React.memo(function Section(props) {
     content = /* @__PURE__ */ React.createElement("div", {
       style: {border: "var(--mainBorder)", borderRadius: "var(--mainBorderRadius)"}
     }, /* @__PURE__ */ React.createElement("div", {
-      style: {backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: "var(--mainBorder)", borderTopLeftRadius: "var(--mainBorderRadius)", borderTopRightRadius: "var(--mainBorderRadius)"},
+      style: {backgroundColor: "var(--mainGray)", cursor: "pointer", padding: "6px", borderBottom: SVs.open ? "var(--mainBorder)" : "none", borderTopLeftRadius: "var(--mainBorderRadius)", borderTopRightRadius: "var(--mainBorderRadius)"},
       onClick: () => callAction({action: SVs.open ? actions.closeSection : actions.revealSection})
     }, /* @__PURE__ */ React.createElement("a", {
       name
@@ -189,21 +204,30 @@ export default React.memo(function Section(props) {
   }
   switch (SVs.containerTag) {
     case "aside":
-      return /* @__PURE__ */ React.createElement("aside", {
+      return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+        partialVisibility: true,
+        onChange: onChangeVisibility
+      }, /* @__PURE__ */ React.createElement("aside", {
         id: name,
         style: {margin: "12px 0"}
-      }, " ", content, " ");
+      }, " ", content, " "));
     case "div":
-      return /* @__PURE__ */ React.createElement("div", {
+      return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+        partialVisibility: true,
+        onChange: onChangeVisibility
+      }, /* @__PURE__ */ React.createElement("div", {
         id: name,
         style: {margin: "12px 0"}
-      }, " ", content, " ");
+      }, " ", content, " "));
     case "none":
       return /* @__PURE__ */ React.createElement(React.Fragment, null, content);
     default:
-      return /* @__PURE__ */ React.createElement("section", {
+      return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+        partialVisibility: true,
+        onChange: onChangeVisibility
+      }, /* @__PURE__ */ React.createElement("section", {
         id: name,
         style: {margin: "12px 0"}
-      }, " ", content, " ");
+      }, " ", content, " "));
   }
 });

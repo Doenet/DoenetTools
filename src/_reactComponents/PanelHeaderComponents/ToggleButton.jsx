@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { MathJax } from "better-react-mathjax";
 
 const Button = styled.button`
   margin: ${(props) => props.theme.margin};
@@ -33,6 +34,11 @@ const Button = styled.button`
         : props.disabled
         ? 'none'
         : 'var(--lightBlue)'};
+  }
+
+  &:focus {
+    outline: 2px solid ${props => props.disabled ? 'var(--mainGray)' : (props. alert ? 'var(--mainRed)' : 'var(--mainBlue)')};
+    outline-offset: 2px;
   }
 `;
 
@@ -98,6 +104,9 @@ export default function ToggleButton(props) {
       icon = props.icon;
       toggleButton.value = '';
     }
+    if(props.value && props.valueHasLatex) {
+      toggleButton.value = <MathJax hideUntilTypeset={"first"} inline dynamic >{toggleButton.value}</MathJax>
+    }
   }
 
   if (isSelected === true) {
@@ -152,8 +161,11 @@ export default function ToggleButton(props) {
   return (
     <>
       <div style={container}>
-        <p style={label}>{label.value}</p>
+        <p id="toggle-button-label" style={label}>{label.value}</p>
         <Button
+          aria-labelledby="toggle-button-label"
+          aria-pressed={props.isSelected}
+          aria-disabled={props.disabled ? true : false}
           id={props.id}
           style={toggleButton}
           disabled={disabled}

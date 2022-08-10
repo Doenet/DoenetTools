@@ -2,9 +2,24 @@ import React, {useEffect, useState, useRef, createContext} from "../../_snowpack
 import {sizeToCSS} from "./utils/css.js";
 import useDoenetRender from "./useDoenetRenderer.js";
 import Plotly from "../../_snowpack/pkg/plotly.js-dist-min.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 export const BoardContext = createContext();
 export default React.memo(function Chart(props) {
   let {name, SVs, actions, callAction} = useDoenetRender(props);
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   useEffect(() => {
     if (SVs.dataFrame !== null) {
       let colInds;
@@ -36,9 +51,12 @@ export default React.memo(function Chart(props) {
   }, []);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("a", {
     name
-  }), /* @__PURE__ */ React.createElement("div", {
+  }), /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement("div", {
     id: name
-  }));
+  })));
 });
 function extractColumn(data, colInd) {
   let dataColumn = [];

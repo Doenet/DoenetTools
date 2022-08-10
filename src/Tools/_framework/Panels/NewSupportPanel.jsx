@@ -51,7 +51,7 @@ export default function SupportPanel({ hide, children, panelTitles=[], panelInde
   return (
     <>
       {/* <ControlsWrapper $hide={hide}>{panelSelector}</ControlsWrapper> */}
-      <ControlsWrapper $hide={hide}>
+      <ControlsWrapper $hide={hide} aria-label="complementary controls" data-test="Support Panel Controls">
         <a href="/public?tool=editor&doenetId=_DG5JOeFNTc5rpWuf2uA-q" target="_blank">
           <FontAwesomeIcon 
             icon={faQuestionCircle} 
@@ -64,7 +64,7 @@ export default function SupportPanel({ hide, children, panelTitles=[], panelInde
               width: '20px'}}/>
         </a>
       </ControlsWrapper>
-      <SupportWrapper  $hide={hide}>{children}</SupportWrapper>
+      <SupportWrapper  $hide={hide} role="complementary" data-test="Support Panel">{children}</SupportWrapper>
     </>
   );
 }

@@ -60,7 +60,7 @@ export default function ChooseLearnerPanel(props) {
     }, "Enter Passcode "), /* @__PURE__ */ React.createElement("input", {
       type: "password",
       value: code,
-      "data-cy": "signinCodeInput",
+      "data-test": "signinCodeInput",
       onKeyDown: (e) => {
         if (e.key === "Enter") {
           setStage("check code");
@@ -72,7 +72,7 @@ export default function ChooseLearnerPanel(props) {
     })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("button", {
       style: {},
       onClick: () => setStage("check code"),
-      "data-cy": "signInButton"
+      "data-test": "signInButton"
     }, "Submit"))));
   }
   if (stage === "check code") {

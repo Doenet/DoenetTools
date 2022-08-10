@@ -253,9 +253,9 @@ export default React.memo(function ChoiceInput(props) {
 
       if (validationState === "unvalidated") {
 
-        let checkWorkText = "Check Work";
+        let checkWorkText = SVs.submitLabel;
         if (!SVs.showCorrectness) {
-          checkWorkText = "Submit Response";
+          checkWorkText = SVs.submitLabelNoCorrectness;
         }
         if (disabled) {
           checkWorkStyle.backgroundColor = "rgb(200,200,200)";

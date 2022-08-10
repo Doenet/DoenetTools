@@ -3,7 +3,7 @@ export default function Card(props) {
   const labelVisible = props.label ? "static" : "none";
   const align = props.vertical ? "static" : "flex";
   var card = {
-    backgroundImage: `linear-gradient(to bottom left, white, white, white, rgb(143, 184, 222))`,
+    backgroundImage: `linear-gradient(to bottom left, var(--canvas), var(--canvas), var(--canvas), var(--solidLightBlue))`,
     transition: "0.3s",
     borderRadius: "5px",
     width: "190px",
@@ -11,8 +11,8 @@ export default function Card(props) {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    color: "black",
-    border: "2px solid black",
+    color: "var(--canvastext)",
+    border: "2px solid var(--canvastext)",
     cursor: "pointer"
   };
   var title = {
@@ -46,11 +46,11 @@ export default function Card(props) {
     label.value = props.label;
   }
   if (props.alert) {
-    card.borderColor = "#C1292E";
+    card.borderColor = "var(--mainRed)";
   }
   if (props.disabled) {
-    card.borderColor = "#e2e2e2";
-    card.color = "black";
+    card.borderColor = "var(--mainGray)";
+    card.color = "var(--canvastext)";
     card.cursor = "not-allowed";
   }
   function handleClick(e) {

@@ -37,6 +37,7 @@ export default class Choiceinput extends Input {
   static renderChildren = true;
 
   static variableForPlainMacro = "values";
+  static variableForPlainCopy = "values";
 
   static createsVariants = true;
 
@@ -49,6 +50,7 @@ export default class Choiceinput extends Input {
       defaultValue: false,
       public: true,
       forRenderer: true,
+      fallBackToParentStateVariable: "selectMultiple",
     };
     attributes.matchPartial = {
       createComponentOfType: "boolean",
@@ -84,6 +86,24 @@ export default class Choiceinput extends Input {
       forRenderer: true,
     }
 
+    attributes.submitLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabel",
+      defaultValue: "Check Work",
+      public: true,
+      forRenderer: true,
+      fallBackToParentStateVariable: "submitLabel",
+    }
+
+    attributes.submitLabelNoCorrectness = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabelNoCorrectness",
+      defaultValue: "Submit Response",
+      public: true,
+      forRenderer: true,
+      fallBackToParentStateVariable: "submitLabelNoCorrectness",
+    }
+
     return attributes;
   }
 
@@ -103,7 +123,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.inline = {
       public: true,
-      componentType: "boolean",
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
       forRenderer: true,
       defaultValue: false,
       hasEssential: true,
@@ -131,7 +153,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.numberChoices = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         choiceChildren: {
           dependencyType: "child",
@@ -269,7 +293,13 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.choiceChildrenOrdered = {
       additionalStateVariablesDefined: [
-        { variableName: "numberChoices", public: true, componentType: "number" },
+        {
+          variableName: "numberChoices",
+          public: true,
+          shadowingInstructions: {
+            createComponentOfType: "number"
+          }
+        },
       ],
       returnDependencies: () => ({
         choiceOrder: {
@@ -297,7 +327,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.choiceTexts = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       isArray: true,
       entryPrefixes: ["choiceText"],
       forRenderer: true,
@@ -630,7 +662,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.selectedIndices = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       isArray: true,
       entryPrefixes: ["selectedIndex"],
       forRenderer: true,
@@ -674,7 +708,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.selectedValues = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       isArray: true,
       entryPrefixes: ["selectedValue"],
       returnArraySizeDependencies: () => ({
@@ -896,7 +932,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.numberFeedbacks = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         allFeedbacks: {
           dependencyType: "stateVariable",
@@ -913,7 +951,9 @@ export default class Choiceinput extends Input {
 
     stateVariableDefinitions.feedbacks = {
       public: true,
-      componentType: "feedback",
+      shadowingInstructions: {
+        createComponentOfType: "feedback",
+      },
       isArray: true,
       entryPrefixes: ["feedback"],
       returnArraySizeDependencies: () => ({
@@ -1045,7 +1085,7 @@ export default class Choiceinput extends Input {
   }) {
 
 
-    if (!serializedComponent.attributes.shuffleOrder?.primitive) {
+    if (!serializedComponent.attributes?.shuffleOrder?.primitive) {
       return super.determineNumberOfUniqueVariants({
         serializedComponent, componentInfoObjects
       });
@@ -1061,7 +1101,7 @@ export default class Choiceinput extends Input {
           inheritedComponentType: child.componentType,
           baseComponentType: "composite"
         })
-          && child.attributes.componentType?.primitive === "choice"
+          && child.attributes.createComponentOfType?.primitive === "choice"
         ) {
           if (child.attributes.nComponents?.primitive !== undefined) {
             let newChoices = Number(child.attributes.nComponents?.primitive);

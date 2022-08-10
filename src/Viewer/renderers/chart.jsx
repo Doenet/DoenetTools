@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, createContext } from 'react';
 import { sizeToCSS } from './utils/css';
 import useDoenetRender from './useDoenetRenderer';
 // import Plotly from 'plotly.js-dist-min';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 
 export const BoardContext = createContext();
@@ -10,6 +11,21 @@ export default React.memo(function Chart(props) {
   let { name, SVs, actions, callAction } = useDoenetRender(props);
   // console.log({ name, SVs })
 
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   //Draw chart after mounting component
   // useEffect(() => {
@@ -54,7 +70,7 @@ export default React.memo(function Chart(props) {
 
   return <>
     <a name={name} />
-    <div id={name} />
+    <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><div id={name} /></VisibilitySensor>
   </>;
 
 })

@@ -6,9 +6,11 @@ import me from 'math-expressions';
 export default class Circle extends Curve {
   static componentType = "circle";
   static rendererType = "circle";
+  static representsClosedPath = true;
 
   actions = {
     moveCircle: this.moveCircle.bind(this),
+    circleClicked: this.circleClicked.bind(this),
   };
 
 
@@ -33,9 +35,7 @@ export default class Circle extends Curve {
   }
 
   static returnChildGroups() {
-
-    return []
-
+    return GraphicalComponent.returnChildGroups();
   }
 
 
@@ -43,9 +43,142 @@ export default class Circle extends Curve {
 
     let stateVariableDefinitions = GraphicalComponent.returnStateVariableDefinitions(args);
 
-    let curveStateVariableDefinitions = super.returnStateVariableDefinitions(args);
+    stateVariableDefinitions.styleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
 
-    stateVariableDefinitions.styleDescription = curveStateVariableDefinitions.styleDescription;
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescription = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord;
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " border";
+          } else {
+            styleDescription = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " with " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderDescription) {
+            borderDescription += " ";
+          }
+          borderDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        let styleDescriptionWithNoun;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          styleDescriptionWithNoun = borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+            + " circle";
+        } else {
+          if (dependencyValues.selectedStyle.fillColorWord === dependencyValues.selectedStyle.lineColorWord) {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " circle with a " + borderDescription + " border";
+          } else {
+            styleDescriptionWithNoun = "filled " + dependencyValues.selectedStyle.fillColorWord
+              + " circle with a " + borderDescription + " " + dependencyValues.selectedStyle.lineColorWord
+              + " border";
+          }
+        }
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+
+    stateVariableDefinitions.borderStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let borderStyleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (borderStyleDescription) {
+            borderStyleDescription += " ";
+          }
+          borderStyleDescription += dependencyValues.selectedStyle.lineStyleWord;
+        }
+
+        if (borderStyleDescription) {
+          borderStyleDescription += " ";
+        }
+
+        borderStyleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { borderStyleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.fillStyleDescription = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        selectedStyle: {
+          dependencyType: "stateVariable",
+          variableName: "selectedStyle",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+
+        let fillStyleDescription;
+        if (dependencyValues.selectedStyle.fillColor === "none") {
+          fillStyleDescription = "unfilled";
+        } else {
+          fillStyleDescription = dependencyValues.selectedStyle.fillColorWord;
+        }
+
+        return { setValue: { fillStyleDescription } };
+      }
+    }
 
 
     stateVariableDefinitions.curveType = {
@@ -170,13 +303,19 @@ export default class Circle extends Curve {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "throughPoints") {
-          return "throughPoint" + propIndex;
+          if (propIndex.length === 1) {
+            return "throughPoint" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 12) === "throughPoint") {
           // could be throughPoint or throughPointX
           let throughPointNum = Number(varName.slice(12));
           if (Number.isInteger(throughPointNum) && throughPointNum > 0) {
-            return `throughPointX${throughPointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `throughPointX${throughPointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -2237,6 +2376,16 @@ export default class Circle extends Curve {
 
   }
 
+  async circleClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 }
 
 function circleFromTwoNumericalPoints({ point1, point2 }) {

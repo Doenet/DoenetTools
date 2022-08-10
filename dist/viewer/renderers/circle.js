@@ -28,20 +28,36 @@ export default React.memo(function Circle(props) {
     if (!(Number.isFinite(SVs.numericalCenter[0]) && Number.isFinite(SVs.numericalCenter[1]) && SVs.numericalRadius > 0)) {
       return null;
     }
+    let fixed = !SVs.draggable || SVs.fixed;
     var jsxCircleAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
       withLabel: SVs.showLabel && SVs.label !== "",
-      fixed: !SVs.draggable || SVs.fixed,
+      fixed,
       layer: 10 * SVs.layer + 5,
       strokeColor: SVs.selectedStyle.lineColor,
+      strokeOpacity: SVs.selectedStyle.lineOpacity,
       highlightStrokeColor: SVs.selectedStyle.lineColor,
       strokeWidth: SVs.selectedStyle.lineWidth,
       highlightStrokeWidth: SVs.selectedStyle.lineWidth,
-      dash: styleToDash(SVs.selectedStyle.lineStyle)
+      highlightStrokeOpacity: SVs.selectedStyle.lineOpacity * 0.5,
+      dash: styleToDash(SVs.selectedStyle.lineStyle),
+      fillColor: SVs.selectedStyle.fillColor,
+      fillOpacity: SVs.selectedStyle.fillOpacity,
+      highlightFillColor: SVs.selectedStyle.fillColor,
+      highlightFillOpacity: SVs.selectedStyle.fillOpacity * 0.5,
+      highlight: !fixed
     };
+    if (SVs.selectedStyle.fillColor.toLowerCase() !== "none") {
+      jsxCircleAttributes.hasInnerPoints = true;
+    }
+    jsxCircleAttributes.label = {
+      highlight: false
+    };
+    if (SVs.labelHasLatex) {
+      jsxCircleAttributes.label.useMathJax = true;
+    }
     if (SVs.showLabel && SVs.label !== "") {
-      jsxCircleAttributes.label = {};
       if (SVs.applyStyleToLabel) {
         jsxCircleAttributes.label.strokeColor = SVs.selectedStyle.lineColor;
       } else {
@@ -50,7 +66,9 @@ export default React.memo(function Circle(props) {
     }
     let newCircleJXG = board.create("circle", [[...SVs.numericalCenter], SVs.numericalRadius], jsxCircleAttributes);
     newCircleJXG.on("drag", function(e) {
-      dragged.current = true;
+      if (Math.abs(e.x - pointerAtDown.current[0]) > 0.1 || Math.abs(e.y - pointerAtDown.current[1]) > 0.1) {
+        dragged.current = true;
+      }
       centerCoords.current = calculateCenterPosition(e);
       callAction({
         action: actions.moveCircle,
@@ -73,6 +91,10 @@ export default React.memo(function Circle(props) {
             radius: radiusAtDown.current,
             throughAngles: throughAnglesAtDown.current
           }
+        });
+      } else {
+        callAction({
+          action: actions.circleClicked
         });
       }
     });
@@ -119,16 +141,38 @@ export default React.memo(function Circle(props) {
         circleJXG.current.visProp["visible"] = false;
         circleJXG.current.visPropCalc["visible"] = false;
       }
+      let fixed = !SVs.draggable || SVs.fixed;
+      circleJXG.current.visProp.fixed = fixed;
+      circleJXG.current.visProp.highlight = !fixed;
+      let layer = 10 * SVs.layer + 5;
+      let layerChanged = circleJXG.current.visProp.layer !== layer;
+      if (layerChanged) {
+        circleJXG.current.setAttribute({layer});
+      }
       if (circleJXG.current.visProp.strokecolor !== SVs.selectedStyle.lineColor) {
         circleJXG.current.visProp.strokecolor = SVs.selectedStyle.lineColor;
         circleJXG.current.visProp.highlightstrokecolor = SVs.selectedStyle.lineColor;
       }
-      let newDash = styleToDash(SVs.selectedStyle.lineStyle, SVs.dashed);
+      if (circleJXG.current.visProp.strokeopacity !== SVs.selectedStyle.lineOpacity) {
+        circleJXG.current.visProp.strokeopacity = SVs.selectedStyle.lineOpacity;
+        circleJXG.current.visProp.highlightstrokeopacity = SVs.selectedStyle.lineOpacity * 0.5;
+      }
+      let newDash = styleToDash(SVs.selectedStyle.lineStyle);
       if (circleJXG.current.visProp.dash !== newDash) {
         circleJXG.current.visProp.dash = newDash;
       }
       if (circleJXG.current.visProp.strokewidth !== SVs.selectedStyle.lineWidth) {
         circleJXG.current.visProp.strokewidth = SVs.selectedStyle.lineWidth;
+        circleJXG.current.visProp.highlightstrokewidth = SVs.selectedStyle.lineWidth;
+      }
+      if (circleJXG.current.visProp.fillcolor !== SVs.selectedStyle.fillColor) {
+        circleJXG.current.visProp.fillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.highlightfillcolor = SVs.selectedStyle.fillColor;
+        circleJXG.current.visProp.hasinnerpoints = SVs.selectedStyle.fillColor.toLowerCase() !== "none";
+      }
+      if (circleJXG.current.visProp.fillopacity !== SVs.selectedStyle.fillOpacity) {
+        circleJXG.current.visProp.fillopacity = SVs.selectedStyle.fillOpacity;
+        circleJXG.current.visProp.highlightfillopacity = SVs.selectedStyle.fillOpacity * 0.5;
       }
       circleJXG.current.name = SVs.label;
       let withlabel = SVs.showLabel && SVs.label !== "";

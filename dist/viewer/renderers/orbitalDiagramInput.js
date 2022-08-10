@@ -1,6 +1,7 @@
-import React, {createRef, useState} from "../../_snowpack/pkg/react.js";
+import React, {createRef, useEffect, useState} from "../../_snowpack/pkg/react.js";
 import useDoenetRenderer from "./useDoenetRenderer.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
+import VisibilitySensor from "../../_snowpack/pkg/react-visibility-sensor-v2.js";
 const Box = styled.svg`
 border: '2px solid red';
 margin: 2px;
@@ -13,6 +14,20 @@ export default React.memo(function orbitalDiagramInput(props) {
   orbitalDiagramInput.ignoreActionsWithoutCore = true;
   let fixed = createRef(SVs.fixed);
   fixed.current = SVs.fixed;
+  let onChangeVisibility = (isVisible) => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: {isVisible}
+    });
+  };
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: {isVisible: false}
+      });
+    };
+  }, []);
   if (SVs.hidden) {
     return null;
   }
@@ -142,7 +157,10 @@ export default React.memo(function orbitalDiagramInput(props) {
       }
     }, "Remove Arrow"));
   }
-  return /* @__PURE__ */ React.createElement(React.Fragment, null, controls, rowsJSX);
+  return /* @__PURE__ */ React.createElement(VisibilitySensor, {
+    partialVisibility: true,
+    onChange: onChangeVisibility
+  }, /* @__PURE__ */ React.createElement(React.Fragment, null, controls, rowsJSX));
 });
 const OrbitalRow = React.memo(function OrbitalRow2({rowNumber, updateRowText, selectedRow, setSelectedRow, orbitalText, boxes, selectedBox, setSelectedBox, deselect, name}) {
   let rowStyle = {

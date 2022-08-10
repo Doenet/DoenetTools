@@ -10,6 +10,15 @@ export default class Triangle extends Polygon {
 
     let stateVariableDefinitions = super.returnStateVariableDefinitions();
 
+    let styleDescriptionWithNounDef = stateVariableDefinitions.styleDescriptionWithNoun.definition;
+
+    stateVariableDefinitions.styleDescriptionWithNoun.definition = function ({ dependencyValues }) {
+      let styleDescriptionWithNoun = styleDescriptionWithNounDef({ dependencyValues }).setValue.styleDescriptionWithNoun;
+      styleDescriptionWithNoun = styleDescriptionWithNoun.replaceAll("polygon", "triangle");
+
+      return { setValue: { styleDescriptionWithNoun } }
+    }
+
 
     stateVariableDefinitions.vertices.hasEssential = true;
 

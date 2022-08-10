@@ -85,6 +85,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     attributes.displaySmallAsZero = {
       leaveRaw: true
     }
+    attributes.padZeros = {
+      leaveRaw: true
+    }
 
     attributes.variantDeterminesSeed = {
       createComponentOfType: "boolean",
@@ -102,7 +105,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
     stateVariableDefinitions.step = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         type: {
           dependencyType: "stateVariable",
@@ -126,11 +131,15 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
     stateVariableDefinitions.from = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: [{
         variableName: "to",
         public: true,
-        componentType: "number"
+        shadowingInstructions: {
+          createComponentOfType: "number",
+        },
       }, {
         variableName: "nDiscreteValues",
       }],
@@ -209,7 +218,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     stateVariableDefinitions.mean = {
       stateVariablesDeterminingDependencies: ["type"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies({ stateValues }) {
         let dependencies = {
           type: {
@@ -250,7 +261,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
     stateVariableDefinitions.variance = {
       stateVariablesDeterminingDependencies: ["type"],
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies({ stateValues }) {
         let dependencies = {
           type: {
@@ -312,7 +325,9 @@ export default class SampleRandomNumbers extends CompositeComponent {
 
     stateVariableDefinitions.standardDeviation = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       returnDependencies: () => ({
         variance: {
           dependencyType: "stateVariable",
@@ -464,7 +479,7 @@ export default class SampleRandomNumbers extends CompositeComponent {
     let newNamespace = component.attributes.newNamespace?.primitive;
 
     let attributesToConvert = {};
-    for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals"]) {
+    for (let attr of ["displayDigits", "displaySmallAsZero", "displayDecimals", "padZeros"]) {
       if (attr in component.attributes) {
         attributesToConvert[attr] = component.attributes[attr]
       }

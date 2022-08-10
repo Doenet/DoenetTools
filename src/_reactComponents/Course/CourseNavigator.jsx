@@ -40,6 +40,7 @@ import {
   authorCourseItemOrderByCourseIdBySection,
   studentCourseItemOrderByCourseIdBySection
 } from '../../_reactComponents/Course/CourseActions';
+import styled from 'styled-components';
 
 /**
  * Internal dependencies
@@ -50,6 +51,15 @@ import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';
 // import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
 import { effectiveRoleAtom } from '../PanelHeaderComponents/RoleDropdown';
+
+const ToggleCloseIconStyling = styled.button`
+  border: none;
+  border-radius: 35px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
+`;
 
 export default function CourseNavigator(props) {
   console.log("=== CourseNavigator")
@@ -344,23 +354,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
 
   },[doenetId])
 
-  if (hasToggle){
-    openCloseIndicator = isOpen ? (
-        <span data-cy="folderToggleCloseIcon" onClick={ ()=>{
-          if (hasToggle){
-          toggleOpenClosed();
-        }}} >
-          <FontAwesomeIcon icon={faChevronDown} />
-        </span>
-      ) : (
-        <span data-cy="folderToggleOpenIcon" onClick={ ()=>{
-          if (hasToggle){
-          toggleOpenClosed();
-        }}} >
-          <FontAwesomeIcon icon={faChevronRight} />
-        </span>
-      );
-  }
+  
 
   //Selection is based on course items and Recoil
   //Always append to the end of the array so we know the last selected item
@@ -499,7 +493,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
 
     courseNavigatorProps?.updateSelectMenu({selectedItems:newSelectedItems});
 
-},[doenetId, courseId, setSelectionMenu])
+  },[doenetId, courseId, setSelectionMenu])
 
   let bgcolor = 'var(--canvas)';
   let color = 'var(--canvastext)';
@@ -508,6 +502,48 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     bgcolor = 'var(--lightBlue)';
   }else if (isBeingCut){
     bgcolor = 'var(--mainGray)'; //grey
+  }
+
+  if (hasToggle){
+    openCloseIndicator = isOpen ? (
+        <ToggleCloseIconStyling 
+          data-cy="folderToggleCloseIcon" 
+          aria-expanded="true"
+          style={{backgroundColor: bgcolor}}
+          onClick={ ()=>{
+            if (hasToggle){
+            toggleOpenClosed();
+          }}} 
+          onKeyDown={(e)=>{
+            if (e.key === "enter") {
+              if (hasToggle){
+                toggleOpenClosed();
+              }
+            }
+          }} 
+        >
+          <FontAwesomeIcon icon={faChevronDown} />
+        </ToggleCloseIconStyling>
+      ) : (
+        <ToggleCloseIconStyling 
+          data-cy="folderToggleOpenIcon" 
+          aria-expanded="false"
+          style={{backgroundColor: bgcolor}}
+          onClick={ ()=>{
+            if (hasToggle){
+            toggleOpenClosed();
+          }}}
+          onKeyDown={(e)=>{
+            if (e.key === "enter") {
+              if (hasToggle){
+                toggleOpenClosed();
+              }
+            }
+          }}  
+        >
+          <FontAwesomeIcon icon={faChevronRight} />
+        </ToggleCloseIconStyling>
+      );
   }
 
   //Used to open editor or assignment
@@ -524,9 +560,8 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     <div 
     key={`Row${doenetId}`}
     role="button"
-    data-cy="courseItem"
     tabIndex={0}
-    className="noselect nooutline"
+    className="navigationRow noselect nooutline"
     style={{
       cursor: 'pointer',
       padding: '8px',
@@ -539,6 +574,19 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     }}
     onClick={(e)=>{
       handleSingleSelectionClick(e);
+    }}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter') {
+        if (bgcolor === 'var(--canvas)') {
+          handleSingleSelectionClick(e);
+        } else {
+          if (e.key === 'Enter' && e.metaKey) {
+            handleSingleSelectionClick(e);
+          } else {
+            handleDoubleClick(e);
+          }
+        }
+      }
     }}
     onDoubleClick={(e)=>{
       handleDoubleClick(e);
@@ -555,7 +603,9 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
         // marginBottom: '8px',
       }}
     >
-      <span style={{ 
+      <span 
+       className='navigationColumn1'
+      style={{ 
         marginLeft: `${indentLevel * indentPx}px`
       }}>
 
@@ -578,16 +628,16 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
             y="16">{numbered}</text>
   </svg>: null }
         {openCloseIndicator}
-        <span style={{marginLeft:'8px'}} data-cy="rowIcon">
+        <span style={{marginLeft:'8px'}} data-test="rowIcon">
           <FontAwesomeIcon icon={icon} />
         </span>
-        <span style={{marginLeft:'4px'}} data-cy="rowLabel">{label} </span>
+        <span style={{marginLeft:'4px'}} data-test="rowLabel">{label} </span>
       </p>
       </span>
-    {numberOfVisibleColumns > 1 ? <span style={{ textAlign: 'center' }}>{columnsJSX[0]}</span> : null}
-    {numberOfVisibleColumns > 2 ? <span style={{ textAlign: 'center' }}>{columnsJSX[1]}</span> : null}
-    {numberOfVisibleColumns > 3 ? <span style={{ textAlign: 'center' }}>{columnsJSX[2]}</span> : null}
-    {numberOfVisibleColumns > 4 ? <span style={{ textAlign: 'center' }}>{columnsJSX[3]}</span> : null}
+    {numberOfVisibleColumns > 1 ? <span className='navigationColumn2' style={{ textAlign: 'center' }}>{columnsJSX[0]}</span> : null}
+    {numberOfVisibleColumns > 2 ? <span className='navigationColumn3' style={{ textAlign: 'center' }}>{columnsJSX[1]}</span> : null}
+    {numberOfVisibleColumns > 3 ? <span className='navigationColumn4' style={{ textAlign: 'center' }}>{columnsJSX[2]}</span> : null}
+    {numberOfVisibleColumns > 4 ? <span className='navigationColumn5' style={{ textAlign: 'center' }}>{columnsJSX[3]}</span> : null}
       </div>
     </div>
   )

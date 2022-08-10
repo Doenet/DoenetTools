@@ -6,7 +6,8 @@ export default class Polyline extends GraphicalComponent {
 
   actions = {
     movePolyline: this.movePolyline.bind(this),
-    finalizePolylinePosition: this.finalizePolylinePosition.bind(this)
+    finalizePolylinePosition: this.finalizePolylinePosition.bind(this),
+    polylineClicked: this.polylineClicked.bind(this)
   };
 
   static createAttributesObject() {
@@ -45,22 +46,40 @@ export default class Polyline extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-
-        let styleDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          styleDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          styleDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          styleDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          styleDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        styleDescription += dependencyValues.selectedStyle.lineColorWord;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
+
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
 
         return { setValue: { styleDescription } };
+      }
+    }
+
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " polyline";
+
+        return { setValue: { styleDescriptionWithNoun } };
       }
     }
 
@@ -219,13 +238,19 @@ export default class Polyline extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "vertices") {
-          return "vertex" + propIndex;
+          if (propIndex.length === 1) {
+            return "vertex" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `vertexX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 6) === "vertex") {
           // could be vertex or vertexX
           let vertexNum = Number(varName.slice(6));
           if (Number.isInteger(vertexNum) && vertexNum > 0) {
-            return `vertexX${vertexNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `vertexX${vertexNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -561,5 +586,16 @@ export default class Polyline extends GraphicalComponent {
     });
   }
 
+
+  async polylineClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
 
 }

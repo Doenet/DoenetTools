@@ -37,6 +37,7 @@ export default class Choiceinput extends Input {
   static renderChildren = true;
 
   static variableForPlainMacro = "values";
+  static variableForPlainCopy = "values";
 
   static createsVariants = true;
 
@@ -49,6 +50,7 @@ export default class Choiceinput extends Input {
       defaultValue: false,
       public: true,
       forRenderer: true,
+      fallBackToParentStateVariable: "selectMultiple",
     };
     attributes.matchPartial = {
       createComponentOfType: "boolean",
@@ -82,6 +84,24 @@ export default class Choiceinput extends Input {
       createStateVariable: "placeHolder",
       defaultValue: "",
       forRenderer: true,
+    }
+
+    attributes.submitLabel = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabel",
+      defaultValue: "Check Work",
+      public: true,
+      forRenderer: true,
+      fallBackToParentStateVariable: "submitLabel",
+    }
+
+    attributes.submitLabelNoCorrectness = {
+      createComponentOfType: "text",
+      createStateVariable: "submitLabelNoCorrectness",
+      defaultValue: "Submit Response",
+      public: true,
+      forRenderer: true,
+      fallBackToParentStateVariable: "submitLabelNoCorrectness",
     }
 
     return attributes;
@@ -275,7 +295,7 @@ export default class Choiceinput extends Input {
       additionalStateVariablesDefined: [
         {
           variableName: "numberChoices",
-          public: true, 
+          public: true,
           shadowingInstructions: {
             createComponentOfType: "number"
           }
@@ -1065,7 +1085,7 @@ export default class Choiceinput extends Input {
   }) {
 
 
-    if (!serializedComponent.attributes.shuffleOrder?.primitive) {
+    if (!serializedComponent.attributes?.shuffleOrder?.primitive) {
       return super.determineNumberOfUniqueVariants({
         serializedComponent, componentInfoObjects
       });

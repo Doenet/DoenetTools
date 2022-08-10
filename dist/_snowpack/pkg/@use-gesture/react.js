@@ -887,6 +887,7 @@ class DragEngine extends CoordinatesEngine {
   }
 
   setupScrollPrevention(event) {
+    this.state._preventScroll = false;
     persistEvent(event);
     const remove = this.eventStore.add(this.sharedConfig.window, 'touch', 'change', this.preventScroll.bind(this), {
       passive: false

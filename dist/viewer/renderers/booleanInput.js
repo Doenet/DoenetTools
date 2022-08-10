@@ -5,6 +5,7 @@ import {faCheck, faLevelDownAlt, faTimes, faCloud, faPercentage} from "../../_sn
 import {rendererState} from "./useDoenetRenderer.js";
 import {useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import ToggleButton from "../../_reactComponents/PanelHeaderComponents/ToggleButton.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 export default React.memo(function BooleanInput(props) {
   let {name, SVs, actions, ignoreUpdate, rendererName, callAction} = useDoenetRender(props);
   BooleanInput.baseStateVariable = "value";
@@ -108,7 +109,7 @@ export default React.memo(function BooleanInput(props) {
             style: checkWorkStyle
           }, partialCreditContents);
         } else {
-          checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
+          checkWorkStyle.backgroundColor = "var(--mainRed)";
           checkWorkButton = /* @__PURE__ */ React.createElement("span", {
             id: name + "_incorrect",
             style: checkWorkStyle
@@ -140,9 +141,18 @@ export default React.memo(function BooleanInput(props) {
       isSelected: rendererValue,
       onClick: onChangeHandler,
       value: SVs.label,
+      valueHasLatex: SVs.labelHasLatex,
       disabled
     });
   } else {
+    let label = SVs.label;
+    if (SVs.labelHasLatex) {
+      label = /* @__PURE__ */ React.createElement(MathJax, {
+        hideUntilTypeset: "first",
+        inline: true,
+        dynamic: true
+      }, label);
+    }
     input = /* @__PURE__ */ React.createElement("label", null, /* @__PURE__ */ React.createElement("input", {
       type: "checkbox",
       key: inputKey,
@@ -150,7 +160,7 @@ export default React.memo(function BooleanInput(props) {
       checked: rendererValue,
       onChange: onChangeHandler,
       disabled
-    }), SVs.label);
+    }), label);
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", {
     id: name

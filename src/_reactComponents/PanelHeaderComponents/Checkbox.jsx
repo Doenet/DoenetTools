@@ -11,16 +11,33 @@ const Button = styled.button`
   border: 2px solid;
   border-color: ${(props) => props.color};
   border-radius: var(--mainBorderRadius);
-  color: var(--canvastext);
+  color: ${(props) => props.textColor};
   background-color: ${(props) => props.color};
-  
+  cursor: ${(props) => props.cursor};
   &:hover {
     color: black;
     background-color: ${props => props.alert ? 'var(--lightRed)' : (props.disabled ? 'var(--mainGray)' : 'var(--lightBlue)')};
   }
-`;
 
-export default function CalendarButton(props) {
+  &:focus {
+    outline: 2px solid ${props => props.color == 'var(mainGray)' ? 'var(--canvastext)' : props.color};
+    outline-offset: 2px;
+}
+`;
+const Label = styled.p`
+  font-size: 14px;
+  display: ${(props) => props.labelVisible};
+  margin-right: 5px;
+  margin-bottom: ${(props) => props.align == 'flex' ? 'none' : '2px'}
+`
+ 
+const Container = styled.div`
+  display: ${(props) => props.align};
+  width: auto;
+  align-items: center;
+` 
+
+export default function CheckboxButton(props) {
   let checkedIcon = props.checkedIcon ? (
     props.checkedIcon
   ) : (
@@ -33,21 +50,47 @@ export default function CalendarButton(props) {
   );
   const icon = props.checked ? checkedIcon : uncheckedIcon;
   const color = props.checked ? 'var(--mainBlue)' : 'var(--mainGray)';
+  const textColor = props.checked ? 'white' : 'black';
   const buttonRef = useRef(null);
-
-  // console.log(checkedIcon, props.checkedIcon);
+  const cursor = props.disabled ? 'not-allowed' : 'pointer';
+  const labelVisible = props.label ? 'static' : 'none';
+  const align = props.vertical ? 'static' : 'flex';
+  const disabled = props.disabled ? true : false;
+  let labelValue = "Label:";
+  if (props.label) {
+    labelValue = props.label;
+  };
 
   return (
-    <Button
+    <Container 
+      align={align}
+    >
+      <Label
+        align={align}
+        labelVisible={labelVisible}
+      >
+        {labelValue}
+      </Label>
+      <Button
       style={props.style}
       color={color}
+      textColor={textColor}
       ref={buttonRef}
+      disabled={disabled}
+      cursor={cursor}
+      aria-labelledby={labelValue} 
+      aria-checked={props.checked}
+      aria-disabled={disabled}
+      role="checkbox"
       onClick={(e) => {
         // console.log('contains click', buttonRef.current.contains(e.target));
-        props.onClick(e);
+        if (props.onClick){
+          props.onClick(e);
+        }
       }}
     >
       {icon}
     </Button>
+    </Container>
   );
 }

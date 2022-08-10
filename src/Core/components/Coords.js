@@ -6,16 +6,27 @@ export default class Coords extends MathComponent {
 
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
-    attributes.createVectors = {
-      createComponentOfType: "boolean",
-      createStateVariable: "createVectors",
-      defaultValue: true,
-      public: true,
-    };
+    delete attributes.createVectors;
     return attributes;
   }
 
 
+  static returnStateVariableDefinitions() {
+
+    let stateVariableDefinitions = super.returnStateVariableDefinitions();
+
+    stateVariableDefinitions.createVectors = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "boolean",
+      },
+      returnDependencies: () => ({}),
+      definition: () => ({ setValue: { createVectors: true } })
+    }
+
+    return stateVariableDefinitions;
+
+  }
 
   // TODO: do we want to give warnings or errors if value is not in form of a vector?
 

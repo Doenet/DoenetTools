@@ -1,13 +1,14 @@
 import GraphicalComponent from './abstract/GraphicalComponent.js';
 import me from '../../_snowpack/pkg/math-expressions.js';
-import { returnNVariables, convertValueToMathExpression } from '../utils/math.js';
+import { returnNVariables, convertValueToMathExpression, roundForDisplay } from '../utils/math.js';
 
 export default class Line extends GraphicalComponent {
   static componentType = "line";
 
   actions = {
     moveLine: this.moveLine.bind(this),
-    switchLine: this.switchLine.bind(this)
+    switchLine: this.switchLine.bind(this),
+    lineClicked: this.lineClicked.bind(this)
   };
 
 
@@ -35,6 +36,32 @@ export default class Line extends GraphicalComponent {
       createComponentOfType: "variables",
     };
 
+    attributes.displayDigits = {
+      createComponentOfType: "integer",
+    };
+
+    attributes.displayDecimals = {
+      createComponentOfType: "integer",
+      createStateVariable: "displayDecimals",
+      defaultValue: null,
+      public: true,
+    };
+
+    attributes.displaySmallAsZero = {
+      createComponentOfType: "number",
+      createStateVariable: "displaySmallAsZero",
+      valueForTrue: 1E-14,
+      valueForFalse: 0,
+      defaultValue: 0,
+      public: true,
+    };
+
+    attributes.padZeros = {
+      createComponentOfType: "boolean",
+      createStateVariable: "padZeros",
+      defaultValue: false,
+      public: true,
+    };
     return attributes;
   }
 
@@ -42,17 +69,46 @@ export default class Line extends GraphicalComponent {
   static returnSugarInstructions() {
     let sugarInstructions = super.returnSugarInstructions();
 
-    let stringAndMacrosToEquationAttribute = function ({ matchedChildren }) {
+    let nonLabelToEquationAttribute = function ({ matchedChildren, componentInfoObjects }) {
 
       if (matchedChildren.length === 0) {
         return { success: false };
       }
 
-      // only apply if all children are strings or macros
-      if (!matchedChildren.every(child =>
-        typeof child === "string" ||
-        child.doenetAttributes && child.doenetAttributes.createdFromMacro
-      )) {
+      // wrap first group of non-label children becomes equation
+
+      let componentIsLabel = x => componentInfoObjects.componentIsSpecifiedType(x, "label");
+      let childIsLabel = matchedChildren.map(componentIsLabel);
+
+      let childrenToWrap = [], childrenToNotWrap = [];
+
+      if (childIsLabel.filter(x => x).length === 0) {
+        childrenToWrap = matchedChildren
+      } else {
+        if (childIsLabel[0]) {
+          // started with label, find first non-label child
+          let firstNonLabelInd = childIsLabel.indexOf(false);
+          if (firstNonLabelInd !== -1) {
+            childrenToNotWrap.push(...matchedChildren.slice(0, firstNonLabelInd));
+            matchedChildren = matchedChildren.slice(firstNonLabelInd);
+            childIsLabel = childIsLabel.slice(firstNonLabelInd)
+          }
+        }
+
+        // now we don't have label at the beginning
+        // find first label ind
+        let firstLabelInd = childIsLabel.indexOf(true);
+        if (firstLabelInd === -1) {
+          childrenToWrap = matchedChildren;
+        } else {
+          childrenToWrap = matchedChildren.slice(0, firstLabelInd);
+          childrenToNotWrap.push(...matchedChildren.slice(firstLabelInd));
+        }
+
+
+      }
+
+      if (childrenToWrap.length === 0) {
         return { success: false }
       }
 
@@ -62,16 +118,17 @@ export default class Line extends GraphicalComponent {
           equation: {
             component: {
               componentType: "math",
-              children: matchedChildren
+              children: childrenToWrap
             }
           }
-        }
+        },
+        newChildren: childrenToNotWrap
       }
 
     }
 
     sugarInstructions.push({
-      replacementFunction: stringAndMacrosToEquationAttribute
+      replacementFunction: nonLabelToEquationAttribute
     });
 
     return sugarInstructions;
@@ -85,7 +142,9 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.styleDescription = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       returnDependencies: () => ({
         selectedStyle: {
           dependencyType: "stateVariable",
@@ -94,29 +153,103 @@ export default class Line extends GraphicalComponent {
       }),
       definition: function ({ dependencyValues }) {
 
-
-        let lineDescription = "";
-        if (dependencyValues.selectedStyle.lineWidth >= 4) {
-          lineDescription += "thick ";
-        } else if (dependencyValues.selectedStyle.lineWidth <= 1) {
-          lineDescription += "thin ";
-        }
-        if (dependencyValues.selectedStyle.lineStyle === "dashed") {
-          lineDescription += "dashed ";
-        } else if (dependencyValues.selectedStyle.lineStyle === "dotted") {
-          lineDescription += "dotted ";
+        let styleDescription = dependencyValues.selectedStyle.lineWidthWord;
+        if (dependencyValues.selectedStyle.lineStyleWord) {
+          if (styleDescription) {
+            styleDescription += " ";
+          }
+          styleDescription += dependencyValues.selectedStyle.lineStyleWord;
         }
 
-        lineDescription += dependencyValues.selectedStyle.lineColorWord;
+        if (styleDescription) {
+          styleDescription += " ";
+        }
 
-        return { setValue: { styleDescription: lineDescription } };
+        styleDescription += dependencyValues.selectedStyle.lineColorWord
+
+        return { setValue: { styleDescription } };
       }
     }
 
+    stateVariableDefinitions.styleDescriptionWithNoun = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
+      returnDependencies: () => ({
+        styleDescription: {
+          dependencyType: "stateVariable",
+          variableName: "styleDescription",
+        },
+      }),
+      definition: function ({ dependencyValues }) {
+
+        let styleDescriptionWithNoun = dependencyValues.styleDescription + " line";
+
+        return { setValue: { styleDescriptionWithNoun } };
+      }
+    }
+
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        let displayDigitsAttrUsedDefault = dependencyValues.displayDigitsAttr === null || usedDefault.displayDigitsAttr;
+        let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+        if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+          // if both display digits and display decimals did not used default
+          // we'll regard display digits as using default if it comes from a deeper shadow
+          let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+          let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+          if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+            displayDigitsAttrUsedDefault = true;
+          }
+        }
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+          // have to check to exclude case where have displayDecimals from mathList parent
+          // because otherwise a non-default displayDigits will win over displayDecimals
+
+          if (displayDigitsAttrUsedDefault) {
+            return { useEssentialOrDefaultValue: { displayDigits: { defaultValue: dependencyValues.displayDigitsAttr.stateValues.value } } }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
+      }
+    }
 
     stateVariableDefinitions.nDimensions = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       stateVariablesDeterminingDependencies: ["equationIdentity"],
       returnDependencies: function ({ stateValues }) {
         if (stateValues.equationIdentity === null) {
@@ -239,7 +372,9 @@ export default class Line extends GraphicalComponent {
     stateVariableDefinitions.variables = {
       isArray: true,
       public: true,
-      componentType: "variable",
+      shadowingInstructions: {
+        createComponentOfType: "variable",
+      },
       entryPrefixes: ["var"],
       returnArraySizeDependencies: () => ({
         nDimensions: {
@@ -391,20 +526,23 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.points = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        returnWrappingComponents(prefix) {
+          if (prefix === "pointX") {
+            return [];
+          } else {
+            // point or entire array
+            // wrap inner dimension by both <point> and <xs>
+            // don't wrap outer dimension (for entire array)
+            return [["point", { componentType: "mathList", isAttribute: "xs" }]];
+          }
+        },
+      },
       isArray: true,
       nDimensions: 2,
       entryPrefixes: ["pointX", "point"],
-      returnWrappingComponents(prefix) {
-        if (prefix === "pointX") {
-          return [];
-        } else {
-          // point or entire array
-          // wrap inner dimension by both <point> and <xs>
-          // don't wrap outer dimension (for entire array)
-          return [["point", { componentType: "mathList", isAttribute: "xs" }]];
-        }
-      },
       getArrayKeysFromVarName({ arrayEntryPrefix, varEnding, arraySize }) {
         if (arrayEntryPrefix === "pointX") {
           // pointX1_2 is the 2nd component of the first point
@@ -451,13 +589,19 @@ export default class Line extends GraphicalComponent {
       },
       arrayVarNameFromPropIndex(propIndex, varName) {
         if (varName === "points") {
-          return "point" + propIndex;
+          if (propIndex.length === 1) {
+            return "point" + propIndex[0];
+          } else {
+            // if propIndex has additional entries, ignore them
+            return `pointX${propIndex[0]}_${propIndex[1]}`
+          }
         }
         if (varName.slice(0, 5) === "point") {
           // could be point or pointX
           let pointNum = Number(varName.slice(5));
           if (Number.isInteger(pointNum) && pointNum > 0) {
-            return `pointX${pointNum}_${propIndex}`
+            // if propIndex has additional entries, ignore them
+            return `pointX${pointNum}_${propIndex[0]}`
           }
         }
         return null;
@@ -894,24 +1038,36 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.equation = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       forRenderer: true,
       stateVariablesDeterminingDependencies: ["equationIdentity"],
       additionalStateVariablesDefined: [
         {
           variableName: "coeff0",
           public: true,
-          componentType: "math",
+          shadowingInstructions: {
+            createComponentOfType: "math",
+            attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+          },
         },
         {
           variableName: "coeffvar1",
           public: true,
-          componentType: "math",
+          shadowingInstructions: {
+            createComponentOfType: "math",
+            attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+          },
         },
         {
           variableName: "coeffvar2",
           public: true,
-          componentType: "math",
+          shadowingInstructions: {
+            createComponentOfType: "math",
+            attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+          },
         }
       ],
       returnDependencies: function ({ stateValues }) {
@@ -1223,7 +1379,10 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.slope = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       returnDependencies: () => ({
         coeffvar1: {
           dependencyType: "stateVariable",
@@ -1246,7 +1405,10 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.xintercept = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       returnDependencies: () => ({
         coeff0: {
           dependencyType: "stateVariable",
@@ -1271,7 +1433,10 @@ export default class Line extends GraphicalComponent {
 
     stateVariableDefinitions.yintercept = {
       public: true,
-      componentType: "math",
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
       returnDependencies: () => ({
         coeff0: {
           dependencyType: "stateVariable",
@@ -1313,6 +1478,55 @@ export default class Line extends GraphicalComponent {
       })
     }
 
+    stateVariableDefinitions.latex = {
+      forRenderer: true,
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "text"
+      },
+      returnDependencies: () => ({
+        equation: {
+          dependencyType: "stateVariable",
+          variableName: "equation"
+        },
+        displayDigits: {
+          dependencyType: "stateVariable",
+          variableName: "displayDigits"
+        },
+        displayDecimals: {
+          dependencyType: "stateVariable",
+          variableName: "displayDecimals"
+        },
+        displaySmallAsZero: {
+          dependencyType: "stateVariable",
+          variableName: "displaySmallAsZero"
+        },
+        padZeros: {
+          dependencyType: "stateVariable",
+          variableName: "padZeros"
+        },
+      }),
+      definition: function ({ dependencyValues, usedDefault }) {
+        let params = {};
+        if (dependencyValues.padZeros) {
+          if (usedDefault.displayDigits && !usedDefault.displayDecimals) {
+            if (Number.isFinite(dependencyValues.displayDecimals)) {
+              params.padToDecimals = dependencyValues.displayDecimals;
+            }
+          } else if (dependencyValues.displayDigits >= 1) {
+            params.padToDigits = dependencyValues.displayDigits;
+          }
+        }
+        let latex = roundForDisplay({
+          value: dependencyValues.equation,
+          dependencyValues, usedDefault
+        }).toLatex(params);
+
+        return { setValue: { latex } }
+
+      }
+    }
+
     stateVariableDefinitions.nearestPoint = {
       returnDependencies: () => ({
         nDimensions: {
@@ -1350,7 +1564,7 @@ export default class Line extends GraphicalComponent {
 
         return {
           setValue: {
-            nearestPoint: function ({ variables, scales }) {
+            nearestPoint: function ({ variables, scales = [1, 1] }) {
 
               if (skip) {
                 return {};
@@ -1364,8 +1578,8 @@ export default class Line extends GraphicalComponent {
 
               let denom = a * a + b * b;
 
-              let x1 = variables.x1.evaluate_to_constant();
-              let x2 = variables.x2.evaluate_to_constant();
+              let x1 = variables.x1?.evaluate_to_constant();
+              let x2 = variables.x2?.evaluate_to_constant();
 
 
               if (!(Number.isFinite(x1) && Number.isFinite(x2))) {
@@ -1398,7 +1612,10 @@ export default class Line extends GraphicalComponent {
 
   }
 
-  static adapters = ["equation"];
+  static adapters = [{
+    stateVariable: "equation",
+    stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+  }];
 
   async moveLine({ point1coords, point2coords, transient, actionId }) {
 
@@ -1451,6 +1668,17 @@ export default class Line extends GraphicalComponent {
 
   }
 
+  async lineClicked({ actionId }) {
+
+    await this.coreFunctions.triggerChainedActions({
+      triggeringAction: "click",
+      componentName: this.componentName,
+    })
+
+    this.coreFunctions.resolveAction({ actionId });
+
+  }
+
 
 }
 
@@ -1465,6 +1693,10 @@ function calculateCoeffsFromEquation({ equation, variables }) {
   let var2String = var2.toString();
 
   equation = equation.expand().simplify();
+
+  if (!(Array.isArray(equation.tree) && equation.tree[0] === "=" && equation.tree.length === 3)) {
+    return { success: false }
+  }
 
   let rhs = me.fromAst(['+', equation.tree[2], ['-', equation.tree[1]]]).expand().simplify();
   // divide rhs into terms

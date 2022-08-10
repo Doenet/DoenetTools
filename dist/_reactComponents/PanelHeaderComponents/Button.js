@@ -1,10 +1,11 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
 import styled from "../../_snowpack/pkg/styled-components.js";
+import {MathJax} from "../../_snowpack/pkg/better-react-mathjax.js";
 const ButtonStyling = styled.button`
   margin: ${(props) => props.theme.margin};
   height: 24px;
   border-style: hidden;
-  // border-color: black;
+  // border-color: var(--canvastext);
   // border-width: 2px;
   color: white;
   background-color: ${(props) => props.alert ? "var(--mainRed)" : "var(--mainBlue)"};
@@ -73,11 +74,18 @@ export default function Button(props) {
       icon = props.icon;
       button.value = "";
     }
+    if (props.value && props.valueHasLatex) {
+      button.value = /* @__PURE__ */ React.createElement(MathJax, {
+        hideUntilTypeset: "first",
+        inline: true,
+        dynamic: true
+      }, button.value);
+    }
   }
   ;
   if (props.disabled) {
     button.backgroundColor = "var(--mainGray)";
-    button.color = "black";
+    button.color = "var(--canvastext)";
     button.cursor = "not-allowed";
   }
   ;

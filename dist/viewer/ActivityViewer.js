@@ -571,9 +571,9 @@ export default function ActivityViewer(props) {
       doenetId: props.doenetId,
       activityCid: cid,
       attemptNumber,
-      variantIndex,
+      activityVariantIndex: variantIndex,
       timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
-      version: "0.1.0",
+      version: "0.1.1",
       verb: event.verb,
       object: JSON.stringify(event.object),
       result: JSON.stringify(event.result),
@@ -674,6 +674,7 @@ export default function ActivityViewer(props) {
       itemNumber,
       attemptNumber,
       flags,
+      activityVariantIndex: variantIndex,
       requestedVariantIndex: variantsByPage[ind],
       unbundledCore: props.unbundledCore,
       updateCreditAchievedCallback: props.updateCreditAchievedCallback,
@@ -692,11 +693,11 @@ export default function ActivityViewer(props) {
   let pageControls = null;
   if (nPages > 1) {
     pageControls = /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("button", {
-      "data-cy": "previous",
+      "data-test": "previous",
       disabled: currentPage === 1,
       onClick: clickPrevious
     }, "Previous page"), /* @__PURE__ */ React.createElement("button", {
-      "data-cy": "next",
+      "data-test": "next",
       disabled: currentPage === nPages,
       onClick: clickNext
     }, "Next page"), /* @__PURE__ */ React.createElement("p", null, "Page ", currentPage, " of ", nPages));

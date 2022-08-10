@@ -1,6 +1,7 @@
-import React, { createRef, useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import useDoenetRenderer from './useDoenetRenderer';
 import styled from 'styled-components';
+import VisibilitySensor from 'react-visibility-sensor-v2';
 
 // border: ${(props) => (props.alert ? '2px solid #C1292E' : '2px solid black')};
 
@@ -22,6 +23,22 @@ export default React.memo(function orbitalDiagramInput(props) {
   // use ref for fixed so changed value appears in callbacks
   let fixed = createRef(SVs.fixed);
   fixed.current = SVs.fixed;
+
+  let onChangeVisibility = isVisible => {
+    callAction({
+      action: actions.recordVisibilityChange,
+      args: { isVisible }
+    })
+  }
+
+  useEffect(() => {
+    return () => {
+      callAction({
+        action: actions.recordVisibilityChange,
+        args: { isVisible: false }
+      })
+    }
+  }, [])
 
   if (SVs.hidden) {
     return null;
@@ -169,10 +186,10 @@ export default React.memo(function orbitalDiagramInput(props) {
         }}>Remove Arrow</button>
     </div>
   }
-  return <>
+  return <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><>
     {controls}
     {rowsJSX}
-  </>
+  </></VisibilitySensor>
 })
 
 const OrbitalRow = React.memo(function OrbitalRow({ rowNumber, updateRowText, selectedRow, setSelectedRow, orbitalText, boxes, selectedBox, setSelectedBox, deselect, name }) {

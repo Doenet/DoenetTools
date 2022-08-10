@@ -1,6 +1,6 @@
-import BlockComponent from './abstract/BlockComponent.js';
+import BaseComponent from './abstract/BaseComponent.js';
 
-export default class ConsiderAsResponses extends BlockComponent {
+export default class ConsiderAsResponses extends BaseComponent {
   static componentType = "considerAsResponses";
   static rendererType = undefined;
 

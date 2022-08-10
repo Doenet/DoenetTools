@@ -3,7 +3,7 @@ import { F as Facet, c as combineConfig, S as StateField, E as EditorSelection, 
 import { f as foldable, l as language, s as syntaxTree, i as indentOnInput } from '../common/index-febc6a6d.js';
 import { g as gutter, G as GutterMarker, l as lineNumbers, h as highlightActiveLineGutter } from '../common/index-80ce4713.js';
 import { b as bracketMatching, d as defaultKeymap } from '../common/index-bbc3642b.js';
-import { d as defaultHighlightStyle } from '../common/index-51f558f5.js';
+import { d as defaultHighlightStyle } from '../common/index-76591e04.js';
 import '../common/index-3d578c67.js';
 
 const fromHistory = /*@__PURE__*/Annotation.define();

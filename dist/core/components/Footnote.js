@@ -23,7 +23,9 @@ export default class Footnote extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         inlineChildren: {
@@ -52,7 +54,9 @@ export default class Footnote extends InlineComponent {
 
     stateVariableDefinitions.footnoteTag = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         footnoteCounter: {

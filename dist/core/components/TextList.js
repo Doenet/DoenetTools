@@ -103,7 +103,9 @@ export default class TextList extends InlineComponent {
 
     stateVariableDefinitions.nComponents = {
       public: true,
-      componentType: "number",
+      shadowingInstructions: {
+        createComponentOfType: "number",
+      },
       additionalStateVariablesDefined: ["childIndexByArrayKey"],
       returnDependencies() {
         return {
@@ -170,7 +172,9 @@ export default class TextList extends InlineComponent {
 
     stateVariableDefinitions.texts = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       isArray: true,
       entryPrefixes: ["text"],
       stateVariablesDeterminingDependencies: ["childIndexByArrayKey"],
@@ -300,7 +304,9 @@ export default class TextList extends InlineComponent {
 
     stateVariableDefinitions.text = {
       public: true,
-      componentType: "text",
+      shadowingInstructions: {
+        createComponentOfType: "text",
+      },
       forRenderer: true,
       returnDependencies: () => ({
         texts: {
@@ -426,5 +432,7 @@ export default class TextList extends InlineComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = ["text"];
 
 }

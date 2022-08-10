@@ -41,9 +41,6 @@ export default class MathList extends InlineComponent {
     };
     attributes.displayDigits = {
       createComponentOfType: "integer",
-      createStateVariable: "displayDigits",
-      defaultValue: 10,
-      public: true,
     };
     attributes.displayDecimals = {
       createComponentOfType: "integer",
@@ -123,6 +120,65 @@ export default class MathList extends InlineComponent {
     stateVariableDefinitions.overrideChildHide = {
       returnDependencies: () => ({}),
       definition: () => ({ setValue: { overrideChildHide: true } })
+    }
+
+    stateVariableDefinitions.displayDigits = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "integer",
+      },
+      hasEssential: true,
+      defaultValue: 10,
+      returnDependencies: () => ({
+        displayDigitsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDigits",
+          variableNames: ["value"]
+        },
+        displayDecimalsAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "displayDecimals",
+          variableNames: ["value"]
+        },
+      }),
+      definition({ dependencyValues, usedDefault }) {
+
+        if (dependencyValues.displayDigitsAttr !== null) {
+
+          let displayDigitsAttrUsedDefault = usedDefault.displayDigitsAttr;
+          let displayDecimalsAttrUsedDefault = dependencyValues.displayDecimalsAttr === null || usedDefault.displayDecimalsAttr;
+
+          if (!(displayDigitsAttrUsedDefault || displayDecimalsAttrUsedDefault)) {
+            // if both display digits and display decimals did not use default
+            // we'll regard display digits as using default if it comes from a deeper shadow
+            let shadowDepthDisplayDigits = dependencyValues.displayDigitsAttr.shadowDepth;
+            let shadowDepthDisplayDecimals = dependencyValues.displayDecimalsAttr.shadowDepth;
+
+            if (shadowDepthDisplayDecimals < shadowDepthDisplayDigits) {
+              displayDigitsAttrUsedDefault = true;
+            }
+          }
+
+          if (displayDigitsAttrUsedDefault) {
+            return {
+              useEssentialOrDefaultValue: {
+                displayDigits: {
+                  defaultValue: dependencyValues.displayDigitsAttr.stateValues.value
+                }
+              }
+            }
+          } else {
+            return {
+              setValue: {
+                displayDigits: dependencyValues.displayDigitsAttr.stateValues.value
+              }
+            }
+          }
+        }
+
+        return { useEssentialOrDefaultValue: { displayDigits: true } }
+
+      }
     }
 
     stateVariableDefinitions.mathsShadow = {
@@ -294,7 +350,7 @@ export default class MathList extends InlineComponent {
       public: true,
       shadowingInstructions: {
         createComponentOfType: "math",
-        attributeComponentsToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
       },
       isArray: true,
       entryPrefixes: ["math"],
@@ -427,6 +483,33 @@ export default class MathList extends InlineComponent {
           instructions
         }
 
+
+      }
+    }
+
+    stateVariableDefinitions.math = {
+      public: true,
+      shadowingInstructions: {
+        createComponentOfType: "math",
+        attributesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"],
+      },
+      returnDependencies: () => ({
+        maths: {
+          dependencyType: "stateVariable",
+          variableName: "maths"
+        }
+      }),
+      definition({ dependencyValues }) {
+        let math;
+        if (dependencyValues.maths.length === 0) {
+          math = me.fromAst("\uff3f");
+        } else if (dependencyValues.maths.length === 1) {
+          math = dependencyValues.maths[0]
+        } else {
+          math = me.fromAst(["list", ...dependencyValues.maths.map(x => x.tree)]);
+        }
+
+        return { setValue: { math } }
 
       }
     }
@@ -714,5 +797,13 @@ export default class MathList extends InlineComponent {
 
     return stateVariableDefinitions;
   }
+
+  static adapters = [
+    {
+      stateVariable: "math",
+      stateVariablesToShadow: ["displayDigits", "displayDecimals", "displaySmallAsZero", "padZeros"]
+    },
+    "text"
+  ];
 
 }
