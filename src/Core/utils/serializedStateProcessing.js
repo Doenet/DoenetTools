@@ -3436,12 +3436,12 @@ export function extractComponentNamesAndIndices(serializedComponents, nameSubsti
   for (let serializedComponent of serializedComponents) {
     if (typeof serializedComponent === "object") {
       let componentName = serializedComponent.componentName;
-      for(let originalName in nameSubstitutions) {
+      for (let originalName in nameSubstitutions) {
         componentName = componentName.replace(originalName, nameSubstitutions[originalName])
       }
-      if(serializedComponent.doenetAttributes?.fromCopyTarget) {
+      if (serializedComponent.doenetAttributes?.fromCopyTarget) {
         let lastSlash = componentName.lastIndexOf("/");
-        let originalName = componentName.slice(lastSlash+1);
+        let originalName = componentName.slice(lastSlash + 1);
         let newName = serializedComponent.doenetAttributes.assignNames[0];
         componentName = componentName.replace(originalName, newName);
         nameSubstitutions[originalName] = newName;
@@ -3462,7 +3462,7 @@ export function extractComponentNamesAndIndices(serializedComponents, nameSubsti
       componentArray.push(componentObj);
 
       if (serializedComponent.children) {
-        componentArray.push(...extractComponentNamesAndIndices(serializedComponent.children, {...nameSubstitutions}))
+        componentArray.push(...extractComponentNamesAndIndices(serializedComponent.children, { ...nameSubstitutions }))
       }
 
     }
@@ -3471,7 +3471,6 @@ export function extractComponentNamesAndIndices(serializedComponents, nameSubsti
   return componentArray;
 
 }
-
 
 export function extractRangeIndexPieces({
   componentArray, lastInd = 0, stopInd = Infinity, enclosingComponentName
@@ -3520,19 +3519,45 @@ export function extractRangeIndexPieces({
     componentInd += extractResult.componentsConsumed + 1;
     rangePieces.push(...extractResult.rangePieces);
 
-    lastInd = componentObj.indEnd+1;
+    lastInd = componentObj.indEnd + 1;
 
   }
 
-  if(!foundComponentAfterStopInd && Number.isFinite(stopInd) && stopInd >= lastInd) {
+  if (!foundComponentAfterStopInd && Number.isFinite(stopInd) && stopInd >= lastInd) {
     rangePieces.push({
       begin: lastInd,
       end: stopInd,
       componentName: enclosingComponentName
     })
   }
-  
+
 
   return { componentsConsumed: componentInd, rangePieces };
+
+}
+
+export function countComponentTypes(serializedComponents) {
+  let componentTypeCounts = {};
+
+  for (let component of serializedComponents) {
+    if (typeof component === "object") {
+      let cType = component.componentType;
+      let nComponents = 1;
+      if (component.attributes?.createComponentOfType?.primitive) {
+        cType = component.attributes.createComponentOfType.primitive;
+        nComponents = component.attributes.nComponents?.primitive;
+        if (!(Number.isInteger(nComponents) && nComponents > 0)) {
+          nComponents = 1;
+        }
+      }
+      if (cType in componentTypeCounts) {
+        componentTypeCounts[cType] += nComponents;
+      } else {
+        componentTypeCounts[cType] = nComponents;
+      }
+    }
+  }
+
+  return componentTypeCounts;
 
 }

@@ -28,6 +28,7 @@ const rendererUpdatesToIgnore = atomFamily({
 
 
 export default function PageViewer(props) {
+
   const toast = useToast();
   const updateRendererSVsWithRecoil = useRecoilCallback(({ snapshot, set }) => async ({
     coreId, componentName, stateValues, childrenInstructions, sourceOfUpdate, baseStateVariable, actionId
@@ -727,6 +728,7 @@ export default function PageViewer(props) {
         userId: props.userId,
         doenetML,
         doenetId: props.doenetId,
+        previousComponentTypeCounts: props.previousComponentTypeCounts,
         activityCid: props.activityCid,
         flags: props.flags,
         requestedVariantIndex,
