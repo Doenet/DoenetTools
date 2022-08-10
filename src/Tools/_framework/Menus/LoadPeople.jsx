@@ -1,27 +1,11 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import parse from 'csv-parse';
-import { atom, useRecoilState, useRecoilValue } from 'recoil';
+import { atom, useSetRecoilState } from 'recoil';
 
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
-import { useCourse } from '../../../_reactComponents/Course/CourseActions';
-import { peopleByCourseId } from '../../../_reactComponents/Course/CourseActions';
-import CheckboxButton from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
-import styled from 'styled-components';
-import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import { searchParamAtomFamily } from '../NewToolRoot';
-
-const InputWrapper = styled.div`
-  margin: 10px 5px 0 5px;
-  display: ${(props) => (props.flex ? 'flex' : 'block')};
-  align-items: ${(props) => props.flex && 'center'};
-`;
-const CheckboxLabelText = styled.span`
-  font-size: 15px;
-  line-height: 1.1;
-`;
 
 export const peopleTableDataAtom = atom({
   key: 'peopleTableDataAtom',
@@ -31,9 +15,30 @@ export const processAtom = atom({
   key: 'processAtom',
   default: 'Idle',
 });
+
+export const validHeaders = Object.freeze({
+  Email: 'Email',
+  FirstName: 'FirstName',
+  LastName: 'LastName',
+  Section: 'Section',
+  ExternalId: 'ExternalId',
+});
 export const headersAtom = atom({
   key: 'headersAtom',
   default: [],
+  effects: [
+    ({ onSet, setSelf }) => {
+      onSet((newValue) => {
+        setSelf(
+          newValue.reduce((valid, candidate) => {
+            if (validHeaders[candidate] !== undefined)
+              return [...valid, candidate];
+            return valid;
+          }, []),
+        );
+      });
+    },
+  ],
 });
 
 export const entriesAtom = atom({
@@ -48,25 +53,13 @@ export const enrolllearnerAtom = atom({
 export const csvPeopleProcess = Object.freeze({
   IDLE: 'idle',
   SELECT: 'select',
+  PREVIEW: 'preview',
 });
 
 export default function LoadPeople({ style }) {
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { defaultRoleId } = useCourse(courseId);
-  const [selectedRoleId, setSelectedRoleId] = useState(defaultRoleId);
-
-  const [process, setProcess] = useRecoilState(processAtom);
-  const [headers, setHeaders] = useRecoilState(headersAtom);
-  const [entries, setEntries] = useRecoilState(entriesAtom);
-  const [selectedHeaders, setSelectedHeaders] = useState({
-    ExternalId: false,
-    Email: false,
-    FirstName: false,
-    LastName: false,
-    Section: false,
-  });
-
-  const { recoilMergeData } = useRecoilValue(peopleByCourseId(courseId));
+  const setProcess = useSetRecoilState(processAtom);
+  const setHeaders = useSetRecoilState(headersAtom);
+  const setEntries = useSetRecoilState(entriesAtom);
 
   const onDrop = useCallback(
     (file) => {
@@ -79,7 +72,7 @@ export default function LoadPeople({ style }) {
           setHeaders(data[0]);
           data.shift(); //Remove head row of data
           setEntries(data);
-          setProcess(csvPeopleProcess.SELECT);
+          setProcess(csvPeopleProcess.PREVIEW);
         });
       };
       reader.readAsText(file[0]);
@@ -88,68 +81,6 @@ export default function LoadPeople({ style }) {
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
-  if (process === csvPeopleProcess.SELECT) {
-    return (
-      <div style={style}>
-        <h3>Select Columns to Merge</h3>
-        {headers.reduce((jsxButtons, col, idx) => {
-          return [
-            ...jsxButtons,
-            <InputWrapper key={`${col} ${idx}`} flex>
-              <CheckboxButton
-                style={{ marginRight: '5px' }}
-                checked={selectedHeaders[col] ?? false}
-                onClick={() => {
-                  setSelectedHeaders((prev) => ({
-                    ...prev,
-                    [col]: !prev[col],
-                  }));
-                }}
-                disabled={selectedHeaders[col] === undefined}
-              />
-              <CheckboxLabelText>{col}</CheckboxLabelText>
-            </InputWrapper>,
-          ];
-        }, [])}
-        <RoleDropdown
-          label="Assigned Role"
-          valueRoleId={selectedRoleId ?? defaultRoleId}
-          onChange={({ value: roleId }) => {
-            setSelectedRoleId(roleId);
-          }}
-          maxMenuHeight="200px"
-          vertical
-        />
-        <Button
-          onClick={() => {
-            const mergePayload = {
-              roleId: selectedRoleId ?? defaultRoleId,
-              mergeHeads: [],
-              mergeExternalId: [],
-              mergeFirstName: [],
-              mergeLastName: [],
-              mergeSection: [],
-              mergeEmail: [],
-            };
-            headers.map((colKey, colIdx) => {
-              if (selectedHeaders[headers[colIdx]])
-                mergePayload['mergeHeads'].push(colKey);
-            });
-            for (const entry of entries) {
-              entry.map((candidateData, colIdx) => {
-                if (selectedHeaders[headers[colIdx]])
-                  mergePayload[`merge${headers[colIdx]}`].push(candidateData);
-              });
-            }
-            recoilMergeData(mergePayload);
-          }}
-          value="Merge"
-          width="menu"
-          alert
-        />
-      </div>
-    );
-  }
 
   return (
     <div style={style}>

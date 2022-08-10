@@ -127,22 +127,24 @@ if ($success) {
         }
 
         //gather columns
-        $update_columns = "roleId = '$roleId',";
+        $insert = "courseId = '$courseId', userId = '$new_userId', roleId = '$roleId',";
+        $update_columns = "courseId = '$courseId', userId = '$new_userId'";
         if ($externalId != '') {
+            $insert = $insert . "externalId = '$externalId',";
             $update_columns = $update_columns . "externalId = '$externalId',";
         }
         if ($section != '') {
+            $insert = $insert . "section = '$section',";
             $update_columns = $update_columns . "section = '$section',";
         }
+        $insert = rtrim($insert, ', '); //REMOVE trailing comma
         $update_columns = rtrim($update_columns, ', '); //REMOVE trailing comma
 
         //insert or update
         $result = $conn->query(
             "INSERT INTO course_user
 			SET
-				courseId = '$courseId',
-				userId = '$new_userId',
-				$update_columns
+				$insert
 			ON DUPLICATE KEY UPDATE
 				$update_columns"
         );
@@ -155,6 +157,7 @@ if ($success) {
 			u.firstName, 
 			u.lastName,
             u.screenName,
+            cu.roleId,
 			cu.section, 
 			cu.dateEnrolled, 
 			cu.externalId, 
@@ -173,7 +176,7 @@ if ($success) {
     if ($result->num_rows >= 1) {
         while ($row = $result->fetch_assoc()) {
             $person = [
-                'roleId' => $roleId,
+                'roleId' => $row['roleId'],
                 'firstName' => $row['firstName'],
                 'lastName' => $row['lastName'],
                 'email' => $row['email'],

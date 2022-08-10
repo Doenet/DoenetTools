@@ -75,7 +75,7 @@ if ($success) {
         // Random screen name
         $screen_names = include 'screenNames.php';
         $randomNumber = rand(0, count($screen_names) - 1);
-        $toEnrollscreenName = $screen_names[$randomNumber];
+        $toEnrollScreenName = $screen_names[$randomNumber];
 
         // Random profile picture
         $profile_pics = include 'profilePics.php';
@@ -89,7 +89,7 @@ if ($success) {
                 email = '$email',
                 firstName = '$toEnrollFirstName',
                 lastName = '$toEnrollLastName',
-                screenName = '$toEnrollscreenName',
+                screenName = '$toEnrollScreenName',
                 profilePicture = '$profilePicture'"
         );
 
@@ -131,6 +131,7 @@ if ($success) {
             'roleId' => $roleId,
             'section' => $section,
             'externalId' => $externalId,
+            'withdrew' => '0',
         ];
 
         $result = $conn->query(

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { searchParamAtomFamily } from '../NewToolRoot';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import { peopleByCourseId } from '../../../_reactComponents/Course/CourseActions';
 import { AddUserWithOptions } from '../../../_reactComponents/Course/SettingComponents';
@@ -9,6 +9,13 @@ import styled from 'styled-components';
 import Measure from 'react-measure';
 import { RoleDropdown } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import { useCourse } from '../../../_reactComponents/Course/CourseActions';
+import {
+  csvPeopleProcess,
+  entriesAtom,
+  headersAtom,
+  processAtom,
+  validHeaders,
+} from '../Menus/LoadPeople';
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -28,11 +35,19 @@ export default function People() {
   const {
     recoilUnWithdraw,
     recoilWithdraw,
+    recoilMergeData,
     value: peopleTableData,
   } = useRecoilValue(peopleByCourseId(courseId));
-  const { modifyUserRole } = useCourse(courseId);
+  const { modifyUserRole, defaultRoleId } = useCourse(courseId);
   let [showWithdrawn, setShowWithdrawn] = useState(false);
   const [numberOfVisibleColumns, setNumberOfVisibleColumns] = useState(1);
+  const [process, setProcess] = useRecoilState(processAtom);
+  const headers = useRecoilValue(headersAtom);
+  const entries = useRecoilValue(entriesAtom);
+
+  console.log(headers, entries);
+
+  const [selectedRoleId, setSelectedRoleId] = useState(defaultRoleId);
 
   if (!courseId) {
     return null;
@@ -47,6 +62,61 @@ export default function People() {
     e.preventDefault();
     recoilWithdraw(withdrewLearner);
   };
+
+  if (process === csvPeopleProcess.PREVIEW) {
+    return (
+      <div style={{ padding: '8px' }}>
+        <h2>Preview CSV People:</h2>
+        <RoleDropdown
+          label="Assigned Role"
+          valueRoleId={selectedRoleId ?? defaultRoleId}
+          onChange={({ value: roleId }) => {
+            setSelectedRoleId(roleId);
+          }}
+          maxMenuHeight="200px"
+          vertical
+        />
+        <PeopleTabelHeader
+          columnLabels={headers}
+          numberOfVisibleColumns={numberOfVisibleColumns}
+          setNumberOfVisibleColumns={setNumberOfVisibleColumns}
+        />
+        {entries.map((entry, idx) => (
+          <PreviewTableRow
+            key={`${entry[0]} ${idx}`}
+            numberOfVisibleColumns={numberOfVisibleColumns}
+            entryData={entry}
+            headers={headers}
+          />
+        ))}
+        <Button
+          onClick={() => {
+            const mergePayload = {
+              roleId: selectedRoleId ?? defaultRoleId,
+              mergeHeads: headers,
+              mergeExternalId: [],
+              mergeFirstName: [],
+              mergeLastName: [],
+              mergeSection: [],
+              mergeEmail: [],
+            };
+            for (const entry of entries) {
+              entry.map((candidateData, colIdx) => {
+                if (validHeaders[headers[colIdx]])
+                  mergePayload[`merge${headers[colIdx]}`].push(candidateData);
+              });
+            }
+            recoilMergeData(mergePayload, () => {
+              setProcess(csvPeopleProcess.IDLE);
+            });
+          }}
+          value="Merge"
+          width="menu"
+          alert
+        />
+      </div>
+    );
+  }
 
   return (
     <div style={{ padding: '8px' }}>
@@ -264,6 +334,52 @@ function PeopleTableRow({ numberOfVisibleColumns, label, columnsJSX = [] }) {
               key={idx}
               className={`navigationColumn${idx + 1}`}
               style={{ textAlign: 'left' }}
+            >
+              {value}
+            </span>
+          ) : null,
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PreviewTableRow({ numberOfVisibleColumns, entryData, headers }) {
+  let columnsCSS = getColumnsCSS(numberOfVisibleColumns);
+  const columnsJSX = [];
+  entryData.map((candidateData, colIdx) => {
+    if (validHeaders[headers[colIdx]]) columnsJSX.push(candidateData);
+  });
+  return (
+    <div
+      className="navigationRow noselect nooutline"
+      style={{
+        cursor: 'pointer',
+        padding: '8px',
+        border: '0px',
+        borderBottom: '2px solid var(--canvastext)',
+        backgroundColor: 'var(--canvas)',
+        color: 'var(--canvastext)',
+        width: 'auto',
+        // marginLeft: marginSize,
+        maxWidth: '850px',
+      }}
+    >
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: columnsCSS,
+          gridTemplateRows: '1fr',
+          alignContent: 'center',
+          gap: '4px',
+        }}
+      >
+        {columnsJSX.map((value, idx) =>
+          numberOfVisibleColumns > idx ? (
+            <span
+              key={idx}
+              className={`navigationColumn${idx + 1}`}
+              style={{ textAlign: idx + 1 > 1 ? 'center' : 'left' }}
             >
               {value}
             </span>

@@ -89,8 +89,8 @@ const CourseInfoPanel = function ({ courseId }) {
       <ActionButtonGroup vertical>
         <ActionButton
           width="menu"
-          value="Dashboard"
-          data-test="dashboard nav button"
+          value="Enter Course"
+          data-test="Enter Course nav button"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -104,7 +104,7 @@ const CourseInfoPanel = function ({ courseId }) {
             });
           }}
         />
-        <ActionButton
+        {/* <ActionButton
           width="menu"
           value="Content"
           data-test="content nav button"
@@ -140,7 +140,6 @@ const CourseInfoPanel = function ({ courseId }) {
             }}
           />
         )}
-        {/* TODO: EMILIO create a level above fuction */}
         {dataAccessPermission === 'Identified' && (
           <ActionButton
             width="menu"
@@ -159,7 +158,7 @@ const CourseInfoPanel = function ({ courseId }) {
               });
             }}
           />
-        )}
+        )} */}
       </ActionButtonGroup>
       {canModifyCourseSettings === '1' && <EditLabel courseId={courseId} />}
       {canModifyCourseSettings === '1' && (
