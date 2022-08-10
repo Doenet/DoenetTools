@@ -44,6 +44,7 @@ export function RoleDropdown({
   const defaultIndex = defaultRoleId
     ? roles.findIndex(({ roleId }) => roleId === defaultRoleId)
     : null;
+
   return (
     <DropdownMenu
       width={width}

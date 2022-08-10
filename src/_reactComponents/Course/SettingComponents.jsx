@@ -18,6 +18,7 @@ import { useValidateEmail } from '../../_utils/hooks/useValidateEmail';
 import Button from '../PanelHeaderComponents/Button';
 import ButtonGroup from '../PanelHeaderComponents/ButtonGroup';
 import CheckboxButton from '../PanelHeaderComponents/Checkbox';
+import CollapseSection from '../PanelHeaderComponents/CollapseSection';
 import ColorImagePicker from '../PanelHeaderComponents/ColorImagePicker';
 import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
 import RelatedItems from '../PanelHeaderComponents/RelatedItems';
@@ -206,13 +207,14 @@ const ButtonFlexContainer = styled.div`
 export function AddUserWithOptions({ courseId }) {
   const { defaultRoleId, addUser } = useCourse(courseId);
   const roles = useRecoilValue(courseRolesByCourseId(courseId));
-
-  const [userData, setUserData] = useState({
+  const defaultData = {
     roleId: defaultRoleId,
     firstName: '',
     lastName: '',
-    empId: '',
-  });
+    externalId: '',
+    section: '',
+  };
+  const [userData, setUserData] = useState(defaultData);
 
   const [emailInput, setEmailInput] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(false);
@@ -224,34 +226,10 @@ export function AddUserWithOptions({ courseId }) {
   const handleEmailChange = async () => {
     if (isEmailValid) {
       addUser(emailInput, userData, () => {
+        // addToast(message);
         setEmailInput('');
-        setUserData({
-          roleId: defaultRoleId,
-          firstName: '',
-          lastName: '',
-          empId: '',
-        });
+        setUserData(defaultData);
       });
-      // const {
-      //   data: { success, message, userData: serverUserData },
-      // } = await axios.post('/api/addCourseUser.php', {
-      //   courseId,
-      //   email: emailInput,
-      //   ...userData,
-      // });
-      // if (success) {
-      //   setCourseUsers((prev) => [...prev, { ...serverUserData }]);
-      //   setEmailInput('');
-      //   setUserData({
-      //     roleId: defaultRoleId,
-      //     firstName: '',
-      //     lastName: '',
-      //     empId: '',
-      //   });
-      // } else {
-      //   addToast(message, toastType.ERROR);
-      // }
-      // setEmailInput('');
     }
   };
 
@@ -297,6 +275,24 @@ export function AddUserWithOptions({ courseId }) {
         vertical
         alert={emailInput !== '' && !isEmailValid}
       />
+      <Textfield
+        label="Section:"
+        width="250px"
+        value={userData.section}
+        onChange={(e) => {
+          setUserData((prev) => ({ ...prev, section: e.target.value }));
+        }}
+        vertical
+      />
+      <Textfield
+        label="External Id:"
+        width="250px"
+        value={userData.externalId}
+        onChange={(e) => {
+          setUserData((prev) => ({ ...prev, externalId: e.target.value }));
+        }}
+        vertical
+      />
       <DropdownMenu
         label="Role:"
         width="190px"
@@ -312,15 +308,6 @@ export function AddUserWithOptions({ courseId }) {
         }
         vertical
         disabled={false}
-      />
-      <Textfield
-        label="External Id:"
-        width="250px"
-        value={userData.empId}
-        onChange={(e) => {
-          setUserData((prev) => ({ ...prev, empId: e.target.value }));
-        }}
-        vertical
       />
     </UserWithOptionsContainer>
   );
@@ -514,9 +501,14 @@ export function MangeRoles({ courseId }) {
     courseRolesRecoil[0],
   );
   useEffect(() => {
-    setSelectedRolePermissons(
-      courseRolesRecoil?.find(({ roleId }) => roleId === selectedRoleId),
+    const permissions = courseRolesRecoil?.find(
+      ({ roleId }) => roleId === selectedRoleId,
     );
+    if (permissions) {
+      setSelectedRolePermissons(permissions);
+    } else {
+      setSelectedRoleId(courseRolesRecoil[0].roleId);
+    }
   }, [courseRolesRecoil, selectedRoleId]);
 
   const [permissonEdits, setPermissonEdits] = useState({});
@@ -543,10 +535,28 @@ export function MangeRoles({ courseId }) {
       permissonEdits,
       () => {
         setEdited(false);
-        setPermissonEdits({});
         addToast(
-          `Permissions for ${selectedRolePermissons.roleLabel} updated successfully`,
+          `Permissions for ${
+            permissonEdits?.roleLabel ?? selectedRolePermissons.roleLabel
+          } updated successfully`,
         );
+        setPermissonEdits({});
+      },
+      (error) => {
+        setSelectedRolePermissons(selectedRolePermissons);
+        addToast(error, toastType.ERROR);
+      },
+    );
+  };
+
+  const handleDelete = () => {
+    modifyRolePermissions(
+      selectedRolePermissons.roleId,
+      { isDeleted: '1' },
+      () => {
+        addToast(`${selectedRolePermissons.roleLabel} successfully deleted`);
+        setEdited(false);
+        setPermissonEdits({});
       },
       (error) => {
         setSelectedRolePermissons(selectedRolePermissons);
@@ -569,24 +579,13 @@ export function MangeRoles({ courseId }) {
 
   return (
     <Suspense fallback={<div>Loading roles...</div>}>
-      <DropdownMenu
+      <RoleDropdown
         label="Role"
-        title=""
-        items={
-          //TODO reduce to hide roles as needed
-          courseRolesRecoil?.map(({ roleLabel, roleId }) => [
-            roleId,
-            roleLabel,
-          ]) ?? []
-        }
         onChange={({ value: selectedRoleId }) => {
           setSelectedRoleId(selectedRoleId);
         }}
-        valueIndex={
-          courseRolesRecoil.findIndex(
-            ({ roleId }) => roleId == selectedRoleId,
-          ) + 1
-        }
+        valueRoleId={selectedRoleId}
+        maxMenuHeight="200px"
         vertical
       />
       <Textfield
@@ -672,24 +671,23 @@ export function MangeRoles({ courseId }) {
         items={['None', 'Aggregated', 'Anonymized', 'Identified'].map(
           (value) => [value, value],
         )}
-        onChange={({ value: dataAccessPermisson }) => {
-          setPermissonEdits((prev) => ({ ...prev, dataAccessPermisson }));
+        onChange={({ value: dataAccessPermission }) => {
+          setPermissonEdits((prev) => ({ ...prev, dataAccessPermission }));
           if (!edited) {
             setEdited(true);
           }
         }}
-        defaultIndex={
+        valueIndex={
           ['None', 'Aggregated', 'Anonymized', 'Identified'].findIndex(
-            (value) => value === selectedRolePermissons.dataAccessPermisson,
+            (value) =>
+              value ===
+              (permissonEdits?.dataAccessPermission ??
+                selectedRolePermissons.dataAccessPermission),
           ) + 1
         }
-        // valueIndex={
-        //   courseRolesRecoil.findIndex(
-        //     ({ roleId }) => roleId == selectedRoleId,
-        //   ) + 1
-        // }
         vertical
         disabled={selectedRolePermissons.isOwner === '1'}
+        width="menu"
       />
       <RolePermissonCheckbox
         courseId={courseId}
@@ -738,6 +736,19 @@ export function MangeRoles({ courseId }) {
           />
         </ButtonGroup>
       )}
+      <CollapseSection width="menu" title="Delete Role" collapsed>
+        <Button
+          width="menu"
+          value="Delete"
+          alert
+          onClick={handleDelete}
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) {
+              handleDelete();
+            }
+          }}
+        />
+      </CollapseSection>
     </Suspense>
   );
 }
@@ -748,31 +759,22 @@ export function AddRole({ courseId }) {
   const { modifyRolePermissions } = useCourse(courseId);
 
   const handleSave = () => {
-    modifyRolePermissions(
-      '',
-      { roleLabel: `Role ${roles.length}` },
-      () => {
-        addToast(`Create a new role: Role ${roles.length}`);
-      },
-      (error) => {
-        addToast(error.message, toastType.ERROR);
-      },
-    );
+    modifyRolePermissions('', { roleLabel: `Role ${roles.length}` }, () => {
+      addToast(`Create a new role: Role ${roles.length}`);
+    });
   };
 
   return (
-    <ButtonGroup vertical>
-      <Button
-        width="menu"
-        value="Create New Role"
-        onClick={handleSave}
-        onKeyDown={(e) => {
-          if (e.keyCode === 13) {
-            handleSave();
-          }
-        }}
-      />
-    </ButtonGroup>
+    <Button
+      width="menu"
+      value="Create New Role"
+      onClick={handleSave}
+      onKeyDown={(e) => {
+        if (e.keyCode === 13) {
+          handleSave();
+        }
+      }}
+    />
   );
 }
 

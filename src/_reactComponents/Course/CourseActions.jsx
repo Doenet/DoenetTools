@@ -90,13 +90,13 @@ export const peopleByCourseId = selectorFamily({
 
     const recoilMergeData = getCallback(({set})=> async (payload)=>{
       try {
-        let resp = await axios.post('/api/mergeEnrollmentData.php', payload);
+        let {data: {success, peopleArray, message}} = await axios.post('/api/mergePeopleData.php', payload);
         // console.log("resp",resp.data)
-        if (resp.status < 300) {
-          set(peopleAtomByCourseId(courseId),resp.data.enrollmentArray);
+        if (success) {
+          set(peopleAtomByCourseId(courseId),peopleArray);
           //TODO (Emilio): toast
         } else {
-          throw new Error(`response code: ${resp.status}`);
+          throw new Error(message);
         }
       } catch (err) {
         //TODO (Emilio): toast
@@ -539,14 +539,15 @@ export const courseRolesByCourseId = selectorFamily({
   get: courseId => ({get}) => {
     const permissonsAndSettings = get(coursePermissionsAndSettingsByCourseId(courseId));
     const roles = get(unfilteredCourseRolesByCourseId(courseId));
-    const ignoreKeys = ['isIncludedInGradebook', 'sectionPermissonOnly', 'dataAccessPermisson', 'roleId', 'roleLabel'];
+
+    const ignoreKeys = ['isIncludedInGradebook', 'sectionPermissonOnly', 'dataAccessPermission', 'roleId', 'roleLabel'];
     let filteredRoles = roles?.filter((role) => {
       let valid = 
         role.roleId === permissonsAndSettings.roleId 
         || !Object.keys(role).every((permKey) => (
-              role[permKey] === permissonsAndSettings[permKey] 
+              (role[permKey] ?? '0') === permissonsAndSettings[permKey] 
               || ignoreKeys.includes(permKey) 
-              ||  role[permKey] === '1' && permissonsAndSettings[permKey] === '0'
+              ||  (role[permKey] ?? '0') === '1' && permissonsAndSettings[permKey] === '0'
           ))
       return (valid)
     }) ?? [];
@@ -1310,7 +1311,7 @@ export const useCourse = (courseId) => {
       });
       if(success) {
         set(peopleAtomByCourseId(courseId), (prev) => ([...prev, {...serverUserData}]));
-        successCallback();
+        successCallback(message);
       } else {
         throw new Error(message);
       }
@@ -1350,15 +1351,38 @@ export const useCourse = (courseId) => {
     async (roleId, newPermissions, successCallback, failureCallback = defaultFailure) =>
     {
       try {
-        const {data: {success, message}} = await axios.post('/api/updateRolePermissons.php', {
-          courseId, roleId, permissions: {...newPermissions, label: newPermissions?.roleLabel}
+
+        const { 
+          data: {
+            success, 
+            message, 
+            actionType, 
+            roleId: serverRoleId,
+            updatedPermissions
+        }} = await axios.post('/api/updateRolePermissons.php', {
+              courseId, 
+              roleId, 
+              permissions: {...newPermissions, label: newPermissions?.roleLabel}
         })
+
         if(success) {
           set(
             unfilteredCourseRolesByCourseId(courseId), (prev => {
-              const idx = prev.findIndex(({roleId: candidateRoleId}) => candidateRoleId === roleId);
               const next = [...prev];
-              next.splice(idx, 1, {...prev[idx], ...newPermissions})
+              const idx = prev.findIndex(({roleId: candidateRoleId}) => candidateRoleId === serverRoleId);
+              let {label: roleLabel} = updatedPermissions;
+              if(roleLabel === undefined) roleLabel = prev[idx].roleLabel;
+              switch(actionType) {
+                case 'add':
+                  next.push({...updatedPermissions,roleLabel, roleId: serverRoleId})
+                  break;
+                case 'update':
+                  next.splice(idx, 1, {...prev[idx],...updatedPermissions,roleLabel})
+                  break;
+                case 'delete':
+                  next.splice(idx, 1);
+                  break;
+              }
               return next;
             })
           )
@@ -1372,6 +1396,8 @@ export const useCourse = (courseId) => {
     }, 
     [courseId, defaultFailure]
     );
+
+  
 
   const deleteCourse = useRecoilCallback(
     ({ set }) =>

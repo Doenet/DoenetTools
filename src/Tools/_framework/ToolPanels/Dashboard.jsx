@@ -19,7 +19,7 @@ import { faCode, faUser, faChartPie } from '@fortawesome/free-solid-svg-icons';
 export default function Dashboard(props) {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { canModifyCourseSettings, canManageUsers, dataAccessPermisson } =
+  const { canModifyCourseSettings, canManageUsers, dataAccessPermission } =
     useRecoilValue(effectivePermissionsByCourseId(courseId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const loadProfile = useRecoilValueLoadable(profileAtom);
@@ -68,7 +68,7 @@ export default function Dashboard(props) {
               }
             />
           ) : null}
-          {(dataAccessPermisson ?? 'None') !== 'None' ? (
+          {(dataAccessPermission ?? 'None') !== 'None' ? (
             <Card
               name="Data"
               icon={<FontAwesomeIcon icon={faChartPie} />}
