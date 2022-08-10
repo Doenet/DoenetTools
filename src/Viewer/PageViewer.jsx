@@ -11,6 +11,8 @@ import { cidFromText } from '../Core/utils/cid';
 import { retrieveTextFileForCid } from '../Core/utils/retrieveTextFile';
 import axios from 'axios';
 import { returnAllPossibleVariants } from '../Core/utils/returnAllPossibleVariants';
+import { useLocation } from "react-router";
+import cssesc from 'cssesc';
 
 const rendererUpdatesToIgnore = atomFamily({
   key: 'rendererUpdatesToIgnore',
@@ -107,12 +109,12 @@ export default function PageViewer(props) {
 
   const [stage, setStage] = useState('initial');
   const [pageContentChanged, setPageContentChanged] = useState(false);
-  
+
   const [documentRenderer, setDocumentRenderer] = useState(null);
-  
+
   const initialCoreData = useRef({});
-  
-  
+
+
   const rendererClasses = useRef({});
   const coreInfo = useRef(null);
   const coreCreated = useRef(false);
@@ -129,6 +131,8 @@ export default function PageViewer(props) {
   const animationInfo = useRef({});
 
   const resolveActionPromises = useRef({});
+
+  let { hash } = useLocation();
 
   useEffect(() => {
 
@@ -245,6 +249,25 @@ export default function PageViewer(props) {
       }
     })
   })
+
+  useEffect(() => {
+    if (hash && coreCreated.current && coreWorker.current) {
+      coreWorker.current.postMessage({
+        messageType: "navigatingToHash",
+        args: {
+          hash: hash.slice(1)
+        }
+      })
+    }
+  }, [hash, coreCreated.current, coreWorker.current])
+
+
+  useEffect(() => {
+    if (documentRenderer) {
+      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+    }
+  }, [hash, documentRenderer])
+
 
   function terminateCoreAndAnimations() {
     preventMoreAnimations.current = true;
