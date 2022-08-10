@@ -176,16 +176,32 @@ if ($success) {
     if ($isDeleted == '1') {
         $actionType = 'delete';
         $result = $conn->query(
-            "DELETE FROM course_role
-            WHERE
-            courseId ='$courseId'
-            AND
-            roleId = '$roleId'"
+            "SELECT defaultRoleId
+             FROM course WHERE courseId = '$courseId'"
         );
-        if ($result == false) {
+
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $defaultRoleId = $row['defaultRoleId'];
+        }
+
+        if ($defaultRoleId == $roleId) {
             $success = false;
             $message =
-                'Please remove all people from this role before deleting';
+                'Cannot delete the deafault role, please alter course setting first';
+        } else {
+            $result = $conn->query(
+                "DELETE FROM course_role
+                WHERE
+                courseId ='$courseId'
+                AND
+                roleId = '$roleId'"
+            );
+            if ($result == false) {
+                $success = false;
+                $message =
+                    'Please remove all people from this role before deleting';
+            }
         }
     } else {
         foreach ($permissonKeys as $permisson) {
