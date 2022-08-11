@@ -3947,15 +3947,15 @@ class AttributeComponentDependency extends Dependency {
         }
       } else {
         let composite = this.dependencyHandler._components[shadows.compositeName];
-        if ("targetAttributesToIgnoreRecursively" in composite.state) {
-          let targetAttributesToIgnoreRecursively = await composite.stateValues.targetAttributesToIgnoreRecursively;
-          if (targetAttributesToIgnoreRecursively.includes(this.attributeName)) {
+        if ("sourceAttributesToIgnoreRecursively" in composite.state) {
+          let sourceAttributesToIgnoreRecursively = await composite.stateValues.sourceAttributesToIgnoreRecursively;
+          if (sourceAttributesToIgnoreRecursively.includes(this.attributeName)) {
             break;
           }
         }
-        if (shadows.firstLevelReplacement && "targetAttributesToIgnore" in composite.state) {
-          let targetAttributesToIgnore = await composite.stateValues.targetAttributesToIgnore;
-          if (targetAttributesToIgnore.includes(this.attributeName)) {
+        if (shadows.firstLevelReplacement && "sourceAttributesToIgnore" in composite.state) {
+          let sourceAttributesToIgnore = await composite.stateValues.sourceAttributesToIgnore;
+          if (sourceAttributesToIgnore.includes(this.attributeName)) {
             break;
           }
         }
@@ -6598,6 +6598,13 @@ class CountAmongSiblingsDependency extends Dependency {
     let childrenOfSameType = this.dependencyHandler.components[this.parentName].activeChildren
       .filter(x => x.componentType === childComponentType);
     let value = childrenOfSameType.map(x => x.componentName).indexOf(this.upstreamComponentName) + 1;
+
+    if(this.parentName === this.dependencyHandler.core.documentName) {
+      let previousCounts = this.dependencyHandler.core.previousComponentTypeCounts[childComponentType]
+      if(previousCounts) {
+        value += previousCounts;
+      }
+    }
 
     // don't need changes, as it is changed directly from core
     // and then upstream variables are marked as changed

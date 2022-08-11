@@ -42,7 +42,8 @@ const ToggleButtonGroup = (props) => {
   });
   return /* @__PURE__ */ React.createElement(Container, {
     style: {height: "fit-content"},
-    vertical: props.vertical
+    vertical: props.vertical,
+    role: "group"
   }, /* @__PURE__ */ React.createElement(ThemeProvider, {
     theme: props.vertical ? verticalToggleGroup : toggleGroup
   }, modElem));

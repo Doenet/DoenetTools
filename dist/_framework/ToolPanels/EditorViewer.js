@@ -1,5 +1,6 @@
 import React, {useEffect, useRef} from "../../_snowpack/pkg/react.js";
 import PageViewer from "../../viewer/PageViewer.js";
+import useEventListener from "../../_utils/hooks/useEventListener.js";
 import {
   useRecoilValue,
   atom,
@@ -38,6 +39,17 @@ export const editorViewerErrorStateAtom = atom({
   key: "editorViewerErrorStateAtom",
   default: false
 });
+export const useUpdateViewer = () => {
+  const updateViewer = useRecoilCallback(({snapshot, set}) => async () => {
+    const textEditorDoenetML = await snapshot.getPromise(textEditorDoenetMLAtom);
+    const isErrorState = await snapshot.getPromise(editorViewerErrorStateAtom);
+    set(viewerDoenetMLAtom, textEditorDoenetML);
+    if (isErrorState) {
+      set(refreshNumberAtom, (was) => was + 1);
+    }
+  });
+  return updateViewer;
+};
 export default function EditorViewer() {
   const viewerDoenetML = useRecoilValue(viewerDoenetMLAtom);
   const paramPageId = useRecoilValue(searchParamAtomFamily("pageId"));
@@ -52,6 +64,7 @@ export default function EditorViewer() {
   const pageObj = useRecoilValue(itemByDoenetId(paramPageId));
   const activityObj = useRecoilValue(itemByDoenetId(doenetId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
+  const updateViewer = useUpdateViewer();
   useSetCourseIdFromDoenetId(doenetId);
   useInitCourseItems(courseId);
   let pageInitiated = false;
@@ -96,6 +109,12 @@ export default function EditorViewer() {
       setEditorInit("");
     };
   }, [paramPageId, pageInitiated]);
+  useEventListener("keydown", (e) => {
+    if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+      e.preventDefault();
+      updateViewer();
+    }
+  });
   if (courseId === "__not_found__") {
     return /* @__PURE__ */ React.createElement("h1", null, "Content not found or no permission to view content");
   } else if (paramPageId !== initializedPageId) {

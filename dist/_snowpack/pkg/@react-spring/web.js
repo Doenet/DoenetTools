@@ -1,5 +1,5 @@
-import { r as react } from '../common/index-61623f21.js';
-import { r as reactDom } from '../common/index-eaf9e997.js';
+import { r as react } from '../common/index-56a88a1e.js';
+import { r as reactDom } from '../common/index-c4ac9922.js';
 import '../common/_commonjsHelpers-f5d70792.js';
 
 let updateQueue = makeQueue();
@@ -47,9 +47,9 @@ let findTimeout = time => ~(~timeouts.findIndex(t => t.time > time) || ~timeouts
 raf.cancel = fn => {
   onStartQueue.delete(fn);
   onFrameQueue.delete(fn);
+  onFinishQueue.delete(fn);
   updateQueue.delete(fn);
   writeQueue.delete(fn);
-  onFinishQueue.delete(fn);
 };
 
 raf.sync = fn => {
@@ -148,15 +148,16 @@ function update() {
     pendingCount -= count;
   }
 
+  if (!pendingCount) {
+    stop();
+    return;
+  }
+
   onStartQueue.flush();
   updateQueue.flush(prevTs ? Math.min(64, ts - prevTs) : 16.667);
   onFrameQueue.flush();
   writeQueue.flush();
   onFinishQueue.flush();
-
-  if (!pendingCount) {
-    stop();
-  }
 }
 
 function makeQueue() {
@@ -889,11 +890,11 @@ function isAnimatedString(value) {
   return is.str(value) && (value[0] == '#' || /\d/.test(value) || !isSSR() && cssVariableRegex.test(value) || value in (colors$1 || {}));
 }
 
-const useLayoutEffect = typeof window !== 'undefined' && window.document && window.document.createElement ? react.useLayoutEffect : react.useEffect;
+const useIsomorphicLayoutEffect = isSSR() ? react.useEffect : react.useLayoutEffect;
 
 const useIsMounted = () => {
   const isMounted = react.useRef(false);
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
@@ -1239,7 +1240,7 @@ const withAnimated = (Component, host) => {
 
     const observer = new PropsObserver(callback, deps);
     const observerRef = react.useRef();
-    useLayoutEffect(() => {
+    useIsomorphicLayoutEffect(() => {
       observerRef.current = observer;
       each(deps, dep => addFluidObserver(dep, observer));
       return () => {
@@ -1476,7 +1477,7 @@ function replaceRef(ctrl, ref) {
 }
 
 function useChain(refs, timeSteps, timeFrame = 1000) {
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (timeSteps) {
       let prevDelay = 0;
       each(refs, (ref, i) => {
@@ -3322,7 +3323,7 @@ function useSprings(length, props, deps) {
   const context = react.useContext(SpringContext);
   const prevContext = usePrev(context);
   const hasContext = context !== prevContext && hasProps(context);
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     layoutId.current++;
     state.ctrls = ctrls.current;
     const {
@@ -3395,19 +3396,13 @@ function useTransition(data, props, deps) {
   const transitions = [];
   const usedTransitions = react.useRef(null);
   const prevTransitions = reset ? null : usedTransitions.current;
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     usedTransitions.current = transitions;
   });
   useOnce(() => {
-    each(usedTransitions.current, t => {
-      var _t$ctrl$ref;
-
-      (_t$ctrl$ref = t.ctrl.ref) == null ? void 0 : _t$ctrl$ref.add(t.ctrl);
-      const change = changes.get(t);
-
-      if (change) {
-        t.ctrl.start(change.payload);
-      }
+    each(transitions, t => {
+      ref == null ? void 0 : ref.add(t.ctrl);
+      t.ctrl.ref = ref;
     });
     return () => {
       each(usedTransitions.current, t => {
@@ -3422,7 +3417,7 @@ function useTransition(data, props, deps) {
   });
   const keys = getKeys(items, propsFn ? propsFn() : props, prevTransitions);
   const expired = reset && usedTransitions.current || [];
-  useLayoutEffect(() => each(expired, ({
+  useIsomorphicLayoutEffect(() => each(expired, ({
     ctrl,
     item,
     key
@@ -3596,7 +3591,7 @@ function useTransition(data, props, deps) {
   const context = react.useContext(SpringContext);
   const prevContext = usePrev(context);
   const hasContext = context !== prevContext && hasProps(context);
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (hasContext) {
       each(transitions, t => {
         t.ctrl.start({
@@ -3611,7 +3606,7 @@ function useTransition(data, props, deps) {
       transitions.splice(ind, 1);
     }
   });
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     each(exitingTransitions.current.size ? exitingTransitions.current : changes, ({
       phase,
       payload
@@ -3631,7 +3626,7 @@ function useTransition(data, props, deps) {
       if (payload) {
         replaceRef(ctrl, payload.ref);
 
-        if (ctrl.ref && !forceChange.current) {
+        if ((ctrl.ref || ref) && !forceChange.current) {
           ctrl.update(payload);
         } else {
           ctrl.start(payload);

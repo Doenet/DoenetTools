@@ -126,7 +126,7 @@ export default class Award extends BaseComponent {
       defaultValue: null,
       public: true,
     };
-    attributes.targetsAreResponses = {
+    attributes.sourcesAreResponses = {
       createPrimitiveOfType: "string"
     }
 
@@ -143,8 +143,8 @@ export default class Award extends BaseComponent {
   }
 
   static preprocessSerializedChildren({ serializedChildren, attributes, componentName }) {
-    if (attributes.targetsAreResponses) {
-      let targetNames = attributes.targetsAreResponses.primitive.split(/\s+/).filter(s => s);
+    if (attributes.sourcesAreResponses) {
+      let targetNames = attributes.sourcesAreResponses.primitive.split(/\s+/).filter(s => s);
       let nameSpace;
       if (attributes.newNamespace?.primitive) {
         nameSpace = componentName + "/";

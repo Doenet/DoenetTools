@@ -42,13 +42,12 @@ if ($doenetId == "") {
 
 
 if ($success) {
-    $sql = "
-        SELECT e.timeLimitMultiplier AS timeLimitMultiplier
-        FROM enrollment AS e
+    $sql = "SELECT cu.timeLimitMultiplier AS timeLimitMultiplier
+        FROM course_user AS cu
         LEFT JOIN course_content AS cc
-        ON e.courseId = cc.courseId
+        ON cu.courseId = cc.courseId
         WHERE cc.doenetId='$doenetId'
-        AND e.userId = '$userId'";
+        AND cu.userId = '$userId'";
 
     $result = $conn->query($sql);
     $row = $result->fetch_assoc();

@@ -1,9 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from "../../_snowpack/pkg/react.js";
+import React, {useCallback, useEffect, useRef, useState} from "../../_snowpack/pkg/react.js";
 import Measure from "../../_snowpack/pkg/react-measure.js";
 import {
   faCode,
@@ -16,31 +11,34 @@ import {
   faCheck
 } from "../../_snowpack/pkg/@fortawesome/free-solid-svg-icons.js";
 import {FontAwesomeIcon} from "../../_snowpack/pkg/@fortawesome/react-fontawesome.js";
-import {
-  useRecoilValue,
-  useRecoilCallback,
-  useSetRecoilState
-} from "../../_snowpack/pkg/recoil.js";
+import {useRecoilValue, useRecoilCallback, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
 import {
   authorCourseItemOrderByCourseId,
   itemByDoenetId,
-  coursePermissionsAndSettingsByCourseId,
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
   studentCourseItemOrderByCourseIdBySection
 } from "./CourseActions.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 import "../../_utils/util.css.proxy.js";
 import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {mainPanelClickAtom} from "../../_framework/Panels/NewMainPanel.js";
 import {selectedMenuPanelAtom} from "../../_framework/Panels/NewMenuPanel.js";
-import {effectiveRoleAtom} from "../PanelHeaderComponents/RoleDropdown.js";
+import {effectivePermissionsByCourseId} from "../PanelHeaderComponents/RoleDropdown.js";
+const ToggleCloseIconStyling = styled.button`
+  border: none;
+  border-radius: 35px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
+`;
 export default function CourseNavigator(props) {
   console.log("=== CourseNavigator");
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const sectionId = useRecoilValue(searchParamAtomFamily("sectionId"));
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
-  let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  const {canViewUnassignedContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns, setNumberOfVisibleColumns] = useState(1);
   let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
@@ -63,10 +61,7 @@ export default function CourseNavigator(props) {
       return newObj;
     });
   }, [clearSelections, setMainPanelClick]);
-  if (!coursePermissionsAndSettings) {
-    return null;
-  }
-  if (coursePermissionsAndSettings.canEditContent == "0" || effectiveRole == "student" || props.displayRole == "student") {
+  if (canViewUnassignedContent == "0" || props.displayRole == "student") {
     return /* @__PURE__ */ React.createElement(StudentCourseNavigation, {
       courseNavigatorProps: props,
       courseId,
@@ -75,7 +70,7 @@ export default function CourseNavigator(props) {
       setNumberOfVisibleColumns
     });
   }
-  if (coursePermissionsAndSettings.canEditContent == "1" || effectiveRole == "instructor" || props.displayRole == "instructor") {
+  if (canViewUnassignedContent == "1" || props.displayRole == "instructor") {
     return /* @__PURE__ */ React.createElement(AuthorCourseNavigation, {
       courseNavigatorProps: props,
       courseId,
@@ -86,9 +81,14 @@ export default function CourseNavigator(props) {
   }
   return null;
 }
-function StudentCourseNavigation({courseId, sectionId, numberOfVisibleColumns, setNumberOfVisibleColumns, courseNavigatorProps}) {
+function StudentCourseNavigation({
+  courseId,
+  sectionId,
+  numberOfVisibleColumns,
+  setNumberOfVisibleColumns,
+  courseNavigatorProps
+}) {
   let studentItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId, sectionId}));
-  console.log("studentItemOrder", studentItemOrder);
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
   if (definedForSectionId.current != sectionId) {
@@ -111,7 +111,14 @@ function StudentCourseNavigation({courseId, sectionId, numberOfVisibleColumns, s
     setNumberOfVisibleColumns
   }), items);
 }
-function StudentItem({courseId, doenetId, numberOfVisibleColumns, indentLevel, previousSections, courseNavigatorProps}) {
+function StudentItem({
+  courseId,
+  doenetId,
+  numberOfVisibleColumns,
+  indentLevel,
+  previousSections,
+  courseNavigatorProps
+}) {
   let itemInfo = useRecoilValue(itemByDoenetId(doenetId));
   if (itemInfo.type == "section" && previousSections?.current) {
     previousSections.current.push(itemInfo.doenetId);
@@ -142,8 +149,18 @@ function StudentItem({courseId, doenetId, numberOfVisibleColumns, indentLevel, p
   }
   return null;
 }
-function StudentSection({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
-  let studentSectionItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({courseId, sectionId: itemInfo.doenetId}));
+function StudentSection({
+  courseId,
+  doenetId,
+  itemInfo,
+  numberOfVisibleColumns,
+  indentLevel,
+  courseNavigatorProps
+}) {
+  let studentSectionItemOrder = useRecoilValue(studentCourseItemOrderByCourseIdBySection({
+    courseId,
+    sectionId: itemInfo.doenetId
+  }));
   let previousSections = useRef([]);
   if (itemInfo.isOpen) {
     let sectionItems = studentSectionItemOrder.map((doenetId2) => /* @__PURE__ */ React.createElement(StudentItem, {
@@ -182,7 +199,14 @@ function StudentSection({courseId, doenetId, itemInfo, numberOfVisibleColumns, i
     });
   }
 }
-function StudentActivity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
+function StudentActivity({
+  courseId,
+  doenetId,
+  itemInfo,
+  numberOfVisibleColumns,
+  indentLevel,
+  courseNavigatorProps
+}) {
   let columnsJSX = [null];
   if (itemInfo.dueDate) {
     columnsJSX[0] = /* @__PURE__ */ React.createElement("span", {
@@ -202,9 +226,14 @@ function StudentActivity({courseId, doenetId, itemInfo, numberOfVisibleColumns, 
     isBeingCut: itemInfo.isBeingCut
   }));
 }
-function AuthorCourseNavigation({courseId, sectionId, numberOfVisibleColumns, setNumberOfVisibleColumns, courseNavigatorProps}) {
+function AuthorCourseNavigation({
+  courseId,
+  sectionId,
+  numberOfVisibleColumns,
+  setNumberOfVisibleColumns,
+  courseNavigatorProps
+}) {
   let authorItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId, sectionId}));
-  console.log("authorItemOrder", courseId, sectionId, authorItemOrder);
   let previousSections = useRef([]);
   let definedForSectionId = useRef("");
   if (definedForSectionId.current != sectionId) {
@@ -226,7 +255,14 @@ function AuthorCourseNavigation({courseId, sectionId, numberOfVisibleColumns, se
     setNumberOfVisibleColumns
   }), items);
 }
-function Item({courseId, doenetId, numberOfVisibleColumns, indentLevel, previousSections, courseNavigatorProps}) {
+function Item({
+  courseId,
+  doenetId,
+  numberOfVisibleColumns,
+  indentLevel,
+  previousSections,
+  courseNavigatorProps
+}) {
   let itemInfo = useRecoilValue(itemByDoenetId(doenetId));
   if (itemInfo.type == "section" && previousSections?.current) {
     previousSections.current.push(itemInfo.doenetId);
@@ -267,8 +303,18 @@ function Item({courseId, doenetId, numberOfVisibleColumns, indentLevel, previous
   }
   return null;
 }
-function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
-  let authorSectionItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({courseId, sectionId: itemInfo.doenetId}));
+function Section({
+  courseId,
+  doenetId,
+  itemInfo,
+  numberOfVisibleColumns,
+  indentLevel,
+  courseNavigatorProps
+}) {
+  let authorSectionItemOrder = useRecoilValue(authorCourseItemOrderByCourseIdBySection({
+    courseId,
+    sectionId: itemInfo.doenetId
+  }));
   let previousSections = useRef([]);
   let columnsJSX = [null, null];
   if (itemInfo.isAssigned) {
@@ -318,7 +364,14 @@ function Section({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLe
     });
   }
 }
-function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
+function Bank({
+  courseId,
+  doenetId,
+  itemInfo,
+  numberOfVisibleColumns,
+  indentLevel,
+  courseNavigatorProps
+}) {
   if (itemInfo.isOpen) {
     let pages = itemInfo.pages.map((pageDoenetId, i) => {
       return /* @__PURE__ */ React.createElement(Page, {
@@ -360,7 +413,14 @@ function Bank({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel
     });
   }
 }
-function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentLevel, courseNavigatorProps}) {
+function Activity({
+  courseId,
+  doenetId,
+  itemInfo,
+  numberOfVisibleColumns,
+  indentLevel,
+  courseNavigatorProps
+}) {
   let columnsJSX = [null, null];
   if (itemInfo.isAssigned) {
     columnsJSX[0] = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
@@ -443,7 +503,14 @@ function Activity({courseId, doenetId, itemInfo, numberOfVisibleColumns, indentL
     }));
   }
 }
-function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel, orderInfo, courseNavigatorProps}) {
+function Order({
+  courseId,
+  activityDoenetId,
+  numberOfVisibleColumns,
+  indentLevel,
+  orderInfo,
+  courseNavigatorProps
+}) {
   let {behavior, doenetId, content, numberToSelect, withReplacement} = orderInfo;
   let recoilOrderInfo = useRecoilValue(itemByDoenetId(doenetId));
   let contentJSX = [];
@@ -535,7 +602,15 @@ function Order({courseId, activityDoenetId, numberOfVisibleColumns, indentLevel,
     });
   }
 }
-function Page({courseId, doenetId, activityDoenetId, numberOfVisibleColumns, indentLevel, number = null, courseNavigatorProps}) {
+function Page({
+  courseId,
+  doenetId,
+  activityDoenetId,
+  numberOfVisibleColumns,
+  indentLevel,
+  number = null,
+  courseNavigatorProps
+}) {
   let recoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
   return /* @__PURE__ */ React.createElement(Row, {
     courseId,
@@ -550,7 +625,21 @@ function Page({courseId, doenetId, activityDoenetId, numberOfVisibleColumns, ind
     isBeingCut: recoilPageInfo.isBeingCut
   });
 }
-function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon, label, isSelected = false, indentLevel = 0, numbered, hasToggle = false, isOpen, isBeingCut = false, courseNavigatorProps}) {
+function Row({
+  courseId,
+  doenetId,
+  numberOfVisibleColumns,
+  columnsJSX = [],
+  icon,
+  label,
+  isSelected = false,
+  indentLevel = 0,
+  numbered,
+  hasToggle = false,
+  isOpen,
+  isBeingCut = false,
+  courseNavigatorProps
+}) {
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
   let openCloseIndicator = null;
   let toggleOpenClosed = useRecoilCallback(({set}) => () => {
@@ -693,7 +782,9 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
       }
     }
     set(selectedCourseItems, newSelectedItems);
-    courseNavigatorProps?.updateSelectMenu({selectedItems: newSelectedItems});
+    courseNavigatorProps?.updateSelectMenu({
+      selectedItems: newSelectedItems
+    });
   }, [doenetId, courseId, setSelectionMenu]);
   let bgcolor = "var(--canvas)";
   let color = "var(--canvastext)";
@@ -702,6 +793,45 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     bgcolor = "var(--lightBlue)";
   } else if (isBeingCut) {
     bgcolor = "var(--mainGray)";
+  }
+  if (hasToggle) {
+    openCloseIndicator = isOpen ? /* @__PURE__ */ React.createElement(ToggleCloseIconStyling, {
+      "data-cy": "folderToggleCloseIcon",
+      "aria-expanded": "true",
+      style: {backgroundColor: bgcolor},
+      onClick: () => {
+        if (hasToggle) {
+          toggleOpenClosed();
+        }
+      },
+      onKeyDown: (e) => {
+        if (e.key === "enter") {
+          if (hasToggle) {
+            toggleOpenClosed();
+          }
+        }
+      }
+    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faChevronDown
+    })) : /* @__PURE__ */ React.createElement(ToggleCloseIconStyling, {
+      "data-cy": "folderToggleOpenIcon",
+      "aria-expanded": "false",
+      style: {backgroundColor: bgcolor},
+      onClick: () => {
+        if (hasToggle) {
+          toggleOpenClosed();
+        }
+      },
+      onKeyDown: (e) => {
+        if (e.key === "enter") {
+          if (hasToggle) {
+            toggleOpenClosed();
+          }
+        }
+      }
+    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faChevronRight
+    }));
   }
   let handleDoubleClick = useRecoilCallback(() => async (e) => {
     e.preventDefault();
@@ -727,15 +857,42 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     onClick: (e) => {
       handleSingleSelectionClick(e);
     },
+    onKeyDown: (e) => {
+      if (e.key === "Enter") {
+        if (bgcolor === "var(--canvas)") {
+          handleSingleSelectionClick(e);
+        } else {
+          if (e.key === "Enter" && e.metaKey) {
+            handleSingleSelectionClick(e);
+          } else {
+            handleDoubleClick(e);
+          }
+        }
+      }
+    },
     onDoubleClick: (e) => {
       handleDoubleClick(e);
     }
   }, /* @__PURE__ */ React.createElement("div", {
+    key: `Row${doenetId}`,
+    role: "button",
+    "data-cy": "courseItem",
+    tabIndex: 0,
+    className: "noselect nooutline",
     style: {
-      display: "grid",
-      gridTemplateColumns: columnsCSS,
-      gridTemplateRows: "1fr",
-      alignContent: "center"
+      cursor: "pointer",
+      padding: "8px",
+      border: "0px",
+      borderBottom: "2px solid var(--canvastext)",
+      backgroundColor: bgcolor,
+      color,
+      width: "auto"
+    },
+    onClick: (e) => {
+      handleSingleSelectionClick(e);
+    },
+    onDoubleClick: (e) => {
+      handleDoubleClick(e);
     }
   }, /* @__PURE__ */ React.createElement("span", {
     className: "navigationColumn1",
@@ -803,7 +960,11 @@ function getColumnsCSS(numberOfVisibleColumns) {
   }
   return columnsCSS;
 }
-function CourseNavigationHeader({columnLabels, numberOfVisibleColumns, setNumberOfVisibleColumns}) {
+function CourseNavigationHeader({
+  columnLabels,
+  numberOfVisibleColumns,
+  setNumberOfVisibleColumns
+}) {
   const updateNumColumns = useCallback((width) => {
     const maxColumns = columnLabels.length + 1;
     const breakpoints = [375, 500, 650, 800];

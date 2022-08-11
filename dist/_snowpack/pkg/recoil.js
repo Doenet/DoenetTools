@@ -1,5 +1,5 @@
-import { r as react } from './common/index-61623f21.js';
-import { r as reactDom } from './common/index-eaf9e997.js';
+import { r as react } from './common/index-56a88a1e.js';
+import { r as reactDom } from './common/index-c4ac9922.js';
 import './common/_commonjsHelpers-f5d70792.js';
 
 /**
@@ -7927,6 +7927,12 @@ function atomWithFallback(options) {
     set: ({
       set
     }, newValue) => set(base, newValue),
+    // This selector does not need to cache as it is a wrapper selector
+    // and the selector within the wrapper selector will have a cache
+    // option by default
+    cachePolicy_UNSTABLE: {
+      eviction: 'most-recent'
+    },
     dangerouslyAllowMutability: options.dangerouslyAllowMutability
   });
   setConfigDeletionHandler$1(sel.key, getConfigDeletionHandler$2(options.key));
@@ -8363,7 +8369,10 @@ function unwrapDependencies(dependencies) {
   return Array.isArray(dependencies) ? dependencies : Object.getOwnPropertyNames(dependencies).map(key => dependencies[key]);
 }
 
-function wrapResults(dependencies, results) {
+function wrapResults(dependencies,
+/* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
+ * LTI update could not be added via codemod */
+results) {
   return Array.isArray(dependencies) ? results : // Object.getOwnPropertyNames() has consistent key ordering with ES6
   Object.getOwnPropertyNames(dependencies).reduce((out, key, idx) => ({ ...out,
     [key]: results[idx]

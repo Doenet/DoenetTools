@@ -19,6 +19,11 @@ const Button = styled.button`
     color: ${(props) => props.disabled ? "var(--mainGray)" : "black"};
     background-color: ${(props) => props.alert ? "var(--lightRed)" : props.disabled ? "none" : "var(--lightBlue)"};
   }
+
+  &:focus {
+    outline: 2px solid ${(props) => props.disabled ? "var(--mainGray)" : props.alert ? "var(--mainRed)" : "var(--mainBlue)"};
+    outline-offset: 2px;
+  }
 `;
 Button.defaultProps = {
   theme: {
@@ -113,8 +118,12 @@ export default function ToggleButton(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: container
   }, /* @__PURE__ */ React.createElement("p", {
+    id: "toggle-button-label",
     style: label
   }, label.value), /* @__PURE__ */ React.createElement(Button, {
+    "aria-labelledby": "toggle-button-label",
+    "aria-pressed": props.isSelected,
+    "aria-disabled": props.disabled ? true : false,
     id: props.id,
     style: toggleButton,
     disabled,

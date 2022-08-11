@@ -13,6 +13,10 @@ const Select = styled.select`
     size: ${(props) => props.size};
     overflow: auto;
     cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+    &:focus {
+        outline: 2px solid ${(props) => props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+        outline-offset: 2px;
+    }
 `;
 const Option = styled.option`
     key: ${(props) => props.key};
@@ -33,9 +37,9 @@ export default function RelatedItems(props) {
   const labelVisible = props.label ? "static" : "none";
   const width = props.width ? props.width : "200px";
   const size = props.size ? props.size : 4;
-  const ariaLabel = props.ariaLabel ? props.ariaLabel : null;
   const alert = props.alert ? props.alert : null;
   const disabled = props.disabled ? props.disabled : null;
+  const read_only = props.disabled ? true : false;
   var align = "flex";
   var label = "";
   if (props.label) {
@@ -72,9 +76,11 @@ export default function RelatedItems(props) {
   return /* @__PURE__ */ React.createElement(Container, {
     align
   }, /* @__PURE__ */ React.createElement(Label, {
+    id: "related-items-label",
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement(Select, {
+    readOnly: read_only,
     width,
     size,
     onChange: (e) => {
@@ -89,9 +95,12 @@ export default function RelatedItems(props) {
     onKeyDown: (e) => {
       handleKeyDown(e);
     },
-    "aria-label": ariaLabel,
     alert,
     disabled,
-    multiple: props.multiple
+    multiple: props.multiple,
+    "aria-labelledby": "related-items-label",
+    "aria-disabled": props.disabled ? true : false,
+    role: "listbox",
+    "aria-multiselectable": props.multiple
   }, options));
 }

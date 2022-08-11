@@ -7,6 +7,7 @@ import {
 } from "../../_snowpack/pkg/recoil.js";
 import {useTransition, a} from "../../_snowpack/pkg/@react-spring/web.js";
 import useMeasure from "../../_snowpack/pkg/react-use-measure.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {drivecardSelectedNodesAtom} from "../ToolHandlers/CourseToolHandler.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
@@ -15,6 +16,15 @@ import {coursePermissionsAndSettings} from "../../_reactComponents/Course/Course
 import {mainPanelClickAtom} from "../Panels/NewMainPanel.js";
 import useMedia from "./useMedia.js";
 import "./driveCardsStyle.css.proxy.js";
+const DriveCardFocus = styled.div`
+  border-radius: 5px;
+  padding-right: 4px;
+  padding-bottom: 4px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 3px;
+  }
+`;
 export default function CourseCards(props) {
   console.log(">>>===CourseCards");
   const courses = useRecoilValue(coursePermissionsAndSettings);
@@ -90,13 +100,6 @@ const CourseCardWrapper = (props) => {
         courseId: item.courseId
       }
     });
-  };
-  const handleOnBlur = () => {
-  };
-  const handleKeyUp = (e, item) => {
-    if (e.key === "Tab") {
-      setDrivecardSelection([item]);
-    }
   };
   const drivecardselection = (e, item) => {
     e.preventDefault();
@@ -174,22 +177,24 @@ const CourseCardWrapper = (props) => {
     let isSelected = getSelectedCard(item);
     return /* @__PURE__ */ React.createElement(a.div, {
       style
-    }, /* @__PURE__ */ React.createElement("div", {
+    }, /* @__PURE__ */ React.createElement(DriveCardFocus, {
       role: "button",
-      style: {height: "100%", outline: "none"},
-      tabIndex: index + 1,
+      style: {height: "100%"},
+      tabIndex: "0",
       onClick: (e) => {
         e.preventDefault();
         e.stopPropagation();
         drivecardselection(e, item, props);
       },
-      onBlur: () => handleOnBlur(),
       onKeyDown: (e) => {
         if (e.key === "Enter") {
-          handleSelect(e, item);
+          if (isSelected) {
+            handleSelect(e, item);
+          } else {
+            drivecardselection(e, item, props);
+          }
         }
       },
-      onKeyUp: (e) => handleKeyUp(e, item),
       onDoubleClick: (e) => {
         e.preventDefault();
         e.stopPropagation();

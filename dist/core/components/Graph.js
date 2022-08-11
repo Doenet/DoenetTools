@@ -96,7 +96,7 @@ export default class Graph extends BlockComponent {
       forRenderer: true
     };
     attributes.xlabel = {
-      createComponentOfType: "text",
+      createComponentOfType: "label",
       createStateVariable: "xlabel",
       defaultValue: "",
       public: true,
@@ -119,7 +119,7 @@ export default class Graph extends BlockComponent {
       forRenderer: true,
     }
     attributes.ylabel = {
-      createComponentOfType: "text",
+      createComponentOfType: "label",
       createStateVariable: "ylabel",
       defaultValue: "",
       public: true,
@@ -266,6 +266,42 @@ export default class Graph extends BlockComponent {
 
         return { useEssentialOrDefaultValue: { displayDigits: true } }
 
+      }
+    }
+
+    stateVariableDefinitions.xlabelHasLatex = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        xlabelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "xlabel",
+          variableNames: ["hasLatex"]
+        }
+      }),
+      definition({dependencyValues}) {
+        return {
+          setValue: {
+            xlabelHasLatex: dependencyValues.xlabelAttr?.stateValues.hasLatex || false
+          }
+        }
+      }
+    }
+
+    stateVariableDefinitions.ylabelHasLatex = {
+      forRenderer: true,
+      returnDependencies: () => ({
+        ylabelAttr: {
+          dependencyType: "attributeComponent",
+          attributeName: "ylabel",
+          variableNames: ["hasLatex"]
+        }
+      }),
+      definition({dependencyValues}) {
+        return {
+          setValue: {
+            ylabelHasLatex: dependencyValues.ylabelAttr?.stateValues.hasLatex || false
+          }
+        }
       }
     }
 
@@ -503,7 +539,6 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.xmin = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -599,7 +634,6 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.xmax = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -707,7 +741,6 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.ymin = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",
@@ -803,7 +836,6 @@ export default class Graph extends BlockComponent {
 
     stateVariableDefinitions.ymax = {
       stateVariablesDeterminingDependencies: ["identicalAxisScales", "aspectRatioFromAxisScales"],
-      defaultValue: -10,
       public: true,
       shadowingInstructions: {
         createComponentOfType: "number",

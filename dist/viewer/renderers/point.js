@@ -34,10 +34,11 @@ export default React.memo(function Point(props) {
     let fillColor = SVs.open ? "var(--canvas)" : SVs.selectedStyle.markerColor;
     let strokeColor = SVs.open ? SVs.selectedStyle.markerColor : "none";
     let fixed = !SVs.draggable || SVs.fixed;
+    let withlabel = SVs.showLabel && SVs.label !== "";
     let jsxPointAttributes = {
       name: SVs.label,
       visible: !SVs.hidden,
-      withLabel: SVs.showLabel && SVs.label !== "",
+      withlabel,
       fixed: true,
       layer: 10 * SVs.layer + 9,
       fillColor,
@@ -50,7 +51,7 @@ export default React.memo(function Point(props) {
       face: normalizeStyle(SVs.selectedStyle.markerStyle),
       highlight: !fixed
     };
-    if (SVs.showLabel && SVs.label !== "") {
+    if (withlabel) {
       let anchorx, anchory, offset;
       if (SVs.labelPosition === "upperright") {
         offset = [5, 5];
@@ -186,6 +187,8 @@ export default React.memo(function Point(props) {
     });
     pointJXG.current = newPointJXG;
     shadowPointJXG.current = newShadowPointJXG;
+    previousLabelPosition.current = SVs.labelPosition;
+    previousWithLabel.current = withlabel;
   }
   if (board) {
     if (pointJXG.current === null) {

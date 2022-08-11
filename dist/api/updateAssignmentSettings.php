@@ -30,7 +30,7 @@ if ($doenetId == ""){
   http_response_code(400);
 }
 $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
-if ($permissions["canEditContent"] != '1'){
+if ($permissions["canModifyActivitySettings"] != '1'){
   $success = FALSE;
   $message = "You need permission to edit content.";
   http_response_code(403);

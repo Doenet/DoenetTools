@@ -2,13 +2,16 @@
 
 function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
 {
+    //TODO: is this safe?
     $sql = "SELECT
     c.label,
     c.isPublic,
     c.image,
     c.color,
+    c.defaultRoleId,
+    cr.roleId,
     cr.label as roleLabel,
-    cr.canViewCourse,
+    cr.isIncludedInGradebook,
     cr.canViewContentSource,
     cr.canEditContent,
     cr.canPublishContent,
@@ -16,10 +19,12 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
     cr.canProctor,
     cr.canViewAndModifyGrades,
     cr.canViewActivitySettings,
+    cr.canModifyActivitySettings,
     cr.canModifyCourseSettings,
     cr.canViewUsers,
     cr.canManageUsers,
-    cr.canModifyRoles,
+    cr.isAdmin,
+    cr.dataAccessPermission,
     cr.isOwner
     FROM course_role AS cr
     LEFT JOIN course_user as cu
@@ -28,7 +33,6 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
     ON c.courseId = cu.courseId
     WHERE c.courseId = '$courseId'
     AND cu.userId = '$userId'
-    AND cr.canViewCourse = '1'
     AND c.isDeleted = '0'
     ORDER BY c.id DESC
     ";
@@ -43,8 +47,10 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
             'isPublic' => $row['isPublic'],
             'image' => $row['image'],
             'color' => $row['color'],
+            'defaultRoleId' => $row['defaultRoleId'],
+            'roleId' => $row['roleId'],
             'roleLabel' => $row['roleLabel'],
-            'canViewCourse' => $row['canViewCourse'],
+            'isIncludedInGradebook' => $row['isIncludedInGradebook'],
             'canViewContentSource' => $row['canViewContentSource'],
             'canEditContent' => $row['canEditContent'],
             'canPublishContent' => $row['canPublishContent'],
@@ -52,12 +58,16 @@ function permissionsAndSettingsForOneCourseFunction($conn, $userId, $courseId)
             'canProctor' => $row['canProctor'],
             'canViewAndModifyGrades' => $row['canViewAndModifyGrades'],
             'canViewActivitySettings' => $row['canViewActivitySettings'],
+            'canModifyActivitySettings' => $row['canModifyActivitySettings'],
             'canModifyCourseSettings' => $row['canModifyCourseSettings'],
             'canViewUsers' => $row['canViewUsers'],
             'canManageUsers' => $row['canManageUsers'],
-            'canModifyRoles' => $row['canModifyRoles'],
+            'isAdmin' => $row['isAdmin'],
+            'dataAccessPermission' => $row['dataAccessPermission'],
             'isOwner' => $row['isOwner'],
         ];
+    } else {
+        return false;
     }
 
     return $permissionsAndSettings;
