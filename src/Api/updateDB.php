@@ -21,11 +21,14 @@ $results['alter enrollment'] = $conn->query(
     DROP forTesting,
     DROP userName,
     CHANGE empId externalId VARCHAR(32),
-    MODIFY dateEnrolled DATETIME DEFAULT CURRENT_TIMESTAMP"
+    MODIFY dateEnrolled DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT 'UTC DateTime'"
 );
 
 $results['alter user'] = $conn->query(
     "ALTER TABLE user DROP roleStudent,
+    MODIFY firstName varchar(255) DEFAULT '',
+    MODIFY lastName varchar(255) DEFAULT '',
+    MODIFY screenName varchar(255) DEFAULT 'New User',
     DROP roleInstructor,
     DROP roleCourseDesigner,
     DROP roleWatchdog,
@@ -135,8 +138,10 @@ foreach ($results['cache by courseId'] as $courseId => $courseUsers) {
 
 $results['drop course_user'] = $conn->query('DROP TABLE course_user');
 
-$results['rename enrollment to course_user'] = $conn->query(
-    'RENAME TABLE enrollment TO course_user'
+$results['alter enrollment to course_user'] = $conn->query(
+    'ALTER TABLE enrollment RENAME TO course_user, 
+    DROP id, 
+    ADD CONSTRAINT `course_user_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `course_role` (`roleId`) ON DELETE NO ACTION ON UPDATE CASCADE'
 );
 
 http_response_code(200);
