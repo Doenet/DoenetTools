@@ -100,7 +100,7 @@ foreach ($results['cache by courseId'] as $courseId => $courseUsers) {
             canViewActivitySettings,
             canModifyActivitySettings,
             canModifyCourseSettings,
-            dataAccessPermisson,
+            dataAccessPermission,
             canViewUsers,
             canManageUsers,
             isAdmin,
