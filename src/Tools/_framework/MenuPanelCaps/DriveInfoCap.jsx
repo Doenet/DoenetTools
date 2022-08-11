@@ -48,7 +48,7 @@ let accessible_name = "course";
       <span style={{ marginBottom: "15px" }}>{label}</span> <br />
       <span style={{ marginBottom: "15px" }}>{role}</span> <br />
       <RoleDropdown
-        label="View as:"
+        label="View as"
         onChange={({ value: roleId }) => setEffectiveRoleId(roleId)}
         valueRoleId={effectiveRoleId ?? course.roleId}
         vertical

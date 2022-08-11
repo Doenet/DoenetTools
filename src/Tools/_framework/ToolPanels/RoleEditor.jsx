@@ -20,7 +20,7 @@ export default function RolesEditor() {
   if (isAdmin !== '1') return null;
   return (
     <Conainer>
-      <h2>Edit Role Permissons:</h2>
+      <h2>Edit Role Permissons</h2>
       <AddRole courseId={courseId} />
       <MangeRoles courseId={courseId} />
     </Conainer>

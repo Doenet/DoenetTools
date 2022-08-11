@@ -65,7 +65,30 @@ export default function People() {
   if (process === csvPeopleProcess.PREVIEW) {
     return (
       <div style={{ padding: '8px' }}>
-        <h2>Preview CSV People:</h2>
+        <h2>Preview CSV People</h2>
+        <RoleDropdown
+          label="Assigned Role"
+          valueRoleId={selectedRoleId ?? defaultRoleId}
+          onChange={({ value: roleId }) => {
+            setSelectedRoleId(roleId);
+          }}
+          maxMenuHeight="200px"
+          vertical
+        />
+        <PeopleTabelHeader
+          columnLabels={headers}
+          numberOfVisibleColumns={numberOfVisibleColumns}
+          setNumberOfVisibleColumns={setNumberOfVisibleColumns}
+        />
+        {entries.map((entry, idx) => (
+          <PreviewTableRow
+            key={`${entry[0]} ${idx}`}
+            numberOfVisibleColumns={numberOfVisibleColumns}
+            entryData={entry}
+            headers={headers}
+          />
+        ))}
+        <br />
         <ButtonGroup>
           <Button
             onClick={() => {
@@ -98,37 +121,15 @@ export default function People() {
             alert
           />
         </ButtonGroup>
-        <RoleDropdown
-          label="Assigned Role"
-          valueRoleId={selectedRoleId ?? defaultRoleId}
-          onChange={({ value: roleId }) => {
-            setSelectedRoleId(roleId);
-          }}
-          maxMenuHeight="200px"
-          vertical
-        />
-        <PeopleTabelHeader
-          columnLabels={headers}
-          numberOfVisibleColumns={numberOfVisibleColumns}
-          setNumberOfVisibleColumns={setNumberOfVisibleColumns}
-        />
-        {entries.map((entry, idx) => (
-          <PreviewTableRow
-            key={`${entry[0]} ${idx}`}
-            numberOfVisibleColumns={numberOfVisibleColumns}
-            entryData={entry}
-            headers={headers}
-          />
-        ))}
       </div>
     );
   }
 
   return (
     <div style={{ padding: '8px' }}>
-      <h2>Add Person:</h2>
+      <h2>Add Person</h2>
       <AddUserWithOptions courseId={courseId} />
-      <h2>Current People:</h2>
+      <h2>Current People</h2>
       {peopleTableData.length > 0 ? (
         <InputWrapper flex>
           <Checkbox
