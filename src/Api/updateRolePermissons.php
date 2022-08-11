@@ -56,13 +56,13 @@ if (!array_key_exists('permissions', $_POST)) {
 
 //Check permissions
 if ($success) {
-    $userPermissions = permissionsAndSettingsForOneCourseFunction(
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
         $conn,
         $userId,
         $courseId
     );
 
-    if ($requestorPermissions['isAdmin'] == '1') {
+    if ($requestorPermissions['isAdmin'] != '1') {
         $success = false;
         $message = 'Operation Denied: you need permission to mange users';
     }
