@@ -138,9 +138,12 @@ foreach ($results['cache by courseId'] as $courseId => $courseUsers) {
 
 $results['drop course_user'] = $conn->query('DROP TABLE course_user');
 
-$results['alter enrollment to course_user'] = $conn->query(
-    'ALTER TABLE enrollment RENAME TO course_user, 
-    DROP id, 
+$results['rename enrollment to course_user'] = $conn->query(
+    'RENAME TABLE enrollment TO course_user'
+);
+
+$results['alter course_user'] = $conn->query(
+    'ALTER TABLE DROP id, 
     ADD CONSTRAINT `course_user_ibfk_1` FOREIGN KEY (`roleId`) REFERENCES `course_role` (`roleId`) ON DELETE NO ACTION ON UPDATE CASCADE'
 );
 

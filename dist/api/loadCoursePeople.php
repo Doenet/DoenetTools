@@ -11,9 +11,15 @@ include 'permissionsAndSettingsForOneCourseFunction.php';
 $jwtArray = include 'jwtArray.php';
 $userId = $jwtArray['userId'];
 
-$allowed = false;
+$success = true;
 
-if (array_key_exists('courseId', $_REQUEST)) {
+if (!array_key_exists('courseId', $_REQUEST)) {
+    $success = false;
+    $message = 'Request error, missing courseId';
+}
+
+//Check permissions
+if ($success) {
     $courseId = mysqli_real_escape_string($conn, $_REQUEST['courseId']);
 
     //check user has permission to view users
@@ -22,12 +28,15 @@ if (array_key_exists('courseId', $_REQUEST)) {
         $userId,
         $courseId
     );
-    $allowed = $permissons['canViewUsers']; //TODO Emilio deal with undefined (for a 401?)
+
+    if ($permissons['canViewUsers'] != '1') {
+        $success = false;
+    }
 }
 
 $peopleArray = [];
 
-if ($allowed) {
+if ($success) {
     $sql = "SELECT
 		u.firstName,
 		u.lastName,
@@ -64,6 +73,7 @@ if ($allowed) {
 
 $response_arr = [
     'success' => $allowed,
+    'message' => $message,
     'peopleArray' => $peopleArray,
 ];
 

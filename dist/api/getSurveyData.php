@@ -24,9 +24,9 @@ if ($doenetId == ""){
 
 $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
 
-if ($permissions["canViewIden"] != '1'){
+if ($permissions["dataAccessPermisson"] != 'Identified'){
   $success = FALSE;
-  $message = "You need permission to manage users.";
+  $message = "You need permission to view data";
 }
 
 //Check if they have view rights

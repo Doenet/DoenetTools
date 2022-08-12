@@ -65,7 +65,7 @@ export default function People() {
       maxMenuHeight: "200px",
       vertical: true
     }), /* @__PURE__ */ React.createElement(PeopleTabelHeader, {
-      columnLabels: headers,
+      columnLabels: headers.filter((head) => validHeaders[head] ?? false),
       numberOfVisibleColumns,
       setNumberOfVisibleColumns
     }), entries.map((entry, idx) => /* @__PURE__ */ React.createElement(PreviewTableRow, {

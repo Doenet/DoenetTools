@@ -35,13 +35,13 @@ if ($email == '') {
 
 //Check permissions
 if ($success) {
-    $userPermissions = permissionsAndSettingsForOneCourseFunction(
+    $requestorPermissions = permissionsAndSettingsForOneCourseFunction(
         $conn,
         $userId,
         $courseId
     );
 
-    if ($requestorPermissions['canManageUsers'] == '1') {
+    if ($requestorPermissions['canManageUsers'] != '1') {
         $success = false;
         $message = 'Operation Denied: you need permission to manage users';
     }

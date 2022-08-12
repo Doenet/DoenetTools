@@ -91,7 +91,10 @@ if ($success) {
 
         //If they don't have an account in user table then make one
         $result = $conn->query(
-            "SELECT userId
+            "SELECT 
+                userId,
+                firstName,
+                lastName
 			FROM user
 			WHERE email = '$email'"
         );
@@ -100,6 +103,31 @@ if ($success) {
             //Acount found
             $row = $result->fetch_assoc();
             $new_userId = $row['userId'];
+
+            if (
+                $row['firstName'] == '' &&
+                in_array('FirstName', $mergeHeads, false)
+            ) {
+                $result = $conn->query(
+                    "UPDATE user
+                    SET
+                    firstName = '$firstName'
+                    WHERE userId = '$new_userId'"
+                );
+                var_dump("UPDATE user
+                SET
+                firstName = '$firstName'
+                WHERE userId = '$new_userId'");
+            }
+
+            if ($lastName == '' && in_array('LastName', $mergeHeads, false)) {
+                $result = $conn->query(
+                    "UPDATE user
+                    SET
+                    lastName = '$lastName'
+                    WHERE userId = '$new_userId'"
+                );
+            }
         } elseif ($result->num_rows == 0) {
             //Create user account
 
@@ -128,7 +156,7 @@ if ($success) {
 
         //gather columns
         $insert = "courseId = '$courseId', userId = '$new_userId', roleId = '$roleId',";
-        $update_columns = "courseId = '$courseId', userId = '$new_userId'";
+        $update_columns = "courseId = '$courseId', userId = '$new_userId',";
         if ($externalId != '') {
             $insert = $insert . "externalId = '$externalId',";
             $update_columns = $update_columns . "externalId = '$externalId',";
