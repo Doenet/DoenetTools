@@ -4,13 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { authorCollectionsByCourseId, itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
 import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast } from '../Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
+import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 function CollectionSelectionOptions({courseId,selectedDoenetId}){
   let collectionNameAndDoenetIds = useRecoilValue(authorCollectionsByCourseId(courseId));
@@ -28,11 +28,14 @@ function CollectionSelectionOptions({courseId,selectedDoenetId}){
 
 export default function SelectedCollectionAlias() {
   // const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(itemByDoenetId(doenetId));
   console.log("itemObj",itemObj)
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
+  const { canEditContent } = useRecoilValue(
+    effectivePermissionsByCourseId(courseId),
+  );
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
   let { deleteItem, renameItem, updateCollectionAlias } = useCourse(courseId);
 
@@ -66,7 +69,7 @@ export default function SelectedCollectionAlias() {
   </h2>)
 
 
-  if (effectiveRole === 'student') {
+  if (canEditContent !== '1') {
     return null;
   }
 
