@@ -76,7 +76,7 @@ export default function People() {
           vertical
         />
         <PeopleTabelHeader
-          columnLabels={headers}
+          columnLabels={headers.filter((head) => validHeaders[head] ?? false)}
           numberOfVisibleColumns={numberOfVisibleColumns}
           setNumberOfVisibleColumns={setNumberOfVisibleColumns}
         />

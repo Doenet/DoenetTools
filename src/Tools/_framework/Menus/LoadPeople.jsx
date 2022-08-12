@@ -6,6 +6,7 @@ import { atom, useSetRecoilState } from 'recoil';
 
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import CollapseSection from '../../../_reactComponents/PanelHeaderComponents/CollapseSection';
+import { toastType, useToast } from '../Toast';
 
 export const peopleTableDataAtom = atom({
   key: 'peopleTableDataAtom',
@@ -26,19 +27,19 @@ export const validHeaders = Object.freeze({
 export const headersAtom = atom({
   key: 'headersAtom',
   default: [],
-  effects: [
-    ({ onSet, setSelf }) => {
-      onSet((newValue) => {
-        setSelf(
-          newValue.reduce((valid, candidate) => {
-            if (validHeaders[candidate] !== undefined)
-              return [...valid, candidate];
-            return valid;
-          }, []),
-        );
-      });
-    },
-  ],
+  // effects: [
+  //   ({ onSet, setSelf }) => {
+  //     onSet((newValue) => {
+  //       setSelf(
+  //         newValue.reduce((valid, candidate) => {
+  //           if (validHeaders[candidate] !== undefined)
+  //             return [...valid, candidate];
+  //           return valid;
+  //         }, []),
+  //       );
+  //     });
+  //   },
+  // ],
 });
 
 export const entriesAtom = atom({
@@ -57,6 +58,7 @@ export const csvPeopleProcess = Object.freeze({
 });
 
 export default function LoadPeople({ style }) {
+  const addToast = useToast();
   const setProcess = useSetRecoilState(processAtom);
   const setHeaders = useSetRecoilState(headersAtom);
   const setEntries = useSetRecoilState(entriesAtom);
@@ -66,13 +68,22 @@ export default function LoadPeople({ style }) {
       const reader = new FileReader();
 
       reader.onabort = () => {};
-      reader.onerror = () => {};
+      reader.onerror = () => {
+        // addToast('Failed to read file, please check sintax and try again');
+      };
       reader.onload = () => {
         parse(reader.result, { comment: '#' }, function (err, data) {
-          setHeaders(data[0]);
-          data.shift(); //Remove head row of data
-          setEntries(data);
-          setProcess(csvPeopleProcess.PREVIEW);
+          if (err?.message) {
+            addToast(
+              `${err.message}. Please reformat and try again`,
+              toastType.ERROR,
+            );
+          } else {
+            setHeaders(data[0]);
+            data.shift(); //Remove head row of data
+            setEntries(data);
+            setProcess(csvPeopleProcess.PREVIEW);
+          }
         });
       };
       reader.readAsText(file[0]);
