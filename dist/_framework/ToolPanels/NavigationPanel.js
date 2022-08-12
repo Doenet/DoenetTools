@@ -1,13 +1,16 @@
-import React, {useState, Suspense, useEffect, useLayoutEffect} from "../../_snowpack/pkg/react.js";
+import React, {Suspense, useLayoutEffect} from "../../_snowpack/pkg/react.js";
 import {useRecoilCallback, useRecoilValue, useSetRecoilState} from "../../_snowpack/pkg/recoil.js";
+import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
+import {useToast, toastType} from "../Toast.js";
+import {suppressMenusAtom} from "../NewToolRoot.js";
+import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
 import {searchParamAtomFamily, pageToolViewAtom} from "../NewToolRoot.js";
 import CourseNavigator from "../../_reactComponents/Course/CourseNavigator.js";
-import {selectedMenuPanelAtom} from "../Panels/NewMenuPanel.js";
-import {effectiveRoleAtom} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
-import {suppressMenusAtom} from "../NewToolRoot.js";
-import styled, {keyframes} from "../../_snowpack/pkg/styled-components.js";
-import {itemByDoenetId, findFirstPageOfActivity, selectedCourseItems} from "../../_reactComponents/Course/CourseActions.js";
-import {useToast, toastType} from "../Toast.js";
+import {effectivePermissionsByCourseId} from "../../_reactComponents/PanelHeaderComponents/RoleDropdown.js";
+import {
+  itemByDoenetId,
+  findFirstPageOfActivity
+} from "../../_reactComponents/Course/CourseActions.js";
 const movingGradient = keyframes`
   0% { background-position: -250px 0; }
   100% { background-position: 250px 0; }
@@ -32,11 +35,10 @@ const Td = styled.td`
   &.Td3 {
     width: 400px;
   }
-
 `;
 const TBody = styled.tbody``;
 const Td2Span = styled.span`
-  display: block; 
+  display: block;
   //background-color: var(--canvastext);
   width: 70px;
   height: 16px;
@@ -46,7 +48,12 @@ const Td3Span = styled.span`
   display: block;
   height: 14px;
   border-radius: 5px;
-  background: linear-gradient(to right, var(--mainGray) 20%, var(--mainGray) 50%, var(--mainGray) 80%);
+  background: linear-gradient(
+    to right,
+    var(--mainGray) 20%,
+    var(--mainGray) 50%,
+    var(--mainGray) 80%
+  );
   background-size: 500px 100px;
   animation-name: ${movingGradient};
   animation-duration: 1s;
@@ -55,20 +62,13 @@ const Td3Span = styled.span`
   animation-fill-mode: forwards;
 `;
 export default function NavigationPanel() {
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
+  const {canEditContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);
   const addToast = useToast();
   useLayoutEffect(() => {
-    switch (effectiveRole) {
-      case "instructor":
-        setSuppressMenus([]);
-        break;
-      case "student":
-        setSuppressMenus(["AddDriveItems", "CutCopyPasteMenu"]);
-        break;
-      default:
-    }
-  }, [effectiveRole, setSuppressMenus]);
+    setSuppressMenus(canEditContent == "1" ? [] : ["AddDriveItems", "CutCopyPasteMenu"]);
+  }, [canEditContent, setSuppressMenus]);
   const updateSelectMenu = useRecoilCallback(({set, snapshot}) => async ({selectedItems}) => {
     if (selectedItems.length == 1) {
       let selectedDoenetId = selectedItems[0];
@@ -90,29 +90,23 @@ export default function NavigationPanel() {
       set(selectedMenuPanelAtom, null);
     }
   });
-  const doubleClickItem = useRecoilCallback(({set, snapshot}) => async ({doenetId, courseId}) => {
+  const doubleClickItem = useRecoilCallback(({set, snapshot}) => async ({doenetId, courseId: courseId2}) => {
     let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
-    let effectiveRole2 = await snapshot.getPromise(effectiveRoleAtom);
+    let {canEditContent: canEditContent2} = await snapshot.getPromise(effectivePermissionsByCourseId(courseId2));
     if (clickedItem.type == "page") {
       set(pageToolViewAtom, (prev) => {
         return {
           page: "course",
           tool: "editor",
           view: prev.view,
-          params: {pageId: doenetId, doenetId: clickedItem.containingDoenetId}
+          params: {
+            pageId: doenetId,
+            doenetId: clickedItem.containingDoenetId
+          }
         };
       });
     } else if (clickedItem.type == "activity") {
-      if (effectiveRole2 == "student") {
-        set(pageToolViewAtom, {
-          page: "course",
-          tool: "assignment",
-          view: "",
-          params: {
-            doenetId
-          }
-        });
-      } else {
+      if (canEditContent2 == "1") {
         let pageDoenetId = findFirstPageOfActivity(clickedItem.content);
         if (pageDoenetId == null) {
           addToast(`ERROR: No page found in activity`, toastType.INFO);
@@ -126,6 +120,15 @@ export default function NavigationPanel() {
             };
           });
         }
+      } else {
+        set(pageToolViewAtom, {
+          page: "course",
+          tool: "assignment",
+          view: "",
+          params: {
+            doenetId
+          }
+        });
       }
     } else if (clickedItem.type == "section") {
       set(pageToolViewAtom, (prev) => {
@@ -133,7 +136,7 @@ export default function NavigationPanel() {
           page: "course",
           tool: "navigation",
           view: prev.view,
-          params: {sectionId: clickedItem.doenetId, courseId}
+          params: {sectionId: clickedItem.doenetId, courseId: courseId2}
         };
       });
     }

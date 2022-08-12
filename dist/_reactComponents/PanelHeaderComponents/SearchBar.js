@@ -14,6 +14,10 @@ const SearchBar = styled.input`
     width: ${(props) => props.width === "menu" ? "130px" : "220px"};
     font-size: 14px;
     cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+    &:focus {
+        outline: 2px solid ${(props) => props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+        outline-offset: 2px;
+    }
 `;
 const CancelButton = styled.button`
     float: right;
@@ -27,6 +31,10 @@ const CancelButton = styled.button`
     color: var(--canvastext);
     overflow: hidden;
     outline: none;
+    border-radius: 5px;
+    &:focus {
+        outline: 2px solid var(--canvastext);
+    }
 `;
 const SubmitButton = styled.button`
     position: absolute;
@@ -45,6 +53,11 @@ const SubmitButton = styled.button`
     &:hover {
         color: var(--canvastext);
         background-color: ${(props) => props.disabled ? "var(--mainGray)" : "var(--lightBlue)"};
+    }
+
+    &:focus {
+        outline: 2px solid ${(props) => props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+        outline-offset: 2px;
     }
 `;
 const Label = styled.p`
@@ -110,11 +123,6 @@ export default function Searchbar(props) {
     label = props.label;
   }
   ;
-  var ariaLabel = "";
-  if (props.ariaLabel) {
-    ariaLabel = props.ariaLabel;
-  }
-  ;
   let autoFocus = false;
   if (props.autoFocus) {
     autoFocus = true;
@@ -160,6 +168,7 @@ export default function Searchbar(props) {
   return /* @__PURE__ */ React.createElement(Container, {
     align
   }, /* @__PURE__ */ React.createElement(Label, {
+    id: "search-label",
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement("div", {
@@ -168,6 +177,7 @@ export default function Searchbar(props) {
     icon: faSearch,
     style: searchIcon
   }), /* @__PURE__ */ React.createElement(CancelButton, {
+    "aria-label": "Clear",
     ref: searchBarRef,
     cancelShown,
     marginLeft,
@@ -192,12 +202,13 @@ export default function Searchbar(props) {
     alert,
     value: searchTerm,
     onKeyDown: (e) => {
-      if (e.key === "Enter") {
+      if (e.key === "Enter" || e.key === "Spacebar" || e.key === " ") {
         searchSubmitAction();
       }
     },
     autoFocus,
-    ariaLabel
+    "aria-labelledby": "search-label",
+    "aria-disabled": props.disabled ? true : false
   }), /* @__PURE__ */ React.createElement("div", {
     style: {padding: "3px", display: "inline"}
   }), searchButton));

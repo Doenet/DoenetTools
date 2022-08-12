@@ -54,34 +54,46 @@ const Life = styled(animated.div)`
   bottom: ${(props) => props.top ? "10px" : "0"};
   left: 0px;
   width: auto;
-  background-image: linear-gradient(130deg, var(--mainBlue), var(--solidLightBlue));
+  background-image: linear-gradient(
+    130deg,
+    var(--mainBlue),
+    var(--solidLightBlue)
+  );
   height: 5px;
 `;
 const Button = styled("button")`
   cursor: pointer;
   pointer-events: all;
-  outline: 0;
   border: none;
+  border-radius: 20px;
   background: transparent;
   display: flex;
-  align-self: flex-end;
+  align-items: center;
   overflow: hidden;
-  margin: 0;
+  margin-top: 14px;
   padding: 0;
-  padding-bottom: 14px;
+  height: 20px;
   // color: var(--canvas);
   // :hover {
   //   color: var(--canvas);
   // }
   color: var(--canvastext);
   font-size: 1em;
+  &: focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
 `;
 const toastStack = atom({
   key: "toastStack",
   default: []
 });
-let id = 0;
-export const recoilAddToast = ({set}) => (msg, type = toastType.INFO, action = null) => {
+const toastStackId = atom({
+  key: "toastStackId",
+  default: 0
+});
+export const recoilAddToast = ({set, snapshot}) => (msg, type = toastType.INFO, action = null) => {
+  const id = snapshot.getLoadable(toastStackId).getValue();
   set(toastStack, (old) => [
     ...old,
     /* @__PURE__ */ React.createElement(ToastMessage, {
@@ -92,7 +104,7 @@ export const recoilAddToast = ({set}) => (msg, type = toastType.INFO, action = n
       tId: id
     }, msg)
   ]);
-  id++;
+  set(toastStackId, (prev) => prev + 1);
 };
 export const useToast = () => {
   const addToast = useRecoilCallback(recoilAddToast, []);
@@ -113,15 +125,15 @@ export const toastType = Object.freeze({
     background: "rgba()"
   },
   INFO: {
-    timeout: 3e3,
+    timeout: -1,
     background: "var(--mainBlue)"
   },
   SUCCESS: {
-    timeout: 3e3,
+    timeout: -1,
     background: "var(--mainGreen)"
   },
   CONFIRMATION: {
-    timeout: 5e3,
+    timeout: -1,
     background: "var(--mainBlue)"
   }
 });
@@ -158,7 +170,8 @@ function ToastMessage({
     }
   });
   return /* @__PURE__ */ React.createElement(Message, {
-    style: props
+    style: props,
+    role: "alert"
   }, /* @__PURE__ */ React.createElement(Content, {
     ref,
     key: tId,
@@ -166,13 +179,17 @@ function ToastMessage({
     "data-test": "toast"
   }, /* @__PURE__ */ React.createElement(Life, {
     style: {right: props.life}
-  }), /* @__PURE__ */ React.createElement("p", null, children), /* @__PURE__ */ React.createElement(Button, {
+  }), /* @__PURE__ */ React.createElement("p", {
+    id: "alert-message"
+  }, children), /* @__PURE__ */ React.createElement(Button, {
     "data-test": "toast cancel button",
     onClick: (e) => {
       e.stopPropagation();
       ref.current.cancel();
       setToasts((old) => old.filter((i) => i.props.tId !== tId));
-    }
+    },
+    "aria-label": "Close alert:",
+    "aria-labelledby": "alert-message"
   }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: faTimes
   }))));

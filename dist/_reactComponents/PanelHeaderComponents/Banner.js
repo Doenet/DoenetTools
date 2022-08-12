@@ -47,13 +47,17 @@ export default function Banner(props) {
   function clearBanner() {
     setBannerVisible("none");
   }
-  return /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", {
+  return /* @__PURE__ */ React.createElement("div", {
+    "aria-labelledby": "banner-text"
+  }, /* @__PURE__ */ React.createElement("div", {
     style: container
   }, /* @__PURE__ */ React.createElement("div", {
     style: banner
   }, /* @__PURE__ */ React.createElement("div", {
-    style: bannerText
+    style: bannerText,
+    id: "banner-text"
   }, /* @__PURE__ */ React.createElement("strong", null, "Reminder:"), " Your assignment is due tomorrow. Please contact the instructor to request an extension. Here is some more text! I am trying out this banner to see how many words I can fit. Please contact the help desk if you need any assistance. They can be reached at 651-713-8393."), /* @__PURE__ */ React.createElement("button", {
+    "aria-label": "Close banner",
     style: closeButton,
     onClick: () => {
       clearBanner();

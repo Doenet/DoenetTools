@@ -6,6 +6,7 @@ header("Access-Control-Allow-Credentials: true");
 header('Content-Type: application/json');
 
 include "db_connection.php";
+include "permissionsAndSettingsForOneCourseFunction.php";
 
 
 $jwtArray = include "jwtArray.php";
@@ -21,7 +22,14 @@ if ($doenetId == ""){
   $message = 'Internal Error: missing doenetId';
 }
 
-// //Check if they have view rights
+$permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
+
+if ($permissions["dataAccessPermisson"] != 'Identified'){
+  $success = FALSE;
+  $message = "You need permission to view data";
+}
+
+//Check if they have view rights
 if ($success){
 
   $sql = "
@@ -49,17 +57,18 @@ if ($success){
 
 //Get Survey data
 if ($success){
-  $sql = "
-  SELECT e.firstName,
-  e.lastName,
-  e.email,
-  e.empId,
+  $sql = "SELECT u.firstName,
+  u.lastName,
+  u.email,
+  cu.externalId,
   ci.stateVariables
   FROM content_interactions AS ci
   LEFT JOIN assignment AS a
   ON a.doenetId = ci.doenetId
-  LEFT JOIN enrollment AS e
-  ON e.userId = ci.userId AND a.driveId = e.driveId
+  LEFT JOIN course_user AS cu
+  ON cu.userId = ci.userId AND a.courseId = cu.courseId
+  LEFT JOIN user As u
+  ON ci.userId = u.userId
   WHERE ci.doenetId = '$doenetId'
   ";
 
@@ -70,7 +79,7 @@ if ($result->num_rows > 0) {
       array_push($responses,array(
                 "firstName"=>$row['firstName'],
                 "lastName"=>$row['lastName'],
-                "studentId"=>$row['empId'],
+                "studentId"=>$row['externalId'],
                 "email"=>$row['email'],
                 "stateVariables"=>$row['stateVariables'],
       ));

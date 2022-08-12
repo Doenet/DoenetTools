@@ -92,11 +92,11 @@ if ($success) {
         // have to use course_content
         // to get courseId from doenetID
         $sql = "SELECT timeLimitMultiplier 
-            FROM enrollment e
+            FROM course_user cu
             INNER JOIN course_content cc
-                ON cc.courseId = e.courseId
+                ON cc.courseId = cu.courseId
             WHERE cc.doenetId = '$doenetId'
-            AND e.userId = '$userId'
+            AND cu.userId = '$userId'
             ";
 
         $result = $conn->query($sql);

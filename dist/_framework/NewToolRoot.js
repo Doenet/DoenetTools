@@ -1,4 +1,4 @@
-import React, {useState, lazy, Suspense, useRef, useEffect} from "../_snowpack/pkg/react.js";
+import React, {useState, lazy, Suspense, useRef} from "../_snowpack/pkg/react.js";
 import {
   atom,
   selector,
@@ -17,7 +17,6 @@ import SupportPanel from "./Panels/NewSupportPanel.js";
 import MenuPanel from "./Panels/NewMenuPanel.js";
 import FooterPanel from "./Panels/FooterPanel.js";
 import {animated} from "../_snowpack/pkg/@react-spring/web.js";
-import {darkModeAtom} from "./Panels/NewMenuPanel.js";
 import {useNavigate, useLocation} from "../_snowpack/pkg/react-router.js";
 const ToolContainer = styled(animated.div)`
   display: grid;
@@ -61,7 +60,6 @@ export const paramObjAtom = atom({
   default: {}
 });
 export default function ToolRoot() {
-  const darkModeToggle = useRecoilValue(darkModeAtom);
   const [toolRootMenusAndPanels, setToolRootMenusAndPanels] = useState({
     pageName: "init",
     menuPanelCap: "",
@@ -105,11 +103,12 @@ export default function ToolRoot() {
     DataPanel: lazy(() => import("./ToolPanels/DataPanel.js")),
     SurveyDataViewer: lazy(() => import("./ToolPanels/SurveyDataViewer.js")),
     DoenetMLEditor: lazy(() => import("./ToolPanels/DoenetMLEditor.js")),
-    Enrollment: lazy(() => import("./ToolPanels/Enrollment.js")),
+    People: lazy(() => import("./ToolPanels/People.js")),
     ChooseLearnerPanel: lazy(() => import("./ToolPanels/ChooseLearnerPanel.js")),
     EndExamPanel: lazy(() => import("./ToolPanels/EndExamPanel.js")),
     GuestDoenetMLEditor: lazy(() => import("./ToolPanels/GuestDoenetMLEditor.js")),
-    GuestEditorViewer: lazy(() => import("./ToolPanels/GuestEditorViewer.js"))
+    GuestEditorViewer: lazy(() => import("./ToolPanels/GuestEditorViewer.js")),
+    RolesEditor: lazy(() => import("./ToolPanels/RoleEditor.js"))
   }).current;
   const LazyControlObj = useRef({
     BackButton: lazy(() => import("./HeaderControls/BackButton.js")),
@@ -117,7 +116,7 @@ export default function ToolRoot() {
     NavigationBreadCrumb: lazy(() => import("./HeaderControls/NavigationBreadCrumb.js")),
     ChooserBreadCrumb: lazy(() => import("./HeaderControls/ChooserBreadCrumb.js")),
     DashboardBreadCrumb: lazy(() => import("./HeaderControls/DashboardBreadCrumb.js")),
-    EnrollmentBreadCrumb: lazy(() => import("./HeaderControls/EnrollmentBreadCrumb.js")),
+    PeopleBreadCrumb: lazy(() => import("./HeaderControls/PeopleBreadCrumb.js")),
     DataBreadCrumb: lazy(() => import("./HeaderControls/DataBreadCrumb.js")),
     EditorBreadCrumb: lazy(() => import("./HeaderControls/EditorBreadCrumb.js")),
     GradebookBreadCrumb: lazy(() => import("./HeaderControls/GradebookBreadCrumb.js")),
@@ -252,9 +251,7 @@ export default function ToolRoot() {
       key: {footerKey}
     })));
   }
-  return /* @__PURE__ */ React.createElement("html", {
-    dark: darkModeToggle === true ? "true" : null
-  }, /* @__PURE__ */ React.createElement(ToolContainer, null, menus, /* @__PURE__ */ React.createElement(ContentPanel, {
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(ToolContainer, null, menus, /* @__PURE__ */ React.createElement(ContentPanel, {
     main: /* @__PURE__ */ React.createElement(MainPanel, {
       headerControls,
       setMenusOpen,
@@ -419,17 +416,17 @@ let navigationObj = {
       footer: {height: 250, open: false, component: "MathInputKeyboard"},
       waitForMenuSuppression: true
     },
-    enrollment: {
-      pageName: "Enrollment",
+    people: {
+      pageName: "People",
       menuPanelCap: "DriveInfoCap",
-      currentMenus: ["LoadEnrollment"],
+      currentMenus: ["LoadPeople"],
       menusTitles: ["Import Learners"],
       menusInitOpen: [false],
-      currentMainPanel: "Enrollment",
-      supportPanelOptions: [],
-      supportPanelTitles: [],
+      currentMainPanel: "People",
+      supportPanelOptions: ["RolesEditor"],
+      supportPanelTitles: ["Roles Editor"],
       supportPanelIndex: 0,
-      headerControls: ["EnrollmentBreadCrumb"]
+      headerControls: ["PeopleBreadCrumb"]
     },
     data: {
       pageName: "data",
@@ -764,7 +761,6 @@ function RootController(props) {
       setSearchParamAtom(searchObj);
     }
     if (location.pathname !== pathname || location.search !== search) {
-      console.log("urlpush:", urlPush);
       navigate(urlPush);
     }
   }

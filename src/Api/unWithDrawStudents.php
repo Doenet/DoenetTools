@@ -28,9 +28,15 @@ $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseI
 
 if ($success) {
 
-	$sql = "
-	UPDATE enrollment SET dateWithdrew = NULL , withDrew = 0 WHERE courseId = '$courseId' AND email='$email';
-	";
+	$sql = "UPDATE course_user AS cu
+    LEFT JOIN user AS u
+    ON u.userId = cu.userId
+    SET 
+    cu.dateWithdrew = NULL, 
+    cu.withDrew = 0 
+    WHERE cu.courseId = '$courseId' 
+    AND u.email='$email';
+    ";
   $result = $conn->query($sql);
 
          

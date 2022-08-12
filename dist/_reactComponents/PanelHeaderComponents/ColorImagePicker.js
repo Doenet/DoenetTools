@@ -1,8 +1,9 @@
 import React, {useState} from "../../_snowpack/pkg/react.js";
 import {driveColors, driveImages} from "../Drive/util.js";
 import styled, {css} from "../../_snowpack/pkg/styled-components.js";
-const Display = styled.div`
+const Display = styled.button`
     border-radius: var(--mainBorderRadius);
+    border: none;
     height: 36px;
     width: 36px;
     background-size: cover;
@@ -11,12 +12,16 @@ const Display = styled.div`
     background-color: ${(props) => props.color || "var(--canvas)"};
     background-image: ${(props) => props.image || "none"};
     cursor: pointer;
+    &:focus {
+        outline: 2px solid var(--canvastext);
+        outline-offset: 2px;
+    }
 `;
 const Menu = styled.div`
     border: var(--mainBorder);
     border-radius: var(--mainBorderRadius);
-    background-color: var(--mainGray);
-    height: 246px;
+    background-color: var(--canvas);
+    height: 352px;
     width: 220px;
     display: none;
     position: relative;
@@ -36,9 +41,9 @@ const ColorSection = styled.div`
 const ImageSection = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 54px);
-    grid-template-rows: repeat(5, 54px);
+    grid-template-rows: repeat(7, 54px);
     width: 224px;
-    height: 100px;
+    height: 140px;
     padding-bottom: 6px;
 `;
 const Color = styled.div`
@@ -100,10 +105,11 @@ export default function ColorImagePicker(props) {
   for (let i = 0; i < driveColors.length; i++) {
     colorArray.push(/* @__PURE__ */ React.createElement(Color, {
       key: i,
-      color: "#" + driveColors[i],
+      color: "#" + driveColors[i].Color,
       onClick: () => {
-        changeColor(driveColors[i]);
-      }
+        changeColor(driveColors[i].Color);
+      },
+      "aria-label": driveColors[i].Name
     }));
   }
   ;
@@ -111,14 +117,18 @@ export default function ColorImagePicker(props) {
   for (let i = 0; i < driveImages.length; i++) {
     imageArray.push(/* @__PURE__ */ React.createElement(Image, {
       key: i,
-      image: "url(/media/drive_pictures/" + driveImages[i] + ")",
+      image: "url(/media/drive_pictures/" + driveImages[i].Image + ")",
       onClick: () => {
-        changeImage(driveImages[i]);
-      }
+        changeImage(driveImages[i].Image);
+      },
+      "aria-label": driveImages[i].Name
     }));
   }
   ;
-  return /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Label, null, "Background Image"), /* @__PURE__ */ React.createElement(Display, {
+  return /* @__PURE__ */ React.createElement(Container, null, /* @__PURE__ */ React.createElement(Label, {
+    id: "color-image-picker-label"
+  }, "Background Image"), /* @__PURE__ */ React.createElement(Display, {
+    "aria-labelledby": "color-image-picker-label",
     onClick: (e) => {
       handleClick(e);
     },

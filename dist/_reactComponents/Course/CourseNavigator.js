@@ -22,25 +22,30 @@ import {
   useSetRecoilState
 } from "../../_snowpack/pkg/recoil.js";
 import {
-  authorCourseItemOrderByCourseId,
   itemByDoenetId,
-  coursePermissionsAndSettingsByCourseId,
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
   studentCourseItemOrderByCourseIdBySection
 } from "./CourseActions.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
 import "../../_utils/util.css.proxy.js";
 import {searchParamAtomFamily} from "../../_framework/NewToolRoot.js";
 import {mainPanelClickAtom} from "../../_framework/Panels/NewMainPanel.js";
 import {selectedMenuPanelAtom} from "../../_framework/Panels/NewMenuPanel.js";
-import {effectiveRoleAtom} from "../PanelHeaderComponents/RoleDropdown.js";
+import {effectivePermissionsByCourseId} from "../PanelHeaderComponents/RoleDropdown.js";
+const ToggleCloseIconStyling = styled.button`
+  border: none;
+  border-radius: 35px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+  }
+`;
 export default function CourseNavigator(props) {
-  console.log("=== CourseNavigator");
   const courseId = useRecoilValue(searchParamAtomFamily("courseId"));
   const sectionId = useRecoilValue(searchParamAtomFamily("sectionId"));
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
-  let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
+  const {canEditContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns, setNumberOfVisibleColumns] = useState(1);
   let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
@@ -63,10 +68,7 @@ export default function CourseNavigator(props) {
       return newObj;
     });
   }, [clearSelections, setMainPanelClick]);
-  if (!coursePermissionsAndSettings) {
-    return null;
-  }
-  if (coursePermissionsAndSettings.canEditContent == "0" || effectiveRole == "student" || props.displayRole == "student") {
+  if (canEditContent == "0" || props.displayRole == "student") {
     return /* @__PURE__ */ React.createElement(StudentCourseNavigation, {
       courseNavigatorProps: props,
       courseId,
@@ -75,7 +77,7 @@ export default function CourseNavigator(props) {
       setNumberOfVisibleColumns
     });
   }
-  if (coursePermissionsAndSettings.canEditContent == "1" || effectiveRole == "instructor" || props.displayRole == "instructor") {
+  if (canEditContent == "1" || props.displayRole == "instructor") {
     return /* @__PURE__ */ React.createElement(AuthorCourseNavigation, {
       courseNavigatorProps: props,
       courseId,
@@ -560,27 +562,6 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
       return newObj;
     });
   }, [doenetId]);
-  if (hasToggle) {
-    openCloseIndicator = isOpen ? /* @__PURE__ */ React.createElement("span", {
-      "data-test": "folderToggleCloseIcon",
-      onClick: () => {
-        if (hasToggle) {
-          toggleOpenClosed();
-        }
-      }
-    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faChevronDown
-    })) : /* @__PURE__ */ React.createElement("span", {
-      "data-test": "folderToggleOpenIcon",
-      onClick: () => {
-        if (hasToggle) {
-          toggleOpenClosed();
-        }
-      }
-    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
-      icon: faChevronRight
-    }));
-  }
   let handleSingleSelectionClick = useRecoilCallback(({snapshot, set}) => async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -703,6 +684,45 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
   } else if (isBeingCut) {
     bgcolor = "var(--mainGray)";
   }
+  if (hasToggle) {
+    openCloseIndicator = isOpen ? /* @__PURE__ */ React.createElement(ToggleCloseIconStyling, {
+      "data-cy": "folderToggleCloseIcon",
+      "aria-expanded": "true",
+      style: {backgroundColor: bgcolor},
+      onClick: () => {
+        if (hasToggle) {
+          toggleOpenClosed();
+        }
+      },
+      onKeyDown: (e) => {
+        if (e.key === "enter") {
+          if (hasToggle) {
+            toggleOpenClosed();
+          }
+        }
+      }
+    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faChevronDown
+    })) : /* @__PURE__ */ React.createElement(ToggleCloseIconStyling, {
+      "data-cy": "folderToggleOpenIcon",
+      "aria-expanded": "false",
+      style: {backgroundColor: bgcolor},
+      onClick: () => {
+        if (hasToggle) {
+          toggleOpenClosed();
+        }
+      },
+      onKeyDown: (e) => {
+        if (e.key === "enter") {
+          if (hasToggle) {
+            toggleOpenClosed();
+          }
+        }
+      }
+    }, /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
+      icon: faChevronRight
+    }));
+  }
   let handleDoubleClick = useRecoilCallback(() => async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -726,6 +746,19 @@ function Row({courseId, doenetId, numberOfVisibleColumns, columnsJSX = [], icon,
     },
     onClick: (e) => {
       handleSingleSelectionClick(e);
+    },
+    onKeyDown: (e) => {
+      if (e.key === "Enter") {
+        if (bgcolor === "var(--canvas)") {
+          handleSingleSelectionClick(e);
+        } else {
+          if (e.key === "Enter" && e.metaKey) {
+            handleSingleSelectionClick(e);
+          } else {
+            handleDoubleClick(e);
+          }
+        }
+      }
     },
     onDoubleClick: (e) => {
       handleDoubleClick(e);

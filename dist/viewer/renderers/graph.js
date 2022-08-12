@@ -22,6 +22,8 @@ export default React.memo(function Graph(props) {
   const settingBoundingBox = useRef(false);
   const boardJustInitialized = useRef(false);
   const previousShowNavigation = useRef(false);
+  let previousXaxisWithLabel = useRef(null);
+  let previousYaxisWithLabel = useRef(null);
   let onChangeVisibility = (isVisible) => {
     callAction({
       action: actions.recordVisibilityChange,
@@ -173,8 +175,23 @@ export default React.memo(function Graph(props) {
         yaxis.current.defaultTicks.setAttribute({minorHeight: 10});
       }
     }
+    let displayXAxisChanged = SVs.displayXAxis ? !Boolean(xaxis.current) : Boolean(xaxis.current);
+    let displayYAxisChanged = SVs.displayYAxis ? !Boolean(yaxis.current) : Boolean(yaxis.current);
+    if (displayYAxisChanged && !displayXAxisChanged && SVs.displayXAxis) {
+      board.removeObject(xaxis.current);
+      xaxis.current = null;
+    }
+    if (displayXAxisChanged && !displayYAxisChanged && SVs.displayYAxis) {
+      board.removeObject(yaxis.current);
+      yaxis.current = null;
+    }
     if (SVs.displayXAxis) {
       if (xaxis.current) {
+        let xaxisWithLabel = Boolean(SVs.xlabel);
+        if (xaxisWithLabel !== previousXaxisWithLabel.current) {
+          xaxis.current.setAttribute({withlabel: xaxisWithLabel});
+          previousXaxisWithLabel.current = xaxisWithLabel;
+        }
         xaxis.current.name = SVs.xlabel;
         xaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayXAxisTickLabels});
         if (xaxis.current.hasLabel) {
@@ -201,6 +218,11 @@ export default React.memo(function Graph(props) {
     }
     if (SVs.displayYAxis) {
       if (yaxis.current) {
+        let yaxisWithLabel = Boolean(SVs.ylabel);
+        if (yaxisWithLabel !== previousYaxisWithLabel.current) {
+          yaxis.current.setAttribute({withlabel: yaxisWithLabel});
+          previousYaxisWithLabel.current = yaxisWithLabel;
+        }
         yaxis.current.name = SVs.ylabel;
         yaxis.current.defaultTicks.setAttribute({drawLabels: SVs.displayYAxisTickLabels});
         if (yaxis.current.hasLabel) {
@@ -294,7 +316,11 @@ export default React.memo(function Graph(props) {
         anchorx,
         strokeColor: "var(--canvastext)"
       };
+      if (SVs.ylabelHasLatex) {
+        yaxisOptions.label.useMathJax = true;
+      }
     }
+    previousYaxisWithLabel.current = Boolean(SVs.ylabel);
     yaxisOptions.strokeColor = "var(--canvastext)";
     yaxisOptions.highlight = false;
     yaxisOptions.ticks = {
@@ -329,6 +355,7 @@ export default React.memo(function Graph(props) {
     if (!SVs.displayXAxis) {
       yaxisOptions.ticks.drawZero = true;
     }
+    theBoard.suspendUpdate();
     yaxis.current = theBoard.create("axis", [[0, 0], [0, 1]], yaxisOptions);
     yaxis.current.defaultTicks.ticksFunction = function() {
       var delta, b, dist;
@@ -361,7 +388,9 @@ export default React.memo(function Graph(props) {
         return;
       }
       tickPosition = 0;
-      tickPosition = ticksDelta;
+      if (!this.visProp.drawzero) {
+        tickPosition = ticksDelta;
+      }
       while (tickPosition <= bounds.upper + eps2) {
         if (tickPosition >= bounds.lower - eps2) {
           this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
@@ -382,6 +411,7 @@ export default React.memo(function Graph(props) {
         }
       }
     };
+    theBoard.unsuspendUpdate();
   }
   function createXAxis(theBoard) {
     let xaxisOptions = {};
@@ -402,7 +432,11 @@ export default React.memo(function Graph(props) {
         anchorx,
         strokeColor: "var(--canvastext)"
       };
+      if (SVs.xlabelHasLatex) {
+        xaxisOptions.label.useMathJax = true;
+      }
     }
+    previousXaxisWithLabel.current = Boolean(SVs.xlabel);
     xaxisOptions.ticks = {
       ticksDistance: 2,
       label: {
@@ -437,6 +471,7 @@ export default React.memo(function Graph(props) {
     if (!SVs.displayYAxis) {
       xaxisOptions.ticks.drawZero = true;
     }
+    theBoard.suspendUpdate();
     xaxis.current = theBoard.create("axis", [[0, 0], [1, 0]], xaxisOptions);
     xaxis.current.defaultTicks.ticksFunction = function() {
       var delta, b, dist;
@@ -449,6 +484,7 @@ export default React.memo(function Graph(props) {
       return delta;
     };
     xaxis.current.defaultTicks.generateEquidistantTicks = function(coordsZero, bounds) {
+      this.minTicksDistance = 2 * Math.max(2.5, Math.log10(Math.abs(bounds.lower)), Math.log10(Math.abs(bounds.upper)));
       var tickPosition, eps2 = 1e-6, deltas, ticksDelta = this.equidistant ? this.ticksFunction(1) : this.ticksDelta, ev_it = true, ev_mt = 4;
       this.visProp.minorticks = 4;
       deltas = this.getXandYdeltas();
@@ -469,7 +505,9 @@ export default React.memo(function Graph(props) {
         return;
       }
       tickPosition = 0;
-      tickPosition = ticksDelta;
+      if (!this.visProp.drawzero) {
+        tickPosition = ticksDelta;
+      }
       while (tickPosition <= bounds.upper + eps2) {
         if (tickPosition >= bounds.lower - eps2) {
           this.processTickPosition(coordsZero, tickPosition, ticksDelta, deltas);
@@ -490,6 +528,7 @@ export default React.memo(function Graph(props) {
         }
       }
     };
+    theBoard.unsuspendUpdate();
   }
   function addNavigationButtons() {
     let navigationBar = document.querySelector("#" + cesc(name) + `_navigationbar`);

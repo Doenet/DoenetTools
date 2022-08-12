@@ -14,9 +14,12 @@ const DriveCardContainer = styled.figure`
   display: flex; // added
   flex-direction: column; // added
   justify-content: space-between;
-  
   border: 2px solid var(--canvastext);
   cursor: pointer;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: 2px;
+}
 `;
 const Image = styled.img`
   height: 100%;
@@ -27,6 +30,7 @@ const Image = styled.img`
   background-color: ${(props) => props.color == "none" ? "none" : "#" + props.color};
   background-size: cover;
   background-position: center;
+  
 `;
 const Info = styled.figcaption`
   border-radius: 0px 0px 5px 5px;
@@ -35,7 +39,6 @@ const Info = styled.figcaption`
   height: 65px;
   width: inherit;
   background: var(--canvas);
-  
 `;
 const LabelContainer = styled.p`
   text-transform: capitalize;
@@ -54,6 +57,8 @@ const DriveCard = (props) => {
   let imageURL = `url(/media/drive_pictures/${props.image})`;
   return /* @__PURE__ */ React.createElement(DriveCardContainer, {
     "data-test": "driveCard",
+    "aria-labelledby": "card-label role-label",
+    "data-cy": "driveCard",
     url: imageURL,
     color: props.color,
     width: props.width,
@@ -66,6 +71,7 @@ const DriveCard = (props) => {
       backgroundColor: props.isSelected ? "var(--lightBlue)" : ""
     }
   }, /* @__PURE__ */ React.createElement(LabelContainer, {
+    id: "card-label",
     textAlign: props.textAlign,
     lineHeight: props.lineHeight,
     whiteSpace: props.whiteSpace,
@@ -76,6 +82,7 @@ const DriveCard = (props) => {
     "data-test": "driveCardLabel"
   }, props.label)), props?.role?.map((item) => {
     return /* @__PURE__ */ React.createElement(LabelContainer, {
+      id: "role-label",
       key: item,
       style: {color: props.isSelected ? "black" : "var(--canvastext)"}
     }, item);
