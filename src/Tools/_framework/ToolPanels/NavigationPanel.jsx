@@ -103,6 +103,10 @@ export default function NavigationPanel() {
             set(selectedMenuPanelAtom,"SelectedSection");
           }else if (selectedItem.type == "bank"){
             set(selectedMenuPanelAtom,"SelectedBank");
+          }else if (selectedItem.type == "collectionAlias"){
+            set(selectedMenuPanelAtom,"SelectedCollectionAlias");
+          }else if (selectedItem.type == "pageAlias"){
+            set(selectedMenuPanelAtom,"SelectedPageAlias");
           }else{
             set(selectedMenuPanelAtom,null);
           }

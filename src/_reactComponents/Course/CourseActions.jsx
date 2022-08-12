@@ -183,6 +183,43 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray,assignmentDo
     orderAndPagesDoenetIds.push(item.doenetId);
         let moreOrderDoenetIds = findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray:item.content,assignmentDoenetId,orderDoenetId:item.doenetId});
         orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,...moreOrderDoenetIds];
+      }else if (item?.type == 'collectionAlias'){
+      //Store order objects for UI
+      let numberToSelect = item.numberToSelect;
+      if (numberToSelect == undefined){
+        numberToSelect = 1;
+      }
+      let withReplacement = item.withReplacement;
+      if (withReplacement == undefined){
+        withReplacement = false;
+      }
+      let parentDoenetId = orderDoenetId;
+      if (orderDoenetId == null){
+        parentDoenetId = assignmentDoenetId;
+      }
+      set(itemByDoenetId(item.doenetId), {
+        type: "collectionAlias",
+        doenetId: item.doenetId, 
+        collectionDoenetId: item.collectionDoenetId,
+        isManuallyFiltered: item.isManuallyFiltered,
+        manuallyFilteredPages: item.manuallyFilteredPages,
+        label:item.label,
+        isOpen:false,
+        isSelected:false,
+        parentDoenetId
+      });
+      console.log("set collectionAlias",{
+        type: "collectionAlias",
+        doenetId: item.doenetId, 
+        collectionDoenetId: item.collectionDoenetId,
+        isManuallyFiltered: item.isManuallyFiltered,
+        manuallyFilteredPages: item.manuallyFilteredPages,
+        label:item.label,
+        isOpen:false,
+        isSelected:false,
+        parentDoenetId
+      })
+      orderAndPagesDoenetIds.push(item.doenetId);
       }else{
         //Page 
         orderAndPagesDoenetIds = [...orderAndPagesDoenetIds,item];
@@ -268,7 +305,7 @@ export function useInitCourseItems(courseId) {
           const { data } = await axios.get('/api/getCourseItems.php', {
            params: { courseId },
           });
-
+          console.log("data",data)
           if(data.success) {
             //DoenetIds depth first search and going into json structures
             // console.log("data",data)
@@ -581,17 +618,22 @@ export const cutCourseItems = atom({
 
 
 function findContentsChildIds(content){
-  let orderAndPageIds = [];
+  let collectionAliasOrderAndPageIds = [];
 
   for (let item of content){
     if (item?.type == 'order'){
     let newIds = findContentsChildIds(item.content)
-    orderAndPageIds = [...orderAndPageIds,item.doenetId,...newIds]
+    collectionAliasOrderAndPageIds = [...collectionAliasOrderAndPageIds,item.doenetId,...newIds]
+    }else if (item?.type == 'collectionAlias'){
+      // let newIds = findCollectionAliasPages(item)
+      let newIds = [];
+    collectionAliasOrderAndPageIds = [...collectionAliasOrderAndPageIds,item.doenetId,...newIds]
+
     }else{
-      orderAndPageIds.push(item);
+      collectionAliasOrderAndPageIds.push(item);
     }
   }
-  return orderAndPageIds;
+  return collectionAliasOrderAndPageIds;
 }
 
 export const useCourse = (courseId) => {
@@ -957,7 +999,7 @@ export const useCourse = (courseId) => {
             newAuthorItemDoenetIds.splice(indexOfPrevious+1,0,data.doenetId)
           }
           set(authorCourseItemOrderByCourseId(courseId), newAuthorItemDoenetIds);
-        } else if (itemType == 'page' || itemType == 'order') {
+        } else if (itemType == 'page' || itemType == 'order' || itemType == 'collectionAlias') {
           //Prepare to make a new page
           let selectedDoenetId = (await snapshot.getPromise(selectedCourseItems))[0];
           const selectedItemObj = await snapshot.getPromise(itemByDoenetId(selectedDoenetId));
@@ -979,7 +1021,7 @@ export const useCourse = (courseId) => {
                   containingDoenetId,
                 },
               });
-          let {pageThatWasCreated, orderDoenetIdThatWasCreated} = data;
+          let {pageThatWasCreated, orderDoenetIdThatWasCreated, collectionAliasDoenetIdThatWasCreated} = data;
           let numberToSelect = 1;
           let withReplacement = false;
           let orderObj = {
@@ -989,6 +1031,14 @@ export const useCourse = (courseId) => {
             withReplacement,
             content:[],
             doenetId: orderDoenetIdThatWasCreated,
+          }
+          let collectionAliasObj = {
+            type: "collectionAlias",
+            doenetId: collectionAliasDoenetIdThatWasCreated,
+            collectionDoenetId: null,
+            isManuallyFiltered: false,
+            manuallyFilteredPages:[],
+            label:"Untitled Collection Alias",
           }
 
           //Update the Global Item Order Activity or Collection
@@ -1000,8 +1050,10 @@ export const useCourse = (courseId) => {
               pageThatWasCreated.parentDoenetId = selectedItemObj.doenetId;
               newJSON = [...selectedItemObj.content,pageThatWasCreated.doenetId]
             }else if (itemType == 'order'){
-              console.log("orderObj",orderObj)
               newJSON = [...selectedItemObj.content,orderObj]
+            }else if (itemType == 'collectionAlias'){
+              console.log("collectionAliasObj",collectionAliasObj)
+              newJSON = [...selectedItemObj.content,collectionAliasObj]
             }
             let newActivityObj = {...selectedItemObj}
             newActivityObj.content = newJSON;
@@ -1029,6 +1081,14 @@ export const useCourse = (courseId) => {
                 parentDoenetId:selectedItemObj.doenetId
               }
               set(itemByDoenetId(orderObj.doenetId),orderObj)
+            }else if (itemType == 'collectionAlias'){
+              collectionAliasObj = {...collectionAliasObj,
+                isOpen:false,
+                isSelected:false,
+                containingDoenetId: selectedItemObj.doenetId,
+                parentDoenetId:selectedItemObj.doenetId
+              }
+              set(itemByDoenetId(collectionAliasObj.doenetId),collectionAliasObj)
             }
 
             //TODO: can we use this after order and page below?????

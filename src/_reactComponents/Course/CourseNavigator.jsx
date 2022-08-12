@@ -20,6 +20,8 @@ import {
   // faUsersSlash,
   // faUsers,
   faCheck,
+  // faRightToBracket,
+  faShareFromSquare,
   // faUserEdit,
   // faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
@@ -273,11 +275,13 @@ function Activity({courseId,doenetId,itemInfo,numberOfVisibleColumns,indentLevel
      </>
   }
   if (itemInfo.isOpen){
-    let childRowsJSX = itemInfo.content.map((pageOrOrder,i)=>{
-      if (pageOrOrder?.type == 'order'){
-        return <Order key={`Order${i}${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={pageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
-      }else{
-        return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={pageOrOrder} activityDoenetId={itemInfo.doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+    let childRowsJSX = itemInfo.content.map((collectionAliasPageOrOrder,i)=>{
+      if (collectionAliasPageOrOrder?.type == 'order'){
+        return <Order key={`Order${i}${doenetId}`} courseNavigatorProps={courseNavigatorProps} orderInfo={collectionAliasPageOrOrder} courseId={courseId} activityDoenetId={doenetId} numberOfVisibleColumns={1} indentLevel={indentLevel + 1} />
+      }else if (!collectionAliasPageOrOrder?.type){
+        return <Page key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} doenetId={collectionAliasPageOrOrder} activityDoenetId={itemInfo.doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
+      }else if (collectionAliasPageOrOrder?.type == 'collectionAlias'){
+        return <CollectionAlias key={`NavPage${i}`} courseNavigatorProps={courseNavigatorProps} courseId={courseId} collectionAliasInfo={collectionAliasPageOrOrder} activityDoenetId={itemInfo.doenetId} numberOfVisibleColumns={numberOfVisibleColumns} indentLevel={indentLevel + 1} />
       }
     })
     return <>
@@ -341,6 +345,16 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
   return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
 
+function CollectionAlias({courseId,numberOfVisibleColumns,indentLevel,number=null,courseNavigatorProps,collectionAliasInfo}){
+  let {doenetId } = collectionAliasInfo;
+  let collectionAliasRecoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
+  console.log("navigation CollectionAlias: ",collectionAliasRecoilPageInfo)
+
+  return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faShareFromSquare} label={collectionAliasRecoilPageInfo.label} doenetId={doenetId} indentLevel={indentLevel} numbered={number} isSelected={collectionAliasRecoilPageInfo.isSelected} isBeingCut={collectionAliasRecoilPageInfo.isBeingCut}/>
+}
+
+
+
 function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false,courseNavigatorProps}){
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
 
@@ -362,8 +376,9 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     e.preventDefault();
     e.stopPropagation();
     let selectedItems = await snapshot.getPromise(selectedCourseItems);
+    console.log("selectedItems",selectedItems)
     let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
-    console.log("clickedItem",clickedItem.type,clickedItem.doenetId,clickedItem)
+    console.log(`clickedItem type:"${clickedItem.type}" doenetId:"${clickedItem.doenetId}"`,clickedItem)
     
     let newSelectedItems = [];
 
