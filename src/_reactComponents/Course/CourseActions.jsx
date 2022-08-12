@@ -200,6 +200,7 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray,assignmentDo
       set(itemByDoenetId(item.doenetId), {
         type: "collectionAlias",
         doenetId: item.doenetId, 
+        containingDoenetId:assignmentDoenetId,
         collectionDoenetId: item.collectionDoenetId,
         isManuallyFiltered: item.isManuallyFiltered,
         manuallyFilteredPages: item.manuallyFilteredPages,
@@ -208,17 +209,6 @@ function findOrderAndPageDoenetIdsAndSetOrderObjs({set,contentArray,assignmentDo
         isSelected:false,
         parentDoenetId
       });
-      console.log("set collectionAlias",{
-        type: "collectionAlias",
-        doenetId: item.doenetId, 
-        collectionDoenetId: item.collectionDoenetId,
-        isManuallyFiltered: item.isManuallyFiltered,
-        manuallyFilteredPages: item.manuallyFilteredPages,
-        label:item.label,
-        isOpen:false,
-        isSelected:false,
-        parentDoenetId
-      })
       orderAndPagesDoenetIds.push(item.doenetId);
       }else{
         //Page 
@@ -386,6 +376,23 @@ export function useSetCourseIdFromDoenetId(doenetId) {
 export const courseIdAtom = atom({
   key: 'courseIdAtom',
   default: null
+})
+
+export const authorCollectionsByCourseId = selectorFamily({
+  key: 'authorCollectionsByCourseId',
+  get:(courseId)=> ({get})=>{
+    let allDoenetIdsInOrder = get(authorCourseItemOrderByCourseId(courseId));
+
+    let collectionDoenetIds = [];
+    
+    for (let doenetId of allDoenetIdsInOrder){
+      let itemObj = get(itemByDoenetId(doenetId));
+      if (itemObj.type == 'bank'){
+        collectionDoenetIds.push({label:itemObj.label,doenetId})
+      }
+    }
+    return collectionDoenetIds;
+  }
 })
 
 export const authorCourseItemOrderByCourseId = atomFamily({
@@ -1535,6 +1542,39 @@ export const useCourse = (courseId) => {
     return null;
   }
 
+  function updateAssignmentCollectionAlias({content,needleDoenetId,changesObj}){
+    let nextContent = [...content];
+
+    for (let [i,item] of Object.entries(content)){
+      console.log(i,item)
+      if (item?.type == 'collectionAlias'){
+        //Check for match
+        if (needleDoenetId == item.doenetId){
+          let nextItemObj = {...item}
+          Object.assign(nextItemObj,changesObj);
+          nextContent.splice(i,1,nextItemObj);
+          return nextContent;
+        }
+      }
+      if (item?.type == 'order'){
+        //if not match then recurse into content
+        let childContent = updateAssignmentCollectionAlias({content:item.content,needleDoenetId,changesObj});
+        // console.log(">>childContent",childContent)
+        // console.log(">>nextContent",nextContent)
+        if (childContent != null){
+          // console.log("childContent",childContent)
+          let nextOrderObj = {...item}
+          nextOrderObj.content = childContent;
+          // console.log(">>nextOrderObj",nextOrderObj)
+          nextContent.splice(i,1,nextOrderObj);
+          return nextContent;
+        }
+      }
+    }
+    //Didn't find needle
+    return null;
+  }
+
   function deletePageFromActivity({content,needleDoenetId}){
     let nextContent = [...content];
 
@@ -1614,6 +1654,37 @@ export const useCourse = (courseId) => {
 
     return orderDoenetIds;
   }
+
+  
+
+  const updateCollectionAlias = useRecoilCallback(
+    ({ set,snapshot }) =>
+      async ({doenetId, collectionDoenetId, isManuallyFiltered, manuallyFilteredPages=[], successCallback, failureCallback = defaultFailure}) => {
+
+        let collectionAliasObj = await snapshot.getPromise(itemByDoenetId(doenetId));
+        let activityObj = await snapshot.getPromise(itemByDoenetId(collectionAliasObj.containingDoenetId))
+
+        let changesObj = {collectionDoenetId};
+        let newJSON = updateAssignmentCollectionAlias({content:activityObj.content,needleDoenetId:doenetId,changesObj});
+        // console.log("newJSON",newJSON)
+        let { data } = await axios.post('/api/updateActivityStructure.php', {
+          courseId,
+          doenetId:collectionAliasObj.containingDoenetId,
+          newJSON
+        });
+      // console.log("data",data)
+        let nextActivityObj = {...activityObj};
+        nextActivityObj.content = newJSON;
+        set(itemByDoenetId(collectionAliasObj.containingDoenetId),nextActivityObj)
+   
+        set(itemByDoenetId(doenetId),(prev)=>{
+          let next = {...prev}
+          next.isManuallyFiltered = isManuallyFiltered;
+          next.collectionDoenetId = collectionDoenetId;
+          next.manuallyFilteredPages = [...manuallyFilteredPages];
+          return next;
+        });
+  });
 
   const updateOrderBehavior = useRecoilCallback(
     ({ set,snapshot }) =>
@@ -2523,7 +2594,8 @@ export const useCourse = (courseId) => {
     renameItem, 
     compileActivity, 
     updateAssignItem,
-    updateOrderBehavior, 
+    updateOrderBehavior,
+    updateCollectionAlias, 
     copyItems, 
     cutItems,
     pasteItems,

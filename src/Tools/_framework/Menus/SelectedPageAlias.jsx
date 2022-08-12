@@ -2,7 +2,7 @@ import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { authorCollectionsByCourseId, itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
@@ -10,6 +10,9 @@ import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast } from '../Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+
+
+
 
 export default function SelectedPageAlias() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -53,6 +56,7 @@ export default function SelectedPageAlias() {
   if (effectiveRole === 'student') {
     return null;
   }
+
   
   return <>
   {heading}

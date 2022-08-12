@@ -2,7 +2,7 @@ import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { authorCollectionsByCourseId, itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
 import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
@@ -10,6 +10,21 @@ import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
 import { useToast } from '../Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
+import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
+
+function CollectionSelectionOptions({courseId,selectedDoenetId}){
+  let collectionNameAndDoenetIds = useRecoilValue(authorCollectionsByCourseId(courseId));
+  let CollectionOptionsJSX = []
+  for (let [i,obj] of collectionNameAndDoenetIds.entries()){
+    if (selectedDoenetId == obj.doenetId){
+      CollectionOptionsJSX.push(<option selected key={`CollectionOptions${i}`} value={obj.doenetId}>{obj.label}</option>)
+    }else{
+      CollectionOptionsJSX.push(<option key={`CollectionOptions${i}`} value={obj.doenetId}>{obj.label}</option>)
+    }
+
+  }
+  return <>{CollectionOptionsJSX}</>
+}
 
 export default function SelectedCollectionAlias() {
   // const setPageToolView = useSetRecoilState(pageToolViewAtom);
@@ -19,7 +34,7 @@ export default function SelectedCollectionAlias() {
   console.log("itemObj",itemObj)
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
-  let { deleteItem, renameItem } = useCourse(courseId);
+  let { deleteItem, renameItem, updateCollectionAlias } = useCourse(courseId);
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
@@ -54,6 +69,9 @@ export default function SelectedCollectionAlias() {
   if (effectiveRole === 'student') {
     return null;
   }
+
+ let collectionsInCourseJSX = <CollectionSelectionOptions courseId={courseId} selectedDoenetId={itemObj.collectionDoenetId} />
+
   
   return <>
   {heading}
@@ -69,7 +87,16 @@ export default function SelectedCollectionAlias() {
       onBlur={handelLabelModfication}
     />
     <br />
-   
+    <div>collection</div>
+  <RelatedItems
+        width="menu"
+        options={collectionsInCourseJSX}
+        onChange={(e) => {
+          console.log("SELECTED ",e.target.value)
+          updateCollectionAlias({doenetId, collectionDoenetId:e.target.value})
+        }}
+      />
+      <br />
     <Button
       width="menu"
       value="Delete Collection Alias"
