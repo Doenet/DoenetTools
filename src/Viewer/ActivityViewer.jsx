@@ -170,7 +170,6 @@ export default function ActivityViewer(props) {
     if (currentPage > 0) {
       let pageAnchor = `#page${currentPage}`;
       if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
-        console.log(`history replace to ${pageAnchor}`)
         navigate(search + pageAnchor, { replace: true })
       }
     }
@@ -804,8 +803,6 @@ export default function ActivityViewer(props) {
     // just use the ref
 
     let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
-
-    console.log(`oldTimeoutId: ${oldTimeoutId}`)
 
     if (oldTimeoutId !== null) {
       if (overrideThrottle) {

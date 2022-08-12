@@ -1,7 +1,7 @@
 // import {signIn} from '../DoenetSignin/DoenetSignin.cy';
 
 
-describe('Relationships among pages tests', function () {
+describe('Multipage activity tests', function () {
   const userId = "cyuserId";
   // const userId = "devuserId";
   const courseId = "courseid1";
@@ -29,6 +29,89 @@ describe('Relationships among pages tests', function () {
     // failing the test
     return false
   })
+
+
+
+  it('Changing paginated pages changes hash, does not add to url history', () => {
+    const doenetML1 = `Page 1`
+
+    const doenetML2 = `Page 2`
+
+    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
+    
+    cy.get('[data-test="Assign Activity"]').click();
+
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+    cy.get('[data-test="View Assigned Activity"]').click();
+
+    cy.get('#page1').should('contain.text', 'Page 1')
+    
+    cy.url().should('match', /#page1$/)
+
+    cy.get('[data-test=next]').click();
+
+    cy.get('#page2').should('contain.text', 'Page 2')
+
+    cy.url().should('match', /#page2$/)
+
+    cy.go('back')
+
+    cy.url().should('contain', `course?tool=navigation&courseId=${courseId}`);
+
+
+  })
+
+
+  it.only('Changing non-paginated pages changes hash, does not add to url history', () => {
+    const doenetML1 = `<p name="top">top 1</p><lorem generateParagraphs="8" /><p name="bottom">bottom 1</p>`
+    const doenetML2 = `<p name="top">top 2</p><lorem generateParagraphs="8" /><p name="bottom">bottom 2</p>`
+
+    cy.createMultipageActivity({ courseId, doenetId, parentDoenetId: courseId, pageDoenetId1, pageDoenetId2, doenetML1, doenetML2 });
+
+    cy.visit(`http://localhost/course?tool=navigation&courseId=${courseId}`)
+
+    cy.get('.navigationRow').should('have.length',1); //Need this to wait for the row to appear
+    cy.get('.navigationRow').eq(0).get('.navigationColumn1').click();
+    
+    cy.get('[data-test="Assign Activity"]').click();
+
+    cy.get('[data-test="toast"]').contains('Activity Assigned');
+    cy.get('[data-test="toast cancel button"]').click();
+    // cy.get('[data-test="View Assigned Activity"]').click();
+
+    // cy.get('#page1\\/top').should('contain.text', 'top 1')
+    // cy.get('#page2\\/top').should('contain.text', 'top 2')
+    
+    // cy.url().should('match', /#page1$/)
+
+    // cy.get('#page1\\/bottom').scrollIntoView();
+
+    // cy.url().should('match', /#page1$/)
+
+    // cy.get('#page2\\/top').scrollIntoView();
+
+    // cy.url().should('match', /#page2$/)
+
+    // cy.get('#page2\\/bottom').scrollIntoView();
+    // cy.url().should('match', /#page2$/)
+
+    // cy.get('#page1\\/bottom').scrollIntoView();
+    // cy.url().should('match', /#page1$/)
+
+    // cy.go('back')
+
+    // cy.url().should('contain', `course?tool=navigation&courseId=${courseId}`);
+
+
+  })
+
+
 
 
   it('Two page activity, paginated, with mutual links', () => {

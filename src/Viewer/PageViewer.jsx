@@ -70,7 +70,7 @@ export default function PageViewer(props) {
       }
     }
 
-    let newRendererState = { stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate, prefixForIds: props.prefixForIds };
+    let newRendererState = { stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate, prefixForIds: prefixForIds };
 
     if (childrenInstructions === undefined) {
       let previousRendererState = snapshot.getLoadable(rendererState(rendererName)).contents;
@@ -134,6 +134,8 @@ export default function PageViewer(props) {
   const havePrerendered = useRef(null);
 
   const resolveActionPromises = useRef({});
+
+  const prefixForIds = props.prefixForIds || "";
 
   let { hash } = useLocation();
 
@@ -257,11 +259,11 @@ export default function PageViewer(props) {
   useEffect(() => {
     if (hash && coreCreated.current && coreWorker.current) {
       let anchor = hash.slice(1);
-      if (anchor.substring(0, props.prefixForIds?.length) === props.prefixForIds) {
+      if (anchor.substring(0, prefixForIds.length) === prefixForIds) {
         coreWorker.current.postMessage({
           messageType: "navigatingToComponent",
           args: {
-            componentName: anchor.substring(props.prefixForIds.length)
+            componentName: anchor.substring(prefixForIds.length)
           }
         })
       }
@@ -272,7 +274,7 @@ export default function PageViewer(props) {
   useEffect(() => {
     if (hash && documentRenderer && props.pageIsActive) {
       let anchor = hash.slice(1);
-      if (anchor.length > props.prefixForIds?.length && anchor.substring(0, props.prefixForIds.length) === props.prefixForIds) {
+      if (anchor.length > prefixForIds.length && anchor.substring(0, prefixForIds.length) === prefixForIds) {
         document.getElementById(cssesc(anchor))?.scrollIntoView();
       }
     }

@@ -32,13 +32,23 @@ describe('doenetEditor test', function () {
 it('basic test of update button',()=>{
   const doenetMLString = 'abcdefg'
   cy.get('.cm-content').type(doenetMLString)
+  cy.get('#\\/_document1').should('not.contain', 'a');
   cy.get('[data-test="Viewer Update Button"]').click();
-  cy.get('.sc-iBkjds > div').contains(doenetMLString);
-
+  cy.get('#\\/_document1').contains(doenetMLString)
 })
 
+
+it('ctrl+s updates viewer',()=>{
+  const doenetMLString = 'abcdefg'
+  cy.get('.cm-content').type(doenetMLString)
+  cy.get('#\\/_document1').should('not.contain', 'a');
+  cy.get('.cm-content').type('{ctrl+s}')
+  cy.get('#\\/_document1').contains(doenetMLString)
+})
+
+
 it('Page Variant Menu Test',()=>{
-  const componentName = 'seqenceContainer'
+  const componentName = 'sequenceContainer'
   const doenetMLString = `<p name='${componentName}' ><selectFromSequence   /></p>`
   // const doenetMLString = `<selectFromSequence  assignNames='${componentName}' />`
   cy.get('.cm-content').type(doenetMLString)
@@ -252,14 +262,14 @@ it('Assign two-page activity',()=>{
 
 it('animation stopped when click update button',()=>{
   const doenetMLString = `
-  <number name="n">1</number>
+<number name="n">1</number>
 
-  <animateFromSequence target="n" animationMode="increase once" from="1" to="100" animationInterval="100" name="a" />
+<animateFromSequence target="n" animationMode="increase once" from="1" to="100" animationInterval="100" name="a" />
 
-  <p><callAction target="a" actionName="toggleAnimation" name="ca" >
-    <label>Toggle animation</label>
-  </callAction></p>
-  `
+<p><callAction target="a" actionName="toggleAnimation" name="ca" >
+<label>Toggle animation</label>
+</callAction></p>
+`
   cy.get('.cm-content').type(doenetMLString)
   cy.get('[data-test="Viewer Update Button"]').click();
   cy.get('#\\/n').should('have.text', '1')

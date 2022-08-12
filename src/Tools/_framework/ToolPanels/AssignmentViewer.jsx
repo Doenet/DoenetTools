@@ -95,7 +95,7 @@ function generateNewVariant({ previousVariants, allPossibleVariants, individuali
 }
 
 export default function AssignmentViewer() {
-  console.log(">>>===AssignmentViewer")
+  // console.log(">>>===AssignmentViewer")
   const recoilDoenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
   const courseId = useRecoilValue(courseIdAtom);
   const setSuppressMenus = useSetRecoilState(suppressMenusAtom);

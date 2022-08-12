@@ -40,7 +40,7 @@ $settingKeys = array(
   "makeContnet", "isSubmitted", "role", "dueDate", "assignedDate", 
   "timeLimit", "numberOfAttemptsAllowed", "attemptAggregation", "totalPointsOrPercent",
   "gradeCategory", "individualize", "showSolution", "showSolutionInGradebook", 
-  "showFeedback", "showHints", "showCorrectness", "showCreditAchievedMenu", 
+  "showFeedback", "showHints", "showCorrectness", "showCreditAchievedMenu", "paginate",  
   "proctorMakesAvailable", "pinnedUntilDate", "pinnedAfterDate"
 );
 
@@ -65,7 +65,7 @@ if (array_key_exists("totalPointsOrPercent", $proviedValues) && $proviedValues["
 //protect against invalid boolean values
 $boolKeys = array(
   "individualize", "showSolution", "showSolutionInGradebook", "showFeedback",
-  "showHints","showCorrectness","showCreditAchievedMenu","proctorMakesAvailable"
+  "showHints","showCorrectness","showCreditAchievedMenu","paginate","proctorMakesAvailable"
 );
 
 foreach ($boolKeys as $key) {

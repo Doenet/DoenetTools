@@ -6,7 +6,7 @@ import { toastType, useToast } from '@Toast';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState, atom } from 'recoil';
 import { useActivity } from '../../../_reactComponents/Activity/ActivityActions';
-import { AssignedDate, AssignTo, AssignUnassignActivity, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, Paginate, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent } from '../../../_reactComponents/Activity/SettingComponents';
+import { AssignedDate, AssignTo, AssignUnassignActivity, AttemptLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, Paginate, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent } from '../../../_reactComponents/Activity/SettingComponents';
 import {
   itemByDoenetId,
   findFirstPageOfActivity,
@@ -264,7 +264,7 @@ export function AssignmentSettings({ effectiveRole, doenetId, courseId }) {
       <AssignedDate courseId={courseId} doenetId={doenetId}/>
       <DueDate courseId={courseId} doenetId={doenetId}/>
       <TimeLimit courseId={courseId} doenetId={doenetId}/>
-      <AttempLimit courseId={courseId} doenetId={doenetId}/>
+      <AttemptLimit courseId={courseId} doenetId={doenetId}/>
       <AttemptAggregation courseId={courseId} doenetId={doenetId}/>
       <TotalPointsOrPercent courseId={courseId} doenetId={doenetId}/>
       <GradeCategory courseId={courseId} doenetId={doenetId}/>

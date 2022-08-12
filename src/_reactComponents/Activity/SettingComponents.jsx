@@ -130,6 +130,7 @@ export const AssignedDate = ({ doenetId, courseId }) => {
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
+          dataTest="Assigned Date Checkbox"
           checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
           uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
           checked={assignedDate !== null && assignedDate !== undefined}
@@ -154,6 +155,7 @@ export const AssignedDate = ({ doenetId, courseId }) => {
         <DateTime
           disabled={assignedDate === null || assignedDate === undefined}
           value={assignedDate ? new Date(assignedDate) : null}
+          dataTest="Assigned Date"
           disabledText="No Assigned Date"
           disabledOnClick={() => {
             let valueDescription = 'Now';
@@ -216,6 +218,7 @@ export const DueDate = ({ courseId, doenetId }) => {
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
+          dataTest="Due Date Checkbox"
           checkedIcon={<FontAwesomeIcon icon={faCalendarPlus} />}
           uncheckedIcon={<FontAwesomeIcon icon={faCalendarTimes} />}
           checked={dueDate !== null && dueDate !== undefined}
@@ -243,6 +246,7 @@ export const DueDate = ({ courseId, doenetId }) => {
         <DateTime
           disabled={dueDate === null || dueDate === undefined}
           value={dueDate ? new Date(dueDate) : null}
+          dataTest="Due Date"
           onBlur={({ valid, value }) => {
             if (valid) {
               try {
@@ -301,6 +305,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
+          dataTest="Time Limit Checkbox"
           checked={timeLimit !== null}
           onClick={() => {
             let valueDescription = 'Not Limited';
@@ -321,6 +326,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
         <Increment
           disabled={timeLimit === null}
           value={timeLimit}
+          dataTest="Time Limit"
           min={0}
           onBlur={() => {
             if (recoilValue !== timeLimit) {
@@ -349,7 +355,7 @@ export const TimeLimit = ({ courseId, doenetId }) => {
   );
 };
 
-export const AttempLimit = ({ courseId, doenetId }) => {
+export const AttemptLimit = ({ courseId, doenetId }) => {
   const {
     value: { numberOfAttemptsAllowed: recoilValue },
     updateAssignmentSettings,
@@ -368,6 +374,7 @@ export const AttempLimit = ({ courseId, doenetId }) => {
       <InputControl onClick={(e) => e.preventDefault()}>
         <Checkbox
           style={{ marginRight: '5px' }}
+          dataTest="Attempt Limit Checkbox"
           checked={numberOfAttemptsAllowed !== null}
           onClick={() => {
             let valueDescription = 'Not Limited';
@@ -388,6 +395,7 @@ export const AttempLimit = ({ courseId, doenetId }) => {
         <Increment
           disabled={numberOfAttemptsAllowed === null}
           value={numberOfAttemptsAllowed}
+          dataTest="Attempt Limit"
           min={0}
           onBlur={() => {
             if (recoilValue !== numberOfAttemptsAllowed) {
@@ -476,6 +484,7 @@ export const TotalPointsOrPercent = ({ courseId, doenetId }) => {
       <InputControl>
         <Increment
           value={totalPointsOrPercent}
+          dataTest='Total Points Or Percent'
           min={0}
           onBlur={() => {
             if (recoilValue !== totalPointsOrPercent) {
@@ -562,6 +571,7 @@ export const CheckedSetting = ({
   description,
   label,
   invert,
+  dataTest,
 }) => {
   const {
     value: { [keyToUpdate]: recoilValue },
@@ -576,6 +586,7 @@ export const CheckedSetting = ({
     <InputWrapper flex>
       <Checkbox
         style={{ marginRight: '5px' }}
+        dataTest={dataTest}
         checked={invert ? !localValue : localValue}
         onClick={() => {
           let valueDescription = invert ? 'True' : 'False';
@@ -605,6 +616,7 @@ export const CheckedFlag = ({
   description,
   label,
   invert,
+  dataTest,
 }) => {
   const {
     value: { [keyToUpdate]: recoilValue },
@@ -619,6 +631,7 @@ export const CheckedFlag = ({
     <InputWrapper flex>
       <Checkbox
         style={{ marginRight: '5px' }}
+        dataTest={dataTest}
         checked={invert ? !localValue : localValue}
         onClick={() => {
           let valueDescription = invert ? 'True' : 'False';
@@ -648,6 +661,7 @@ export const Individualize = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="individualize"
       description="Individualize"
+      dataTest="Individualize"
     />
   );
 };
@@ -659,6 +673,7 @@ export const ShowSolution = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showSolution"
       description="Show Solution"
+      dataTest="Show Solution"
     />
   );
 };
@@ -670,6 +685,7 @@ export const ShowSolutionInGradebook = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showSolutionInGradebook"
       description="Show Solution In Gradebook"
+      dataTest="Show Solution In Gradebook"
     />
   );
 };
@@ -681,6 +697,7 @@ export const ShowFeedback = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showFeedback"
       description="Show Feedback"
+      dataTest="Show Feedback"
     />
   );
 };
@@ -692,6 +709,7 @@ export const ShowHints = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showHints"
       description="Show Hints"
+      dataTest="Show Hints"
     />
   );
 };
@@ -703,6 +721,7 @@ export const ShowCorrectness = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showCorrectness"
       description="Show Correctness"
+      dataTest="Show Correctness"
     />
   );
 };
@@ -714,17 +733,19 @@ export const ShowCreditAchieved = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="showCreditAchievedMenu"
       description="Show Credit Achieved Menu"
+      dataTest="Show Credit Achieved Menu"
     />
   );
 };
 
 export const Paginate = ({ courseId, doenetId }) => {
   return (
-    <CheckedFlag
+    <CheckedSetting
       courseId={courseId}
       doenetId={doenetId}
       keyToUpdate="paginate"
       description="Paginate"
+      dataTest="Paginate"
     />
   );
 };
@@ -736,6 +757,7 @@ export const MakePublic = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="isPublic"
       description="Make Publicly Visible"
+      dataTest="Make Publicly Visible"
     />
   );
 };
@@ -747,6 +769,7 @@ export const ShowDoenetMLSource = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="userCanViewSource"
       description="Show DoenetML Source"
+      dataTest="Show DoenetML Source"
     />
   );
 };
@@ -758,6 +781,7 @@ export const ProctorMakesAvailable = ({ courseId, doenetId }) => {
       doenetId={doenetId}
       keyToUpdate="proctorMakesAvailable"
       description="Proctor Makes Available"
+      dataTest="Proctor Makes Available"
     />
   );
 };
