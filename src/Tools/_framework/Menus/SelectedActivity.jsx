@@ -191,7 +191,7 @@ export default function SelectedActivity() {
       </ButtonGroup>
       <br />
       
-      <AssignmentSettings effectiveRole={effectiveRole} doenetId={doenetId} courseId={courseId} />
+      <AssignmentSettings doenetId={doenetId} courseId={courseId} />
       <Button
         width="menu"
         value="Delete Activity"
@@ -205,6 +205,7 @@ export default function SelectedActivity() {
       />
     </>
   );
+}
 }
 
 //TODO: Emilio
