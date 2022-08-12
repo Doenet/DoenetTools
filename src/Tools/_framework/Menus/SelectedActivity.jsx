@@ -205,6 +205,8 @@ export default function SelectedActivity() {
       />
     </>
   );
+}else{
+  return null;
 }
 }
 
