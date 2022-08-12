@@ -87,6 +87,7 @@ CREATE TABLE `assignment` (
   `showHints` tinyint(1) NOT NULL DEFAULT '1',
   `showCorrectness` tinyint(1) NOT NULL DEFAULT '1',
   `showCreditAchievedMenu` tinyint(1) NOT NULL DEFAULT '1',
+  `paginate` tinyint(1) NOT NULL DEFAULT '1',
   `proctorMakesAvailable` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Released by proctor or instructor',
   PRIMARY KEY (`id`),
   UNIQUE KEY `doenetId` (`doenetId`)
@@ -99,7 +100,7 @@ CREATE TABLE `assignment` (
 
 LOCK TABLES `assignment` WRITE;
 /*!40000 ALTER TABLE `assignment` DISABLE KEYS */;
-INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,0);
+INSERT INTO `assignment` VALUES (1,'_Ga07DeeWjhH6Y4UpWlakE','_KwRMyq2rLo3B0dhVXgh6R',NULL,NULL,NULL,NULL,NULL,NULL,'m',10,NULL,0,1,1,1,1,1,1,1,0);
 /*!40000 ALTER TABLE `assignment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -239,7 +240,7 @@ CREATE TABLE `content_interactions` (
   `timestamp` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `should_be_unique` (`userId`,`doenetId`,`attemptNumber`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -978,4 +979,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-08-11 17:59:24
+-- Dump completed on 2022-08-12 21:17:07
