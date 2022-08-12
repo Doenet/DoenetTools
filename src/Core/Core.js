@@ -9620,7 +9620,9 @@ export default class Core {
 
   }
 
-  async saveState() {
+  async saveState(overrideThrottle = false) {
+
+    this.savePageStateTimeoutID = null;
 
     if (!this.flags.allowSaveState && !this.flags.allowLocalState) {
       return;
@@ -9668,18 +9670,25 @@ export default class Core {
     this.changesToBeSaved = true;
 
     // if not currently in throttle, save changes to database
-    this.saveChangesToDatabase();
+    this.saveChangesToDatabase(overrideThrottle);
 
 
   }
 
-  async saveChangesToDatabase() {
+  async saveChangesToDatabase(overrideThrottle) {
     // throttle save to database at 60 seconds
 
-    if (this.saveStateToDBTimerId !== null || !this.changesToBeSaved) {
+    if (!this.changesToBeSaved) {
       return;
     }
 
+    if (this.saveStateToDBTimerId !== null) {
+      if (overrideThrottle) {
+        clearTimeout(this.saveStateToDBTimerId);
+      } else {
+        return;
+      }
+    }
 
     this.changesToBeSaved = false;
 
@@ -10111,8 +10120,8 @@ export default class Core {
     }
   }
 
-  handleNavigatingToHash(hash) {
-    let component = this._components[hash];
+  handleNavigatingToComponent(componentName) {
+    let component = this._components[componentName];
     if (component?.actions?.revealSection) {
       this.requestAction({ componentName: component.componentName, actionName: "revealSection" })
     }
@@ -10121,6 +10130,18 @@ export default class Core {
   async terminate() {
     // suspend visibility measuring so that remaining times collected are saved
     await this.suspendVisibilityMeasuring();
+
+    if (this.savePageStateTimeoutID) {
+      // if in debounce to save page to local storage
+      // then immediate save to local storage
+      // and override timeout to save to database
+      clearTimeout(this.savePageStateTimeoutID);
+      await this.saveState(true);
+    } else {
+      // else override timeout to save any pending changes to database
+      await this.saveChangesToDatabase(true)
+    }
+
   }
 
 }

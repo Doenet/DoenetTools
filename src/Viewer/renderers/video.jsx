@@ -11,7 +11,7 @@ import VisibilitySensor from 'react-visibility-sensor-v2';
 
 
 export default React.memo(function Video(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
   let player = useRef(null);
   let postSkipTime = useRef(null);
@@ -44,7 +44,7 @@ export default React.memo(function Video(props) {
   useEffect(() => {
     if (SVs.youtube) {
 
-      let cName = cssesc(name);
+      let cName = cssesc(id);
 
       player.current = new window.YT.Player(cName, {
         playerVars: {
@@ -447,20 +447,20 @@ export default React.memo(function Video(props) {
   let videoTag;
 
   if (SVs.youtube) {
-    videoTag = <iframe id={name} style={videoStyle} src={"https://www.youtube.com/embed/" + SVs.youtube + "?enablejsapi=1&rel=0&modestbranding=1"} allow="autoplay; fullscreen" />
+    videoTag = <iframe id={id} style={videoStyle} src={"https://www.youtube.com/embed/" + SVs.youtube + "?enablejsapi=1&rel=0&modestbranding=1"} allow="autoplay; fullscreen" />
   } else if (SVs.source) {
-    videoTag = <video className="video" id={name} controls style={videoStyle} >
+    videoTag = <video className="video" id={id} controls style={videoStyle} >
       <source src={SVs.source} type={`video/${SVs.source.split('/').pop().split('.').pop()}`} />
       Your browser does not support the &lt;video&gt; tag.
     </video>
   } else {
-    videoTag = <span id={name}></span>
+    videoTag = <span id={id}></span>
   }
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-      <div style={outerStyle} id={name + "_outer"}>
-        <a name={name} />
+      <div style={outerStyle} id={id + "_outer"}>
+        <a name={id} />
         {videoTag}
       </div>
     </VisibilitySensor>

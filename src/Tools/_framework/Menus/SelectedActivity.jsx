@@ -6,7 +6,7 @@ import { toastType, useToast } from '@Toast';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState, atom } from 'recoil';
 import { useActivity } from '../../../_reactComponents/Activity/ActivityActions';
-import { AssignedDate, AssignTo, AssignUnassignActivity, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent } from '../../../_reactComponents/Activity/SettingComponents';
+import { AssignedDate, AssignTo, AssignUnassignActivity, AttempLimit, AttemptAggregation, DueDate, GradeCategory, Individualize, MakePublic, PinAssignment, ProctorMakesAvailable, ShowCorrectness, ShowCreditAchieved, Paginate, ShowDoenetMLSource, ShowFeedback, ShowHints, ShowSolution, ShowSolutionInGradebook, TimeLimit, TotalPointsOrPercent } from '../../../_reactComponents/Activity/SettingComponents';
 import {
   itemByDoenetId,
   findFirstPageOfActivity,
@@ -188,11 +188,13 @@ export default function SelectedActivity() {
           width="menu"
           onClick={() => create({ itemType: 'page' })}
           value="Add Page"
+          data-test="Add Page"
         />
         <Button
           width="menu"
           onClick={() => create({ itemType: 'order' })}
           value="Add Order"
+          data-test="Add Order"
         />
       </ButtonGroup>
       <br />
@@ -274,6 +276,7 @@ export function AssignmentSettings({ effectiveRole, doenetId, courseId }) {
         <ShowHints courseId={courseId} doenetId={doenetId}/>
         <ShowCorrectness courseId={courseId} doenetId={doenetId}/>
         <ShowCreditAchieved courseId={courseId} doenetId={doenetId}/>
+        <Paginate courseId={courseId} doenetId={doenetId}/>
         <ProctorMakesAvailable courseId={courseId} doenetId={doenetId}/>
         <MakePublic courseId={courseId} doenetId={doenetId}/>
         <ShowDoenetMLSource courseId={courseId} doenetId={doenetId}/>

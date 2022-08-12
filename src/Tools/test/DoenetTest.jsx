@@ -35,6 +35,7 @@ function Test() {
     allowSaveSubmissions: false,
     allowSaveEvents: false,
     useTestCode: false,
+    paginate: true,
   }
   let testSettings = JSON.parse(localStorage.getItem("test settings"))
   if (!testSettings) {
@@ -58,6 +59,7 @@ function Test() {
   const [allowSaveSubmissions, setAllowSaveSubmissions] = useState(testSettings.allowSaveSubmissions);
   const [allowSaveEvents, setAllowSaveEvents] = useState(testSettings.allowSaveEvents);
   const [useTestCode, setUseTestCode] = useState(testSettings.useTestCode);
+  const [paginate, setPaginate] = useState(testSettings.paginate);
   const [_, setRefresh] = useState(0);
   const solutionDisplayMode = "button";
 
@@ -212,6 +214,17 @@ function Test() {
       </div>
       <hr />
       <div>
+        <label> <input type='checkbox' checked={paginate} onChange={
+          () => {
+            testSettings.paginate = !testSettings.paginate;
+            localStorage.setItem("test settings", JSON.stringify(testSettings))
+            setPaginate(was => !was)
+            setUpdateNumber(was => was + 1)
+          }
+        } />Paginate</label>
+      </div>
+      <hr />
+      <div>
         <label> <input type='checkbox' checked={bundledCore} onChange={
           () => {
             testSettings.bundledCore = !testSettings.bundledCore;
@@ -274,6 +287,7 @@ function Test() {
       requestedVariantIndex={requestedVariantIndex.current}
       unbundledCore={!bundledCore}
       doenetId="doenetIdFromTest"
+      paginate={paginate}
     />
   }
 

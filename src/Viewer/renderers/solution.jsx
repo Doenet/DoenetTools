@@ -5,7 +5,7 @@ import { faPuzzlePiece as puzzle } from '@fortawesome/free-solid-svg-icons';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Solution(props) {
-  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -71,10 +71,10 @@ export default React.memo(function Solution(props) {
 
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <aside id={name}  style={{ margin: "12px 0" }}>
-      <a name={name} />
+    <aside id={id}  style={{ margin: "12px 0" }}>
+      <a name={id} />
       <span
-        id={name + '_button'}
+        id={id + '_button'}
         style={{
           display: 'block',
           margin: SVs.open ? '12px 4px 0px 4px' : '12px 4px 12px 4px',

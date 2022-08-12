@@ -72,6 +72,7 @@ export default function Public(props){
           allowSaveSubmissions: false,
           allowSaveEvents: false,
         }}
+        paginate = {true}
       />
     </>
   );

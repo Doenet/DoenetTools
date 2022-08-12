@@ -11,7 +11,7 @@ registerAllModules();
 
 
 export default React.memo(function SpreadsheetRenderer(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -35,8 +35,8 @@ export default React.memo(function SpreadsheetRenderer(props) {
   
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
-    <div id={name} style={{ margin: "12px 0" }} >
-      <a name={name} />
+    <div id={id} style={{ margin: "12px 0" }} >
+      <a name={id} />
       <HotTable
         // style={{ borderRadius:"var(--mainBorderRadius)", border:"var(--mainBorder)" }}
         licenseKey='non-commercial-and-evaluation'

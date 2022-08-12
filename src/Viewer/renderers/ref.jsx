@@ -5,7 +5,7 @@ import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
 import useDoenetRender from './useDoenetRenderer';
 
 export default React.memo(function Ref(props) {
-  let { name, SVs, children } = useDoenetRender(props);
+  let { name, id, SVs, children } = useDoenetRender(props);
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
@@ -53,7 +53,12 @@ export default React.memo(function Ref(props) {
     haveValidTarget = true;
 
     if (SVs.targetName) {
-      url += "#" + SVs.targetName;
+      if (SVs.page) {
+        url += `#page${SVs.page}`
+      } else {
+        url += "#page1"
+      }
+      url += SVs.targetName;
     }
   } else if (SVs.uri) {
     url = SVs.uri;
@@ -61,22 +66,30 @@ export default React.memo(function Ref(props) {
       haveValidTarget = true;
     }
   } else {
-    url = "#" + SVs.targetName;
+
+    if (SVs.page) {
+      url += `#page${SVs.page}`
+    } else {
+      let firstSlash = id.indexOf("/");
+      let prefix = id.substring(0, firstSlash);
+      url += "#" + prefix;
+    }
+    url += SVs.targetName;
     targetForATag = null;
     haveValidTarget = true;
   }
 
 
   if (SVs.createButton) {
-    return <span id={name}><a name={name} />
-      <button id={name + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</button>
+    return <span id={id}><a name={id} />
+      <button id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</button>
     </span>;
 
   } else {
     if (haveValidTarget) {
-      return <a target={targetForATag} id={name} name={name} href={url}>{linkContent}</a>
+      return <a target={targetForATag} id={id} name={id} href={url}>{linkContent}</a>
     } else {
-      return <span id={name}>{linkContent}</span>
+      return <span id={id}>{linkContent}</span>
     }
   }
 

@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
 export default React.memo(function Number(props) {
-  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
+  let { name, id, SVs } = useDoenetRender(props);
 
 
   if (SVs.hidden) {
@@ -14,5 +14,5 @@ export default React.memo(function Number(props) {
   if (SVs.renderAsMath) {
     number = "\\(" + number + "\\)"
   }
-  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{number}</MathJax></span></>
+  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{number}</MathJax></span></>
 })

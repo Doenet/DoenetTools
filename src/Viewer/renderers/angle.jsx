@@ -5,7 +5,7 @@ import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
 export default React.memo(function Angle(props) {
-  let { name, SVs } = useDoenetRender(props);
+  let { name, id, SVs } = useDoenetRender(props);
 
   const board = useContext(BoardContext);
 
@@ -156,14 +156,14 @@ export default React.memo(function Angle(props) {
 
     }
 
-    return <><a name={name} /></>
+    return <><a name={id} /></>
   }
 
 
 
   let mathJaxify = "\\(" + SVs.latexForRenderer + "\\)";
 
-  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 })
 
 

@@ -5,7 +5,7 @@ import CodeMirror from '../../Tools/_framework/CodeMirror';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function CodeEditor(props) {
-  let { name, SVs, children, actions, callAction } = useDoenetRenderer(props);
+  let { name, id, SVs, children, actions, callAction } = useDoenetRenderer(props);
   let currentValue = useRef(SVs.immediateValue)
   let updateValueTimer = useRef(null)
   let editorRef = useRef(null)
@@ -42,8 +42,8 @@ export default React.memo(function CodeEditor(props) {
     return null;
   }
 
-  const editorKey = name + '_editor';
-  const codemirrorKey = name + '_codemirror';
+  const editorKey = id + '_editor';
+  const codemirrorKey = id + '_codemirror';
 
   //Received update from core to immediateValue
   //NOTE: currently causes a scrolling issue
@@ -126,7 +126,7 @@ export default React.memo(function CodeEditor(props) {
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
       <div style={{ margin: "12px 0" }}>
-        <a name={name} />
+        <a name={id} />
         <div style={{
           padding: "0",
           border: "var(--mainBorder)",
@@ -137,7 +137,7 @@ export default React.memo(function CodeEditor(props) {
           display: 'flex',
           flexDirection: 'column',
         }}
-        id={name}>
+        id={id}>
           {editor}
           {viewer}
         </div>

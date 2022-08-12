@@ -14,8 +14,18 @@ import { enumerateCombinations } from '../Core/utils/enumeration';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../_utils/activityUtils';
 import createComponentInfoObjects from '../Core/utils/componentInfoObjects';
 import { addDocumentIfItsMissing, countComponentTypes, expandDoenetMLsToFullSerializedComponents } from '../Core/utils/serializedStateProcessing';
+import VisibilitySensor from 'react-visibility-sensor-v2';
+import { useLocation, useNavigate } from 'react-router';
+import cssesc from 'cssesc';
+import { atom, useRecoilCallback, useSetRecoilState } from 'recoil';
 
 let rngClass = prng_alea;
+
+export const saveStateToDBTimerIdAtom = atom({
+  key: "saveStateToDBTimerIdAtom",
+  default: null
+})
+
 
 export default function ActivityViewer(props) {
   const toast = useToast();
@@ -43,8 +53,11 @@ export default function ActivityViewer(props) {
 
   const [flags, setFlags] = useState(props.flags);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [nPages, setNPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+  const currentPageRef = useRef(currentPage);  // so that event listener can get new current page
+  currentPageRef.current = currentPage; // so updates on every refresh
+
+  const [nPages, setNPages] = useState(0);
 
   const [variantsByPage, setVariantsByPage] = useState(null);
   const [itemWeights, setItemWeights] = useState(null);
@@ -56,11 +69,30 @@ export default function ActivityViewer(props) {
 
   const activityStateToBeSavedToDatabase = useRef(null);
   const changesToBeSaved = useRef(false);
-  const saveStateToDBTimerId = useRef(null);
+
+  const setSaveStateToDBTimerId = useSetRecoilState(saveStateToDBTimerIdAtom);
+
   const activityInfo = useRef(null);
   const activityInfoString = useRef(null);
   const pageAtPreviousSave = useRef(null);
 
+
+
+  const [pageIsVisible, setPageIsVisible] = useState([]);
+  const [pageIsActive, setPageIsActive] = useState([]);
+  const [pageHasCore, setPageHasCore] = useState([]);
+
+  const [waitingForPagesCore, setWaitingForPagesCore] = useState(null);
+
+  const prerenderedPages = useRef([])
+  const allPagesPrerendered = useRef(false);
+
+  let { hash, search } = useLocation();
+
+  let navigate = useNavigate();
+
+
+  // set ref to value from recoil atom
 
   useEffect(() => {
 
@@ -94,8 +126,74 @@ export default function ActivityViewer(props) {
   })
 
   useEffect(() => {
+    // for non-paginated activity
+    // set the current page to be the page at the top of the screen
+    // will be used to set the url hash
+    if (!props.paginate && nPages > 1) {
+      window.addEventListener('scroll', (event) => {
+        // find page that is at the top
+        let topPage;
+        for (let ind = 0; ind < nPages - 1; ind++) {
+          let thePage = document.getElementById(`page${ind + 1}`);
+          if (thePage) {
+            let { bottom } = thePage.getBoundingClientRect();
+            if (bottom < 0) {
+              topPage = ind + 2;
+            } else if (!topPage) {
+              topPage = 1;
+            }
+          }
+        }
+
+        if (topPage && topPage !== currentPageRef.current) {
+          setCurrentPage(topPage)
+        }
+
+      })
+    }
+  }, [nPages])
+
+  useEffect(() => {
     props.pageChangedCallback?.(currentPage);
   }, [currentPage])
+
+  useEffect(() => {
+    if (hash && nPages) {
+      let match = hash.match(/^#page(\d+)/)
+      if (match) {
+        setCurrentPage(Math.max(1, Math.min(nPages, match[1])));
+      }
+    }
+  }, [hash, nPages])
+
+  useEffect(() => {
+    if (currentPage > 0) {
+      let pageAnchor = `#page${currentPage}`;
+      if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
+        console.log(`history replace to ${pageAnchor}`)
+        navigate(search + pageAnchor, { replace: true })
+      }
+    }
+  }, [currentPage])
+
+  useEffect(() => {
+
+    // BADBAD: there must be a better and more robust way of doing this than
+    // using a timeout with an arbitrary 500 ms delay!
+    if (allPagesPrerendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
+      setTimeout(() => {
+        document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+      }, 500);
+    }
+  }, [allPagesPrerendered.current])
+
+
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) =>
+    async () => {
+      return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+    }
+  )
+
 
   function resetActivity({ changedOnDevice, newCid, newAttemptNumber }) {
     console.log('resetActivity', changedOnDevice, newCid, newAttemptNumber);
@@ -226,7 +324,6 @@ export default function ActivityViewer(props) {
 
     let loadedState = false;
     let newItemWeights;
-    let newCurrentPage;
     let newVariantIndex;
 
     if (props.flags.allowLocalState) {
@@ -275,8 +372,9 @@ export default function ActivityViewer(props) {
         serverSaveId.current = localInfo.saveId;
 
         // activityState is just currentPage
-        newCurrentPage = localInfo.activityState.currentPage
-        setCurrentPage(newCurrentPage);
+        if (!hash?.match(/^#page(\d+)/)) {
+          setCurrentPage(localInfo.activityState.currentPage);
+        }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
         let newActivityInfo = localInfo.activityInfo;
@@ -287,7 +385,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
-        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts;
+        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts || [];
 
 
         activityInfo.current = newActivityInfo;
@@ -356,8 +454,9 @@ export default function ActivityViewer(props) {
         let activityState = JSON.parse(resp.data.activityState);
 
         // activityState is just currentPage
-        newCurrentPage = activityState.currentPage;
-        setCurrentPage(newCurrentPage);
+        if (!hash?.match(/^#page(\d+)/)) {
+          setCurrentPage(activityState.currentPage);
+        }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
         newVariantIndex = resp.data.variantIndex;
@@ -367,7 +466,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
-        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts;
+        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts || [];
 
 
         activityInfo.current = newActivityInfo;
@@ -377,9 +476,10 @@ export default function ActivityViewer(props) {
 
         // get initial state and info
 
-        // state at page 1
-        newCurrentPage = 1;
-        setCurrentPage(1);
+        // start at page 1
+        if (!hash?.match(/^#page(\d+)/)) {
+          setCurrentPage(1);
+        }
 
         let results;
         results = await calculateOrderAndVariants();
@@ -398,7 +498,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(results.variantsByPage);
         setItemWeights(results.itemWeights);
         newItemWeights = results.itemWeights;
-        previousComponentTypeCountsByPage.current = results.previousComponentTypeCounts;
+        previousComponentTypeCountsByPage.current = results.previousComponentTypeCounts || [];
 
         activityInfo.current = results.activityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
@@ -691,22 +791,40 @@ export default function ActivityViewer(props) {
 
   }
 
-  async function saveChangesToDatabase() {
+  async function saveChangesToDatabase(overrideThrottle = false) {
     // throttle save to database at 60 seconds
 
-    if (saveStateToDBTimerId.current !== null || !changesToBeSaved.current) {
+    if (!changesToBeSaved.current) {
       return;
+    }
+
+    // get the up-to-date value here without a refresh!!
+
+
+    // just use the ref
+
+    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
+
+    console.log(`oldTimeoutId: ${oldTimeoutId}`)
+
+    if (oldTimeoutId !== null) {
+      if (overrideThrottle) {
+        clearTimeout(oldTimeoutId);
+      } else {
+        return;
+      }
     }
 
 
     changesToBeSaved.current = false;
 
     // check for changes again after 60 seconds
-    saveStateToDBTimerId.current = setTimeout(() => {
-      saveStateToDBTimerId.current = null;
+    let newTimeoutId = setTimeout(() => {
+      setSaveStateToDBTimerId(null)
       saveChangesToDatabase();
-    }, 10000);
-    // }, 60000);
+    }, 60000);
+
+    setSaveStateToDBTimerId(newTimeoutId)
 
 
     // TODO: find out how to test if not online
@@ -921,9 +1039,74 @@ export default function ActivityViewer(props) {
 
   }
 
+  function onChangeVisibility(isVisible, pageInd) {
+
+    if (!props.paginate) {
+      setPageIsVisible(was => {
+        let newArray = [...was];
+        newArray[pageInd] = isVisible;
+        return newArray;
+      })
+
+      if (!isVisible && pageIsActive[pageInd]) {
+        setPageIsActive(was => {
+          let newArray = [...was];
+          newArray[pageInd] = false;
+          return newArray;
+        })
+
+        if (waitingForPagesCore === pageInd) {
+          setWaitingForPagesCore(null);
+        }
+      }
+    }
+
+  }
+
+  function coreCreatedCallback(pageInd) {
+    if (waitingForPagesCore === pageInd) {
+      setWaitingForPagesCore(null);
+    }
+    setPageHasCore(was => {
+      let newArray = [...was];
+      newArray[pageInd] = true;
+      return newArray;
+    })
+  }
+
+  function pagePrerenderedCallback(pageInd, success) {
+    if (success) {
+      prerenderedPages.current[pageInd] = true;
+
+      if (prerenderedPages.current.length === nPages && prerenderedPages.current.every(x => x)) {
+        allPagesPrerendered.current = true;
+      }
+    }
+
+  }
+
   if (errMsg !== null) {
     let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
     return <div style={{ fontSize: "1.3em", marginLeft: "20px", marginTop: "20px" }}>{errorIcon} {errMsg}</div>
+  }
+
+  if (waitingForPagesCore === null) {
+    for (let [pageInd, isVisible] of pageIsVisible.entries()) {
+      if (isVisible && !pageIsActive[pageInd]) {
+        // if we find an inactive page that is visible
+        setPageIsActive(was => {
+          let newArray = [...was];
+          newArray[pageInd] = true;
+          return newArray;
+        })
+        if (!pageHasCore[pageInd]) {
+          // if we need to create core
+          // then stop here to not create multiple cores at once
+          setWaitingForPagesCore(pageInd);
+          break;
+        }
+      }
+    }
   }
 
 
@@ -1027,29 +1210,46 @@ export default function ActivityViewer(props) {
       itemNumber = 0;
     }
 
-    pages.push(
-      <div key={`page${ind}`}>
-        <PageViewer
-          doenetId={props.doenetId}
-          activityCid={cid}
-          cid={page.cid}
-          doenetML={page.doenetML}
-          pageNumber={(ind + 1).toString()}
-          previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
-          pageIsActive={ind + 1 === currentPage}
-          itemNumber={itemNumber}
-          attemptNumber={attemptNumber}
-          flags={flags}
-          activityVariantIndex={variantIndex}
-          requestedVariantIndex={variantsByPage[ind]}
-          unbundledCore={props.unbundledCore}
-          updateCreditAchievedCallback={props.updateCreditAchievedCallback}
-          setIsInErrorState={props.setIsInErrorState}
-          updateAttemptNumber={props.updateAttemptNumber}
-          saveStateCallback={receivedSaveFromPage}
-          updateDataOnContentChange={props.updateDataOnContentChange}
-        />
+    let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageIsActive[ind];
 
+    let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
+
+    let pageViewer = <PageViewer
+      doenetId={props.doenetId}
+      activityCid={cid}
+      cid={page.cid}
+      doenetML={page.doenetML}
+      pageNumber={(ind + 1).toString()}
+      previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
+      pageIsActive={thisPageIsActive}
+      itemNumber={itemNumber}
+      attemptNumber={attemptNumber}
+      flags={flags}
+      activityVariantIndex={variantIndex}
+      requestedVariantIndex={variantsByPage[ind]}
+      unbundledCore={props.unbundledCore}
+      updateCreditAchievedCallback={props.updateCreditAchievedCallback}
+      setIsInErrorState={props.setIsInErrorState}
+      updateAttemptNumber={props.updateAttemptNumber}
+      saveStateCallback={receivedSaveFromPage}
+      updateDataOnContentChange={props.updateDataOnContentChange}
+      coreCreatedCallback={() => coreCreatedCallback(ind)}
+      pagePrerenderedCallback={(x) => pagePrerenderedCallback(ind, x)}
+      hideWhenInactive={props.paginate}
+      prefixForIds={prefixForIds}
+    />
+
+    if (!props.paginate) {
+      pageViewer = <VisibilitySensor partialVisibility={true} offset={{ top: -200, bottom: -200 }} requireContentsSize={false} onChange={(isVisible) => onChangeVisibility(isVisible, ind)}>
+        <div>
+          {pageViewer}
+        </div>
+      </VisibilitySensor>
+    }
+
+    pages.push(
+      <div key={`page${ind + 1}`} id={`page${ind + 1}`}>
+        {pageViewer}
       </div>
     )
   }
@@ -1062,7 +1262,7 @@ export default function ActivityViewer(props) {
   }
 
   let pageControls = null;
-  if (nPages > 1) {
+  if (props.paginate && nPages > 1) {
     pageControls = <>
       <button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
       <button data-test={"next"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
@@ -1070,7 +1270,7 @@ export default function ActivityViewer(props) {
     </>
   }
 
-  return <div style={{ marginBottom: "200px" }}>
+  return <div style={{ paddingBottom: "50vh" }} id="activityTop">
     {cidChangedAlert}
     {pageControls}
     {title}

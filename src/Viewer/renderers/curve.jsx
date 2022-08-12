@@ -5,7 +5,7 @@ import { BoardContext } from './graph';
 
 
 export default React.memo(function Curve(props) {
-  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Curve.ignoreActionsWithoutCore = true;
 
@@ -580,13 +580,13 @@ export default React.memo(function Curve(props) {
 
 
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = curveJXG.current;
+        board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
 
     } else {
 
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = curveJXG.current;
+        board.itemsRenderedLowQuality[id] = curveJXG.current;
       }
 
       updateSinceDown.current = true;
@@ -677,7 +677,7 @@ export default React.memo(function Curve(props) {
 
       if (SVs.curveType !== "bezier") {
         board.updateRenderer();
-        return <><a name={name} /></>
+        return <><a name={id} /></>
       }
 
 
@@ -686,7 +686,7 @@ export default React.memo(function Curve(props) {
           deleteControls();
         }
         board.updateRenderer();
-        return <><a name={name} /></>
+        return <><a name={id} /></>
       }
 
       if (segmentsJXG.current.length === 0) {
@@ -696,7 +696,7 @@ export default React.memo(function Curve(props) {
         previousVectorControlDirections.current = [...SVs.vectorControlDirections];
 
         board.updateRenderer();
-        return <><a name={name} /></>
+        return <><a name={id} /></>
       }
 
       // add or delete segments and points if number changed
@@ -854,7 +854,7 @@ export default React.memo(function Curve(props) {
   }
 
   // don't think we want to return anything if not in board
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 
 })
 

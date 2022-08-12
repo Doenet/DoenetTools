@@ -718,6 +718,17 @@ export const ShowCreditAchieved = ({ courseId, doenetId }) => {
   );
 };
 
+export const Paginate = ({ courseId, doenetId }) => {
+  return (
+    <CheckedFlag
+      courseId={courseId}
+      doenetId={doenetId}
+      keyToUpdate="paginate"
+      description="Paginate"
+    />
+  );
+};
+
 export const MakePublic = ({ courseId, doenetId }) => {
   return (
     <CheckedFlag

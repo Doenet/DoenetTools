@@ -5,7 +5,7 @@ import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function CodeViewer(props){
-  let {name, SVs, children, actions, callAction} = useDoenetRenderer(props,false);
+  let {name, id, SVs, children, actions, callAction} = useDoenetRenderer(props,false);
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -53,9 +53,9 @@ export default React.memo(function CodeViewer(props){
       // overflowY: "scroll"
     }}>
       <div style={{height:"28px"}}>
-        <Button onClick={()=>callAction({action:actions.updateComponents})} value="update" id={name + "_updateButton"}></Button>
+        <Button onClick={()=>callAction({action:actions.updateComponents})} value="update" id={id + "_updateButton"}></Button>
       </div>
-      <div style={{ overflowY: "scroll", width: sizeToCSS(viewerWidth), maxWidth: "100%", height: sizeToCSS(viewerHeight) }} id={name + "_content"}>
+      <div style={{ overflowY: "scroll", width: sizeToCSS(viewerWidth), maxWidth: "100%", height: sizeToCSS(viewerHeight) }} id={id + "_content"}>
         {children}
       </div>
     </div>
@@ -63,11 +63,11 @@ export default React.memo(function CodeViewer(props){
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
     <div style={{ margin: "12px 0" }}>
-      <a name={name} />
+      <a name={id} />
       <div 
         style={surroundingBoxStyle}
         className="codeViewerSurroundingBox" 
-        id={name} 
+        id={id} 
       >
         {contentPanel}
       </div>

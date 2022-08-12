@@ -891,6 +891,7 @@ export const useCourse = (courseId) => {
             showHints: true,
             showCorrectness: true,
             showCreditAchievedMenu: true,
+            paginate: true,
             proctorMakesAvailable: false,
             pinnedAfterDate: null,
             pinnedUntilDate: null,

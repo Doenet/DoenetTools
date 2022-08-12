@@ -83,6 +83,15 @@ Cypress.Commands.add("createActivity", ({courseId,doenetId,parentDoenetId,pageDo
     // })
 });
 
+
+Cypress.Commands.add("createMultipageActivity", ({courseId,doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,doenetML1,doenetML2}) => {
+  // cy.log(courseId,doenetId,parentDoenetId,pageDoenetId)
+  cy.request(`/cyapi/cypressCreateMultipageActivity.php?courseId=${courseId}&doenetId=${doenetId}&parentDoenetId=${parentDoenetId}&pageDoenetId1=${pageDoenetId1}&pageDoenetId2=${pageDoenetId2}&doenetML1=${doenetML1}&doenetML2=${doenetML2}`)
+    // .then((resp)=>{
+    //   cy.log(resp.body)
+    // })
+});
+
 Cypress.Commands.add("clearIndexedDB", () => {
   return new Promise((resolve, reject) => {
     const request = window.indexedDB.deleteDatabase("keyval-store");

@@ -69,7 +69,7 @@ export default function CreditAchieved(){
 
   if (!creditByItem){ return null; }
   let creditByItemsJSX = creditByItem.map((x,i)=>{
-    return <ScoreContainer key={`creditByItem${i}`}>Item {i+1}: <ScoreOnRight>{x?Math.round(x*1000)/1000:0}</ScoreOnRight></ScoreContainer> 
+    return <ScoreContainer key={`creditByItem${i}`}>Item {i+1}: <ScoreOnRight  data-test={`Item ${i+1} Credit`}>{x?Math.round(x*1000)/10:0}%</ScoreOnRight></ScoreContainer> 
   })
 
   // console.log(`>>>>stage -${stage}-`);
@@ -96,12 +96,12 @@ export default function CreditAchieved(){
   }
 
  return <div>
-   <ScoreContainer>Possible Points: <ScoreOnRight>{totalPointsOrPercent}</ScoreOnRight></ScoreContainer>
-   <ScoreContainer>Final Score: <ScoreOnRight>{score}</ScoreOnRight></ScoreContainer>
+   <ScoreContainer>Possible Points: <ScoreOnRight data-test="Possible Points">{totalPointsOrPercent}</ScoreOnRight></ScoreContainer>
+   <ScoreContainer>Final Score: <ScoreOnRight data-test="Final Score">{score}</ScoreOnRight></ScoreContainer>
    <Line/>
    <b>Credit For:</b>
-   <ScoreContainer>Attempt {recoilAttemptNumber}: <ScoreOnRight>{creditForAttempt?Math.round(creditForAttempt*1000)/10:0}%</ScoreOnRight></ScoreContainer>
+   <ScoreContainer>Attempt {recoilAttemptNumber}: <ScoreOnRight data-test="Attempt Percent">{creditForAttempt?Math.round(creditForAttempt*1000)/10:0}%</ScoreOnRight></ScoreContainer>
    <div style={{marginLeft: '15px'}}>{creditByItemsJSX}</div>
-   <ScoreContainer>Assignment: <ScoreOnRight>{creditForAssignment?Math.round(creditForAssignment*1000)/10:0}%</ScoreOnRight></ScoreContainer>
+   <ScoreContainer>Assignment: <ScoreOnRight data-test="Assignment Percent">{creditForAssignment?Math.round(creditForAssignment*1000)/10:0}%</ScoreOnRight></ScoreContainer>
  </div>
 }

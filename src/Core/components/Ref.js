@@ -21,6 +21,13 @@ export default class Ref extends InlineComponent {
       public: true,
       forRenderer: true
     };
+    attributes.page = {
+      createPrimitiveOfType: "integer",
+      createStateVariable: "page",
+      defaultValue: null,
+      public: true,
+      forRenderer: true
+    };
     attributes.createButton = {
       createComponentOfType: "boolean",
       createStateVariable: "createButton",
@@ -96,6 +103,10 @@ export default class Ref extends InlineComponent {
           dependencyType: "stateVariable",
           variableName: "uri"
         },
+        page: {
+          dependencyType: "stateVariable",
+          variableName: "page"
+        },
         targetInactive: {
           dependencyType: "stateVariable",
           variableName: "targetInactive"
@@ -106,7 +117,7 @@ export default class Ref extends InlineComponent {
         }
       }),
       definition: function ({ dependencyValues }) {
-        if (dependencyValues.uri) {
+        if (dependencyValues.uri || dependencyValues.page) {
           if (dependencyValues.targetAttribute) {
             let targetName = dependencyValues.targetAttribute;
             if (targetName[0] !== "/") {
