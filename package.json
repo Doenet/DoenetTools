@@ -9,7 +9,7 @@
     "dev:restart": "docker compose restart dev",
     "dev:install": "docker compose exec dev npm install",
     "dev:uninstall": "docker compose exec dev npm uninstall",
-    "build": "docker exec -i doenet-dev-1 npx snowpack build --config snowpack.deploy.config.js",
+    "build": "docker compose run --rm dev npx snowpack build --config snowpack.deploy.config.js",
     "build:ci": "snowpack build --out dist_ci --no-watch",
     "build:clean": "snowpack build --clean --reload --config snowpack.deploy.config.js",
     "build:docker": "docker compose build",
@@ -46,8 +46,8 @@
     "@lezer/lr": "^0.15.5",
     "@lezer/xml": "^0.15.1",
     "@prettier/plugin-php": "^0.18.2",
-    "@react-spring/web": "^9.2.4",
-    "@use-gesture/react": "^10.2.12",
+    "@react-spring/web": "^9.4.5",
+    "@use-gesture/react": "^10.2.16",
     "axios": "^0.27.2",
     "better-react-mathjax": "^1.0.3",
     "compromise": "^13.11.4",
@@ -82,7 +82,7 @@
     "react-table": "^7.7.0",
     "react-use-measure": "^2.1.1",
     "react-visibility-sensor-v2": "^1.0.0",
-    "recoil": "^0.7.3",
+    "recoil": "^0.7.4",
     "socket.io": "^4.5.0",
     "socket.io-client": "^4.5.0",
     "styled-components": "^5.3.1"
@@ -104,7 +104,6 @@
     "esbuild": "^0.14.38",
     "eslint": "^8.14.0",
     "eslint-config-prettier": "^8.2.0",
-    "eslint-plugin-cypress": "^2.12.1",
     "eslint-plugin-import": "^2.24.2",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.26.1",
@@ -120,7 +119,8 @@
   "optionalDependencies": {
     "cypress": "^10.4.0",
     "cypress-plugin-tab": "^1.0.5",
-    "cypress-wait-until": "^1.7.2"
+    "cypress-wait-until": "^1.7.2",
+    "eslint-plugin-cypress": "^2.12.1"
   },
   "eslintConfig": {
     "extends": [

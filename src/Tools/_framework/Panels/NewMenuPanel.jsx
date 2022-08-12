@@ -291,7 +291,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     PageVariant:lazy(() => import('../Menus/PageVariant')),
     ActivityVariant:lazy(() => import('../Menus/ActivityVariant')),
     AutoSaves:lazy(() => import('../Menus/AutoSaves')),
-    LoadEnrollment:lazy(() => import('../Menus/LoadEnrollment')),
+    LoadPeople:lazy(() => import('../Menus/LoadPeople')),
     GradeUpload:lazy(() => import('../Menus/GradeUpload')),
     GradeDownload:lazy(() => import('../Menus/GradeDownload')),
     ManualEnrollment:lazy(() => import('../Menus/ManualEnrollment')),
@@ -302,6 +302,7 @@ export default function MenuPanel({ hide, menuPanelCap="", menusTitles=[], curre
     CreditAchieved:lazy(() => import('../Menus/CreditAchieved')),
     ClassTimes:lazy(() => import('../Menus/ClassTimes')),
     CurrentContent:lazy(() => import('../Menus/CurrentContent')),
+    ManageUsersMenu:lazy(() => import('../Menus/ManageUsersMenu'))
     
   }).current;
 

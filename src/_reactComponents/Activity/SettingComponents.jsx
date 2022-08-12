@@ -12,7 +12,11 @@ import Checkbox from '../../_reactComponents/PanelHeaderComponents/Checkbox';
 import Increment from '../PanelHeaderComponents/IncrementMenu';
 import DropdownMenu from '../PanelHeaderComponents/DropdownMenu';
 import { useRecoilValue } from 'recoil';
-import { enrollmentByCourseId, itemByDoenetId, useCourse } from '../Course/CourseActions';
+import {
+  peopleByCourseId,
+  itemByDoenetId,
+  useCourse,
+} from '../Course/CourseActions';
 import axios from 'axios';
 import RelatedItems from '../PanelHeaderComponents/RelatedItems';
 import ActionButtonGroup from '../PanelHeaderComponents/ActionButtonGroup';
@@ -20,7 +24,6 @@ import ActionButton from '../PanelHeaderComponents/ActionButton';
 import { toastType, useToast } from '@Toast';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { useSaveDraft } from '../../Tools/_framework/ToolPanels/DoenetMLEditor';
-
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -44,17 +47,11 @@ const InputControl = styled.div`
 `;
 
 export const AssignUnassignActivity = ({ doenetId, courseId }) => {
-  const pageId = useRecoilValue(searchParamAtomFamily('pageId'))
+  const pageId = useRecoilValue(searchParamAtomFamily('pageId'));
   const { saveDraft } = useSaveDraft();
-  const {
-    compileActivity,
-    updateAssignItem
-  } = useCourse(courseId);
-  const {
-    isAssigned,
-  } = useRecoilValue(itemByDoenetId(doenetId));
+  const { compileActivity, updateAssignItem } = useCourse(courseId);
+  const { isAssigned } = useRecoilValue(itemByDoenetId(doenetId));
   const addToast = useToast();
-
 
   let assignActivityText = 'Assign Activity';
   if (isAssigned) {
@@ -62,55 +59,56 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
     assignActivityText = 'Update Assigned Activity';
   }
 
-  return (<ActionButtonGroup vertical>
-  <ActionButton
-  width="menu"
-  data-test="Assign Activity"
-  value={assignActivityText}
-  onClick={async () => {
-    if (pageId){
-      await saveDraft({pageId, courseId});
-    }
-      compileActivity({
-        activityDoenetId: doenetId,
-        isAssigned: true,
-        courseId,
-        // successCallback: () => {
-        //   addToast('Activity Assigned.', toastType.INFO);
-        // },
-      });
-      updateAssignItem({
-        doenetId,
-        isAssigned:true,
-        successCallback: () => {
-          addToast("Activity Assigned", toastType.INFO);
-        },
-      })
+  return (
+    <ActionButtonGroup vertical>
+      <ActionButton
+        width="menu"
+        data-test="Assign Activity"
+        value={assignActivityText}
+        onClick={async () => {
+          if (pageId) {
+            await saveDraft({ pageId, courseId });
+          }
+          compileActivity({
+            activityDoenetId: doenetId,
+            isAssigned: true,
+            courseId,
+            // successCallback: () => {
+            //   addToast('Activity Assigned.', toastType.INFO);
+            // },
+          });
+          updateAssignItem({
+            doenetId,
+            isAssigned: true,
+            successCallback: () => {
+              addToast('Activity Assigned', toastType.INFO);
+            },
+          });
+        }}
+      />
+      {isAssigned ? (
+        <ActionButton
+          width="menu"
+          data-test="Unassign Activity"
+          value="Unassign Activity"
+          alert
+          onClick={() => {
+            updateAssignItem({
+              doenetId,
+              isAssigned: false,
+              successCallback: () => {
+                addToast('Activity Unassigned', toastType.INFO);
+              },
+            });
+          }}
+        />
+      ) : null}
+    </ActionButtonGroup>
+  );
+};
 
-  }}
-/>
-{isAssigned ? 
-<ActionButton
-  width="menu"
-  data-test="Unassign Activity"
-  value="Unassign Activity"
-  alert
-  onClick={() => {
-    updateAssignItem({
-      doenetId,
-      isAssigned:false,
-      successCallback: () => {
-        addToast("Activity Unassigned", toastType.INFO);
-      },
-    })
-  
-  }}
-/>
-: null}
-</ActionButtonGroup>)
-}
-
-export const AssignedDate = ({ doenetId, courseId }) => {
+//TODO: Emilio ask CLARA about non edible display
+export const AssignedDate = ({ doenetId, courseId, editable = false }) => {
   const addToast = useToast();
 
   const {
@@ -971,7 +969,7 @@ export function AssignTo({ courseId, doenetId }) {
   } = useActivity(courseId, doenetId);
 
   const { value: enrolledStudents } = useRecoilValue(
-    enrollmentByCourseId(courseId),
+    peopleByCourseId(courseId),
   );
 
   //email addresses of only those who assignment is restricted to

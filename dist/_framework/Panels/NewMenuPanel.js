@@ -1,4 +1,4 @@
-import React, {useState, lazy, useRef, Suspense, useEffect} from "../../_snowpack/pkg/react.js";
+import React, {useState, lazy, useRef, Suspense} from "../../_snowpack/pkg/react.js";
 import {
   atom,
   useRecoilValue,
@@ -17,13 +17,10 @@ import {
 import Logo from "../Logo.js";
 import {pageToolViewAtom} from "../NewToolRoot.js";
 import Checkbox from "../../_reactComponents/PanelHeaderComponents/Checkbox.js";
+import {darkModeAtom} from "../DarkmodeController.js";
 export const selectedMenuPanelAtom = atom({
   key: "selectedMenuPanelAtom",
   default: null
-});
-export const darkModeAtom = atom({
-  key: "darkModeAtom",
-  default: JSON.parse(localStorage.getItem("darkModeToggle"))
 });
 const MenuPanelsWrapper = styled.div`
   grid-area: menuPanel;
@@ -98,6 +95,10 @@ position:  static;
 left: 220px;
 cursor: pointer;
 z-index: 2;
+&:focus {
+  outline: 2px solid var(--mainBlue);
+  outline-offset: 2px;
+}
 `;
 const EditMenuPanels = styled.button`
   background-color: var(--mainBlue);
@@ -120,13 +121,21 @@ const MenuPanelTitle = styled.button`
   // border-top: 1px solid var(--canvastext);
   border-bottom: ${(props) => props.isOpen ? "2px solid var(--canvastext)" : "0px solid var(--canvastext)"};
   margin-top: 2px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+    outline-offset: -6px;
+  }
 `;
 const SettingsButton = styled.button`
   background-color: var(--canvas);
   color: var(--canvastext);
   border: none;
+  border-radius: 80px;
   cursor: pointer;
   font-size: 20px;
+  &:focus {
+    outline: 2px solid var(--canvastext);
+  }
 `;
 const HomeButton = styled.button`
   color: var(--canvastext);
@@ -159,9 +168,14 @@ function Menu(props) {
   }
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(MenuPanelTitle, {
     isOpen,
+    "aria-expanded": isOpen,
+    "aria-controls": "menu",
     onClick: () => setIsOpen((was) => !was),
+    id: "menu-title",
     "data-test": `${props.type} Menu`
   }, /* @__PURE__ */ React.createElement("h3", null, props.title)), /* @__PURE__ */ React.createElement("div", {
+    id: "menu",
+    "aria-labelledby": "menu-title",
     style: {
       display: hideShowStyle,
       paddingTop: "4px",
@@ -213,7 +227,7 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     PageVariant: lazy(() => import("../Menus/PageVariant.js")),
     ActivityVariant: lazy(() => import("../Menus/ActivityVariant.js")),
     AutoSaves: lazy(() => import("../Menus/AutoSaves.js")),
-    LoadEnrollment: lazy(() => import("../Menus/LoadEnrollment.js")),
+    LoadPeople: lazy(() => import("../Menus/LoadPeople.js")),
     GradeUpload: lazy(() => import("../Menus/GradeUpload.js")),
     GradeDownload: lazy(() => import("../Menus/GradeDownload.js")),
     ManualEnrollment: lazy(() => import("../Menus/ManualEnrollment.js")),
@@ -223,7 +237,8 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
     TimerMenu: lazy(() => import("../Menus/TimerMenu.js")),
     CreditAchieved: lazy(() => import("../Menus/CreditAchieved.js")),
     ClassTimes: lazy(() => import("../Menus/ClassTimes.js")),
-    CurrentContent: lazy(() => import("../Menus/CurrentContent.js"))
+    CurrentContent: lazy(() => import("../Menus/CurrentContent.js")),
+    ManageUsersMenu: lazy(() => import("../Menus/ManageUsersMenu.js"))
   }).current;
   let selectionPanel = null;
   if (currentSelectionMenu) {
@@ -265,8 +280,8 @@ export default function MenuPanel({hide, menuPanelCap = "", menusTitles = [], cu
   }, /* @__PURE__ */ React.createElement(Branding, {
     style: {marginLeft: "5px"}
   }, /* @__PURE__ */ React.createElement(Logo, null), /* @__PURE__ */ React.createElement("p", null, "Doenet")), /* @__PURE__ */ React.createElement(IconsGroup, null, /* @__PURE__ */ React.createElement(Checkbox, {
-    checked: darkModeToggle,
-    onClick: (e) => setDarkModeToggle(!darkModeToggle),
+    checked: darkModeToggle === "dark",
+    onClick: () => setDarkModeToggle(darkModeToggle === "dark" ? "light" : "dark"),
     checkedIcon: /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: faSun
     }),

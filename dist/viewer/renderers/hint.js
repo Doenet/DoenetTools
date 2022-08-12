@@ -25,11 +25,18 @@ export default React.memo(function Hint(props) {
   if (!SVs.showHints) {
     return null;
   }
-  let childrenToRender = children;
-  let title = SVs.title;
-  if (SVs.titleDefinedByChildren) {
-    title = children[0];
-    childrenToRender = children.slice(1);
+  let title;
+  if (SVs.titleChildName) {
+    for (let [ind, child] of children.entries()) {
+      if (child.props?.componentInstructions.componentName === SVs.titleChildName) {
+        title = children[ind];
+        children.splice(ind, 1);
+        break;
+      }
+    }
+  }
+  if (!title) {
+    title = SVs.title;
   }
   let twirlIcon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
     icon: twirlIsClosed
@@ -53,7 +60,7 @@ export default React.memo(function Hint(props) {
     icon = /* @__PURE__ */ React.createElement(FontAwesomeIcon, {
       icon: lightOn
     });
-    info = childrenToRender;
+    info = children;
     infoBlockStyle = {
       display: "block",
       margin: "0px 4px 12px 4px",
@@ -91,6 +98,7 @@ export default React.memo(function Hint(props) {
       backgroundColor: "var(--mainGray)",
       cursor: "pointer"
     },
+    "data-test": "hint-heading",
     onClick: onClickFunction
   }, twirlIcon, " ", icon, " ", title, " (click to ", openCloseText, ")"), /* @__PURE__ */ React.createElement("span", {
     style: infoBlockStyle

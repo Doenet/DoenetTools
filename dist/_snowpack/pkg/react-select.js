@@ -1,11 +1,11 @@
 import { _ as _extends } from './common/extends-b13c3e88.js';
-import { R as React, r as react } from './common/index-61623f21.js';
-import { m as memoize, u as unitlessKeys } from './common/unitless.browser.esm-2a8c2f28.js';
+import { r as react } from './common/index-56a88a1e.js';
+import { u as unitlessKeys } from './common/unitless.browser.esm-569dc2db.js';
 import { o as objectWithoutPropertiesLoose } from './common/defineProperty-42ace2b1.js';
 import { _ as _objectWithoutPropertiesLoose, a as _setPrototypeOf } from './common/setPrototypeOf-e07fe23a.js';
 import { c as createCommonjsModule, g as getDefaultExportFromCjs } from './common/_commonjsHelpers-f5d70792.js';
 import { p as propTypes } from './common/index-d3677bfe.js';
-import { r as reactDom } from './common/index-eaf9e997.js';
+import { r as reactDom } from './common/index-c4ac9922.js';
 
 /*
 
@@ -61,7 +61,6 @@ function createStyleElement(options) {
 }
 
 var StyleSheet = /*#__PURE__*/function () {
-  // Using Node instead of HTMLElement since container may be a ShadowRoot
   function StyleSheet(options) {
     var _this = this;
 
@@ -151,77 +150,76 @@ var i = "@import";
 var p = "@keyframes";
 var k = Math.abs;
 var d = String.fromCharCode;
-var g = Object.assign;
 function m(e2, r2) {
   return (((r2 << 2 ^ z(e2, 0)) << 2 ^ z(e2, 1)) << 2 ^ z(e2, 2)) << 2 ^ z(e2, 3);
 }
-function x(e2) {
+function g(e2) {
   return e2.trim();
 }
-function y(e2, r2) {
+function x(e2, r2) {
   return (e2 = r2.exec(e2)) ? e2[0] : e2;
 }
-function j(e2, r2, a2) {
+function y(e2, r2, a2) {
   return e2.replace(r2, a2);
 }
-function C(e2, r2) {
+function j(e2, r2) {
   return e2.indexOf(r2);
 }
 function z(e2, r2) {
   return e2.charCodeAt(r2) | 0;
 }
-function A(e2, r2, a2) {
+function C(e2, r2, a2) {
   return e2.slice(r2, a2);
 }
-function O(e2) {
+function A(e2) {
   return e2.length;
 }
 function M(e2) {
   return e2.length;
 }
-function S(e2, r2) {
+function O(e2, r2) {
   return r2.push(e2), e2;
 }
-function q(e2, r2) {
+function S(e2, r2) {
   return e2.map(r2).join("");
 }
+var q = 1;
 var B = 1;
-var D = 1;
+var D = 0;
 var E = 0;
 var F = 0;
-var G = 0;
-var H = "";
-function I(e2, r2, a2, c2, n2, t2, s2) {
-  return {value: e2, root: r2, parent: a2, type: c2, props: n2, children: t2, line: B, column: D, length: s2, return: ""};
+var G = "";
+function H(e2, r2, a2, c2, n2, t2, s2) {
+  return {value: e2, root: r2, parent: a2, type: c2, props: n2, children: t2, line: q, column: B, length: s2, return: ""};
 }
-function J(e2, r2) {
-  return g(I("", null, null, "", null, null, 0), e2, {length: -e2.length}, r2);
+function I(e2, r2, a2) {
+  return H(e2, r2.root, r2.parent, a2, r2.props, r2.children, 0);
 }
-function K() {
-  return G;
-}
-function L() {
-  G = F > 0 ? z(H, --F) : 0;
-  if (D--, G === 10)
-    D = 1, B--;
-  return G;
-}
-function N() {
-  G = F < E ? z(H, F++) : 0;
-  if (D++, G === 10)
-    D = 1, B++;
-  return G;
-}
-function P() {
-  return z(H, F);
-}
-function Q() {
+function J() {
   return F;
 }
-function R(e2, r2) {
-  return A(H, e2, r2);
+function K() {
+  F = E > 0 ? z(G, --E) : 0;
+  if (B--, F === 10)
+    B = 1, q--;
+  return F;
 }
-function T(e2) {
+function L() {
+  F = E < D ? z(G, E++) : 0;
+  if (B++, F === 10)
+    B = 1, q++;
+  return F;
+}
+function N() {
+  return z(G, E);
+}
+function P() {
+  return E;
+}
+function Q(e2, r2) {
+  return C(G, e2, r2);
+}
+function R(e2) {
   switch (e2) {
     case 0:
     case 9:
@@ -253,66 +251,64 @@ function T(e2) {
   }
   return 0;
 }
+function T(e2) {
+  return q = B = 1, D = A(G = e2), E = 0, [];
+}
 function U(e2) {
-  return B = D = 1, E = O(H = e2), F = 0, [];
+  return G = "", e2;
 }
 function V(e2) {
-  return H = "", e2;
+  return g(Q(E - 1, _(e2 === 91 ? e2 + 2 : e2 === 40 ? e2 + 1 : e2)));
 }
-function W(e2) {
-  return x(R(F - 1, ee(e2 === 91 ? e2 + 2 : e2 === 40 ? e2 + 1 : e2)));
-}
-function Y(e2) {
-  while (G = P())
-    if (G < 33)
-      N();
+function X(e2) {
+  while (F = N())
+    if (F < 33)
+      L();
     else
       break;
-  return T(e2) > 2 || T(G) > 3 ? "" : " ";
+  return R(e2) > 2 || R(F) > 3 ? "" : " ";
 }
-function _(e2, r2) {
-  while (--r2 && N())
-    if (G < 48 || G > 102 || G > 57 && G < 65 || G > 70 && G < 97)
+function Z(e2, r2) {
+  while (--r2 && L())
+    if (F < 48 || F > 102 || F > 57 && F < 65 || F > 70 && F < 97)
       break;
-  return R(e2, Q() + (r2 < 6 && P() == 32 && N() == 32));
+  return Q(e2, P() + (r2 < 6 && N() == 32 && L() == 32));
 }
-function ee(e2) {
-  while (N())
-    switch (G) {
+function _(e2) {
+  while (L())
+    switch (F) {
       case e2:
-        return F;
+        return E;
       case 34:
       case 39:
-        if (e2 !== 34 && e2 !== 39)
-          ee(G);
-        break;
+        return _(e2 === 34 || e2 === 39 ? e2 : F);
       case 40:
         if (e2 === 41)
-          ee(e2);
+          _(e2);
         break;
       case 92:
-        N();
+        L();
         break;
     }
-  return F;
+  return E;
 }
-function re(e2, r2) {
-  while (N())
-    if (e2 + G === 47 + 10)
+function ee(e2, r2) {
+  while (L())
+    if (e2 + F === 47 + 10)
       break;
-    else if (e2 + G === 42 + 42 && P() === 47)
+    else if (e2 + F === 42 + 42 && N() === 47)
       break;
-  return "/*" + R(r2, F - 1) + "*" + d(e2 === 47 ? e2 : N());
+  return "/*" + Q(r2, E - 1) + "*" + d(e2 === 47 ? e2 : L());
+}
+function re(e2) {
+  while (!R(N()))
+    L();
+  return Q(e2, E);
 }
 function ae(e2) {
-  while (!T(P()))
-    N();
-  return R(e2, F);
+  return U(ce("", null, null, null, [""], e2 = T(e2), 0, [0], e2));
 }
-function ce(e2) {
-  return V(ne("", null, null, null, [""], e2 = U(e2), 0, [0], e2));
-}
-function ne(e2, r2, a2, c2, n2, t2, s2, u2, i2) {
+function ce(e2, r2, a2, c2, n2, t2, s2, u2, i2) {
   var f2 = 0;
   var o2 = 0;
   var l2 = s2;
@@ -323,45 +319,40 @@ function ne(e2, r2, a2, c2, n2, t2, s2, u2, i2) {
   var w2 = 1;
   var $2 = 1;
   var k2 = 0;
-  var g2 = "";
-  var m2 = n2;
+  var m2 = "";
+  var g2 = n2;
   var x2 = t2;
-  var y2 = c2;
-  var z2 = g2;
+  var j2 = c2;
+  var z2 = m2;
   while (w2)
-    switch (p2 = k2, k2 = N()) {
-      case 40:
-        if (p2 != 108 && z2.charCodeAt(l2 - 1) == 58) {
-          if (C(z2 += j(W(k2), "&", "&\f"), "&\f") != -1)
-            $2 = -1;
-          break;
-        }
+    switch (p2 = k2, k2 = L()) {
       case 34:
       case 39:
       case 91:
-        z2 += W(k2);
+      case 40:
+        z2 += V(k2);
         break;
       case 9:
       case 10:
       case 13:
       case 32:
-        z2 += Y(p2);
+        z2 += X(p2);
         break;
       case 92:
-        z2 += _(Q() - 1, 7);
+        z2 += Z(P() - 1, 7);
         continue;
       case 47:
-        switch (P()) {
+        switch (N()) {
           case 42:
           case 47:
-            S(se(re(N(), Q()), r2, a2), i2);
+            O(te(ee(L(), P()), r2, a2), i2);
             break;
           default:
             z2 += "/";
         }
         break;
       case 123 * b2:
-        u2[f2++] = O(z2) * $2;
+        u2[f2++] = A(z2) * $2;
       case 125 * b2:
       case 59:
       case 0:
@@ -370,36 +361,36 @@ function ne(e2, r2, a2, c2, n2, t2, s2, u2, i2) {
           case 125:
             w2 = 0;
           case 59 + o2:
-            if (h2 > 0 && O(z2) - l2)
-              S(h2 > 32 ? ue(z2 + ";", c2, a2, l2 - 1) : ue(j(z2, " ", "") + ";", c2, a2, l2 - 2), i2);
+            if (h2 > 0 && A(z2) - l2)
+              O(h2 > 32 ? se(z2 + ";", c2, a2, l2 - 1) : se(y(z2, " ", "") + ";", c2, a2, l2 - 2), i2);
             break;
           case 59:
             z2 += ";";
           default:
-            S(y2 = te(z2, r2, a2, f2, o2, n2, u2, g2, m2 = [], x2 = [], l2), t2);
+            O(j2 = ne(z2, r2, a2, f2, o2, n2, u2, m2, g2 = [], x2 = [], l2), t2);
             if (k2 === 123)
               if (o2 === 0)
-                ne(z2, r2, y2, y2, m2, t2, l2, u2, x2);
+                ce(z2, r2, j2, j2, g2, t2, l2, u2, x2);
               else
                 switch (v2) {
                   case 100:
                   case 109:
                   case 115:
-                    ne(e2, y2, y2, c2 && S(te(e2, y2, y2, 0, 0, n2, u2, g2, n2, m2 = [], l2), x2), n2, x2, l2, u2, c2 ? m2 : x2);
+                    ce(e2, j2, j2, c2 && O(ne(e2, j2, j2, 0, 0, n2, u2, m2, n2, g2 = [], l2), x2), n2, x2, l2, u2, c2 ? g2 : x2);
                     break;
                   default:
-                    ne(z2, y2, y2, y2, [""], x2, 0, u2, x2);
+                    ce(z2, j2, j2, j2, [""], x2, l2, u2, x2);
                 }
         }
-        f2 = o2 = h2 = 0, b2 = $2 = 1, g2 = z2 = "", l2 = s2;
+        f2 = o2 = h2 = 0, b2 = $2 = 1, m2 = z2 = "", l2 = s2;
         break;
       case 58:
-        l2 = 1 + O(z2), h2 = p2;
+        l2 = 1 + A(z2), h2 = p2;
       default:
         if (b2 < 1) {
           if (k2 == 123)
             --b2;
-          else if (k2 == 125 && b2++ == 0 && L() == 125)
+          else if (k2 == 125 && b2++ == 0 && K() == 125)
             continue;
         }
         switch (z2 += d(k2), k2 * b2) {
@@ -407,37 +398,37 @@ function ne(e2, r2, a2, c2, n2, t2, s2, u2, i2) {
             $2 = o2 > 0 ? 1 : (z2 += "\f", -1);
             break;
           case 44:
-            u2[f2++] = (O(z2) - 1) * $2, $2 = 1;
+            u2[f2++] = (A(z2) - 1) * $2, $2 = 1;
             break;
           case 64:
-            if (P() === 45)
-              z2 += W(N());
-            v2 = P(), o2 = l2 = O(g2 = z2 += ae(Q())), k2++;
+            if (N() === 45)
+              z2 += V(L());
+            v2 = N(), o2 = A(m2 = z2 += re(P())), k2++;
             break;
           case 45:
-            if (p2 === 45 && O(z2) == 2)
+            if (p2 === 45 && A(z2) == 2)
               b2 = 0;
         }
     }
   return t2;
 }
-function te(e2, r2, a2, c2, t2, s2, u2, i2, f2, o2, l2) {
+function ne(e2, r2, a2, c2, t2, s2, u2, i2, f2, o2, l2) {
   var v2 = t2 - 1;
   var h2 = t2 === 0 ? s2 : [""];
   var p2 = M(h2);
   for (var b2 = 0, w2 = 0, $2 = 0; b2 < c2; ++b2)
-    for (var d2 = 0, g2 = A(e2, v2 + 1, v2 = k(w2 = u2[b2])), m2 = e2; d2 < p2; ++d2)
-      if (m2 = x(w2 > 0 ? h2[d2] + " " + g2 : j(g2, /&\f/g, h2[d2])))
-        f2[$2++] = m2;
-  return I(e2, r2, a2, t2 === 0 ? n : i2, f2, o2, l2);
+    for (var d2 = 0, m2 = C(e2, v2 + 1, v2 = k(w2 = u2[b2])), x2 = e2; d2 < p2; ++d2)
+      if (x2 = g(w2 > 0 ? h2[d2] + " " + m2 : y(m2, /&\f/g, h2[d2])))
+        f2[$2++] = x2;
+  return H(e2, r2, a2, t2 === 0 ? n : i2, f2, o2, l2);
 }
-function se(e2, r2, a2) {
-  return I(e2, r2, a2, c, d(K()), A(e2, 2, -2), 0);
+function te(e2, r2, a2) {
+  return H(e2, r2, a2, c, d(J()), C(e2, 2, -2), 0);
 }
-function ue(e2, r2, a2, c2) {
-  return I(e2, r2, a2, t, A(e2, 0, c2), A(e2, c2 + 1, -1), c2);
+function se(e2, r2, a2, c2) {
+  return H(e2, r2, a2, t, C(e2, 0, c2), C(e2, c2 + 1, -1), c2);
 }
-function ie(c2, n2) {
+function ue(c2, n2) {
   switch (m(c2, n2)) {
     case 5103:
       return a + "print-" + c2 + c2;
@@ -479,31 +470,31 @@ function ie(c2, n2) {
     case 6165:
       return a + c2 + e + "flex-" + c2 + c2;
     case 5187:
-      return a + c2 + j(c2, /(\w+).+(:[^]+)/, a + "box-$1$2" + e + "flex-$1$2") + c2;
+      return a + c2 + y(c2, /(\w+).+(:[^]+)/, a + "box-$1$2" + e + "flex-$1$2") + c2;
     case 5443:
-      return a + c2 + e + "flex-item-" + j(c2, /flex-|-self/, "") + c2;
+      return a + c2 + e + "flex-item-" + y(c2, /flex-|-self/, "") + c2;
     case 4675:
-      return a + c2 + e + "flex-line-pack" + j(c2, /align-content|flex-|-self/, "") + c2;
+      return a + c2 + e + "flex-line-pack" + y(c2, /align-content|flex-|-self/, "") + c2;
     case 5548:
-      return a + c2 + e + j(c2, "shrink", "negative") + c2;
+      return a + c2 + e + y(c2, "shrink", "negative") + c2;
     case 5292:
-      return a + c2 + e + j(c2, "basis", "preferred-size") + c2;
+      return a + c2 + e + y(c2, "basis", "preferred-size") + c2;
     case 6060:
-      return a + "box-" + j(c2, "-grow", "") + a + c2 + e + j(c2, "grow", "positive") + c2;
+      return a + "box-" + y(c2, "-grow", "") + a + c2 + e + y(c2, "grow", "positive") + c2;
     case 4554:
-      return a + j(c2, /([^-])(transform)/g, "$1" + a + "$2") + c2;
+      return a + y(c2, /([^-])(transform)/g, "$1" + a + "$2") + c2;
     case 6187:
-      return j(j(j(c2, /(zoom-|grab)/, a + "$1"), /(image-set)/, a + "$1"), c2, "") + c2;
+      return y(y(y(c2, /(zoom-|grab)/, a + "$1"), /(image-set)/, a + "$1"), c2, "") + c2;
     case 5495:
     case 3959:
-      return j(c2, /(image-set\([^]*)/, a + "$1$`$1");
+      return y(c2, /(image-set\([^]*)/, a + "$1$`$1");
     case 4968:
-      return j(j(c2, /(.+:)(flex-)?(.*)/, a + "box-pack:$3" + e + "flex-pack:$3"), /s.+-b[^;]+/, "justify") + a + c2 + c2;
+      return y(y(c2, /(.+:)(flex-)?(.*)/, a + "box-pack:$3" + e + "flex-pack:$3"), /s.+-b[^;]+/, "justify") + a + c2 + c2;
     case 4095:
     case 3583:
     case 4068:
     case 2532:
-      return j(c2, /(.+)-inline(.+)/, a + "$1$2") + c2;
+      return y(c2, /(.+)-inline(.+)/, a + "$1$2") + c2;
     case 8116:
     case 7059:
     case 5753:
@@ -516,63 +507,61 @@ function ie(c2, n2) {
     case 5789:
     case 5021:
     case 4765:
-      if (O(c2) - 1 - n2 > 6)
+      if (A(c2) - 1 - n2 > 6)
         switch (z(c2, n2 + 1)) {
           case 109:
             if (z(c2, n2 + 4) !== 45)
               break;
           case 102:
-            return j(c2, /(.+:)(.+)-([^]+)/, "$1" + a + "$2-$3$1" + r + (z(c2, n2 + 3) == 108 ? "$3" : "$2-$3")) + c2;
+            return y(c2, /(.+:)(.+)-([^]+)/, "$1" + a + "$2-$3$1" + r + (z(c2, n2 + 3) == 108 ? "$3" : "$2-$3")) + c2;
           case 115:
-            return ~C(c2, "stretch") ? ie(j(c2, "stretch", "fill-available"), n2) + c2 : c2;
+            return ~j(c2, "stretch") ? ue(y(c2, "stretch", "fill-available"), n2) + c2 : c2;
         }
       break;
     case 4949:
       if (z(c2, n2 + 1) !== 115)
         break;
     case 6444:
-      switch (z(c2, O(c2) - 3 - (~C(c2, "!important") && 10))) {
+      switch (z(c2, A(c2) - 3 - (~j(c2, "!important") && 10))) {
         case 107:
-          return j(c2, ":", ":" + a) + c2;
+          return y(c2, ":", ":" + a) + c2;
         case 101:
-          return j(c2, /(.+:)([^;!]+)(;|!.+)?/, "$1" + a + (z(c2, 14) === 45 ? "inline-" : "") + "box$3$1" + a + "$2$3$1" + e + "$2box$3") + c2;
+          return y(c2, /(.+:)([^;!]+)(;|!.+)?/, "$1" + a + (z(c2, 14) === 45 ? "inline-" : "") + "box$3$1" + a + "$2$3$1" + e + "$2box$3") + c2;
       }
       break;
     case 5936:
       switch (z(c2, n2 + 11)) {
         case 114:
-          return a + c2 + e + j(c2, /[svh]\w+-[tblr]{2}/, "tb") + c2;
+          return a + c2 + e + y(c2, /[svh]\w+-[tblr]{2}/, "tb") + c2;
         case 108:
-          return a + c2 + e + j(c2, /[svh]\w+-[tblr]{2}/, "tb-rl") + c2;
+          return a + c2 + e + y(c2, /[svh]\w+-[tblr]{2}/, "tb-rl") + c2;
         case 45:
-          return a + c2 + e + j(c2, /[svh]\w+-[tblr]{2}/, "lr") + c2;
+          return a + c2 + e + y(c2, /[svh]\w+-[tblr]{2}/, "lr") + c2;
       }
       return a + c2 + e + c2 + c2;
   }
   return c2;
 }
-function fe(e2, r2) {
+function ie(e2, r2) {
   var a2 = "";
   var c2 = M(e2);
   for (var n2 = 0; n2 < c2; n2++)
     a2 += r2(e2[n2], n2, e2, r2) || "";
   return a2;
 }
-function oe(e2, r2, a2, s2) {
+function fe(e2, r2, a2, s2) {
   switch (e2.type) {
     case i:
     case t:
       return e2.return = e2.return || e2.value;
     case c:
       return "";
-    case p:
-      return e2.return = e2.value + "{" + fe(e2.children, s2) + "}";
     case n:
       e2.value = e2.props.join(",");
   }
-  return O(a2 = fe(e2.children, s2)) ? e2.return = e2.value + "{" + a2 + "}" : "";
+  return A(a2 = ie(e2.children, s2)) ? e2.return = e2.value + "{" + a2 + "}" : "";
 }
-function le(e2) {
+function oe(e2) {
   var r2 = M(e2);
   return function(a2, c2, n2, t2) {
     var s2 = "";
@@ -581,7 +570,7 @@ function le(e2) {
     return s2;
   };
 }
-function ve(e2) {
+function le(e2) {
   return function(r2) {
     if (!r2.root) {
       if (r2 = r2.return)
@@ -589,29 +578,35 @@ function ve(e2) {
     }
   };
 }
-function he(c2, s2, u2, i2) {
-  if (c2.length > -1) {
-    if (!c2.return)
-      switch (c2.type) {
-        case t:
-          c2.return = ie(c2.value, c2.length);
-          break;
-        case p:
-          return fe([J(c2, {value: j(c2.value, "@", "@" + a)})], i2);
-        case n:
-          if (c2.length)
-            return q(c2.props, function(n2) {
-              switch (y(n2, /(::plac\w+|:read-\w+)/)) {
-                case ":read-only":
-                case ":read-write":
-                  return fe([J(c2, {props: [j(n2, /:(read-\w+)/, ":" + r + "$1")]})], i2);
-                case "::placeholder":
-                  return fe([J(c2, {props: [j(n2, /:(plac\w+)/, ":" + a + "input-$1")]}), J(c2, {props: [j(n2, /:(plac\w+)/, ":" + r + "$1")]}), J(c2, {props: [j(n2, /:(plac\w+)/, e + "input-$1")]})], i2);
-              }
-              return "";
-            });
-      }
-  }
+function ve(c2, s2, u2, i2) {
+  if (!c2.return)
+    switch (c2.type) {
+      case t:
+        c2.return = ue(c2.value, c2.length);
+        break;
+      case p:
+        return ie([I(y(c2.value, "@", "@" + a), c2, "")], i2);
+      case n:
+        if (c2.length)
+          return S(c2.props, function(n2) {
+            switch (x(n2, /(::plac\w+|:read-\w+)/)) {
+              case ":read-only":
+              case ":read-write":
+                return ie([I(y(n2, /:(read-\w+)/, ":" + r + "$1"), c2, "")], i2);
+              case "::placeholder":
+                return ie([I(y(n2, /:(plac\w+)/, ":" + a + "input-$1"), c2, ""), I(y(n2, /:(plac\w+)/, ":" + r + "$1"), c2, ""), I(y(n2, /:(plac\w+)/, e + "input-$1"), c2, "")], i2);
+            }
+            return "";
+          });
+    }
+}
+
+function memoize(fn) {
+  var cache = Object.create(null);
+  return function (arg) {
+    if (cache[arg] === undefined) cache[arg] = fn(arg);
+    return cache[arg];
+  };
 }
 
 var identifierWithPointTracking = function identifierWithPointTracking(begin, points, index) {
@@ -620,20 +615,20 @@ var identifierWithPointTracking = function identifierWithPointTracking(begin, po
 
   while (true) {
     previous = character;
-    character = P(); // &\f
+    character = N(); // &\f
 
     if (previous === 38 && character === 12) {
       points[index] = 1;
     }
 
-    if (T(character)) {
+    if (R(character)) {
       break;
     }
 
-    N();
+    L();
   }
 
-  return R(begin, F);
+  return Q(begin, E);
 };
 
 var toRules = function toRules(parsed, points) {
@@ -642,10 +637,10 @@ var toRules = function toRules(parsed, points) {
   var character = 44;
 
   do {
-    switch (T(character)) {
+    switch (R(character)) {
       case 0:
         // &\f
-        if (character === 38 && P() === 12) {
+        if (character === 38 && N() === 12) {
           // this is not 100% correct, we don't account for literal sequences here - like for example quoted strings
           // stylis inserts \f after & to know when & where it should replace this sequence with the context selector
           // and when it should just concatenate the outer and inner selectors
@@ -653,18 +648,18 @@ var toRules = function toRules(parsed, points) {
           points[index] = 1;
         }
 
-        parsed[index] += identifierWithPointTracking(F - 1, points, index);
+        parsed[index] += identifierWithPointTracking(E - 1, points, index);
         break;
 
       case 2:
-        parsed[index] += W(character);
+        parsed[index] += V(character);
         break;
 
       case 4:
         // comma
         if (character === 44) {
           // colon
-          parsed[++index] = P() === 58 ? '&\f' : '';
+          parsed[++index] = N() === 58 ? '&\f' : '';
           points[index] = parsed[index].length;
           break;
         }
@@ -674,21 +669,20 @@ var toRules = function toRules(parsed, points) {
       default:
         parsed[index] += d(character);
     }
-  } while (character = N());
+  } while (character = L());
 
   return parsed;
 };
 
 var getRules = function getRules(value, points) {
-  return V(toRules(U(value), points));
+  return U(toRules(T(value), points));
 }; // WeakSet would be more appropriate, but only WeakMap is supported in IE11
 
 
 var fixedElements = /* #__PURE__ */new WeakMap();
 var compat = function compat(element) {
-  if (element.type !== 'rule' || !element.parent || // positive .length indicates that this rule contains pseudo
-  // negative .length indicates that this rule has been already prefixed
-  element.length < 1) {
+  if (element.type !== 'rule' || !element.parent || // .length indicates if this rule contains pseudo or not
+  !element.length) {
     return;
   }
 
@@ -739,7 +733,7 @@ var removeLabel = function removeLabel(element) {
   }
 };
 
-var defaultStylisPlugins = [he];
+var defaultStylisPlugins = [ve];
 
 var createCache = function createCache(options) {
   var key = options.key;
@@ -769,7 +763,8 @@ var createCache = function createCache(options) {
 
   var stylisPlugins = options.stylisPlugins || defaultStylisPlugins;
 
-  var inserted = {};
+  var inserted = {}; // $FlowFixMe
+
   var container;
   var nodesToHydrate = [];
 
@@ -794,13 +789,13 @@ var createCache = function createCache(options) {
 
   {
     var currentSheet;
-    var finalizingPlugins = [oe,  ve(function (rule) {
+    var finalizingPlugins = [fe,  le(function (rule) {
       currentSheet.insert(rule);
     })];
-    var serializer = le(omnipresentPlugins.concat(stylisPlugins, finalizingPlugins));
+    var serializer = oe(omnipresentPlugins.concat(stylisPlugins, finalizingPlugins));
 
     var stylis = function stylis(styles) {
-      return fe(ce(styles), serializer);
+      return ie(ae(styles), serializer);
     };
 
     _insert = function insert(selector, serialized, sheet, shouldCache) {
@@ -845,7 +840,7 @@ function getRegisteredStyles(registered, registeredStyles, classNames) {
   });
   return rawClassName;
 }
-var registerStyles = function registerStyles(cache, serialized, isStringTag) {
+var insertStyles = function insertStyles(cache, serialized, isStringTag) {
   var className = cache.key + "-" + serialized.name;
 
   if ( // we only need to add the styles to the registered cache if the
@@ -860,10 +855,6 @@ var registerStyles = function registerStyles(cache, serialized, isStringTag) {
   isBrowser === false ) && cache.registered[className] === undefined) {
     cache.registered[className] = serialized.styles;
   }
-};
-var insertStyles = function insertStyles(cache, serialized, isStringTag) {
-  registerStyles(cache, serialized, isStringTag);
-  var className = cache.key + "-" + serialized.name;
 
   if (cache.inserted[serialized.name] === undefined) {
     var current = serialized;
@@ -970,8 +961,6 @@ var processStyleValue = function processStyleValue(key, value) {
   return value;
 };
 
-var noComponentSelectorMessage = 'Component selectors can only be used in conjunction with ' + '@emotion/babel-plugin, the swc Emotion plugin, or another Emotion-aware ' + 'compiler transform.';
-
 function handleInterpolation(mergedProps, registered, interpolation) {
   if (interpolation == null) {
     return '';
@@ -1064,7 +1053,7 @@ function createStringFromObject(mergedProps, registered, obj) {
         }
       } else {
         if (_key === 'NO_COMPONENT_SELECTOR' && "production" !== 'production') {
-          throw new Error(noComponentSelectorMessage);
+          throw new Error('Component selectors can only be used in conjunction with @emotion/babel-plugin.');
         }
 
         if (Array.isArray(value) && typeof value[0] === 'string' && (registered == null || registered[value[0]] === undefined)) {
@@ -1175,14 +1164,6 @@ var withEmotionCache = function withEmotionCache(func) {
 
 var ThemeContext = /* #__PURE__ */react.createContext({});
 
-var useInsertionEffect = React['useInsertion' + 'Effect'] ? React['useInsertion' + 'Effect'] : function useInsertionEffect(create) {
-  create();
-};
-function useInsertionEffectMaybe(create) {
-
-  useInsertionEffect(create);
-}
-
 var typePropName = '__EMOTION_TYPE_PLEASE_DO_NOT_USE__';
 var createEmotionProps = function createEmotionProps(type, props) {
 
@@ -1194,20 +1175,12 @@ var createEmotionProps = function createEmotionProps(type, props) {
     }
   }
 
-  newProps[typePropName] = type; // For performance, only call getLabelFromStackTrace in development and when
+  newProps[typePropName] = type;
 
   return newProps;
 };
 
-var Insertion = function Insertion(_ref) {
-  var cache = _ref.cache,
-      serialized = _ref.serialized,
-      isStringTag = _ref.isStringTag;
-  registerStyles(cache, serialized, isStringTag);
-  var rules = useInsertionEffectMaybe(function () {
-    return insertStyles(cache, serialized, isStringTag);
-  });
-
+var Noop = function Noop() {
   return null;
 };
 
@@ -1220,7 +1193,7 @@ var Emotion = /* #__PURE__ */withEmotionCache(function (props, cache, ref) {
     cssProp = cache.registered[cssProp];
   }
 
-  var WrappedComponent = props[typePropName];
+  var type = props[typePropName];
   var registeredStyles = [cssProp];
   var className = '';
 
@@ -1232,6 +1205,7 @@ var Emotion = /* #__PURE__ */withEmotionCache(function (props, cache, ref) {
 
   var serialized = serializeStyles(registeredStyles, undefined, react.useContext(ThemeContext));
 
+  var rules = insertStyles(cache, serialized, typeof type === 'string');
   className += cache.key + "-" + serialized.name;
   var newProps = {};
 
@@ -1243,11 +1217,11 @@ var Emotion = /* #__PURE__ */withEmotionCache(function (props, cache, ref) {
 
   newProps.ref = ref;
   newProps.className = className;
-  return /*#__PURE__*/react.createElement(react.Fragment, null, /*#__PURE__*/react.createElement(Insertion, {
-    cache: cache,
-    serialized: serialized,
-    isStringTag: typeof WrappedComponent === 'string'
-  }), /*#__PURE__*/react.createElement(WrappedComponent, newProps));
+  var ele = /*#__PURE__*/react.createElement(type, newProps);
+  var possiblyStyleElement = /*#__PURE__*/react.createElement(Noop, null);
+
+
+  return /*#__PURE__*/react.createElement(react.Fragment, null, possiblyStyleElement, ele);
 });
 
 var jsx = function jsx(type, props) {
@@ -1270,8 +1244,6 @@ var jsx = function jsx(type, props) {
 
   return react.createElement.apply(null, createElementArgArray);
 };
-
-var useInsertionEffect$1 = React['useInsertion' + 'Effect'] ? React['useInsertion' + 'Effect'] : react.useLayoutEffect;
 
 function css() {
   for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -1354,22 +1326,12 @@ function merge(registered, css, className) {
   return rawClassName + css(registeredStyles);
 }
 
-var Insertion$1 = function Insertion(_ref) {
-  var cache = _ref.cache,
-      serializedArr = _ref.serializedArr;
-  var rules = useInsertionEffectMaybe(function () {
-
-    for (var i = 0; i < serializedArr.length; i++) {
-      var res = insertStyles(cache, serializedArr[i], false);
-    }
-  });
-
+var Noop$1 = function Noop() {
   return null;
 };
 
 var ClassNames = /* #__PURE__ */withEmotionCache(function (props, cache) {
   var hasRendered = false;
-  var serializedArr = [];
 
   var css = function css() {
     if (hasRendered && "production" !== 'production') {
@@ -1381,9 +1343,11 @@ var ClassNames = /* #__PURE__ */withEmotionCache(function (props, cache) {
     }
 
     var serialized = serializeStyles(args, cache.registered);
-    serializedArr.push(serialized); // registration has to happen here as the result of this might get consumed by `cx`
 
-    registerStyles(cache, serialized, false);
+    {
+      insertStyles(cache, serialized, false);
+    }
+
     return cache.key + "-" + serialized.name;
   };
 
@@ -1406,10 +1370,10 @@ var ClassNames = /* #__PURE__ */withEmotionCache(function (props, cache) {
   };
   var ele = props.children(content);
   hasRendered = true;
-  return /*#__PURE__*/react.createElement(react.Fragment, null, /*#__PURE__*/react.createElement(Insertion$1, {
-    cache: cache,
-    serializedArr: serializedArr
-  }), ele);
+  var possiblyStyleElement = /*#__PURE__*/react.createElement(Noop$1, null);
+
+
+  return /*#__PURE__*/react.createElement(react.Fragment, null, possiblyStyleElement, ele);
 });
 
 function _taggedTemplateLiteral(strings, raw) {

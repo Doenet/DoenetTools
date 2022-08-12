@@ -34,21 +34,22 @@ $restrictedTo = [];
 
 if ($success){
 
-$sql = "
-SELECT e.email
-FROM user_assignment AS ua
-LEFT JOIN enrollment AS e
-ON ua.userId = e.userId
-WHERE ua.doenetId = '$doenetId'
-AND ua.isUnassigned = '0'
-AND e.courseId = '$courseId'
-";
-$result = $conn->query($sql); 
-if ($result->num_rows > 0) {
-  while($row = $result->fetch_assoc()){
-    array_push($restrictedTo,$row['email']);
+  $sql = "SELECT u.email
+    FROM user_assignment AS ua
+    LEFT JOIN course_user AS cu
+    ON ua.userId = cu.userId
+    LEFT JOIN user AS u
+    ON cu.userId = u.userId
+    WHERE ua.doenetId = '$doenetId'
+    AND ua.isUnassigned = '0'
+    AND cu.courseId = '$courseId'
+    ";
+  $result = $conn->query($sql); 
+  if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()){
+      array_push($restrictedTo,$row['email']);
+    }
   }
-}
 
 }
 

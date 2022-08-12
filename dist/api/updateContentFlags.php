@@ -16,7 +16,7 @@ $message = '';
 
 $_POST = json_decode(file_get_contents('php://input'), true);
 
-$courseId = $_POST['courseId'];
+$courseId = mysqli_real_escape_string($conn, $_POST['courseId']);
 $doenetId = mysqli_real_escape_string($conn, $_POST['doenetId']);
 if ($courseId == '') {
     $success = false;

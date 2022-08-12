@@ -33,6 +33,8 @@ onmessage = function (e) {
     core.terminate().then(() => {
       postMessage({ messageType: "terminated" });
     })
+  } else if(e.data.messageType === "navigatingToHash") {
+    core.handleNavigatingToHash(e.data.args.hash)
   }
 }
 

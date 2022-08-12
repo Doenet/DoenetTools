@@ -91,9 +91,9 @@ export default class MathComponent extends InlineComponent {
       public: true,
     }
 
-    attributes.targetsAreFunctionSymbols = {
+    attributes.sourcesAreFunctionSymbols = {
       createComponentOfType: "textList",
-      createStateVariable: "targetsAreFunctionSymbols",
+      createStateVariable: "sourcesAreFunctionSymbols",
       defaultValue: [],
     }
 
@@ -703,9 +703,9 @@ export default class MathComponent extends InlineComponent {
 
     stateVariableDefinitions.mathChildrenFunctionSymbols = {
       returnDependencies: () => ({
-        targetsAreFunctionSymbols: {
+        sourcesAreFunctionSymbols: {
           dependencyType: "stateVariable",
-          variableName: "targetsAreFunctionSymbols"
+          variableName: "sourcesAreFunctionSymbols"
         },
         mathChildren: {
           dependencyType: "child",
@@ -716,7 +716,7 @@ export default class MathComponent extends InlineComponent {
         let mathChildrenFunctionSymbols = [];
         if (dependencyValues.mathChildren.compositeReplacementRange) {
           for (let compositeInfo of dependencyValues.mathChildren.compositeReplacementRange) {
-            if (dependencyValues.targetsAreFunctionSymbols.includes(compositeInfo.target)) {
+            if (dependencyValues.sourcesAreFunctionSymbols.includes(compositeInfo.target)) {
               for (let ind = compositeInfo.firstInd; ind <= compositeInfo.lastInd; ind++) {
                 mathChildrenFunctionSymbols.push(ind)
               }

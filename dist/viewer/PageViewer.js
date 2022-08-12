@@ -11,6 +11,8 @@ import {cidFromText} from "../core/utils/cid.js";
 import {retrieveTextFileForCid} from "../core/utils/retrieveTextFile.js";
 import axios from "../_snowpack/pkg/axios.js";
 import {returnAllPossibleVariants} from "../core/utils/returnAllPossibleVariants.js";
+import {useLocation} from "../_snowpack/pkg/react-router.js";
+import cssesc from "../_snowpack/pkg/cssesc.js";
 const rendererUpdatesToIgnore = atomFamily({
   key: "rendererUpdatesToIgnore",
   default: {}
@@ -83,6 +85,7 @@ export default function PageViewer(props) {
   const preventMoreAnimations = useRef(false);
   const animationInfo = useRef({});
   const resolveActionPromises = useRef({});
+  let {hash} = useLocation();
   useEffect(() => {
     if (coreWorker.current) {
       coreWorker.current.onmessage = function(e) {
@@ -116,6 +119,8 @@ export default function PageViewer(props) {
         } else if (e.data.messageType === "returnAllStateVariables") {
           console.log(e.data.args);
           resolveAllStateVariables.current(e.data.args);
+        } else if (e.data.messageType === "componentRangePieces") {
+          window["componentRangePieces" + pageNumber] = e.data.args.componentRangePieces;
         } else if (e.data.messageType === "inErrorState") {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true);
@@ -177,6 +182,21 @@ export default function PageViewer(props) {
       }
     });
   });
+  useEffect(() => {
+    if (hash && coreCreated.current && coreWorker.current) {
+      coreWorker.current.postMessage({
+        messageType: "navigatingToHash",
+        args: {
+          hash: hash.slice(1)
+        }
+      });
+    }
+  }, [hash, coreCreated.current, coreWorker.current]);
+  useEffect(() => {
+    if (documentRenderer) {
+      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+    }
+  }, [hash, documentRenderer]);
   function terminateCoreAndAnimations() {
     preventMoreAnimations.current = true;
     coreWorker.current.terminate();
@@ -204,7 +224,7 @@ export default function PageViewer(props) {
         componentName: action.componentName,
         args
       };
-      coreWorker.current.postMessage({
+      coreWorker.current?.postMessage({
         messageType: "requestAction",
         args: actionArgs
       });
@@ -484,6 +504,7 @@ export default function PageViewer(props) {
         userId: props.userId,
         doenetML,
         doenetId: props.doenetId,
+        previousComponentTypeCounts: props.previousComponentTypeCounts,
         activityCid: props.activityCid,
         flags: props.flags,
         requestedVariantIndex,
