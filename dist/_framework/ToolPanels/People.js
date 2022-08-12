@@ -227,7 +227,6 @@ function PeopleTableRow({numberOfVisibleColumns, label, columnsJSX = []}) {
   return /* @__PURE__ */ React.createElement("div", {
     className: "navigationRow noselect nooutline",
     style: {
-      cursor: "pointer",
       padding: "8px",
       border: "0px",
       borderBottom: "2px solid var(--canvastext)",
@@ -270,7 +269,6 @@ function PreviewTableRow({numberOfVisibleColumns, entryData, headers}) {
   return /* @__PURE__ */ React.createElement("div", {
     className: "navigationRow noselect nooutline",
     style: {
-      cursor: "pointer",
       padding: "8px",
       border: "0px",
       borderBottom: "2px solid var(--canvastext)",
