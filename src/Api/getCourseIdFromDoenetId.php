@@ -1,25 +1,25 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: access");
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Credentials: true");
-header("Content-Type: application/json");
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: access');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Credentials: true');
+header('Content-Type: application/json');
 
-include "db_connection.php";
-include "permissionsAndSettingsForOneCourseFunction.php";
+include 'db_connection.php';
+include 'permissionsAndSettingsForOneCourseFunction.php';
 
-$jwtArray = include "jwtArray.php";
-$userId = $jwtArray["userId"];
+$jwtArray = include 'jwtArray.php';
+$userId = $jwtArray['userId'];
 
 $success = true;
-$message = "";
+$message = '';
 
 // if (array_key_exists('driveId', get_defined_vars())) {
-$doenetId = mysqli_real_escape_string($conn, $_REQUEST["doenetId"]);
+$doenetId = mysqli_real_escape_string($conn, $_REQUEST['doenetId']);
 
-if ($doenetId == "") {
+if ($doenetId == '') {
     $success = false;
-    $message = "Internal Error: missing doenetId";
+    $message = 'Internal Error: missing doenetId';
 }
 
 if ($success) {
@@ -31,10 +31,10 @@ WHERE doenetId='$doenetId'
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $courseId = $row["courseId"];
+        $courseId = $row['courseId'];
     } else {
         $success = false;
-        $message = "Content not found or no permission to view content";
+        $message = 'Content not found or no permission to view content';
     }
 }
 
@@ -45,17 +45,17 @@ if ($success) {
         $courseId
     );
 
-    if ($permissions["canViewCourse"] != "1") {
+    if ($permissions == false) {
         $course = null;
         $success = false;
-        $message = "Content not found or no permission to view content";
+        $message = 'Content not found or no permission to view content';
     }
 }
 
 $response_arr = [
-    "success" => $success,
-    "message" => $message,
-    "courseId" => $courseId,
+    'success' => $success,
+    'message' => $message,
+    'courseId' => $courseId,
 ];
 
 http_response_code(200);

@@ -117,6 +117,8 @@ export function parseAndCompile(inText) {
 
       let tagName = inText.substring(cursor.from, cursor.to);
 
+      let tagBegin = cursor.from;
+
       let attrs = {};
       while (cursor.nextSibling()) {
         //All of the siblings must be Attributes, but we're checking just in case the grammar changes
@@ -147,7 +149,7 @@ export function parseAndCompile(inText) {
         cursor.parent();
       }
 
-      let range = { selfCloseBegin: cursor.from, selfCloseEnd: cursor.to };
+      let range = { selfCloseBegin: tagBegin, selfCloseEnd: cursor.to + 2 };
 
       // console.log(">>>toReturn", {componentType :  tagName, props : attrs, children : []});
 

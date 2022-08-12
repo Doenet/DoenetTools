@@ -12,7 +12,11 @@ import Checkbox from "../PanelHeaderComponents/Checkbox.js";
 import Increment from "../PanelHeaderComponents/IncrementMenu.js";
 import DropdownMenu from "../PanelHeaderComponents/DropdownMenu.js";
 import {useRecoilValue} from "../../_snowpack/pkg/recoil.js";
-import {enrollmentByCourseId, itemByDoenetId, useCourse} from "../Course/CourseActions.js";
+import {
+  peopleByCourseId,
+  itemByDoenetId,
+  useCourse
+} from "../Course/CourseActions.js";
 import axios from "../../_snowpack/pkg/axios.js";
 import RelatedItems from "../PanelHeaderComponents/RelatedItems.js";
 import ActionButtonGroup from "../PanelHeaderComponents/ActionButtonGroup.js";
@@ -40,13 +44,8 @@ const InputControl = styled.div`
 export const AssignUnassignActivity = ({doenetId, courseId}) => {
   const pageId = useRecoilValue(searchParamAtomFamily("pageId"));
   const {saveDraft} = useSaveDraft();
-  const {
-    compileActivity,
-    updateAssignItem
-  } = useCourse(courseId);
-  const {
-    isAssigned
-  } = useRecoilValue(itemByDoenetId(doenetId));
+  const {compileActivity, updateAssignItem} = useCourse(courseId);
+  const {isAssigned} = useRecoilValue(itemByDoenetId(doenetId));
   const addToast = useToast();
   let assignActivityText = "Assign Activity";
   if (isAssigned) {
@@ -91,7 +90,7 @@ export const AssignUnassignActivity = ({doenetId, courseId}) => {
     }
   }) : null);
 };
-export const AssignedDate = ({doenetId, courseId}) => {
+export const AssignedDate = ({doenetId, courseId, editable = false}) => {
   const addToast = useToast();
   const {
     value: {assignedDate: recoilValue},
@@ -753,7 +752,7 @@ export function AssignTo({courseId, doenetId}) {
   const {
     value: {isGloballyAssigned}
   } = useActivity(courseId, doenetId);
-  const {value: enrolledStudents} = useRecoilValue(enrollmentByCourseId(courseId));
+  const {value: enrolledStudents} = useRecoilValue(peopleByCourseId(courseId));
   const [restrictedTo, setRestrictedTo] = useState([]);
   async function getAndSetRestrictedTo({courseId: courseId2, doenetId: doenetId2}) {
     let resp = await axios.get("/api/getRestrictedTo.php", {

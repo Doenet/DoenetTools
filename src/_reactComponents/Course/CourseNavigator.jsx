@@ -32,9 +32,7 @@ import {
 } from 'recoil';
 
 import { 
-  authorCourseItemOrderByCourseId, 
   itemByDoenetId,
-  coursePermissionsAndSettingsByCourseId, 
   useInitCourseItems,
   selectedCourseItems,
   authorCourseItemOrderByCourseIdBySection,
@@ -48,9 +46,8 @@ import styled from 'styled-components';
 import '../../_utils/util.css';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { mainPanelClickAtom } from '../../Tools/_framework/Panels/NewMainPanel';  
-// import { useToast, toastType } from '../../Tools/_framework/Toast';
 import { selectedMenuPanelAtom } from '../../Tools/_framework/Panels/NewMenuPanel';
-import { effectiveRoleAtom } from '../PanelHeaderComponents/RoleDropdown';
+import { effectivePermissionsByCourseId } from '../PanelHeaderComponents/RoleDropdown';
 
 const ToggleCloseIconStyling = styled.button`
   border: none;
@@ -62,12 +59,11 @@ const ToggleCloseIconStyling = styled.button`
 `;
 
 export default function CourseNavigator(props) {
-  console.log("=== CourseNavigator")
+  // console.log("=== CourseNavigator")
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const sectionId = useRecoilValue(searchParamAtomFamily('sectionId'));
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
+  const {canEditContent} = useRecoilValue(effectivePermissionsByCourseId(courseId));
 
-  let coursePermissionsAndSettings = useRecoilValue(coursePermissionsAndSettingsByCourseId(courseId));
   useInitCourseItems(courseId);
   const [numberOfVisibleColumns,setNumberOfVisibleColumns] = useState(1);
   let setMainPanelClick = useSetRecoilState(mainPanelClickAtom);
@@ -94,15 +90,10 @@ export default function CourseNavigator(props) {
     })
   },[clearSelections, setMainPanelClick])
 
-
-  if (!coursePermissionsAndSettings){
-    return null;
-  }
-
-  if (coursePermissionsAndSettings.canEditContent == '0' || effectiveRole == 'student' || props.displayRole == 'student'){
+  if (canEditContent == '0' || props.displayRole == 'student'){
     return <StudentCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
-  if (coursePermissionsAndSettings.canEditContent == '1' || effectiveRole == 'instructor' || props.displayRole == 'instructor'){
+  if (canEditContent == '1' || props.displayRole == 'instructor'){
     return <AuthorCourseNavigation courseNavigatorProps={props} courseId={courseId} sectionId={sectionId} numberOfVisibleColumns={numberOfVisibleColumns} setNumberOfVisibleColumns={setNumberOfVisibleColumns} />
   }
   return null;

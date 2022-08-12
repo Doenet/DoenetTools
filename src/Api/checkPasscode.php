@@ -100,7 +100,7 @@ if ($success){
 
         $sql = "
         SELECT timeLimitMultiplier 
-        FROM enrollment 
+        FROM course_user 
         WHERE userId = '$userId'
         ";
         $result = $conn->query($sql);

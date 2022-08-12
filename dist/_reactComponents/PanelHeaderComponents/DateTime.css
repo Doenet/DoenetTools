@@ -14,6 +14,11 @@
   background-color: var(--mainBlue);
 }
 
+.form-control:focus {
+  outline: 2px solid var(--canvastext);
+  outline-offset: 2px;
+}
+
 .rdtPicker td.rdtToday:before {
   border-bottom: 7px solid var(--mainBlue);
 }

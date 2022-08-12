@@ -47,6 +47,40 @@ export default class MatchesPattern extends BooleanComponent {
     return attributes;
   }
 
+  static returnSugarInstructions() {
+    let sugarInstructions = [];
+
+    let wrapNonMathWithMath = function ({ matchedChildren, componentInfoObjects }) {
+
+      // if have no children or a single math, don't do anything
+      if (matchedChildren.length === 0 || 
+        matchedChildren.length === 1 && componentInfoObjects.componentIsSpecifiedType(matchedChildren[0], "math")
+        ) {
+        return { success: false }
+      }
+
+
+      return {
+        success: true,
+        newChildren: [
+          {
+            componentType: "math",
+            children: matchedChildren
+          },
+        ],
+      }
+
+    }
+
+    sugarInstructions.push({
+      replacementFunction: wrapNonMathWithMath
+    });
+
+    return sugarInstructions;
+  }
+
+
+
 
   static returnChildGroups() {
 
@@ -75,16 +109,16 @@ export default class MatchesPattern extends BooleanComponent {
         }
       }),
       definition({ dependencyValues }) {
+        let patternVariables = [];
         if (!dependencyValues.patternAttr) {
           return {
-            setValue: { pattern: '\uff3f' }
+            setValue: { pattern: '\uff3f', patternVariables }
           }
         }
 
         let originalVariablesInPattern = dependencyValues.patternAttr.stateValues.value.variables();
 
         let ind = 26 * 27 + 1; // starts with variable AAA
-        let patternVariables = [];
 
         function replacePatternVariables(tree) {
           if (tree === "\uff3f") {

@@ -14,9 +14,9 @@ export default class Label extends InlineComponent {
   static createAttributesObject() {
     let attributes = super.createAttributesObject();
 
-    attributes.forTarget = {
+    attributes.forObject = {
       createPrimitiveOfType: "string",
-      createStateVariable: "forTarget",
+      createStateVariable: "forObject",
       defaultValue: null,
       public: true,
     }
@@ -328,16 +328,16 @@ export default class Label extends InlineComponent {
       }
     }
 
-    stateVariableDefinitions.forTargetComponentName = {
-      stateVariablesDeterminingDependencies: ["forTarget"],
+    stateVariableDefinitions.forObjectComponentName = {
+      stateVariablesDeterminingDependencies: ["forObject"],
       returnDependencies: ({ stateValues }) => ({
-        forTargetComponentName: {
+        forObjectComponentName: {
           dependencyType: "expandTargetName",
-          target: stateValues.forTarget
+          target: stateValues.forObject
         }
       }),
       definition({ dependencyValues }) {
-        return { setValue: { forTargetComponentName: dependencyValues.forTargetComponentName } }
+        return { setValue: { forObjectComponentName: dependencyValues.forObjectComponentName } }
       }
 
     }

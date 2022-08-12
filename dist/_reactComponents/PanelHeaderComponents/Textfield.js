@@ -1,24 +1,34 @@
 import React, {useState, useEffect, useRef} from "../../_snowpack/pkg/react.js";
+import styled from "../../_snowpack/pkg/styled-components.js";
+const TextfieldStyling = styled.input`
+  margin: 0px 4px 0px 0px;
+  height: 24px;
+  border: 2px solid ${(props) => props.disabled ? "var(--mainGray)" : props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+  font-family: Arial;
+  border-radius: var(--mainBorderRadius);
+  color: var(--canvastext);
+  resize: none;
+  white-space: nowrap;
+  padding: 0px 5px 0px 5px;
+  line-height: 24px;
+  font-size: 14px;
+  background-color: var(--canvas);
+  cursor: ${(props) => props.disabled ? "not-allowed" : "auto"};
+  pointer-events: ${(props) => props.disabled ? "none" : "auto"};
+  width: ${(props) => props.inputWidth};
+  &:focus {
+    outline: 2px solid ${(props) => props.disabled ? "var(--mainGray)" : props.alert ? "var(--mainRed)" : "var(--canvastext)"};
+    outline-offset: 2px;
+  }
+`;
 export default function Textfield(props) {
   const labelVisible = props.label ? "static" : "none";
-  const align = props.vertical ? "static" : "flex";
+  const align = props.vertical ? "initial" : "flex";
   const [cursorStart, setCursorStart] = useState(0);
   const [cursorEnd, setCursorEnd] = useState(0);
   const inputRef = useRef(null);
-  var textfield = {
-    margin: "0px 4px 0px 0px",
-    height: "24px",
-    border: "var(--mainBorder)",
-    fontFamily: "Arial",
-    borderRadius: "var(--mainBorderRadius)",
-    color: "var(--canvastext)",
-    value: `${props.value}`,
-    resize: "none",
-    whiteSpace: "nowrap",
-    padding: "0px 5px 0px 5px",
-    lineHeight: "24px",
-    fontSize: "14px",
-    backgroundColor: "var(--canvas)"
+  var textfieldValue = {
+    value: `${props.value}`
   };
   var label = {
     value: "Label:",
@@ -36,36 +46,29 @@ export default function Textfield(props) {
     inputRef.current.selectionStart = cursorStart;
     inputRef.current.selectionEnd = cursorEnd;
   });
-  if (props.alert) {
-    textfield.border = "2px solid var(--mainRed)";
-  }
-  ;
   if (props.label) {
     label.value = props.label;
   }
   ;
   if (props.value) {
-    textfield.value = props.value;
+    textfieldValue.value = props.value;
   }
   ;
   if (props.placeholder) {
-    textfield.placeholder = props.placeholder;
-  }
-  ;
-  if (props.ariaLabel) {
-    textfield.ariaLabel = props.ariaLabel;
+    textfieldValue.placeholder = props.placeholder;
   }
   ;
   var disable = "";
+  var read_only = false;
   if (props.disabled) {
-    textfield.border = "2px solid var(--mainGray)";
-    textfield.cursor = "not-allowed";
     disable = "disabled";
+    read_only = true;
   }
   ;
+  var inputWidth = "";
   if (props.width) {
     if (props.width === "menu") {
-      textfield.width = "200px";
+      inputWidth = "200px";
       if (props.label) {
         container.width = "200px";
       }
@@ -92,14 +95,21 @@ export default function Textfield(props) {
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", {
     style: container
   }, /* @__PURE__ */ React.createElement("p", {
-    style: label
-  }, label.value), /* @__PURE__ */ React.createElement("input", {
+    style: label,
+    id: "textfield-label"
+  }, label.value), /* @__PURE__ */ React.createElement(TextfieldStyling, {
+    "aria-disabled": props.disabled ? true : false,
+    "aria-labelledby": "textfield-label",
     type: "text",
+    inputWidth,
+    readOnly: read_only,
+    alert: props.alert,
+    disabled: props.disabled,
     ref: inputRef,
     value: props.value,
-    placeholder: textfield.placeholder,
-    "aria-label": textfield.ariaLabel,
-    style: textfield,
+    placeholder: textfieldValue.placeholder,
+    "aria-label": textfieldValue.ariaLabel,
+    style: textfieldValue,
     onChange: (e) => {
       handleChange(e);
     },
@@ -108,8 +118,7 @@ export default function Textfield(props) {
     },
     onKeyDown: (e) => {
       handleKeyDown(e);
-    },
-    disabled: disable
+    }
   })));
 }
 ;

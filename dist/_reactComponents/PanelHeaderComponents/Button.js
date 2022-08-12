@@ -19,6 +19,11 @@ const ButtonStyling = styled.button`
     background-color: ${(props) => props.alert ? "var(--lightRed)" : "var(--lightBlue)"};
     color: black;
   };
+
+  &:focus {
+    outline: 2px solid ${(props) => props.alert ? "var(--mainRed)" : props.disabled ? "var(--canvastext)" : "var(--mainBlue)"};
+    outline-offset: 2px;
+  }
 `;
 ButtonStyling.defaultProps = {
   theme: {
@@ -101,6 +106,10 @@ export default function Button(props) {
     labelVisible,
     align
   }, label), /* @__PURE__ */ React.createElement(ButtonStyling, {
+    disabled: props.disabled,
+    "aria-disabled": props.disabled,
+    "aria-labelledby": label,
+    "aria-label": button.value,
     style: button,
     ...props,
     onClick: (e) => {

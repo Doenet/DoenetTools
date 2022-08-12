@@ -202,7 +202,7 @@ export default class Tabular extends BlockComponent {
     //   },
     //   returnEntryDimensions: prefix => prefix === "range" ? 2 : 1,
     //   containsComponentNamesToCopy: true,
-    //   targetAttributesToIgnoreOnCopy: ["rowNum", "colNum"],
+    //   sourceAttributesToIgnoreOnCopy: ["rowNum", "colNum"],
     //   returnWrappingComponents(prefix) {
     //     if (prefix === "cell") {
     //       return [];

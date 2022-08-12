@@ -37,8 +37,7 @@ export default React.memo(function Video(props) {
           autoplay: 0,
           controls: 1,
           modestbranding: 1,
-          rel: 0,
-          showinfo: 0
+          rel: 0
         },
         events: {
           onReady: onPlayerReady,
@@ -259,8 +258,8 @@ export default React.memo(function Video(props) {
     videoTag = /* @__PURE__ */ React.createElement("iframe", {
       id: name,
       style: videoStyle,
-      src: "https://www.youtube.com/embed/" + SVs.youtube + "?enablejsapi=1",
-      allow: "autoplay"
+      src: "https://www.youtube.com/embed/" + SVs.youtube + "?enablejsapi=1&rel=0&modestbranding=1",
+      allow: "autoplay; fullscreen"
     });
   } else if (SVs.source) {
     videoTag = /* @__PURE__ */ React.createElement("video", {

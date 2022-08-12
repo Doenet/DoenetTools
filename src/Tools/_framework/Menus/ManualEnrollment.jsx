@@ -3,33 +3,28 @@ import { nanoid } from 'nanoid';
 import axios from 'axios';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil';
-import {
-  processAtom,
-  enrolllearnerAtom,
-  enrollmentTableDataAtom,
-} from '../ToolPanels/Enrollment';
 import { searchParamAtomFamily } from '../NewToolRoot';
+import { enrolllearnerAtom, peopleTableDataAtom, processAtom } from './LoadPeople';
 
 export default function ManualEnrollment(props) {
   //array containing column names
   const setProcess = useSetRecoilState(processAtom);
   //array containing column data
-  const [enrolllearner,setEnrolllearner] = useRecoilState(enrolllearnerAtom);
-  const setEnrollmentTableData = useSetRecoilState(enrollmentTableDataAtom);
+  const [enrolllearner, setEnrolllearner] = useRecoilState(enrolllearnerAtom);
+  const setEnrollmentTableData = useSetRecoilState(peopleTableDataAtom);
 
   const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
 
-  const enrollManual = (enrolllearner,driveId) => {
+  const enrollManual = (enrolllearner, driveId) => {
     if (enrolllearner) {
       let payload = {
         email: enrolllearner,
         userId: nanoid(),
         driveId: driveId,
       };
-    console.log(">>>>payload",payload)
-    axios.post('/api/manualEnrollment.php', payload)
-    .then((resp) => {
-      console.log(">>>>resp",resp.data)
+      console.log('>>>>payload', payload);
+      axios.post('/api/manualEnrollment.php', payload).then((resp) => {
+        console.log('>>>>resp', resp.data);
         // axios.get('/api/getEnrollment.php', { params: { driveId } })
         //   .then((resp) => {
         //     console.log(">>>>resp",resp.data)
@@ -51,28 +46,28 @@ export default function ManualEnrollment(props) {
 
   let manualEnroll = (
     <div>
-      <label>Email
-      <input
-        required
-        type="email"
-        name="email"
-        value={enrolllearner}
-        placeholder="example@example.com"
-        onChange={(e)=>setEnrolllearner(e.currentTarget.value)}
-        onKeyDown={(e)=>{
-          if (e.key === 'Enter'){
-            enrollManual(enrolllearner,driveId)
-          }
-        }}
-      />
+      <label>
+        Email
+        <input
+          required
+          type="email"
+          name="email"
+          value={enrolllearner}
+          placeholder="example@example.com"
+          onChange={(e) => setEnrolllearner(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              enrollManual(enrolllearner, driveId);
+            }
+          }}
+        />
       </label>
-      <Button value="Enroll" onClick={() => enrollManual(enrolllearner,driveId)} />
+      <Button
+        value="Enroll"
+        onClick={() => enrollManual(enrolllearner, driveId)}
+      />
     </div>
   );
 
-  return (
-    <div style={props.style}>
-      {manualEnroll}
-    </div>
-  );
+  return <div style={props.style}>{manualEnroll}</div>;
 }

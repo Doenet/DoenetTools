@@ -1,7 +1,7 @@
-import { g as engineIsIos, h as engineIsNode, t as task$1, i as speciesConstructor, o as objectToArray, s as stringRepeat } from './common/es.string.starts-with-96c3abce.js';
-import { h as fails, _ as _export, aq as objectGetOwnPropertyNamesExternal, ar as defineWellKnownSymbol, as as setToStringTag, am as getBuiltIn, g as global_1, e as engineUserAgent, $ as functionBindContext, y as objectGetOwnPropertyDescriptor, R as wellKnownSymbol, i as isCallable, I as isForced_1, at as inspectSource, C as engineV8Version, D as aCallable, aa as internalState, K as defineBuiltIn, u as objectSetPrototypeOf, a9 as setSpecies, af as anInstance, m as functionCall, j as isObject$1, au as checkCorrectnessOfIteration, ag as iterate, n as anObject, av as mathTrunc, f as functionUncurryThis, H as toAbsoluteIndex } from './common/es.function.name-3b0da0e4.js';
+import { g as engineIsIos, h as engineIsNode, t as task$1, i as speciesConstructor, o as objectToArray, s as stringRepeat } from './common/es.string.starts-with-24653f71.js';
+import { h as fails, _ as _export, aq as objectGetOwnPropertyNamesExternal, ar as defineWellKnownSymbol, as as setToStringTag, am as getBuiltIn, g as global_1, e as engineUserAgent, $ as functionBindContext, y as objectGetOwnPropertyDescriptor, R as wellKnownSymbol, i as isCallable, I as isForced_1, at as inspectSource, C as engineV8Version, D as aCallable, aa as internalState, K as defineBuiltIn, u as objectSetPrototypeOf, a9 as setSpecies, af as anInstance, m as functionCall, j as isObject$1, au as checkCorrectnessOfIteration, ag as iterate, n as anObject, av as mathTrunc, f as functionUncurryThis, H as toAbsoluteIndex } from './common/es.function.name-c5ad53e4.js';
 import { c as createCommonjsModule, a as commonjsGlobal } from './common/_commonjsHelpers-f5d70792.js';
-import './common/es.string.ends-with-176c3fe0.js';
+import './common/es.string.ends-with-18505327.js';
 
 var getOwnPropertyNames = objectGetOwnPropertyNamesExternal.f;
 
@@ -46,7 +46,7 @@ var macrotask = task$1.set;
 
 
 var MutationObserver = global_1.MutationObserver || global_1.WebKitMutationObserver;
-var document = global_1.document;
+var document$1 = global_1.document;
 var process = global_1.process;
 var Promise$1 = global_1.Promise;
 // Node.js 11 shows ExperimentalWarning on getting `queueMicrotask`
@@ -76,9 +76,9 @@ if (!queueMicrotask) {
 
   // browsers with MutationObserver, except iOS - https://github.com/zloirock/core-js/issues/339
   // also except WebOS Webkit https://github.com/zloirock/core-js/issues/898
-  if (!engineIsIos && !engineIsNode && !engineIsWebosWebkit && MutationObserver && document) {
+  if (!engineIsIos && !engineIsNode && !engineIsWebosWebkit && MutationObserver && document$1) {
     toggle = true;
-    node = document.createTextNode('');
+    node = document$1.createTextNode('');
     new MutationObserver(flush).observe(node, { characterData: true });
     notify = function () {
       node.data = toggle = !toggle;
@@ -163,7 +163,12 @@ var queue = Queue;
 
 var promiseNativeConstructor = global_1.Promise;
 
-var engineIsBrowser = typeof window == 'object' && typeof Deno != 'object';
+/* global Deno -- Deno case */
+var engineIsDeno = typeof Deno == 'object' && Deno && typeof Deno.version == 'object';
+
+var engineIsBrowser = !engineIsDeno && !engineIsNode
+  && typeof window == 'object'
+  && typeof document == 'object';
 
 var NativePromisePrototype = promiseNativeConstructor && promiseNativeConstructor.prototype;
 var SPECIES = wellKnownSymbol('species');
@@ -180,18 +185,18 @@ var FORCED_PROMISE_CONSTRUCTOR = isForced_1('Promise', function () {
   // We can't use @@species feature detection in V8 since it causes
   // deoptimization and performance degradation
   // https://github.com/zloirock/core-js/issues/679
-  if (engineV8Version >= 51 && /native code/.test(PROMISE_CONSTRUCTOR_SOURCE)) return false;
-  // Detect correctness of subclassing with @@species support
-  var promise = new promiseNativeConstructor(function (resolve) { resolve(1); });
-  var FakePromise = function (exec) {
-    exec(function () { /* empty */ }, function () { /* empty */ });
-  };
-  var constructor = promise.constructor = {};
-  constructor[SPECIES] = FakePromise;
-  SUBCLASSING = promise.then(function () { /* empty */ }) instanceof FakePromise;
-  if (!SUBCLASSING) return true;
+  if (!engineV8Version || engineV8Version < 51 || !/native code/.test(PROMISE_CONSTRUCTOR_SOURCE)) {
+    // Detect correctness of subclassing with @@species support
+    var promise = new promiseNativeConstructor(function (resolve) { resolve(1); });
+    var FakePromise = function (exec) {
+      exec(function () { /* empty */ }, function () { /* empty */ });
+    };
+    var constructor = promise.constructor = {};
+    constructor[SPECIES] = FakePromise;
+    SUBCLASSING = promise.then(function () { /* empty */ }) instanceof FakePromise;
+    if (!SUBCLASSING) return true;
   // Unhandled rejections tracking support, NodeJS Promise without it fails @@species test
-  return !GLOBAL_CORE_JS_PROMISE && engineIsBrowser && !NATIVE_PROMISE_REJECTION_EVENT;
+  } return !GLOBAL_CORE_JS_PROMISE && (engineIsBrowser || engineIsDeno) && !NATIVE_PROMISE_REJECTION_EVENT;
 });
 
 var promiseConstructorDetection = {
@@ -241,12 +246,12 @@ var NativePromisePrototype$1 = promiseNativeConstructor && promiseNativeConstruc
 var PromiseConstructor = promiseNativeConstructor;
 var PromisePrototype = NativePromisePrototype$1;
 var TypeError$1 = global_1.TypeError;
-var document$1 = global_1.document;
+var document$2 = global_1.document;
 var process$1 = global_1.process;
 var newPromiseCapability$1 = newPromiseCapability.f;
 var newGenericPromiseCapability = newPromiseCapability$1;
 
-var DISPATCH_EVENT = !!(document$1 && document$1.createEvent && global_1.dispatchEvent);
+var DISPATCH_EVENT = !!(document$2 && document$2.createEvent && global_1.dispatchEvent);
 var UNHANDLED_REJECTION = 'unhandledrejection';
 var REJECTION_HANDLED = 'rejectionhandled';
 var PENDING = 0;
@@ -315,7 +320,7 @@ var notify$1 = function (state, isReject) {
 var dispatchEvent = function (name, promise, reason) {
   var event, handler;
   if (DISPATCH_EVENT) {
-    event = document$1.createEvent('Event');
+    event = document$2.createEvent('Event');
     event.promise = promise;
     event.reason = reason;
     event.initEvent(name, false, true);
