@@ -919,7 +919,6 @@ export const useCourse = (courseId) => {
           //Find last item in section
           let authorItemSectionDoenetIds = await snapshot.getPromise(authorCourseItemOrderByCourseIdBySection({courseId,sectionId}));
           let lastItemInSectionDoenetId = authorItemSectionDoenetIds[authorItemSectionDoenetIds.length - 1];
-
           parentDoenetId = sectionId; //parent when nothing selected will always be sectionId
           if (lastItemInSectionDoenetId == undefined){
             //No items in this section so parent and previous are the section
@@ -929,7 +928,7 @@ export const useCourse = (courseId) => {
             //Nothing selected 
             previousDoenetId = lastItemInSectionDoenetId; 
             let lastItemObj = await snapshot.getPromise(itemByDoenetId(lastItemInSectionDoenetId));
-            if (lastItemObj.type == 'page' || lastItemObj.type == 'order'){
+            if (lastItemObj.type == 'page' || lastItemObj.type == 'order' || lastItemObj.type == 'collectionAlias'){
               previousContainingDoenetId = lastItemObj.containingDoenetId;
             }else if (lastItemObj.type == 'activity' || lastItemObj.type == 'bank' || lastItemObj.type == 'section'){
               previousContainingDoenetId = lastItemObj.doenetId;
@@ -1018,7 +1017,7 @@ export const useCourse = (courseId) => {
               itemType,
               parentDoenetId,
           });
-          // console.log('bankData', data);
+          console.log('bankData', data);
           newDoenetId = data.doenetId;
           set(itemByDoenetId(data.doenetId), data.itemEntered);
           //Find index of previousDoenetId and insert the new item's doenetId right after
@@ -1353,7 +1352,6 @@ export const useCourse = (courseId) => {
   );
 
   const validateEmail = useValidateEmail();
-
 
   const addUser = useRecoilCallback(({set}) => async (email, options, successCallback, failureCallback = defaultFailure) => {
     try {
@@ -1801,8 +1799,6 @@ export const useCourse = (courseId) => {
 
     return orderDoenetIds;
   }
-
-  
 
   const updateCollectionAlias = useRecoilCallback(
     ({ set,snapshot }) =>
