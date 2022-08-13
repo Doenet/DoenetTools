@@ -20,6 +20,7 @@ import {
   // faUsersSlash,
   // faUsers,
   faCheck,
+  faShare,
   // faRightToBracket,
   faShareFromSquare,
   // faUserEdit,
@@ -336,15 +337,40 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
   return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
 
-function CollectionAlias({courseId,numberOfVisibleColumns,indentLevel,number=null,courseNavigatorProps,collectionAliasInfo}){
-  let {doenetId } = collectionAliasInfo;
-  let collectionAliasRecoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
-  console.log("navigation CollectionAlias: ",collectionAliasRecoilPageInfo)
+function CollectionAliasChildren({courseId, indentLevel, isManuallyFiltered,manuallyFilteredPages,collectionDoenetId}){
+  let pageAliasDoenetIds = useRecoilValue(itemByDoenetId(collectionDoenetId)).pages;
+  if (isManuallyFiltered){
+    pageAliasDoenetIds = manuallyFilteredPages;
+  }
+  let pageAliasesJSX = []
+  for (let [i,pageId] of pageAliasDoenetIds.entries()){
+    pageAliasesJSX.push(<PageAlias courseId={courseId} doenetId={pageId} number={i+1} indentLevel={indentLevel+1} />)
+  }
 
-  return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faShareFromSquare} label={collectionAliasRecoilPageInfo.label} doenetId={doenetId} indentLevel={indentLevel} numbered={number} isSelected={collectionAliasRecoilPageInfo.isSelected} isBeingCut={collectionAliasRecoilPageInfo.isBeingCut}/>
+  return <>{pageAliasesJSX}</>
 }
 
+function CollectionAlias({courseId,numberOfVisibleColumns,indentLevel,number=null,courseNavigatorProps,collectionAliasInfo}){
+  let { doenetId } = collectionAliasInfo;
+  let collectionAliasRecoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
 
+  let collectionAliasChildrenJSX = null;
+
+  if (collectionAliasRecoilPageInfo.isOpen){
+    collectionAliasChildrenJSX = <CollectionAliasChildren courseId={courseId} indentLevel={indentLevel} isManuallyFiltered={collectionAliasRecoilPageInfo.isManuallyFiltered} manuallyFilteredPages={collectionAliasRecoilPageInfo.manuallyFilteredPages} collectionDoenetId={collectionAliasRecoilPageInfo.collectionDoenetId} />
+  }
+
+  return <>
+  <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} hasToggle={true} isOpen={collectionAliasRecoilPageInfo.isOpen} numberOfVisibleColumns={numberOfVisibleColumns} icon={faShare} label={collectionAliasRecoilPageInfo.label} doenetId={doenetId} indentLevel={indentLevel} numbered={number} isSelected={collectionAliasRecoilPageInfo.isSelected} isBeingCut={collectionAliasRecoilPageInfo.isBeingCut}/>
+  {collectionAliasChildrenJSX}
+  </>
+}
+
+function PageAlias({courseId,doenetId,indentLevel,numberOfVisibleColumns,number=null,courseNavigatorProps}){
+  let recoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
+  //TODO: numbered
+  return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faShareFromSquare} label={`${recoilPageInfo.label} Page Alias`} doenetId={doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
+}
 
 function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false,courseNavigatorProps}){
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
@@ -496,6 +522,12 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
       }
     }
     set(selectedCourseItems,newSelectedItems);
+
+    if (newSelectedItems.length == 1){
+    let singleItem = await snapshot.getPromise(itemByDoenetId(newSelectedItems[0]));
+
+      console.log("singleItem",singleItem)
+    }
 
     courseNavigatorProps?.updateSelectMenu({selectedItems:newSelectedItems});
 

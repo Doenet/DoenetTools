@@ -162,7 +162,8 @@ export default function SelectedCollectionAlias() {
         width="menu"
         options={collectionsInCourseJSX}
         onChange={(e) => {
-          updateCollectionAlias({doenetId, collectionDoenetId:e.target.value, isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
+          //Clear out manual pages on change
+          updateCollectionAlias({doenetId, collectionDoenetId:e.target.value, isManuallyFiltered:false,manuallyFilteredPages:[]})
         }}
       />
       <br />
