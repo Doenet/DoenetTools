@@ -338,7 +338,10 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
 }
 
 function CollectionAliasChildren({courseId, indentLevel, isManuallyFiltered,manuallyFilteredPages,collectionDoenetId,courseNavigatorProps}){
-  let pageAliasDoenetIds = useRecoilValue(itemByDoenetId(collectionDoenetId)).pages;
+  let pageAliasDoenetIds = useRecoilValue(itemByDoenetId(collectionDoenetId))?.pages;
+  
+  if (!pageAliasDoenetIds){ return null; } 
+  
   if (isManuallyFiltered){
     pageAliasDoenetIds = manuallyFilteredPages;
   }
