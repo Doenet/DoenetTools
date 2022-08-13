@@ -21,8 +21,8 @@ import {
   // faUsers,
   faCheck,
   faShare,
-  // faRightToBracket,
   faShareFromSquare,
+  // faRightToBracket,
   // faUserEdit,
   // faLayerGroup,
 } from '@fortawesome/free-solid-svg-icons';
@@ -337,14 +337,14 @@ function Page({courseId,doenetId,activityDoenetId,numberOfVisibleColumns,indentL
   return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faCode} label={recoilPageInfo.label} doenetId={recoilPageInfo.doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
 
-function CollectionAliasChildren({courseId, indentLevel, isManuallyFiltered,manuallyFilteredPages,collectionDoenetId}){
+function CollectionAliasChildren({courseId, indentLevel, isManuallyFiltered,manuallyFilteredPages,collectionDoenetId,courseNavigatorProps}){
   let pageAliasDoenetIds = useRecoilValue(itemByDoenetId(collectionDoenetId)).pages;
   if (isManuallyFiltered){
     pageAliasDoenetIds = manuallyFilteredPages;
   }
   let pageAliasesJSX = []
   for (let [i,pageId] of pageAliasDoenetIds.entries()){
-    pageAliasesJSX.push(<PageAlias courseId={courseId} doenetId={pageId} number={i+1} indentLevel={indentLevel+1} />)
+    pageAliasesJSX.push(<PageAlias courseId={courseId} doenetId={pageId} number={i+1} indentLevel={indentLevel+1} courseNavigatorProps={courseNavigatorProps}/>)
   }
 
   return <>{pageAliasesJSX}</>
@@ -357,7 +357,7 @@ function CollectionAlias({courseId,numberOfVisibleColumns,indentLevel,number=nul
   let collectionAliasChildrenJSX = null;
 
   if (collectionAliasRecoilPageInfo.isOpen){
-    collectionAliasChildrenJSX = <CollectionAliasChildren courseId={courseId} indentLevel={indentLevel} isManuallyFiltered={collectionAliasRecoilPageInfo.isManuallyFiltered} manuallyFilteredPages={collectionAliasRecoilPageInfo.manuallyFilteredPages} collectionDoenetId={collectionAliasRecoilPageInfo.collectionDoenetId} />
+    collectionAliasChildrenJSX = <CollectionAliasChildren courseId={courseId} indentLevel={indentLevel} isManuallyFiltered={collectionAliasRecoilPageInfo.isManuallyFiltered} manuallyFilteredPages={collectionAliasRecoilPageInfo.manuallyFilteredPages} collectionDoenetId={collectionAliasRecoilPageInfo.collectionDoenetId} courseNavigatorProps={courseNavigatorProps}/>
   }
 
   return <>
@@ -368,11 +368,10 @@ function CollectionAlias({courseId,numberOfVisibleColumns,indentLevel,number=nul
 
 function PageAlias({courseId,doenetId,indentLevel,numberOfVisibleColumns,number=null,courseNavigatorProps}){
   let recoilPageInfo = useRecoilValue(itemByDoenetId(doenetId));
-  //TODO: numbered
-  return <Row courseId={courseId} courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faShareFromSquare} label={`${recoilPageInfo.label} Page Alias`} doenetId={doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
+  return <Row courseId={courseId} itemType="pageAlias" courseNavigatorProps={courseNavigatorProps} numberOfVisibleColumns={numberOfVisibleColumns} icon={faShareFromSquare} label={`${recoilPageInfo.label} Page Alias`} doenetId={doenetId} indentLevel={indentLevel} numbered={number} isSelected={recoilPageInfo.isSelected} isBeingCut={recoilPageInfo.isBeingCut}/>
 }
 
-function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false,courseNavigatorProps}){
+function Row({courseId,doenetId,itemType,numberOfVisibleColumns,columnsJSX=[],icon,label,isSelected=false,indentLevel=0,numbered,hasToggle=false,isOpen,isBeingCut=false,courseNavigatorProps}){
   const setSelectionMenu = useSetRecoilState(selectedMenuPanelAtom);
 
   let openCloseIndicator = null;
@@ -393,9 +392,8 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
     e.preventDefault();
     e.stopPropagation();
     let selectedItems = await snapshot.getPromise(selectedCourseItems);
-    console.log("selectedItems",selectedItems)
-    let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
-    console.log(`clickedItem type:"${clickedItem.type}" doenetId:"${clickedItem.doenetId}"`,clickedItem)
+    // let clickedItem = await snapshot.getPromise(itemByDoenetId(doenetId));
+    // console.log(`clickedItem type:"${clickedItem.type}" doenetId:"${clickedItem.doenetId}"`,clickedItem)
     
     let newSelectedItems = [];
 
@@ -521,15 +519,17 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
         }
       }
     }
-    set(selectedCourseItems,newSelectedItems);
-
+    let singleItem = null;
     if (newSelectedItems.length == 1){
-    let singleItem = await snapshot.getPromise(itemByDoenetId(newSelectedItems[0]));
-
-      console.log("singleItem",singleItem)
+      if (itemType == 'pageAlias'){
+        singleItem = {type:'pageAlias'} //Isn't entered into itemByDoenetId
+      }else{
+        singleItem = await snapshot.getPromise(itemByDoenetId(newSelectedItems[0]));
+      }
     }
 
-    courseNavigatorProps?.updateSelectMenu({selectedItems:newSelectedItems});
+    set(selectedCourseItems,newSelectedItems);
+    courseNavigatorProps?.updateSelectMenu({selectedItems:newSelectedItems,singleItem});
 
   },[doenetId, courseId, setSelectionMenu])
 

@@ -1,4 +1,4 @@
-import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
+import { faShare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -90,7 +90,7 @@ export default function SelectedCollectionAlias() {
 
   const addToast = useToast();
   let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
-    <FontAwesomeIcon icon={faLayerGroup} /> {itemObj.label} 
+    <FontAwesomeIcon icon={faShare} /> {itemObj.label} 
   </h2>)
 
 

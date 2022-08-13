@@ -1,97 +1,50 @@
-import { faLayerGroup } from '@fortawesome/free-solid-svg-icons';
+import { faShareFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { authorCollectionsByCourseId, itemByDoenetId, selectedCourseItems, useCourse } from '../../../_reactComponents/Course/CourseActions';
+import { itemByDoenetId, selectedCourseItems } from '../../../_reactComponents/Course/CourseActions';
+import { pageToolViewAtom } from '../NewToolRoot';
 import ActionButton from '../../../_reactComponents/PanelHeaderComponents/ActionButton';
-import { effectiveRoleAtom } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
-import Textfield from '../../../_reactComponents/PanelHeaderComponents/Textfield';
-import { pageToolViewAtom, searchParamAtomFamily } from '../NewToolRoot';
-import { useToast } from '../Toast';
-import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
-import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
-
-
-
+import ActionButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ActionButtonGroup';
 
 export default function SelectedPageAlias() {
   const setPageToolView = useSetRecoilState(pageToolViewAtom);
-  const effectiveRole = useRecoilValue(effectiveRoleAtom);
-  const doenetId = useRecoilValue(selectedCourseItems)[0];
-  const itemObj = useRecoilValue(itemByDoenetId(doenetId));
-  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
-  const { renameItem } = useCourse(courseId);
-  const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
-  let { create, deleteItem } = useCourse(courseId);
+  const pageId = useRecoilValue(selectedCourseItems)[0];
+  const pageObj = useRecoilValue(itemByDoenetId(pageId));
+  const containingObj = useRecoilValue(itemByDoenetId(pageObj.containingDoenetId));
+  const doenetId = containingObj.doenetId;
+  const [itemTextFieldLabel,setItemTextFieldLabel] = useState(pageObj.label)
 
   useEffect(()=>{
-    if (itemTextFieldLabel !== itemObj.label){
-      setItemTextFieldLabel(itemObj.label)
+    if (itemTextFieldLabel !== pageObj.label){
+      setItemTextFieldLabel(pageObj.label)
     }
-  },[doenetId])
+  },[pageId]) //Only check when the pageId changes
 
-  const handelLabelModfication = () => {
-    let effectiveItemLabel = itemTextFieldLabel;
-    if (itemTextFieldLabel === '') {
-      effectiveItemLabel = itemObj.label;
-      if (itemObj.label === ''){
-        effectiveItemLabel = 'Untitled';
-      }
 
-      setItemTextFieldLabel(effectiveItemLabel);
-      addToast('Every item must have a label.');
-    }
-    //Only update the server when it changes
-    if (itemObj.label !== effectiveItemLabel){
-      renameItem(doenetId,effectiveItemLabel)
-    }
-  };
-
-  const addToast = useToast();
   let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
-    <FontAwesomeIcon icon={faLayerGroup} /> {itemObj.label} 
+    <FontAwesomeIcon icon={faShareFromSquare} /> {pageObj.label} 
   </h2>)
-
-
-  if (effectiveRole === 'student') {
-    return null;
-  }
 
   
   return <>
   {heading}
-  <Textfield
-      label="Label"
-      vertical
-      width="menu"
-      value={itemTextFieldLabel}
-      onChange={(e) => setItemTextFieldLabel(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.keyCode === 13) handelLabelModfication();
-      }}
-      onBlur={handelLabelModfication}
-    />
-    <br />
-    <ButtonGroup vertical>
-      <Button
-        width="menu"
-        onClick={() =>
-          create({itemType:"page"})
-        }
-        value="Add Page"
-      />
-    </ButtonGroup>
-    <br />
-    <Button
-      width="menu"
-      value="Delete Collection"
-      alert
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      
-        deleteItem({doenetId});
-      }}
-    />
+  <ActionButtonGroup vertical>
+  <ActionButton
+          width="menu"
+          value="Edit Page"
+          onClick={() => {
+            setPageToolView({
+              page: 'course',
+              tool: 'editor',
+              view: '',
+              params: {
+                pageId,
+                doenetId,
+              },
+            });
+          }}
+        />
+  </ActionButtonGroup>
   </>
 }

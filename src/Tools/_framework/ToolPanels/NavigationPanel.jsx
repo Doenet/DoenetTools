@@ -87,23 +87,22 @@ export default function NavigationPanel() {
 
   const updateSelectMenu = useRecoilCallback(
     ({ set, snapshot }) =>
-      async ({ selectedItems }) => {
-        if (selectedItems.length == 1) {
-          let selectedDoenetId = selectedItems[0];
-          let selectedItem = await snapshot.getPromise(itemByDoenetId(selectedDoenetId));
-          if (selectedItem.type == "activity"){
+      async ({ singleItem }) => {
+
+        if (singleItem !== null) {
+          if (singleItem.type == "activity"){
             set(selectedMenuPanelAtom,"SelectedActivity");
-          }else if (selectedItem.type == "order"){
+          }else if (singleItem.type == "order"){
             set(selectedMenuPanelAtom,"SelectedOrder");
-          }else if (selectedItem.type == "page"){
+          }else if (singleItem.type == "page"){
             set(selectedMenuPanelAtom,"SelectedPage");
-          }else if (selectedItem.type == "section"){
+          }else if (singleItem.type == "section"){
             set(selectedMenuPanelAtom,"SelectedSection");
-          }else if (selectedItem.type == "bank"){
+          }else if (singleItem.type == "bank"){
             set(selectedMenuPanelAtom,"SelectedBank");
-          }else if (selectedItem.type == "collectionAlias"){
+          }else if (singleItem.type == "collectionAlias"){
             set(selectedMenuPanelAtom,"SelectedCollectionAlias");
-          }else if (selectedItem.type == "pageAlias"){
+          }else if (singleItem.type == "pageAlias"){
             set(selectedMenuPanelAtom,"SelectedPageAlias");
           }else{
             set(selectedMenuPanelAtom,null);
