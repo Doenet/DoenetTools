@@ -10,6 +10,7 @@ import { useToast } from '../Toast';
 import ButtonGroup from '../../../_reactComponents/PanelHeaderComponents/ButtonGroup';
 import Button from '../../../_reactComponents/PanelHeaderComponents/Button';
 import RelatedItems from '../../../_reactComponents/PanelHeaderComponents/RelatedItems';
+import Checkbox from '../../../_reactComponents/PanelHeaderComponents/Checkbox';
 import { effectivePermissionsByCourseId } from '../../../_reactComponents/PanelHeaderComponents/RoleDropdown';
 
 function CollectionSelectionOptions({courseId,selectedDoenetId}){
@@ -26,18 +27,42 @@ function CollectionSelectionOptions({courseId,selectedDoenetId}){
   return <>{CollectionOptionsJSX}</>
 }
 
+function PageOption({selected,i,pageId}){
+  let pageObj = useRecoilValue(itemByDoenetId(pageId));
+  if (selected){
+    return <option selected key={`PagesInACollection${i}`} value={pageId}>{pageObj.label}</option>
+  }else{
+    return <option key={`PagesInACollection${i}`} value={pageId}>{pageObj.label}</option>
+  }
+}
+
+function PagesInACollectionOptions({doenetId,manuallyFilteredPages=[]}){
+  let collectionItemObj = useRecoilValue(itemByDoenetId(doenetId));
+  let PageOptionsJSX = []
+  let pages = collectionItemObj?.pages ? collectionItemObj?.pages : []
+  for (let [i,pageId] of pages.entries()){
+    if (manuallyFilteredPages.includes(pageId)){
+      PageOptionsJSX.push(<PageOption selected i={i} pageId={pageId} />)
+    }else{
+      PageOptionsJSX.push(<PageOption i={i} pageId={pageId} />)
+    }
+
+  }
+  return <>{PageOptionsJSX}</>
+}
+
 export default function SelectedCollectionAlias() {
   // const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const doenetId = useRecoilValue(selectedCourseItems)[0];
   const itemObj = useRecoilValue(itemByDoenetId(doenetId));
-  console.log("itemObj",itemObj)
   const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   const { canEditContent } = useRecoilValue(
     effectivePermissionsByCourseId(courseId),
   );
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
   let { deleteItem, renameItem, updateCollectionAlias } = useCourse(courseId);
+  
 
   useEffect(()=>{
     if (itemTextFieldLabel !== itemObj.label){
@@ -75,6 +100,47 @@ export default function SelectedCollectionAlias() {
 
  let collectionsInCourseJSX = <CollectionSelectionOptions courseId={courseId} selectedDoenetId={itemObj.collectionDoenetId} />
 
+ let pageAliasesJSX = null;
+ 
+ if (itemObj.collectionDoenetId){
+   
+   let pagesFromCollectionJSX = <PagesInACollectionOptions doenetId={itemObj.collectionDoenetId} manuallyFilteredPages={itemObj.manuallyFilteredPages} />;
+
+  pageAliasesJSX = <><div style={{display: "flex"}}>
+  <Checkbox
+    style={{ marginRight: '5px' }}
+    checked={itemObj.isManuallyFiltered}
+    onClick={()=>{
+      updateCollectionAlias({doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:!itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
+    }}
+/>Filter Page Aliases</div>
+    <RelatedItems
+      width="menu"
+      options={pagesFromCollectionJSX}
+      disabled={!itemObj.isManuallyFiltered}
+      onChange={(e) => {
+        let values = Array.from(
+            e.target.selectedOptions,
+            (option) => option.value,
+          );
+      updateCollectionAlias({doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:values})
+
+          // setManuallyFilteredPages(values)
+      // updateOrderBehavior({doenetId, behavior, numberToSelect, withReplacement, restrictPages:!restrictPages, selectedCollectionDoenetId, restrictToThesePages:values})
+
+        // //TODO: Clara please build this in to RelatedItems
+        // let emailAddresses = Array.from(
+        //   e.target.selectedOptions,
+        //   (option) => option.value,
+        // );
+        // updateRestrictedTo({ courseId, doenetId, emailAddresses });
+      }}
+      multiple
+    />
+    <br />
+    </>
+ }
+
   
   return <>
   {heading}
@@ -90,15 +156,17 @@ export default function SelectedCollectionAlias() {
       onBlur={handelLabelModfication}
     />
     <br />
+    <br />
     <div>collection</div>
   <RelatedItems
         width="menu"
         options={collectionsInCourseJSX}
         onChange={(e) => {
-          console.log("SELECTED ",e.target.value)
-          updateCollectionAlias({doenetId, collectionDoenetId:e.target.value})
+          updateCollectionAlias({doenetId, collectionDoenetId:e.target.value, isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
         }}
       />
+      <br />
+      {pageAliasesJSX}
       <br />
     <Button
       width="menu"

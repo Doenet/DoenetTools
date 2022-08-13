@@ -928,7 +928,7 @@ export const useCourse = (courseId) => {
             //Nothing selected 
             previousDoenetId = lastItemInSectionDoenetId; 
             let lastItemObj = await snapshot.getPromise(itemByDoenetId(lastItemInSectionDoenetId));
-            if (lastItemObj.type == 'page' || lastItemObj.type == 'order' || lastItemObj.type == 'collectionAlias'){
+            if (lastItemObj.type == 'page' || lastItemObj.type == 'order' || lastItemObj.type == 'collectionAlias' || lastItemObj.type == 'pageAlias'){
               previousContainingDoenetId = lastItemObj.containingDoenetId;
             }else if (lastItemObj.type == 'activity' || lastItemObj.type == 'bank' || lastItemObj.type == 'section'){
               previousContainingDoenetId = lastItemObj.doenetId;
@@ -1807,7 +1807,7 @@ export const useCourse = (courseId) => {
         let collectionAliasObj = await snapshot.getPromise(itemByDoenetId(doenetId));
         let activityObj = await snapshot.getPromise(itemByDoenetId(collectionAliasObj.containingDoenetId))
 
-        let changesObj = {collectionDoenetId};
+        let changesObj = {collectionDoenetId,isManuallyFiltered,manuallyFilteredPages};
         let newJSON = updateAssignmentCollectionAlias({content:activityObj.content,needleDoenetId:doenetId,changesObj});
         // console.log("newJSON",newJSON)
         let { data } = await axios.post('/api/updateActivityStructure.php', {
