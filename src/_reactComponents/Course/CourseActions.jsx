@@ -1781,6 +1781,38 @@ export const useCourse = (courseId) => {
     //Didn't find needle
     return null;
   }
+
+  function deleteCollectionAliasFromContent({content,needleDoenetId}){
+    let nextContent = [...content];
+
+    let index = null;
+
+    for (let [i,item] of Object.entries(content)){
+      
+      //Check for match
+      if (needleDoenetId == item.doenetId){
+        index = i;
+        break;
+      }
+      if (item?.type == 'order'){ 
+        //if not a match then recurse into content
+        let childContent = deleteCollectionAliasFromContent({content:item.content,needleDoenetId});
+        if (childContent != null){
+          let nextOrder = {...item}
+          nextOrder.content = [...childContent]
+          nextContent.splice(i,1,nextOrder);
+          return nextContent;
+        }
+      }
+    }
+    //Need to return order object without the doenetId of the page to delete
+    if (index != null){
+      nextContent.splice(index,1);
+      return nextContent
+    }
+    //Didn't find needle
+    return null;
+  }
   
   function findOrderIdsInAnOrder({content,needleOrderDoenetId,foundNeedle=false}){
     let orderDoenetIds = [];
@@ -1901,14 +1933,10 @@ export const useCourse = (courseId) => {
           activitiesJsonDoenetIds.push(containingObj.doenetId);
         }else if (itemToDeleteObj.type == 'collectionAlias'){
           let containingObj = await snapshot.getPromise(itemByDoenetId(itemToDeleteObj.containingDoenetId))
-          //Find doenentIds of pages contained by the order
-          // pagesDoenetIds = findPageDoenetIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:itemToDeleteObj.doenetId})
-          // orderDoenetIds = findOrderIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:doenetId})
-          //Find updated activities' default order
-          let nextOrder = deleteOrderFromContent({content:containingObj.content,needleDoenetId:doenetId})
+          let nextOrder = deleteCollectionAliasFromContent({content:containingObj.content,needleDoenetId:doenetId})
           console.log("nextOrder",nextOrder)
-          // activitiesJson.push(nextOrder);
-          // activitiesJsonDoenetIds.push(containingObj.doenetId);
+          activitiesJson.push(nextOrder);
+          activitiesJsonDoenetIds.push(containingObj.doenetId);
         }else if (itemToDeleteObj.type == 'bank'){
           baseCollectionsDoenetIds.push(doenetId);
           pagesDoenetIds = itemToDeleteObj.pages;

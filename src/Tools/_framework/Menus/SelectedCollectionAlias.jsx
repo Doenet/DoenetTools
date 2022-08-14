@@ -179,7 +179,7 @@ export default function SelectedCollectionAlias() {
         e.preventDefault();
         e.stopPropagation();
         console.log("delete ",doenetId)
-        // deleteItem({doenetId});
+        deleteItem({doenetId});
       }}
     />
   </>
