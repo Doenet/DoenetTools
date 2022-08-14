@@ -1899,6 +1899,16 @@ export const useCourse = (courseId) => {
           let nextOrder = deleteOrderFromContent({content:containingObj.content,needleDoenetId:doenetId})
           activitiesJson.push(nextOrder);
           activitiesJsonDoenetIds.push(containingObj.doenetId);
+        }else if (itemToDeleteObj.type == 'collectionAlias'){
+          let containingObj = await snapshot.getPromise(itemByDoenetId(itemToDeleteObj.containingDoenetId))
+          //Find doenentIds of pages contained by the order
+          // pagesDoenetIds = findPageDoenetIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:itemToDeleteObj.doenetId})
+          // orderDoenetIds = findOrderIdsInAnOrder({content:containingObj.content,needleOrderDoenetId:doenetId})
+          //Find updated activities' default order
+          let nextOrder = deleteOrderFromContent({content:containingObj.content,needleDoenetId:doenetId})
+          console.log("nextOrder",nextOrder)
+          // activitiesJson.push(nextOrder);
+          // activitiesJsonDoenetIds.push(containingObj.doenetId);
         }else if (itemToDeleteObj.type == 'bank'){
           baseCollectionsDoenetIds.push(doenetId);
           pagesDoenetIds = itemToDeleteObj.pages;
