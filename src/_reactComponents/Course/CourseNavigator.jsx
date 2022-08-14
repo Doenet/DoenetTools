@@ -687,13 +687,13 @@ function Row({courseId,doenetId,itemType,numberOfVisibleColumns,columnsJSX=[],ic
 }
 
 function getColumnsCSS(numberOfVisibleColumns){
-  let columnsCSS = '250px repeat(4,1fr)'; //5 columns max
+  let columnsCSS = '300px repeat(4,1fr)'; //5 columns max
   if (numberOfVisibleColumns === 4) {
-    columnsCSS = '250px repeat(3,1fr)';
+    columnsCSS = '300px repeat(3,1fr)';
   } else if (numberOfVisibleColumns === 3) {
-    columnsCSS = '250px 1fr 1fr';
+    columnsCSS = '300px 1fr 1fr';
   } else if (numberOfVisibleColumns === 2) {
-    columnsCSS = '250px 1fr';
+    columnsCSS = '300px 1fr';
   } else if (numberOfVisibleColumns === 1) {
     columnsCSS = '100%';
   }
