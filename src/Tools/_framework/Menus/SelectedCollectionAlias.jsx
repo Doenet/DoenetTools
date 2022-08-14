@@ -61,7 +61,7 @@ export default function SelectedCollectionAlias() {
     effectivePermissionsByCourseId(courseId),
   );
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
-  let { deleteItem, renameItem, updateCollectionAlias } = useCourse(courseId);
+  let { deleteItem, updateCollectionAlias } = useCourse(courseId);
   
 
   useEffect(()=>{
@@ -85,6 +85,8 @@ export default function SelectedCollectionAlias() {
     if (itemObj.label !== effectiveItemLabel){
       console.log("Rename",doenetId,effectiveItemLabel)
       // renameItem(doenetId,effectiveItemLabel)
+      updateCollectionAlias({doenetId, label:effectiveItemLabel, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
+
     }
   };
 

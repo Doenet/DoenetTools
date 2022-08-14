@@ -1802,12 +1802,12 @@ export const useCourse = (courseId) => {
 
   const updateCollectionAlias = useRecoilCallback(
     ({ set,snapshot }) =>
-      async ({doenetId, collectionDoenetId, isManuallyFiltered, manuallyFilteredPages=[], successCallback, failureCallback = defaultFailure}) => {
+      async ({doenetId, label, collectionDoenetId, isManuallyFiltered, manuallyFilteredPages=[], successCallback, failureCallback = defaultFailure}) => {
 
         let collectionAliasObj = await snapshot.getPromise(itemByDoenetId(doenetId));
         let activityObj = await snapshot.getPromise(itemByDoenetId(collectionAliasObj.containingDoenetId))
 
-        let changesObj = {collectionDoenetId,isManuallyFiltered,manuallyFilteredPages};
+        let changesObj = {label,collectionDoenetId,isManuallyFiltered,manuallyFilteredPages};
         let newJSON = updateAssignmentCollectionAlias({content:activityObj.content,needleDoenetId:doenetId,changesObj});
         // console.log("newJSON",newJSON)
         let { data } = await axios.post('/api/updateActivityStructure.php', {
@@ -1825,6 +1825,9 @@ export const useCourse = (courseId) => {
           next.isManuallyFiltered = isManuallyFiltered;
           next.collectionDoenetId = collectionDoenetId;
           next.manuallyFilteredPages = [...manuallyFilteredPages];
+          if(label){
+            next.label = label;
+          }
           return next;
         });
   });
