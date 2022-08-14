@@ -178,11 +178,13 @@ export default function SelectedActivity() {
             width="menu"
             onClick={() => create({ itemType: 'page' })}
             value="Add Page"
+            data-test="Add Page"
           />
           <Button
             width="menu"
             onClick={() => create({ itemType: 'order' })}
             value="Add Order"
+            data-test="Add Order"
           />
         </ButtonGroup>
         <br />
@@ -191,6 +193,7 @@ export default function SelectedActivity() {
         <Button
           width="menu"
           value="Delete Activity"
+          data-test="Delete Activity"
           alert
           onClick={(e) => {
             e.preventDefault();
@@ -208,7 +211,7 @@ export default function SelectedActivity() {
       {heading}
       <ActionButton
         width="menu"
-        data-test="Edit Activity"
+        data-test="View Activity"
         value="View Activity"
         onClick={() => {
           setPageToolView({

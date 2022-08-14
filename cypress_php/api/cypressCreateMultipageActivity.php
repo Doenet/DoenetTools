@@ -8,15 +8,17 @@ header('Content-Type: application/json');
 include '../api/db_connection.php';
 include "../api/lexicographicalRankingSort.php";
 
+$_POST = json_decode(file_get_contents('php://input'), true);
+
 $message = "";
 $success = TRUE;
-$courseId = $_REQUEST['courseId'];
-$doenetId = $_REQUEST['doenetId'];
-$parentDoenetId = $_REQUEST['parentDoenetId'];
-$pageDoenetId1 = $_REQUEST['pageDoenetId1'];
-$pageDoenetId2 = $_REQUEST['pageDoenetId2'];
-$doenetML1 = $_REQUEST['doenetML1'];
-$doenetML2 = $_REQUEST['doenetML2'];
+$courseId = $_POST['courseId'];
+$doenetId = $_POST['doenetId'];
+$parentDoenetId = $_POST['parentDoenetId'];
+$pageDoenetId1 = $_POST['pageDoenetId1'];
+$pageDoenetId2 = $_POST['pageDoenetId2'];
+$doenetML1 = $_POST['doenetML1'];
+$doenetML2 = $_POST['doenetML2'];
 
 if ($parentDoenetId == ""){
   $parentDoenetId = $courseId;

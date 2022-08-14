@@ -64,7 +64,7 @@ it('Page Variant Menu Test',()=>{
 
 })
 
-it('Assign Activity Test using Toast',()=>{
+it('Assign activity and navigate directly to URL',()=>{
   const doenetMLString = '<problem name="problem1"><answer>42</answer></problem>'
 
   cy.get('.cm-content').type(doenetMLString)
@@ -81,7 +81,7 @@ it('Assign Activity Test using Toast',()=>{
 })
 
 
-it('Assign Activity Test using Breadcrumbs',()=>{
+it('Assign activity and navigate using Breadcrumbs',()=>{
   const doenetMLString = '<problem name="problem1"><answer>42</answer></problem>'
 
   cy.get('.cm-content').type(doenetMLString)

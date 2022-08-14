@@ -77,15 +77,19 @@ export default function ActivityViewer(props) {
   const pageAtPreviousSave = useRef(null);
 
 
+  const [pageInfo, setPageInfo] = useState({
+    pageIsVisible: [],
+    pageIsActive: [],
+    pageHasCore: [],
+    waitingForPagesCore: null
+  })
 
-  const [pageIsVisible, setPageIsVisible] = useState([]);
-  const [pageIsActive, setPageIsActive] = useState([]);
-  const [pageHasCore, setPageHasCore] = useState([]);
-
-  const [waitingForPagesCore, setWaitingForPagesCore] = useState(null);
 
   const prerenderedPages = useRef([])
   const allPagesPrerendered = useRef(false);
+
+  const nodeRef = useRef(null);
+  const ignoreNextScroll = useRef(false);
 
   let { hash, search } = useLocation();
 
@@ -129,29 +133,41 @@ export default function ActivityViewer(props) {
     // for non-paginated activity
     // set the current page to be the page at the top of the screen
     // will be used to set the url hash
-    if (!props.paginate && nPages > 1) {
-      window.addEventListener('scroll', (event) => {
+
+    if (!props.paginate && nPages > 1 && nodeRef.current) {
+
+      let scrollableContainer = nodeRef.current.parentNode.id === "mainPanel"
+        ? nodeRef.current.parentNode : window
+
+      scrollableContainer.addEventListener('scroll', (event) => {
         // find page that is at the top
-        let topPage;
-        for (let ind = 0; ind < nPages - 1; ind++) {
-          let thePage = document.getElementById(`page${ind + 1}`);
-          if (thePage) {
-            let { bottom } = thePage.getBoundingClientRect();
-            if (bottom < 0) {
-              topPage = ind + 2;
-            } else if (!topPage) {
-              topPage = 1;
+
+        if (ignoreNextScroll.current) {
+          ignoreNextScroll.current = false;
+
+        } else {
+
+          let topPage;
+          for (let ind = 0; ind < nPages - 1; ind++) {
+            let thePage = document.getElementById(`page${ind + 1}`);
+            if (thePage) {
+              let { bottom } = thePage.getBoundingClientRect();
+              if (bottom < 50) {
+                topPage = ind + 2;
+              } else if (!topPage) {
+                topPage = 1;
+              }
             }
           }
-        }
 
-        if (topPage && topPage !== currentPageRef.current) {
-          setCurrentPage(topPage)
+          if (topPage && topPage !== currentPageRef.current) {
+            setCurrentPage(topPage)
+          }
         }
 
       })
     }
-  }, [nPages])
+  }, [nodeRef.current, nPages])
 
   useEffect(() => {
     props.pageChangedCallback?.(currentPage);
@@ -176,13 +192,9 @@ export default function ActivityViewer(props) {
   }, [currentPage])
 
   useEffect(() => {
-
-    // BADBAD: there must be a better and more robust way of doing this than
-    // using a timeout with an arbitrary 500 ms delay!
     if (allPagesPrerendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
-      setTimeout(() => {
-        document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
-      }, 500);
+      ignoreNextScroll.current = true;
+      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
     }
   }, [allPagesPrerendered.current])
 
@@ -1039,36 +1051,45 @@ export default function ActivityViewer(props) {
   function onChangeVisibility(isVisible, pageInd) {
 
     if (!props.paginate) {
-      setPageIsVisible(was => {
-        let newArray = [...was];
-        newArray[pageInd] = isVisible;
-        return newArray;
+
+      setPageInfo(was => {
+        let newObj = { ...was };
+        let newVisible = [...newObj.pageIsVisible];
+        newVisible[pageInd] = isVisible;
+        newObj.pageIsVisible = newVisible;
+
+        if (!isVisible && newObj.pageIsActive[pageInd]) {
+          let newActive = [...newObj.pageIsActive];
+          newActive[pageInd] = false;
+          newObj.pageIsActive = newActive;
+
+          if (newObj.waitingForPagesCore === pageInd) {
+            newObj.waitingForPagesCore = null;
+          }
+        }
+
+        return newObj;
+
       })
 
-      if (!isVisible && pageIsActive[pageInd]) {
-        setPageIsActive(was => {
-          let newArray = [...was];
-          newArray[pageInd] = false;
-          return newArray;
-        })
-
-        if (waitingForPagesCore === pageInd) {
-          setWaitingForPagesCore(null);
-        }
-      }
     }
 
   }
 
   function coreCreatedCallback(pageInd) {
-    if (waitingForPagesCore === pageInd) {
-      setWaitingForPagesCore(null);
-    }
-    setPageHasCore(was => {
-      let newArray = [...was];
-      newArray[pageInd] = true;
-      return newArray;
+    setPageInfo(was => {
+      let newObj = { ...was };
+      if (newObj.waitingForPagesCore === pageInd) {
+        newObj.waitingForPagesCore = null;
+      }
+      let newHasCore = [...newObj.pageHasCore];
+      newHasCore[pageInd] = true;
+      newObj.pageHasCore = newHasCore;
+
+      return newObj;
+
     })
+
   }
 
   function pagePrerenderedCallback(pageInd, success) {
@@ -1087,20 +1108,36 @@ export default function ActivityViewer(props) {
     return <div style={{ fontSize: "1.3em", marginLeft: "20px", marginTop: "20px" }}>{errorIcon} {errMsg}</div>
   }
 
-  if (waitingForPagesCore === null) {
-    for (let [pageInd, isVisible] of pageIsVisible.entries()) {
-      if (isVisible && !pageIsActive[pageInd]) {
-        // if we find an inactive page that is visible
-        setPageIsActive(was => {
-          let newArray = [...was];
-          newArray[pageInd] = true;
-          return newArray;
-        })
-        if (!pageHasCore[pageInd]) {
+  if (pageInfo.waitingForPagesCore === null) {
+
+    // check current page first
+    if (currentPage) {
+      for (let pageInd of [currentPage - 1, ...Array(nPages).keys()]) {
+        let isVisible = pageInfo.pageIsVisible[pageInd];
+        if ((isVisible || currentPage === pageInd + 1) && !pageInfo.pageIsActive[pageInd]) {
+
+          // activate either the current page or an inactive page that is visible
+
           // if we need to create core
           // then stop here to not create multiple cores at once
-          setWaitingForPagesCore(pageInd);
-          break;
+          let waitingAgain = !pageInfo.pageHasCore[pageInd];
+
+          setPageInfo(was => {
+            let newObj = { ...was };
+            let newActive = [...newObj.pageIsActive];
+            newActive[pageInd] = true;
+            newObj.pageIsActive = newActive;
+            if (!newObj.pageHasCore[pageInd]) {
+              newObj.waitingForPagesCore = pageInd;
+            }
+            return newObj;
+          })
+
+
+          if (waitingAgain) {
+            break;
+          }
+
         }
       }
     }
@@ -1207,7 +1244,7 @@ export default function ActivityViewer(props) {
       itemNumber = 0;
     }
 
-    let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageIsActive[ind];
+    let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageInfo.pageIsActive[ind];
 
     let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
 
@@ -1267,7 +1304,7 @@ export default function ActivityViewer(props) {
     </>
   }
 
-  return <div style={{ paddingBottom: "50vh" }} id="activityTop">
+  return <div style={{ paddingBottom: "50vh" }} id="activityTop" ref={nodeRef}>
     {cidChangedAlert}
     {pageControls}
     {title}

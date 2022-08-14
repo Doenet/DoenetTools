@@ -28,9 +28,6 @@ export default React.memo(function Ref(props) {
     } else {
       url = `doenetId=${SVs.doenetId}`
     }
-    if (SVs.pageNumber) {
-      url += `&page=${SVs.pageNumber}`
-    }
     if (SVs.variantIndex) {
       url += `&variant=${SVs.variantIndex}`;
     }
@@ -52,13 +49,15 @@ export default React.memo(function Ref(props) {
 
     haveValidTarget = true;
 
-    if (SVs.targetName) {
+    if (SVs.hash) {
+      url += SVs.hash;
+    } else {
       if (SVs.page) {
         url += `#page${SVs.page}`
-      } else {
-        url += "#page1"
       }
-      url += SVs.targetName;
+      if (SVs.targetName) {
+        url += SVs.targetName;
+      }
     }
   } else if (SVs.uri) {
     url = SVs.uri;

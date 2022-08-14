@@ -9696,8 +9696,7 @@ export default class Core {
     this.saveStateToDBTimerId = setTimeout(() => {
       this.saveStateToDBTimerId = null;
       this.saveChangesToDatabase();
-    }, 10000);
-    // }, 60000);
+    }, 60000);
 
 
     // TODO: find out how to test if not online
