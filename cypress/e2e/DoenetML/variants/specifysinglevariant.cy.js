@@ -306,7 +306,7 @@ describe('Specifying single variant document tests', function () {
       win.postMessage({
         doenetML: `
     <p>
-      <text>g</text>
+      <text>g2</text>
       Selected number: 
       <selectfromsequence assignnames="n" length="10000000000" />
     </p>
@@ -315,7 +315,7 @@ describe('Specifying single variant document tests', function () {
       }, "*");
     });
     // to wait for page to load
-    cy.get('#\\/_text1').should('have.text', `g`)
+    cy.get('#\\/_text1').should('have.text', `g2`)
     cy.window().then(async (win) => {
       let stateVariables = await win.returnAllStateVariables1();
       expect(stateVariables['/n'].stateValues.value).eq(nWithIndex2);

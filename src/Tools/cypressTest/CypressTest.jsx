@@ -85,11 +85,14 @@ function Test() {
       localStorage.setItem("test settings", JSON.stringify(testSettings))
     }
 
-    setBaseState({
-      doenetML: newDoenetML,
-      activityDefinition: newActivityDefinition,
-      attemptNumber: newAttemptNumber
-    })
+    // don't do anything if receive a message from another source (like the youtube player)
+    if (newDoenetML || newActivityDefinition || newAttemptNumber !== attemptNumber) {
+      setBaseState({
+        doenetML: newDoenetML,
+        activityDefinition: newActivityDefinition,
+        attemptNumber: newAttemptNumber
+      })
+    }
 
   };
 

@@ -28,7 +28,7 @@ describe('Video Tag Tests', function () {
   `}, "*");
     });
     cy.get('#\\/_video1').invoke('css', 'width')
-    .then(width => parseInt(width)).should('be.gte', widthsBySize["large"] - 4).and('be.lte', widthsBySize["large"] + 1)
+      .then(width => parseInt(width)).should('be.gte', widthsBySize["large"] - 4).and('be.lte', widthsBySize["large"] + 1)
 
     // cy.get('#\\/_video1').invoke('attr', 'height').then((height) => expect(height).eq('315px'))
     cy.get('#\\/_video1').invoke('attr', 'src').then((src) => expect(src.includes("tJ4ypc5L6uU")).eq(true))
@@ -42,7 +42,7 @@ describe('Video Tag Tests', function () {
   `}, "*");
     });
     cy.get('#\\/_video1').invoke('css', 'width')
-    .then(width => parseInt(width)).should('be.gte', widthsBySize["large"] - 4).and('be.lte', widthsBySize["large"] + 1)
+      .then(width => parseInt(width)).should('be.gte', widthsBySize["large"] - 4).and('be.lte', widthsBySize["large"] + 1)
     // cy.get('#\\/_video1').invoke('attr', 'height').then((height) => expect(height).eq('315px'))
     cy.get('#\\/_video1 source').invoke('attr', 'src').then((src) => expect(src).eq("https://jsoncompare.org/LearningContainer/SampleFiles/Video/MP4/Sample-MP4-Video-File-for-Testing.mp4"));
     cy.get('#\\/_video1 source').invoke('attr', 'type').then((type) => expect(type).eq("video/mp4"));
@@ -259,7 +259,7 @@ describe('Video Tag Tests', function () {
 
 
     cy.get('#\\/v').invoke('css', 'width')
-    .then(width => parseInt(width)).should('be.gte', widthsBySize["full"] - 4).and('be.lte', widthsBySize["full"] + 1)
+      .then(width => parseInt(width)).should('be.gte', widthsBySize["full"] - 4).and('be.lte', widthsBySize["full"] + 1)
 
     cy.get('#\\/v').invoke('attr', 'src').then((src) => expect(src.includes("tJ4ypc5L6uU")).eq(true))
 
@@ -283,7 +283,7 @@ describe('Video Tag Tests', function () {
 
 
     cy.log('cue to first minute')
-    cy.get('#\\/mi textarea').type("{end}{backspace}60{enter}", {force: true});
+    cy.get('#\\/mi textarea').type("{end}{backspace}60{enter}", { force: true });
 
     cy.get('#\\/state').contains("stopped")
     cy.get('#\\/time').contains("60")
