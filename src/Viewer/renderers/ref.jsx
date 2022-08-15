@@ -1,7 +1,10 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
+import { scrollableContainerAtom } from '../ActivityViewer';
 import useDoenetRender from './useDoenetRenderer';
 
 export default React.memo(function Ref(props) {
@@ -9,6 +12,11 @@ export default React.memo(function Ref(props) {
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
+  const scollableContainer = useRecoilValue(scrollableContainerAtom);
+
+  let { search } = useLocation();
+  let navigate = useNavigate();
+
 
   if (SVs.hidden) {
     return null;
@@ -65,6 +73,7 @@ export default React.memo(function Ref(props) {
       haveValidTarget = true;
     }
   } else {
+    url += search;
 
     if (SVs.page) {
       url += `#page${SVs.page}`
@@ -81,12 +90,15 @@ export default React.memo(function Ref(props) {
 
   if (SVs.createButton) {
     return <span id={id}><a name={id} />
-      <button id={id + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</button>
+      <button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</button>
     </span>;
 
   } else {
     if (haveValidTarget) {
-      return <a target={targetForATag} id={id} name={id} href={url}>{linkContent}</a>
+
+      let stateObj = {}
+      Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scollableContainer.scrollTop, enumerable: true });
+      return <Link target={targetForATag} id={id} name={id} to={url} state={stateObj}>{linkContent}</Link>
     } else {
       return <span id={id}>{linkContent}</span>
     }

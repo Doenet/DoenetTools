@@ -17,7 +17,7 @@ import { addDocumentIfItsMissing, countComponentTypes, expandDoenetMLsToFullSeri
 import VisibilitySensor from 'react-visibility-sensor-v2';
 import { useLocation, useNavigate } from 'react-router';
 import cssesc from 'cssesc';
-import { atom, useRecoilCallback, useSetRecoilState } from 'recoil';
+import { atom, useRecoilCallback, useRecoilState, useSetRecoilState } from 'recoil';
 
 let rngClass = prng_alea;
 
@@ -26,6 +26,10 @@ export const saveStateToDBTimerIdAtom = atom({
   default: null
 })
 
+export const scrollableContainerAtom = atom({
+  key: "scollParentAtom",
+  default: null
+})
 
 export default function ActivityViewer(props) {
   const toast = useToast();
@@ -84,6 +88,7 @@ export default function ActivityViewer(props) {
   const changesToBeSaved = useRef(false);
 
   const setSaveStateToDBTimerId = useSetRecoilState(saveStateToDBTimerIdAtom);
+  const [scrollableContainer, setScrollableContainer] = useRecoilState(scrollableContainerAtom);
 
   const activityInfo = useRef(null);
   const activityInfoString = useRef(null);
@@ -104,7 +109,28 @@ export default function ActivityViewer(props) {
   const nodeRef = useRef(null);
   const ignoreNextScroll = useRef(false);
 
-  let { hash, search } = useLocation();
+  let location = useLocation();
+  let hash = location.hash;
+
+
+  // Keep track of scroll position when clicked on a link
+  // If navigate back to that location (i.e., hit back button)
+  // then scroll back to the location when clicked
+  const previousLocations = useRef({});
+  const currentLocationKey = useRef(null);
+
+  if (currentLocationKey.current !== location.key) {
+    if (location.state?.previousScrollPosition && currentLocationKey.current) {
+      previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition
+    }
+    if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
+      scrollableContainer.scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+    }
+
+    previousLocations.current[location.key] = { ...location };
+    currentLocationKey.current = location.key;
+  }
+
 
   let navigate = useNavigate();
 
@@ -147,38 +173,43 @@ export default function ActivityViewer(props) {
     // set the current page to be the page at the top of the screen
     // will be used to set the url hash
 
-    if (!props.paginate && nPages > 1 && nodeRef.current) {
+    if (nodeRef.current) {
 
-      let scrollableContainer = nodeRef.current.parentNode.id === "mainPanel"
+      let newScrollableContainer = nodeRef.current.parentNode.id === "mainPanel"
         ? nodeRef.current.parentNode : window
 
-      scrollableContainer.addEventListener('scroll', (event) => {
-        // find page that is at the top
+      setScrollableContainer(newScrollableContainer);
 
-        if (ignoreNextScroll.current) {
-          ignoreNextScroll.current = false;
+      if (!props.paginate && nPages > 1) {
 
-        } else {
+        newScrollableContainer.addEventListener('scroll', (event) => {
+          // find page that is at the top
 
-          let topPage;
-          for (let ind = 0; ind < nPages - 1; ind++) {
-            let thePage = document.getElementById(`page${ind + 1}`);
-            if (thePage) {
-              let { bottom } = thePage.getBoundingClientRect();
-              if (bottom < 50) {
-                topPage = ind + 2;
-              } else if (!topPage) {
-                topPage = 1;
+          if (ignoreNextScroll.current) {
+            ignoreNextScroll.current = false;
+
+          } else {
+
+            let topPage;
+            for (let ind = 0; ind < nPages - 1; ind++) {
+              let thePage = document.getElementById(`page${ind + 1}`);
+              if (thePage) {
+                let { bottom } = thePage.getBoundingClientRect();
+                if (bottom < 50) {
+                  topPage = ind + 2;
+                } else if (!topPage) {
+                  topPage = 1;
+                }
               }
+            }
+
+            if (topPage && topPage !== currentPageRef.current) {
+              setCurrentPage(topPage)
             }
           }
 
-          if (topPage && topPage !== currentPageRef.current) {
-            setCurrentPage(topPage)
-          }
-        }
-
-      })
+        })
+      }
     }
   }, [nodeRef.current, nPages])
 
@@ -199,7 +230,7 @@ export default function ActivityViewer(props) {
     if (currentPage > 0 && nPages > 1) {
       let pageAnchor = `#page${currentPage}`;
       if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
-        navigate(search + pageAnchor, { replace: true })
+        navigate(location.search + pageAnchor, { replace: true })
       }
     }
   }, [currentPage, nPages])
