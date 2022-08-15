@@ -498,7 +498,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
   if (hasToggle){
     openCloseIndicator = isOpen ? (
         <ToggleCloseIconStyling 
-          data-cy="folderToggleCloseIcon" 
+          data-text="folderToggleCloseIcon" 
           aria-expanded="true"
           style={{backgroundColor: bgcolor}}
           onClick={ ()=>{
@@ -517,7 +517,7 @@ function Row({courseId,doenetId,numberOfVisibleColumns,columnsJSX=[],icon,label,
         </ToggleCloseIconStyling>
       ) : (
         <ToggleCloseIconStyling 
-          data-cy="folderToggleOpenIcon" 
+          data-test="folderToggleOpenIcon" 
           aria-expanded="false"
           style={{backgroundColor: bgcolor}}
           onClick={ ()=>{

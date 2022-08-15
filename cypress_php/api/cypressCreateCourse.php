@@ -7,10 +7,12 @@ header('Content-Type: application/json');
 
 include '../api/db_connection.php';
 
+$_POST = json_decode(file_get_contents('php://input'), true);
+
 $message = "";
 $success = TRUE;
-$courseId = $_REQUEST['courseId'];
-$userId = $_REQUEST['userId'];
+$courseId = $_POST['courseId'];
+$userId = $_POST['userId'];
 // $emailaddress = 'devuser@example.com';
 // $userId = 'devuserid';
 
@@ -22,9 +24,43 @@ $sql = "
 INSERT INTO course
 SET courseId='$courseId',
 label='Cypress Generated',
-image='picture1.jpg'
+image='picture1.jpg',
+defaultRoleId = 'studentRoleId'
 ";
 $result = $conn->query($sql); 
+
+$result = $conn->query(
+  //Owner
+  "INSERT INTO course_role
+  SET
+  courseId = '$courseId',
+  roleId = 'ownerRoleId',
+  label = 'Owner',
+  canViewContentSource = '1',
+  canEditContent = '1',
+  canPublishContent = '1',
+  canViewUnassignedContent = '1',
+  canProctor = '1',
+  canViewAndModifyGrades = '1',
+  canViewActivitySettings = '1',
+  canModifyActivitySettings = '1',
+  canModifyCourseSettings = '1',
+  dataAccessPermission = 'Identified',
+  canViewUsers = '1',
+  canManageUsers = '1',
+  isAdmin = '1',
+  isOwner = '1'"
+);
+
+$result = $conn->query(
+  //Student
+  "INSERT INTO course_role
+  SET
+  courseId= '$courseId', 
+  roleId= 'studentRoleId', 
+  label= 'Student', 
+  isIncludedInGradebook = '1'"
+);
 
 $sql = "
 SELECT userId
@@ -41,12 +77,9 @@ if ($result->num_rows == 0) {
 
     $sql = "
     INSERT INTO course_user
-    (userId,courseId,canViewCourse,canViewContentSource,canEditContent,
-    canPublishContent,canViewUnassignedContent,canProctor,canViewAndModifyGrades,
-    canViewActivitySettings,canModifyCourseSettings,canViewUsers,canManageUsers,
-    canModifyRoles,isOwner,roleLabels)
+    (userId,courseId,roleId)
     VALUES
-    ('$userId','$courseId','1','1','1','1','1','1','1','1','1','1','1','1','1','$roleLabels')
+    ('$userId','$courseId','ownerRoleId')
     ";
 
     $result = $conn->query($sql); 

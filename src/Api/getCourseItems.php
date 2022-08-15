@@ -62,6 +62,7 @@ $containingDoenetIds = [];
 		a.showHints AS showHints,
 		a.showCorrectness AS showCorrectness,
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
+		a.paginate AS paginate,
 		a.proctorMakesAvailable AS proctorMakesAvailable
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
@@ -102,6 +103,7 @@ $containingDoenetIds = [];
           "showHints" => nullishCoalesce($row['showHints'], '1') == '1' ? true : false,
           "showCorrectness" => nullishCoalesce($row['showCorrectness'], '1') == '1' ? true : false,
           "showCreditAchievedMenu" => nullishCoalesce($row['showCreditAchievedMenu'], '1') == '1' ? true : false,
+          "paginate" => nullishCoalesce($row['paginate'], '1') == '1' ? true : false,
           "proctorMakesAvailable" => nullishCoalesce($row['proctorMakesAvailable'], '0') == '1' ? true : false,
 				);
 
@@ -175,6 +177,7 @@ $containingDoenetIds = [];
 		a.showHints AS showHints,
 		a.showCorrectness AS showCorrectness,
 		a.showCreditAchievedMenu AS showCreditAchievedMenu,
+		a.paginate AS paginate,
 		a.proctorMakesAvailable AS proctorMakesAvailable
 		FROM course_content AS cc
 		LEFT JOIN assignment AS a
@@ -218,6 +221,7 @@ $containingDoenetIds = [];
 					"showHints" => $row['showHints'] == '1' ? true : false,
 					"showCorrectness" => $row['showCorrectness'] == '1' ? true : false,
 					"showCreditAchievedMenu" => $row['showCreditAchievedMenu'] == '1' ? true : false,
+					"paginate" => $row['paginate'] == '1' ? true : false,
 					"proctorMakesAvailable" => $row['proctorMakesAvailable'] == '1' ? true : false,
 				);
 

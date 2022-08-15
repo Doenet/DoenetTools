@@ -2,7 +2,7 @@ import React from 'react';
 import useDoenetRender from './useDoenetRenderer';
 
 export default React.memo(function Row(props) {
-  let { name, SVs, children } = useDoenetRender(props);
+  let { name, id, SVs, children } = useDoenetRender(props);
 
   if (SVs.hidden) {
     return null;
@@ -23,7 +23,7 @@ export default React.memo(function Row(props) {
         style.borderLeftWidth = "thick";
       }
     }
-    return <tr id={name} style={style}>{children}</tr>
+    return <tr id={id} style={style}>{children}</tr>
 
 
 })

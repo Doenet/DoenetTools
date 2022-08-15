@@ -45,7 +45,7 @@ const Button = styled.button`
   `;
 
 export default function MathInput(props) {
-  let { name, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } =
+  let { name, id, SVs, actions, sourceOfUpdate, ignoreUpdate, rendererName, callAction } =
     useDoenetRender(props);
 
   MathInput.baseStateVariable = 'rawRendererValue';
@@ -202,7 +202,7 @@ export default function MathInput(props) {
       }
       checkWorkButton = (
         <Button
-          id={name + '_submit'}
+          id={id + '_submit'}
           tabIndex="0"
           disabled={SVs.disabled}
           style={checkWorkStyle}
@@ -227,7 +227,7 @@ export default function MathInput(props) {
         if (validationState.current === 'correct') {
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainGreen");
           checkWorkButton = (
-            <Button id={name + '_correct'} style={checkWorkStyle}>
+            <Button id={id + '_correct'} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faCheck} />
             </Button>
           );
@@ -240,7 +240,7 @@ export default function MathInput(props) {
 
           checkWorkStyle.backgroundColor = '#efab34';
           checkWorkButton = (
-            <Button id={name + '_partial'} style={checkWorkStyle}>
+            <Button id={id + '_partial'} style={checkWorkStyle}>
               {partialCreditContents}
             </Button>
           );
@@ -248,7 +248,7 @@ export default function MathInput(props) {
           //incorrect
           checkWorkStyle.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue("--mainRed");
           checkWorkButton = (
-            <Button id={name + '_incorrect'} style={checkWorkStyle}>
+            <Button id={id + '_incorrect'} style={checkWorkStyle}>
               <FontAwesomeIcon icon={faTimes} />
             </Button>
           );
@@ -257,7 +257,7 @@ export default function MathInput(props) {
         // showCorrectness is false
         checkWorkStyle.backgroundColor = 'rgb(74, 3, 217)';
         checkWorkButton = (
-          <Button id={name + '_saved'} style={checkWorkStyle}>
+          <Button id={id + '_saved'} style={checkWorkStyle}>
             <FontAwesomeIcon icon={faCloud} />
           </Button>
         );
@@ -290,9 +290,9 @@ export default function MathInput(props) {
 
   return (
     <React.Fragment>
-      <a name={name} />
+      <a name={id} />
 
-      <span className="textInputSurroundingBox" id={name} style={{ marginBottom: "12px" }}>
+      <span className="textInputSurroundingBox" id={id} style={{ marginBottom: "12px" }}>
         <span>
           <EditableMathField
             style={{ border: "var(--mainBorder)" }}

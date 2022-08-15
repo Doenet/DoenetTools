@@ -17,7 +17,7 @@ function cesc(s) {
 export const BoardContext = createContext();
 
 export default React.memo(function Graph(props) {
-  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
   // console.log({ name, SVs, children, actions })
 
   const [board, setBoard] = useState(null);
@@ -68,7 +68,7 @@ export default React.memo(function Graph(props) {
       JXG.Options.grid.gridY = SVs.grid[1];
     }
 
-    let newBoard = window.JXG.JSXGraph.initBoard(name,
+    let newBoard = window.JXG.JSXGraph.initBoard(id,
       {
         boundingbox,
         axis: false,
@@ -159,8 +159,8 @@ export default React.memo(function Graph(props) {
     return (
       <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
         <div style={outerStyle}>
-          <a name={name} />
-          <div id={name} className="jxgbox" style={divStyle} />
+          <a name={id} />
+          <div id={id} className="jxgbox" style={divStyle} />
         </div>
       </VisibilitySensor>
     );
@@ -346,7 +346,7 @@ export default React.memo(function Graph(props) {
       board.fullUpdate();
 
       if (board.updateQuality === board.BOARD_QUALITY_LOW) {
-        board.itemsRenderedLowQuality[name] = board;
+        board.itemsRenderedLowQuality[id] = board;
       }
 
       previousBoundingbox.current = boundingbox;
@@ -360,8 +360,8 @@ export default React.memo(function Graph(props) {
   return (
     <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
       <div style={outerStyle}>
-        <a name={name} />
-        <div id={name} className="jxgbox" style={divStyle} />
+        <a name={id} />
+        <div id={id} className="jxgbox" style={divStyle} />
         <BoardContext.Provider value={board}>
           {children}
         </BoardContext.Provider>
@@ -692,7 +692,7 @@ export default React.memo(function Graph(props) {
 
   function addNavigationButtons() {
     // not sure why getElementById doesn't work
-    let navigationBar = document.querySelector('#' + cesc(name) + `_navigationbar`);
+    let navigationBar = document.querySelector('#' + cesc(id) + `_navigationbar`);
 
     // code modified from abstract.js and env.js of JSXGraph
 
@@ -757,7 +757,7 @@ export default React.memo(function Graph(props) {
 
   function removeNavigationButtons() {
     for (let i = 7; i >= 1; i--) {
-      let button = document.querySelector('#' + cesc(name) + `_navigationbar > :first-child`);
+      let button = document.querySelector('#' + cesc(id) + `_navigationbar > :first-child`);
       button.remove();
     }
 

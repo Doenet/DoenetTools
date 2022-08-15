@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { BoardContext } from './graph';
 
 export default React.memo(function Legend(props) {
-  let { name, SVs } = useDoenetRender(props);
+  let { name, id, SVs } = useDoenetRender(props);
 
   const board = useContext(BoardContext);
 
@@ -217,7 +217,7 @@ export default React.memo(function Legend(props) {
 
     createLegend();
 
-    return <><a name={name} /></>
+    return <><a name={id} /></>
 
   }
 
@@ -227,7 +227,7 @@ export default React.memo(function Legend(props) {
 
 
   // don't return anything if not in board
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 })
 
 function styleToDash(style) {

@@ -12,7 +12,7 @@ outline: none;
 `;
 
 export default React.memo(function orbitalDiagram(props) {
-  let { name, SVs, actions, callAction } = useDoenetRenderer(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRenderer(props);
   // console.log("orbitalDiagramInput SVs ", SVs);
 
   // use ref for fixed so changed value appears in callbacks
@@ -49,7 +49,7 @@ export default React.memo(function orbitalDiagram(props) {
       rowNumber={rowNumber}
       orbitalText={row.orbitalText}
       boxes={row.boxes}
-      name={name}
+      name={id}
     />)
   }
 

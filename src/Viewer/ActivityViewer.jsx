@@ -14,28 +14,51 @@ import { enumerateCombinations } from '../Core/utils/enumeration';
 import { determineNumberOfActivityVariants, parseActivityDefinition } from '../_utils/activityUtils';
 import createComponentInfoObjects from '../Core/utils/componentInfoObjects';
 import { addDocumentIfItsMissing, countComponentTypes, expandDoenetMLsToFullSerializedComponents } from '../Core/utils/serializedStateProcessing';
+import VisibilitySensor from 'react-visibility-sensor-v2';
+import { useLocation, useNavigate } from 'react-router';
+import cssesc from 'cssesc';
+import { atom, useRecoilCallback, useSetRecoilState } from 'recoil';
 
 let rngClass = prng_alea;
+
+export const saveStateToDBTimerIdAtom = atom({
+  key: "saveStateToDBTimerIdAtom",
+  default: null
+})
+
 
 export default function ActivityViewer(props) {
   const toast = useToast();
 
   const [errMsg, setErrMsg] = useState(null);
 
-  const [cidFromProps, setCidFromProps] = useState(null);
-  const [activityDefinitionFromProps, setActivityDefinitionFromProps] = useState(null);
+
+  const [{
+    cidFromProps,
+    activityDefinitionFromProps,
+    attemptNumber,
+    requestedVariantIndex
+  },
+    setInfoFromProps
+  ] = useState({
+    cidFromProps: null,
+    activityDefinitionFromProps: null,
+    attemptNumber: null,
+    requestedVariantIndex: null
+  })
+
+
   const [cid, setCid] = useState(null);
 
   const activityDefinitionDoenetML = useRef(null);
 
   const [activityDefinition, setActivityDefinition] = useState(null);
 
-  const [attemptNumber, setAttemptNumber] = useState(null);
 
-  const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
   const [variantIndex, setVariantIndex] = useState(null);
 
   const [stage, setStage] = useState('initial');
+  const settingUp = useRef(true);
 
   const [activityContentChanged, setActivityContentChanged] = useState(false);
 
@@ -43,8 +66,11 @@ export default function ActivityViewer(props) {
 
   const [flags, setFlags] = useState(props.flags);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [nPages, setNPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
+  const currentPageRef = useRef(currentPage);  // so that event listener can get new current page
+  currentPageRef.current = currentPage; // so updates on every refresh
+
+  const [nPages, setNPages] = useState(0);
 
   const [variantsByPage, setVariantsByPage] = useState(null);
   const [itemWeights, setItemWeights] = useState(null);
@@ -56,11 +82,34 @@ export default function ActivityViewer(props) {
 
   const activityStateToBeSavedToDatabase = useRef(null);
   const changesToBeSaved = useRef(false);
-  const saveStateToDBTimerId = useRef(null);
+
+  const setSaveStateToDBTimerId = useSetRecoilState(saveStateToDBTimerIdAtom);
+
   const activityInfo = useRef(null);
   const activityInfoString = useRef(null);
   const pageAtPreviousSave = useRef(null);
 
+
+  const [pageInfo, setPageInfo] = useState({
+    pageIsVisible: [],
+    pageIsActive: [],
+    pageHasCore: [],
+    waitingForPagesCore: null
+  })
+
+
+  const prerenderedPages = useRef([])
+  const allPagesPrerendered = useRef(false);
+
+  const nodeRef = useRef(null);
+  const ignoreNextScroll = useRef(false);
+
+  let { hash, search } = useLocation();
+
+  let navigate = useNavigate();
+
+
+  // set ref to value from recoil atom
 
   useEffect(() => {
 
@@ -94,8 +143,81 @@ export default function ActivityViewer(props) {
   })
 
   useEffect(() => {
+    // for non-paginated activity
+    // set the current page to be the page at the top of the screen
+    // will be used to set the url hash
+
+    if (!props.paginate && nPages > 1 && nodeRef.current) {
+
+      let scrollableContainer = nodeRef.current.parentNode.id === "mainPanel"
+        ? nodeRef.current.parentNode : window
+
+      scrollableContainer.addEventListener('scroll', (event) => {
+        // find page that is at the top
+
+        if (ignoreNextScroll.current) {
+          ignoreNextScroll.current = false;
+
+        } else {
+
+          let topPage;
+          for (let ind = 0; ind < nPages - 1; ind++) {
+            let thePage = document.getElementById(`page${ind + 1}`);
+            if (thePage) {
+              let { bottom } = thePage.getBoundingClientRect();
+              if (bottom < 50) {
+                topPage = ind + 2;
+              } else if (!topPage) {
+                topPage = 1;
+              }
+            }
+          }
+
+          if (topPage && topPage !== currentPageRef.current) {
+            setCurrentPage(topPage)
+          }
+        }
+
+      })
+    }
+  }, [nodeRef.current, nPages])
+
+  useEffect(() => {
     props.pageChangedCallback?.(currentPage);
   }, [currentPage])
+
+  useEffect(() => {
+    if (hash && nPages) {
+      let match = hash.match(/^#page(\d+)/)
+      if (match) {
+        setCurrentPage(Math.max(1, Math.min(nPages, match[1])));
+      }
+    }
+  }, [hash, nPages])
+
+  useEffect(() => {
+    if (currentPage > 0 && nPages > 1) {
+      let pageAnchor = `#page${currentPage}`;
+      if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
+        navigate(search + pageAnchor, { replace: true })
+      }
+    }
+  }, [currentPage, nPages])
+
+  useEffect(() => {
+    if (allPagesPrerendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
+      ignoreNextScroll.current = true;
+      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+    }
+  }, [allPagesPrerendered.current])
+
+
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) =>
+    async () => {
+      return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+    }
+  )
+
 
   function resetActivity({ changedOnDevice, newCid, newAttemptNumber }) {
     console.log('resetActivity', changedOnDevice, newCid, newAttemptNumber);
@@ -226,7 +348,6 @@ export default function ActivityViewer(props) {
 
     let loadedState = false;
     let newItemWeights;
-    let newCurrentPage;
     let newVariantIndex;
 
     if (props.flags.allowLocalState) {
@@ -275,8 +396,9 @@ export default function ActivityViewer(props) {
         serverSaveId.current = localInfo.saveId;
 
         // activityState is just currentPage
-        newCurrentPage = localInfo.activityState.currentPage
-        setCurrentPage(newCurrentPage);
+        if (!hash?.match(/^#page(\d+)/)) {
+          setCurrentPage(localInfo.activityState.currentPage);
+        }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
         let newActivityInfo = localInfo.activityInfo;
@@ -287,7 +409,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
-        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts;
+        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts || [];
 
 
         activityInfo.current = newActivityInfo;
@@ -356,8 +478,9 @@ export default function ActivityViewer(props) {
         let activityState = JSON.parse(resp.data.activityState);
 
         // activityState is just currentPage
-        newCurrentPage = activityState.currentPage;
-        setCurrentPage(newCurrentPage);
+        if (!hash?.match(/^#page(\d+)/)) {
+          setCurrentPage(activityState.currentPage);
+        }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
         newVariantIndex = resp.data.variantIndex;
@@ -367,7 +490,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(newActivityInfo.variantsByPage);
         setItemWeights(newActivityInfo.itemWeights);
         newItemWeights = newActivityInfo.itemWeights;
-        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts;
+        previousComponentTypeCountsByPage.current = newActivityInfo.previousComponentTypeCounts || [];
 
 
         activityInfo.current = newActivityInfo;
@@ -377,9 +500,10 @@ export default function ActivityViewer(props) {
 
         // get initial state and info
 
-        // state at page 1
-        newCurrentPage = 1;
-        setCurrentPage(1);
+        // start at page 1
+        if (!hash?.match(/^#page(\d+)/)) {
+          setCurrentPage(1);
+        }
 
         let results;
         results = await calculateOrderAndVariants();
@@ -398,7 +522,7 @@ export default function ActivityViewer(props) {
         setVariantsByPage(results.variantsByPage);
         setItemWeights(results.itemWeights);
         newItemWeights = results.itemWeights;
-        previousComponentTypeCountsByPage.current = results.previousComponentTypeCounts;
+        previousComponentTypeCountsByPage.current = results.previousComponentTypeCounts || [];
 
         activityInfo.current = results.activityInfo;
         activityInfoString.current = JSON.stringify(activityInfo.current);
@@ -644,7 +768,7 @@ export default function ActivityViewer(props) {
 
 
     if (stage !== "saving" || currentPage === pageAtPreviousSave.current) {
-      // haven't got a save event from page or no change to be saved
+      // haven't gotten a save event from page or no change to be saved
       return;
     }
 
@@ -691,22 +815,38 @@ export default function ActivityViewer(props) {
 
   }
 
-  async function saveChangesToDatabase() {
+  async function saveChangesToDatabase(overrideThrottle = false) {
     // throttle save to database at 60 seconds
 
-    if (saveStateToDBTimerId.current !== null || !changesToBeSaved.current) {
+    if (!changesToBeSaved.current) {
       return;
+    }
+
+    // get the up-to-date value here without a refresh!!
+
+
+    // just use the ref
+
+    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
+
+    if (oldTimeoutId !== null) {
+      if (overrideThrottle) {
+        clearTimeout(oldTimeoutId);
+      } else {
+        return;
+      }
     }
 
 
     changesToBeSaved.current = false;
 
     // check for changes again after 60 seconds
-    saveStateToDBTimerId.current = setTimeout(() => {
-      saveStateToDBTimerId.current = null;
+    let newTimeoutId = setTimeout(() => {
+      setSaveStateToDBTimerId(null)
       saveChangesToDatabase();
-    }, 10000);
-    // }, 60000);
+    }, 60000);
+
+    setSaveStateToDBTimerId(newTimeoutId)
 
 
     // TODO: find out how to test if not online
@@ -838,7 +978,9 @@ export default function ActivityViewer(props) {
 
   async function receivedSaveFromPage() {
     // activity state isn't saved until a first save from a page
-    setStage("saving");
+    if (stage !== "saving" && !settingUp.current) {
+      setStage("saving");
+    }
 
     // check if cid changed
     try {
@@ -921,32 +1063,106 @@ export default function ActivityViewer(props) {
 
   }
 
+  function onChangeVisibility(isVisible, pageInd) {
+
+    if (!props.paginate) {
+
+      setPageInfo(was => {
+        let newObj = { ...was };
+        let newVisible = [...newObj.pageIsVisible];
+        newVisible[pageInd] = isVisible;
+        newObj.pageIsVisible = newVisible;
+
+        if (!isVisible && newObj.pageIsActive[pageInd]) {
+          let newActive = [...newObj.pageIsActive];
+          newActive[pageInd] = false;
+          newObj.pageIsActive = newActive;
+
+          if (newObj.waitingForPagesCore === pageInd) {
+            newObj.waitingForPagesCore = null;
+          }
+        }
+
+        return newObj;
+
+      })
+
+    }
+
+  }
+
+  function coreCreatedCallback(pageInd) {
+    setPageInfo(was => {
+      let newObj = { ...was };
+      if (newObj.waitingForPagesCore === pageInd) {
+        newObj.waitingForPagesCore = null;
+      }
+      let newHasCore = [...newObj.pageHasCore];
+      newHasCore[pageInd] = true;
+      newObj.pageHasCore = newHasCore;
+
+      return newObj;
+
+    })
+
+  }
+
+  function pagePrerenderedCallback(pageInd, success) {
+    if (success) {
+      prerenderedPages.current[pageInd] = true;
+
+      if (prerenderedPages.current.length === nPages && prerenderedPages.current.every(x => x)) {
+        allPagesPrerendered.current = true;
+      }
+    }
+
+  }
+
   if (errMsg !== null) {
     let errorIcon = <span style={{ fontSize: "1em", color: "#C1292E" }}><FontAwesomeIcon icon={faExclamationCircle} /></span>
     return <div style={{ fontSize: "1.3em", marginLeft: "20px", marginTop: "20px" }}>{errorIcon} {errMsg}</div>
   }
 
+  if (pageInfo.waitingForPagesCore === null) {
 
-  let changedState = false;
+    // check current page first
+    if (currentPage) {
+      for (let pageInd of [currentPage - 1, ...Array(nPages).keys()]) {
+        let isVisible = pageInfo.pageIsVisible[pageInd];
+        if ((isVisible || currentPage === pageInd + 1) && !pageInfo.pageIsActive[pageInd]) {
 
-  if (activityDefinitionFromProps !== props.activityDefinition) {
-    setActivityDefinitionFromProps(props.activityDefinition);
-    changedState = true;
+          // activate either the current page or an inactive page that is visible
+
+          // if we need to create core
+          // then stop here to not create multiple cores at once
+          let waitingAgain = !pageInfo.pageHasCore[pageInd];
+
+          setPageInfo(was => {
+            let newObj = { ...was };
+            let newActive = [...newObj.pageIsActive];
+            newActive[pageInd] = true;
+            newObj.pageIsActive = newActive;
+            if (!newObj.pageHasCore[pageInd]) {
+              newObj.waitingForPagesCore = pageInd;
+            }
+            return newObj;
+          })
+
+
+          if (waitingAgain) {
+            break;
+          }
+
+        }
+      }
+    }
   }
-  if (cidFromProps !== props.cid) {
-    setCidFromProps(props.cid);
-    changedState = true;
-  }
+
 
   //If no attemptNumber prop then set to 1
   let propAttemptNumber = props.attemptNumber;
   if (propAttemptNumber === undefined) {
     propAttemptNumber = 1;
-  }
-
-  if (propAttemptNumber !== attemptNumber) {
-    setAttemptNumber(propAttemptNumber);
-    changedState = true;
   }
 
   // attemptNumber is used for requestedVariantIndex if not specified
@@ -956,13 +1172,21 @@ export default function ActivityViewer(props) {
   }
 
 
-  if (requestedVariantIndex !== adjustedRequestedVariantIndex) {
-    setRequestedVariantIndex(adjustedRequestedVariantIndex);
-    changedState = true;
-  }
+  if (activityDefinitionFromProps !== props.activityDefinition
+    || cidFromProps !== props.cid
+    || propAttemptNumber !== attemptNumber
+    || requestedVariantIndex !== adjustedRequestedVariantIndex
+  ) {
 
-  // Next time through will recalculate, after state variables are set
-  if (changedState) {
+    settingUp.current = true;
+
+    setInfoFromProps({
+      activityDefinitionFromProps: props.activityDefinition,
+      cidFromProps: props.cid,
+      attemptNumber: propAttemptNumber,
+      requestedVariantIndex: adjustedRequestedVariantIndex
+    })
+
     setStage('recalcParams')
     setActivityContentChanged(true);
     return null;
@@ -1002,6 +1226,7 @@ export default function ActivityViewer(props) {
         initializeUserAssignmentTables(results.newItemWeights);
         props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
+      settingUp.current = false;
     })
 
     return null;
@@ -1027,29 +1252,46 @@ export default function ActivityViewer(props) {
       itemNumber = 0;
     }
 
-    pages.push(
-      <div key={`page${ind}`}>
-        <PageViewer
-          doenetId={props.doenetId}
-          activityCid={cid}
-          cid={page.cid}
-          doenetML={page.doenetML}
-          pageNumber={(ind + 1).toString()}
-          previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
-          pageIsActive={ind + 1 === currentPage}
-          itemNumber={itemNumber}
-          attemptNumber={attemptNumber}
-          flags={flags}
-          activityVariantIndex={variantIndex}
-          requestedVariantIndex={variantsByPage[ind]}
-          unbundledCore={props.unbundledCore}
-          updateCreditAchievedCallback={props.updateCreditAchievedCallback}
-          setIsInErrorState={props.setIsInErrorState}
-          updateAttemptNumber={props.updateAttemptNumber}
-          saveStateCallback={receivedSaveFromPage}
-          updateDataOnContentChange={props.updateDataOnContentChange}
-        />
+    let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageInfo.pageIsActive[ind];
 
+    let prefixForIds = nPages > 1 ? `page${ind + 1}` : '';
+
+    let pageViewer = <PageViewer
+      doenetId={props.doenetId}
+      activityCid={cid}
+      cid={page.cid}
+      doenetML={page.doenetML}
+      pageNumber={(ind + 1).toString()}
+      previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
+      pageIsActive={thisPageIsActive}
+      itemNumber={itemNumber}
+      attemptNumber={attemptNumber}
+      flags={flags}
+      activityVariantIndex={variantIndex}
+      requestedVariantIndex={variantsByPage[ind]}
+      unbundledCore={props.unbundledCore}
+      updateCreditAchievedCallback={props.updateCreditAchievedCallback}
+      setIsInErrorState={props.setIsInErrorState}
+      updateAttemptNumber={props.updateAttemptNumber}
+      saveStateCallback={receivedSaveFromPage}
+      updateDataOnContentChange={props.updateDataOnContentChange}
+      coreCreatedCallback={() => coreCreatedCallback(ind)}
+      pagePrerenderedCallback={(x) => pagePrerenderedCallback(ind, x)}
+      hideWhenInactive={props.paginate}
+      prefixForIds={prefixForIds}
+    />
+
+    if (!props.paginate) {
+      pageViewer = <VisibilitySensor partialVisibility={true} offset={{ top: -200, bottom: -200 }} requireContentsSize={false} onChange={(isVisible) => onChangeVisibility(isVisible, ind)}>
+        <div>
+          {pageViewer}
+        </div>
+      </VisibilitySensor>
+    }
+
+    pages.push(
+      <div key={`page${ind + 1}`} id={`page${ind + 1}`}>
+        {pageViewer}
       </div>
     )
   }
@@ -1062,7 +1304,7 @@ export default function ActivityViewer(props) {
   }
 
   let pageControls = null;
-  if (nPages > 1) {
+  if (props.paginate && nPages > 1) {
     pageControls = <>
       <button data-test={"previous"} disabled={currentPage === 1} onClick={clickPrevious}>Previous page</button>
       <button data-test={"next"} disabled={currentPage === nPages} onClick={clickNext}>Next page</button>
@@ -1070,7 +1312,7 @@ export default function ActivityViewer(props) {
     </>
   }
 
-  return <div style={{ marginBottom: "200px" }}>
+  return <div style={{ paddingBottom: "50vh" }} id="activityTop" ref={nodeRef}>
     {cidChangedAlert}
     {pageControls}
     {title}

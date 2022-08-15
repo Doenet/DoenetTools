@@ -5827,7 +5827,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/p3a')).should('not.exist');
     cy.get(cesc('#/p4a')).should('not.exist');
 
-    cy.get(cesc('#/section7_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#/section7_title')).should('have.text', 'Section 7')
     cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
     cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
     cy.get(cesc('#/section7/p3')).should('not.exist');
@@ -6069,7 +6069,7 @@ describe('Copy Tag Tests', function () {
     cy.get(cesc('#/p3a')).should('not.exist');
     cy.get(cesc('#/p4a')).should('not.exist');
 
-    cy.get(cesc('#/section7_title')).should('have.text', 'Section 1')
+    cy.get(cesc('#/section7_title')).should('have.text', 'Section 7')
     cy.get(cesc('#/section7/p1')).should('have.text', "i=1, v=11");
     cy.get(cesc('#/section7/p2')).should('have.text', "i=2, v=12");
     cy.get(cesc('#/section7/p3')).should('not.exist');
@@ -6876,10 +6876,10 @@ describe('Copy Tag Tests', function () {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1a')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
     })
 
 
@@ -6900,16 +6900,16 @@ describe('Copy Tag Tests', function () {
       cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
 
       cy.get(cesc('#' + c7s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c8s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c9s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c10s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
       })
 
       // put in window just so happens after above
@@ -7056,10 +7056,10 @@ describe('Copy Tag Tests', function () {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1a')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1b')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
 
     cy.window().then(async (win) => {
@@ -7137,10 +7137,10 @@ describe('Copy Tag Tests', function () {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1a')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
     })
 
     cy.window().then(async (win) => {
@@ -7159,16 +7159,16 @@ describe('Copy Tag Tests', function () {
       cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c7s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c8s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c9s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c10s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
       })
       // put in window just so happens after above
       cy.window().then(async (win) => {
@@ -7313,10 +7313,10 @@ describe('Copy Tag Tests', function () {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1a')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1b')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
 
     cy.window().then(async (win) => {
@@ -7394,10 +7394,10 @@ describe('Copy Tag Tests', function () {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1a')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
     })
 
     cy.window().then(async (win) => {
@@ -7416,16 +7416,16 @@ describe('Copy Tag Tests', function () {
       cy.get(cesc('#' + c4p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c7s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c8s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c9s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c10s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
       })
 
       // put in window just so happens after above
@@ -7568,10 +7568,10 @@ describe('Copy Tag Tests', function () {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1a')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1b')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
 
     cy.window().then(async (win) => {
@@ -7654,13 +7654,13 @@ describe('Copy Tag Tests', function () {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1a')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/c10/s1b')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/c11/grp')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 6\s*values: 1 2 3/)).not.be.null
     })
 
     cy.window().then(async (win) => {
@@ -7682,19 +7682,19 @@ describe('Copy Tag Tests', function () {
       cy.get(cesc('#' + c5p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c6p)).should('have.text', 'values: 1 2 3')
       cy.get(cesc('#' + c7s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c8s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c9s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 4\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c10s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 5\s*values: 1 2 3/)).not.be.null
       })
       cy.get(cesc('#' + c11s)).invoke('text').then(text => {
-        expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+        expect(text.match(/Section 6\s*values: 1 2 3/)).not.be.null
       })
 
       // put in window just so happens after above
@@ -7860,10 +7860,10 @@ describe('Copy Tag Tests', function () {
       expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1a')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 2\s*values: 1 2 3/)).not.be.null
     })
     cy.get(cesc('#/s1b')).invoke('text').then(text => {
-      expect(text.match(/Section 1\s*values: 1 2 3/)).not.be.null
+      expect(text.match(/Section 3\s*values: 1 2 3/)).not.be.null
     })
 
     cy.window().then(async (win) => {

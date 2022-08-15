@@ -4,7 +4,7 @@ import { sizeToCSS } from './utils/css';
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Tabular(props) {
-  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -44,9 +44,9 @@ let data = <tr>{columns.map((x,i)=><td key={i}>{SVs.summaryStatistics[x]}</td>)}
 return (
   <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}>
   <div style={{ margin: "12px 0" }} >
-    <a name={name} />
+    <a name={id} />
     <p>Summary statistics of {SVs.columnName}</p>
-    <table id={name} style={tableStyle}>
+    <table id={id} style={tableStyle}>
       <tbody>
         {heading}
         {data}

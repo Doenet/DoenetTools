@@ -8,7 +8,7 @@ import {
   AssignedDate,
   AssignTo,
   AssignUnassignActivity,
-  AttempLimit,
+  AttemptLimit,
   AttemptAggregation,
   DueDate,
   GradeCategory,
@@ -18,6 +18,7 @@ import {
   ProctorMakesAvailable,
   ShowCorrectness,
   ShowCreditAchieved,
+  Paginate,
   ShowDoenetMLSource,
   ShowFeedback,
   ShowHints,
@@ -177,11 +178,13 @@ export default function SelectedActivity() {
             width="menu"
             onClick={() => create({ itemType: 'page' })}
             value="Add Page"
+            data-test="Add Page"
           />
           <Button
             width="menu"
             onClick={() => create({ itemType: 'order' })}
             value="Add Order"
+            data-test="Add Order"
           />
         </ButtonGroup>
         <br />
@@ -190,6 +193,7 @@ export default function SelectedActivity() {
         <Button
           width="menu"
           value="Delete Activity"
+          data-test="Delete Activity"
           alert
           onClick={(e) => {
             e.preventDefault();
@@ -207,7 +211,7 @@ export default function SelectedActivity() {
       {heading}
       <ActionButton
         width="menu"
-        data-test="Edit Activity"
+        data-test="View Activity"
         value="View Activity"
         onClick={() => {
           setPageToolView({
@@ -259,7 +263,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
         <AssignedDate {...sharedProps} />
         <DueDate {...sharedProps} />
         <TimeLimit {...sharedProps} />
-        <AttempLimit {...sharedProps} />
+        <AttemptLimit {...sharedProps} />
         <AttemptAggregation {...sharedProps} />
         <TotalPointsOrPercent {...sharedProps} />
         <GradeCategory {...sharedProps} />
@@ -271,6 +275,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
           <ShowHints {...sharedProps} />
           <ShowCorrectness {...sharedProps} />
           <ShowCreditAchieved {...sharedProps} />
+          <Paginate {...sharedProps} />
           <ProctorMakesAvailable {...sharedProps} />
           <MakePublic {...sharedProps} />
           <ShowDoenetMLSource {...sharedProps} />

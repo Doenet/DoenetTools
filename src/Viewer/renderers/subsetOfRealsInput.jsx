@@ -31,7 +31,7 @@ const TextNoSelect = styled.text`
 // `;
 
 export default React.memo(function subsetOfReals(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props, false);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props, false);
   let [mode, setMode] = useState("add remove points");
   let bounds = useRef(null);
   let pointGrabbed = useRef(null);
@@ -351,7 +351,7 @@ export default React.memo(function subsetOfReals(props) {
 
  return  (
   <VisibilitySensor partialVisibility={true} onChange={onChangeVisibility}><>
-    <a name={name} />
+    <a name={id} />
     <div ref={bounds} style={{display: "flex", gap: "12px"}}>
       {controlButtons}
     </div>

@@ -70,7 +70,7 @@ export default function PageViewer(props) {
       }
     }
 
-    let newRendererState = { stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate };
+    let newRendererState = { stateValues, childrenInstructions, sourceOfUpdate, ignoreUpdate, prefixForIds: prefixForIds };
 
     if (childrenInstructions === undefined) {
       let previousRendererState = snapshot.getLoadable(rendererState(rendererName)).contents;
@@ -131,7 +131,11 @@ export default function PageViewer(props) {
   const preventMoreAnimations = useRef(false);
   const animationInfo = useRef({});
 
+  const havePrerendered = useRef(null);
+
   const resolveActionPromises = useRef({});
+
+  const prefixForIds = props.prefixForIds || "";
 
   let { hash } = useLocation();
 
@@ -155,6 +159,7 @@ export default function PageViewer(props) {
           coreCreated.current = true;
           preventMoreAnimations.current = false;
           setStage('coreCreated');
+          props.coreCreatedCallback?.();
         } else if (e.data.messageType === "initializeRenderers") {
           if (coreInfo.current && JSON.stringify(coreInfo.current) === JSON.stringify(e.data.args.coreInfo)) {
             // we already initialized renderers before core was created
@@ -249,26 +254,40 @@ export default function PageViewer(props) {
         })
       }
     })
-  })
+  }, [])
 
   useEffect(() => {
     if (hash && coreCreated.current && coreWorker.current) {
-      coreWorker.current.postMessage({
-        messageType: "navigatingToHash",
-        args: {
-          hash: hash.slice(1)
-        }
-      })
+      let anchor = hash.slice(1);
+      if (anchor.substring(0, prefixForIds.length) === prefixForIds) {
+        coreWorker.current.postMessage({
+          messageType: "navigatingToComponent",
+          args: {
+            componentName: anchor.substring(prefixForIds.length)
+          }
+        })
+      }
     }
   }, [hash, coreCreated.current, coreWorker.current])
 
 
   useEffect(() => {
-    if (documentRenderer) {
-      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
+    if (hash && documentRenderer && props.pageIsActive) {
+      let anchor = hash.slice(1);
+      if (anchor.length > prefixForIds.length && anchor.substring(0, prefixForIds.length) === prefixForIds) {
+        document.getElementById(cssesc(anchor))?.scrollIntoView();
+      }
     }
-  }, [hash, documentRenderer])
+  }, [hash, documentRenderer, props.hideWhenInactive, props.pageIsActive])
 
+  useEffect(() => {
+
+    if(havePrerendered.current !== null) {
+      props.pagePrerenderedCallback?.(havePrerendered.current)
+
+    }
+
+  }, [havePrerendered.current])
 
   function terminateCoreAndAnimations() {
     preventMoreAnimations.current = true;
@@ -640,7 +659,12 @@ export default function PageViewer(props) {
 
     //Guard against the possiblity that parameters changed while waiting
     if (coreIdWhenCalled === coreId.current) {
-      startCore();
+      if (props.pageIsActive) {
+        startCore();
+      } else {
+        setStage('readyToCreateCore');
+      }
+      havePrerendered.current = Object.keys(initialCoreData.current).length > 0;
     }
 
   }
@@ -922,7 +946,7 @@ export default function PageViewer(props) {
     return null;
   }
 
-  if (pageContentChanged && props.pageIsActive) {
+  if (pageContentChanged) {
 
     setPageContentChanged(false);
 
@@ -953,7 +977,7 @@ export default function PageViewer(props) {
 
   }
 
-  if (!props.pageIsActive) {
+  if (props.hideWhenInactive && !props.pageIsActive) {
     return null;
   }
 
@@ -965,11 +989,13 @@ export default function PageViewer(props) {
   }
 
   let noCoreWarning = null;
-  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px", paddingBottom: "50vh" };
+  let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
   if (!coreCreated.current) {
-    noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
-      <p>Waiting for core to be created....</p>
-    </div>
+    if (!documentRenderer) {
+      noCoreWarning = <div style={{ backgroundColor: "lightCyan", padding: "10px" }}>
+        <p>Initializing....</p>
+      </div>
+    }
     pageStyle.backgroundColor = "#F0F0F0";
   }
 
