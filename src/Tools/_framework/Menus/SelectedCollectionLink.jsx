@@ -1,4 +1,4 @@
-import { faShare } from '@fortawesome/free-solid-svg-icons';
+import { faLink } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -51,7 +51,7 @@ function PagesInACollectionOptions({doenetId,manuallyFilteredPages=[]}){
   return <>{PageOptionsJSX}</>
 }
 
-export default function SelectedCollectionAlias() {
+export default function SelectedCollectionLink() {
   // const setPageToolView = useSetRecoilState(pageToolViewAtom);
 
   const doenetId = useRecoilValue(selectedCourseItems)[0];
@@ -61,7 +61,7 @@ export default function SelectedCollectionAlias() {
     effectivePermissionsByCourseId(courseId),
   );
   const [itemTextFieldLabel,setItemTextFieldLabel] = useState(itemObj.label)
-  let { deleteItem, updateCollectionAlias } = useCourse(courseId);
+  let { deleteItem, updateCollectionLink } = useCourse(courseId);
   
 
   useEffect(()=>{
@@ -75,7 +75,7 @@ export default function SelectedCollectionAlias() {
     if (itemTextFieldLabel === '') {
       effectiveItemLabel = itemObj.label;
       if (itemObj.label === ''){
-        effectiveItemLabel = 'Untitled Collection Alias';
+        effectiveItemLabel = 'Untitled Collection Link';
       }
 
       setItemTextFieldLabel(effectiveItemLabel);
@@ -85,14 +85,14 @@ export default function SelectedCollectionAlias() {
     if (itemObj.label !== effectiveItemLabel){
       console.log("Rename",doenetId,effectiveItemLabel)
       // renameItem(doenetId,effectiveItemLabel)
-      updateCollectionAlias({doenetId, label:effectiveItemLabel, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
+      updateCollectionLink({doenetId, label:effectiveItemLabel, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
 
     }
   };
 
   const addToast = useToast();
   let heading = (<h2 data-test="infoPanelItemLabel" style={{ margin: "16px 5px" }} >
-    <FontAwesomeIcon icon={faShare} /> {itemObj.label} 
+    <FontAwesomeIcon icon={faLink} /> {itemObj.label} 
   </h2>)
 
 
@@ -113,7 +113,7 @@ export default function SelectedCollectionAlias() {
     style={{ marginRight: '5px' }}
     checked={itemObj.isManuallyFiltered}
     onClick={()=>{
-      updateCollectionAlias({doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:!itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
+      updateCollectionLink({doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:!itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
     }}
 />Filter Page Aliases</div>
     <RelatedItems
@@ -125,7 +125,7 @@ export default function SelectedCollectionAlias() {
             e.target.selectedOptions,
             (option) => option.value,
           );
-      updateCollectionAlias({doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:values})
+      updateCollectionLink({doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:values})
 
           // setManuallyFilteredPages(values)
       // updateOrderBehavior({doenetId, behavior, numberToSelect, withReplacement, restrictPages:!restrictPages, selectedCollectionDoenetId, restrictToThesePages:values})
@@ -165,7 +165,7 @@ export default function SelectedCollectionAlias() {
         options={collectionsInCourseJSX}
         onChange={(e) => {
           //Clear out manual pages on change
-          updateCollectionAlias({doenetId, collectionDoenetId:e.target.value, isManuallyFiltered:false,manuallyFilteredPages:[]})
+          updateCollectionLink({doenetId, collectionDoenetId:e.target.value, isManuallyFiltered:false,manuallyFilteredPages:[]})
         }}
       />
       <br />
@@ -173,7 +173,7 @@ export default function SelectedCollectionAlias() {
       <br />
     <Button
       width="menu"
-      value="Delete Collection Alias"
+      value="Delete Collection Link"
       alert
       onClick={(e) => {
         e.preventDefault();

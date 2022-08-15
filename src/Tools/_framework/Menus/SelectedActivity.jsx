@@ -185,8 +185,8 @@ export default function SelectedActivity() {
         />
          <Button
           width="menu"
-          onClick={() => create({ itemType: 'collectionAlias' })}
-          value="Add Collection Alias"
+          onClick={() => create({ itemType: 'collectionLink' })}
+          value="Add Collection Link"
         />
       </ButtonGroup>
       <br />

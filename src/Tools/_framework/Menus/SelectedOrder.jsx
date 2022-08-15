@@ -124,9 +124,9 @@ if (behavior == 'select'){
         <Button
           width="menu"
           onClick={() =>
-            create({itemType:"collectionAlias"})
+            create({itemType:"collectionLink"})
           }
-          value="Add Collection Alias"
+          value="Add Collection Link"
         />
     </ButtonGroup>
     <br />
