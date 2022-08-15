@@ -121,6 +121,13 @@ if (behavior == 'select'){
           }
           value="Add Order"
         />
+        <Button
+          width="menu"
+          onClick={() =>
+            create({itemType:"collectionAlias"})
+          }
+          value="Add Collection Alias"
+        />
     </ButtonGroup>
     <br />
     <Button
