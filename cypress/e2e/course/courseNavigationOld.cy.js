@@ -13,7 +13,7 @@ describe('Course Navigation Tests', function () {
     })
   })
 
-  it('overview', function() {
+  it.skip('overview', function() {
     // click on navbar
     cy.get('[data-test=overviewNavItem]').click();
     // check if selected navbar is prepended with *
@@ -31,7 +31,7 @@ describe('Course Navigation Tests', function () {
 
   });
 
-  it('syllabus', function() {
+  it.skip('syllabus', function() {
     // click on navbar
     cy.get('[data-test=syllabusNavItem]').click();
     // check if selected navbar is prepended with *
@@ -48,7 +48,7 @@ describe('Course Navigation Tests', function () {
     cy.get('[data-test=sectionTitle]').should('have.text', 'Syllabus');
   });
 
-  it('grades', function() {
+  it.skip('grades', function() {
     // click on navbar
     cy.get('[data-test=gradesNavItem]').click();
     // check if selected navbar is prepended with *
@@ -65,7 +65,7 @@ describe('Course Navigation Tests', function () {
     cy.get('[data-test=sectionTitle]').should('have.text', 'Grades');
   });
 
-  it('assignments onclick', function() {
+  it.skip('assignments onclick', function() {
     
     // click on navbar
     cy.get('[data-test=assignmentsAccordion]').click();
@@ -83,7 +83,7 @@ describe('Course Navigation Tests', function () {
     cy.get('#\\/_document1_heading').should('have.text', 'Assignment A3');
   })
 
-  it('assignments outline type sort order', function(){
+  it.skip('assignments outline type sort order', function(){
     // click on navbar
     cy.get('[data-test=assignmentsAccordion]').click();
     cy.get('.homeLeftNav > :nth-child(4)').click();

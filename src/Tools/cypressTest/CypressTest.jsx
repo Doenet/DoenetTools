@@ -6,13 +6,7 @@ import ActivityViewer from '../../Viewer/ActivityViewer.jsx';
 function Test() {
   // console.log("===Test")
 
-  const [doenetML, setDoenetML] = useState(null);
-  const [activityDefinition, setActivityDefinition] = useState(null);
 
-  // //New PageViewer when code changes
-  // useEffect(() => {
-  //   setDoenetML(testCodeDoenetML);
-  // }, [testCodeDoenetML]);
 
   const defaultTestSettings = {
     updateNumber: 0,
@@ -36,9 +30,20 @@ function Test() {
     localStorage.setItem("test settings", JSON.stringify(defaultTestSettings))
   }
 
+  const [{
+    doenetML,
+    activityDefinition,
+    attemptNumber
+  },
+    setBaseState
+  ] = useState({
+    doenetML: null,
+    activityDefinition: null,
+    attemptNumber: testSettings.attemptNumber
+  })
+
 
   const [updateNumber, setUpdateNumber] = useState(testSettings.updateNumber);
-  const [attemptNumber, setAttemptNumber] = useState(testSettings.attemptNumber);
   const [controlsVisible, setControlsVisible] = useState(testSettings.controlsVisible);
   const [showCorrectness, setShowCorrectness] = useState(testSettings.showCorrectness);
   const [readOnly, setReadOnly] = useState(testSettings.readOnly);
@@ -63,18 +68,29 @@ function Test() {
 
   //For Cypress Test Use
   window.onmessage = (e) => {
+    let newDoenetML = null, newActivityDefinition = null, newAttemptNumber = attemptNumber;
+
     if (e.data.doenetML !== undefined) {
-      setActivityDefinition(null);
-      setDoenetML(e.data.doenetML);
+      newDoenetML = e.data.doenetML;
     } else if (e.data.activityDefinition !== undefined) {
-      setDoenetML(null);
-      setActivityDefinition(e.data.activityDefinition);
+      newActivityDefinition = e.data.activityDefinition;
     }
 
     if (e.data.requestedVariantIndex !== undefined) {
       requestedVariantIndex.current = e.data.requestedVariantIndex;
-      setUpdateNumber(was => was + 1)
     }
+    if (e.data.attemptNumber !== undefined) {
+      newAttemptNumber = e.data.attemptNumber
+      testSettings.attemptNumber = newAttemptNumber;
+      localStorage.setItem("test settings", JSON.stringify(testSettings))
+    }
+
+    setBaseState({
+      doenetML: newDoenetML,
+      activityDefinition: newActivityDefinition,
+      attemptNumber: newAttemptNumber
+    })
+
   };
 
   let controls = null;
@@ -92,13 +108,21 @@ function Test() {
           () => {
             testSettings.attemptNumber = testSettings.attemptNumber + 1;
             localStorage.setItem("test settings", JSON.stringify(testSettings))
-            setAttemptNumber(was => was + 1)
+            setBaseState(was => {
+              let newObj = { ...was };
+              newObj.attemptNumber++;
+              return newObj;
+            })
           }
         }>New Attempt</button> <button onClick={
           () => {
             testSettings.attemptNumber = 1;
             localStorage.setItem("test settings", JSON.stringify(testSettings))
-            setAttemptNumber(1)
+            setBaseState(was => {
+              let newObj = { ...was };
+              newObj.attemptNumber = 1;
+              return newObj;
+            })
           }
         }>Reset Attempt Number</button></label>
       </div>

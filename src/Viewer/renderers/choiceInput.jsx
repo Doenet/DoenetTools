@@ -222,7 +222,7 @@ export default React.memo(function ChoiceInput(props) {
     }
 
     return <React.Fragment>
-      <a id={id} />
+      <a name={id} />
       <select
         id={id}
         onChange={onChangeHandler}

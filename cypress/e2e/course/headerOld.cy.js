@@ -4,7 +4,7 @@ describe('Page Header Tests', function () {
     cy.visit('/course')
   })
 
-  it('toolbox button', function() {
+  it.skip('toolbox button', function() {
     // click on toolbox button
     cy.get('[data-test=toolboxButton]').click();
     
@@ -30,7 +30,7 @@ describe('Page Header Tests', function () {
     cy.get('[data-test=toolbox]').should('not.be.visible');
   });
 
-  it('toolbox menu links', function() {
+  it.skip('toolbox menu links', function() {
     // check if admin link redirects to admin page
     cy.get('[data-test=toolboxButton]').click();
     cy.get('[data-test=toolboxNavLinkToAdmin').click();
@@ -55,7 +55,7 @@ describe('Page Header Tests', function () {
     cy.url().should('include', '/editor');
   });
 
-  it('previous page button', function() {
+  it.skip('previous page button', function() {
 
     // redirect to documentation page
     cy.get('[data-test=toolboxButton]').click();

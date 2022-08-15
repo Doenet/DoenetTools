@@ -32,20 +32,33 @@ export default function ActivityViewer(props) {
 
   const [errMsg, setErrMsg] = useState(null);
 
-  const [cidFromProps, setCidFromProps] = useState(null);
-  const [activityDefinitionFromProps, setActivityDefinitionFromProps] = useState(null);
+
+  const [{
+    cidFromProps,
+    activityDefinitionFromProps,
+    attemptNumber,
+    requestedVariantIndex
+  },
+    setInfoFromProps
+  ] = useState({
+    cidFromProps: null,
+    activityDefinitionFromProps: null,
+    attemptNumber: null,
+    requestedVariantIndex: null
+  })
+
+
   const [cid, setCid] = useState(null);
 
   const activityDefinitionDoenetML = useRef(null);
 
   const [activityDefinition, setActivityDefinition] = useState(null);
 
-  const [attemptNumber, setAttemptNumber] = useState(null);
 
-  const [requestedVariantIndex, setRequestedVariantIndex] = useState(null);
   const [variantIndex, setVariantIndex] = useState(null);
 
   const [stage, setStage] = useState('initial');
+  const settingUp = useRef(true);
 
   const [activityContentChanged, setActivityContentChanged] = useState(false);
 
@@ -183,13 +196,13 @@ export default function ActivityViewer(props) {
   }, [hash, nPages])
 
   useEffect(() => {
-    if (currentPage > 0) {
+    if (currentPage > 0 && nPages > 1) {
       let pageAnchor = `#page${currentPage}`;
       if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
         navigate(search + pageAnchor, { replace: true })
       }
     }
-  }, [currentPage])
+  }, [currentPage, nPages])
 
   useEffect(() => {
     if (allPagesPrerendered.current && !props.paginate && hash?.match(/^#page(\d+)$/)) {
@@ -755,7 +768,7 @@ export default function ActivityViewer(props) {
 
 
     if (stage !== "saving" || currentPage === pageAtPreviousSave.current) {
-      // haven't got a save event from page or no change to be saved
+      // haven't gotten a save event from page or no change to be saved
       return;
     }
 
@@ -965,7 +978,9 @@ export default function ActivityViewer(props) {
 
   async function receivedSaveFromPage() {
     // activity state isn't saved until a first save from a page
-    setStage("saving");
+    if (stage !== "saving" && !settingUp.current) {
+      setStage("saving");
+    }
 
     // check if cid changed
     try {
@@ -1144,26 +1159,10 @@ export default function ActivityViewer(props) {
   }
 
 
-  let changedState = false;
-
-  if (activityDefinitionFromProps !== props.activityDefinition) {
-    setActivityDefinitionFromProps(props.activityDefinition);
-    changedState = true;
-  }
-  if (cidFromProps !== props.cid) {
-    setCidFromProps(props.cid);
-    changedState = true;
-  }
-
   //If no attemptNumber prop then set to 1
   let propAttemptNumber = props.attemptNumber;
   if (propAttemptNumber === undefined) {
     propAttemptNumber = 1;
-  }
-
-  if (propAttemptNumber !== attemptNumber) {
-    setAttemptNumber(propAttemptNumber);
-    changedState = true;
   }
 
   // attemptNumber is used for requestedVariantIndex if not specified
@@ -1173,13 +1172,21 @@ export default function ActivityViewer(props) {
   }
 
 
-  if (requestedVariantIndex !== adjustedRequestedVariantIndex) {
-    setRequestedVariantIndex(adjustedRequestedVariantIndex);
-    changedState = true;
-  }
+  if (activityDefinitionFromProps !== props.activityDefinition
+    || cidFromProps !== props.cid
+    || propAttemptNumber !== attemptNumber
+    || requestedVariantIndex !== adjustedRequestedVariantIndex
+  ) {
 
-  // Next time through will recalculate, after state variables are set
-  if (changedState) {
+    settingUp.current = true;
+
+    setInfoFromProps({
+      activityDefinitionFromProps: props.activityDefinition,
+      cidFromProps: props.cid,
+      attemptNumber: propAttemptNumber,
+      requestedVariantIndex: adjustedRequestedVariantIndex
+    })
+
     setStage('recalcParams')
     setActivityContentChanged(true);
     return null;
@@ -1219,6 +1226,7 @@ export default function ActivityViewer(props) {
         initializeUserAssignmentTables(results.newItemWeights);
         props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
+      settingUp.current = false;
     })
 
     return null;
