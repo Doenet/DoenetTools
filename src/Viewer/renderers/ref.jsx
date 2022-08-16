@@ -62,9 +62,11 @@ export default React.memo(function Ref(props) {
     } else {
       if (SVs.page) {
         url += `#page${SVs.page}`
-      }
-      if (SVs.targetName) {
-        url += SVs.targetName;
+        if (SVs.targetName) {
+          url += SVs.targetName;
+        }
+      } else if (SVs.targetName) {
+        url += '#' + SVs.targetName;
       }
     }
   } else if (SVs.uri) {
