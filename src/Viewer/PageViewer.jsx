@@ -126,8 +126,6 @@ export default function PageViewer(props) {
 
   const coreWorker = useRef(null);
 
-  const [saveStatesWorker, setSaveStatesWorker] = useState(null);
-
   const preventMoreAnimations = useRef(false);
   const animationInfo = useRef({});
 
@@ -778,49 +776,6 @@ export default function PageViewer(props) {
     }
   }
 
-  async function saveInitialRendererStates() {
-
-    let nVariants;
-
-    try {
-      let result = await returnAllPossibleVariants({ doenetId: props.doenetId, cid, flags: props.flags });
-      nVariants = result.allPossibleVariants.length;
-    } catch (e) {
-      let message = `Could not save initial renderer state: ${e.message}`;
-      console.log(`Sending toast: ${message}`);
-      toast(message, toastType.ERROR);
-      return;
-    }
-
-    let sWorker = new Worker('core/utils/initialState.js', { type: 'module' });
-
-    // console.log(`Generating initial renderer states for ${nVariants} variants`);
-
-    sWorker.postMessage({
-      messageType: "saveInitialRendererStates",
-      args: {
-        doenetId: props.doenetId,
-        cid,
-        doenetML,
-        flags: props.flags,
-        nVariants
-      }
-    })
-
-    sWorker.onmessage = function (e) {
-      if (e.data.messageType === "finished") {
-        sWorker.terminate();
-        setSaveStatesWorker(null);
-      }
-    }
-
-    setSaveStatesWorker(sWorker);
-  }
-
-  function cancelSaveInitialRendererStates() {
-    saveStatesWorker.terminate();
-    setSaveStatesWorker(null);
-  }
 
   function requestAnimationFrame({ action, actionArgs, delay, animationId }) {
     if (!preventMoreAnimations.current) {
@@ -982,12 +937,6 @@ export default function PageViewer(props) {
     return null;
   }
 
-  let saveStatesButton;
-  if (saveStatesWorker) {
-    saveStatesButton = <button onClick={() => cancelSaveInitialRendererStates()}>Cancel saving initial renderer states</button>
-  } else {
-    saveStatesButton = <button onClick={() => saveInitialRendererStates()}>Save initial renderer states</button>
-  }
 
   let noCoreWarning = null;
   let pageStyle = { maxWidth: "850px", paddingLeft: "20px", paddingRight: "20px" };
@@ -1003,7 +952,6 @@ export default function PageViewer(props) {
   //Spacing around the whole doenetML document
   return <ErrorBoundary setIsInErrorState={props.setIsInErrorState}>
     {noCoreWarning}
-    {/* <p>{saveStatesButton}</p> */}
     <div style={pageStyle}>
       {documentRenderer}
     </div>
