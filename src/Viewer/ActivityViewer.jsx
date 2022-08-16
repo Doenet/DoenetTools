@@ -111,25 +111,8 @@ export default function ActivityViewer(props) {
 
   let location = useLocation();
   let hash = location.hash;
-
-
-  // Keep track of scroll position when clicked on a link
-  // If navigate back to that location (i.e., hit back button)
-  // then scroll back to the location when clicked
   const previousLocations = useRef({});
   const currentLocationKey = useRef(null);
-
-  if (currentLocationKey.current !== location.key) {
-    if (location.state?.previousScrollPosition && currentLocationKey.current) {
-      previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition
-    }
-    if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
-      scrollableContainer.scroll({ top: previousLocations.current[location.key].lastScrollPosition })
-    }
-
-    previousLocations.current[location.key] = { ...location };
-    currentLocationKey.current = location.key;
-  }
 
 
   let navigate = useNavigate();
@@ -242,6 +225,26 @@ export default function ActivityViewer(props) {
     }
   }, [allPagesPrerendered.current])
 
+  useEffect(() => {
+    // Keep track of scroll position when clicked on a link
+    // If navigate back to that location (i.e., hit back button)
+    // then scroll back to the location when clicked
+
+    console.log(currentLocationKey.current, location.key, location.state?.previousScrollPosition,previousLocations.current[location.key]?.lastScrollPosition)
+
+    if (currentLocationKey.current !== location.key) {
+      if (location.state?.previousScrollPosition && currentLocationKey.current) {
+        previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition
+      }
+      if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
+        scrollableContainer.scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+      }
+
+      previousLocations.current[location.key] = { ...location };
+      currentLocationKey.current = location.key;
+    }
+
+  }, [location])
 
   const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) =>
     async () => {

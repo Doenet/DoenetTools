@@ -137,7 +137,8 @@ export default function PageViewer(props) {
 
   const prefixForIds = props.prefixForIds || "";
 
-  let { hash } = useLocation();
+  let location = useLocation();
+  let hash = location.hash;
 
   useEffect(() => {
 
@@ -268,7 +269,7 @@ export default function PageViewer(props) {
         })
       }
     }
-  }, [hash, coreCreated.current, coreWorker.current])
+  }, [location, hash, coreCreated.current, coreWorker.current])
 
 
   useEffect(() => {
@@ -278,7 +279,7 @@ export default function PageViewer(props) {
         document.getElementById(cssesc(anchor))?.scrollIntoView();
       }
     }
-  }, [hash, documentRenderer, props.hideWhenInactive, props.pageIsActive])
+  }, [location, hash, documentRenderer, props.pageIsActive])
 
   useEffect(() => {
 
