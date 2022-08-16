@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PageViewer from '../../../Viewer/PageViewer';
+import useEventListener from '../../../_utils/hooks/useEventListener'
 import {
   useRecoilValue,
   useRecoilCallback,
@@ -13,7 +14,7 @@ import {
 } from '../ToolHandlers/CourseToolHandler';
 import { findFirstPageOfActivity } from '../../../_reactComponents/Course/CourseActions';
 import axios from 'axios';
-import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom } from '../ToolPanels/EditorViewer'
+import { editorPageIdInitAtom, textEditorDoenetMLAtom, updateTextEditorDoenetMLAtom, viewerDoenetMLAtom, refreshNumberAtom, editorViewerErrorStateAtom, useUpdateViewer } from '../ToolPanels/EditorViewer'
 import { retrieveTextFileForCid } from '../../../Core/utils/retrieveTextFile';
 import { parseActivityDefinition } from '../../../_utils/activityUtils';
 
@@ -29,6 +30,7 @@ export default function EditorViewer() {
   const refreshNumber = useRecoilValue(refreshNumberAtom);
   const setIsInErrorState = useSetRecoilState(editorViewerErrorStateAtom);
   const [pageCid, setPageCid] = useState(null);
+  const updateViewer = useUpdateViewer();
 
   const [errMsg, setErrMsg] = useState(null);
 
@@ -112,6 +114,15 @@ export default function EditorViewer() {
       setEditorInit("");
     }
   }, [pageCid]);
+
+
+  useEventListener("keydown", e => {
+    if (e.keyCode === 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+      e.preventDefault();
+      updateViewer();
+    }
+  });
+
 
   if (errMsg) {
     return <h1>{errMsg}</h1>;
