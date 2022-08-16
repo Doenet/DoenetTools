@@ -33,54 +33,59 @@ export default function EditorViewer() {
   const [errMsg, setErrMsg] = useState(null);
 
 
-  useEffect(async () => {
+  useEffect(() => {
     const prevTitle = document.title;
 
-    // determine cid
-    let resp = await axios.get(
-      `/api/getCidForAssignment.php`,
-      { params: { doenetId, latestAttemptOverrides: false, publicOnly: true, userCanViewSourceOnly: true } },
-    );
+    const setTitle = async () => {
+      // determine cid
+      let resp = await axios.get(
+        `/api/getCidForAssignment.php`,
+        { params: { doenetId, latestAttemptOverrides: false, publicOnly: true, userCanViewSourceOnly: true } },
+      );
 
-    let activityCid;
+      let activityCid;
 
-    if (!resp.data.success || !resp.data.cid) {
-      if (resp.data.cid) {
-        setErrMsg(`Error loading activity: ${resp.data.message}`);
+      if (!resp.data.success || !resp.data.cid) {
+        if (resp.data.cid) {
+          setErrMsg(`Error loading activity: ${resp.data.message}`);
+        } else {
+          setErrMsg(`Error loading activity: public content with public source not found`);
+        }
+        return;
       } else {
-        setErrMsg(`Error loading activity: public content with public source not found`);
+        activityCid = resp.data.cid;
       }
-      return;
-    } else {
-      activityCid = resp.data.cid;
+
+      let activityDefinition;
+
+      try {
+        activityDefinition = await retrieveTextFileForCid(activityCid, "doenet");
+      }
+      catch (e) {
+        setErrMsg(`Error loading activity: activity file not found`);
+        return;
+      }
+
+      let parseResult = parseActivityDefinition(activityDefinition);
+      if (!parseResult.success) {
+        setErrMsg(`Invalid activity definition: ${parseResult.message}`);
+        return;
+      }
+
+      let activityJSON = parseResult.activityJSON;
+
+
+      setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.order));
+
+      if (errMsg) {
+        setErrMsg(null);
+      }
+
+      document.title = `${resp.data.label} - Doenet`;
     }
 
-    let activityDefinition;
-
-    try {
-      activityDefinition = await retrieveTextFileForCid(activityCid, "doenet");
-    }
-    catch (e) {
-      setErrMsg(`Error loading activity: activity file not found`);
-      return;
-    }
-
-    let parseResult = parseActivityDefinition(activityDefinition);
-    if (!parseResult.success) {
-      setErrMsg(`Invalid activity definition: ${parseResult.message}`);
-      return;
-    }
-
-    let activityJSON = parseResult.activityJSON;
-
-
-    setPageCid(findFirstPageCidFromCompiledActivity(activityJSON.order));
-
-    if (errMsg) {
-      setErrMsg(null);
-    }
-    
-    document.title = `${resp.data.label} - Doenet`;
+    setTitle()
+      .catch(console.error)
 
     return () => {
       document.title = prevTitle;
