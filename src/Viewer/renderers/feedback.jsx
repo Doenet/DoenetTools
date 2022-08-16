@@ -5,7 +5,7 @@ import { faComment as thoughtBubble } from '@fortawesome/free-regular-svg-icons'
 import VisibilitySensor from 'react-visibility-sensor-v2';
 
 export default React.memo(function Feedback(props) {
-  let { name, SVs, children, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, children, actions, callAction } = useDoenetRender(props);
 
   let onChangeVisibility = isVisible => {
     callAction({
@@ -45,7 +45,7 @@ export default React.memo(function Feedback(props) {
         {icon} Feedback
       </span>
       <aside
-        id={name}
+        id={id}
         style={{
           backgroundColor: 'white',
           margin: '0px 4px 12px 4px',
@@ -56,7 +56,7 @@ export default React.memo(function Feedback(props) {
           borderBottomRightRadius: '5px',
         }}
       >
-        <a name={name} />
+        <a name={id} />
 
         {SVs.feedbackText}
         {children}

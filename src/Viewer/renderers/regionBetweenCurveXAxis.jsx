@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 import { createFunctionFromDefinition } from '../../Core/utils/function';
 
 export default React.memo(function RegionBetweenCurveXAxis(props) {
-  let { name, SVs } = useDoenetRender(props);
+  let { name, id, SVs } = useDoenetRender(props);
 
   RegionBetweenCurveXAxis.ignoreActionsWithoutCore = true;
 
@@ -149,7 +149,7 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
       board.updateRenderer();
     }
 
-    return <><a name={name} /></>
+    return <><a name={id} /></>
 
   }
 
@@ -158,5 +158,5 @@ export default React.memo(function RegionBetweenCurveXAxis(props) {
   }
 
   // don't think we want to return anything if not in board
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 })

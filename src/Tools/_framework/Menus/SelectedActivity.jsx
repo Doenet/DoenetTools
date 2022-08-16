@@ -8,7 +8,7 @@ import {
   AssignedDate,
   AssignTo,
   AssignUnassignActivity,
-  AttempLimit,
+  AttemptLimit,
   AttemptAggregation,
   DueDate,
   GradeCategory,
@@ -18,6 +18,7 @@ import {
   ProctorMakesAvailable,
   ShowCorrectness,
   ShowCreditAchieved,
+  Paginate,
   ShowDoenetMLSource,
   ShowFeedback,
   ShowHints,
@@ -158,56 +159,74 @@ export default function SelectedActivity() {
         </ActionButtonGroup>
         <br />
 
-      <AssignUnassignActivity doenetId={doenetId} courseId={courseId} />
-  
-      <Textfield
-        label="Label"
-        vertical
-        width="menu"
-        value={itemTextFieldLabel}
-        onChange={(e) => setItemTextFieldLabel(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.keyCode === 13) handelLabelModfication();
-        }}
-        onBlur={handelLabelModfication}
-      />
-      <br />
-      <ButtonGroup vertical>
-        <Button
-          width="menu"
-          onClick={() => create({ itemType: 'page' })}
-          value="Add Page"
-        />
-        <Button
-          width="menu"
-          onClick={() => create({ itemType: 'order' })}
-          value="Add Order"
-        />
-         <Button
-          width="menu"
-          onClick={() => create({ itemType: 'collectionLink' })}
-          value="Add Collection Link"
-        />
-      </ButtonGroup>
-      <br />
-      
-      <AssignmentSettings doenetId={doenetId} courseId={courseId} />
-      <Button
-        width="menu"
-        value="Delete Activity"
-        alert
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
+        <AssignUnassignActivity doenetId={doenetId} courseId={courseId} />
 
-          deleteItem({ doenetId });
+        <Textfield
+          label="Label"
+          vertical
+          width="menu"
+          value={itemTextFieldLabel}
+          onChange={(e) => setItemTextFieldLabel(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.keyCode === 13) handelLabelModfication();
+          }}
+          onBlur={handelLabelModfication}
+        />
+        <br />
+        <ButtonGroup vertical>
+          <Button
+            width="menu"
+            onClick={() => create({ itemType: 'page' })}
+            value="Add Page"
+            data-test="Add Page"
+          />
+          <Button
+            width="menu"
+            onClick={() => create({ itemType: 'order' })}
+            value="Add Order"
+            data-test="Add Order"
+          />
+        </ButtonGroup>
+        <br />
+
+        <AssignmentSettings doenetId={doenetId} courseId={courseId} />
+        <Button
+          width="menu"
+          value="Delete Activity"
+          data-test="Delete Activity"
+          alert
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            deleteItem({ doenetId });
+          }}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      {heading}
+      <ActionButton
+        width="menu"
+        data-test="Edit Activity"
+        value="View Activity"
+        onClick={() => {
+          setPageToolView({
+            page: 'course',
+            tool: 'assignment',
+            view: '',
+            params: {
+              doenetId,
+            },
+          });
         }}
       />
+      <AssignmentSettings doenetId={doenetId} courseId={courseId} />
     </>
   );
-}else{
-  return null;
-}
 }
 
 //TODO: Emilio
@@ -244,7 +263,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
         <AssignedDate {...sharedProps} />
         <DueDate {...sharedProps} />
         <TimeLimit {...sharedProps} />
-        <AttempLimit {...sharedProps} />
+        <AttemptLimit {...sharedProps} />
         <AttemptAggregation {...sharedProps} />
         <TotalPointsOrPercent {...sharedProps} />
         <GradeCategory {...sharedProps} />
@@ -256,6 +275,7 @@ export function AssignmentSettings({ doenetId, courseId }) {
           <ShowHints {...sharedProps} />
           <ShowCorrectness {...sharedProps} />
           <ShowCreditAchieved {...sharedProps} />
+          <Paginate {...sharedProps} />
           <ProctorMakesAvailable {...sharedProps} />
           <MakePublic {...sharedProps} />
           <ShowDoenetMLSource {...sharedProps} />

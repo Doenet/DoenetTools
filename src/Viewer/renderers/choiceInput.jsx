@@ -6,7 +6,7 @@ import { rendererState } from './useDoenetRenderer';
 import { useSetRecoilState } from 'recoil';
 
 export default React.memo(function ChoiceInput(props) {
-  let { name, SVs, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, children, sourceOfUpdate, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
 
   ChoiceInput.baseStateVariable = "selectedIndices";
 
@@ -123,7 +123,7 @@ export default React.memo(function ChoiceInput(props) {
           checkWorkStyle.backgroundColor = "rgb(2, 117, 216)";
         }
         checkWorkButton = <button
-          id={name + '_submit'}
+          id={id + '_submit'}
           disabled={disabled}
           tabIndex="0"
           // ref={c => { this.target = c && ReactDOM.findDOMNode(c); }}
@@ -146,7 +146,7 @@ export default React.memo(function ChoiceInput(props) {
           if (validationState === "correct") {
             checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
             checkWorkButton = <span
-              id={name + '_correct'}
+              id={id + '_correct'}
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faCheck} />
@@ -160,14 +160,14 @@ export default React.memo(function ChoiceInput(props) {
 
             checkWorkStyle.backgroundColor = "#efab34";
             checkWorkButton = <span
-              id={name + '_partial'}
+              id={id + '_partial'}
               style={checkWorkStyle}
             >{partialCreditContents}</span>
           } else {
             //incorrect
             checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
             checkWorkButton = <span
-              id={name + '_incorrect'}
+              id={id + '_incorrect'}
               style={checkWorkStyle}
             ><FontAwesomeIcon icon={faTimes} /></span>
 
@@ -176,7 +176,7 @@ export default React.memo(function ChoiceInput(props) {
           // showCorrectness is false
           checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkWorkButton = <span
-            id={name + '_saved'}
+            id={id + '_saved'}
             style={checkWorkStyle}
           ><FontAwesomeIcon icon={faCloud} /></span>
 
@@ -222,9 +222,9 @@ export default React.memo(function ChoiceInput(props) {
     }
 
     return <React.Fragment>
-      <a name={name} />
+      <a name={id} />
       <select
-        id={name}
+        id={id}
         onChange={onChangeHandler}
         value={value}
         disabled={disabled}
@@ -261,7 +261,7 @@ export default React.memo(function ChoiceInput(props) {
           checkWorkStyle.backgroundColor = "rgb(200,200,200)";
         }
         checkworkComponent = (
-          <button id={name + "_submit"}
+          <button id={id + "_submit"}
             tabIndex="0"
             disabled={disabled}
             style={checkWorkStyle}
@@ -286,7 +286,7 @@ export default React.memo(function ChoiceInput(props) {
           if (validationState === "correct") {
             checkWorkStyle.backgroundColor = "rgb(92, 184, 92)";
             checkworkComponent = (
-              <span id={name + "_correct"}
+              <span id={id + "_correct"}
                 style={checkWorkStyle}
               >
                 <FontAwesomeIcon icon={faCheck} />
@@ -296,7 +296,7 @@ export default React.memo(function ChoiceInput(props) {
           } else if (validationState === "incorrect") {
             checkWorkStyle.backgroundColor = "rgb(187, 0, 0)";
             checkworkComponent = (
-              <span id={name + "_incorrect"}
+              <span id={id + "_incorrect"}
                 style={checkWorkStyle}
               >
                 <FontAwesomeIcon icon={faTimes} />
@@ -309,7 +309,7 @@ export default React.memo(function ChoiceInput(props) {
             let partialCreditContents = `${percent}% Correct`;
 
             checkworkComponent = (
-              <span id={name + "_partial"}
+              <span id={id + "_partial"}
                 style={checkWorkStyle}
               >
                 {partialCreditContents}
@@ -318,7 +318,7 @@ export default React.memo(function ChoiceInput(props) {
         } else {
           checkWorkStyle.backgroundColor = "rgb(74, 3, 217)";
           checkworkComponent = (
-            <span id={name + "_saved"}
+            <span id={id + "_saved"}
               style={checkWorkStyle}
             >
               <FontAwesomeIcon icon={faCloud} />
@@ -346,7 +346,7 @@ export default React.memo(function ChoiceInput(props) {
       </>
     }
 
-    let inputKey = name;
+    let inputKey = id;
     let listStyle = {
       listStyleType: "none"
     }
@@ -382,7 +382,7 @@ export default React.memo(function ChoiceInput(props) {
       });
 
     return <React.Fragment>
-      <ol id={inputKey} style={listStyle}><a name={name} />{choiceDoenetTags}</ol>
+      <ol id={inputKey} style={listStyle}><a name={id} />{choiceDoenetTags}</ol>
       {checkworkComponent}
     </React.Fragment>
 

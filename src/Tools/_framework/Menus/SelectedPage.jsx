@@ -58,6 +58,7 @@ export default function SelectedPage() {
   <ActionButton
           width="menu"
           value="Edit Page"
+          data-test="Edit Page" 
           onClick={() => {
             setPageToolView({
               page: 'course',

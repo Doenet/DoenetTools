@@ -1,14 +1,22 @@
 import React from 'react';
+import { useLocation, useNavigate } from 'react-router';
+import { Link } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 import { pageToolViewAtom } from '../../Tools/_framework/NewToolRoot';
 import { itemByDoenetId } from '../../_reactComponents/Course/CourseActions';
+import { scrollableContainerAtom } from '../ActivityViewer';
 import useDoenetRender from './useDoenetRenderer';
 
 export default React.memo(function Ref(props) {
-  let { name, SVs, children } = useDoenetRender(props);
+  let { name, id, SVs, children } = useDoenetRender(props);
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
+  const scollableContainer = useRecoilValue(scrollableContainerAtom);
+
+  let { search } = useLocation();
+  let navigate = useNavigate();
+
 
   if (SVs.hidden) {
     return null;
@@ -27,9 +35,6 @@ export default React.memo(function Ref(props) {
       url = `cid=${SVs.cid}`
     } else {
       url = `doenetId=${SVs.doenetId}`
-    }
-    if (SVs.pageNumber) {
-      url += `&page=${SVs.pageNumber}`
     }
     if (SVs.variantIndex) {
       url += `&variant=${SVs.variantIndex}`;
@@ -52,8 +57,17 @@ export default React.memo(function Ref(props) {
 
     haveValidTarget = true;
 
-    if (SVs.targetName) {
-      url += "#" + SVs.targetName;
+    if (SVs.hash) {
+      url += SVs.hash;
+    } else {
+      if (SVs.page) {
+        url += `#page${SVs.page}`
+        if (SVs.targetName) {
+          url += SVs.targetName;
+        }
+      } else if (SVs.targetName) {
+        url += '#' + SVs.targetName;
+      }
     }
   } else if (SVs.uri) {
     url = SVs.uri;
@@ -61,22 +75,34 @@ export default React.memo(function Ref(props) {
       haveValidTarget = true;
     }
   } else {
-    url = "#" + SVs.targetName;
+    url += search;
+
+    if (SVs.page) {
+      url += `#page${SVs.page}`
+    } else {
+      let firstSlash = id.indexOf("/");
+      let prefix = id.substring(0, firstSlash);
+      url += "#" + prefix;
+    }
+    url += SVs.targetName;
     targetForATag = null;
     haveValidTarget = true;
   }
 
 
   if (SVs.createButton) {
-    return <span id={name}><a name={name} />
-      <button id={name + "_button"} onClick={() => window.location.href = url} disabled={SVs.disabled}>{SVs.linkText}</button>
+    return <span id={id}><a name={id} />
+      <button id={id + "_button"} onClick={() => navigate(url)} disabled={SVs.disabled}>{SVs.linkText}</button>
     </span>;
 
   } else {
     if (haveValidTarget) {
-      return <a target={targetForATag} id={name} name={name} href={url}>{linkContent}</a>
+
+      let stateObj = {}
+      Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scollableContainer.scrollTop, enumerable: true });
+      return <Link target={targetForATag} id={id} name={id} to={url} state={stateObj}>{linkContent}</Link>
     } else {
-      return <span id={name}>{linkContent}</span>
+      return <span id={id}>{linkContent}</span>
     }
   }
 

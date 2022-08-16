@@ -5,7 +5,7 @@ import me from 'math-expressions';
 import { MathJax } from 'better-react-mathjax';
 
 export default React.memo(function Vector(props) {
-  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Vector.ignoreActionsWithoutCore = true;
 
@@ -444,7 +444,7 @@ export default React.memo(function Vector(props) {
 
     }
 
-    return <><a name={name} /></>
+    return <><a name={id} /></>
 
   }
 
@@ -454,7 +454,7 @@ export default React.memo(function Vector(props) {
   }
 
   let mathJaxify = "\\(" + SVs.latex + "\\)";
-  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 })
 
 function styleToDash(style) {

@@ -4,17 +4,17 @@ import Button from '../../_reactComponents/PanelHeaderComponents/Button';
 
 
 export default React.memo(function TriggerSet(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props,false);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props,false);
 
   if (SVs.hidden) {
     return null;
   }
 
   return (
-    <div id={name} style={{ margin:"12px 0" ,display: "inline-block" }}>
-      <a name={name} />
+    <div id={id} style={{ margin:"12px 0" ,display: "inline-block" }}>
+      <a name={id} />
       <Button
-        id={name + "_button"} 
+        id={id + "_button"} 
         onClick={()=>callAction({ action:actions.triggerActions })} 
         disabled={SVs.disabled}
         value={SVs.label}

@@ -6,7 +6,7 @@ import { MathJax } from 'better-react-mathjax';
 
 
 export default React.memo(function Line(props) {
-  let { name, SVs, actions, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, callAction } = useDoenetRender(props);
 
   Line.ignoreActionsWithoutCore = true;
 
@@ -277,7 +277,7 @@ export default React.memo(function Line(props) {
       board.updateRenderer();
     }
 
-    return <><a name={name} /></>
+    return <><a name={id} /></>
 
   }
 
@@ -288,7 +288,7 @@ export default React.memo(function Line(props) {
 
 
   let mathJaxify = "\\(" + SVs.latex + "\\)";
-  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 })
 
 function styleToDash(style, dash) {

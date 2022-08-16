@@ -3,7 +3,7 @@ import useDoenetRender from './useDoenetRenderer';
 import { MathJax } from "better-react-mathjax";
 
 export default React.memo(function Math(props) {
-  let { name, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate } = useDoenetRender(props);
 
 
   if (SVs.hidden) {
@@ -50,7 +50,7 @@ export default React.memo(function Math(props) {
   )
 
   let anchors = [
-    React.createElement('a', { name, key: name })
+    React.createElement('a', { name: id, key: id })
   ];
   if (SVs.mrowChildNames) {
     anchors.push(SVs.mrowChildNames.map(x =>
@@ -63,14 +63,14 @@ export default React.memo(function Math(props) {
   // so hard coded the only two cases using so far: with 1 or 2 entries
 
   if (latexOrInputChildren.length === 0) {
-    return <>{anchors}<span id={name}></span></>
+    return <>{anchors}<span id={id}></span></>
 
   } else if (latexOrInputChildren.length === 1) {
-    return <>{anchors}<span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
+    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
 
   } else if (latexOrInputChildren.length === 2) {
-    return <>{anchors}<span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}{latexOrInputChildren[1]}</MathJax></span></>
+    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}{latexOrInputChildren[1]}</MathJax></span></>
   } else {
-    return <>{anchors}<span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
+    return <>{anchors}<span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{latexOrInputChildren[0]}</MathJax></span></>
   }
 })

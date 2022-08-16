@@ -4,7 +4,7 @@ import { BoardContext } from './graph';
 import { MathJax } from 'better-react-mathjax';
 
 export default React.memo(function Point(props) {
-  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   Point.ignoreActionsWithoutCore = true;
 
@@ -422,7 +422,7 @@ export default React.memo(function Point(props) {
       board.updateRenderer();
     }
 
-    return <a name={name} />
+    return <a name={id} />
   }
 
   // not in board
@@ -434,7 +434,7 @@ export default React.memo(function Point(props) {
   //Render text coordinates when outside of graph
 
   let mathJaxify = "\\(" + SVs.latex + "\\)";
-  return <><a name={name} /><span id={name}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
+  return <><a name={id} /><span id={id}><MathJax hideUntilTypeset={"first"} inline dynamic >{mathJaxify}</MathJax></span></>
 
 
 })

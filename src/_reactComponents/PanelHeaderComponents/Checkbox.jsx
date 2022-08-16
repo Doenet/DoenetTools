@@ -82,6 +82,7 @@ export default function CheckboxButton(props) {
       aria-checked={props.checked}
       aria-disabled={disabled}
       role="checkbox"
+      data-test={props.dataTest}
       onClick={(e) => {
         // console.log('contains click', buttonRef.current.contains(e.target));
         if (props.onClick){

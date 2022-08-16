@@ -308,7 +308,7 @@ function nearestValue(refval, points, SVs) {
 }
 
 export default React.memo(function Slider(props) {
-  let { name, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, ignoreUpdate, rendererName, callAction } = useDoenetRender(props);
   // console.log("name: ", name, " value: ", SVs.value, " index: ", SVs.index, "ignoreUpdate", ignoreUpdate);
   // console.log(SVs)
 
@@ -408,12 +408,12 @@ export default React.memo(function Slider(props) {
         noTicked={SVs.showTicks === false}
         ref={containerRef}
       >
-        <div id={`${name}-label`} style={{ height: SVs.label || SVs.showValue ? '20px' : '0px' }}>
+        <div id={`${id}-label`} style={{ height: SVs.label || SVs.showValue ? '20px' : '0px' }}>
           {myLabel}
         </div>
         <SubContainer2>
-          <StyledSlider width={`${SVs.width.size}px`} id={name}>
-            <StyledThumb disabled style={{ left: `${thumbXPos - 4}px` }} id={`${name}-handle`} />
+          <StyledSlider width={`${SVs.width.size}px`} id={id}>
+            <StyledThumb disabled style={{ left: `${thumbXPos - 4}px` }} id={`${id}-handle`} />
             {ticksAndLabels}
           </StyledSlider>
         </SubContainer2>
@@ -675,12 +675,12 @@ export default React.memo(function Slider(props) {
       <ActionButton
         value="Prev"
         onClick={(e) => handlePrevious(e)}
-        id={`${name}-prevbutton`}
+        id={`${id}-prevbutton`}
       ></ActionButton>
       <ActionButton
         value="Next"
         onClick={(e) => handleNext(e)}
-        id={`${name}-nextbutton`}
+        id={`${id}-nextbutton`}
       ></ActionButton>
     </ActionButtonGroup>
   } else {
@@ -712,14 +712,14 @@ export default React.memo(function Slider(props) {
 
   return (
     <SliderContainer ref={containerRef} labeled={(SVs.showControls || SVs.label)} noTicked={SVs.showTicks === false} onKeyDown={handleKeyDown} tabIndex='0'>
-      <div id={`${name}-label`} style={{ height: (SVs.label)  || (SVs.showValue) ? "20px" : "0px" }}>
+      <div id={`${id}-label`} style={{ height: (SVs.label)  || (SVs.showValue) ? "20px" : "0px" }}>
         {myLabel}
       </div>
       <SubContainer2 onMouseDown={handleDragEnter}>
-        <StyledSlider width={(`${SVs.width.size}px`)} id={name}>
+        <StyledSlider width={(`${SVs.width.size}px`)} id={id}>
           {/* {valueDisplay} */}
           <StyledThumb style={{ left: `${thumbXPos - 4}px` }}
-            id={`${name}-handle`} />
+            id={`${id}-handle`} />
           {ticksAndLabels}
         </StyledSlider>
       </SubContainer2>

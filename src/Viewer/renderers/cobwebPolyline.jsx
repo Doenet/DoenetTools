@@ -5,7 +5,7 @@ import { createFunctionFromDefinition } from '../../Core/utils/function';
 
 
 export default React.memo(function CobwebPolyline(props) {
-  let { name, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
+  let { name, id, SVs, actions, sourceOfUpdate, callAction } = useDoenetRender(props);
 
   CobwebPolyline.ignoreActionsWithoutCore = true;
 
@@ -364,7 +364,7 @@ export default React.memo(function CobwebPolyline(props) {
   }
 
   // don't think we want to return anything if not in board
-  return <><a name={name} /></>
+  return <><a name={id} /></>
 
 })
 

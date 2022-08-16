@@ -69,15 +69,24 @@ Cypress.Commands.add("clearAllOfAUsersActivities", ({userId}) => {
 });
 
 Cypress.Commands.add("createCourse", ({userId,courseId}) => {
-  cy.request(`/cyapi/cypressCreateCourse.php?userId=${userId}&courseId=${courseId}`)
+  cy.request('POST', `/cyapi/cypressCreateCourse.php`, {userId,courseId})
     // .then((resp)=>{
     //   cy.log(resp.body)
     // })
 });
 
-Cypress.Commands.add("createActivity", ({courseId,doenetId,parentDoenetId,pageDoenetId}) => {
+Cypress.Commands.add("createActivity", ({courseId,doenetId,parentDoenetId,pageDoenetId,doenetML=""}) => {
   // cy.log(courseId,doenetId,parentDoenetId,pageDoenetId)
-  cy.request(`/cyapi/cypressCreateActivity.php?courseId=${courseId}&doenetId=${doenetId}&parentDoenetId=${parentDoenetId}&pageDoenetId=${pageDoenetId}`)
+  cy.request('POST', `/cyapi/cypressCreateActivity.php`, {courseId, doenetId,parentDoenetId,pageDoenetId,doenetML})
+    // .then((resp)=>{
+    //   cy.log(resp.body)
+    // })
+});
+
+
+Cypress.Commands.add("createMultipageActivity", ({courseId,doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,doenetML1,doenetML2}) => {
+  // cy.log(courseId,doenetId,parentDoenetId,pageDoenetId)
+  cy.request('POST', `/cyapi/cypressCreateMultipageActivity.php`, {courseId, doenetId,parentDoenetId,pageDoenetId1,pageDoenetId2,doenetML1,doenetML2})
     // .then((resp)=>{
     //   cy.log(resp.body)
     // })
