@@ -1833,12 +1833,24 @@ export const useCourse = (courseId) => {
 
   const updateCollectionLink = useRecoilCallback(
     ({ set,snapshot }) =>
-      async ({doenetId, label, collectionDoenetId, isManuallyFiltered, manuallyFilteredPages=[], successCallback, failureCallback = defaultFailure}) => {
+      async ({doenetId, label, collectionDoenetId, isManuallyFiltered, pages=[], successCallback, failureCallback = defaultFailure}) => {
 
         let collectionLinkObj = await snapshot.getPromise(itemByDoenetId(doenetId));
         let activityObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.containingDoenetId))
+        // console.log("previous collectionLink:",collectionLinkObj)
+        if (collectionDoenetId !== collectionLinkObj.collectionDoenetId){
+          //New collection source!  
+          //We need to update pages from the server 
+          //and add new objects to itemByDoenetId
+          let { data } = await axios.post('/api/createPageLinks.php', {
+            courseId,
+            collectionDoenetId
+          });
+        console.log("createPageLinks data",data)
 
-        let changesObj = {label,collectionDoenetId,isManuallyFiltered,manuallyFilteredPages};
+        }
+
+        let changesObj = {label,collectionDoenetId,isManuallyFiltered,pages};
         let newJSON = updateAssignmentCollectionAlias({content:activityObj.content,needleDoenetId:doenetId,changesObj});
         // console.log("newJSON",newJSON)
         let { data } = await axios.post('/api/updateActivityStructure.php', {
@@ -1855,7 +1867,7 @@ export const useCourse = (courseId) => {
           let next = {...prev}
           next.isManuallyFiltered = isManuallyFiltered;
           next.collectionDoenetId = collectionDoenetId;
-          next.manuallyFilteredPages = [...manuallyFilteredPages];
+          next.pages = [...pages];
           if(label){
             next.label = label;
           }
