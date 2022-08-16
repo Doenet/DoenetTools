@@ -62,9 +62,11 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
   const [initializeStatus, setInitializeStatus] = useState("");
 
   let assignActivityText = 'Assign Activity';
+  let assignActivityToast = 'Activity Assigned';
   if (isAssigned) {
     // if (assignedCid != null) {
     assignActivityText = 'Update Assigned Activity';
+    assignActivityToast = 'Assigned Activity Updated';
   }
 
   let [initializingWorker, setInitializingWorker] = useRecoilState(initializingWorkersAtom(doenetId));
@@ -90,7 +92,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
         doenetId,
         isAssigned: true,
         successCallback: () => {
-          addToast('Activity Assigned', toastType.INFO);
+          addToast(assignActivityToast, toastType.INFO);
         },
       });
     }}
@@ -116,16 +118,16 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
       }}
     />
 
-    if(initializingWorker) {
+    if (initializingWorker) {
       prerenderButton = <ActionButton
-      width="menu"
-      data-test="Cancel prerendering"
-      value={`Cancel prerendering (status: ${initializeStatus})`}
-      onClick={() => {
-        initializingWorker.terminate();
-        setInitializingWorker(null)
-      }}
-    />
+        width="menu"
+        data-test="Cancel prerendering"
+        value={`Cancel prerendering (status: ${initializeStatus})`}
+        onClick={() => {
+          initializingWorker.terminate();
+          setInitializingWorker(null)
+        }}
+      />
     } else {
 
       let initializePrerender = async () => {
@@ -161,11 +163,11 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
       }
 
       prerenderButton = <ActionButton
-      width="menu"
-      data-test="Prerender activity"
-      value="Prerender activity"
-      onClick={initializePrerender}
-    />
+        width="menu"
+        data-test="Prerender activity"
+        value="Prerender activity"
+        onClick={initializePrerender}
+      />
 
     }
 
