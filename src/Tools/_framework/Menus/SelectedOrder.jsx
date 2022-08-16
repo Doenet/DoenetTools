@@ -127,6 +127,8 @@ if (behavior == 'select'){
             create({itemType:"collectionLink"})
           }
           value="Add Collection Link"
+          data-test="Add Collection Link"
+
         />
     </ButtonGroup>
     <br />

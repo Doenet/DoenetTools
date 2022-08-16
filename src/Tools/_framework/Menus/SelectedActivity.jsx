@@ -186,6 +186,14 @@ export default function SelectedActivity() {
             value="Add Order"
             data-test="Add Order"
           />
+          <Button
+          width="menu"
+          onClick={() =>
+            create({itemType:"collectionLink"})
+          }
+          data-test="Add Collection Link"
+          value="Add Collection Link"
+        />
         </ButtonGroup>
         <br />
 
