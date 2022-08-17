@@ -25,6 +25,16 @@ export const scrollableContainerAtom = atom({
   default: null
 })
 
+export const currentPageAtom = atom({
+  key: "currentPageAtom",
+  default: 0
+})
+
+export const activityAttemptNumberSetUpAtom = atom({
+  key: "activityAttemptNumberSetUpAtom",
+  default: 0
+})
+
 export default function ActivityViewer(props) {
   const toast = useToast();
 
@@ -65,8 +75,11 @@ export default function ActivityViewer(props) {
   const [flags, setFlags] = useState(props.flags);
 
   const [currentPage, setCurrentPage] = useState(0);
+  const setRecoilCurrentPage = useSetRecoilState(currentPageAtom);
   const currentPageRef = useRef(currentPage);  // so that event listener can get new current page
   currentPageRef.current = currentPage; // so updates on every refresh
+
+  const setActivityAttemptNumberSetUp = useSetRecoilState(activityAttemptNumberSetUpAtom);
 
   const [nPages, setNPages] = useState(0);
 
@@ -182,6 +195,7 @@ export default function ActivityViewer(props) {
 
             if (topPage && topPage !== currentPageRef.current) {
               setCurrentPage(topPage)
+              setRecoilCurrentPage(topPage)
             }
           }
 
@@ -198,7 +212,9 @@ export default function ActivityViewer(props) {
     if (hash && nPages) {
       let match = hash.match(/^#page(\d+)/)
       if (match) {
-        setCurrentPage(Math.max(1, Math.min(nPages, match[1])));
+        let newPage = Math.max(1, Math.min(nPages, match[1]));
+        setCurrentPage(newPage);
+        setRecoilCurrentPage(newPage);
       }
     }
   }, [hash, nPages])
@@ -228,7 +244,7 @@ export default function ActivityViewer(props) {
       currentLocationKey: currentLocationKey.current,
       newLocationKey: location.key,
       scrollPositionFromLink: location.state?.previousScrollPosition,
-      newScrollPOsition: previousLocations.current[location.key]?.lastScrollPosition
+      newScrollPosition: previousLocations.current[location.key]?.lastScrollPosition
     })
 
     if (currentLocationKey.current !== location.key) {
@@ -245,11 +261,9 @@ export default function ActivityViewer(props) {
 
   }, [location])
 
-  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) =>
-    async () => {
-      return await snapshot.getPromise(saveStateToDBTimerIdAtom)
-    }
-  )
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) => async () => {
+    return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+  }, [saveStateToDBTimerIdAtom])
 
 
   function resetActivity({ changedOnDevice, newCid, newAttemptNumber }) {
@@ -431,6 +445,7 @@ export default function ActivityViewer(props) {
         // activityState is just currentPage
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(localInfo.activityState.currentPage);
+          setRecoilCurrentPage(localInfo.activityState.currentPage);
         }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
@@ -513,6 +528,7 @@ export default function ActivityViewer(props) {
         // activityState is just currentPage
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(activityState.currentPage);
+          setRecoilCurrentPage(activityState.currentPage);
         }
 
         // activityInfo is orderWithCids, variantsByPage, itemWeights, and numberOfVariants
@@ -536,10 +552,11 @@ export default function ActivityViewer(props) {
         // start at page 1
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(1);
+          setRecoilCurrentPage(1);
         }
 
         let results;
-        results = await calculateOrderAndVariants({activityDefinition, requestedVariantIndex});
+        results = await calculateOrderAndVariants({ activityDefinition, requestedVariantIndex });
         if (!results.success) {
           if (props.setIsInErrorState) {
             props.setIsInErrorState(true)
@@ -693,7 +710,7 @@ export default function ActivityViewer(props) {
 
   }
 
-  async function saveChangesToDatabase(overrideThrottle = false) {
+  async function saveChangesToDatabase() {
     // throttle save to database at 60 seconds
 
     if (!changesToBeSaved.current) {
@@ -708,11 +725,7 @@ export default function ActivityViewer(props) {
     let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
 
     if (oldTimeoutId !== null) {
-      if (overrideThrottle) {
-        clearTimeout(oldTimeoutId);
-      } else {
-        return;
-      }
+      return;
     }
 
 
@@ -781,24 +794,12 @@ export default function ActivityViewer(props) {
       // then we reset the activity to the new state
       if (attemptNumber !== Number(data.attemptNumber)) {
 
-        if (props.flags.allowLocalState) {
-          idb_set(
-            `${props.doenetId}|${data.attemptNumber}|${data.cid}`,
-            {
-              activityState: JSON.parse(data.activityState),
-              activityInfo: JSON.parse(data.activityInfo),
-              saveId: data.saveId,
-              variantIndex: data.variantIndex
-            }
-          )
+        resetActivity({
+          changedOnDevice: data.device,
+          newCid: data.cid,
+          newAttemptNumber: Number(data.attemptNumber),
+        })
 
-          resetActivity({
-            changedOnDevice: data.device,
-            newCid: data.cid,
-            newAttemptNumber: Number(data.attemptNumber),
-          })
-
-        }
       } else if (cid !== data.cid) {
 
         // if the cid changed without the attemptNumber changing, something went wrong
@@ -824,15 +825,11 @@ export default function ActivityViewer(props) {
     //Initialize user_assignment tables
     if (flags.allowSaveSubmissions) {
 
-      // if an item weight is set to zero, then it is not considered an item
-      // in the assignments table
-      // and it will not affect the resulting score
-      let weights = newItemWeights.filter(x => x);
 
       try {
         let resp = await axios.post('/api/initAssignmentAttempt.php', {
           doenetId: props.doenetId,
-          weights,
+          weights: newItemWeights,
           attemptNumber,
         });
 
@@ -879,6 +876,7 @@ export default function ActivityViewer(props) {
 
   function clickNext() {
     setCurrentPage((was) => Math.min(nPages, was + 1));
+    setRecoilCurrentPage((was) => Math.min(nPages, was + 1));
 
     let event = {
       verb: "interacted",
@@ -893,6 +891,7 @@ export default function ActivityViewer(props) {
 
   function clickPrevious() {
     setCurrentPage((was) => Math.max(1, was - 1));
+    setRecoilCurrentPage((was) => Math.max(1, was - 1));
 
     let event = {
       verb: "interacted",
@@ -1101,7 +1100,9 @@ export default function ActivityViewer(props) {
 
     loadState().then(results => {
       if (results) {
-        initializeUserAssignmentTables(results.newItemWeights);
+        initializeUserAssignmentTables(results.newItemWeights).then(() => {
+          setActivityAttemptNumberSetUp(attemptNumber)
+        })
         props.generatedVariantCallback?.(results.newVariantIndex, activityInfo.current.numberOfVariants);
       }
       settingUp.current = false;
@@ -1123,7 +1124,7 @@ export default function ActivityViewer(props) {
 
   for (let [ind, page] of order.entries()) {
     let itemNumber;
-    if (itemWeights[ind] > 0) {
+    if (itemWeights[ind] >= 0) {
       lastItemNumber++;
       itemNumber = lastItemNumber;
     } else {

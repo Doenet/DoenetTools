@@ -25,6 +25,7 @@ import { toastType, useToast } from '@Toast';
 import { searchParamAtomFamily } from '../../Tools/_framework/NewToolRoot';
 import { useSaveDraft } from '../../Tools/_framework/ToolPanels/DoenetMLEditor';
 import { prerenderActivity } from '../../_utils/activityUtils';
+import Textfield from '../PanelHeaderComponents/Textfield';
 
 const InputWrapper = styled.div`
   margin: 0 5px 10px 5px;
@@ -629,6 +630,45 @@ export const GradeCategory = ({ courseId, doenetId }) => {
               keyToUpdate: 'gradeCategory',
               value: val,
               description: 'Grade Category',
+            });
+          }
+        }}
+      />
+    </InputWrapper>
+  );
+};
+
+export const ItemWeights = ({ courseId, doenetId }) => {
+  const {
+    value: { itemWeights: recoilValue },
+    updateAssignmentSettings,
+  } = useActivity(courseId, doenetId);
+  const [textValue, setTextValue] = useState("");
+
+  useEffect(() => {
+    setTextValue(recoilValue?.join(" "))
+  }, [recoilValue]);
+
+  return (
+    <InputWrapper>
+      <LabelText>Item Weights</LabelText>
+      <Textfield
+        vertical
+        width="menu"
+        value={textValue}
+        onChange={(e) => {
+          setTextValue(e.target.value);
+        }}
+        onBlur={() => {
+          let parsedValue = textValue.split(" ").filter(x => x).map(Number).map(x => x >= 0 ? x : 0);
+
+          if (recoilValue.length !== parsedValue.length
+            || recoilValue.some((v, i) => v !== parsedValue[i])
+          ) {
+            updateAssignmentSettings({
+              keyToUpdate: 'itemWeights',
+              value: parsedValue,
+              description: 'Item weights',
             });
           }
         }}

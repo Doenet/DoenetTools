@@ -329,6 +329,13 @@ export default class Core {
       },
     })
 
+    if((await this.document.stateValues.nScoredDescendants) === 0) {
+      // if there are no scored items in document
+      // then treat the first view of the document as a submission
+      // so that will get credit for viewing the page
+      this.saveSubmissions({pageCreditAchieved: await this.document.stateValues.creditAchieved})
+    }
+
     this.resolveInitialized();
 
     setTimeout(this.sendVisibilityChangedEvents.bind(this), this.visibilityInfo.saveDelay)
@@ -8364,23 +8371,11 @@ export default class Core {
       }
 
 
-      let componentsSubmitted = [];
-      for (let itemSubmission of recordItemSubmissions) {
-        componentsSubmitted.push({
-          componentName: itemSubmission.submittedComponent,
-          response: itemSubmission.response,
-          responseText: itemSubmission.responseText,
-          creditAchieved: itemSubmission.creditAchieved,
-          subitemNumber: itemSubmission.itemNumber
-        });
-      }
-
-
       // if itemNumber is zero, it means this document wasn't given any weight,
       // so don't record the submission to the attempt tables
       // (the event will still get recorded)
       if (this.itemNumber > 0) {
-        this.saveSubmissions({ pageCreditAchieved, componentsSubmitted });
+        this.saveSubmissions({ pageCreditAchieved });
       }
 
     }
@@ -9812,7 +9807,7 @@ export default class Core {
     // console.log(">>>>recordContentInteraction data",data)
   }
 
-  saveSubmissions({ pageCreditAchieved, componentsSubmitted }) {
+  saveSubmissions({ pageCreditAchieved }) {
     if (!this.flags.allowSaveSubmissions) {
       return;
     }
@@ -9823,7 +9818,6 @@ export default class Core {
       attemptNumber: this.attemptNumber,
       credit: pageCreditAchieved,
       itemNumber: this.itemNumber,
-      componentsSubmitted: JSON.stringify(removeFunctionsMathExpressionClass(componentsSubmitted), serializeFunctions.serializedComponentsReplacer)
     }
 
     console.log('payload for save credit for item', payload);

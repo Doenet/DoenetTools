@@ -33,8 +33,7 @@ export const currentAttemptNumber = atom({
 export const creditAchievedAtom = atom({
   key: 'creditAchievedAtom',
   default: {
-    creditByItem: [1, 0, 0.5],
-    // creditByItem:[],
+    creditByItem:[],
     creditForAttempt: 0,
     creditForAssignment: 0,
     totalPointsOrPercent: 0,
@@ -121,7 +120,9 @@ export default function AssignmentViewer() {
   let userId = useRef(null);
   let individualize = useRef(null);
 
-  const setSaveStateToDBTimerId = useSetRecoilState(saveStateToDBTimerIdAtom);
+  const getValueOfTimeoutWithoutARefresh = useRecoilCallback(({ snapshot }) => async () => {
+    return await snapshot.getPromise(saveStateToDBTimerIdAtom)
+  }, [saveStateToDBTimerIdAtom])
 
   useSetCourseIdFromDoenetId(recoilDoenetId);
   useInitCourseItems(courseId);
@@ -369,11 +370,12 @@ export default function AssignmentViewer() {
       navigate(search + "#page1", { replace: true });
     }
 
-    // setting the save state timeout id from activity viewer to null 
-    // so that it doesn't attempt to save data from old attempt number
-    // (which triggered a reset and error message);
-    setSaveStateToDBTimerId(null);
-
+    // don't attempt to save data from old attempt number
+    // (which would triggered a reset and error message);
+    let oldTimeoutId = await getValueOfTimeoutWithoutARefresh();
+    if(oldTimeoutId !== null) {
+      clearTimeout(oldTimeoutId)
+    }
 
     //Check if cid has changed
 
