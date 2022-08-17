@@ -656,6 +656,7 @@ export const ItemWeights = ({ courseId, doenetId }) => {
         vertical
         width="menu"
         value={textValue}
+        dataTest="Item Weights"
         onChange={(e) => {
           setTextValue(e.target.value);
         }}
@@ -668,7 +669,7 @@ export const ItemWeights = ({ courseId, doenetId }) => {
             updateAssignmentSettings({
               keyToUpdate: 'itemWeights',
               value: parsedValue,
-              description: 'Item weights',
+              description: 'Item Weights',
             });
           }
         }}

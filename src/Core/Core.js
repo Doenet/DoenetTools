@@ -329,11 +329,30 @@ export default class Core {
       },
     })
 
-    if((await this.document.stateValues.nScoredDescendants) === 0) {
+    let foundAnswerDescendant = function (comp) {
+      let sDecs = comp.stateValues.scoredDescendants;
+      if (Array.isArray(sDecs)) {
+        for (let dec of sDecs) {
+          if (dec.componentType === "answer") {
+            return true;
+          } else {
+            if (foundAnswerDescendant(dec)) {
+              return true;
+            }
+          }
+        }
+      }
+
+      return false;
+    }
+
+    await this.document.stateValues.scoredDescendants;  // to evaluated scoredDescendants
+
+    if (!foundAnswerDescendant(this.document)) {
       // if there are no scored items in document
       // then treat the first view of the document as a submission
       // so that will get credit for viewing the page
-      this.saveSubmissions({pageCreditAchieved: await this.document.stateValues.creditAchieved})
+      this.saveSubmissions({ pageCreditAchieved: await this.document.stateValues.creditAchieved })
     }
 
     this.resolveInitialized();
