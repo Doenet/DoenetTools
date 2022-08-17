@@ -1384,5 +1384,629 @@ describe('Sectioning Tag Tests', function () {
 
   });
 
+  it('Auto naming of section titles', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section name="sec1">
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section name="sec2">
+        <p><lorem generateSentences="1" /></p>
+
+        <section name="sec21">
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section name="sec22">
+          <p><lorem generateSentences="1" /></p>
+          <section name="sec221">
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec222">
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec223">
+            <p><lorem generateSentences="1" /></p>
+
+            <section name="sec2231">
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section name="sec23">
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section 1');
+    cy.get('#\\/sec2_title').should('have.text', 'Section 2');
+    cy.get('#\\/sec21_title').should('have.text', 'Section 2.1');
+    cy.get('#\\/sec22_title').should('have.text', 'Section 2.2');
+    cy.get('#\\/sec221_title').should('have.text', 'Section 2.2.1');
+    cy.get('#\\/sec222_title').should('have.text', 'Section 2.2.2');
+    cy.get('#\\/sec223_title').should('have.text', 'Section 2.2.3');
+    cy.get('#\\/sec2231_title').should('have.text', 'Section 2.2.3.1');
+    cy.get('#\\/sec23_title').should('have.text', 'Section 2.3');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+
+  it('Auto naming of section titles, with custom titles', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section name="sec22">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section 1: A');
+    cy.get('#\\/sec2_title').should('have.text', 'Section 2: B');
+    cy.get('#\\/sec21_title').should('have.text', 'Section 2.1: BA');
+    cy.get('#\\/sec22_title').should('have.text', 'Section 2.2: BB');
+    cy.get('#\\/sec221_title').should('have.text', 'Section 2.2.1: BBA');
+    cy.get('#\\/sec222_title').should('have.text', 'Section 2.2.2: BBB');
+    cy.get('#\\/sec223_title').should('have.text', 'Section 2.2.3: BBC');
+    cy.get('#\\/sec2231_title').should('have.text', 'Section 2.2.3.1: BBCA');
+    cy.get('#\\/sec23_title').should('have.text', 'Section 2.3: BC');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+
+  it('Auto naming of section titles, with custom titles, no auto name', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section suppressAutoName name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section suppressAutoName name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section suppressAutoName name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section suppressAutoName name="sec22">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section suppressAutoName name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section suppressAutoName name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section suppressAutoName name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section suppressAutoName name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section suppressAutoName name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', '1. A');
+    cy.get('#\\/sec2_title').should('have.text', '2. B');
+    cy.get('#\\/sec21_title').should('have.text', '2.1. BA');
+    cy.get('#\\/sec22_title').should('have.text', '2.2. BB');
+    cy.get('#\\/sec221_title').should('have.text', '2.2.1. BBA');
+    cy.get('#\\/sec222_title').should('have.text', '2.2.2. BBB');
+    cy.get('#\\/sec223_title').should('have.text', '2.2.3. BBC');
+    cy.get('#\\/sec2231_title').should('have.text', '2.2.3.1. BBCA');
+    cy.get('#\\/sec23_title').should('have.text', '2.3. BC');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+
+  it('Not auto naming of section titles, with custom titles, no auto name and number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section suppressAutoName suppressAutoNumber name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section suppressAutoName suppressAutoNumber name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section suppressAutoName suppressAutoNumber name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section suppressAutoName suppressAutoNumber name="sec22">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section suppressAutoName suppressAutoNumber name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section suppressAutoName suppressAutoNumber name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section suppressAutoName suppressAutoNumber name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section suppressAutoName suppressAutoNumber name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section suppressAutoName suppressAutoNumber name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'A');
+    cy.get('#\\/sec2_title').should('have.text', 'B');
+    cy.get('#\\/sec21_title').should('have.text', 'BA');
+    cy.get('#\\/sec22_title').should('have.text', 'BB');
+    cy.get('#\\/sec221_title').should('have.text', 'BBA');
+    cy.get('#\\/sec222_title').should('have.text', 'BBB');
+    cy.get('#\\/sec223_title').should('have.text', 'BBC');
+    cy.get('#\\/sec2231_title').should('have.text', 'BBCA');
+    cy.get('#\\/sec23_title').should('have.text', 'BC');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+
+  it('Auto naming of section titles, with custom titles, no auto number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section suppressAutoNumber name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section suppressAutoNumber name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section suppressAutoNumber name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section suppressAutoNumber name="sec22">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section suppressAutoNumber name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section suppressAutoNumber name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section suppressAutoNumber name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section suppressAutoNumber name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section suppressAutoNumber name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section: A');
+    cy.get('#\\/sec2_title').should('have.text', 'Section: B');
+    cy.get('#\\/sec21_title').should('have.text', 'Section: BA');
+    cy.get('#\\/sec22_title').should('have.text', 'Section: BB');
+    cy.get('#\\/sec221_title').should('have.text', 'Section: BBA');
+    cy.get('#\\/sec222_title').should('have.text', 'Section: BBB');
+    cy.get('#\\/sec223_title').should('have.text', 'Section: BBC');
+    cy.get('#\\/sec2231_title').should('have.text', 'Section: BBCA');
+    cy.get('#\\/sec23_title').should('have.text', 'Section: BC');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+
+  it('Auto naming of section titles, with custom titles, turning off include parent number', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section name="sec1">
+        <title>A</title>
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section name="sec2">
+        <title>B</title>
+        <p><lorem generateSentences="1" /></p>
+
+        <section name="sec21">
+          <title>BA</title>
+          <p><lorem generateSentences="1" /></p>
+          <section name="sec211" includeParentNumber="false">
+            <title>BAA</title>
+            <p><lorem generateSentences="1" /></p>
+            <section name="sec2111">
+              <title>BAAA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+            <section name="sec2112">
+              <title>BAAB</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+        </section>
+        <section name="sec22" includeParentNumber="false">
+          <title>BB</title>
+          <p><lorem generateSentences="1" /></p>
+          <section name="sec221">
+            <title>BBA</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec222">
+            <title>BBB</title>
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section name="sec223">
+            <title>BBC</title>
+            <p><lorem generateSentences="1" /></p>
+
+            <section name="sec2231">
+              <title>BBCA</title>
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section name="sec23">
+          <title>BC</title>
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section 1: A');
+    cy.get('#\\/sec2_title').should('have.text', 'Section 2: B');
+    cy.get('#\\/sec21_title').should('have.text', 'Section 2.1: BA');
+    cy.get('#\\/sec211_title').should('have.text', 'Section 1: BAA');
+    cy.get('#\\/sec2111_title').should('have.text', 'Section 1.1: BAAA');
+    cy.get('#\\/sec2112_title').should('have.text', 'Section 1.2: BAAB');
+    cy.get('#\\/sec22_title').should('have.text', 'Section 2: BB');
+    cy.get('#\\/sec221_title').should('have.text', 'Section 2.1: BBA');
+    cy.get('#\\/sec222_title').should('have.text', 'Section 2.2: BBB');
+    cy.get('#\\/sec223_title').should('have.text', 'Section 2.3: BBC');
+    cy.get('#\\/sec2231_title').should('have.text', 'Section 2.3.1: BBCA');
+    cy.get('#\\/sec23_title').should('have.text', 'Section 2.3: BC');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec211'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2111'].stateValues.level).eq(4);
+      expect(stateVariables['/sec2112'].stateValues.level).eq(4);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+
+  it('Auto naming of section titles, no auto name', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section suppressAutoName name="sec1">
+        <p><lorem generateSentences="1" /></p>
+      </section>
+      <section suppressAutoName name="sec2">
+        <p><lorem generateSentences="1" /></p>
+
+        <section suppressAutoName name="sec21">
+          <p><lorem generateSentences="1" /></p>
+        </section>
+        <section suppressAutoName name="sec22">
+          <p><lorem generateSentences="1" /></p>
+          <section suppressAutoName name="sec221">
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section suppressAutoName name="sec222">
+            <p><lorem generateSentences="1" /></p>
+          </section>
+          <section suppressAutoName name="sec223">
+            <p><lorem generateSentences="1" /></p>
+
+            <section suppressAutoName name="sec2231">
+              <p><lorem generateSentences="1" /></p>
+            </section>
+          </section>
+
+        </section>
+
+        <section suppressAutoName name="sec23">
+          <p><lorem generateSentences="1" /></p>
+        </section>
+      </section>
+  
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', '1');
+    cy.get('#\\/sec2_title').should('have.text', '2');
+    cy.get('#\\/sec21_title').should('have.text', '2.1');
+    cy.get('#\\/sec22_title').should('have.text', '2.2');
+    cy.get('#\\/sec221_title').should('have.text', '2.2.1');
+    cy.get('#\\/sec222_title').should('have.text', '2.2.2');
+    cy.get('#\\/sec223_title').should('have.text', '2.2.3');
+    cy.get('#\\/sec2231_title').should('have.text', '2.2.3.1');
+    cy.get('#\\/sec23_title').should('have.text', '2.3');
+
+
+    cy.window().then(async (win) => {
+      let stateVariables = await win.returnAllStateVariables1();
+      expect(stateVariables['/sec1'].stateValues.level).eq(1);
+      expect(stateVariables['/sec2'].stateValues.level).eq(1);
+      expect(stateVariables['/sec21'].stateValues.level).eq(2);
+      expect(stateVariables['/sec22'].stateValues.level).eq(2);
+      expect(stateVariables['/sec221'].stateValues.level).eq(3);
+      expect(stateVariables['/sec222'].stateValues.level).eq(3);
+      expect(stateVariables['/sec223'].stateValues.level).eq(3);
+      expect(stateVariables['/sec2231'].stateValues.level).eq(4);
+      expect(stateVariables['/sec23'].stateValues.level).eq(2);
+    });
+  });
+
+
+  it('Aside suppresses auto number by default', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <aside name="aside1">
+        <p><lorem generateSentences="1" /></p>
+      </aside>
+      <aside name="aside2">
+        <title>Side point</title>
+        <p><lorem generateSentences="1" /></p>
+      </aside>
+      <aside name="aside3" suppressAutoNumber="false">
+        <title>Another side point</title>
+        <p><lorem generateSentences="1" /></p>
+        <aside name="aside31">
+          <p><lorem generateSentences="1" /></p>
+        </aside>
+        <aside name="aside32" suppressAutoNumber="false">
+          <p><lorem generateSentences="1" /></p>
+        </aside>
+        <aside name="aside33" suppressAutoNumber="false" includeParentNumber>
+          <p><lorem generateSentences="1" /></p>
+        </aside>
+      </aside>
+  
+
+    `}, "*");
+    });
+
+    cy.get('#\\/aside1_title').should('contain.text', 'Aside');
+    cy.get('#\\/aside1_title').should('not.contain.text', '1');
+    cy.get('#\\/aside1_title').should('not.contain.text', ':');
+    cy.get('#\\/aside2_title').should('contain.text', 'Aside: Side point');
+    cy.get('#\\/aside3_title').should('contain.text', 'Aside 3: Another side point');
+    cy.get('#\\/aside3_title').click();
+
+    cy.get('#\\/aside31_title').should('contain.text', 'Aside');
+    cy.get('#\\/aside31_title').should('not.contain.text', '1');
+    cy.get('#\\/aside31_title').should('not.contain.text', ':');
+    cy.get('#\\/aside32_title').should('contain.text', 'Aside 2 ');
+    cy.get('#\\/aside32_title').should('not.contain.text', ':');
+    cy.get('#\\/aside33_title').should('contain.text', 'Aside 3.3 ');
+    cy.get('#\\/aside33_title').should('not.contain.text', ':');
+
+  });
+
+  it('Example, problems, exercise no not include parent number by default', () => {
+    cy.window().then(async (win) => {
+      win.postMessage({
+        doenetML: `
+      <section name="sec1">
+        <problem name="prob11">
+          <p><lorem generateSentences="1" /></p>
+        </problem>
+        <exercise name="exer11">
+          <p><lorem generateSentences="1" /></p>
+        </exercise>
+        <example name="exam11">
+          <p><lorem generateSentences="1" /></p>
+        </example>
+        <problem name="prob12">
+          <p><lorem generateSentences="1" /></p>
+        </problem>
+        <exercise name="exer12">
+          <p><lorem generateSentences="1" /></p>
+        </exercise>
+        <example name="exam12">
+          <p><lorem generateSentences="1" /></p>
+        </example>
+        <problem name="prob13" includeParentNumber>
+          <p><lorem generateSentences="1" /></p>
+        </problem>
+        <exercise name="exer13" includeParentNumber>
+          <p><lorem generateSentences="1" /></p>
+        </exercise>
+        <example name="exam13" includeParentNumber>
+          <p><lorem generateSentences="1" /></p>
+        </example>
+
+      </section>
+  
+
+    `}, "*");
+    });
+
+    cy.get('#\\/sec1_title').should('have.text', 'Section 1');
+    cy.get('#\\/prob11_title').should('have.text', 'Problem 1');
+    cy.get('#\\/exer11_title').should('have.text', 'Exercise 1');
+    cy.get('#\\/exam11_title').should('have.text', 'Example 1');
+    cy.get('#\\/prob12_title').should('have.text', 'Problem 2');
+    cy.get('#\\/exer12_title').should('have.text', 'Exercise 2');
+    cy.get('#\\/exam12_title').should('have.text', 'Example 2');
+    cy.get('#\\/prob13_title').should('have.text', 'Problem 1.3');
+    cy.get('#\\/exer13_title').should('have.text', 'Exercise 1.3');
+    cy.get('#\\/exam13_title').should('have.text', 'Example 1.3');
+
+  });
+
+
 
 });
