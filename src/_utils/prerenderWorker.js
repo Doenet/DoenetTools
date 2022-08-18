@@ -6,11 +6,7 @@ import { calculateOrderAndVariants, determineNumberOfActivityVariants, parseActi
 onmessage = function (e) {
 
   if (e.data.messageType === "prerenderActivity") {
-
-    console.log('got message', e.data)
-
     prerenderActivity(e.data.args);
-
   }
 }
 
@@ -38,11 +34,18 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
 
   let { numberOfVariants } = await determineNumberOfActivityVariants(activityDefinition);
 
-  let variantsCalculatedByPage = {};
 
-  postMessage({ messageType: "status", finished: 0, numberOfVariants });
+  postMessage({ messageType: "status", stage: "gathering", complete: 0 });
+
+  // first determine all the pages and the variant indices needed for each page
+
+  const variantsNeededByPage = {};
+  const doenetMLByPage = {};
+
 
   for (let variantIndex = 1; variantIndex <= numberOfVariants; variantIndex++) {
+
+    console.log(`Gathering ${variantIndex} of ${numberOfVariants}`);
 
     let result = await calculateOrderAndVariants({ activityDefinition, requestedVariantIndex: variantIndex });
 
@@ -51,52 +54,107 @@ async function prerenderActivity({ cid, doenetId, flags = {} }) {
       continue;
     }
 
+
     let order = result.order;
     let variantsByPage = result.variantsByPage;
 
-
-
     for (let [pageInd, page] of order.entries()) {
 
-      let variantsCalculated = variantsCalculatedByPage[page.cid];
-      if (!variantsCalculated) {
-        variantsCalculated = variantsCalculatedByPage[page.cid] = [];
+      let variantsNeeded = variantsNeededByPage[page.cid];
+      if (!variantsNeeded) {
+        variantsNeeded = variantsNeededByPage[page.cid] = [];
       }
 
       let pageVariant = variantsByPage[pageInd];
-
-      if (!variantsCalculated.includes(pageVariant)) {
-        variantsCalculated.push(pageVariant);
-
-        let { coreInfo, rendererState } = await calculateInitialRendererState({ doenetML: page.doenetML, doenetId, requestedVariantIndex: variantsByPage[pageInd], flags });
-        console.log(`generated initial renderer state for variant ${variantsByPage[pageInd]} of page ${pageInd + 1}`);
-
-        let payload = {
-          doenetId, cid: page.cid, variantIndex,
-          rendererState: JSON.stringify(rendererState, serializedComponentsReplacer),
-          coreInfo: JSON.stringify(coreInfo, serializedComponentsReplacer)
-        }
-
-        try {
-          let resp = await axios.post('/api/saveInitialRendererState.php', payload);
-
-          if (!resp.data.success) {
-            console.error(`Couldn't save initial renderer state: ${resp.data.message}`);
-          } else if (resp.data.message) {
-            console.log(`Initial renderer state not saved: ${resp.data.message}`);
-          }
-
-        } catch (e) {
-          console.error(`Couldn't save initial renderer state: ${e.message}`)
-        }
+      if (!variantsNeeded.includes(pageVariant)) {
+        variantsNeeded.push(pageVariant);
       }
 
-
+      doenetMLByPage[page.cid] = page.doenetML;
     }
 
-    postMessage({ messageType: "status", finished: variantIndex, numberOfVariants });
+    if(variantIndex % 10 === 0) {
+      postMessage({ messageType: "status", stage: "Gathering", complete: variantIndex/numberOfVariants });
+    }
 
   }
+
+  postMessage({ messageType: "status", stage: "Gathering", complete: 1 });
+
+  let allCids = Object.keys(variantsNeededByPage);
+
+  let payload = {
+    doenetId,
+    cids: allCids,
+  }
+
+
+  let { data } = await axios.post('/api/getSavedInitialRendererStates.php', payload);
+
+  if (!data.success) {
+    console.error('Count not retrieve saved initial renderer states')
+  } else {
+    let foundVariants = data.foundVariants;
+
+    for (let [ind, cid] of allCids.entries()) {
+
+      let variantsNeeded = variantsNeededByPage[cid];
+      for (let variant of foundVariants[ind]) {
+        let varInd = variantsNeeded.indexOf(Number(variant))
+
+        if (varInd !== -1) {
+          variantsNeeded.splice(varInd, 1)
+          if (variantsNeeded.length === 0) {
+            delete variantsNeededByPage[cid];
+          }
+        }
+      }
+    }
+
+  }
+
+
+  let totalNVariants = Object.values(variantsNeededByPage).reduce((a, c) => a + c.length, 0)
+
+
+  let nFinished = 0;
+
+
+  for (let cid in variantsNeededByPage) {
+    console.log(`prerendering page with cid: ${cid}`);
+
+    let doenetML = doenetMLByPage[cid];
+
+    for (let requestedVariantIndex of variantsNeededByPage[cid]) {
+
+      let { coreInfo, rendererState } = await calculateInitialRendererState({ doenetML, doenetId, requestedVariantIndex, flags });
+      console.log(`variant ${requestedVariantIndex} prerendered`);
+
+      let payload = {
+        doenetId, cid, variantIndex: requestedVariantIndex,
+        rendererState: JSON.stringify(rendererState, serializedComponentsReplacer),
+        coreInfo: JSON.stringify(coreInfo, serializedComponentsReplacer)
+      }
+
+      try {
+        let resp = await axios.post('/api/saveInitialRendererState.php', payload);
+
+        if (!resp.data.success) {
+          console.error(`Couldn't save initial renderer state: ${resp.data.message}`);
+        } else if (resp.data.message) {
+          console.log(`Initial renderer state not saved: ${resp.data.message}`);
+        }
+
+      } catch (e) {
+        console.error(`Couldn't save initial renderer state: ${e.message}`)
+      }
+
+      nFinished++;
+      postMessage({ messageType: "status", stage: "Rendering", complete: nFinished / totalNVariants });
+    }
+  }
+
+
 
   postMessage({ messageType: "finished" });
 
