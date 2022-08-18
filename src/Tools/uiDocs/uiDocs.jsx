@@ -555,6 +555,33 @@ export default function attempt() {
           description: 'Sets default value index. Indexing starts at 1',
         },
         {
+          name: 'Label',
+          propPreview:
+            '<DropdownMenu items = {[[1, "one"], [2, "two"]]} label="Dropdown Menu" />',
+          propCode: {
+            items: [
+              [1, 'one'],
+              [2, 'two'],
+            ],
+            label: 'Dropdown Menu',
+          },
+          description: 'Sets a label',
+        },
+        {
+          name: 'Vertical Label',
+          propPreview:
+            '<DropdownMenu items = {[[1, "one"], [2, "two"]]} label = "Datetime" vertical/>',
+          propCode: {
+            items: [
+              [1, 'one'],
+              [2, 'two'],
+            ],
+            label: 'Dropdown Menu',
+            vertical: true,
+          },
+          description: 'Sets a vertical label',
+        },
+        {
           name: 'Title',
           propPreview:
             '<DropdownMenu items = {[[1, "one"], [2, "two"]]} title="Choose your favorite number"/>',
