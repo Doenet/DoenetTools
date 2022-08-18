@@ -201,6 +201,7 @@ export default function ClassTimes() {
   let timesJSX = [];
   for (let [index, timeObj] of Object.entries(timesObj)) {
     console.log('timeObj ', timeObj);
+    console.log('timeObj.startTime', timeObj.startTime);
 
     timesJSX.push(
       <>
@@ -233,7 +234,7 @@ export default function ClassTimes() {
             <DateTime
               datePicker={false}
               width="74px"
-              parentValue={timeObj.startTime}
+              value={new Date(timeObj.startTime)}
               onBlur={(value, valid) => {
                 // if (valid) {
                 let newClassTime = { ...timeObj };
@@ -241,12 +242,12 @@ export default function ClassTimes() {
                   new Date(value.value._d),
                 );
                 // console.log('getTime: ', newClassTime.startTime.getHour());
-                console.log(
-                  'typeof newClassTime.startTime',
-                  typeof newClassTime.startTime,
-                );
-                console.log('newClassTime.startTime ', newClassTime.startTime);
-                console.log('newStartTime: ', index, newClassTime);
+                // console.log(
+                //   'typeof newClassTime.startTime',
+                //   typeof newClassTime.startTime,
+                // );
+                // console.log('newClassTime.startTime ', newClassTime.startTime);
+                // console.log('newStartTime: ', index, newClassTime);
                 updateClassTime({ index, newClassTime });
                 // } else {
                 // console.log('not valid'); // TODO toast
@@ -261,7 +262,7 @@ export default function ClassTimes() {
             <DateTime
               datePicker={false}
               width="74px"
-              parentValue={timeObj.endTime}
+              value={new Date(timeObj.endTime)}
               onBlur={(value, valid) => {
                 let newClassTime = { ...timeObj };
                 newClassTime.endTime = DateToUTCDateString(
