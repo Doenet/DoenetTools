@@ -11,14 +11,16 @@ import { formatAMPM, UTCDateStringToDate } from '../../../_utils/dateUtilityFunc
 
 export default function ChooseLearnerPanel(props) {
   const doenetId = useRecoilValue(searchParamAtomFamily('doenetId'));
-  const driveId = useRecoilValue(searchParamAtomFamily('driveId'));
+  const courseId = useRecoilValue(searchParamAtomFamily('courseId'));
   let [stage, setStage] = useState('request password');
   let [code,setCode] = useState('');
   let [learners,setLearners] = useState([]);
   let [exams,setExams] = useState([]);
+  let [examsById,setExamsById] = useState({});
   let [choosenLearner,setChoosenLearner] = useState(null);
   let [filter,setFilter] = useState('')
   let [resumeAttemptFlag,setResumeAttemptFlag] = useState(false);
+  
   const addToast = useToast();
 
   const newAttempt = useRecoilCallback(({set,snapshot})=> async (doenetId,code,userId,resumeAttemptFlag)=>{
@@ -38,13 +40,13 @@ export default function ChooseLearnerPanel(props) {
     
   })
 
-  const setDoenetId = useRecoilCallback(({set})=> async (doenetId,driveId)=>{
+  const setDoenetId = useRecoilCallback(({set})=> async (doenetId,courseId)=>{
     set(pageToolViewAtom,(was)=>{
       let newObj = {...was};
       if (doenetId){
-        newObj.params = {doenetId,driveId}
+        newObj.params = {doenetId,courseId}
       }else{
-        newObj.params = {driveId}
+        newObj.params = {courseId}
       }
       return newObj
     })
@@ -102,16 +104,19 @@ export default function ChooseLearnerPanel(props) {
   }
 
   if (stage === 'check code'){
+
     const checkCode = async (code)=>{
-      let { data } = await axios.get('/api/checkPasscode.php',{params:{code,doenetId,driveId}})
+      let { data } = await axios.get('/api/checkPasscode.php',{params:{code,doenetId,courseId}})
+      // console.log("data",data)
       if (data.success){
-        if (driveId === ''){
-          setStage('choose learner');
-        }else{
-          setStage('choose exam');
-        }
+        setStage('choose exam');
         setLearners(data.learners);
         setExams(data.exams);
+        let nextExamsById = {}
+        for(let examInfo of data.exams) {
+          nextExamsById[examInfo.doenetId] = examInfo;
+        }
+        setExamsById(nextExamsById);
         
       }else{
       addToast(data.message);
@@ -123,7 +128,7 @@ export default function ChooseLearnerPanel(props) {
    
   }
 
-  //https://localhost/#/exam?tool=chooseLearner&driveId=fjVHU0x9nhv3DMmS5ypqQ
+  //https://localhost/#/exam?tool=chooseLearner&courseId=fjVHU0x9nhv3DMmS5ypqQ
   if (stage === 'choose exam'){
     // console.log(">>>>exams",exams);
 
@@ -136,7 +141,7 @@ export default function ChooseLearnerPanel(props) {
         <td style={{textAlign:"center"}}>{exam.label}</td>
         {/* <td style={{textAlign:"center"}}>{exam.info}</td> */}
         <td style={{textAlign:"center"}}><button onClick={()=>{
-          setDoenetId(exam.doenetId,driveId)
+          setDoenetId(exam.doenetId,courseId)
           setStage('choose learner');
         }}>Choose</button></td>
         </tr>)
@@ -158,11 +163,13 @@ export default function ChooseLearnerPanel(props) {
   }
 
   if (stage === 'choose learner'){
-    // console.log(">>>>learners",learners);
+    if (!doenetId){ return null; }
     if (learners.length < 1){
       return <h1>No One is Enrolled!</h1>
     }
     let learnerRows = [];
+    
+    let examTimeLimit = examsById[doenetId].timeLimit;
 
     for (let learner of learners){
       //filter
@@ -178,8 +185,7 @@ export default function ChooseLearnerPanel(props) {
 
 
         let lastExamDT = UTCDateStringToDate(learner.exam_to_date[doenetId]);
-        let exam_to_timeLimit = learner.exam_to_timeLimit[doenetId];
-        let users_timeLimit_minutes = Number(exam_to_timeLimit) * Number(learner.timeLimit_multiplier)
+        let users_timeLimit_minutes = Number(examTimeLimit) * Number(learner.timeLimitMultiplier)
 
         let minutes_remaining;
         if (users_timeLimit_minutes){
@@ -264,7 +270,7 @@ export default function ChooseLearnerPanel(props) {
        setStage('request password');
        setCode('')
        setChoosenLearner(null);
-       setDoenetId(null,driveId);
+       setDoenetId(null,courseId);
        setResumeAttemptFlag(false);
      }}/>
      <Button value={yesButtonText} onClick={()=>{
