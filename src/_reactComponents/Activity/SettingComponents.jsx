@@ -123,7 +123,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
       prerenderButton = <ActionButton
         width="menu"
         data-test="Cancel prerendering"
-        value={`Cancel prerendering (status: ${initializeStatus})`}
+        value={`${initializeStatus} (Cancel)`}
         onClick={() => {
           initializingWorker.terminate();
           setInitializingWorker(null)
@@ -138,11 +138,11 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
           solutionDisplayMode: itemObj.showSolution ? 'button' : "none",
           showFeedback: itemObj.showFeedback,
           showHints: itemObj.showHints,
-          allowLoadState: true,
-          allowSaveState: true,
-          allowLocalState: true,
-          allowSaveSubmissions: true,
-          allowSaveEvents: true,
+          allowLoadState: false,
+          allowSaveState: false,
+          allowLocalState: false,
+          allowSaveSubmissions: false,
+          allowSaveEvents: false,
         }
         let resp = await axios.get(
           `/api/getCidForAssignment.php`,
@@ -154,7 +154,7 @@ export const AssignUnassignActivity = ({ doenetId, courseId }) => {
           setInitializingWorker(worker);
           worker.onmessage = e => {
             if (e.data.messageType === "status") {
-              setInitializeStatus(`${e.data.finished}/${e.data.numberOfVariants}`)
+              setInitializeStatus(`${e.data.stage} ${Math.round(e.data.complete*100)}%`)
             } else {
               worker.terminate();
               setInitializingWorker(null);

@@ -123,7 +123,7 @@ describe('Relationships among pages tests', function () {
 
     cy.get('#page4\\/_problem1_title').should('have.text', 'Problem 5');
     cy.get('#page4\\/_p1').should('have.text', 'The fifth problem');
-    cy.get('#page4\\/_problem2_title').should('have.text', 'Named problem');
+    cy.get('#page4\\/_problem2_title').should('have.text', 'Problem 6: Named problem');
     cy.get('#page4\\/_title1').should('have.text', 'Named problem');
     cy.get('#page4\\/_p2').should('have.text', 'The sixth problem');
 
@@ -190,7 +190,7 @@ describe('Relationships among pages tests', function () {
 
     cy.get('#page4\\/_problem1_title').should('have.text', 'Problem 5');
     cy.get('#page4\\/_p1').should('have.text', 'The fifth problem');
-    cy.get('#page4\\/_problem2_title').should('have.text', 'Named problem');
+    cy.get('#page4\\/_problem2_title').should('have.text', 'Problem 6: Named problem');
     cy.get('#page4\\/_title1').should('have.text', 'Named problem');
     cy.get('#page4\\/_p2').should('have.text', 'The sixth problem');
 
@@ -325,7 +325,7 @@ describe('Relationships among pages tests', function () {
 
     cy.get('#page4\\/_section1_title').should('have.text', 'Section 5');
     cy.get('#page4\\/_p1').should('have.text', 'The fifth section');
-    cy.get('#page4\\/_section2_title').should('have.text', 'Named section');
+    cy.get('#page4\\/_section2_title').should('have.text', 'Section 6: Named section');
     cy.get('#page4\\/_title1').should('have.text', 'Named section');
     cy.get('#page4\\/_p2').should('have.text', 'The sixth section');
 
@@ -392,7 +392,7 @@ describe('Relationships among pages tests', function () {
     cy.get('#page4').scrollIntoView();
     cy.get('#page4\\/_section1_title').should('have.text', 'Section 5');
     cy.get('#page4\\/_p1').should('have.text', 'The fifth section');
-    cy.get('#page4\\/_section2_title').should('have.text', 'Named section');
+    cy.get('#page4\\/_section2_title').should('have.text', 'Section 6: Named section');
     cy.get('#page4\\/_title1').should('have.text', 'Named section');
     cy.get('#page4\\/_p2').should('have.text', 'The sixth section');
 
@@ -640,25 +640,23 @@ describe('Relationships among pages tests', function () {
     cy.get('#page2\\/asideTitle').should('have.text', 'The aside');
     cy.get('#page2\\/insideAside').should('have.text', 'Content in aside');
 
-
     cy.get('#page1\\/toAbove2').click();
-
 
     cy.url().should('match', /#page2\/pAbove$/)
 
-    cy.get('#page2\\/pAbove').then(el => {
+    cy.waitUntil(() => cy.get('#page2\\/pAbove').then(el => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(-1).lt(1)
-    })
+      return rect.top > -1 && rect.top < 1;
+    }))
 
     cy.get('#page2\\/toAside1').click();
 
     cy.url().should('match', /#page1\/aside$/)
 
-    cy.get('#page1\\/aside').then(el => {
+    cy.waitUntil(() => cy.get('#page1\\/aside').then(el => {
       let rect = el[0].getBoundingClientRect();
-      expect(rect.top).gt(-1).lt(1)
-    })
+      return rect.top > -1 && rect.top < 1;
+    }))
 
     cy.get('#page1\\/insideAside').should('have.text', 'Content in aside');
 

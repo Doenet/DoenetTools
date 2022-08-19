@@ -12,7 +12,7 @@ export default React.memo(function Ref(props) {
 
   const pageToolView = useRecoilValue(pageToolViewAtom);
   const itemInCourse = useRecoilValue(itemByDoenetId(SVs.doenetId));
-  const scollableContainer = useRecoilValue(scrollableContainerAtom);
+  const scrollableContainer = useRecoilValue(scrollableContainerAtom);
 
   let { search } = useLocation();
   let navigate = useNavigate();
@@ -103,8 +103,10 @@ export default React.memo(function Ref(props) {
       if (externalUri) {
         return <a target={targetForATag} id={name} name={name} href={url}>{linkContent}</a>
       } else {
-        let stateObj = {}
-        Object.defineProperty(stateObj, 'previousScrollPosition', { get: () => scollableContainer.scrollTop, enumerable: true });
+
+        let scrollAttribute = scrollableContainer === window ? "scrollY" : "scrollTop";
+        let stateObj = { fromLink: true }
+        Object.defineProperty(stateObj, 'previousScrollPosition', { get: () =>scrollableContainer[scrollAttribute], enumerable: true });
         return <Link target={targetForATag} id={id} name={id} to={url} state={stateObj}>{linkContent}</Link>
       }
     } else {
