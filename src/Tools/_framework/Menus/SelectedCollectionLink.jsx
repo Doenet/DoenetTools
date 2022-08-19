@@ -85,7 +85,7 @@ export default function SelectedCollectionLink() {
     if (itemObj.label !== effectiveItemLabel){
       console.log("Rename",doenetId,effectiveItemLabel)
       // renameItem(doenetId,effectiveItemLabel)
-      updateCollectionLink({doenetId, label:effectiveItemLabel, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
+      updateCollectionLink({courseId, doenetId, label:effectiveItemLabel, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
 
     }
   };
@@ -113,7 +113,7 @@ export default function SelectedCollectionLink() {
     style={{ marginRight: '5px' }}
     checked={itemObj.isManuallyFiltered}
     onClick={()=>{
-      updateCollectionLink({doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:!itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
+      updateCollectionLink({courseId, doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:!itemObj.isManuallyFiltered,manuallyFilteredPages:itemObj.manuallyFilteredPages})
     }}
 />Filter Page Aliases</div>
     <RelatedItems
@@ -125,7 +125,7 @@ export default function SelectedCollectionLink() {
             e.target.selectedOptions,
             (option) => option.value,
           );
-      updateCollectionLink({doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:values})
+      updateCollectionLink({courseId, doenetId, collectionDoenetId:itemObj.collectionDoenetId,isManuallyFiltered:itemObj.isManuallyFiltered,manuallyFilteredPages:values})
 
           // setManuallyFilteredPages(values)
       // updateOrderBehavior({doenetId, behavior, numberToSelect, withReplacement, restrictPages:!restrictPages, selectedCollectionDoenetId, restrictToThesePages:values})
@@ -165,7 +165,7 @@ export default function SelectedCollectionLink() {
         options={collectionsInCourseJSX}
         onChange={(e) => {
           //Clear out manual pages on change
-          updateCollectionLink({doenetId, collectionDoenetId:e.target.value, isManuallyFiltered:false,manuallyFilteredPages:[]})
+          updateCollectionLink({courseId, doenetId, collectionDoenetId:e.target.value, isManuallyFiltered:false,manuallyFilteredPages:[]})
         }}
       />
       <br />

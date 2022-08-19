@@ -27,9 +27,10 @@ if ($userId == ''){
 
 //Test Permission to edit content
 if ($success){
+  echo "\nuserId -$userId-\n courseId -$courseId-\n";
   $permissions = permissionsAndSettingsForOneCourseFunction($conn,$userId,$courseId);
   var_dump($permissions);
-  
+
   if ($permissions["canEditContent"] != '1'){
     $success = FALSE;
     $message = "You need edit permission to add a collection link.";

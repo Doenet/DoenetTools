@@ -1834,7 +1834,7 @@ export const useCourse = (courseId) => {
 
   const updateCollectionLink = useRecoilCallback(
     ({ set,snapshot }) =>
-      async ({doenetId, label, collectionDoenetId, isManuallyFiltered, pages=[], successCallback, failureCallback = defaultFailure}) => {
+      async ({courseId, doenetId, label, collectionDoenetId, isManuallyFiltered, pages=[], successCallback, failureCallback = defaultFailure}) => {
 
         let collectionLinkObj = await snapshot.getPromise(itemByDoenetId(doenetId));
         let activityObj = await snapshot.getPromise(itemByDoenetId(collectionLinkObj.containingDoenetId))
