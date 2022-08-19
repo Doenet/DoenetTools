@@ -206,13 +206,15 @@ export default class SectioningComponent extends BlockComponent {
     stateVariableDefinitions.title = {
       additionalStateVariablesDefined: [{
         variableName: "titlePrefix",
-        forRenderer: true
+        forRenderer: true,
+        alwaysUpdateRenderer: true,
       }],
       public: true,
       shadowingInstructions: {
         createComponentOfType: "text",
       },
       forRenderer: true,
+      alwaysUpdateRenderer: true,
       returnDependencies: () => ({
         titleChild: {
           dependencyType: "child",

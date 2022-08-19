@@ -494,6 +494,18 @@ export default class Core {
 
       this.postUpdateRenderers({ updateInstructions }, true)
 
+      // if have some states to force update
+      // then post these updates without setting init to true
+      if (results.rendererStatesToForceUpdate.length > 0) {
+        let updateInstructions = [{
+          instructionType: "updateRendererStates",
+          rendererStatesToUpdate: results.rendererStatesToForceUpdate,
+        }]
+        this.postUpdateRenderers({ updateInstructions })
+
+      }
+
+
       await this.processStateVariableTriggers();
 
     } else {
@@ -733,12 +745,22 @@ export default class Core {
 
 
     let rendererStatesToUpdate = [];
+    let rendererStatesToForceUpdate = [];
 
     let stateValuesForRenderer = {};
+    let stateValuesForRendererAlwaysUpdate = {};
+    let alwaysUpdate = false;
     for (let stateVariable in component.state) {
       if (component.state[stateVariable].forRenderer) {
         stateValuesForRenderer[stateVariable] = removeFunctionsMathExpressionClass(await component.state[stateVariable].value);
+        if (component.state[stateVariable].alwaysUpdateRenderer) {
+          alwaysUpdate = true;
+        }
       }
+    }
+
+    if (alwaysUpdate) {
+      stateValuesForRendererAlwaysUpdate = stateValuesForRenderer;
     }
 
     let componentName = component.componentName;
@@ -753,6 +775,7 @@ export default class Core {
             let results = await this.initializeRenderedComponentInstruction(child);
             childrenToRender.push(results.componentToRender);
             rendererStatesToUpdate.push(...results.rendererStatesToUpdate);
+            rendererStatesToForceUpdate.push(...results.rendererStatesToForceUpdate);
 
           } else if (typeof child === "string") {
             childrenToRender.push(child);
@@ -768,6 +791,12 @@ export default class Core {
       stateValues: stateValuesForRenderer,
       childrenInstructions: childrenToRender,
     });
+    if (Object.keys(stateValuesForRendererAlwaysUpdate).length > 0) {
+      rendererStatesToForceUpdate.push({
+        componentName,
+        stateValues: stateValuesForRendererAlwaysUpdate,
+      });
+    }
 
     // this.renderState is used to save the renderer state to the database
     this.rendererState[componentName] = {
@@ -809,7 +838,7 @@ export default class Core {
     };
 
 
-    return { componentToRender: rendererInstructions, rendererStatesToUpdate };
+    return { componentToRender: rendererInstructions, rendererStatesToUpdate, rendererStatesToForceUpdate };
   }
 
   deleteFromComponentsToRender({
@@ -9870,7 +9899,13 @@ export default class Core {
           postMessage({
             messageType: "updateCreditAchieved",
             coreId: this.coreId,
-            args: data
+            args: {
+              creditByItem: data.creditByItem.map(Number),
+              creditForAssignment: Number(data.creditForAssignment),
+              creditForAttempt: Number(data.creditForAttempt),
+              showCorrectness: data.showCorrectness === "1",
+              totalPointsOrPercent: Number(data.totalPointsOrPercent),
+            }
           })
 
           //TODO: need type warning (red but doesn't hang around)

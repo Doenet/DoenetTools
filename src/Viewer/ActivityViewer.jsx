@@ -35,6 +35,11 @@ export const activityAttemptNumberSetUpAtom = atom({
   default: 0
 })
 
+export const itemWeightsAtom = atom({
+  key: "itemWeightsAtom",
+  default: []
+})
+
 export default function ActivityViewer(props) {
   const toast = useToast();
 
@@ -84,10 +89,11 @@ export default function ActivityViewer(props) {
   const [nPages, setNPages] = useState(0);
 
   const [variantsByPage, setVariantsByPage] = useState(null);
-  const [itemWeights, setItemWeights] = useState(null);
+  const [itemWeights, setItemWeights] = useRecoilState(itemWeightsAtom);
   const previousComponentTypeCountsByPage = useRef([]);
 
   const [cidChanged, setCidChanged] = useState(props.cidChanged);
+  const [cidChangedMessageOpen, setCidChangedMessageOpen] = useState(false);
 
   const serverSaveId = useRef(null);
 
@@ -156,7 +162,17 @@ export default function ActivityViewer(props) {
         itemWeights,
       }
     }
-  })
+  }, [
+    activityDefinition,
+    requestedVariantIndex,
+    variantIndex,
+    cid,
+    order,
+    currentPage,
+    nPages,
+    variantsByPage,
+    itemWeights
+  ])
 
   useEffect(() => {
     // for non-paginated activity
@@ -223,7 +239,7 @@ export default function ActivityViewer(props) {
     if (currentPage > 0 && nPages > 1) {
       let pageAnchor = `#page${currentPage}`;
       if (hash.slice(0, pageAnchor.length) !== pageAnchor) {
-        navigate(location.search + pageAnchor, { replace: true })
+        navigate(location.search + pageAnchor, { replace: true, state: { doNotScroll: true } })
       }
     }
   }, [currentPage, nPages])
@@ -240,23 +256,37 @@ export default function ActivityViewer(props) {
     // If navigate back to that location (i.e., hit back button)
     // then scroll back to the location when clicked
 
-    console.log({
-      currentLocationKey: currentLocationKey.current,
-      newLocationKey: location.key,
-      scrollPositionFromLink: location.state?.previousScrollPosition,
-      newScrollPosition: previousLocations.current[location.key]?.lastScrollPosition
-    })
+    // console.log({
+    //   currentLocationKey: currentLocationKey.current,
+    //   newLocationKey: location.key,
+    //   scrollPositionFromLink: location.state?.previousScrollPosition,
+    //   newScrollPosition: previousLocations.current[location.key]?.lastScrollPosition
+    // })
+
+    let foundNewInPrevious = false;
 
     if (currentLocationKey.current !== location.key) {
-      if (location.state?.previousScrollPosition && currentLocationKey.current) {
+      if (location.state?.previousScrollPosition !== undefined && currentLocationKey.current) {
         previousLocations.current[currentLocationKey.current].lastScrollPosition = location.state.previousScrollPosition
       }
-      if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
-        scrollableContainer.scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+
+      if (previousLocations.current[location.key]) {
+        foundNewInPrevious = true;
+
+        if (previousLocations.current[location.key]?.lastScrollPosition !== undefined) {
+          scrollableContainer.scroll({ top: previousLocations.current[location.key].lastScrollPosition })
+        }
       }
+
 
       previousLocations.current[location.key] = { ...location };
       currentLocationKey.current = location.key;
+    }
+
+    // since the <Link> from react router doesn't seem to scroll into hashes
+    // always scroll to the hash the first time we get a location from a <Link>
+    if (!location.state?.doNotScroll && (location.key === "default" || !foundNewInPrevious)) {
+      document.getElementById(cssesc(hash.slice(1)))?.scrollIntoView();
     }
 
   }, [location])
@@ -443,6 +473,7 @@ export default function ActivityViewer(props) {
         serverSaveId.current = localInfo.saveId;
 
         // activityState is just currentPage
+        // if hash doesn't already specify a page, set page from activityState
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(localInfo.activityState.currentPage);
           setRecoilCurrentPage(localInfo.activityState.currentPage);
@@ -526,6 +557,7 @@ export default function ActivityViewer(props) {
         let activityState = JSON.parse(resp.data.activityState);
 
         // activityState is just currentPage
+        // if hash doesn't already specify a page, set page from activityState
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(activityState.currentPage);
           setRecoilCurrentPage(activityState.currentPage);
@@ -550,6 +582,7 @@ export default function ActivityViewer(props) {
         // get initial state and info
 
         // start at page 1
+        // if hash doesn't already specify a page, set page to 1
         if (!hash?.match(/^#page(\d+)/)) {
           setCurrentPage(1);
           setRecoilCurrentPage(1);
@@ -1120,16 +1153,8 @@ export default function ActivityViewer(props) {
 
   let pages = [];
 
-  let lastItemNumber = 0;
 
   for (let [ind, page] of order.entries()) {
-    let itemNumber;
-    if (itemWeights[ind] >= 0) {
-      lastItemNumber++;
-      itemNumber = lastItemNumber;
-    } else {
-      itemNumber = 0;
-    }
 
     let thisPageIsActive = props.paginate ? ind + 1 === currentPage : pageInfo.pageIsActive[ind];
 
@@ -1143,7 +1168,7 @@ export default function ActivityViewer(props) {
       pageNumber={(ind + 1).toString()}
       previousComponentTypeCounts={previousComponentTypeCountsByPage.current[ind]}
       pageIsActive={thisPageIsActive}
-      itemNumber={itemNumber}
+      itemNumber={ind + 1}
       attemptNumber={attemptNumber}
       flags={flags}
       activityVariantIndex={variantIndex}
@@ -1177,9 +1202,20 @@ export default function ActivityViewer(props) {
 
   let cidChangedAlert = null;
   if (cidChanged) {
-    cidChangedAlert = <div>
-      <button onClick={() => alert("Hey, content changed")}>content changed</button>
-    </div>
+    if (cidChangedMessageOpen) {
+      cidChangedAlert = <div>
+        <p>A new version of this activity is available.
+          Do you want to start a new attempt using new version?
+          (This will reset the activity to its initial state.)
+        </p>
+        <button onClick={() => setCidChangedMessageOpen(false)}>Yes</button>
+        <button onClick={() => setCidChangedMessageOpen(false)}>No</button>
+      </div>
+    } else {
+      cidChangedAlert = <div>
+        <button onClick={() => setCidChangedMessageOpen(true)}>content changed</button>
+      </div>
+    }
   }
 
   let pageControls = null;

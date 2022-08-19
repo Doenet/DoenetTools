@@ -135,6 +135,8 @@ export default function PageViewer(props) {
 
   const prefixForIds = props.prefixForIds || "";
 
+  const previousLocationKeys = useRef([]);
+
   let location = useLocation();
   let hash = location.hash;
 
@@ -273,15 +275,21 @@ export default function PageViewer(props) {
   useEffect(() => {
     if (hash && documentRenderer && props.pageIsActive) {
       let anchor = hash.slice(1);
-      if (anchor.length > prefixForIds.length && anchor.substring(0, prefixForIds.length) === prefixForIds) {
+      if ((!previousLocationKeys.current.includes(location.key) || location.key === "default") &&
+        anchor.length > prefixForIds.length &&
+        anchor.substring(0, prefixForIds.length) === prefixForIds
+      ) {
         document.getElementById(cssesc(anchor))?.scrollIntoView();
       }
+      previousLocationKeys.current.push(location.key);
     }
+
+
   }, [location, hash, documentRenderer, props.pageIsActive])
 
   useEffect(() => {
 
-    if(havePrerendered.current !== null) {
+    if (havePrerendered.current !== null) {
       props.pagePrerenderedCallback?.(havePrerendered.current)
 
     }

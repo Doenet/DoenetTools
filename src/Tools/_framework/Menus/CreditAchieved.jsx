@@ -6,7 +6,7 @@ import axios from 'axios';
 import { creditAchievedAtom, currentAttemptNumber } from '../ToolPanels/AssignmentViewer';
 import styled from "styled-components";
 import { itemByDoenetId } from '../../../_reactComponents/Course/CourseActions';
-import { activityAttemptNumberSetUpAtom, currentPageAtom } from '../../../Viewer/ActivityViewer';
+import { activityAttemptNumberSetUpAtom, currentPageAtom, itemWeightsAtom } from '../../../Viewer/ActivityViewer';
 
 const Line = styled.div`
   border-bottom: 2px solid var(--canvastext);
@@ -32,6 +32,7 @@ export default function CreditAchieved() {
   const recoilUserId = useRecoilValue(searchParamAtomFamily('userId'));
   const recoilTool = useRecoilValue(searchParamAtomFamily('tool'));
   const itemObj = useRecoilValue(itemByDoenetId(recoilDoenetId));
+  const itemWeights = useRecoilValue(itemWeightsAtom);
   const currentPage = useRecoilValue(currentPageAtom);
   const activityAttemptNumberSetUp = useRecoilValue(activityAttemptNumberSetUpAtom);
 
@@ -47,15 +48,13 @@ export default function CreditAchieved() {
 
     const { data } = await axios.get(`api/loadAssessmentCreditAchieved.php`, { params: { attemptNumber, doenetId, userId, tool } });
 
-    const {
-      creditByItem,
-      creditForAssignment,
-      creditForAttempt,
-      showCorrectness,
-      totalPointsOrPercent
-    } = data;
+    const creditByItem = data.creditByItem.map(Number);
+    const creditForAssignment = Number(data.creditForAssignment)
+    const creditForAttempt = Number(data.creditForAttempt)
+    const showCorrectness = data.showCorrectness === "1";
+    const totalPointsOrPercent = Number(data.totalPointsOrPercent)
 
-    if (Number(showCorrectness) === 0 && tool.substring(0, 9) !== 'gradebook') {
+    if (!showCorrectness && tool.substring(0, 9) !== 'gradebook') {
       setDisabled(true);
     } else {
       set(creditAchievedAtom, (was) => {
@@ -80,7 +79,7 @@ export default function CreditAchieved() {
 
   // wait for the assignment attempt item tables to be set up
   // so that will have the rows for each item
-  if(activityAttemptNumberSetUp !== recoilAttemptNumber) {
+  if (activityAttemptNumberSetUp !== recoilAttemptNumber) {
     return null;
   }
 
@@ -100,8 +99,8 @@ export default function CreditAchieved() {
 
   let creditByItemsJSX = creditByItem.map((x, i) => {
     let scoreDisplay;
-    if (itemObj.itemWeights[i] === 0) {
-      scoreDisplay = "NA"
+    if (itemWeights[i] === 0) {
+      scoreDisplay = x === 0 ? "Not started" : (x === 1 ? "Complete" : "In progress");
     } else {
       scoreDisplay = (x ? Math.round(x * 1000) / 10 : 0) + "%";
     }
